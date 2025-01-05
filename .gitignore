@@ -17,6 +17,11 @@ yarn-error.log
 /.vscode
 *.cache
 .DS_Store
+/*.json
+/.env
+*.key
+*.pem
+
 
 
 # Below Comments For Design Style & Scripts
