@@ -4,7 +4,7 @@
     <img src="{{ getSingleMedia(optional($query->handyman),'profile_image', null) }}" alt="avatar" class="avatar avatar-40 rounded-pill">
     <div class="text-start">
       <h6 class="m-0">{{ optional($query->handyman)->display_name }} </h6>
-      <span>{{ optional($query->handyman)->email ?? '--' }}</span>
+      <span>{{ optional($query->handyman)->country->name ?? '--' }} - {{ optional($query->handyman)->city->name ?? '--' }}</span>
     </div>
   </div>
 </a>

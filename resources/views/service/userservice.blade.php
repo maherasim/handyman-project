@@ -4,6 +4,8 @@
     <div class="text-start">
       <h6 class="m-0">{{ optional($service->serviceBooking->first()->customer)->display_name}}</h6>
       <span>{{ optional($service->serviceBooking->first()->customer)->email ?? '--' }}</span>
+
+      { optional($query->providers)->country->name ?? '--' }}- {{ optional($query->providers)->city->name ?? '--' }}
     </div>
   </div>
   @else

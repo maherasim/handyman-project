@@ -141,12 +141,12 @@
                         name: 'created_at',
                         title: "{{ __('messages.joining_date') }}"
                     },
-                    {
-                        data: 'contact_number',
-                        name: 'contact_number',
-                        title: "{{ __('messages.contact_number') }}",
-                        orderable: false,
-                    },
+                    // {
+                    //     data: 'contact_number',
+                    //     name: 'contact_number',
+                    //     title: "{{ __('messages.contact_number') }}",
+                    //     orderable: false,
+                    // },
                     {
                         data: 'address',
                         name: 'address',

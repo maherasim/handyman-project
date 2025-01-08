@@ -4,7 +4,8 @@
     <img src="{{ getSingleMedia($query,'profile_image', null) }}" alt="avatar" class="avatar avatar-40 rounded-pill">
     <div class="text-start">
       <h6 class="m-0">{{ $query->first_name }} {{ $query->last_name }}</h6>
-      <span>{{ $query->email ?? '--' }}</span>
+      <span>{{ $query->country->name ?? '--' }}</span>-
+      <span>{{ $query->city->name ?? '--' }}</span>
     </div>
   </div>
 </a>
@@ -14,7 +15,8 @@
     <img src="{{ getSingleMedia($query,'profile_image', null) }}" alt="avatar" class="avatar avatar-40 rounded-pill">
     <div class="text-start">
       <h6 class="m-0">{{ $query->first_name }} {{ $query->last_name }}</h6>
-      <span>{{ $query->email ?? '--' }}</span>
+      <span>{{ $query->country->name ?? '--' }}</span>-
+      <span>{{ $query->city->name ?? '--' }}</span>
     </div>
   </div>
 </a>

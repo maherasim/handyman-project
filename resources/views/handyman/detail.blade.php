@@ -63,7 +63,7 @@
                                         {{ $handymandata->display_name }}
                                     </h2>
                                     <ul class="contact-list list-inline d-flex gap-3 flex-column">
-                                        <li>
+                                        {{-- <li>
                                             <i class="ri-smartphone-line"></i>
                                             <a
                                                 href="{{ $handymandata->contact_number }}" class="contact-info-text title-text p-0">{{ !empty($handymandata->contact_number) ? $handymandata->contact_number: '-' }}</a>
@@ -71,7 +71,7 @@
                                         <li>
                                             <i class="ri-mail-line"></i>
                                             <a href="{{ $handymandata->email }}" class="contact-info-text heading-colo p-0">{{ $handymandata->email }}</a>
-                                        </li>
+                                        </li> --}}
                                         <li>
                                             <i class="ri-map-2-line"></i>
                                             <span class="contact-info-text">{{ !empty($handymandata->address) ?$handymandata->address : '-' }}</span>

@@ -4,6 +4,9 @@
         <div class="main-content">
             <div class="container-fluid">
                 @include('partials._provider')
+                <div style="text-align: right; margin: 20px;">
+                    <a href="{{ route('handyman.create') }}" class="btn btn-primary">Add Handyman</a>
+                </div>
                 <div class="card">
                     <div class="card-body p-30">
                         <div class="service-man-list">
@@ -20,10 +23,10 @@
                                         </a> --}}
                                     </div>
                                     <h4 class="service-man-name">{{$handyman->display_name ?? '-' }}</h4>
-                                    <a class="service-man-phone" href="tel: {{$handyman->contact_number}}">{{$handyman->contact_number ?? '-' }}</a>
+                                    {{-- <a class="service-man-phone" href="tel: {{$handyman->contact_number}}">{{$handyman->contact_number ?? '-' }}</a> --}}
                                 </div>
                                 <div class="service-man-list__item_body">
-                                    <a class="service-man-mail" href="mailto: {{$handyman->email}}">{{$handyman->email ?? '-' }}</a>
+                                    {{-- <a class="service-man-mail" href="mailto: {{$handyman->email}}">{{$handyman->email ?? '-' }}</a> --}}
                                     <p class="service-man-address">{{$handyman->address ?? '-' }}</p>
                                 </div>
                             </div>

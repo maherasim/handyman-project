@@ -11,7 +11,7 @@
     <img src="{{ getSingleMedia(optional($query->providers),'profile_image', null) }}" alt="avatar" class="avatar avatar-40 rounded-pill">
     <div class="text-start">
       <h6 class="m-0">{{ optional($query->providers)->display_name }} </h6>
-      <span>{{ optional($query->providers)->email ?? '--' }}</span>
+      <span>{{ optional($query->providers)->country->name ?? '--' }} - {{ optional($query->providers)->city->name ?? '--' }}</span>
     </div>
   </div>
 </a>

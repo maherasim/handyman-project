@@ -3,7 +3,7 @@
     <img src="{{ getSingleMedia(optional($payout->handymans),'profile_image', null) }}" alt="avatar" class="avatar avatar-40 rounded-pill">
     <div class="text-start">
       <h6 class="m-0">{{ optional($payout->handymans)->first_name }} {{ optional($payout->handymans)->last_name }}</h6>
-      <span>{{ optional($payout->handymans)->email ?? '--' }}</span>
+      <span>{{ optional($payout->handymans)->country->name ?? '--' }} - {{ optional($payout->handymans)->city->name ?? '--' }}</span>
     </div>
   </div>
 

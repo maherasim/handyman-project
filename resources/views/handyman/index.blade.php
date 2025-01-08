@@ -142,25 +142,20 @@
                         name: 'provider_id',
                         title: "{{ __('messages.provider') }}"
                     },
-                    {
-                        data: 'contact_number',
-                        name: 'contact_number',
-                        title: "{{ __('messages.contact_number') }}",
-                        orderable: false,
-                    },
-                    {
-                        data: 'address',
-                        name: 'address',
-                        title: "{{ __('messages.address') }}",
-                        orderable: false,
-                    },
-                    {
-                        data: 'wallet',
-                        name: 'wallet',
-                        title: "{{ __('messages.wallet_amt') }}",
-                        searchable: false,
-                        orderable: false,
-                    },
+                    // {
+                    //     data: 'contact_number',
+                    //     name: 'contact_number',
+                    //     title: "{{ __('messages.contact_number') }}",
+                    //     orderable: false,
+                    // },
+                    
+                    // {
+                    //     data: 'wallet',
+                    //     name: 'wallet',
+                    //     title: "{{ __('messages.wallet_amt') }}",
+                    //     searchable: false,
+                    //     orderable: false,
+                    // },
                     {
                         data: 'status',
                         name: 'status',

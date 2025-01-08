@@ -19,7 +19,6 @@ class UserResource extends JsonResource
         $handyman_rating = (float) 0;
         $total_service_rating = 0;
         $is_verify_provider = false;
-        $handymancommission = null;
         if($this->user_type == 'provider')
         {
             $providers_service_rating = (isset($this->getServiceRating) && count($this->getServiceRating) > 0 ) ? (float) number_format(max($this->getServiceRating->avg('rating'),0), 2) : 0;
@@ -33,18 +32,10 @@ class UserResource extends JsonResource
             $handyman_rating = (isset($this->handymanRating) && count($this->handymanRating) > 0 ) ? (float) number_format(max($this->handymanRating->avg('rating'),0), 2) : 0;
         }
         if($this->login_type !== null && $this->login_type !== 'mobile' && $this->login_type !== 'user'){
-            $profile_image = $this->social_image ?? getSingleMedia($this, 'profile_image',null);
+            $profile_image = $this->social_image;
         }else{
             $profile_image = getSingleMedia($this, 'profile_image',null);
         }
-        if ($this->handymantype != null) {
-            if ($this->handymantype->type == 'percent') {
-                $handymancommission = $this->handymantype->commission . '%'; // Append percent sign for percent type
-            } else {
-                $handymancommission = getPriceFormat($this->handymantype->commission); // Append dollar sign for fixed type
-            }
-        }
-        
         return [
             'id'                => $this->id,
             'first_name'        => $this->first_name,
@@ -80,11 +71,20 @@ class UserResource extends JsonResource
             'handyman_rating' => $handyman_rating,
             'is_verify_provider' => (int) $is_verify_provider,
             'isHandymanAvailable' =>  $this->is_available,
+            'languages' =>  $this->languages,
+            'about_me' =>  $this->about_me,
+            'vat_number' =>  $this->vat_number,
+            'company_name' =>  $this->company_name,
             'designation' => $this->designation,
             'handymantype_id' => $this->handymantype_id,
-            'handyman_type' => optional($this->handymantype)->name,
-            'handyman_commission' => $handymancommission,
+            'handymantype' => optional($this->handymantype)->name,
             'known_languages' => $this->known_languages,
+            'language_option' => $this->language_option,
+            'availability' => $this->availability,
+            'experience' => $this->experience,
+            'mobility' => $this->mobility,
+            'education' => $this->education,
+            'certification' => $this->certification,
             'skills' => $this->skills,
             'is_favourite'  => UserFavouriteProvider::where('user_id',$request->login_user_id)->where('provider_id',$request->id)->first() ? 1 : 0,
             'total_services_booked' => Booking::where('provider_id',$this->id)->count('service_id'),

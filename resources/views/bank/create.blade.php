@@ -46,6 +46,25 @@
                                 {{ html()->text('branch_name', $bankdata->branch_name)->placeholder(trans('messages.branch_name'))->class('form-control')->required()}}
                                 <small class="help-block with-errors text-danger"></small>
                             </div>
+
+                            <div class="form-group col-md-4">
+                                {{ html()->label(trans('IBAN Number') . ' <span class="text-danger">*</span>', 'iban_no')->class('form-control-label')}}
+                                {{ html()->text('iban_no', $bankdata->iban_no)->placeholder(trans('IBAN No'))->class('form-control')->required()}}
+                                <small class="help-block with-errors text-danger"></small>
+                            </div>
+                            <div class="form-group col-md-4">
+                                {{ html()->label(trans('BIC/Swift Number') . ' <span class="text-danger">*</span>', 'bic_number')->class('form-control-label')}}
+                                {{ html()->text('bic_number', $bankdata->bic_number)->placeholder(trans('BIC Number'))->class('form-control')->required()}}
+                                <small class="help-block with-errors text-danger"></small>
+                            </div>
+                            <div class="form-group col-md-4">
+                                {{ html()->label(trans('Account Holder') . ' <span class="text-danger">*</span>', 'account_holder')->class('form-control-label')}}
+                                {{ html()->text('account_holder', $bankdata->account_holder)->placeholder(trans('account holder'))->class('form-control')->required()}}
+                                <small class="help-block with-errors text-danger"></small>
+                            </div>
+
+
+
                             <div class="form-group col-md-4">
                                 {{ html()->label(trans('messages.account_no') . ' <span class="text-danger">*</span>', 'account_no')->class('form-control-label')}}
                                 {{ html()->text('account_no', $bankdata->account_no)->placeholder(trans('messages.account_no'))->class('form-control')->required()}}

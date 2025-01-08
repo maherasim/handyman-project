@@ -4,7 +4,9 @@
     <img src="{{ getSingleMedia(optional($payment->customer),'profile_image', null) }}" alt="avatar" class="avatar avatar-40 rounded-pill">
     <div class="text-start">
       <h6 class="m-0">{{ optional($payment->customer)->first_name }} {{ optional($payment->customer)->last_name }}</h6>
-      <span>{{ optional($payment->customer)->email ?? '--' }}</span>
+      <span>{{ optional($payment->customer->city)->name ?? '--' }}</span> -
+      <span>{{ optional($payment->customer->country)->name ?? '--' }}</span> 
+     
     </div>
   </div>
 </a>

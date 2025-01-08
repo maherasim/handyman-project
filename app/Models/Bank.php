@@ -13,7 +13,7 @@ class Bank extends Model implements HasMedia
     use HasFactory,InteractsWithMedia,SoftDeletes;
     protected $table = 'banks';
     protected $fillable = [
-        'provider_id', 'bank_name', 'branch_name','account_no','ifsc_no' , 'mobile_no','aadhar_no','pan_no','status','stripe_account','is_default'
+        'provider_id', 'bank_name', 'branch_name','account_no','account_holder' , 'mobile_no','iban_no','bic_number','status','stripe_account','is_default'
     ];
 
     protected $casts = [
