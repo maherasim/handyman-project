@@ -53,6 +53,48 @@
                                 }}
                             </div>
 
+                            <div class="form-group col-md-6">
+                                {{ html()->label(__('messages.select_name', ['select' => __('messages.country')]), 'country_id')->class('form-control-label') }}
+                                <br />
+                                {{ html()->select(
+                                        'country_id',
+                                        [optional($servicedata->country)->id => optional($servicedata->country)->name],
+                                        optional($servicedata->country)->id,
+                                    )->class('form-group select2js country')->attribute('data-placeholder', __('messages.select_name', ['select' => __('messages.country')]))->attribute('data-ajax--url', route('ajax-list', ['type' => 'country'])) }}
+                            </div>
+        
+                            <div class="form-group col-md-6">
+                                {{ html()->label(__('messages.select_name', ['select' => __('messages.state')]), 'state_id')->class('form-control-label') }}
+                                <br />
+                                {{ html()->select(
+                                        'state_id',
+                                        [optional($servicedata->state)->id => optional($servicedata->state)->name],
+                                        optional($servicedata->state)->id,
+                                    )->class('form-group select2js state_id')->attribute('data-placeholder', __('messages.select_name', ['select' => __('messages.state')])) }}
+                            </div>
+        
+                            <div class="form-group col-md-6">
+                                {{ html()->label(__('messages.select_name', ['select' => __('messages.city')]), 'city_id')->class('form-control-label') }}
+                                <br />
+                                {{ html()->select(
+                                        'city_id',
+                                        [optional($servicedata->city)->id => optional($servicedata->city)->name],
+                                        optional($servicedata->city)->id,
+                                    )->class('form-group select2js city_id')->attribute('data-placeholder', __('messages.select_name', ['select' => __('messages.city')])) }}
+                            </div>
+        
+
+
+
+
+
+
+
+
+
+
+                          
+
                             @if(auth()->user()->hasAnyRole(['admin','demo_admin']))
                             <div class="form-group col-md-4">
                                 {{ html()->label(__('messages.select_name',[ 'select' => __('messages.provider') ]).' <span class="text-danger">*</span>','name')->class('form-control-label') }}
@@ -88,13 +130,28 @@
 
                             <div class="form-group col-md-4">
                                 {{ html()->label(__('messages.price_type') . ' <span class="text-danger">*</span>', 'type')->class('form-control-label') }}
-                                {{ html()->select('type',['fixed' => __('messages.fixed'),'hourly' => __('messages.hourly'),'free' => __('messages.free')], $servicedata->type)->class('form-control select2js')->required()->id('price_type')}}
+                                {{ html()->select('type', [
+                                    'fixed' => __('messages.fixed'),
+                                    'hourly' => __('messages.hourly'),
+                                    'Daily' => __('daily'), // Add 'daily' option here
+                                    'free' => __('messages.free')
+                                ], $servicedata->type)->class('form-control select2js')->required()->id('price_type') }}
                             </div>
+                            
                             <div class="form-group col-md-4" id="price_div">
                                 {{ html()->label(__('messages.price') . ' <span class="text-danger">*</span>', 'price')->class('form-control-label') }}
                                 {{ html()->text('price',null)->attributes(['min' => 1, 'step' => 'any', 'pattern' => '^\\d+(\\.\\d{1,2})?$'])->placeholder(__('messages.price'))->class('form-control')->required()->id('price')}}
                                 <small class="help-block with-errors text-danger"></small>
                             </div>
+
+
+                            <div class="form-group col-md-4" id="price_div">
+                                {{ html()->label(__('Minimum Booking'), 'minimum_booking')->class('form-control-label') }}
+                                {{ html()->text('minimum_booking', null)->attributes(['step' => 'any'])->placeholder(__('messages.minimum_booking'))->class('form-control')->id('minimum_booking') }}
+                                <small class="help-block with-errors text-danger"></small>
+                            </div>
+                            
+
 
                             <div class="form-group col-md-4" id="discount_div">
                                 {{ html()->label(__('messages.discount') . ' %', 'discount')->class('form-control-label') }}
@@ -121,6 +178,10 @@
                                     {{ html()->select('visit_type', $visittype, $servicedata->visit_type)->id('visit_type')->class('form-control select2js')->required() }}
                                     </div>
     
+
+
+
+                                    
                                 <div class="form-group col-md-4">
                                 <label class="form-control-label" for="service_attachment">{{ __('messages.image') }} <span class="text-danger">*</span>
                                     </label>
@@ -193,6 +254,10 @@
                                     {{ html()->label(__('messages.description'), 'description')->class('form-control-label') }}
                                     {{ html()->textarea('description', $servicedata->description)->class('form-control textarea')->rows(3)->placeholder(__('messages.description')) }}
                                 </div>
+                                <div class="form-group col-md-12">
+                                    {{ html()->label(__('Cancellation Policy & Fees'), 'cancellation_policy')->class('form-control-label') }}
+                                    {{ html()->textarea('cancellation_policy', $servicedata->cancellation_policy)->class('form-control textarea')->rows(3)->placeholder(__('cancellation_policy')) }}
+                                </div>
                                 @if(!empty( $slotservice) && $slotservice == 1)
                                 <div class="form-group col-md-3">
                                     <div class="custom-control custom-switch">
@@ -202,13 +267,14 @@
                                     </div>
                                 </div>
                                 @endif
+                                @if (auth()->check() && auth()->user()->user_type === 'provider')
                                 <div class="form-group col-md-3">
                                     <div class="custom-control custom-switch">
                                         {{ html()->checkbox('is_featured', $servicedata->is_featured)->class('custom-control-input')->id('is_featured')}}
                                         <label class="custom-control-label"
                                             for="is_featured">{{ __('messages.set_as_featured') }}</label>
                                     </div>
-                            </div>
+                            </div> @endif
                             <!-- @if(!empty( $digitalservicedata) && $digitalservicedata->value == 1)
                             <div class="form-group col-md-3">
                                 <div class="custom-control custom-switch">
@@ -488,6 +554,205 @@
     }
 
 
+    </script>
+    <script>
+        // (function($) {
+        // 	"use strict";
+        $(document).ready(function() {
+            $('.select2js').select2({
+                width: '100%',
+                // dropdownParent: $(this).parent()
+            });
+            var country_id = "{{ isset($servicedata->country_id) ? $servicedata->country_id : 0 }}";
+            var state_id = "{{ isset($servicedata->state_id) ? $servicedata->state_id : 0 }}";
+            var city_id = "{{ isset($servicedata->city_id) ? $servicedata->city_id : 0 }}";
+    
+            stateName(country_id, state_id);
+            $(document).on('change', '#country_id', function() {
+                var country = $(this).val();
+                $('#state_id').empty();
+                $('#city_id').empty();
+                stateName(country);
+            })
+            $(document).on('change', '#state_id', function() {
+                var state = $(this).val();
+                $('#city_id').empty();
+                cityName(state, city_id);
+            })
+    
+            $(document).ready(function() {
+                // Add Section
+                $("#add-section").click(function() {
+                    var newSection = $(".form-section:first").clone();
+                    newSection.find('input').val(''); // Clear input values
+                    $(".form-section:last").after(newSection);
+                    updateRemoveButtonVisibility();
+                });
+    
+                // Remove Section
+                $(document).on('click', '.remove-section', function() {
+                    if ($(".form-section").length > 1) {
+                        $(this).closest('.form-section').remove();
+                        updateRemoveButtonVisibility();
+                    }
+                });
+    
+                // Remove Section
+                $(document).on('click', '.remove-section1', function() {
+    
+                    $(this).closest('.form-section1').remove();
+    
+                });
+    
+                // Function to update Remove button visibility
+                function updateRemoveButtonVisibility() {
+                    if ($(".form-section").length > 1) {
+                        $('.remove-section').show();
+                    } else {
+                        $('.remove-section').hide();
+                    }
+                }
+    
+                // Initially hide Remove button if there's only one section
+                updateRemoveButtonVisibility();
+            });
+    
+            $(document).on('keyup', '.contact_number', function() {
+                var contactNumberInput = document.getElementById('contact_number');
+                var inputValue = contactNumberInput.value;
+                inputValue = inputValue.replace(/[^0-9+\- ]/g, '');
+                if (inputValue.length > 15) {
+                    inputValue = inputValue.substring(0, 15);
+                    $('#contact_number_err').text('Contact number should not exceed 15 characters');
+                } else {
+                    $('#contact_number_err').text('');
+                }
+                contactNumberInput.value = inputValue;
+                if (inputValue.match(/^[0-9+\- ]+$/)) {
+                    $('#contact_number_err').text('');
+                } else {
+                    $('#contact_number_err').text('Please enter a valid mobile number');
+                }
+            });
+    
+    
+    
+            function stateName(country, state = "") {
+                var state_route = "{{ route('ajax-list', ['type' => 'state', 'country_id' => '']) }}" + country;
+                state_route = state_route.replace('amp;', '');
+    
+                $.ajax({
+                    url: state_route,
+                    success: function(result) {
+                        $('#state_id').select2({
+                            width: '100%',
+                            placeholder: "{{ trans('messages.select_name', ['select' => trans('messages.state')]) }}",
+                            data: result.results
+                        });
+                        if (state != null) {
+                            $("#state_id").val(state).trigger('change');
+                        }
+                    }
+                });
+            }
+    
+            function cityName(state, city = "") {
+                var city_route = "{{ route('ajax-list', ['type' => 'city', 'state_id' => '']) }}" + state;
+                city_route = city_route.replace('amp;', '');
+    
+                $.ajax({
+                    url: city_route,
+                    success: function(result) {
+                        $('#city_id').select2({
+                            width: '100%',
+                            placeholder: "{{ trans('messages.select_name', ['select' => trans('messages.city')]) }}",
+                            data: result.results
+                        });
+                        if (city != null || city != 0) {
+                            $("#city_id").val(city).trigger('change');
+                        }
+                    }
+                });
+            }
+            $(document).on('change', '#profile_image', function() {
+                readURL(this);
+            })
+    
+            function readURL(input) {
+                if (input.files && input.files[0]) {
+                    var reader = new FileReader();
+    
+                    var res = isImage(input.files[0].name);
+    
+                    if (res == false) {
+                        var msg = "{{ __('messages.image_png_gif') }}";
+                        Snackbar.show({
+                            text: msg,
+                            pos: 'bottom-center',
+                            backgroundColor: '#d32f2f',
+                            actionTextColor: '#fff'
+                        });
+                        return false;
+                    }
+    
+                    reader.onload = function(e) {
+                        $('.profile_image_preview').attr('src', e.target.result);
+                        $("#imagelabel").text((input.files[0].name));
+                    }
+    
+                    reader.readAsDataURL(input.files[0]);
+                }
+            }
+    
+    
+            $(document).ready(function() {
+    
+                var currentImage = "{{ getSingleMedia($servicedata, 'profile_image', null) }}";
+    
+    
+                if (currentImage !== "") {
+    
+                    var fileName = currentImage.split('/').pop();
+    
+                    $('#imagelabel').text(fileName);
+                }
+            });
+    
+    
+            function getExtension(filename) {
+                var parts = filename.split('.');
+                return parts[parts.length - 1];
+            }
+    
+            function isImage(filename) {
+                var ext = getExtension(filename);
+                switch (ext.toLowerCase()) {
+                    case 'jpg':
+                    case 'jpeg':
+                    case 'png':
+                    case 'gif':
+                        return true;
+                }
+                return false;
+            }
+        })
+        // })(jQuery);
+    </script>
+     <script>
+        tinymce.init({
+            selector: '#description', // Target the ID of your textarea
+            plugins: 'lists link image preview', // Add any plugins you want to use
+            toolbar: 'undo redo | bold italic | bullist numlist | link image preview',
+            menubar: false
+        });
+    </script>
+     <script>
+        tinymce.init({
+            selector: '#cancellation_policy', // Target the ID of your textarea
+            plugins: 'lists link image preview', // Add any plugins you want to use
+            toolbar: 'undo redo | bold italic | bullist numlist | link image preview',
+            menubar: false
+        });
     </script>
     @endsection
 </x-master-layout>

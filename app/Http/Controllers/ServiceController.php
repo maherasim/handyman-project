@@ -226,7 +226,8 @@ class ServiceController extends Controller
             if ($digital_services == 1) {
                 $visittype = [
                     'ON_SITE' => 'On Site',
-                    'ONLINE' => 'Online',
+                    'Remote' => 'Remote',
+                    'Hybird' => 'Hybird',
                 ];
             } else {
                 $visittype = [
