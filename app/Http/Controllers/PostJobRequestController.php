@@ -29,7 +29,18 @@ class PostJobRequestController extends Controller
         return view('postrequest.index', compact('pageTitle','auth_user','assets','filter'));
 
     }
-
+    public function bidshowindex()
+    {
+        $auth_user = authSession();
+        
+        // Fetch all bids that belong to the logged-in provider
+        $postJobBids = PostJobBid::where('provider_id', $auth_user->id)->get();
+    
+        $pageTitle = trans('messages.list_form_title', ['form' => trans('messages.postbid')]);
+        $asset = ['datatable'];
+    
+        return view('postrequest.view', compact('pageTitle', 'auth_user', 'asset', 'postJobBids'));
+    }
 
 
     public function index_data(DataTables $datatable,Request $request)
@@ -200,6 +211,33 @@ class PostJobRequestController extends Controller
         return view('postrequest.view', compact('pageTitle', 'auth_user', 'asset','id'));
     }
 
+    // public function postrequest_index_data(DataTables $datatable,$id)
+    // {
+    //     $query = PostJobBid::where('post_request_id',$id);
+
+    //     if (auth()->user()->hasAnyRole(['admin'])) {
+    //         $query->newquery();
+    //     }
+
+    //     return $datatable  ->eloquent($query)
+    //     ->editColumn('post_request_id' , function ($post_job_bid){
+    //         return ($post_job_bid->post_request_id != null && isset($post_job_bid->postrequest)) ? $post_job_bid->postrequest->title : '-';
+    //     })
+    //     ->editColumn('provider_id' , function ($post_job_bid){
+    //         return ($post_job_bid->provider_id != null && isset($post_job_bid->provider)) ? $post_job_bid->provider->display_name : '-';
+    //     })
+    //     ->editColumn('customer_id', function ($post_job_bid){
+    //         return ($post_job_bid->customer_id != null && isset($post_job_bid->customer)) ? $post_job_bid->customer->display_name : '-';
+    //     })
+    //     ->editColumn('price' , function ($post_job){
+    //         return getPriceFormat($post_job->price);
+    //     })
+    //     ->editColumn('duration' , function ($post_job_bid){
+    //         return ($post_job_bid->duration != null) ? $post_job_bid->duration : '-';
+    //     })
+    //     ->addIndexColumn()
+    //     ->toJson();
+    // }
     public function postrequest_index_data(DataTables $datatable,$id)
     {
         $query = PostJobBid::where('post_request_id',$id);
@@ -222,7 +260,7 @@ class PostJobRequestController extends Controller
             return getPriceFormat($post_job->price);
         })
         ->editColumn('duration' , function ($post_job_bid){
-            return ($post_job_bid->duration != null) ? $post_job_bid->duration : '-';
+            return ($post_job_bid->duration != null) ? $post_job_bid->duration .' hours' : '-';
         })
         ->addIndexColumn()
         ->toJson();

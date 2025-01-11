@@ -44,6 +44,19 @@ class ServiceController extends Controller
         return view('service.index', compact('pageTitle','auth_user','assets','filter','postrequestid','servicepackage'));
     }  
 
+    public function myindex(Request $request)
+    {
+        $servicepackage = $request->packageid;
+        $postrequestid = $request->route('postjobid');
+        $filter = [
+            'status' => $request->status,
+        ];
+        $pageTitle = __('messages.all_form_title',['form' => __('messages.services')] );
+        $auth_user = authSession();
+        $assets = ['datatable'];
+        return view('service.myindex', compact('pageTitle','auth_user','assets','filter','postrequestid','servicepackage'));
+    }
+
     // get datatable data
     public function index_data(DataTables $datatable,Request $request)
     {
@@ -133,6 +146,91 @@ class ServiceController extends Controller
             })
 
             ->rawColumns(['action', 'status', 'check','name'])
+            ->toJson();
+    }
+    public function myindex_data(DataTables $datatable, Request $request)
+    {
+        // Start the query with the user's favorite services
+        $query = Service::query()
+            ->whereHas('getUserFavouriteService', function ($subQuery) {
+                $subQuery->where('user_id', auth()->user()->id);
+            })
+            ->myService()
+            ->list();
+    
+        $filter = $request->filter;
+    
+        if (isset($filter)) {
+            if (isset($filter['column_status'])) {
+                $query->where('status', $filter['column_status']);
+            }
+        }
+    
+        if (auth()->user()->hasAnyRole(['admin', 'provider'])) {
+            $query->where('service_type', 'service')->withTrashed();
+        }
+    
+        if ($request->has('postrequestid')) {
+            $postRequestId = $request->postrequestid;
+            $query->whereHas('postJobService', function ($subQuery) use ($postRequestId) {
+                $subQuery->where('post_request_id', $postRequestId);
+            });
+        }
+    
+        if ($request->has('servicepackage')) {
+            $servicepackage = $request->servicepackage;
+            $query->whereHas('servicePackage', function ($subQuery) use ($servicepackage) {
+                $subQuery->where('service_package_id', $servicepackage);
+            });
+        }
+    
+        return $datatable->eloquent($query)
+            ->addColumn('check', function ($row) {
+                return '<input type="checkbox" class="form-check-input select-table-row" id="datatable-row-'.$row->id.'" name="datatable_ids[]" value="'.$row->id.'" data-type="service" onclick="dataTableRowCheck('.$row->id.', this)">';
+            })
+            ->editColumn('name', function($query) {
+                if (auth()->user()->can('service edit')) {
+                    $link = '<a class="btn-link btn-link-hover" href='.route('service.create', ['id' => $query->id]).'>'.$query->name.'</a>';
+                } else {
+                    $link = $query->name;
+                }
+                return $link;
+            })
+            ->editColumn('category_id', function ($query) {
+                return ($query->category_id != null && isset($query->category)) ? $query->category->name : '-';
+            })
+            ->filterColumn('category_id', function($query, $keyword) {
+                $query->whereHas('category', function ($q) use ($keyword) {
+                    $q->where('name', 'like', '%'.$keyword.'%');
+                });
+            })
+            ->editColumn('provider_id', function ($query) {
+                return view('service.service', compact('query'));
+            })
+            ->filterColumn('provider_id', function($query, $keyword) {
+                $query->whereHas('providers', function ($q) use ($keyword) {
+                    $q->where('display_name', 'like', '%'.$keyword.'%');
+                });
+            })
+            ->editColumn('price', function ($query) {
+                return getPriceFormat($query->price).'-'.ucFirst($query->type);
+            })
+            ->editColumn('discount', function ($query) {
+                return $query->discount ? $query->discount .'%' : '-';
+            })
+            ->addColumn('action', function ($data) {
+                return view('service.action', compact('data'));
+            })
+            ->editColumn('status', function ($query) {
+                $disabled = $query->trashed() ? 'disabled' : '';
+                return '<div class="custom-control custom-switch custom-switch-text custom-switch-color custom-control-inline">
+                    <div class="custom-switch-inner">
+                        <input type="checkbox" class="custom-control-input change_status" data-type="service_status" '.($query->status ? "checked" : "").' '.$disabled.' value="'.$query->id.'" id="'.$query->id.'" data-id="'.$query->id.'">
+                        <label class="custom-control-label" for="'.$query->id.'" data-on-label="" data-off-label=""></label>
+                    </div>
+                </div>';
+            })
+            ->rawColumns(['action', 'status', 'check', 'name'])
             ->toJson();
     }
 

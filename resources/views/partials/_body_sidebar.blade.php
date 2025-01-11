@@ -518,6 +518,56 @@
             )
             ->nickname('payment')
             ->data('permission', 'payment list');
+            if(auth()->user()->user_type == 'user' || auth()->user()->user_type == 'provider'){
+$menu->add('<span>'.__('Wallet Balance').'</span><span class="custom-tooltip"><span class="tooltip-text">'.__('messages.messages.custom_job').'</span></span>', ['route' => 'wallet.index'])
+->prepend(' <svg class="mr-2" width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M2 12C2 8.22876 2 6.34315 3.17157 5.17157C4.34315 4 6.22876 4 10 4H14C17.7712 4 19.6569 4 20.8284 5.17157C22 6.34315 22 8.22876 22 12C22 15.7712 22 17.6569 20.8284 18.8284C19.6569 20 17.7712 20 14 20H10C6.22876 20 4.34315 20 3.17157 18.8284C2 17.6569 2 15.7712 2 12Z" stroke="currentColor" stroke-width="1.5"/>
+<path d="M10 16H6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M14 16H12.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M2 10L22 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+</svg>
+')
+->nickname('custom_job')
+->data('permission', 'payment list');
+
+
+}
+
+
+
+
+if(auth()->user()->user_type == 'user' ){
+
+$menu->add('favoritism', ['class' => 'category-main'])->data('permission', ['tax list','payment list','earning list']); 
+
+
+$menu->add('<span>'.__('Favourit Services').'</span><span class="custom-tooltip"><span class="tooltip-text">'.__('messages.messages.myservice').'</span></span>', ['route' => 'myservice'])
+->prepend(' <svg width="15" height="12" class="sidebar-menu-icon" viewBox="0 0 15 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M2 12C2 8.22876 2 6.34315 3.17157 5.17157C4.34315 4 6.22876 4 10 4H14C17.7712 4 19.6569 4 20.8284 5.17157C22 6.34315 22 8.22876 22 12C22 15.7712 22 17.6569 20.8284 18.8284C19.6569 20 17.7712 20 14 20H10C6.22876 20 4.34315 20 3.17157 18.8284C2 17.6569 2 15.7712 2 12Z" stroke="currentColor" stroke-width="1.5"/>
+<path d="M10 16H6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M14 16H12.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M2 10L22 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+</svg>
+')
+->nickname('custom_job')
+->data('permission', 'payment list');
+
+
+
+$menu->add('<span>'.__('Favourit Provider').'</span><span class="custom-tooltip"><span class="tooltip-text">'.__('messages.messages.myservice').'</span></span>', ['route' => 'myprovider'])
+->prepend(' <svg class="mr-2" width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    
+<path d="M2 12C2 8.22876 2 6.34315 3.17157 5.17157C4.34315 4 6.22876 4 10 4H14C17.7712 4 19.6569 4 20.8284 5.17157C22 6.34315 22 8.22876 22 12C22 15.7712 22 17.6569 20.8284 18.8284C19.6569 20 17.7712 20 14 20H10C6.22876 20 4.34315 20 3.17157 18.8284C2 17.6569 2 15.7712 2 12Z" stroke="currentColor" stroke-width="1.5"/>
+<path d="M10 16H6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M14 16H12.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M2 10L22 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+</svg>
+')
+->nickname('custom_job')
+->data('permission', 'payment list');
+
+
+}
 
         $menu
             ->add(
@@ -586,6 +636,62 @@
                 ->nickname('provider_withdrawal_requests')
                 ->data('permission', 'service list');
         }
+
+        
+    $menu
+        ->add(
+            '<span>' .
+                __('messages.myjob_request') .
+                '</span><span class="custom-tooltip"><span class="tooltip-text">' .
+                __('messages.myjob_request') .
+                '</span></span>',
+            ['route' => 'post-job-request.index'] // Change 'myjob.request' to the correct route
+        )
+        ->prepend(
+            '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <!-- Add appropriate SVG icon here -->
+            </svg>'
+        )
+        ->nickname('Asimm job') // Set a nickname for identification
+        ->data('permission', ' '); 
+        // Set the required permission for this item
+        if(auth()->user()->user_type == 'provider' ){
+
+$menu->add('<span>'.__('Job Request').'</span><span class="custom-tooltip"><span class="tooltip-text">'.__('messages.messages.custom_job').'</span></span>', ['route' => 'post-job-request.index'])
+->prepend(' <svg width="15" height="15" class="sidebar-menu-icon" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+    
+<path d="M2 12C2 8.22876 2 6.34315 3.17157 5.17157C4.34315 4 6.22876 4 10 4H14C17.7712 4 19.6569 4 20.8284 5.17157C22 6.34315 22 8.22876 22 12C22 15.7712 22 17.6569 20.8284 18.8284C19.6569 20 17.7712 20 14 20H10C6.22876 20 4.34315 20 3.17157 18.8284C2 17.6569 2 15.7712 2 12Z" stroke="currentColor" stroke-width="1.5"/>
+<path d="M10 16H6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M14 16H12.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M2 10L22 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+</svg>
+')
+->nickname('custom_job')
+->data('permission', 'payment list');
+
+}
+
+
+        if(auth()->user()->user_type == 'provider' ){
+
+$menu->add('<span>'.__('My  Bid List').'</span><span class="custom-tooltip"><span class="tooltip-text">'.__('messages.messages.custom_job').'</span></span>', ['route' => 'bidsshow'])
+->prepend(' <svg width="15" height="15" class="sidebar-menu-icon" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+    
+<path d="M2 12C2 8.22876 2 6.34315 3.17157 5.17157C4.34315 4 6.22876 4 10 4H14C17.7712 4 19.6569 4 20.8284 5.17157C22 6.34315 22 8.22876 22 12C22 15.7712 22 17.6569 20.8284 18.8284C19.6569 20 17.7712 20 14 20H10C6.22876 20 4.34315 20 3.17157 18.8284C2 17.6569 2 15.7712 2 12Z" stroke="currentColor" stroke-width="1.5"/>
+<path d="M10 16H6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M14 16H12.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M2 10L22 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+</svg>
+')
+->nickname('custom_job')
+->data('permission', 'payment list');
+
+}
+
+
+
+
+
 
         $menu->add(__('messages.promotion'), ['class' => 'category-main'])->data('permission', 'coupon list');
 
@@ -1041,6 +1147,16 @@
             ->nickname('frontend_setting')
             ->data('role', ['admin', 'demo_admin'])
             ->link->attr(['class' => '']);
+
+
+
+
+
+
+
+
+
+
 
         $menu
             ->add(

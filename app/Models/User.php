@@ -161,7 +161,10 @@ class User extends Authenticatable implements HasMedia
     public function payment(){
         return $this->hasMany(Payment::class, 'customer_id','id');
     }
-
+    public function userFavourites()
+    {
+        return $this->hasMany(UserFavouriteProvider::class, 'provider_id');
+    }
     protected function getUserByKeyValue($key,$value){
         return $this->where($key, $value)->first();
     }

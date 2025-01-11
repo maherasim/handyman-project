@@ -5,13 +5,8 @@
 
     RewriteEngine On
 
-    # Allow access to files in the storage folder
-    RewriteCond %{REQUEST_URI} ^/storage/
-    RewriteCond %{REQUEST_FILENAME} -f
-    RewriteRule ^(.*)$ storage/$1 [L]
-
     # Handle Authorization Header
-    RewriteCond %{HTTP:Authorization} . 
+    RewriteCond %{HTTP:Authorization} .
     RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
 
     # Redirect Trailing Slashes If Not A Folder...

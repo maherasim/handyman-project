@@ -521,3 +521,16 @@ Route::group(['middleware' => ['permission:helpdesk list']], function () {
     Route::get('helpdesk-closed/{id}', [HelpDeskController::class, 'closed'])->name('helpdesk.closed');
     Route::post('helpdesk-activity/{id}', [HelpDeskController::class, 'activity'])->name('helpdesk.activity');
 });
+
+Route::get('bidsshow',[PostJobRequestController::class,'bidshowindex'])->name('bidsshow');
+Route::get('bidsindex',[PostJobRequestController::class,'bidshow'])->name('bidsshowjson');
+// my favriout Service
+
+Route::get('my-service',[ServiceController::class,'myindex'])->name('myservice');
+Route::get('myservice-index-data',[ServiceController::class,'myindex_data'])->name('myservice.service-index-data');
+
+// my favriout provider
+
+Route::get('my-provider',[ProviderController::class,'myindex'])->name('myprovider');
+Route::get('myprovider-index-data',[ProviderController::class,'myindex_data'])->name('myprovider.provider-index-data');
+

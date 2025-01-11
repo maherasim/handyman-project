@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Models\UserFavouriteService;
 use App\Models\Booking;
 use App\Models\ProviderSlotMapping;
 use App\Http\Requests\UserRequest;
@@ -42,7 +43,24 @@ class ProviderController extends Controller
         $list_status = $request->status;
         return view('provider.index', compact('list_status','pageTitle','auth_user','assets','filter'));
     }
+    public function myindex(Request $request)
+    {
+        $filter = [
+            'status' => $request->status,
+        ];
+        $pageTitle = __('messages.providers' );
+        if($request->status === 'pending'){
+            $pageTitle = __('messages.pending_list_form_title',['form' => __('messages.provider')] );
+        }
+        if($request->status === 'subscribe'){
+            $pageTitle = __('messages.list_form_title',['form' => __('messages.subscribe')] );
+        }
 
+        $auth_user = authSession();
+        $assets = ['datatable'];
+        $list_status = $request->status;
+        return view('provider.myindex', compact('list_status','pageTitle','auth_user','assets','filter'));
+    }
     public function index_data(DataTables $datatable,Request $request)
     {
         $query = User::query();
@@ -113,6 +131,87 @@ class ProviderController extends Controller
             ->rawColumns(['check','display_name','wallet','action','status'])
             ->toJson();
     }
+
+
+
+    public function myindex_data(DataTables $datatable, Request $request)
+{
+    // Start the query with the user's favorite providers
+    $query = User::query()
+        ->whereHas('userFavourites', function ($subQuery) {
+            $subQuery->where('user_id', auth()->user()->id);
+        })
+        ->list();
+
+    $filter = $request->filter;
+
+    if (isset($filter)) {
+        if (isset($filter['column_status'])) {
+            $query->where('status', $filter['column_status']);
+        }
+    }
+
+    $query = $query->where('user_type', 'provider');
+
+    if (auth()->user()->hasAnyRole(['admin'])) {
+        $query->withTrashed();
+    }
+
+    if ($request->list_status == 'pending') {
+        $query = $query->where('status', 0);
+    } else {
+        $query = $query->where('status', 1);
+    }
+
+    if ($request->list_status == 'subscribe') {
+        $query = $query->where('status', 1)->where('is_subscribe', 1);
+    }
+
+    return $datatable->eloquent($query)
+        ->addColumn('check', function ($row) {
+            return '<input type="checkbox" class="form-check-input select-table-row" id="datatable-row-'.$row->id.'" name="datatable_ids[]" value="'.$row->id.'" data-type="user" onclick="dataTableRowCheck('.$row->id.', this)">';
+        })
+        ->editColumn('display_name', function ($query) {
+            return view('provider.user', compact('query'));
+        })
+        ->editColumn('wallet', function ($query) {
+            return view('provider.wallet', compact('query'));
+        })
+        ->editColumn('status', function ($query) {
+            if ($query->status == '0') {
+                $status = '<a class="btn-sm text-white btn-success" href='.route('provider.approve', $query->id).'><i class="fa fa-check"></i>Approve</a>';
+            } else {
+                $status = '<span class="badge badge-active">'.__('messages.active').'</span>';
+            }
+            return $status;
+        })
+        ->editColumn('providertype_id', function ($query) {
+            return ($query->providertype_id != null && isset($query->providertype)) ? $query->providertype->name : '-';
+        })
+        ->editColumn('address', function ($query) {
+            return ($query->address != null && isset($query->address)) ? $query->address : '-';
+        })
+        ->editColumn('created_at', function ($query) {
+            $sitesetup = Setting::where('type', 'site-setup')->where('key', 'site-setup')->first();
+            $datetime = $sitesetup ? json_decode($sitesetup->value) : null;
+
+            $formattedDate = optional($datetime)->date_format && optional($datetime)->time_format
+                ? date(optional($datetime)->date_format, strtotime($query->created_at)) . ' / ' . date(optional($datetime)->time_format, strtotime($query->created_at))
+                : $query->created_at;
+            return $formattedDate;
+        })
+        ->filterColumn('providertype_id', function ($query, $keyword) {
+            $query->whereHas('providertype', function ($q) use ($keyword) {
+                $q->where('name', 'like', '%'.$keyword.'%');
+            });
+        })
+        ->addColumn('action', function ($provider) {
+            return view('provider.action', compact('provider'))->render();
+        })
+        ->addIndexColumn()
+        ->rawColumns(['check', 'display_name', 'wallet', 'action', 'status'])
+        ->toJson();
+}
 
     /* bulck action method */
     public function bulk_action(Request $request)
