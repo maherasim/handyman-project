@@ -70,11 +70,11 @@
                         name: 'provider_name',
                         title: "{{__('messages.provider_name')}}"
                     },
-                    {
-                        data: 'provider_contact',
-                        name: 'provider_contact',
-                        title: "{{__('messages.provider_contact')}}"
-                    },
+                    // {
+                    //     data: 'provider_contact',
+                    //     name: 'provider_contact',
+                    //     title: "{{__('messages.provider_contact')}}"
+                    // },
                     {
                         data: 'amount',
                         name: 'amount',

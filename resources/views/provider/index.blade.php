@@ -116,11 +116,11 @@
                     name: 'providertype_id',
                     title: "{{ __('messages.providertype') }}"
                 },
-                {
-                    data: 'contact_number',
-                    name: 'contact_number',
-                    title: "{{ __('messages.contact_number') }}"
-                },
+                // {
+                //     data: 'contact_number',
+                //     name: 'contact_number',
+                //     title: "{{ __('messages.contact_number') }}"
+                // },
                 {
                     data: 'wallet',
                     name: 'wallet',

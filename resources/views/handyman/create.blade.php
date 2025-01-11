@@ -44,7 +44,72 @@
                                 {{ html()->email('email', $handymandata->email)->placeholder(__('messages.email'))->class('form-control')->required()->attribute('pattern', '[^@]+@[^@]+\.[a-zA-Z]{2,}')->attribute('title', 'Please enter a valid email address') }}
                                 <small class="help-block with-errors text-danger"></small>
                             </div>
-                    
+                            <div class="form-group col-md-4">
+                                {{ html()->label(__('Company Name') . ' <span class="text-danger">*</span>')->class('form-control-label')->for('company_name') }}
+                                {{ html()->text('company_name', $handymandata->company_name)->placeholder(__('Company Name'))->class('form-control')->required() }}
+                                <small class="help-block with-errors text-danger"></small>
+                            </div>
+        
+                            <div class="form-group col-md-4">
+                                {{ html()->label(__('Vat Number') . ' <span class="text-danger">*</span>')->class('form-control-label')->for('company_name') }}
+                                {{ html()->text('vat_number', $handymandata->vat_number)->placeholder(__('Vat Number'))->class('form-control')->required() }}
+                                <small class="help-block with-errors text-danger"></small>
+                            </div>
+                            
+        
+                            <div class="form-group col-md-4">
+                                {{ html()->label(__('skills') . ' <span class="text-danger">*</span>')->class('form-control-label')->for('skills') }}
+                                {{ html()->text('skills', $handymandata->skills)->placeholder(__('skills'))->class('form-control')->required() }}
+                                <small class="help-block with-errors text-danger"></small>
+                            </div>
+                            <div class="form-group col-md-4">
+                                {{ html()->label(__('messages.select_name', ['select' => __('Language')]), 'languages')->class('form-control-label') }} <br />
+                                {{ html()->select(
+                                    'languages[]', // Use [] to allow multiple selections
+                                    [
+                                        'english' => 'English', 
+                                        'french' => 'French', 
+                                        'chinese' => 'Chinese', 
+                                        'urdu' => 'Urdu', 
+                                        'spanish' => 'Spanish',
+                                        'german' => 'German'
+                                    ], // Static language options
+                                    old('languages', $handymandata->languages ?? []), // Retain old value or user data
+                                )->class('form-group select2js')->multiple()->attribute('data-placeholder', __('select_name', ['select' => __('messages.language')])) }}
+                            </div>
+                            <div class="form-group col-md-4">
+                                {{ html()->label(__('experience'), 'experience')->class('form-control-label') }}
+                                {{ html()->textarea('experience', $handymandata->experience)->class('form-control textarea')->rows(2)->placeholder(__('experience')) }}
+                            </div>
+                            <div class="form-group col-md-4">
+                                {{ html()->label(__('Education') . ' <span class="text-danger">*</span>')->class('form-control-label')->for('education') }}
+                                {{ html()->text('education', $handymandata->education)->placeholder(__('education'))->class('form-control')->required() }}
+                                <small class="help-block with-errors text-danger"></small>
+                            </div>
+                            <div class="form-group col-md-4">
+                                {{ html()->label(__('About Me'))->class('form-control-label')->for('about_me') }}
+                                {{ html()->textarea('about_me', $handymandata->about_me)->class('form-control textarea')->rows(2)->placeholder(__('about_me')) }}
+                            </div>
+                            <div class="form-group col-md-4">
+                                {{ html()->label(__('Certification') . ' <span class="text-danger">*</span>')->class('form-control-label')->for('certification') }}
+                                {{ html()->text('certification', $handymandata->certification)->placeholder(__('Certification'))->class('form-control')->required() }}
+                                <small class="help-block with-errors text-danger"></small>
+                            </div>
+        
+                            <div class="form-group col-md-4">
+                                {{ html()->label(__('Availability') . ' <span class="text-danger">*</span>')->class('form-control-label')->for('availability') }}
+                                {{ html()->select('availability', [
+                                    'full_time' => 'Full-time',
+                                    'part_time' => 'Part-time'
+                                ], $handymandata->availability)->class('form-control')->required()->placeholder(__('Select Availability')) }}
+                                <small class="help-block with-errors text-danger"></small>
+                            </div>
+                            
+                            <div class="form-group col-md-4">
+                                {{ html()->label(__('Mobility') . ' <span class="text-danger">*</span>')->class('form-control-label')->for('mobility') }}
+                                {{ html()->text('mobility', $handymandata->mobility)->placeholder(__('Mobility'))->class('form-control')->required() }}
+                                <small class="help-block with-errors text-danger"></small>
+                            </div>
                             @if (!isset($handymandata->id) || $handymandata->id == null)
                             <div class="form-group col-md-4">
                                 {{ html()->label(__('messages.password').' <span class="text-danger">*</span>', 'password')->class('form-control-label') }}
@@ -155,10 +220,13 @@
                             </div>
                             @endif
                     
+                             
                             <div class="form-group col-md-12">
-                                {{ html()->label(__('messages.address'), 'address')->class('form-control-label') }}
-                                {{ html()->textarea('address')->class('form-control textarea')->rows(3)->placeholder(__('messages.address')) }}
+                                {{ html()->label(__('Address'), 'address')->class('form-control-label') }}
+                                {{ html()->textarea('address', $handymandata->address)->class('form-control textarea')->rows(2)->placeholder(__('address')) }}
                             </div>
+
+
                         </div>
                         {{ html()->submit(__('messages.save'))->class('btn btn-md btn-primary float-end') }}
                         {{ html()->form()->close() }}

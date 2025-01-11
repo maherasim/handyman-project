@@ -225,11 +225,12 @@ $timezone = getTimeZone();
                                 </div>
                             </div>
                         <ul class="list-unstyled mt-3">
+                            
                             <li class="d-flex align-items-center mb-2">
-                                <i class="ri-phone-line me-2"></i>
-                                <a href="tel:{{optional($bookingdata->provider)->contact_number}}" class="text-body">
-                                    {{ optional($bookingdata->provider)->contact_number ?? '-' }}
-                                </a>
+                                <i class="ri-calendar-line me-2"></i>
+                                <span class="text-body">
+                                    {{ optional($bookingdata->provider)->created_at ? optional($bookingdata->provider)->created_at->format('Y-m-d') : '-' }}
+                                </span>
                             </li>
                             <!-- <li class="d-flex align-items-center mb-2">
                                 <i class="ri-mail-line me-2"></i>

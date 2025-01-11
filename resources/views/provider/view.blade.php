@@ -63,15 +63,15 @@
                                         {{ $providerdata->display_name ?? '-'}}
                                     </h2>
                                     <ul class="contact-list list-inline d-flex gap-3 flex-column">
-                                        <li>
+                                        {{-- <li>
                                             <i class="ri-smartphone-line"></i>
                                             <a
                                                 href="tel: {{ $providerdata->contact_number }}" class="contact-info-text heading-color p-0">{{ !empty($providerdata->contact_number) ? $providerdata->contact_number: '-' }}</a>
-                                        </li>
-                                        <li>
+                                        </li> --}}
+                                        {{-- <li>
                                             <i class="ri-mail-line"></i>
                                             <a href="mailto: {{ $providerdata->email }}" class="contact-info-text heading-color p-0">{{ $providerdata->email ?? '-'}}</a>
-                                        </li>
+                                        </li> --}}
                                         <li>
                                             <i class="ri-map-2-line"></i>
                                             <span class="contact-info-text">{{ !empty($providerdata->address) ? $providerdata->address : '-' }}</span>

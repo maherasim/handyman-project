@@ -13,7 +13,7 @@
     <img src="{{ $row['provider_image'] ?? asset('images/default.png') }}" alt="avatar" class="avatar avatar-40 rounded-pill">
         <div class="text-start">
             <h6 class="m-0">{{ $row['provider_name'] ?? '--' }}</h6>
-            <span>{{ $row['provider_email'] ?? '--' }}</span>
+            <span>{{ $row['country'] ?? '--' }}- {{ $row['city'] ?? '--' }}</span>
         </div>
     </div>
   @else

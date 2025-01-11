@@ -892,6 +892,8 @@ class BookingController extends Controller
             $provider_image = getSingleMedia(optional($booking->provider), 'profile_image', null);
             $provider_contact = optional($booking->provider)->contact_number ?? '-';
             $provider_email = optional($booking->provider)->email ?? '-';
+            $country = optional($booking->provider)->country->name ?? '-';
+            $city = optional($booking->provider)->city->name ?? '-';
             $amount = $booking->total_amount;
             $payment_status = optional($booking->payment)->payment_status ?? null;
             $start_at = $booking->start_at;
@@ -902,6 +904,8 @@ class BookingController extends Controller
                 'provider_name' => $provider_name,
                 'provider_image' => $provider_image,
                 'provider_email' => $provider_email,
+                'country' => $country,
+                'city' => $city,
                 'provider_contact' => $provider_contact,
                 'amount' => $amount,
                 'payment_status' => $payment_status,
