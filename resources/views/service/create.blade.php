@@ -244,6 +244,19 @@
                                             </div>
                                         </div>
                                     </div>
+                                    <div class="form-group col-md-4">
+                                        <label class="form-control-label" for="service_attachment">{{ __('messages.image') }}
+                                            <span class="text-danger">*</span>
+                                        </label>
+                                        <div class="custom-file">
+                                            <input type="file" onchange="preview()" name="service_attachment[]"
+                                                class="custom-file-input"
+                                                data-file-error="{{ __('messages.files_not_allowed') }}" multiple>
+                                            <label
+                                                class="custom-file-label upload-label">{{ __('messages.choose_file', ['file' => __('messages.attachments')]) }}</label>
+                                        </div>
+                                    </div>
+                                    <img id="service_attachment_preview" src="" width="150px" />
                                     @endif
                                 </div>
                             </div>
