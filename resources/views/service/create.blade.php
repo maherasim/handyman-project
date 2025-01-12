@@ -58,10 +58,14 @@
                                 <br />
                                 {{ html()->select(
                                         'country_id',
-                                        [optional($servicedata->country)->id => optional($servicedata->country)->name],
-                                        optional($servicedata->country)->id,
-                                    )->class('form-group select2js country')->attribute('data-placeholder', __('messages.select_name', ['select' => __('messages.country')]))->attribute('data-ajax--url', route('ajax-list', ['type' => 'country'])) }}
+                                        $countries,  // assuming $countries is a list of countries available in your controller
+                                        optional($servicedata->country)->id,  // this ensures the selected country is set
+                                    )->class('form-group select2js country')
+                                    ->attribute('data-placeholder', __('messages.select_name', ['select' => __('messages.country')]))
+                                    ->attribute('data-ajax--url', route('ajax-list', ['type' => 'country']))
+                                }}
                             </div>
+                            
         
                             <div class="form-group col-md-6">
                                 {{ html()->label(__('messages.select_name', ['select' => __('messages.state')]), 'state_id')->class('form-control-label') }}
