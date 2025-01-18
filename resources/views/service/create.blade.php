@@ -58,7 +58,7 @@
                                 <br />
                                 {{ html()->select(
                                         'country_id',
-                                        $countries,  // assuming $countries is a list of countries available in your controller
+                                       // $countries,  // assuming $countries is a list of countries available in your controller
                                         optional($servicedata->country)->id,  // this ensures the selected country is set
                                     )->class('form-group select2js country')
                                     ->attribute('data-placeholder', __('messages.select_name', ['select' => __('messages.country')]))
