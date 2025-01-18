@@ -406,7 +406,7 @@
             <div class="card">
                 <div class="card-body">
                     <div class="table-responsive">
-                        <table class="table-sm title-color align-right w-100">
+                        <table class="table text-nowrap align-middle mb-0">
                             <tbody>
                                 <!-- Unit Price -->
                                 <tr>
