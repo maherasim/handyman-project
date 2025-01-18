@@ -869,7 +869,7 @@ $menu->add('<span>'.__('My  Bid List').'</span><span class="custom-tooltip"><spa
             ->nickname('helpdesk')
             ->data('permission', 'helpdesk list');
 
-        if (default_earning_type() === 'subscription') {
+        // if (default_earning_type() === 'subscription') {
             $menu
                 ->add(
                     '<span>' .
@@ -889,7 +889,7 @@ $menu->add('<span>'.__('My  Bid List').'</span><span class="custom-tooltip"><spa
                 )
                 ->nickname('plan')
                 ->data('permission', 'plan list');
-        }
+        // }
         $menu
             ->add(
                 '<span>' .
