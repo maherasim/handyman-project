@@ -21,7 +21,7 @@
         "spatie/laravel-html": "^3.7",
         "spatie/laravel-medialibrary": "^11.4",
         "spatie/laravel-permission": "^6.1",
-        "stripe/stripe-php": "^10.12",
+        "stripe/stripe-php": "*",
         "tightenco/ziggy": "^1.4",
         "toin0u/geocoder-laravel": "^4.6",
         "yajra/laravel-datatables-oracle": "^11.0"

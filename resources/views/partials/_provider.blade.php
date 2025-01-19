@@ -9,11 +9,11 @@
         <li class="nav-item {{request()->routeIs('provider_info') ? 'active' : ''}}">
             <a class="nav-link" href="{{ route('provider_info',$providerdata->id) }}"> {{__('messages.overview')}}</a>
         </li>
-        @if (default_earning_type() === 'subscription')
+        {{-- @if (default_earning_type() === 'subscription') --}}
         <li class="nav-item {{request()->routeIs('service.show') ? 'active' : ''}}">
                 <a class="nav-link" href="{{ route('service.show',$providerdata->id) }}"> {{__('messages.plan')}}</a> 
         </li>
-        @endif
+        {{-- @endif --}}
         <li class="nav-item {{request()->routeIs('booking.details') ? 'active' : ''}}">
             <a class="nav-link" href="{{ route('booking.details',$providerdata->id) }}"> {{__('messages.Bookings')}}</a>
         </li>

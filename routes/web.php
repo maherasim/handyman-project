@@ -9,6 +9,7 @@ use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\ProviderTypeController;
 use App\Http\Controllers\ProviderController;
 use App\Http\Controllers\HandymanController;
+use App\Http\Controllers\PayPalController;
 use App\Http\Controllers\CouponController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\SliderController;
@@ -143,6 +144,19 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
     Route::post('provider-change-password', [ProviderController::class, 'changePassword'])->name('provider.changepassword');
     Route::get('provider-time-slot/{id}', [ProviderController::class, 'getProviderTimeSlot'])->name('provider.time-slot');
     Route::get('provider-edit-time-slot', [ProviderController::class, 'editProviderTimeSlot'])->name('provider.edit-time-slot');
+    Route::get('/get-plans', [ProviderController::class, 'getPlans'])->name('get.plans');
+
+
+
+    Route::get('/paypal-payment', [PayPalController::class, 'createPayment'])->name('paypal.payment');
+    Route::post('/paypal-success', [PayPalController::class, 'success'])->name('paypal.success');
+    Route::get('/paypal-cancel', [PayPalController::class, 'cancel'])->name('paypal.cancel');
+    
+
+
+
+    Route::get('stripe', [ProviderController::class, 'stripe'])->name('stripe');
+    Route::post('stripe', [ProviderController::class, 'stripePost'])->name('stripe.post');
     Route::post('provider-save-slot', [ProviderSlotController::class, 'store'])->name('providerslot.store');
     Route::group(['middleware' => ['permission:provider list']], function () {
         Route::resource('provider', ProviderController::class);

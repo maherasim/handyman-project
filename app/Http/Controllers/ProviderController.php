@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\UserFavouriteService;
+use App\Models\Plans;
 use App\Models\Booking;
 use App\Models\ProviderSlotMapping;
 use App\Http\Requests\UserRequest;
@@ -359,6 +360,61 @@ class ProviderController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
+    public function stripe()
+
+    {
+
+        return view('stripe');
+
+    }
+    public function stripePost(Request $request)
+    {
+        // Debugging request data
+       // dd($request->all());
+    
+        // Set Stripe API key
+        Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
+    
+        // Calculate the amount dynamically based on the request
+        $amount = $request->plan_amount * 100; // Stripe expects the amount in cents
+    
+        try {
+            // Create the Stripe charge
+            $charge = Stripe\Charge::create([
+                "amount" => $amount,   // Dynamic amount based on plan_amount
+                "currency" => "usd",   // Currency
+                "source" => $request->stripeToken, // Stripe token from the request
+                "description" => "Payment for plan: " . $request->plan_type, // Description with plan type
+            ]);
+            
+            // Find the plan from the database
+            $plan = ProviderSubscription::find($request->plan_id);
+            
+            if ($plan) {
+                // Update plan details based on the request
+                $plan->plan_type = $request->plan_type;
+                $plan->amount = $request->plan_amount;
+                $plan->status = 'active';
+                $plan->start_at = now();
+                $plan->end_at = now()->addMonth(); // Assuming a 1-month subscription
+                
+                // Attempt to save the updated plan details
+                if ($plan->save()) {
+                    Log::info('Subscription updated successfully for ID: ' . $plan->id);
+                    return redirect()->back()->with('success', 'Subscription updated successfully.');
+                } else {
+                    Log::error('Failed to update subscription for ID: ' . $plan->id);
+                    return redirect()->back()->with('error', 'Failed to update subscription.');
+                }
+            }
+    
+            return redirect()->back()->with('error', 'Subscription not found.');
+        } catch (\Exception $e) {
+            // If something goes wrong with Stripe
+            Log::error('Stripe charge failed: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Payment failed: ' . $e->getMessage());
+        }
+    }
     public function show($id, $withdrawAmount = 0)
 {
     $auth_user = authSession();
@@ -681,6 +737,14 @@ class ProviderController extends Controller
             return redirect()->route('provider.changepassword',['id' => $user->id])->with('error', $message);
         }
     }
+
+    public function getPlans()
+{
+    $plans = Plans::select('id', 'title', 'amount')->where('status',1)->get();
+    return response()->json($plans);
+}
+
+
     public function getProviderTimeSlot(Request $request){
         $auth_user = authSession();
         $id = $request->id;
