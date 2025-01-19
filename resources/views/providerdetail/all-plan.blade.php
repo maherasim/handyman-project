@@ -121,7 +121,7 @@
                     }
                 },
                 columns: [{
-                        data: 'title',
+                        data: 'plan_type',
                         name: 'title'
                     },
                     {
