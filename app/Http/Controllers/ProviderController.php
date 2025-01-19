@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\UserFavouriteService;
 use App\Models\Plans;
+use Stripe;
+use Illuminate\Support\Facades\Log;
 use App\Models\Booking;
 use App\Models\ProviderSlotMapping;
 use App\Http\Requests\UserRequest;
