@@ -83,9 +83,10 @@ class PostJobRequestController extends Controller
             ->addColumn('check', function ($row) {
                 return '<input type="checkbox" class="form-check-input select-table-row"  id="datatable-row-'.$row->id.'"  name="datatable_ids[]" value="'.$row->id.'" onclick="dataTableRowCheck('.$row->id.')">';
             })
-            ->editColumn('title', function($query){
-                return '<a class="btn-link btn-link-hover"  href='.route('postjobrequest.service',$query->id).'>'.$query->title.'</a>';
+            ->editColumn('title', function($query) {
+                return $query->title; // Return plain text instead of a clickable link
             })
+            
             ->editColumn('provider_id' , function ($query){
                 return view('postrequest.provider', compact('query'));
             })
