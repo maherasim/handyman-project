@@ -25,20 +25,7 @@
                                     {{ html()->label(__('messages.day') . ' <span class="text-danger">*</span>', 'Day')->class('form-control-label col-md-12') }}
                                     
                                     <!-- Day Calendar Design -->
-                                    <div class="col-md-12">
-                                        <div class="d-flex flex-wrap gap-2 mt-3">
-                                            @foreach ($slotsArray as $slotDay)
-                                                @if (isset($slotDay['day']))
-                                                    <button type="button" 
-                                                            class="btn btn-outline-primary day-link" 
-                                                            data-day="{{ $slotDay['day'] }}" 
-                                                            id="btn-{{ $slotDay['day'] }}">
-                                                        {{ ucfirst($slotDay['day']) }}
-                                                    </button>
-                                                @endif
-                                            @endforeach
-                                        </div>
-                                    </div>
+                                     
                                 </div>
 
                                 <div class="form-group has-feedback mt-4">
