@@ -75,35 +75,6 @@
         calendar.render();
     });
 </script>
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        var calendarEl = document.getElementById('calendar');
-        var calendar = new FullCalendar.Calendar(calendarEl, {
-            plugins: ['dayGrid', 'timeGrid', 'list', 'interaction', 'bootstrap'],
-            themeSystem: 'bootstrap', // Use Bootstrap theme
-            header: {
-                left: 'prev,next today', // Navigation buttons
-                center: 'title',        // Title at the center
-                right: 'dayGridMonth,timeGridWeek,timeGridDay' // View options
-            },
-            height: 600,
-            selectable: true,
-            editable: false,
-            eventLimit: false,
-            events: [
-                // Existing event logic here
-            ],
-            eventClick: function (info) {
-                // Existing event click logic
-            },
-            select: function (info) {
-                // Existing select logic
-            },
-        });
-
-        calendar.render();
-    });
-</script>
 
 <script>
     $(document).ready(function () {
