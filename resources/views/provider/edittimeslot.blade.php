@@ -1,14 +1,17 @@
 <x-master-layout>
     <div class="container-fluid">
-    @include('partials._provider')
+        @include('partials._provider')
         <div class="row">
             <div class="col-lg-12">
                 <div class="card card-block card-stretch">
                     <div class="card-body p-0">
                         <div class="d-flex justify-content-between align-items-center p-3 flex-wrap gap-3">
-                            <h5 class="fw-bold">{{$providerdata->first_name .' '. $providerdata->last_name}} {{$pageTitle}}</h5>
-                            <a href="{{ route('provider.time-slot',['id' => $provider_id]) }}   " class=" float-end btn btn-sm btn-primary"><i class="fa fa-angle-double-left"></i> {{ __('messages.back') }}</a>
-                            
+                            <h5 class="fw-bold">
+                                {{ $providerdata->first_name . ' ' . $providerdata->last_name }} {{ $pageTitle }}
+                            </h5>
+                            <a href="{{ route('provider.time-slot', ['id' => $provider_id]) }}" class="float-end btn btn-sm btn-primary">
+                                <i class="fa fa-angle-double-left"></i> {{ __('messages.back') }}
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -17,50 +20,41 @@
                 <div class="card">
                     <div class="card-body">
                         {{ html()->form('POST', route('providerslot.store'))->attribute('data-toggle', 'validator')->id('provider-form')->open() }}
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <input type="hidden" name="id" id="provider-id" value="{{ $provider_id }}">
-                                    <div class="form-group has-feedback">
-                                        {{ html()->label(__('messages.day').' <span class="text-danger">*</span>', 'Day')->class('form-control-label col-md-12') }}
-                                        <div class="col-md-12">
-                                            
-                                            <ul class="nav nav-tabs pay-tabs nav-fill gap-3 tabslink" id="tab-text" role="tablist">
-                                                @foreach ($slotsArray['days'] as $day)
-                                                    @if (isset($day))
-                                                        <li class="nav-item m-0">
-                                                            <a href="#{{ $day }}" name="days" class="nav-link day-link" data-day="{{ $day }}" data-bs-toggle="tab" rel="tooltip">{{ ucfirst($day) }}</a>
-                                                        </li>
-                                                    @endif
-                                                @endforeach
-                                            </ul>
-                                        </div>
-                                    </div>
-                                    <div class="form-group has-feedback">
-                                        <div class="col-md-12">
-                                            {{ html()->label(__('messages.time').' <span class="text-danger">*</span>', 'Time')->class('form-control-label col-md-12') }}
-                                            <div class="tab-content" id="pills-tabContent-1">
-                                                @foreach ($slotsArray['days'] as $day)
-                                                    @if (isset($day))
-                                                        <div class="tab-pane p-1 day-slot @if(strtolower($day) === strtolower($activeDay)) active @endif" id="{{ $day }}">
-                                                                {{-- <!-- <h3>{{ ucfirst($day) }}</h3> --> --}}
-                                                            <ul class="nav nav-tabs pay-tabs nav-fill tabslink gap-3 provider-slot">
-                                                                @for ($hour = 0; $hour < 24; $hour++)
-                                                                    <li class="nav-item m-0">
-                                                                        @php
-                                                                            $slotTime = sprintf('%02d:00', $hour);
-                                                                            $isActive = in_array($slotTime, $activeSlots[$day] ?? []);
-                                                                        @endphp
-                                                                        <a href="javascript:void(0)" name="start_at" class="nav-link time-link @if ($isActive) active @endif slot-link" data-day="{{ $day }}" data-slot="{{ $slotTime }}" data-bs-toggle="tab" rel="tooltip">{{ $slotTime }}</a>
-                                                                    </li>
-                                                                @endfor
-                                                            </ul>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <input type="hidden" name="id" id="provider-id" value="{{ $provider_id }}">
+                                <div class="form-group has-feedback">
+                                    {{ html()->label(__('messages.day').' <span class="text-danger">*</span>', 'Day')->class('form-control-label col-md-12') }}
+                                </div>
+                                <div class="form-group has-feedback">
+                                    <!-- Calendar Container -->
+                                    <div id="calendar"></div>
+                                </div>
+                                <div class="form-group has-feedback mt-4">
+                                    <div class="col-md-12">
+                                        {{ html()->label(__('messages.time').' <span class="text-danger">*</span>', 'Time')->class('form-control-label col-md-12') }}
+                                        <div class="tab-content" id="pills-tabContent-1">
+                                            @foreach ($slotsArray['days'] as $day)
+                                                @if (isset($day))
+                                                    <div class="tab-pane p-1 day-slot @if(strtolower($day) === strtolower($activeDay)) active @endif" id="{{ $day }}">
+                                                        <div class="d-flex flex-wrap gap-2">
+                                                            @for ($hour = 0; $hour < 24; $hour++)
+                                                                @php
+                                                                    $slotTime = sprintf('%02d:00', $hour);
+                                                                    $isActive = in_array($slotTime, $activeSlots[$day] ?? []);
+                                                                @endphp
+                                                                <span class="badge bg-primary p-2 time-link @if ($isActive) active @endif slot-link" data-day="{{ $day }}" data-slot="{{ $slotTime }}">
+                                                                    {{ $slotTime }}
+                                                                </span>
+                                                            @endfor
                                                         </div>
-                                                    @endif
-                                                @endforeach
-                                            </div>
+                                                    </div>
+                                                @endif
+                                            @endforeach
                                         </div>
                                     </div>
-                                    {{ html()->submit(__('messages.submit'))->class('btn btn-md btn-primary') }}
+                                </div>
+                                {{ html()->submit(__('messages.submit'))->class('btn btn-md btn-primary') }}
                             </div>
                         </div>
                         {{ html()->form()->close() }}
@@ -69,87 +63,89 @@
             </div>
         </div>
     </div>
-</x-master-layout>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-<script>
-    $(document).ready(function () {
-       
-        setActiveDay('mon');
-        var urlParams = new URLSearchParams(window.location.search);
-        var provider_id = urlParams.get('id');
-        
-        $('.day-link').on('click', function (e) {
-            e.preventDefault();
-            var selectedDay = $(this).data('day');
-            setActiveDay(selectedDay);
-            showActiveDaySlots();
-        });
-
-        function setActiveDay(day) {
-            $('.day-slot').removeClass('active');
-            $('.day-link').removeClass('active');
-            $('.day-link[data-day="' + day + '"]').addClass('active');
-            $('.day-slot#' + day).addClass('active');
-            activeDay = day;
-        }
-
-        function showActiveDaySlots() {
-            $('.day-slot').hide();
-            $('.day-slot.active').show();
-        }
-
-        $('.time-link').on('click', function (e) {
-            e.preventDefault();
-            $(this).toggleClass('active');
-        });
-
-        function showMessage(message) {
-            Snackbar.show({
-                text: message,
-                pos: 'bottom-center'
-            });
-        }
-
-        $('#provider-form').on('submit', function (e) {
-            e.preventDefault();
-            var selectedSlots = [];
-            var selectedSlotsByDay = {};
-
-            $('.slot-link.active').each(function () {
-                var day = $(this).data('day');
-                var slot = $(this).data('slot');
-
-                if (!(day in selectedSlotsByDay)) { 
-                    selectedSlotsByDay[day] = [];
-                }
-
-                selectedSlotsByDay[day].push(slot);
-            });
-            for (var day in selectedSlotsByDay) {
-                selectedSlots.push({
-                    day: day,
-                    time: selectedSlotsByDay[day]
-                });
-            }
-            var csrfToken = $('meta[name="csrf-token"]').attr('content');
-            $.ajaxSetup({
-                headers: {
-                    'X-CSRF-TOKEN': csrfToken
-                }
-            });
-            $.ajax({
-                type: 'POST',
-                url: '{{ route("providerslot.store") }}', 
-                data: {provider_id: provider_id, slots: selectedSlots },
-                success: function (response) {
-                    console.log(response);
-                    showMessage(response.message);
+    @section('bottom_script')
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Initialize FullCalendar
+            var calendarEl = document.getElementById('calendar');
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                plugins: ['dayGrid', 'timeGrid', 'list', 'interaction', 'bootstrap'],
+                themeSystem: 'bootstrap',
+                header: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
                 },
-                error: function (error) {
-                    console.error(error);
+                height: 600,
+                selectable: true,
+                editable: false,
+                events: [
+                    @foreach ($slotsArray['days'] as $day)
+                        @if (isset($day) && isset($activeSlots[$day]))
+                            @foreach ($activeSlots[$day] as $slot)
+                                {
+                                    title: "{{ ucfirst($day) }} Slot",
+                                    start: "{{ $day . 'T' . $slot }}",
+                                    color: 'rgb(19, 193, 240)',
+                                    textColor: '#fff'
+                                },
+                            @endforeach
+                        @endif
+                    @endforeach
+                ],
+                eventClick: function (info) {
+                    info.jsEvent.preventDefault();
+                    var day = info.event.startStr.split('T')[0];
+                    var slot = info.event.startStr.split('T')[1];
+                    alert(`Day: ${day}, Slot: ${slot}`);
                 }
             });
+
+            calendar.render();
+
+            // Handle time slot toggling
+            $('.time-link').on('click', function () {
+                $(this).toggleClass('active');
+            });
+
+            // Handle form submission
+            $('#provider-form').on('submit', function (e) {
+                e.preventDefault();
+                var selectedSlotsByDay = {};
+
+                $('.slot-link.active').each(function () {
+                    var day = $(this).data('day');
+                    var slot = $(this).data('slot');
+                    if (!selectedSlotsByDay[day]) {
+                        selectedSlotsByDay[day] = [];
+                    }
+                    selectedSlotsByDay[day].push(slot);
+                });
+
+                var providerId = $('#provider-id').val();
+                var csrfToken = $('meta[name="csrf-token"]').attr('content');
+
+                $.ajax({
+                    type: 'POST',
+                    url: '{{ route("providerslot.store") }}',
+                    headers: {
+                        'X-CSRF-TOKEN': csrfToken
+                    },
+                    data: {
+                        provider_id: providerId,
+                        slots: selectedSlotsByDay
+                    },
+                    success: function (response) {
+                        alert(response.message);
+                    },
+                    error: function (error) {
+                        console.error(error);
+                        alert('Error saving slots');
+                    }
+                });
+            });
         });
-    });
-</script>
+    </script>
+    @endsection
+</x-master-layout>
