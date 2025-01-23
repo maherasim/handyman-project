@@ -151,7 +151,7 @@
 
                             <div class="form-group col-md-4" id="minimum_booking_div">
                                 {{ html()->label(__('Minimum Booking'), 'minimum_booking')->class('form-control-label') }}
-                                {{ html()->text('minimum_booking', isset($servicedata->minimum_booking) ? $servicedata->minimum_booking : null)->attributes(['step' => 'any'])->placeholder(__('messages.minimum_booking'))->class('form-control')->id('minimum_booking') }}
+                                {{ html()->text('minimum_booking', isset($servicedata->minimum_booking) ? $servicedata->minimum_booking : null)->attributes(['step' => 'any'])->placeholder(__('minimum booking'))->class('form-control')->id('minimum_booking') }}
                                 <small class="help-block with-errors text-danger"></small>
                             </div>
 
