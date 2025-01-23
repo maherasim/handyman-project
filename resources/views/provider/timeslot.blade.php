@@ -44,7 +44,7 @@
                                 <div class="form-group has-feedback mt-4">
                                     <div class="col-md-12">
                                         {{ html()->label(__('messages.time') . ' <span class="text-danger">*</span>', 'Time')->class('form-control-label col-md-12') }}
-                                        <div class="tab-content" id="pills-tabContent-1">
+                                        {{-- <div class="tab-content" id="pills-tabContent-1">
                                             @foreach ($slotsArray as $slotDay)
                                                 @if (isset($slotDay['day']) && isset($slotDay['slot']))
                                                     <div class="tab-pane p-1 day-slot @if (strtolower($slotDay['day']) === strtolower($activeDay)) active @endif" id="{{ $slotDay['day'] }}">
@@ -65,7 +65,7 @@
                                                     </div>
                                                 @endif
                                             @endforeach
-                                        </div>
+                                        </div> --}}
                                     </div>
                                 </div>
                             </div>
