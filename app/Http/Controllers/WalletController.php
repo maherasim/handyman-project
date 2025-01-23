@@ -34,50 +34,59 @@ class WalletController extends Controller
     }
 
 
-    public function index_data(DataTables $datatable,Request $request)
+    public function index_data(DataTables $datatable, Request $request)
     {
-        $query = Wallet::query()->list();
+        // Get the current logged-in user
+        $user = auth()->user();
+    
+        // Start the Wallet query
+        $query = Wallet::query();
+    
+        // If the user is not an admin, filter the query to show only their wallet
+        if (!$user->hasAnyRole(['admin'])) {
+            $query->where('user_id', $user->id);
+        }
+    
+        // Apply filters from the request
         $filter = $request->filter;
-        $query = $query->orderBy('updated_at','desc');
         if (isset($filter)) {
             if (isset($filter['column_status'])) {
                 $query->where('status', $filter['column_status']);
             }
         }
-        if (auth()->user()->hasAnyRole(['admin'])) {
-            $query->newquery();
-        }
-
+    
+        // Order by the most recent update
+        $query->orderBy('updated_at', 'desc');
+    
         return $datatable->eloquent($query)
             ->addColumn('check', function ($row) {
-                return '<input type="checkbox" class="form-check-input select-table-row"  id="datatable-row-'.$row->id.'"  name="datatable_ids[]" value="'.$row->id.'" onclick="dataTableRowCheck('.$row->id.')">';
+                return '<input type="checkbox" class="form-check-input select-table-row" id="datatable-row-' . $row->id . '" name="datatable_ids[]" value="' . $row->id . '" onclick="dataTableRowCheck(' . $row->id . ')">';
             })
-            ->editColumn('title', function($query){
-                return '<a class="btn-link btn-link-hover" href='.route('wallet.show', $query->user_id).'>'.$query->title.'</a>';
+            ->editColumn('title', function ($query) {
+                return '<a class="btn-link btn-link-hover" href=' . route('wallet.show', $query->user_id) . '>' . $query->title . '</a>';
             })
-
-            ->editColumn('user_id' , function ($query){
+            ->editColumn('user_id', function ($query) {
                 return view('wallet.user', compact('query'));
             })
-            ->editColumn('amount' , function ($query){
+            ->editColumn('amount', function ($query) {
                 return getPriceFormat($query->amount);
             })
-            ->editColumn('status' , function ($query){
+            ->editColumn('status', function ($query) {
                 return '<div class="custom-control custom-switch custom-switch-text custom-switch-color custom-control-inline">
                     <div class="custom-switch-inner">
-                        <input type="checkbox" class="custom-control-input  change_status" data-type="wallet_status" '.($query->status ? "checked" : "").'  value="'.$query->id.'" id="'.$query->id.'" data-id="'.$query->id.'">
-                        <label class="custom-control-label" for="'.$query->id.'" data-on-label="" data-off-label=""></label>
+                        <input type="checkbox" class="custom-control-input change_status" data-type="wallet_status" ' . ($query->status ? "checked" : "") . ' value="' . $query->id . '" id="' . $query->id . '" data-id="' . $query->id . '">
+                        <label class="custom-control-label" for="' . $query->id . '" data-on-label="" data-off-label=""></label>
                     </div>
                 </div>';
             })
-            ->addColumn('action', function($wallet){
-                return view('wallet.action',compact('wallet'))->render();
+            ->addColumn('action', function ($wallet) {
+                return view('wallet.action', compact('wallet'))->render();
             })
             ->addIndexColumn()
-            ->rawColumns(['title','action','status','check'])
+            ->rawColumns(['title', 'action', 'status', 'check'])
             ->toJson();
     }
-
+    
     /* bulck action method */
     public function bulk_action(Request $request)
     {
