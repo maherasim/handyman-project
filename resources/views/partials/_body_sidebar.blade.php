@@ -637,23 +637,27 @@ $menu->add('<span>'.__('Favourit Provider').'</span><span class="custom-tooltip"
                 ->data('permission', 'service list');
         }
 
-        
+        if (auth()->user()->user_type == 'provider' || auth()->user()->user_type == 'user') {
     $menu
         ->add(
             '<span>' .
                 __('messages.myjob_request') .
                 '</span><span class="custom-tooltip"><span class="tooltip-text">' .
-                __('messages.myjob_request') .
+                __('My job Request') .
                 '</span></span>',
-            ['route' => 'post-job-request.index'] // Change 'myjob.request' to the correct route
+            [
+                'route' => 'post-job-request.index' // Make sure this route exists and is named correctly
+            ]
         )
         ->prepend(
             '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <!-- Add appropriate SVG icon here -->
             </svg>'
         )
-        ->nickname('Asimm job') // Set a nickname for identification
-        ->data('permission', ' '); 
+        ->nickname('Asimm job') // A nickname for easy identification
+        ->data('permission', ' '); // Optional data attribute
+}
+
         // Set the required permission for this item
         if(auth()->user()->user_type == 'provider' ){
 
