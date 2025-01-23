@@ -388,12 +388,12 @@ $timezone = getTimeZone();
                                         </div>
                                     </div>
                                             <ul class="list-unstyled mt-3">
-                                                <li class="d-flex align-items-center mb-2">
+                                                {{-- <li class="d-flex align-items-center mb-2">
                                                     <i class="ri-phone-line me-2"></i>
                                                     <a href="tel:{{optional($booking->handyman)->contact_number}}" class="text-body">
                                                         {{ optional($booking->handyman)->contact_number ?? '-' }}
                                                     </a>
-                                                </li>
+                                                </li> --}}
                                                 <li class="d-flex align-items-center">
                                                     <i class="ri-map-pin-line me-2"></i>
                                                     <span class="text-wrap">{{ optional($booking->handyman)->address ?? '-' }}</span>
