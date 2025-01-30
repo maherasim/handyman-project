@@ -562,6 +562,60 @@ class FrontendController extends Controller
         return $datatable->rawColumns(['name'])
             ->toJson();
     }
+    public function jobDatatable(Request $request) 
+    {
+        // Initialize the query builder
+        $query = PostJobRequest::query();
+    
+        // Apply filters based on request input
+        if ($request->has('category_id') && $request->category_id != 'Filter by Category') {
+            $query->where('category_id', $request->category_id);
+        }
+    
+        if ($request->has('subcategory_id') && $request->subcategory_id != 'Filter by Sub-Category') {
+            $query->where('subcategory_id', $request->subcategory_id);
+        }
+    
+        if ($request->has('customer_id') && $request->customer_id != 'Filter by Customer') {
+            $query->where('customer_id', $request->customer_id);
+        }
+    
+        if ($request->has('country_id') && $request->country_id != 'Filter by Country') {
+            $query->where('country_id', $request->country_id);
+        }
+    
+        if ($request->has('city_id') && $request->city_id != 'Filter by City') {
+            $query->where('city_id', $request->city_id);
+        }
+    
+        // Optionally apply sorting
+        if ($request->has('sort') && $request->sort == 1) {
+            $query->orderBy('price', 'asc');
+        } elseif ($request->has('sort') && $request->sort == 2) {
+            $query->orderBy('price', 'desc');
+        }
+    
+        // Fetch the filtered results
+        $jobrequest = $query->get();
+    
+        // Fetch categories, subcategories, customers, countries, and cities for dropdowns
+        $categories = Category::all();
+        $subcategories = SubCategory::all();
+        $customers = User::where('user_type','user')->get();
+        $countries = Country::get();  
+        $cities = City::take(10)->get();  
+        $favouriteService = auth()->check() 
+        ? PostJobRequest::where('provider_id', auth()->id())->get() 
+        : collect(); // Empty collection if not logged in
+
+    
+        return view('job.datatable-card', compact('jobrequest', 'categories', 'subcategories', 'customers', 'countries', 'cities','favouriteService'));
+    }
+
+
+
+
+
 
     public function serviceDatatable(Datatables $datatable, Request $request){
         $query = Service::where('service_type','service')->where('status',1);

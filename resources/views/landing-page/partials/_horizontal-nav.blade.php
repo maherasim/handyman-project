@@ -46,6 +46,9 @@
                 <a class="nav-link {{ request()->routeIs('frontend.provider.*') ? 'active' : '' }}" href="{{ route('frontend.provider') }}">{{__('landingpage.providers')}}</a>
             </li>
             @endif
+            <li class="nav-item">
+                <a class="nav-link {{ request()->routeIs('job.data.*') ? 'active' : '' }}" href="{{ route('job.data') }}">Jobs</a>
+            </li>
             @if(auth()->check() && auth()->user()->user_type == 'user' && $sectionData['bookings'] == 1)
                 <li class="nav-item">
                     <a class="nav-link {{ request()->routeIs('booking.*') ? 'active' : '' }}" href="{{ route('booking.list') }}">{{__('landingpage.bookings')}}</a>

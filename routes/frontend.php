@@ -75,6 +75,13 @@ Route::get('/subcategory-datatable', [FrontendController::class, 'subCategoryDat
 Route::get('/service-datatable', [FrontendController::class, 'serviceDatatable'])->name('service.data');
 Route::get('/blog-datatable', [FrontendController::class, 'blogDatatable'])->name('blog.data');
 Route::get('/provider-datatable', [FrontendController::class, 'providerDatatable'])->name('provider.data');
+
+Route::get('/job-datatable', [FrontendController::class, 'jobDatatable'])->name('job.data');
+
+
+
+
+
 Route::get('/booking-datatable', [FrontendController::class, 'bookingDatatable'])->name('booking.data');
 Route::get('/post-job-datatable', [FrontendController::class, 'postJobDatatable'])->name('post.job.data');
 Route::get('/favouriteservice-datatable', [FrontendController::class, 'favouriteServiceDatatable'])->name('favouriteservice.data');
