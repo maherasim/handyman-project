@@ -78,7 +78,7 @@ Route::get('/provider-datatable', [FrontendController::class, 'providerDatatable
 
 Route::get('/job-datatable', [FrontendController::class, 'jobDatatable'])->name('job.data');
 
-
+Route::get('/job-details/{id}', [FrontendController::class, 'showdetails'])->name('job.details');
 
 
 
