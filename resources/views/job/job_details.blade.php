@@ -10,7 +10,7 @@
                 <div class="d-flex justify-content-between">
                     <p class="mb-0 text-dark"><b>
                         
-                        {{-- {{ $jobrequest->city->name??'N/A' }} - {{ $jobrequest->country->name }}</b></p> --}}
+                   
                     <p>Created By: <span>{{ $jobrequest->provider->username??'N/A' }}</span></p>
                 </div>
                 <img src="https://noorhantrdg.com/wp-content/uploads/2021/10/mechanic-changing-engine-oil-car-vehicle-1-1.jpg" alt="" class="img-fluid" style="border-radius: 12px;">
