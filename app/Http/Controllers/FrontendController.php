@@ -410,7 +410,21 @@ class FrontendController extends Controller
         $wallet_amount = $wallet ? $wallet->amount : 0;
         return view('landing-page.BookService',compact('service','coupons','taxes','user_id','availableserviceslot','serviceaddon','googlemapkey','wallet_amount'));
     }
-
+    public function showdetails($id)
+    {
+        // Use 'with' to eager-load the relationships, including 'postBidList'
+        $jobrequest = PostJobRequest::with(['city', 'country', 'provider', 'postBidList'])->find($id);
+    
+        if (!$jobrequest) {
+            abort(404); // Return 404 if the job doesn't exist
+        }
+    
+        // Get total bids
+        $totalBids = $jobrequest->total_bids;
+    //dd( $totalBids);
+        return view('job.job_details', compact('jobrequest', 'totalBids'));
+    }
+    
     public function bookPostJobView(Request $request){
         $user_id = Auth::id();
         $post_job_id = $request->id;
