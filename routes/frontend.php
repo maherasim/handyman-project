@@ -80,6 +80,7 @@ Route::get('/job-datatable', [FrontendController::class, 'jobDatatable'])->name(
 
 Route::get('/job-details/{id}', [FrontendController::class, 'showdetails'])->name('job.details');
 
+Route::get('/subcategory-list-forcategory', [FrontendController::class, 'subCatgeoryListfor'])->name('subcategory.listforgood');
 
 
 Route::get('/booking-datatable', [FrontendController::class, 'bookingDatatable'])->name('booking.data');
