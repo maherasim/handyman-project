@@ -46,4 +46,21 @@ class PostJobRequest extends Model
     public function customer(){
         return $this->belongsTo(User::class,'customer_id', 'id')->withTrashed();
     }
+    
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
+    }
+    public function subCategory()
+    {
+        return $this->belongsTo(SubCategory::class,'subcategory_id','id');
+    }
+    public function country()
+    {
+        return $this->belongsTo(Country::class);
+    }
+    public function city()
+    {
+        return $this->belongsTo(City::class);
+    }
 }
