@@ -38,28 +38,95 @@ use  App\Models\WalletHistory;
 class FrontendController extends Controller
 {
 
-    public function index(Request $request){
+    public function index(Request $request)
+    {
+        $service_id = $request->id;
         $auth_user_id = null;
         $favourite = null;
-
-        if(auth()->check() && auth()->user()->hasRole('user')){
+    
+        if (auth()->check() && auth()->user()->hasRole('user')) {
             $auth_user_id = auth()->user()->id;
             $favourite = UserFavouriteService::where('user_id', $auth_user_id)->get();
         }
+    
+        // Fetch all section data from FrontendSetting
         $sectionData = [];
-        $sectionKeys = ['section_1', 'section_2', 'section_3', 'section_4', 'section_5', 'section_6', 'section_7', 'section_9'];
-
+        $sectionKeys = ['section_1', 'section_2', 'section_3', 'section_4', 'section_5', 'section_6', 'section_7', 'section_9', 'section_10'];
+    
         foreach ($sectionKeys as $key) {
             $section = FrontendSetting::where('key', $key)->first();
             $sectionData[$key] = $section ? json_decode($section->value, true) : null;
         }
-        $settings = Setting::where('type', 'service-configurations')->where('key','service-configurations')->first();
+    
+        // Job List
+        $postJobRequestIds = $sectionData['section_10']['post_job_requests_id'] ?? [];
+        $jobRequests = PostJobRequest::whereIn('id', $postJobRequestIds)->get();
+    
+        // Category List
+        $categories = $sectionData['section_2']['category_id'] ?? [];
+        $categoryrequest = Category::whereIn('id', $categories)->get();
+    
+        // Service List
+ // Service List with average ratings and review counts
+        $servicerequest = $sectionData['section_3']['service_id'] ?? [];
+        $servicerequest = Service::whereIn('id', $servicerequest)
+
+    ->with(['serviceRating']) // Assuming a serviceRating relationship exists
+    ->get()
+    ->map(function ($service) {
+        $ratings = BookingRating::where('service_id', $service->id)->pluck('rating')->toArray();
+        $totalReviews = count($ratings);
+        $avgRating = $totalReviews > 0 ? array_sum($ratings) / $totalReviews : 0;
+
+        $service->total_reviews = $totalReviews;
+        $service->avg_rating = round($avgRating, 1);
+
+        return $service;
+    });
+
+    $featuredrequest = $sectionData['section_4']['service_id'] ?? [];
+    $featuredrequest = Service::whereIn('id', $featuredrequest)
+        ->with(['serviceRating']) // Assuming a serviceRating relationship exists
+        ->get()
+        ->map(function ($service) {
+            $ratings = BookingRating::where('service_id', $service->id)->pluck('rating')->toArray();
+            $totalReviews = count($ratings);
+            $avgRating = $totalReviews > 0 ? array_sum($ratings) / $totalReviews : 0;
+
+            $service->total_reviews = $totalReviews;
+            $service->avg_rating = round($avgRating, 1);
+
+            return $service;
+        });
+        // Featured Service List
+         
+        // Service Configuration
+        $settings = Setting::where('type', 'service-configurations')->where('key', 'service-configurations')->first();
         $serviceconfig = $settings ? json_decode($settings->value) : null;
         $postjobservice = $serviceconfig ? $serviceconfig->post_services : null;
+    
+        // Calculate average rating
         $ratings = BookingRating::pluck('rating')->toArray();
         $averageRating = count($ratings) > 0 ? array_sum($ratings) / count($ratings) : 0;
         $totalRating = number_format($averageRating, 2);
-        return view('landing-page.index',compact('sectionData','postjobservice','auth_user_id','favourite','totalRating'));
+        $favouriteServiceData = [];
+        $apiRequest = new Request(['service_id' => $service_id, 'per_page' => 'all']);
+        $serviceController = app(ServiceController::class);
+        if (!empty(auth()->user())) {
+            $favouriteServiceResponse = $serviceController->getUserFavouriteService($apiRequest);
+            $favouriteService = json_decode($favouriteServiceResponse->content(), true);
+            $favouriteServiceData = $favouriteService['data'] ?? [];
+            $userId = auth()->user()->id;
+            $favouriteService = collect($favouriteServiceData)->filter(function ($item) use ($userId,$service_id) {
+                return isset($item['user_id']) && $item['user_id'] == $userId
+                    && isset($item['service_id']) && $item['service_id'] == $service_id;
+            })->toArray();
+        } else {
+            $favouriteService = collect();
+            $userId = 0;
+        }
+    
+        return view('landing-page.index', compact('sectionData', 'favouriteService', 'postjobservice', 'auth_user_id', 'favourite', 'totalRating', 'jobRequests', 'categoryrequest', 'servicerequest', 'featuredrequest'));
     }
 
     public function userLoginView(Request $request){
