@@ -699,68 +699,71 @@ class FrontendController extends Controller
 
 
 
-
-    public function serviceDatatable(Datatables $datatable, Request $request){
-        $query = Service::where('service_type','service')->where('status',1);
-
-        if($request->type == 'provider-service'){
+    public function serviceDatatable(Datatables $datatable, Request $request)
+    { 
+        $query = Service::where('service_type', 'service')->where('status', 1);
+    
+        // Apply filters (existing logic)
+        if ($request->type == 'provider-service') {
             $query->where('provider_id', $request->id);
         }
-        if($request->type == 'subcategory-service'){
+        if ($request->type == 'subcategory-service') {
             $query->whereHas('subcategory', function ($q) use ($request) {
                 $q->where('subcategory_id', $request->id);
             });
         }
-        if($request->type == 'category-service'){
+        if ($request->type == 'category-service') {
             $query->where('category_id', $request->id);
         }
+    
         if ($request->has('latitude') && !empty($request->latitude) && $request->has('longitude') && !empty($request->longitude)) {
-
-            $get_distance = getSettingKeyValue('site-setup','radious') ?? 50;
-            $get_unit = getSettingKeyValue('site-setup','distance_type') ?? 'km';
-
-            $locations = $query->locationService($request->latitude,$request->longitude,$get_distance,$get_unit);
-            $service_in_location = ProviderServiceAddressMapping::whereIn('provider_address_id',$locations)->get()->pluck('service_id');
-            $query->with('providerServiceAddress')->whereIn('id',$service_in_location);
+            $get_distance = getSettingKeyValue('site-setup', 'radious') ?? 50;
+            $get_unit = getSettingKeyValue('site-setup', 'distance_type') ?? 'km';
+            $locations = $query->locationService($request->latitude, $request->longitude, $get_distance, $get_unit);
+            $service_in_location = ProviderServiceAddressMapping::whereIn('provider_address_id', $locations)->get()->pluck('service_id');
+            $query->with('providerServiceAddress')->whereIn('id', $service_in_location);
         }
-
-        if(default_earning_type() === 'subscription'){
-             $query->whereHas('providers', function ($a) use ($request) {
-                 $a->where('status', 1)->where('is_subscribe',1);
-             });
-         }
+    
+        if (default_earning_type() === 'subscription') {
+            $query->whereHas('providers', function ($a) use ($request) {
+                $a->where('status', 1)->where('is_subscribe', 1);
+            });
+        }
+    
+        // Handle filters
         $filter = $request->filter;
-
-        if(isset($filter['search'])) {
+        if (isset($filter['search'])) {
             $query->where('name', 'LIKE', '%'.$filter['search'].'%');
         }
-        if(isset($filter['selectedCategory'])) {
+        if (isset($filter['selectedCategory'])) {
             $query->where('category_id', $filter['selectedCategory']);
         }
-        if(isset($filter['selectedProvider'])) {
+        if (isset($filter['selectedProvider'])) {
             $query->where('provider_id', $filter['selectedProvider']);
         }
         if (isset($filter['selectedPriceRange'])) {
             $priceRange = explode('-', $filter['selectedPriceRange']);
-
             if (count($priceRange) === 2) {
                 $minPrice = $priceRange[0];
                 $maxPrice = $priceRange[1];
                 $query->whereBetween('price', [$minPrice, $maxPrice]);
             }
         }
-        if(isset($filter['selectedSortOption'])) {
+    
+        // Handle sorting
+        if (isset($filter['selectedSortOption'])) {
             if ($filter['selectedSortOption'] == "best_selling") {
                 $bestSellingServiceIds = Booking::select('service_id', \DB::raw('COUNT(service_id) as service_count'))
+                    ->where('status', 'completed')  // Only count completed bookings
                     ->groupBy('service_id')
                     ->orderByDesc('service_count')
                     ->pluck('service_id')
                     ->toArray();
-
-                    if (!empty($bestSellingServiceIds)) {
-                        $query->whereIn('id', $bestSellingServiceIds)
-                            ->orderByRaw(\DB::raw("FIELD(id, " . implode(',', $bestSellingServiceIds) . ")"));
-                    }
+    
+                if (!empty($bestSellingServiceIds)) {
+                    $query->whereIn('id', $bestSellingServiceIds)
+                        ->orderByRaw(\DB::raw("FIELD(id, " . implode(',', $bestSellingServiceIds) . ")"));
+                }
             }
             if ($filter['selectedSortOption'] == "top_rated") {
                 $topRatedServiceIds = BookingRating::select(
@@ -773,6 +776,7 @@ class FrontendController extends Controller
                     ->orderByDesc('total_reviews')
                     ->pluck('service_id')
                     ->toArray();
+    
                 if (!empty($topRatedServiceIds)) { 
                     $allServiceIds = $query->pluck('id')->toArray(); 
                     $otherServiceIds = array_diff($allServiceIds, $topRatedServiceIds); 
@@ -781,27 +785,33 @@ class FrontendController extends Controller
                         ->orderByRaw(\DB::raw("FIELD(id, " . implode(',', $orderedServiceIds) . ")"));
                 }
             }
-            if($filter['selectedSortOption'] == "newest"){
+            if($filter['selectedSortOption'] == "newest") {
                 $query->orderBy('created_at', 'desc');
             }
         }
-
-
+    
+        // Add a column to count completed bookings
         $datatable = $datatable->eloquent($query)
         ->editColumn('name', function ($data) {
             $totalReviews = $data->id ? BookingRating::where('service_id', $data->id)->count() : 0;
             $totalRating = $data->serviceRating ? (float) number_format(max($data->serviceRating->avg('rating'), 0), 2) : 0;
-            if(!empty(auth()->user())){
+            if (!empty(auth()->user())) {
                 $favouriteService = $data->getUserFavouriteService()->where('user_id', auth()->user()->id)->get();
-            }else{
+            } else {
                 $favouriteService = collect();
             }
-            return view('service.datatable-card', compact('data', 'totalReviews','totalRating', 'favouriteService'));
+    
+            // Count the number of completed bookings for this service
+            $completedBookingCount = Booking::where('service_id', $data->id)
+                ->where('status', 'completed')  // Only count completed bookings
+                ->count();
+    
+            return view('service.datatable-card', compact('data', 'totalReviews', 'totalRating', 'favouriteService', 'completedBookingCount'));
         })
         ->order(function ($query) {
             $query->orderBy('id', 'desc');
         });
-
+    
         return $datatable->rawColumns(['name'])
             ->toJson();
     }

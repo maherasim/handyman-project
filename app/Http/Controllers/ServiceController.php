@@ -7,7 +7,6 @@ use App\Models\Service;
 use App\Models\User;
 use App\Models\Setting;
 use App\Http\Requests\ServiceRequest;
-use App\Models\ServicePackage;
 use Yajra\DataTables\DataTables;
 use App\Models\UserFavouriteService;
 
@@ -22,27 +21,14 @@ class ServiceController extends Controller
     {
         $servicepackage = $request->packageid;
         $postrequestid = $request->route('postjobid');
-
-        $auth_user = auth()->user();
-
-        if ($request->is('servicepackage/list/*')) { 
-            if ($auth_user->hasRole('provider')) {
-                $isAuthorizedPackage = ServicePackage::where('id', $servicepackage)
-                    ->where('provider_id', $auth_user->id)
-                    ->exists();
-    
-                if (!$isAuthorizedPackage) {
-                    return redirect()->back()->withErrors(__('You are not authorized to view this package.'));
-                }
-            }
-        }
         $filter = [
             'status' => $request->status,
         ];
         $pageTitle = __('messages.all_form_title',['form' => __('messages.services')] );
+        $auth_user = authSession();
         $assets = ['datatable'];
         return view('service.index', compact('pageTitle','auth_user','assets','filter','postrequestid','servicepackage'));
-    }  
+    }
 
     public function myindex(Request $request)
     {
@@ -60,7 +46,7 @@ class ServiceController extends Controller
     // get datatable data
     public function index_data(DataTables $datatable,Request $request)
     {
-        $query = Service::query()->myService();
+        $query = Service::query()->myService()->list();
 
         $filter = $request->filter;
 
@@ -108,10 +94,7 @@ class ServiceController extends Controller
                     $q->where('name','like','%'.$keyword.'%');
                 });
             })
-            ->orderColumn('category_id', function ($query, $order) {
-                $query->join('categories', 'categories.id', '=', 'services.category_id')
-                      ->orderBy('categories.name', $order);
-            })
+
             ->editColumn('provider_id' , function ($query){
                 return view('service.service', compact('query'));
             })
@@ -119,11 +102,6 @@ class ServiceController extends Controller
                 $query->whereHas('providers',function ($q) use($keyword){
                     $q->where('display_name','like','%'.$keyword.'%');
                 });
-            })
-            ->orderColumn('provider_id', function ($query, $order) {
-                $query->select('services.*')
-                      ->join('users as providers', 'providers.id', '=', 'services.provider_id')
-                      ->orderBy('providers.display_name', $order);   
             })
             ->editColumn('price' , function ($query){
                 return getPriceFormat($query->price).'-'.ucFirst($query->type);
@@ -148,6 +126,8 @@ class ServiceController extends Controller
             ->rawColumns(['action', 'status', 'check','name'])
             ->toJson();
     }
+
+
     public function myindex_data(DataTables $datatable, Request $request)
     {
         // Start the query with the user's favorite services
@@ -233,6 +213,10 @@ class ServiceController extends Controller
             ->rawColumns(['action', 'status', 'check', 'name'])
             ->toJson();
     }
+    
+
+
+
 
     public function bulk_action(Request $request)
     {
@@ -294,9 +278,6 @@ class ServiceController extends Controller
      */
     public function create(Request $request)
     {
-        if (!auth()->user()->can('service add')) {
-            return redirect()->back()->withErrors(trans('messages.demo_permission_denied'));
-        }
         $id = $request->id;
 
         $auth_user = authSession();
@@ -324,8 +305,7 @@ class ServiceController extends Controller
             if ($digital_services == 1) {
                 $visittype = [
                     'ON_SITE' => 'On Site',
-                    'Remote' => 'Remote',
-                    'Hybird' => 'Hybird',
+                    'ONLINE' => 'Online',
                 ];
             } else {
                 $visittype = [
@@ -339,10 +319,6 @@ class ServiceController extends Controller
         if($servicedata == null){
             $pageTitle = __('messages.add_button_form',['form' => __('messages.service')]);
             $servicedata = new Service;
-        }else{
-            if ($servicedata->provider_id !== auth()->user()->id && !auth()->user()->hasRole(['admin', 'demo_admin'])) {
-                return redirect(route('service.index'))->withErrors(trans('messages.demo_permission_denied'));
-            }
         }
 
         return view('service.create', compact('pageTitle' ,'servicedata' ,'auth_user' , 'advancedPaymentSetting','visittype','slotservice'));
@@ -485,9 +461,6 @@ class ServiceController extends Controller
     public function show(Request $request, $id)
     {
         $auth_user = authSession();
-        if ($id != auth()->user()->id && !auth()->user()->hasRole(['admin', 'demo_admin'])) {
-            return redirect(route('home'))->withErrors(trans('messages.demo_permission_denied'));
-        }
         $tabpage = 'all-plan';
         $providerdata = User::with('providerDocument')->where('user_type', 'provider')->where('id', $id)->first();
         if (empty($providerdata)) {
