@@ -607,10 +607,11 @@
                                                         class="font-size-14 service-user-name">{{ $data->providers->display_name }}</span>
                                                 </a>
                                             </div>
-                                            <img src="{{ asset('images/plans/icon.jpg') }}" alt="icon"
-                                            style="width: 23%; height: 23%; margin-right: 10px;"> <img src="{{ asset('images/plans/icon.jpg') }}" alt="icon"
-                                            style="width: 23%; height: 23%">
-                                        </div>
+                                            <div class="mt-3">
+                                                 <img src="{{ asset('images/plans/icon.jpg') }}" alt="icon"
+                                                style="width: 23%; height: 23%; margin-right: 10px;"> <img src="{{ asset('images/plans/icon.jpg') }}" alt="icon"
+                                                style="width: 23%; height: 23%">
+                                            </div></div>
                                             <div class="d-flex align-items-center gap-1 f-none mt-2">
                                                 @if ($data->avg_rating > 0)
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12"
