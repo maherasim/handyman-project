@@ -233,11 +233,13 @@
                                 <h5 class="mb-0" style="font-weight: 400;">
                                     @if ($jobRequest->city)
                                         {{ $jobRequest->city->name }} -
-                                    @endif
+                                    @endif 
+                                    'N/A'
 
                                     @if ($jobRequest->country)
                                         {{ $jobRequest->country->name }}
                                     @endif
+                                    'N/A'
                                 </h5>
                                 <h5 class="mb-0" style="font-weight: 600;">Published at:</h5>
                                 <div class="d-flex align-items-center" style="gap: 10px;">
