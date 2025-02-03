@@ -69,6 +69,10 @@ class FrontendController extends Controller
         // Service List
  // Service List with average ratings and review counts
         $servicerequest = $sectionData['section_3']['service_id'] ?? [];
+       // dd($servicerequest);
+        // $completedBookingCount = Booking::whereIn('service_id', $servicerequest)
+        // ->where('status', 'completed') // Only count completed bookings
+        // ->count();
         $servicerequest = Service::whereIn('id', $servicerequest)
 
     ->with(['serviceRating']) // Assuming a serviceRating relationship exists
@@ -85,6 +89,11 @@ class FrontendController extends Controller
     });
 
     $featuredrequest = $sectionData['section_4']['service_id'] ?? [];
+   // dd( $featuredrequest);
+    $completedBookingCount = Booking::whereIn('service_id', $featuredrequest)
+    ->where('status', 'completed') // Only count completed bookings
+    ->count();
+   // dd( $completedBookingCount);
     $featuredrequest = Service::whereIn('id', $featuredrequest)
         ->with(['serviceRating']) // Assuming a serviceRating relationship exists
         ->get()
@@ -126,7 +135,7 @@ class FrontendController extends Controller
             $userId = 0;
         }
     
-        return view('landing-page.index', compact('sectionData', 'favouriteService', 'postjobservice', 'auth_user_id', 'favourite', 'totalRating', 'jobRequests', 'categoryrequest', 'servicerequest', 'featuredrequest'));
+        return view('landing-page.index', compact('sectionData', 'favouriteService','completedBookingCount', 'postjobservice', 'auth_user_id', 'favourite', 'totalRating', 'jobRequests', 'categoryrequest', 'servicerequest', 'featuredrequest'));
     }
 
     public function userLoginView(Request $request){

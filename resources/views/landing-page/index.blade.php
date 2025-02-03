@@ -430,13 +430,20 @@
                                                             ({{ $data->total_reviews }}
                                                             {{ $data->total_reviews > 1 ? __('messages.reviews') : __('messages.review') }})
                                                         </a>
+                                                      
                                                     </h6>
                                                 @else
                                                     <h6 class="font-size-14 mb-0 text-muted">
                                                         {{ __('no_reviews_yet') }}</h6>
                                                 @endif
+                                                {{-- <strong>{{ $completedBookingCount }} Bookings</strong>   --}}
                                             </div>
-
+                                            <div class="d-flex align-items-center gap-1 f-none mt-2">
+                                                <img src="{{ asset('images/plans/icon.jpg') }}" alt="icon"
+                                                style="width: 23%; height: 23%; margin-right: 10px;"> <img src="{{ asset('images/plans/icon.jpg') }}" alt="icon"
+                                                style="width: 23%; height: 23%">
+                                                
+                                            </div>
                                             <br>
                                             <div class="d-flex mt-8 " style="gap: 18px; justify-content: center;">
                                                 <a href="#"><img
@@ -597,7 +604,9 @@
                                                 </li>
                                             @endif
                                         </ul>
-
+                                        <p style="font-weight: 600;">
+                                            {{ $data->city ? $data->city->name : 'N/A' }}-{{ $data->country ? $data->country->name : 'N/A' }}
+                                        </p>
                                         <div class="mt-3">
                                             <div class="d-flex align-items-center gap-2">
                                                 <img src="{{ getSingleMedia($data->providers, 'profile_image', null) }}"
@@ -606,16 +615,8 @@
                                                     <span
                                                         class="font-size-14 service-user-name">{{ $data->providers->display_name }}</span>
                                                 </a>
-                                                <img src="{{ asset('images/plans/icon.jpg') }}" alt="icon"
-                                                style="width: 13%; height: 13%; margin-right: 2px;"> <img src="{{ asset('images/plans/icon.jpg') }}" alt="icon"
-                                                style="width: 13%; height: 13%">
-                                            </div></div>
                                             </div>
-                                            {{-- <div class="mt-3">
-                                                 <img src="{{ asset('images/plans/icon.jpg') }}" alt="icon"
-                                                style="width: 23%; height: 23%; margin-right: 10px;"> <img src="{{ asset('images/plans/icon.jpg') }}" alt="icon"
-                                                style="width: 23%; height: 23%">
-                                            </div></div> --}}
+                                           
                                             <div class="d-flex align-items-center gap-1 f-none mt-2">
                                                 @if ($data->avg_rating > 0)
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12"
@@ -634,7 +635,35 @@
                                                     <h6 class="font-size-14 mb-0 text-muted">
                                                         {{ __('no_reviews_yet') }}</h6>
                                                 @endif
+                                                {{-- yyy --}}
                                             </div>
+
+
+
+                                            <div class="d-flex align-items-center gap-1 f-none mt-2">
+                                                <img src="{{ asset('images/plans/icon.jpg') }}" alt="icon"
+                                                style="width: 23%; height: 23%; margin-right: 10px;"> <img src="{{ asset('images/plans/icon.jpg') }}" alt="icon"
+                                                style="width: 23%; height: 23%">
+                                                
+                                            </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
                                             <br>
                                             <div class="d-flex mt-8 " style="gap: 18px; justify-content: center;">
