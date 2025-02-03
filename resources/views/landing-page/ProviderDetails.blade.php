@@ -332,7 +332,7 @@
     <div class="modal fade" id="chooseme" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
             <div class="modal-content overflow-visible">
-                <span class="text-primary custom-btn-close" data-bs-dismiss="modal" aria-label="Close">
+                <span class="text-primary custom-btn-close" data-bs-dis\miss="modal" aria-label="Close">
                     <svg xmlns="http://www.w3.org/2000/svg" width="40" height="41" viewBox="0 0 40 41"
                         fill="none">
                         <rect x="12" y="11.8381" width="17" height="17" fill="white"></rect>
