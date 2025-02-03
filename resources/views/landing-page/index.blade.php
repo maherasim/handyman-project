@@ -606,6 +606,10 @@
                                                     <span
                                                         class="font-size-14 service-user-name">{{ $data->providers->display_name }}</span>
                                                 </a>
+                                                <img src="{{ asset('images/plans/icon.jpg') }}" alt="icon"
+                                                style="width: 23%; height: 23%; margin-right: 10px;"> <img src="{{ asset('images/plans/icon.jpg') }}" alt="icon"
+                                                style="width: 23%; height: 23%">
+                                            </div></div>
                                             </div>
                                             {{-- <div class="mt-3">
                                                  <img src="{{ asset('images/plans/icon.jpg') }}" alt="icon"
