@@ -161,104 +161,111 @@
         </div>
     @endif
 
+{{-- JOb Requests --}}
 
-
-    @if ($sectionData && isset($sectionData['section_10']) && $sectionData['section_10']['section_10'] == 1)
-        <div class="section-padding ">
-            <div class="container">
-                <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
-                    <div class="iq-title-box mb-0">
-                        <h3 class="text-capitalize line-count-1">{{ $sectionData['section_10']['title'] }}
-                            <div class="highlighted-text">
-                                <span class="highlighted-text-swipe"></span>
-                                <span class="highlighted-image">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="155" height="12"
-                                        viewBox="0 0 155 12" fill="none">
-                                        <path d="M2.5 9.5C3.16964 9.26081 78.8393 -2.45948 152.5 4.9554"
-                                            stroke="currentColor" stroke-width="4" stroke-linecap="round"
-                                            stroke-linejoin="round" />
-                                    </svg>
-                                </span>
-                            </div>
-                        </h3>
+@if ($sectionData && isset($sectionData['section_10']) && $sectionData['section_10']['section_10'] == 1)
+<div class="section-padding ">
+    <div class="container">
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+            <div class="iq-title-box mb-0">
+                <h3 class="text-capitalize line-count-1">{{ $sectionData['section_10']['title'] }}
+                    <div class="highlighted-text">
+                        <span class="highlighted-text-swipe"></span>
+                        <span class="highlighted-image">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="155" height="12"
+                                viewBox="0 0 155 12" fill="none">
+                                <path d="M2.5 9.5C3.16964 9.26081 78.8393 -2.45948 152.5 4.9554"
+                                    stroke="currentColor" stroke-width="4" stroke-linecap="round"
+                                    stroke-linejoin="round" />
+                            </svg>
+                        </span>
                     </div>
-                    <a href="{{ route('job.data') }}"
-                        class="btn btn-link p-0 text-capitalize flex-shrink-0 font-size-14">{{ __('messages.view_all') }}</a>
-                </div>
-
-                <!-- Display Job Requests Cards Similar to Category Section -->
-                <div class="row">
-                    @foreach ($jobRequests as $jobRequest)
-                        <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
-                            <!-- Make the entire card clickable by wrapping the card inside <a> -->
-                            <a href="{{ route('job.details', $jobRequest->id) }}" class="card-link">
-                                <div class="card mt-5 p-3" style="background: #FAF9FF;">
-                                    <div class="card-imgd">
-                                        <img class="card-img-top"
-                                            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTpIfGmXhZx9-emF4uqhWXj-YgTNxlMz692LXcfGxC0TyZ8sXMilKktiOwWwzSsw2R4aG8&usqp=CAU"
-                                            alt="Card image cap">
-
-                                        <div class="img-icon">
-                                            <i class='bx bx-heart'
-                                                style="position: absolute; top: 0; right: 0; transform: translate(-32px, 30px); background: #fff; padding: 7px; color: #8384AE; border-radius: 50px;"></i>
-                                        </div>
-                                    </div>
-                                    <button class="btn btn-fix col-md-8 d-flex m-auto justify-content-center"
-                                        style="background: #a52828; color: #fff; font-weight: 600; font-size: 18px; border-radius: 15px; border: 17px solid #E1DCDD; margin-top: -40px !important;">€
-                                        {{ $jobRequest->price }} </button>
-
-                                    <div class="card-body pl-0">
-                                        <div class="d-flex align-items-center justify-content-between flex-wrap">
-                                            <h5 class="card-title mb-0" style="font-weight: 600;">
-                                                {{ $jobRequest->title }}</h5>
-                                            <div class="d-flex align-items-center justify-content-center gap-3 mt-1">
-                                                <a href="#">
-                                                    <img src="https://cdn.pixabay.com/photo/2021/06/15/12/51/facebook-6338507_1280.png"
-                                                        style="width: 30px; border-radius: 8px;" alt="">
-                                                </a>
-                                                <a href="#">
-                                                    <img src="https://upload.wikimedia.org/wikipedia/commons/9/95/Instagram_logo_2022.svg"
-                                                        style="width: 30px; border-radius: 8px;" alt="">
-                                                </a>
-                                                <a href="#">
-                                                    <img src="https://cdn.pixabay.com/photo/2015/03/10/17/30/twitter-667462_640.png"
-                                                        style="width: 30px; border-radius: 8px;" alt="">
-                                                </a>
-                                                <a href="#">
-                                                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRokEYt0yyh6uNDKL8uksVLlhZ35laKNQgZ9g&s"
-                                                        style="width: 30px; border-radius: 8px;" alt="">
-                                                </a>
-                                            </div>
-                                        </div>
-                                        <h5 class="mb-0" style="font-weight: 400;">
-                                            @if ($jobRequest->city)
-                                                {{ $jobRequest->city->name }} -
-                                            @endif
-
-                                            @if ($jobRequest->country)
-                                                {{ $jobRequest->country->name }}
-                                            @endif
-                                        </h5>
-                                        <h5 class="mb-0" style="font-weight: 600;">Published at:</h5>
-                                        <div class="d-flex align-items-center" style="gap: 10px;">
-                                            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQnnM0ib-pYCZg4DbbB_T5_mfxpqrDHYXFLy208bjvHjIM5q1FF4lzLvNFp2qZ5Eo11orA&usqp=CAU"
-                                                class="img-fluid" style="width: 35px;" alt="">
-
-                                            <p class="mb-0" style="color: #8081dc;">
-                                                @if ($jobRequest->provider)
-                                                    {{ $jobRequest->provider->username }}
-                                            </p>
-                    @endif
-                </div>
-                <h5 style="font-weight: 600;">Status: <span style="font-size: 17px; font-weight: 500;">
-                        {{ $jobRequest->status }}</span></h5>
+                </h3>
             </div>
+            <a href="{{ route('job.data') }}"
+                class="btn btn-link p-0 text-capitalize flex-shrink-0 font-size-14">{{ __('messages.view_all') }}</a>
         </div>
-        </a> <!-- Closing the clickable link -->
+
+        <!-- Display Job Requests Cards Similar to Category Section -->
+        <div class="row">
+            @foreach ($jobRequests as $jobRequest)
+                <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+                    <!-- Make the entire card clickable by wrapping the card inside <a> -->
+                    <a href="{{ route('job.details', $jobRequest->id) }}" class="card-link">
+                        <div class="card mt-5 p-3" style="background: #FAF9FF;">
+                            <div class="card-imgd">
+                                <img class="card-img-top"
+                                    src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTpIfGmXhZx9-emF4uqhWXj-YgTNxlMz692LXcfGxC0TyZ8sXMilKktiOwWwzSsw2R4aG8&usqp=CAU"
+                                    alt="Card image cap">
+
+                                <div class="img-icon">
+                                    <i class='bx bx-heart'
+                                        style="position: absolute; top: 0; right: 0; transform: translate(-32px, 30px); background: #fff; padding: 7px; color: #8384AE; border-radius: 50px;"></i>
+                                </div>
+                            </div>
+                            <button class="btn btn-fix col-md-8 d-flex m-auto justify-content-center"
+                                style="background: #a52828; color: #fff; font-weight: 600; font-size: 18px; border-radius: 15px; border: 17px solid #E1DCDD; margin-top: -40px !important;">€
+                                {{ $jobRequest->price }} </button>
+
+                            <div class="card-body pl-0">
+                                <div class="d-flex align-items-center justify-content-between flex-wrap">
+                                    <h5 class="card-title mb-0" style="font-weight: 600;">
+                                        {{ $jobRequest->title }}</h5>
+                                    <div class="d-flex align-items-center justify-content-center gap-3 mt-1">
+                                        <a href="#">
+                                            <img src="https://cdn.pixabay.com/photo/2021/06/15/12/51/facebook-6338507_1280.png"
+                                                style="width: 30px; border-radius: 8px;" alt="">
+                                        </a>
+                                        <a href="#">
+                                            <img src="https://upload.wikimedia.org/wikipedia/commons/9/95/Instagram_logo_2022.svg"
+                                                style="width: 30px; border-radius: 8px;" alt="">
+                                        </a>
+                                        <a href="#">
+                                            <img src="https://cdn.pixabay.com/photo/2015/03/10/17/30/twitter-667462_640.png"
+                                                style="width: 30px; border-radius: 8px;" alt="">
+                                        </a>
+                                        <a href="#">
+                                            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRokEYt0yyh6uNDKL8uksVLlhZ35laKNQgZ9g&s"
+                                                style="width: 30px; border-radius: 8px;" alt="">
+                                        </a>
+                                    </div>
+                                </div>
+                                <h5 class="mb-0" style="font-weight: 400;">
+                                    @if ($jobRequest->city)
+                                        {{ $jobRequest->city->name }} -
+                                    @endif
+
+                                    @if ($jobRequest->country)
+                                        {{ $jobRequest->country->name }}
+                                    @endif
+                                </h5>
+                                <h5 class="mb-0" style="font-weight: 600;">Published at:</h5>
+                                <div class="d-flex align-items-center" style="gap: 10px;">
+                                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQnnM0ib-pYCZg4DbbB_T5_mfxpqrDHYXFLy208bjvHjIM5q1FF4lzLvNFp2qZ5Eo11orA&usqp=CAU"
+                                        class="img-fluid" style="width: 35px;" alt="">
+
+                                    <p class="mb-0" style="color: #8081dc;">
+                                        @if ($jobRequest->provider)
+                                            {{ $jobRequest->provider->username }}
+                                    </p>
+            @endif
         </div>
-    @endforeach
+        <h5 style="font-weight: 600;">Status: <span style="font-size: 17px; font-weight: 500;">
+                {{ $jobRequest->status }}</span></h5>
     </div>
-    @endif
+</div>
+</a> <!-- Closing the clickable link -->
+</div>
+@endforeach
+</div>
+@endif
+
+
+
+
+
+
+
 
 
     <!-- Service -->
@@ -436,7 +443,7 @@
                                                     <h6 class="font-size-14 mb-0 text-muted">
                                                         {{ __('no_reviews_yet') }}</h6>
                                                 @endif
-                                                {{-- <strong>{{ $completedBookingCount }} Bookings</strong>   --}}
+                                                <strong>{{ $completedBookingCount }} Bookings</strong>  
                                             </div>
                                             <div class="d-flex align-items-center gap-1 f-none mt-2">
                                                 <img src="{{ asset('images/plans/icon.jpg') }}" alt="icon"
@@ -635,7 +642,7 @@
                                                     <h6 class="font-size-14 mb-0 text-muted">
                                                         {{ __('no_reviews_yet') }}</h6>
                                                 @endif
-                                                {{-- yyy --}}
+                                                <strong>{{ $completedBookingCount }} Bookings</strong>  
                                             </div>
 
 
