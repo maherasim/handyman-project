@@ -65,9 +65,10 @@
                     @if (!empty($serviceData['service_detail']['description']))
                         <div class="mt-5 pt-lg-5 pt-3">
                             <h5 class="mb-3">{{ __('Minimum Booking') }}</h5>
-                            {{-- <p class="m-0">
-                                {{ $serviceData['service_detail']['minimum_booking'] }}
-                            </p> --}}
+                            <p class="m-0">
+                                 {{ $serviceData['provider']['minimum_booking'] }}
+                            
+                            </p>
                         </div>
                     @endif
                     @if (!empty($serviceData['service_detail']['description']))
