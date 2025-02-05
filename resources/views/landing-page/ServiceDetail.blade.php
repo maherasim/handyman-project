@@ -60,6 +60,11 @@
                             <a class="d-inline-block text-capitalize m-0"
                                 href="{{ route('provider.detail', $serviceData['provider']['id']) }}">{{ $serviceData['provider']['display_name'] }}</a>
                         </div>
+                        <div>
+                            {{ $serviceData['city']['name'] ?? 'N/A' }} - {{ $serviceData['country']['name'] ?? 'N/A' }}
+
+                            
+                        </div>
                     </div>
                     @if (!empty($serviceData['service_detail']['attchments']))
                         <div class="mt-5">
