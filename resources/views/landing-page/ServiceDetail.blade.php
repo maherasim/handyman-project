@@ -34,20 +34,12 @@
                             @if (!empty($serviceData['service_detail']['duration']))
                                 <li>
                                     <h6 class="text-body">
-                                        @php
-
-                                            $durationParts = explode(':', $serviceData['service_detail']['duration']);
-                                            $hours = intval($durationParts[0]);
-                                            $minutes = intval($durationParts[1]);
-                                        @endphp
-
-                                        @if ($hours > 0)
-                                            ({{ $hours }} hrs @if ($minutes > 0)
-                                                {{ $minutes }} min
-                                            @endif)
-                                        @else
-                                            ({{ $minutes }} min)
-                                        @endif
+                                        <div>
+                                            {{ $serviceData['provider']['city']['name'] ?? 'N/A' }} - 
+                                            {{ $serviceData['provider']['country']['name'] ?? 'N/A' }}
+                
+                                            
+                                        </div>
 
 
 
@@ -59,11 +51,6 @@
                             <span class="text-capitalize">{{ __('landingpage.created_by') }}: </span>
                             <a class="d-inline-block text-capitalize m-0"
                                 href="{{ route('provider.detail', $serviceData['provider']['id']) }}">{{ $serviceData['provider']['display_name'] }}</a>
-                        </div>
-                        <div>
-                            {{ $serviceData['city']['name'] ?? 'N/A' }} - {{ $serviceData['country']['name'] ?? 'N/A' }}
-
-                            
                         </div>
                     </div>
                     @if (!empty($serviceData['service_detail']['attchments']))
