@@ -35,10 +35,10 @@
                                 <li>
                                     <h6 class="text-body">
                                         <div>
-                                            {{ $serviceData['provider']['city']['name'] ?? 'N/A' }} - 
+                                            {{ $serviceData['provider']['city']['name'] ?? 'N/A' }} -
                                             {{ $serviceData['provider']['country']['name'] ?? 'N/A' }}
-                
-                                            
+
+
                                         </div>
 
 
@@ -71,14 +71,12 @@
                         </div>
                     @endif
                     @if (!empty($serviceData['service_detail']['description']))
-                    <div class="mt-5 pt-lg-5 pt-3">
-                        <h5 class="mb-3">{{ __('landingpage.about_service') }}</h5>
-                        <p class="m-0">
-                            {{ html_entity_decode(strip_tags($serviceData['service_detail']['description'])) }}
-                        </p>
-                    </div>
-                    
-                    
+                        <div class="mt-5 pt-lg-5 pt-3">
+                            <h5 class="mb-3">{{ __('landingpage.about_service') }}</h5>
+                            <p class="m-0">
+                                {{ html_entity_decode(strip_tags($serviceData['service_detail']['description'])) }}
+                            </p>
+                        </div>
                     @endif
 
 
@@ -550,10 +548,10 @@
                             </div>
                         </div>
                         @if (!empty($serviceData['service_detail']['description']))
-                        <p class="m-0 readmore-text">
-                            {{ strip_tags($serviceData['service_detail']['description']) }}
-                        </p>
-                        
+                            <p class="m-0 readmore-text">
+                                {{ strip_tags($serviceData['service_detail']['description']) }}
+                            </p>
+
                             <a href="javascript:void(0);" class="readmore-btn">{{ __('landingpage.read_more') }}</a>
                         @endif
 
@@ -602,7 +600,20 @@
                     </div>
 
                     <div class="bg-light p-5 rounded-3 mt-5">
-                        <h3>Provider Details</h3>
+                        <h3 class="fw-500 d-inline-block position-relative"
+                            style="background-color: #007bff; 
+           color: white;
+           font-size: 18px; 
+           font-weight: bold; 
+           text-align: center; 
+           padding: 10px 15px; 
+           border-radius: 10px; 
+           display: inline-block; 
+           width: 180px; 
+           margin: auto;">
+                            Provider Details
+                        </h3>
+
                         <h5 class="mb-2">{{ __('landingpage.available_location') }}</h5>
                         <ul class="list-inline m-0 p-0 d-flex align-items-center gap-2 flex-wrap">
                             @foreach ($serviceData['service_detail']['service_address_mapping'] as $service_address)
@@ -629,7 +640,7 @@
 
                             <li>Languages: {{ is_array($languages) ? implode(', ', $languages) : $languages }}</li>
 
-                        <li>    Availability : {{ $serviceData['provider']['availability'] }} </li>
+                            <li> Availability : {{ $serviceData['provider']['availability'] }} </li>
                             <li>Mobility : {{ $serviceData['provider']['mobility'] }}</li>
                             <li>Skills : {{ $serviceData['provider']['skills'] }}</li>
                             <li>Diploma : </li>
