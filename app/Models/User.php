@@ -26,8 +26,8 @@ class User extends Authenticatable implements HasMedia
         'player_id','country_id', 'state_id',  'city_id' ,  'provider_id' , 'status',
         'display_name', 'providertype_id' , 'is_featured' , 'time_zone' ,'last_notification_seen' ,'company_name','vat_number',
         'login_type','service_address_id' , 'uid','is_subscribe','about_me','mobility','certification','about_me',
-        'social_image','is_available','designation','last_online_time','education','availability',
-        'known_languages','skills','description','why_choose_me','is_email_verified','languages','experience',
+        'social_image','is_available','designation','last_online_time','education',
+        'known_languages','skills','description','why_choose_me','is_email_verified','languages','experience','minimum_booking'
     ];
 
     /**

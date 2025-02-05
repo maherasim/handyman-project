@@ -377,6 +377,7 @@ class FrontendController extends Controller
         return view('landing-page.ServiceDetail', compact('serviceData','favouriteService','date_time','completed_services','knownLanguageArray','subtotal','total_ratings','favouriteServiceData','userId'));
     }
 
+
     public function privacyPolicy(Request $request){
         $privacy_policy = Setting::where('type', 'privacy_policy')->where('key', 'privacy_policy')->first();
         return view('landing-page.PrivacyPolicy',compact('privacy_policy'));

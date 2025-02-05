@@ -227,13 +227,11 @@ class ServiceController extends Controller
                     $coupon->where('service_id', $id );
                 })->get();
         $coupon_data = CouponResource::collection($coupon);
-        $tax = ProviderTaxMapping::with('taxes')->where('provider_id',$service->provider_id)->get()->filter(function ($item) {
-            return $item->taxes !== null && optional($item->taxes)->status == 1;
-        });
+        $tax = ProviderTaxMapping::with('taxes')->where('provider_id',$service->provider_id)->get();
         $taxes = ProviderTaxResource::collection($tax);
         // $tax = Tax::where('status',1)->get();
         // $taxes = TaxResource::collection($tax);
-        $servicefaq =  ServiceFaq::where('service_id',$id)->where('status',1)->get();
+        $servicefaq =  ServiceFaq::where('service_id',$id)->get();
         $serviceAddon = ServiceAddon::where('service_id',$id)->where('status',1)->get();
         $serviceaddon =  ServiceAddonResource::collection($serviceAddon);
         $response = [
