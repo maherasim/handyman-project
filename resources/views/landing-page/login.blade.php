@@ -42,7 +42,7 @@
                             <div class="authontication-forms">
                                 <div class="d-flex justify-content-between align-items-center p-3 flex-wrap gap-3 mb-5">
                                     <h4 class="text-capitalize">{{__('auth.sign_in')}}</h4>
-                                    <a href="{{ route('login') }}" class=" float-end me-1 btn btn-sm btn-primary">{{__('landingpage.admin_login')}}</a>
+                                    <a href="{{ route('login') }}" class="float-right mr-1 btn btn-sm btn-primary">{{__('landingpage.admin_login')}}</a>
                                 </div>
                                 <div class="iq-login-form ">
                                     <div class="alert alert-danger d-none" role="alert"  id="error">
