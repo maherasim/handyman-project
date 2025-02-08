@@ -29,7 +29,7 @@
                 <hr>
                 <button class="btn btn-cont text-white col-md-12" style="background: #5F60BA; padding: 10px;">Continue</button>
                 <img src="https://www.shutterstock.com/shutterstock/videos/1045125877/thumb/12.jpg?ip=x480" style="width: 200px;" alt="">
-                <button class="btn btn-job col-md-12" style="background: #018E27; border-radius: 50px; color: red;padding: 10px;">About Job Request</button>
+                <button class="btn btn-job col-md-12" style="background: #018E27; border-radius: 50px; color: white;padding: 10px;">About Job Request</button>
                 <ul class="pl-0 mt-3" style="list-style: none; font-weight: 500; ">
                     <li><a href="#" class="text-dark"> <b>Published at: </b>  NYC
                     </a></li>
