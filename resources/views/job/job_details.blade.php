@@ -14,6 +14,13 @@
                 </div>
                 <img src="https://noorhantrdg.com/wp-content/uploads/2021/10/mechanic-changing-engine-oil-car-vehicle-1-1.jpg" alt="" class="img-fluid" style="border-radius: 12px;">
                 <img src="https://noorhantrdg.com/wp-content/uploads/2021/10/mechanic-changing-engine-oil-car-vehicle-1-1.jpg" style="width: 100px; border-radius: 10px;" class="mt-3" alt="">
+                <div class="d-flex justify-content-between">
+                    <br>
+                    <p class="mb-0 text-dark"><b>
+                       <b>About Job Request</b>
+                       <p>{{ $jobrequest->description }}</p>
+                    </b></p>
+                </div>
             </div> 
             <div class="col-md-4 mt-3">
                 <h5 class="mt-4">$ {{ $jobrequest->price }} <span class="text-dark"><b>/ Hour</b></span> </h5>
