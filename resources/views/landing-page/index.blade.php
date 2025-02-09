@@ -16,7 +16,7 @@
         .service{
             margin-top: -30px;
         }
-        .service-img {
+        .service-img img {
     height: 10.5rem !important;
 }
     </style>
@@ -312,7 +312,7 @@
                         <div class="row">
                             @foreach ($servicerequest as $data)
                                 <div class="col-md-3"> <!-- Changed from col-md-4 to col-md-3 -->
-                                    <div class="  service-box-card bg-light rounded-3 mb-5"
+                                    <div class="service-box-card bg-light rounded-3 mb-5"
                                         data-service-id="{{ $data->id }}">
                                         <div class="iq-image position-relative">
                                             @if ($data->visit_type == 'ONLINE')
