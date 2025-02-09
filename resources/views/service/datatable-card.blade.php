@@ -82,21 +82,18 @@
 
 
 
-      <div class="service d-flex justify-content-center "
-      style="position:relative; z-index:1111; margin:auto; background-image: url('{{ asset('images/icon/bannerbg.jpg') }}'); background-size: cover; width:68% ; margin-top:-32px;  background-repeat: no-repeat; background-position: center; padding: 10px 20px; color: white; font-weight: 600; font-size: 18px; border-radius: 10px; border: 3px solid #E1DCDD;">
-
+      <div class="service d-flex justify-content-center"
+      style="position:relative; z-index:1111; margin:auto; background-image: url('{{ asset('images/icon/bannerbg.jpg') }}'); background-size: cover; width:68% ; margin-top:-32px; background-repeat: no-repeat; background-position: center; padding: 10px 20px; color: white; font-weight: 600; font-size: 18px; border-radius: 10px; border: 3px solid #E1DCDD;">
+      
       @if ($data->price == 0)
-          <li
-              class="text-white fw-500 d-inline-block position-relative font-size-18">
-              Free</li>
+          <span class="text-white fw-500 position-relative font-size-18">Free</span>
       @else
-          <li
-              class="text-white fw-500 d-inline-block position-relative font-size-18">
+          <span class="text-white fw-500 position-relative font-size-18">
               {{ getPriceFormat($data->price) }} / {{ $data->type }}
-          </li>
+          </span>
       @endif
   </div>
-
+  
 
  
 </ul>
