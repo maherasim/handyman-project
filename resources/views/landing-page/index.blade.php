@@ -206,21 +206,22 @@
                                 </div>
                                 <!-- Card Content -->
                                 <div class="card-body" style="flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between;">
-                                    <h5 class="card-title text-truncate" style="font-weight: 300;">{{ $jobRequest->title }}</h5>
-                                    <div class="d-flex justify-content-start align-items-center gap-2 mt-2">
-                                        <a href="#"><img
-                                                src="https://cdn.pixabay.com/photo/2021/06/15/12/51/facebook-6338507_1280.png"
-                                                alt="Facebook" style="width: 30px; border-radius: 8px;"></a>
-                                        <a href="#"><img
-                                                src="https://upload.wikimedia.org/wikipedia/commons/9/95/Instagram_logo_2022.svg"
-                                                alt="Instagram" style="width: 30px; border-radius: 8px;"></a>
-                                        <a href="#"><img
-                                                src="https://cdn.pixabay.com/photo/2015/03/10/17/30/twitter-667462_640.png"
-                                                alt="Twitter" style="width: 30px; border-radius: 8px;"></a>
-                                        <a href="#"><img
-                                                src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRokEYt0yyh6uNDKL8uksVLlhZ35laKNQgZ9g&s"
-                                                alt="LinkedIn" style="width: 30px; border-radius: 8px;"></a>
-                                    </div>
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <h5 class="card-title" style="font-weight: 600; font-size: 18px; margin: 0;">Fault Diagnose</h5>
+                                        <div class="d-flex gap-2">
+                                            <a href="#"><img
+                                                    src="https://cdn.pixabay.com/photo/2021/06/15/12/51/facebook-6338507_1280.png"
+                                                    alt="Facebook" style="width: 24px;"></a>
+                                            <a href="#"><img
+                                                    src="https://upload.wikimedia.org/wikipedia/commons/9/95/Instagram_logo_2022.svg"
+                                                    alt="Instagram" style="width: 24px;"></a>
+                                            <a href="#"><img
+                                                    src="https://cdn.pixabay.com/photo/2015/03/10/17/30/twitter-667462_640.png"
+                                                    alt="Twitter" style="width: 24px;"></a>
+                                            <a href="#"><img
+                                                    src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRokEYt0yyh6uNDKL8uksVLlhZ35laKNQgZ9g&s"
+                                                    alt="LinkedIn" style="width: 24px;"></a>
+                                        </div>
                                     <h5 class="mb-1 text-truncate">
                                         <span style="font-weight: 300;">
                                             @if ($jobRequest->city && $jobRequest->country)
