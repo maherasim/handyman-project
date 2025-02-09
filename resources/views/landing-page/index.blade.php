@@ -207,7 +207,7 @@
                                 <div class="card-body">
                                     <!-- Title with Social Icons -->
                                     <div class="d-flex justify-content-between align-items-center mb-3">
-                                        <h5 class="card-title" style="font-weight: 150; font-size: 18px; margin: 0;">{{ $jobRequest->title }}</h5>
+                                        <h5 class="card-title" style="font-weight: 150; font-size: 14px; margin: 0;">{{ $jobRequest->title }}</h5>
                                         <div class="d-flex gap-2">
                                             <a href="#"><img
                                                     src="https://cdn.pixabay.com/photo/2021/06/15/12/51/facebook-6338507_1280.png"
