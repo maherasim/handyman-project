@@ -13,15 +13,35 @@
       width: 180px; /* Increased width */
       margin: 5px 0; /* Optional: Adds spacing around the box */
    }
+   .service-asim {
+            height: 10.5rem !important;
+        }
+        .provider-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+}
+
+.provider-name {
+    display: inline-block;
+    line-height: 1.2;
+    word-break: break-word;
+}
+
+.provider-name span {
+    display: block;
+}
+
 </style>
-<div class="service-box-card bg-light rounded-3 mb-5" data-service-id="{{ $data->id }}">
+<div class="service-box-card bg-light rounded-3 mb-0" data-service-id="{{ $data->id }}">
    <div class="iq-image position-relative">
       @if($data->visit_type == 'ONLINE')
          <span class="online-service"></span>
       @endif
       <a href="{{ route('service.detail', $data->id) }}" class="service-img">
          <img src="{{ getSingleMedia($data,'service_attachment', null) }}" alt="service"
-         class="service-img w-100 object-cover img-fluid rounded-3"> 
+         class="service-asim w-100 object-cover img-fluid rounded-3"> 
       </a>
 
       @if(auth()->check() && auth()->user()->hasRole('user'))
@@ -77,39 +97,59 @@
    @if($data->price==0)
    <li class="text-primary fw-500 d-inline-block position-relative font-size-18">Free</li>
    @else
-<li class="price-box fw-500 d-inline-block position-relative font-size-18">{{ getPriceFormat($data->price) }} / {{ $data->type }}</li></div>
+<li  class="text-white fw-500 d-inline-block position-relative font-size-18">{{ getPriceFormat($data->price) }} / {{ $data->type }}</li></div>
 
 </ul>
    @endif 
-   <a href="{{ route('service.detail', $data->id) }}" class="service-heading mt-4 d-block p-0">
-      <h5 class="service-heading service-title font-size-18 line-count-2" style="font-family: Georgia, serif;">
-         {{ $data->name }}
-     </h5>
-        </a>
+   <a href="{{ route('service.detail', $data->id) }}"
+      class="service-heading mt-2 d-block p-0">
+      <h5 class="service-heading service-title font-size-1 line-count-2"
+          style="font-size:14px">
+         <b>{{ $data->name }}</b> </h5>
+  </a>
   
-  <h5 class="font-size-18 line-count-2" > {{ $data->city ? $data->city->name : 'N/A' }}  -  {{ $data->country ? $data->country->name : 'N/A' }}</h5>
-    
+  <p class="mt-0 mb-0" style="font-size: 12;  ">
+   {{ $data->city ? $data->city->name : 'City' }}-{{ $data->country ? $data->country->name : 'Country' }}
+</p>  
 
-  <div
-      class="mt-3">
-      <div class="d-flex align-items-center gap-2">
-         <img src="{{ getSingleMedia($data->providers,'profile_image', null) }}" alt="service" class="img-fluid rounded-3 object-cover avatar-24">
-         <a href="{{ route('provider.detail', ($data->providers)->id) }}">
-            <span class="font-size-14 service-user-name">{{ ($data->providers)->display_name }}</span>
-         </a>
-      </div>
-      <div class="d-flex align-items-center gap-2">
+  
+      <div class="d-flex align-items-center justify-content-between" style="width: 100%;">
+         <div class="provider-info">
+             <img src="{{ getSingleMedia($data->providers, 'profile_image', null) }}" 
+                  alt="service" class="img-fluid rounded-3 object-cover avatar-24">
+             <a href="{{ route('provider.detail', $data->providers->id) }}" class="provider-name">
+                 @php
+                     $nameParts = explode(' ', $data->providers->display_name, 2);
+                 @endphp
+                 <span>{{ $nameParts[0] }}</span>
+                 <span>{{ isset($nameParts[1]) ? $nameParts[1] : '' }}</span>
+             </a>
+         </div>
+         <div class="d-flex align-items-center justify-content-end">
+             <img src="{{ asset('images/plans/icon.jpg') }}" alt="icon" style="width: 20%; height: 70%; margin-right: 10px;"> 
+             <img src="{{ asset('images/plans/icon.jpg') }}" alt="icon" style="width: 20%; height: 8%;">
+         </div>
+     </div>
+     
+      
+         <div class="d-flex align-items-center  mt-2">
+            <div class="d-flex align-items-center  mt-2">
+               <div class="d-flex align-items-center gap-2 flex-wrap ml-2">
+                   <div class="star-rating">
+                       <rating-component :readonly="true" :showrating="false" :ratingvalue="1" />
+                   </div>
+                   <h6 class="lh-sm">1</h6>
+                   <a href="#">(1 {{ __('messages.reviews') }})</a>
+               </div>
+               
+
+               <strong>{{ $completedBookingCount }} Bookings</strong>
+           </div>
+
+        </div>
+      
          
-         <span class="font-size-20 line-count-2" style="font-family: Georgia, serif;">
-            <strong>{{ $completedBookingCount }} Bookings</strong>    
-        </span>
-      
-         <img src="{{ asset('images/plans/icon.jpg') }}" alt="icon"
-         style="width: 23%; height: 23%; margin-right: 10px;"> <img src="{{ asset('images/plans/icon.jpg') }}" alt="icon"
-         style="width: 23%; height: 23%">
-       
-      
-      </div>
+        
       <div class="d-flex align-items-center gap-1 f-none mt-2">
          @if($totalRating > 0)
          <svg xmlns=" " width="12" height="12" viewBox="0 0 12 12" fill="none"
@@ -126,7 +166,7 @@
             @endif
          @endif
       </div> <br>
-      <div class="d-flex mt-8 "  style="gap: 18px; justify-content: center;">
+      <div class="d-flex mt-10 " style="gap: 14px; justify-content: center;">
          <a href="#"><img
                  src="https://cdn.pixabay.com/photo/2021/06/15/12/51/facebook-6338507_1280.png"
                  style="width: 30px; border-radius: 8px;" alt=""></a>
@@ -141,7 +181,7 @@
                  style="width: 30px; border-radius: 8px;" alt=""></a>
      </div>
      
-   </div>  
+   
    
   
 </div>

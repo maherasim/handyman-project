@@ -399,7 +399,7 @@
                                                 @else
                                                     <li
                                                         class="text-white fw-500 d-inline-block position-relative font-size-18">
-                                                        {{ getPriceFormat($data->price) }}
+                                                        {{ getPriceFormat($data->price) }}/{{ $data->type }}
                                                     </li>
                                                 @endif
                                             </div>
@@ -604,7 +604,7 @@
                                             @else
                                                 <li
                                                     class="text-white fw-500 d-inline-block position-relative font-size-18">
-                                                    {{ getPriceFormat($data->price) }}
+                                                    {{ getPriceFormat($data->price) }}/{{ $data->type }}
                                                 </li>
                                             @endif
                                         </div>
