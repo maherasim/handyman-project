@@ -234,7 +234,7 @@
                                             </span>
                                         </h5>
                                         <!-- Published Info -->
-                                        <h5 class="mb-0" style="font-weight: 100;">Published at:
+                                        <h5 class="mb-0" style="font-weight: 60;">Published at:
                                             {{ $jobRequest->created_at->toDateString() }}</h5>
 
 
