@@ -406,13 +406,13 @@
                                     
 
                                         <a href="{{ route('service.detail', $data->id) }}"
-                                            class="service-heading mt-4 d-block p-0">
+                                            class="service-heading mt-2 d-block p-0">
                                             <h5 class="service-heading service-title font-size-18 line-count-2">
                                                 {{ $data->name }}</h5>
                                         </a>
 
                                        
-                                        <p class="mt-3" style="font-weight: 600; ">
+                                        <p class="mt-0 mb-0" style="font-weight: 600;  ">
                                             {{ $data->city ? $data->city->name : 'City' }}-{{ $data->country ? $data->country->name : 'Country' }}
                                         </p>
 
