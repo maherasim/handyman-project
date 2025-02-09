@@ -448,7 +448,7 @@
                                             </div>
                                             
             
-                                            <strong>{{ $completedBookingCount }} Bookings</strong>
+                                            <p>{{ $completedBookingCount }} Bookings</p>
                                         </div>
 
 
@@ -652,7 +652,7 @@
                                             <a href="#">(1 {{ __('messages.reviews') }})</a>
                                         </div>
                                         
-                                        <strong>{{ $completedBookingCount }} Bookings</strong>
+                                        <p>{{ $completedBookingCount }} Bookings</p>
                                     </div>
 
 
