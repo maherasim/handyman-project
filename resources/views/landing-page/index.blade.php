@@ -395,9 +395,9 @@
                                                     {{ getPriceFormat($data->price) }}
                                                 </li>
                                             @endif
-                                            
+                                        </div>
                                         </ul> 
-                                    </div>
+                                    
 
                                         <a href="{{ route('service.detail', $data->id) }}"
                                             class="service-heading mt-4 d-block p-0">
