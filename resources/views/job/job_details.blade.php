@@ -17,7 +17,25 @@
                 <div>
                     <br>
                    
-                       <b class="heading_text">About Job Request</b> <br>
+                    <div class="service d-flex justify-content-center" 
+                    style="position: relative; z-index: 1111; margin: auto; 
+                           background-image: url('{{ asset('images/icon/blueicon.jpg') }}'); 
+                           background-size: cover; 
+                           width: 80%; 
+                           border-radius: 10px;  
+                           background-repeat: no-repeat; 
+                           background-position: center; 
+                           padding: 10px 20px; 
+                           color: #fff; 
+                           font-weight: 600; 
+                           font-size: 18px; 
+                           border: 3px solid #E1DCDD;">
+                   <h3 class="fw-200 d-inline-block position-relative"
+                       style="color: white; font-size: 15px; font-weight: bold; text-align: center; 
+                              padding: 10px 15px; display: inline-block; width: 90%; margin: auto;">
+                    About Job Request
+                   </h3>            
+               </div> <br>
                        <p>{{ $jobrequest->description }}</p>
                     </b> 
                 </div>
