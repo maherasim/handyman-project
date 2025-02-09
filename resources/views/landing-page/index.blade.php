@@ -417,7 +417,7 @@
                                         </p>
 
                                         
-                                            <div class="d-flex align-items-center justify-content-between">
+                                            <div class="d-flex align-items-center justify-content-between" style="width: 100%">
                                                 <img src="{{ getSingleMedia($data->providers, 'profile_image', null) }}"
                                                     alt="service" class="img-fluid rounded-3 object-cover avatar-24">
                                                 <a href="{{ route('provider.detail', $data->providers->id) }}">
