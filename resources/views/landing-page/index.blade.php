@@ -206,12 +206,12 @@
                                 <div class="card-body">
                                     <h5 class="card-title" style="font-weight: 600;">{{ $jobRequest->title }}</h5>
                                     <h5 class="mb-1">
-                                        <span style="font-weight: 600;">City - Country:</span>
-                                        @if ($jobRequest->city && $jobRequest->country)
+                                        <span style="font-weight: 600;"> @if ($jobRequest->city && $jobRequest->country)
                                             {{ $jobRequest->city->name }} - {{ $jobRequest->country->name }}
                                         @else
                                             N/A
-                                        @endif
+                                        @endif</span>
+                                       
                                     </h5>
                                     <h5 class="mb-1" style="font-weight: 600;">Published at:</h5>
                                     <div class="d-flex align-items-center gap-2">
