@@ -161,105 +161,83 @@
         </div>
     @endif
 
-{{-- JOb Requests --}}
-
-@if ($sectionData && isset($sectionData['section_10']) && $sectionData['section_10']['section_10'] == 1)
-<div class="section-padding ">
-    <div class="container">
-        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
-            <div class="iq-title-box mb-0">
-                <h3 class="text-capitalize line-count-1">{{ $sectionData['section_10']['title'] }}
+    {{-- JOb Requests --}}
+    @if ($sectionData && isset($sectionData['section_10']) && $sectionData['section_10']['section_10'] == 1)
+    <div class="section-padding">
+        <div class="container">
+            <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+                <div class="iq-title-box mb-0">
+                    <h3 class="text-capitalize line-count-1">{{ $sectionData['section_10']['title'] }}</h3>
                     <div class="highlighted-text">
                         <span class="highlighted-text-swipe"></span>
                         <span class="highlighted-image">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="155" height="12"
-                                viewBox="0 0 155 12" fill="none">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="155" height="12" viewBox="0 0 155 12" fill="none">
                                 <path d="M2.5 9.5C3.16964 9.26081 78.8393 -2.45948 152.5 4.9554"
-                                    stroke="currentColor" stroke-width="4" stroke-linecap="round"
-                                    stroke-linejoin="round" />
+                                    stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
                             </svg>
                         </span>
                     </div>
-                </h3>
-            </div>
-            <a href="{{ route('job.data') }}"
-                class="btn btn-link p-0 text-capitalize flex-shrink-0 font-size-14">{{ __('messages.view_all') }}</a>
-        </div>
+                </div>
+                <a href="{{ route('job.data') }}"
+                   class="btn btn-link p-0 text-capitalize flex-shrink-0 font-size-14">{{ __('messages.view_all') }}</a>
+            </div>git 
 
-        <!-- Display Job Requests Cards Similar to Category Section -->
-        <div class="row">
-            @foreach ($jobRequests as $jobRequest)
-                <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
-                    <!-- Make the entire card clickable by wrapping the card inside <a> -->
-                    <a href="{{ route('job.details', $jobRequest->id) }}" class="card-link">
-                        <div class="card mt-5 p-3" style="background: #FAF9FF;">
-                            <div class="card-imgd">
-                                <img class="card-img-top"
-                                    src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTpIfGmXhZx9-emF4uqhWXj-YgTNxlMz692LXcfGxC0TyZ8sXMilKktiOwWwzSsw2R4aG8&usqp=CAU"
-                                    alt="Card image cap">
-
-                                <div class="img-icon">
+            <!-- Display Job Requests Cards Similar to Category Section -->
+            <div class="row">
+                @foreach ($jobRequests as $jobRequest)
+                    <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+                        <a href="{{ route('job.details', $jobRequest->id) }}" class="card-link">
+                            <div class="card mt-5 p-3" style="position: relative; background: #FAF9FF; border-radius: 10px;">
+                                <!-- Card Image -->
+                                <div class="card-imgd" style="position: relative;">
+                                    <img class="card-img-top"
+                                         src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTpIfGmXhZx9-emF4uqhWXj-YgTNxlMz692LXcfGxC0TyZ8sXMilKktiOwWwzSsw2R4aG8&usqp=CAU"
+                                         alt="Card image cap"
+                                         style="border-radius: 10px; width: 100%; height: 200px; object-fit: cover;">
+                                    <!-- Price Overlay -->
+                                    <div style="position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); background: #a52828; padding: 10px 20px; color: #fff; font-weight: 600; font-size: 18px; border-radius: 10px; border: 3px solid #E1DCDD;">
+                                        € {{ $jobRequest->price }} / Fix
+                                    </div>
+                                    <!-- Heart Icon -->
                                     <i class='bx bx-heart'
-                                        style="position: absolute; top: 0; right: 0; transform: translate(-32px, 30px); background: #fff; padding: 7px; color: #8384AE; border-radius: 50px;"></i>
+                                       style="position: absolute; top: 10px; right: 10px; background: #fff; padding: 7px; color: #8384AE; border-radius: 50%;"></i>
                                 </div>
-                            </div>
-                            <button class="btn btn-fix col-md-8 d-flex m-auto justify-content-center"
-                                style="background: #a52828; color: #fff; font-weight: 600; font-size: 18px; border-radius: 15px; border: 17px solid #E1DCDD; margin-top: -40px !important;">€
-                                {{ $jobRequest->price }} </button>
-
-                            <div class="card-body pl-0">
-                                <div class="d-flex align-items-center justify-content-between flex-wrap">
-                                    <h5 class="card-title mb-0" style="font-weight: 600;">
-                                        {{ $jobRequest->title }}</h5>
-                                    <div class="d-flex align-items-center justify-content-center gap-3 mt-1">
-                                        <a href="#">
-                                            <img src="https://cdn.pixabay.com/photo/2021/06/15/12/51/facebook-6338507_1280.png"
-                                                style="width: 30px; border-radius: 8px;" alt="">
-                                        </a>
-                                        <a href="#">
-                                            <img src="https://upload.wikimedia.org/wikipedia/commons/9/95/Instagram_logo_2022.svg"
-                                                style="width: 30px; border-radius: 8px;" alt="">
-                                        </a>
-                                        <a href="#">
-                                            <img src="https://cdn.pixabay.com/photo/2015/03/10/17/30/twitter-667462_640.png"
-                                                style="width: 30px; border-radius: 8px;" alt="">
-                                        </a>
-                                        <a href="#">
-                                            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRokEYt0yyh6uNDKL8uksVLlhZ35laKNQgZ9g&s"
-                                                style="width: 30px; border-radius: 8px;" alt="">
-                                        </a>
+                                <!-- Card Content -->
+                                <div class="card-body">
+                                    <h5 class="card-title" style="font-weight: 600;">{{ $jobRequest->title }}</h5>
+                                    <h5 class="mb-1">
+                                        <span style="font-weight: 600;">City - Country:</span>
+                                        @if ($jobRequest->city && $jobRequest->country)
+                                            {{ $jobRequest->city->name }} - {{ $jobRequest->country->name }}
+                                        @else
+                                            N/A
+                                        @endif
+                                    </h5>
+                                    <h5 class="mb-1" style="font-weight: 600;">Published at:</h5>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQnnM0ib-pYCZg4DbbB_T5_mfxpqrDHYXFLy208bjvHjIM5q1FF4lzLvNFp2qZ5Eo11orA&usqp=CAU"
+                                             alt="Provider"
+                                             style="width: 35px; border-radius: 50%;">
+                                        <p style="margin: 0; color: #8081dc;">
+                                            {{ $jobRequest->provider->username ?? 'Unknown' }}
+                                        </p>
+                                    </div>
+                                    <h5 style="font-weight: 600;">Status: <span style="font-weight: 500; font-size: 17px;">{{ $jobRequest->status }}</span></h5>
+                                    <!-- Social Media Icons -->
+                                    <div class="d-flex justify-content-start align-items-center gap-2 mt-2">
+                                        <a href="#"><img src="https://cdn.pixabay.com/photo/2021/06/15/12/51/facebook-6338507_1280.png" alt="Facebook" style="width: 30px; border-radius: 8px;"></a>
+                                        <a href="#"><img src="https://upload.wikimedia.org/wikipedia/commons/9/95/Instagram_logo_2022.svg" alt="Instagram" style="width: 30px; border-radius: 8px;"></a>
+                                        <a href="#"><img src="https://cdn.pixabay.com/photo/2015/03/10/17/30/twitter-667462_640.png" alt="Twitter" style="width: 30px; border-radius: 8px;"></a>
+                                        <a href="#"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRokEYt0yyh6uNDKL8uksVLlhZ35laKNQgZ9g&s" alt="LinkedIn" style="width: 30px; border-radius: 8px;"></a>
                                     </div>
                                 </div>
-                                <h5 class="mb-0" style="font-weight: 400;">
-                                    @if ($jobRequest->city)
-                                        {{ $jobRequest->city->name }} -
-                                    @endif 
-                                   N/A
-
-                                    @if ($jobRequest->country)
-                                        {{ $jobRequest->country->name }}
-                                    @endif
-                                   N/A
-                                </h5>
-                                <h5 class="mb-0" style="font-weight: 600;">Published at:</h5>
-                                <div class="d-flex align-items-center" style="gap: 10px;">
-                                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQnnM0ib-pYCZg4DbbB_T5_mfxpqrDHYXFLy208bjvHjIM5q1FF4lzLvNFp2qZ5Eo11orA&usqp=CAU"
-                                        class="img-fluid" style="width: 35px;" alt="">
-
-                                    <p class="mb-0" style="color: #8081dc;">
-                                        @if ($jobRequest->provider)
-                                            {{ $jobRequest->provider->username }}
-                                    </p>
-            @endif
+                            </div>
+                        </a>
+                    </div>
+                @endforeach
+            </div>
         </div>
-        <h5 style="font-weight: 600;">Status: <span style="font-size: 17px; font-weight: 500;">
-                {{ $jobRequest->status }}</span></h5>
     </div>
-</div>
-</a> <!-- Closing the clickable link -->
-</div>
-@endforeach
-</div>
 @endif
 
 
@@ -439,19 +417,20 @@
                                                             ({{ $data->total_reviews }}
                                                             {{ $data->total_reviews > 1 ? __('messages.reviews') : __('messages.review') }})
                                                         </a>
-                                                      
+
                                                     </h6>
                                                 @else
                                                     <h6 class="font-size-14 mb-0 text-muted">
                                                         {{ __('no_reviews_yet') }}</h6>
                                                 @endif
-                                                <strong>{{ $completedBookingCount }} Bookings</strong>  
+                                                <strong>{{ $completedBookingCount }} Bookings</strong>
                                             </div>
                                             <div class="d-flex align-items-center gap-1 f-none mt-2">
                                                 <img src="{{ asset('images/plans/icon.jpg') }}" alt="icon"
-                                                style="width: 23%; height: 23%; margin-right: 10px;"> <img src="{{ asset('images/plans/icon.jpg') }}" alt="icon"
-                                                style="width: 23%; height: 23%">
-                                                
+                                                    style="width: 23%; height: 23%; margin-right: 10px;"> <img
+                                                    src="{{ asset('images/plans/icon.jpg') }}" alt="icon"
+                                                    style="width: 23%; height: 23%">
+
                                             </div>
                                             <br>
                                             <div class="d-flex mt-8 " style="gap: 18px; justify-content: center;">
@@ -520,64 +499,78 @@
                                                 <span class="online-service"></span>
                                             @endif
                                             <a href="{{ route('service.detail', $data->id) }}" class="service-img">
-                                                <img src="{{ getSingleMedia($data, 'service_attachment', null) }}" alt="service"
+                                                <img src="{{ getSingleMedia($data, 'service_attachment', null) }}"
+                                                    alt="service"
                                                     class="service-img w-100 object-cover img-fluid rounded-3">
                                             </a>
-                                        
+
                                             @if (auth()->check() && auth()->user()->hasRole('user'))
-                                            @if (is_array($favouriteService) && empty($favouriteService))
-                                                <form method="POST" id="favoriteForm">
-                                                    @csrf
-                                                    <input type="hidden" name="service_id" class="service_id" value="{{ $data->id }}">
-                                                    <input type="hidden" name="user_id" id="user_id" value="{{ Auth::user()->id }}">
-                                                    <button type="button" class="btn-link serv-whishlist text-primary save_fav">
-                                                        <svg width="12" height="13" viewBox="0 0 12 13" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                            <path fill-rule="evenodd" clip-rule="evenodd"
-                                                                d="M1.43593 6.29916C0.899433 4.62416 1.52643 2.70966 3.28493 2.14316C4.20993 1.84466 5.23093 2.02066 5.99993 2.59916C6.72743 2.03666 7.78593 1.84666 8.70993 2.14316C10.4684 2.70966 11.0994 4.62416 10.5634 6.29916C9.72843 8.95416 5.99993 10.9992 5.99993 10.9992C5.99993 10.9992 2.29893 8.98516 1.43593 6.29916Z"
-                                                                stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                                                            <path
-                                                                d="M8 3.84998C8.535 4.02298 8.913 4.50048 8.9585 5.06098"
-                                                                stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                                                        </svg>
-                                                    </button>
-                                                </form>
+                                                @if (is_array($favouriteService) && empty($favouriteService))
+                                                    <form method="POST" id="favoriteForm">
+                                                        @csrf
+                                                        <input type="hidden" name="service_id" class="service_id"
+                                                            value="{{ $data->id }}">
+                                                        <input type="hidden" name="user_id" id="user_id"
+                                                            value="{{ Auth::user()->id }}">
+                                                        <button type="button"
+                                                            class="btn-link serv-whishlist text-primary save_fav">
+                                                            <svg width="12" height="13" viewBox="0 0 12 13"
+                                                                fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                                <path fill-rule="evenodd" clip-rule="evenodd"
+                                                                    d="M1.43593 6.29916C0.899433 4.62416 1.52643 2.70966 3.28493 2.14316C4.20993 1.84466 5.23093 2.02066 5.99993 2.59916C6.72743 2.03666 7.78593 1.84666 8.70993 2.14316C10.4684 2.70966 11.0994 4.62416 10.5634 6.29916C9.72843 8.95416 5.99993 10.9992 5.99993 10.9992C5.99993 10.9992 2.29893 8.98516 1.43593 6.29916Z"
+                                                                    stroke="currentColor" stroke-width="1.5"
+                                                                    stroke-linecap="round" stroke-linejoin="round" />
+                                                                <path
+                                                                    d="M8 3.84998C8.535 4.02298 8.913 4.50048 8.9585 5.06098"
+                                                                    stroke="currentColor" stroke-width="1.5"
+                                                                    stroke-linecap="round" stroke-linejoin="round" />
+                                                            </svg>
+                                                        </button>
+                                                    </form>
+                                                @else
+                                                    <form method="POST" id="favoriteForm">
+                                                        @csrf
+                                                        <input type="hidden" name="service_id" class="service_id"
+                                                            value="{{ $data->id }}">
+                                                        <input type="hidden" name="user_id" id="user_id"
+                                                            value="{{ Auth::user()->id }}">
+                                                        <button type="button"
+                                                            class="btn-link serv-whishlist text-primary delete_fav">
+                                                            <svg width="12" height="13" viewBox="0 0 12 13"
+                                                                fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                                                <path fill-rule="evenodd" clip-rule="evenodd"
+                                                                    d="M1.43593 6.29916C0.899433 4.62416 1.52643 2.70966 3.28493 2.14316C4.20993 1.84466 5.23093 2.02066 5.99993 2.59916C6.72743 2.03666 7.78593 1.84666 8.70993 2.14316C10.4684 2.70966 11.0994 4.62416 10.5634 6.29916C9.72843 8.95416 5.99993 10.9992 5.99993 10.9992C5.99993 10.9992 2.29893 8.98516 1.43593 6.29916Z"
+                                                                    stroke="currentColor" stroke-width="1.5"
+                                                                    stroke-linecap="round" stroke-linejoin="round" />
+                                                                <path
+                                                                    d="M8 3.84998C8.535 4.02298 8.913 4.50048 8.9585 5.06098"
+                                                                    stroke="currentColor" stroke-width="1.5"
+                                                                    stroke-linecap="round" stroke-linejoin="round" />
+                                                            </svg>
+                                                        </button>
+                                                    </form>
+                                                @endif
                                             @else
-                                                <form method="POST" id="favoriteForm">
+                                                <form method="GET" id="favoriteForm"
+                                                    action="{{ route('user.login') }}">
                                                     @csrf
-                                                    <input type="hidden" name="service_id" class="service_id" value="{{ $data->id }}">
-                                                    <input type="hidden" name="user_id" id="user_id" value="{{ Auth::user()->id }}">
-                                                    <button type="button" class="btn-link serv-whishlist text-primary delete_fav">
-                                                        <svg width="12" height="13" viewBox="0 0 12 13" fill="currentColor"
-                                                            xmlns="http://www.w3.org/2000/svg">
+                                                    <button type="submit" class="btn-link serv-whishlist text-primary">
+                                                        <svg width="12" height="13" viewBox="0 0 12 13"
+                                                            fill="none" xmlns="http://www.w3.org/2000/svg">
                                                             <path fill-rule="evenodd" clip-rule="evenodd"
                                                                 d="M1.43593 6.29916C0.899433 4.62416 1.52643 2.70966 3.28493 2.14316C4.20993 1.84466 5.23093 2.02066 5.99993 2.59916C6.72743 2.03666 7.78593 1.84666 8.70993 2.14316C10.4684 2.70966 11.0994 4.62416 10.5634 6.29916C9.72843 8.95416 5.99993 10.9992 5.99993 10.9992C5.99993 10.9992 2.29893 8.98516 1.43593 6.29916Z"
-                                                                stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                                                            <path
-                                                                d="M8 3.84998C8.535 4.02298 8.913 4.50048 8.9585 5.06098"
-                                                                stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                                                                stroke="currentColor" stroke-width="1.5"
+                                                                stroke-linecap="round" stroke-linejoin="round" />
+                                                            <path d="M8 3.84998C8.535 4.02298 8.913 4.50048 8.9585 5.06098"
+                                                                stroke="currentColor" stroke-width="1.5"
+                                                                stroke-linecap="round" stroke-linejoin="round" />
                                                         </svg>
                                                     </button>
                                                 </form>
                                             @endif
-                                        @else
-                                            <form method="GET" id="favoriteForm" action="{{ route('user.login') }}">
-                                                @csrf
-                                                <button type="submit" class="btn-link serv-whishlist text-primary">
-                                                    <svg width="12" height="13" viewBox="0 0 12 13" fill="none"
-                                                        xmlns="http://www.w3.org/2000/svg">
-                                                        <path fill-rule="evenodd" clip-rule="evenodd"
-                                                            d="M1.43593 6.29916C0.899433 4.62416 1.52643 2.70966 3.28493 2.14316C4.20993 1.84466 5.23093 2.02066 5.99993 2.59916C6.72743 2.03666 7.78593 1.84666 8.70993 2.14316C10.4684 2.70966 11.0994 4.62416 10.5634 6.29916C9.72843 8.95416 5.99993 10.9992 5.99993 10.9992C5.99993 10.9992 2.29893 8.98516 1.43593 6.29916Z"
-                                                            stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                                                        <path
-                                                            d="M8 3.84998C8.535 4.02298 8.913 4.50048 8.9585 5.06098"
-                                                            stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                                                    </svg>
-                                                </button>
-                                            </form>
-                                        @endif
-                                        
+
                                         </div>
-                                        
+
 
                                         <a href="{{ route('service.detail', $data->id) }}"
                                             class="service-heading mt-4 d-block p-0">
@@ -625,7 +618,7 @@
                                                         class="font-size-14 service-user-name">{{ $data->providers->display_name }}</span>
                                                 </a>
                                             </div>
-                                           
+
                                             <div class="d-flex align-items-center gap-1 f-none mt-2">
                                                 @if ($data->avg_rating > 0)
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12"
@@ -644,16 +637,17 @@
                                                     <h6 class="font-size-14 mb-0 text-muted">
                                                         {{ __('no_reviews_yet') }}</h6>
                                                 @endif
-                                                <strong>{{ $completedBookingCount }} Bookings</strong>  
+                                                <strong>{{ $completedBookingCount }} Bookings</strong>
                                             </div>
 
 
 
                                             <div class="d-flex align-items-center gap-1 f-none mt-2">
                                                 <img src="{{ asset('images/plans/icon.jpg') }}" alt="icon"
-                                                style="width: 23%; height: 23%; margin-right: 10px;"> <img src="{{ asset('images/plans/icon.jpg') }}" alt="icon"
-                                                style="width: 23%; height: 23%">
-                                                
+                                                    style="width: 23%; height: 23%; margin-right: 10px;"> <img
+                                                    src="{{ asset('images/plans/icon.jpg') }}" alt="icon"
+                                                    style="width: 23%; height: 23%">
+
                                             </div>
 
 
