@@ -438,7 +438,7 @@
                                             </div>
                                         </div>
                                         <div class="d-flex align-items-center  mt-2">
-                                            <div class="d-flex align-items-center gap-2 flex-wrap">
+                                            <div class="d-flex align-items-center gap-2 flex-wrap mt-2">
                                                 <div class="star-rating">
                                                     <rating-component :readonly="true" :showrating="false" :ratingvalue="1" />
                                                 </div>
