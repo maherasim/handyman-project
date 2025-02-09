@@ -624,10 +624,47 @@
                         <div class="d-flex align-items-center  mt-2 justify-content-evenly">
                             <img src="{{ asset('images/plans/icon.jpg') }}" alt="icon"
                                 style="width: 20%; height: 70%; margin-right: 10px;">
-                                <h6 class="lh-sm">
-                                    {{ round($serviceData['provider']['providers_service_rating'], 1) }}</h6><a
-                                    href="{{ route('rating.all', ['provider_id' => $serviceData['provider']['id']]) }}">({{ $serviceData['provider']['total_service_rating'] }}
-                                    {{ __('messages.reviews') }})</a>
+                                
+
+                                <ul class="comment-list list-inline m-0">
+                                    @foreach ($serviceData['rating_data'] as $ratingData)
+                                        <li class="comment mb-5 pb-5 border-bottom">
+                                            <div class="comment-box">
+                                                <div
+                                                    class="d-flex align-items-sm-center align-items-start flex-sm-row flex-column justify-content-between gap-3">
+                                                    <div
+                                                        class="d-inline-flex align-items-sm-center align-items-start flex-sm-row flex-column gap-3">
+                                                        <div class="user-image flex-shrink-0">
+                                                            <img src="{{ $ratingData['profile_image'] }}"
+                                                                class="avatar-70 object-cover rounded-circle"
+                                                                alt="comment-user" />
+                                                        </div>
+                                                        <div class="comment-user-info">
+                                                            <h6 class="font-size-18 text-capitalize mb-2">
+                                                                {{ $ratingData['customer_name'] }}</h6>
+                                                            <span class="text-primary">
+                                                                <rating-component :readonly=true :showrating="false"
+                                                                    :ratingvalue="{{ $ratingData['rating'] }}" />
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="date text-capitalize">
+                                                        {{ date("$date_time->date_format", strtotime($ratingData['created_at'])) }}
+                                                    </div>
+                                                </div>
+                                                <div class="mt-4">
+                                                    <p class="commnet-content m-0">
+                                                        {{ $ratingData['review'] }}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </li>
+                                    @endforeach
+    
+                                </ul>
+
+
+
                                 <img
                                 src="{{ asset('images/plans/icon.jpg') }}" alt="icon"
                                 style="width: 20%; height: 8%">
