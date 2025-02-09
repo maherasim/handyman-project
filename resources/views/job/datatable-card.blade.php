@@ -134,111 +134,83 @@
                          </div>
                      </div>
                  @else
-                     @foreach ($jobrequest as $jobRequest)
-                         <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
-                             <a href="{{ route('job.details', $jobRequest->id) }}" class="text-decoration-none">
-                                 <div class="card mt-5 p-3" style="background: #FAF9FF;">
-                                     <div class="card-imgd">
-                                         <img class="card-img-top"
-                                             src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTpIfGmXhZx9-emF4uqhWXj-YgTNxlMz692LXcfGxC0TyZ8sXMilKktiOwWwzSsw2R4aG8&usqp=CAU"
-                                             alt="Card image cap">
-                                         <div class="img-icon">
-                                             @if (auth()->check() && auth()->user()->hasRole('user'))
-                                                 @if ($favouriteService->isEmpty())
-                                                     <form method="POST" id="favoriteForm"
-                                                         action="">
-                                                         @csrf
-                                                         <input type="hidden" name="jobrequest_id"
-                                                             value="{{ $jobRequest->id }}">
-                                                         @if (auth()->user())
-                                                             <input type="hidden" name="user_id"
-                                                                 value="{{ Auth::user()->id }}">
-                                                         @endif
-                                                         <button type="submit" class="btn-link"
-                                                             style="background: transparent; border: none; cursor: pointer;">
-                                                             <i class='bx bx-heart'
-                                                                 style="position: absolute; top: 0; right: 0; transform: translate(-32px, 30px); background: #fff; padding: 7px; color: #8384AE; border-radius: 50px;"></i>
-                                                         </button>
-                                                     </form>
-                                                 @else
-                                                     <form method="POST" id="favoriteForm"
-                                                         action="{{ route('favorite.destroy', $favouriteService->id) }}">
-                                                         @csrf
-                                                         @method('DELETE')
-                                                         <input type="hidden" name="jobrequest_id"
-                                                             value="{{ $jobRequest->id }}">
-                                                         @if (auth()->user())
-                                                             <input type="hidden" name="user_id"
-                                                                 value="{{ Auth::user()->id }}">
-                                                         @endif
-                                                         <button type="submit" class="btn-link"
-                                                             style="background: transparent; border: none; cursor: pointer;">
-                                                             <i class='bx bx-heart'
-                                                                 style="position: absolute; top: 0; right: 0; transform: translate(-32px, 30px); background: #fff; padding: 7px; color: #ff0000; border-radius: 50px;"></i>
-                                                         </button>
-                                                     </form>
-                                                 @endif
-                                             @else
-                                                 <form method="GET" action="{{ route('user.login') }}">
-                                                     <button type="submit" class="btn-link"
-                                                         style="background: transparent; border: none; cursor: pointer;">
-                                                         <i class='bx bx-heart'
-                                                             style="position: absolute; top: 0; right: 0; transform: translate(-32px, 30px); background: #fff; padding: 7px; color: #8384AE; border-radius: 50px;"></i>
-                                                     </button>
-                                                 </form>
-                                             @endif
-                                         </div>
-                                     </div>
-                                     <button class="btn btn-fix col-md-8 d-flex m-auto justify-content-center"
-                                         style="background: #a52828; color: #fff; font-weight: 600; font-size: 18px; border-radius: 15px; border: 17px solid #E1DCDD; margin-top: -40px !important;">€
-                                         {{ $jobRequest->price }} </button>
-                                     <div class="card-body pl-0">
-                                         <div class="d-flex align-items-center justify-content-between flex-wrap">
-                                            <h5 class="card-title mb-0" style="font-weight: 300;">
-                                                @foreach (explode(' ', $jobRequest->title) as $word)
-                                                    {{ \Illuminate\Support\Str::limit($word, 4) }} 
-                                                @endforeach
-                                            </h5>
-                                            
-                                             <div class="d-flex" style="gap: 5px;">
-                                                 <a href="#"><img
-                                                         src="https://cdn.pixabay.com/photo/2021/06/15/12/51/facebook-6338507_1280.png"
-                                                         style="width: 30px; border-radius: 8px;" alt=""></a>
-                                                 <a href="#"><img
-                                                         src="https://upload.wikimedia.org/wikipedia/commons/9/95/Instagram_logo_2022.svg"
-                                                         style="width: 30px; border-radius: 8px;" alt=""></a>
-                                                 <a href="#"><img
-                                                         src="https://cdn.pixabay.com/photo/2015/03/10/17/30/twitter-667462_640.png"
-                                                         style="width: 30px; border-radius: 8px;" alt=""></a>
-                                                 <a href="#"><img
-                                                         src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRokEYt0yyh6uNDKL8uksVLlhZ35laKNQgZ9g&s"
-                                                         style="width: 30px; border-radius: 8px;" alt=""></a>
-                                             </div>
-                                         </div>
-                                         <h5 class="mb-0" style="font-weight: 400;">
-                                             @if ($jobRequest->city)
-                                                 {{ \Illuminate\Support\Str::limit($jobRequest->city->name, 5) }} -
-                                             @endif
-                                             @if ($jobRequest->country)
-                                                 {{ \Illuminate\Support\Str::limit($jobRequest->country->name, 5) }}
-                                             @endif
-                                         </h5>
-
-                                         <h5 class="mb-0" style="font-weight: 600;">Published at:</h5>
-                                         <div class="d-flex align-items-center" style="gap: 10px;">
-                                             <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQnnM0ib-pYCZg4DbbB_T5_mfxpqrDHYXFLy208bjvHjIM5q1FF4lzLvNFp2qZ5Eo11orA&usqp=CAU"
-                                                 class="img-fluid" style="width: 35px;" alt="">
-                                             <p class="mb-0" style="color: #8081dc;">
-                                                 @if ($jobRequest->provider)
-                                                     {{ $jobRequest->provider->username }}
-                                                 @endif
-                                             </p>
-                                         </div>
+                 @foreach ($jobRequests as $jobRequest)
+                 <div class="col-lg-3 col-md-4 col-12 mb-0">
+                     <a href="{{ route('job.details', $jobRequest->id) }}" class="card-link">
+                         <div class="card mt-5 p-3"
+                             style="position: relative; background: #FAF9FF; border-radius: 10px; height: 400px; display: flex; flex-direction: column; ">
+                             <!-- Card Image -->
+                             <div class="card-imgd" style="position: relative;">
+                                 <img class="card-img-top"
+                                     src="{{ asset('images/post-job/ac_refresh_and_revive.png') }}"
+                                     alt="Card image cap"
+                                     style="border-radius: 10px; width: 100%; height: 200px; object-fit: cover;">
+                                 <!-- Price Overlay -->
+                                 <div
+                                     style="position: absolute; bottom: -20px; left: 50%; transform: translateX(-50%); width:68%; background-image: url('{{ asset('images/icon/bannerbg.jpg') }}'); background-size: cover; background-repeat: no-repeat; background-position: center; padding: 10px 20px; color: #fff; font-weight: 600; font-size: 18px; border-radius: 10px; border: 3px solid #E1DCDD;">
+                                     € {{ $jobRequest->price }} / Fix
+                                 </div>
+                                 <!-- Heart Icon -->
+                                 <i class='bx bx-heart'
+                                     style="position: absolute; top: 10px; right: 10px; padding: 7px; color: #8384AE; border-radius: 50%;"></i>
+                             </div>
+                             <!-- Card Content -->
+                             <div class="card-body p-2"
+                                 style="flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; p">
+                                 <!-- Title and Social Icons -->
+                                 <div class="d-flex justify-content-between align-items-center mt-3">
+                                     <h5 class="categories-name text-capitalize " style="font-size: 15px;">
+                                         <b>{{ $jobRequest->title }}</b>
+                                     </h5>
+                                     <div class="d-flex align-items-center gap-2">
+                                         <a href="#"><img
+                                                 src="https://cdn.pixabay.com/photo/2021/06/15/12/51/facebook-6338507_1280.png"
+                                                 alt="Facebook"
+                                                 style="width: 20px; height: 20px; border-radius: 8px;"></a>
+                                         <a href="#"><img
+                                                 src="https://upload.wikimedia.org/wikipedia/commons/9/95/Instagram_logo_2022.svg"
+                                                 alt="Instagram"
+                                                 style="width: 20px; height: 20px; border-radius: 8px;"></a>
+                                         <a href="#"><img
+                                                 src="https://cdn.pixabay.com/photo/2015/03/10/17/30/twitter-667462_640.png"
+                                                 alt="Twitter"
+                                                 style="width: 20px; height: 20px; border-radius: 8px;"></a>
+                                         <a href="#"><img
+                                                 src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRokEYt0yyh6uNDKL8uksVLlhZ35laKNQgZ9g&s"
+                                                 alt="LinkedIn"
+                                                 style="width: 20px; height: 20px; border-radius: 8px;"></a>
                                      </div>
                                  </div>
-                             </a>  
+                                 <!-- Location -->
+                                 <h5 class="mt-0 mb-0 text-truncate">
+                                     <span style="font-size: 16px;">
+                                         @if ($jobRequest->city && $jobRequest->country)
+                                             {{ $jobRequest->city->name }} - {{ $jobRequest->country->name }}
+                                         @else
+                                             N/A
+                                         @endif
+                                     </span>
+                                 </h5>
+                                 <!-- Published Info -->
+                                 <h5 class="mb-0" style="font-weight: 300;">Published at:
+                                     {{ $jobRequest->created_at->toDateString() }}</h5>
+
+
+                                 <div class="d-flex align-items-center gap-2">
+                                     <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQnnM0ib-pYCZg4DbbB_T5_mfxpqrDHYXFLy208bjvHjIM5q1FF4lzLvNFp2qZ5Eo11orA&usqp=CAU"
+                                         alt="Provider" style="width: 35px; border-radius: 50%;">
+                                     <p style="margin: 0; color: #8081dc;">
+                                         {{ $jobRequest->provider->username ?? 'Unknown' }}</p>
+                                 </div>
+                                 <!-- Status -->
+                                 <h5 style="font-weight: 600;">Status: <span
+                                         style="font-weight: 500; font-size: 17px;">{{ $jobRequest->status }}</span>
+                                 </h5>
+                             </div>
                          </div>
-                     @endforeach
+                     </a>
+                 </div>
+             @endforeach
                  @endif
              </div>
          </div>
