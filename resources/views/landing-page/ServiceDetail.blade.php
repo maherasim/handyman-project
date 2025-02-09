@@ -613,9 +613,9 @@
            width: 100% 
            margin: auto;">
                             Provider Details
-                        </h3>           
+                        </h3>            
                         </div>
-                       
+                       <img src="url('{{ asset('images/icon/backgroundimageprovider.png') }}')" alt="">
 
                         <h5 class="mb-2">{{ __('landingpage.available_location') }}</h5>
                         <ul class="list-inline m-0 p-0 d-flex align-items-center gap-2 flex-wrap">
