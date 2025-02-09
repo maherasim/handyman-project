@@ -619,7 +619,24 @@
                         <div class="d-flex align-items-center  mt-2 justify-content-evenly">
                             <img src="{{ asset('images/plans/icon.jpg') }}" alt="icon"
                                 style="width: 20%; height: 70%; margin-right: 10px;">
-                                reviwss
+                                @if ($data->avg_rating > 0)
+                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12"
+                                    viewBox="0 0 12 12" fill="none" class="service-rating">
+                                    <path d="M6.58578 0.85525L7.92167..." fill="currentColor" />
+                                </svg>
+                                <h6 class="font-size-14 mb-0">
+                                    {{ $data->avg_rating }}
+                                    <a href="{{ route('rating.all', ['service_id' => $data->id]) }}"
+                                        class="text-body ms-1">
+                                        ({{ $data->total_reviews }}
+                                        {{ $data->total_reviews > 1 ? __('messages.reviews') : __('messages.review') }})
+                                    </a>
+
+                                </h6>
+                            @else
+                                <h6 class="font-size-14 mb-0 text-muted">
+                                    {{ __('no_reviews_yet') }}</h6>
+                            @endif
                                 <img
                                 src="{{ asset('images/plans/icon.jpg') }}" alt="icon"
                                 style="width: 20%; height: 8%">
