@@ -16,8 +16,8 @@
         .service{
             margin-top: -30px;
         }
-        .service-img img {
-    height: 10.5rem !important;
+        .service-asim {
+    height: 1.5rem !important;
 }
     </style>
     <!-- Banner -->
@@ -321,7 +321,7 @@
                                             <a href="{{ route('service.detail', $data->id) }}" class="service-img">
                                                 <img src="{{ getSingleMedia($data, 'service_attachment', null) }}"
                                                     alt="service"
-                                                    class="service-img w-100 object-cover img-fluid rounded-3">
+                                                    class="service-asim w-100 object-cover img-fluid rounded-3">
                                             </a>
 
                                             @if (auth()->check() && auth()->user()->hasRole('user'))
