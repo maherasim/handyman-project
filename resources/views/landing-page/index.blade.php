@@ -206,22 +206,28 @@
                                 </div>
                                 <!-- Card Content -->
                                 <div class="card-body" style="flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between;">
-                                    <h5 class="card-title text-truncate" style="font-weight: 300;">{{ $jobRequest->title }}</h5>
-                                    <div class="d-flex justify-content-start align-items-center gap-2 mt-2">
-                                        <a href="#"><img
-                                                src="https://cdn.pixabay.com/photo/2021/06/15/12/51/facebook-6338507_1280.png"
-                                                alt="Facebook" style="width: 30px; border-radius: 8px;"></a>
-                                        <a href="#"><img
-                                                src="https://upload.wikimedia.org/wikipedia/commons/9/95/Instagram_logo_2022.svg"
-                                                alt="Instagram" style="width: 30px; border-radius: 8px;"></a>
-                                        <a href="#"><img
-                                                src="https://cdn.pixabay.com/photo/2015/03/10/17/30/twitter-667462_640.png"
-                                                alt="Twitter" style="width: 30px; border-radius: 8px;"></a>
-                                        <a href="#"><img
-                                                src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRokEYt0yyh6uNDKL8uksVLlhZ35laKNQgZ9g&s"
-                                                alt="LinkedIn" style="width: 30px; border-radius: 8px;"></a>
+                                    <!-- Title and Social Icons -->
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <h5 class="card-title text-truncate" style="font-weight: 300; margin-bottom: 0;">
+                                            {{ $jobRequest->title }}
+                                        </h5>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <a href="#"><img
+                                                    src="https://cdn.pixabay.com/photo/2021/06/15/12/51/facebook-6338507_1280.png"
+                                                    alt="Facebook" style="width: 20px; height: 20px; border-radius: 8px;"></a>
+                                            <a href="#"><img
+                                                    src="https://upload.wikimedia.org/wikipedia/commons/9/95/Instagram_logo_2022.svg"
+                                                    alt="Instagram" style="width: 20px; height: 20px; border-radius: 8px;"></a>
+                                            <a href="#"><img
+                                                    src="https://cdn.pixabay.com/photo/2015/03/10/17/30/twitter-667462_640.png"
+                                                    alt="Twitter" style="width: 20px; height: 20px; border-radius: 8px;"></a>
+                                            <a href="#"><img
+                                                    src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRokEYt0yyh6uNDKL8uksVLlhZ35laKNQgZ9g&s"
+                                                    alt="LinkedIn" style="width: 20px; height: 20px; border-radius: 8px;"></a>
+                                        </div>
                                     </div>
-                                    <h5 class="mb-1 text-truncate">
+                                    <!-- Location -->
+                                    <h5 class="mt-3 mb-1 text-truncate">
                                         <span style="font-weight: 300;">
                                             @if ($jobRequest->city && $jobRequest->country)
                                                 {{ $jobRequest->city->name }} - {{ $jobRequest->country->name }}
@@ -230,12 +236,14 @@
                                             @endif
                                         </span>
                                     </h5>
+                                    <!-- Published Info -->
                                     <h5 class="mb-1" style="font-weight: 300;">Published at:</h5>
                                     <div class="d-flex align-items-center gap-2">
                                         <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQnnM0ib-pYCZg4DbbB_T5_mfxpqrDHYXFLy208bjvHjIM5q1FF4lzLvNFp2qZ5Eo11orA&usqp=CAU"
                                             alt="Provider" style="width: 35px; border-radius: 50%;">
                                         <p style="margin: 0; color: #8081dc;">{{ $jobRequest->provider->username ?? 'Unknown' }}</p>
                                     </div>
+                                    <!-- Status -->
                                     <h5 style="font-weight: 600;">Status: <span
                                             style="font-weight: 500; font-size: 17px;">{{ $jobRequest->status }}</span>
                                     </h5>
@@ -243,6 +251,7 @@
                             </div>
                         </a>
                     </div>
+                    
                     
                     
                     @endforeach
