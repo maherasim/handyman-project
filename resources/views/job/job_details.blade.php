@@ -28,7 +28,7 @@
                 <a href="#">Read More</a>
                 <hr>
                 <button class="btn btn-cont text-white col-md-12" style="background: #5F60BA; padding: 10px;">Continue</button>
-                <div class="d-flex align-items-center justify-content-center gap-3 mt-3">
+                <div class="d-flex align-items-center justify-content-center gap-3 mt-3 mb-3">
                     <a href="#">
                         <img src="https://cdn.pixabay.com/photo/2021/06/15/12/51/facebook-6338507_1280.png"
                             style="width: 30px; border-radius: 8px;" alt="">
