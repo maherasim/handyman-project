@@ -201,7 +201,7 @@
                                     <!-- Card Image -->
                                     <div class="card-imgd" style="position: relative;">
                                         <img class="card-img-top"
-                                            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTpIfGmXhZx9-emF4uqhWXj-YgTNxlMz692LXcfGxC0TyZ8sXMilKktiOwWwzSsw2R4aG8&usqp=CAU"
+                                            src=""
                                             alt="Card image cap"
                                             style="border-radius: 10px; width: 100%; height: 200px; object-fit: cover;">
                                         <!-- Price Overlay -->
