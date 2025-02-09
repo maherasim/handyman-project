@@ -409,7 +409,7 @@
                                         </a>
 
                                        
-                                        <p style="font-weight: 600;">
+                                        <p class="mt-3" style="font-weight: 600; ">
                                             {{ $data->city ? $data->city->name : 'City' }}-{{ $data->country ? $data->country->name : 'Country' }}
                                         </p>
 
