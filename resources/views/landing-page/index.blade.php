@@ -185,40 +185,55 @@
             <!-- Display Job Requests Cards Similar to Category Section -->
             <div class="row">
                 @foreach ($jobRequests as $jobRequest)
-                <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
-                    <a href="{{ route('job.details', $jobRequest->id) }}" class="card-link">
-                        <div class="card mt-5 p-3" 
-                            style="position: relative; background-image: url('{{ asset('images/icons/bannerbg.jpg') }}'); background-size: cover; background-position: center; border-radius: 10px; border: 3px solid #E1DCDD;">
-                            <!-- Price Overlay -->
-                            <div style="position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); background: #a52828; padding: 10px 20px; color: #fff; font-weight: 600; font-size: 18px; border-radius: 10px;">
-                                € {{ $jobRequest->price }} / Fix
-                            </div>
-                            <!-- Card Content -->
-                            <div class="card-body">
-                                <h5 class="card-title" style="font-weight: 600;">{{ $jobRequest->title }}</h5>
-                                <h5 class="mb-1">
-                                    <span style="font-weight: 600;">City - Country:</span>
-                                    @if ($jobRequest->city && $jobRequest->country)
-                                        {{ $jobRequest->city->name }} - {{ $jobRequest->country->name }}
-                                    @else
-                                        N/A
-                                    @endif
-                                </h5>
-                                <h5 class="mb-1" style="font-weight: 600;">Published at:</h5>
-                                <div class="d-flex align-items-center gap-2">
-                                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQnnM0ib-pYCZg4DbbB_T5_mfxpqrDHYXFLy208bjvHjIM5q1FF4lzLvNFp2qZ5Eo11orA&usqp=CAU"
-                                        alt="Provider"
-                                        style="width: 35px; border-radius: 50%;">
-                                    <p style="margin: 0; color: #8081dc;">
-                                        {{ $jobRequest->provider->username ?? 'Unknown' }}
-                                    </p>
+                    <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+                        <a href="{{ route('job.details', $jobRequest->id) }}" class="card-link">
+                            <div class="card mt-5 p-3" style="position: relative; background: #FAF9FF; border-radius: 10px;">
+                                <!-- Card Image -->
+                                <div class="card-imgd" style="position: relative;">
+                                    <img class="card-img-top"
+                                         src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTpIfGmXhZx9-emF4uqhWXj-YgTNxlMz692LXcfGxC0TyZ8sXMilKktiOwWwzSsw2R4aG8&usqp=CAU"
+                                         alt="Card image cap"
+                                         style="border-radius: 10px; width: 100%; height: 200px; object-fit: cover;">
+                                    <!-- Price Overlay -->
+                                    <div style="position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); background: #a52828; padding: 10px 20px; color: #fff; font-weight: 600; font-size: 18px; border-radius: 10px; border: 3px solid #E1DCDD;">
+                                        € {{ $jobRequest->price }} / Fix
+                                    </div>
+                                    <!-- Heart Icon -->
+                                    <i class='bx bx-heart'
+                                       style="position: absolute; top: 10px; right: 10px; background: #fff; padding: 7px; color: #8384AE; border-radius: 50%;"></i>
                                 </div>
-                                <h5 style="font-weight: 600;">Status: <span style="font-weight: 500; font-size: 17px;">{{ $jobRequest->status }}</span></h5>
+                                <!-- Card Content -->
+                                <div class="card-body">
+                                    <h5 class="card-title" style="font-weight: 600;">{{ $jobRequest->title }}</h5>
+                                    <h5 class="mb-1">
+                                        <span style="font-weight: 600;">City - Country:</span>
+                                        @if ($jobRequest->city && $jobRequest->country)
+                                            {{ $jobRequest->city->name }} - {{ $jobRequest->country->name }}
+                                        @else
+                                            N/A
+                                        @endif
+                                    </h5>
+                                    <h5 class="mb-1" style="font-weight: 600;">Published at:</h5>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQnnM0ib-pYCZg4DbbB_T5_mfxpqrDHYXFLy208bjvHjIM5q1FF4lzLvNFp2qZ5Eo11orA&usqp=CAU"
+                                             alt="Provider"
+                                             style="width: 35px; border-radius: 50%;">
+                                        <p style="margin: 0; color: #8081dc;">
+                                            {{ $jobRequest->provider->username ?? 'Unknown' }}
+                                        </p>
+                                    </div>
+                                    <h5 style="font-weight: 600;">Status: <span style="font-weight: 500; font-size: 17px;">{{ $jobRequest->status }}</span></h5>
+                                    <!-- Social Media Icons -->
+                                    <div class="d-flex justify-content-start align-items-center gap-2 mt-2">
+                                        <a href="#"><img src="https://cdn.pixabay.com/photo/2021/06/15/12/51/facebook-6338507_1280.png" alt="Facebook" style="width: 30px; border-radius: 8px;"></a>
+                                        <a href="#"><img src="https://upload.wikimedia.org/wikipedia/commons/9/95/Instagram_logo_2022.svg" alt="Instagram" style="width: 30px; border-radius: 8px;"></a>
+                                        <a href="#"><img src="https://cdn.pixabay.com/photo/2015/03/10/17/30/twitter-667462_640.png" alt="Twitter" style="width: 30px; border-radius: 8px;"></a>
+                                        <a href="#"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRokEYt0yyh6uNDKL8uksVLlhZ35laKNQgZ9g&s" alt="LinkedIn" style="width: 30px; border-radius: 8px;"></a>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    </a>
-                </div>
-                
+                        </a>
+                    </div>
                 @endforeach
             </div>
         </div>
