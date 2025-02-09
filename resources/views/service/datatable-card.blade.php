@@ -82,20 +82,29 @@
 
 
 
-      <div class="service d-flex justify-content-center"
-      style="position:relative; z-index:1111; margin:auto; background-image: url('{{ asset('images/icon/bannerbg.jpg') }}'); background-size: cover; width:68% ; margin-top:-32px; background-repeat: no-repeat; background-position: center; padding: 10px 20px; color: white; font-weight: 600; font-size: 18px; border-radius: 10px; border: 3px solid #E1DCDD;">
-      
-      @if ($data->price == 0)
-          <span class="text-white fw-500 position-relative font-size-18">Free</span>
-      @else
-          <span class="text-white fw-500 position-relative font-size-18">
-              {{ getPriceFormat($data->price) }} / {{ $data->type }}
-          </span>
-      @endif
-  </div>
-  
+<div class="service d-flex justify-content-center "
+      style="position:relative; z-index:1111; margin:auto; background-image: url('{{ asset('images/icon/bannerbg.jpg') }}'); background-size: cover; width:68% ; margin-top:-32px;  background-repeat: no-repeat; background-position: center; padding: 10px 20px; color: white; font-weight: 600; font-size: 18px; border-radius: 10px; border: 3px solid #E1DCDD;">
 
+      @if ($data->price == 0)
+          <li
+              class="text-white fw-500 d-inline-block position-relative font-size-18">
+              Free</li>
+      @else
+          <li
+              class="text-white fw-500 d-inline-block position-relative font-size-18">
+              {{ getPriceFormat($data->price) }}
+          </li>
  
+  </div>
+
+
+
+
+
+   @if($data->price==0)
+   <li class="text-primary fw-500 d-inline-block position-relative font-size-18">Free</li>
+   @else
+<li class="price-box fw-500 d-inline-block position-relative font-size-18">{{ getPriceFormat($data->price) }} / {{ $data->type }}</li>
 </ul>
    @endif 
    <a href="{{ route('service.detail', $data->id) }}" class="service-heading mt-4 d-block p-0">
