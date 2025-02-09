@@ -186,7 +186,7 @@
                 <!-- Display Job Requests Cards Similar to Category Section -->
                 <div class="row">
                     @foreach ($jobRequests as $jobRequest)
-                    <div class="col-lg-3 col-md-4 col-12">
+                    <div class="col-lg-3 col-md-4 col-12 mb-0">
                         <a href="{{ route('job.details', $jobRequest->id) }}" class="card-link">
                             <div class="card mt-5 p-3"
                                 style="position: relative; background: #FAF9FF; border-radius: 10px; height: 450px; display: flex; flex-direction: column; justify-content: space-between;">
@@ -209,7 +209,7 @@
                                 <div class="card-body p-2" style="flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; p">
                                     <!-- Title and Social Icons -->
                                     <div class="d-flex justify-content-between align-items-center">
-                                        <h5 class="card-title text-truncate" style="font-size: 18px;">
+                                        <h5 class="categories-name text-capitalize mt-4 mb-2 line-count-1" style="font-size: 18px;">
                                             {{ $jobRequest->title }}
                                         </h5>
                                         <div class="d-flex align-items-center gap-2">
