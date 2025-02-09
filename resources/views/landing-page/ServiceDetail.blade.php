@@ -601,17 +601,7 @@
 
                     <div class="bg-light p-5 rounded-3 mt-5">
                         <div class="service d-flex justify-content-center " style="position:relative; z-index:1111; margin:auto; background-image: url('{{ asset('images/icon/bannerbg.jpg') }}'); background-size: cover; width:68% ; margin-top:-32px;  background-repeat: no-repeat; background-position: center; padding: 10px 20px; color: #fff; font-weight: 600; font-size: 18px; border-radius: 10px; border: 3px solid #E1DCDD;">
-                            <h3 class="fw-500 d-inline-block position-relative"
-                            style="background-color: #007bff; 
-           color: white;
-           font-size: 18px; 
-           font-weight: bold; 
-           text-align: center; 
-           padding: 10px 15px; 
-           border-radius: 10px; 
-           display: inline-block; 
-           width: 180px; 
-           margin: auto;">
+                            <h3>
                             Provider Details
                         </h3>           
                         </div>
