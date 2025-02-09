@@ -202,7 +202,7 @@
                                         </div>
                                         <!-- Heart Icon -->
                                         <i class='bx bx-heart'
-                                            style="position: absolute; top: 10px; right: 10px; background: #fff; padding: 7px; color: #8384AE; border-radius: 50%;"></i>
+                                            style="position: absolute; top: 10px; right: 10px;  padding: 7px; color: #8384AE; border-radius: 50%;"></i>
                                     </div>
                                     <!-- Card Content -->
                                     <div class="card-body">
