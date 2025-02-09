@@ -616,7 +616,15 @@
                         </h3>            
                         </div>
                         <img src="{{ asset('images/icon/backgroundimageprovider.png') }}" alt="" class="d-flex m-auto">
+                        <div class="d-flex align-items-center  mt-2 justify-content-end">
+                            <img src="{{ asset('images/plans/icon.jpg') }}" alt="icon"
+                                style="width: 20%; height: 70%; margin-right: 10px;">
+                                reviwss
+                                <img
+                                src="{{ asset('images/plans/icon.jpg') }}" alt="icon"
+                                style="width: 20%; height: 8%">
 
+                        </div>
 
                         <h5 class="mb-2">{{ __('landingpage.available_location') }}</h5>
                         <ul class="list-inline m-0 p-0 d-flex align-items-center gap-2 flex-wrap">
