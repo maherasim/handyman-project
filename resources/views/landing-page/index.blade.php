@@ -312,7 +312,7 @@
                         <div class="row">
                             @foreach ($servicerequest as $data)
                                 <div class="col-md-3"> <!-- Changed from col-md-4 to col-md-3 -->
-                                    <div class="service-box-card bg-light rounded-3 mb-5"
+                                    <div class="service-box-card bg-light rounded-3 mb-0"
                                         data-service-id="{{ $data->id }}">
                                         <div class="iq-image position-relative">
                                             @if ($data->visit_type == 'ONLINE')
@@ -457,7 +457,7 @@
                                             </div>
                                             
                                            
-                                            <div class="d-flex mt-2 " style="gap: 18px; justify-content: center;">
+                                            <div class="d-flex mt-0 " style="gap: 18px; justify-content: center;">
                                                 <a href="#"><img
                                                         src="https://cdn.pixabay.com/photo/2021/06/15/12/51/facebook-6338507_1280.png"
                                                         style="width: 30px; border-radius: 8px;" alt=""></a>
