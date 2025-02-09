@@ -17,7 +17,7 @@
             margin-top: -30px;
         }
         .service-img {
-    height: 10.5rem;
+    height: 10.5rem !important;
 }
     </style>
     <!-- Banner -->
