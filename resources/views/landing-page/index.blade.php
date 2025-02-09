@@ -17,7 +17,7 @@
             margin-top: -30px;
         }
         .service-asim {
-    height: 1.5rem !important;
+    height: 10.5rem !important;
 }
     </style>
     <!-- Banner -->
