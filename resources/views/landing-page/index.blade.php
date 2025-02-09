@@ -424,7 +424,7 @@
                                                     <span
                                                         class="font-size-14 service-user-name">{{ $data->providers->display_name }}</span>
                                                 </a>
-                                                <div class="d-flex align-items-center gap-1 f-none mt-2">
+                                                <div class="d-flex align-items-center  mt-2">
                                                     <img src="{{ asset('images/plans/icon.jpg') }}" alt="icon"
                                                         style="width: 3%; height: 8%; margin-right: 10px;"> <img
                                                         src="{{ asset('images/plans/icon.jpg') }}" alt="icon"
@@ -432,7 +432,7 @@
     
                                                 </div>
                                             </div>
-                                            <div class="d-flex align-items-center gap-1 f-none mt-2">
+                                            <div class="d-flex align-items-center  mt-2">
                                                 @if ($data->avg_rating > 0)
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12"
                                                         viewBox="0 0 12 12" fill="none" class="service-rating">
