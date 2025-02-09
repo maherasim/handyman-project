@@ -189,7 +189,7 @@
                     <div class="col-lg-3 col-md-4 col-12 mb-0">
                         <a href="{{ route('job.details', $jobRequest->id) }}" class="card-link">
                             <div class="card mt-5 p-3"
-                                style="position: relative; background: #FAF9FF; border-radius: 10px; height: 360px; display: flex; flex-direction: column; ">
+                                style="position: relative; background: #FAF9FF; border-radius: 10px; height: 400px; display: flex; flex-direction: column; ">
                                 <!-- Card Image -->
                                 <div class="card-imgd" style="position: relative;">
                                     <img class="card-img-top"
