@@ -71,23 +71,6 @@
 
    </div> 
    <ul>
-
-
-
-
-
-      
-
-
-
-
-
-
-
-
-
-
-
    @if($data->price==0)
    <li class="text-primary fw-500 d-inline-block position-relative font-size-18">Free</li>
    @else
