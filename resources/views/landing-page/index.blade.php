@@ -439,20 +439,11 @@
                                         </div>
                                         <div class="d-flex align-items-center  mt-2">
                                             <div class="d-flex align-items-center gap-2 flex-wrap">
-                                                @if (!empty($data['provider']))
-                                                    <div class="star-rating">
-                                                        <rating-component :readonly="true" :showrating="false"
-                                                            :ratingvalue="{{ $data['provider']['providers_service_rating'] ?? 0 }}" />
-                                                    </div>
-                                                    <h6 class="lh-sm">
-                                                        {{ round($data['provider']['providers_service_rating'] ?? 0, 1) }}
-                                                    </h6>
-                                                    <a href="{{ route('rating.all', ['provider_id' => $data['provider']['id'] ?? 0]) }}">
-                                                        ({{ $data['provider']['total_service_rating'] ?? 0 }} {{ __('messages.reviews') }})
-                                                    </a>
-                                                @else
-                                                    <h6 class="lh-sm text-muted">No ratings available</h6>
-                                                @endif
+                                                <div class="star-rating">
+                                                    <rating-component :readonly="true" :showrating="false" :ratingvalue="1" />
+                                                </div>
+                                                <h6 class="lh-sm">1.0</h6>
+                                                <a href="#">(1 {{ __('messages.reviews') }})</a>
                                             </div>
                                             
             
