@@ -615,7 +615,7 @@
                             Provider Details
                         </h3>            
                         </div>
-                        <img src="{{ asset('images/icon/backgroundimageprovider.png') }}" alt="">
+                        <img src="{{ asset('images/icon/backgroundimageprovider.png') }}" alt="" class="d-flex m-auto">
 
 
                         <h5 class="mb-2">{{ __('landingpage.available_location') }}</h5>
