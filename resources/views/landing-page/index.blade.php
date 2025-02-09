@@ -239,6 +239,7 @@
                                     </h5>
                                     <!-- Published Info -->
                                     <h5 class="mb-1" style="font-weight: 300;">Published at:</h5>
+                                    {{ $jobRequest->created_at }}
                                     <div class="d-flex align-items-center gap-2">
                                         <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQnnM0ib-pYCZg4DbbB_T5_mfxpqrDHYXFLy208bjvHjIM5q1FF4lzLvNFp2qZ5Eo11orA&usqp=CAU"
                                             alt="Provider" style="width: 35px; border-radius: 50%;">
