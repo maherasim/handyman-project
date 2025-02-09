@@ -416,7 +416,7 @@
                                             {{ $data->city ? $data->city->name : 'City' }}-{{ $data->country ? $data->country->name : 'Country' }}
                                         </p>
 
-                                        <div class="mt-3">
+                                        
                                             <div class="d-flex align-items-center justify-content-between">
                                                 <img src="{{ getSingleMedia($data->providers, 'profile_image', null) }}"
                                                     alt="service" class="img-fluid rounded-3 object-cover avatar-24">
@@ -469,7 +469,7 @@
                                                         src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRokEYt0yyh6uNDKL8uksVLlhZ35laKNQgZ9g&s"
                                                         style="width: 30px; border-radius: 8px;" alt=""></a>
                                             </div>
-                                        </div>
+                                        
                                     </div>
                                 </div>
                             @endforeach
