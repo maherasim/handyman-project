@@ -16,6 +16,9 @@
         .service{
             margin-top: -30px;
         }
+        .service-img {
+    height: 10.5rem;
+}
     </style>
     <!-- Banner -->
     <div class="padding-top-bottom-90 bg-light">
