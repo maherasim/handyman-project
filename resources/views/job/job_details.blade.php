@@ -17,25 +17,7 @@
                 <div>
                     <br>
                    
-                    <div class="service d-flex justify-content-center" 
-                    style="position: relative; z-index: 1111; margin: auto; 
-                           background-image: url('{{ asset('images/icon/blueicon.jpg') }}'); 
-                           background-size: cover; 
-                           width: 80%; 
-                           border-radius: 10px;  
-                           background-repeat: no-repeat; 
-                           background-position: center; 
-                           padding: 10px 20px; 
-                           color: #fff; 
-                           font-weight: 600; 
-                           font-size: 18px; 
-                           border: 3px solid #E1DCDD;">
-                   <h3 class="fw-200 d-inline-block position-relative"
-                       style="color: white; font-size: 15px; font-weight: bold; text-align: center; 
-                              padding: 10px 15px; display: inline-block; width: 90%; margin: auto;">
-                    About
-                   </h3>            
-               </div> <br>
+                       <b class="heading_text">About Job Request</b> <br>
                        <p>{{ $jobrequest->description }}</p>
                     </b> 
                 </div>
@@ -46,7 +28,24 @@
                 <a href="#">Read More</a>
                 <hr>
                 <button class="btn btn-cont text-white col-md-12" style="background: #5F60BA; padding: 10px;">Continue</button>
-                <img src="https://www.shutterstock.com/shutterstock/videos/1045125877/thumb/12.jpg?ip=x480" style="width: 200px;" alt="">
+                <div class="d-flex align-items-center justify-content-center gap-3 mt-3">
+                    <a href="#">
+                        <img src="https://cdn.pixabay.com/photo/2021/06/15/12/51/facebook-6338507_1280.png"
+                            style="width: 30px; border-radius: 8px;" alt="">
+                    </a>
+                    <a href="#">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/9/95/Instagram_logo_2022.svg"
+                            style="width: 30px; border-radius: 8px;" alt="">
+                    </a>
+                    <a href="#">
+                        <img src="https://cdn.pixabay.com/photo/2015/03/10/17/30/twitter-667462_640.png"
+                            style="width: 30px; border-radius: 8px;" alt="">
+                    </a>
+                    <a href="#">
+                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRokEYt0yyh6uNDKL8uksVLlhZ35laKNQgZ9g&s"
+                            style="width: 30px; border-radius: 8px;" alt="">
+                    </a>
+                </div>
                 <button class="btn btn-job col-md-12" style="background: #018E27; border-radius: 50px; color: white;padding: 10px;">About Job Request</button>
                 <ul class="pl-0 mt-3" style="list-style: none; font-weight: 500; ">
                     <li><a href="#" class="text-dark"> <b>Published at: </b>  NYC
