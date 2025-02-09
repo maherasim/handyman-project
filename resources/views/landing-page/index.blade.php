@@ -234,8 +234,8 @@
                                             </span>
                                         </h5>
                                         <!-- Published Info -->
-                                        <h5 class="mb-0" style="font-weight: 60;">Published at:
-                                            {{ $jobRequest->created_at->toDateString() }}</h5>
+                                        <p class="mb-0" style="font-weight: 60;">Published at:
+                                            {{ $jobRequest->created_at->toDateString() }}</p>
 
 
                                         <div class="d-flex align-items-center gap-2">
