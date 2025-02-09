@@ -312,7 +312,7 @@
                         <div class="row">
                             @foreach ($servicerequest as $data)
                                 <div class="col-md-3"> <!-- Changed from col-md-4 to col-md-3 -->
-                                    <div class="service-box-card bg-light rounded-3 mb-5"
+                                    <div class=" service-img  service-box-card bg-light rounded-3 mb-5"
                                         data-service-id="{{ $data->id }}">
                                         <div class="iq-image position-relative">
                                             @if ($data->visit_type == 'ONLINE')
@@ -389,7 +389,7 @@
                                                 </form>
                                             @endif
                                         </div>
-                                        <ul class=" list-inline p-0 mt-0 mb-0 price-content">
+                                        <ul class="list-inline p-0 mt-0 mb-0 price-content">
                                          <div class="service d-flex justify-content-center " style="position:relative; z-index:1111; margin:auto; background-image: url('{{ asset('images/icon/bannerbg.jpg') }}'); background-size: cover; width:68% ; margin-top:-32px;  background-repeat: no-repeat; background-position: center; padding: 10px 20px; color: #fff; font-weight: 600; font-size: 18px; border-radius: 10px; border: 3px solid #E1DCDD;">
                                             @if ($data->price == 0)
                                                 <li
