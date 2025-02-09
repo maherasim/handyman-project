@@ -383,13 +383,6 @@
                                                 </form>
                                             @endif
                                         </div>
-
-                                        <a href="{{ route('service.detail', $data->id) }}"
-                                            class="service-heading mt-4 d-block p-0">
-                                            <h5 class="service-heading service-title font-size-18 line-count-2">
-                                                {{ $data->name }}</h5>
-                                        </a>
-
                                         <ul class="list-inline p-0 mt-0 mb-0 price-content">
                                             @if ($data->price == 0)
                                                 <li
@@ -403,6 +396,13 @@
                                             @endif
                                             
                                         </ul>
+                                        <a href="{{ route('service.detail', $data->id) }}"
+                                            class="service-heading mt-4 d-block p-0">
+                                            <h5 class="service-heading service-title font-size-18 line-count-2">
+                                                {{ $data->name }}</h5>
+                                        </a>
+
+                                       
                                         <p style="font-weight: 600;">
                                             {{ $data->city ? $data->city->name : 'N/A' }}-{{ $data->country ? $data->country->name : 'N/A' }}
                                         </p>
