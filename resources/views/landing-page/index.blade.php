@@ -407,7 +407,7 @@
 
                                         <a href="{{ route('service.detail', $data->id) }}"
                                             class="service-heading mt-2 d-block p-0">
-                                            <h5 class="service-heading service-title font-size-18 line-count-2">
+                                            <h5 class="service-heading service-title font-size-1 line-count-2" style="font-size:12px">
                                                 {{ $data->name }}</h5>
                                         </a>
 
