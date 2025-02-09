@@ -208,7 +208,7 @@
                                 <div class="card-body" style="flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between;">
                                     <!-- Title and Social Icons -->
                                     <div class="d-flex justify-content-between align-items-center">
-                                        <h5 class="card-title text-truncate" style="font-size: 14px; color: rgb(85, 85, 85);">
+                                        <h5 class="card-title text-truncate" style="font-size: 18px; color: rgb(85, 85, 85);">
                                             {{ $jobRequest->title }}
                                         </h5>
                                         <div class="d-flex align-items-center gap-2">
