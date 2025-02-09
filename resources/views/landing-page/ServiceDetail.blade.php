@@ -584,7 +584,7 @@
                         </div>
                     </div>
 
-                    @if ($serviceData['service_detail']['is_slot'] == 1)
+                    {{-- @if ($serviceData['service_detail']['is_slot'] == 1)
                         <div class="bg-light p-5 rounded-3 mt-5">
                             <h5 class="mb-2">{{ __('landingpage.available_days') }}</h5>
                             <ul class="list-inline m-0 p-0 d-flex align-items-center gap-2 flex-wrap">
@@ -596,11 +596,12 @@
                                 @endforeach
                             </ul>
                         </div>
-                    @endif
+                    @endif --}}
                  
 
                     <div class="bg-light p-5 rounded-3 mt-5">
-                        <h3 class="fw-500 d-inline-block position-relative"
+                        <div class="service d-flex justify-content-center " style="position:relative; z-index:1111; margin:auto; background-image: url('{{ asset('images/icon/bannerbg.jpg') }}'); background-size: cover; width:68% ; margin-top:-32px;  background-repeat: no-repeat; background-position: center; padding: 10px 20px; color: #fff; font-weight: 600; font-size: 18px; border-radius: 10px; border: 3px solid #E1DCDD;">
+                            <h3 class="fw-500 d-inline-block position-relative"
                             style="background-color: #007bff; 
            color: white;
            font-size: 18px; 
@@ -612,7 +613,9 @@
            width: 180px; 
            margin: auto;">
                             Provider Details
-                        </h3>
+                        </h3>           
+                        </div>
+                       
 
                         <h5 class="mb-2">{{ __('landingpage.available_location') }}</h5>
                         <ul class="list-inline m-0 p-0 d-flex align-items-center gap-2 flex-wrap">

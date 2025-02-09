@@ -391,6 +391,7 @@
                                         </div>
                                         <ul class="list-inline p-0 mt-0 mb-0 price-content">
                                          <div class="service d-flex justify-content-center " style="position:relative; z-index:1111; margin:auto; background-image: url('{{ asset('images/icon/bannerbg.jpg') }}'); background-size: cover; width:68% ; margin-top:-32px;  background-repeat: no-repeat; background-position: center; padding: 10px 20px; color: #fff; font-weight: 600; font-size: 18px; border-radius: 10px; border: 3px solid #E1DCDD;">
+                                            
                                             @if ($data->price == 0)
                                                 <li
                                                     class="text-primary fw-500 d-inline-block position-relative font-size-18">
