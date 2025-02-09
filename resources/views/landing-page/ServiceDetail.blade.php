@@ -600,21 +600,26 @@
                  
 
                     <div class="bg-light   pl-5 pr-5 pb-0 rounded-3 mt-0 pt-0">
-                        <div class="service d-flex justify-content-center " style="position:relative; z-index:1111; margin:auto; background-image: url('{{ asset('images/icon/blueicon.jpg') }}'); background-size: cover; width:100% ; border-radious:10px  background-repeat: no-repeat; background-position: center; padding: 10px 20px; color: #fff; font-weight: 600; font-size: 18px; border-radius: 10px; border: 3px solid #E1DCDD;">
-                            <h3 class="fw-200 d-inline-block position-relative"
-                            style=" 
-           color: white;
-           font-size: 15px; 
-           font-weight: bold; 
-           text-align: center; 
-           padding: 10px 15px; 
-           
-           display: inline-block; 
-           width: 90% 
-           margin: auto;">
-                            Provider Details
-                        </h3>            
-                        </div>
+                        <div class="service d-flex justify-content-center" 
+     style="position: relative; z-index: 1111; margin: auto; 
+            background-image: url('{{ asset('images/icon/blueicon.jpg') }}'); 
+            background-size: cover; 
+            width: 80%; 
+            border-radius: 10px;  
+            background-repeat: no-repeat; 
+            background-position: center; 
+            padding: 10px 20px; 
+            color: #fff; 
+            font-weight: 600; 
+            font-size: 18px; 
+            border: 3px solid #E1DCDD;">
+    <h3 class="fw-200 d-inline-block position-relative"
+        style="color: white; font-size: 15px; font-weight: bold; text-align: center; 
+               padding: 10px 15px; display: inline-block; width: 90%; margin: auto;">
+        Provider Details
+    </h3>            
+</div>
+
                         <img src="{{ asset('images/icon/backgroundimageprovider.png') }}" alt="" class="d-flex m-auto">
                         <div class="d-flex align-items-center  mt-2 justify-content-evenly">
                             <img src="{{ asset('images/plans/icon.jpg') }}" alt="icon"
