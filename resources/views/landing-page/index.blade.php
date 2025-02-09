@@ -251,7 +251,7 @@
                                             </span>
                                         </h5>
                                         <!-- Published Info -->
-                                        <h5 class="mb-0" style="font-weight: 300;">Published at:
+                                        <h5 class="mb-0" style="font-weight: 200;">Published at:
                                             {{ $jobRequest->created_at->toDateString() }}</h5>
 
 
@@ -262,7 +262,7 @@
                                                 {{ $jobRequest->provider->username ?? 'Unknown' }}</p>
                                         </div>
                                         <!-- Status -->
-                                        <h5 style="font-weight: 600;">Status: <span
+                                        <h5 style="font-weight: 200;">Status: <span
                                                 style="font-weight: 500; font-size: 17px;">{{ $jobRequest->status }}</span>
                                         </h5>
                                     </div>
