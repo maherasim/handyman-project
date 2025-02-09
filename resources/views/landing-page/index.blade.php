@@ -426,9 +426,9 @@
                                                 </a>
                                                 <div class="d-flex align-items-center gap-1 f-none mt-2">
                                                     <img src="{{ asset('images/plans/icon.jpg') }}" alt="icon"
-                                                        style="width: 23%; height: 23%; margin-right: 10px;"> <img
+                                                        style="width: 8%; height: 8%; margin-right: 10px;"> <img
                                                         src="{{ asset('images/plans/icon.jpg') }}" alt="icon"
-                                                        style="width: 23%; height: 23%">
+                                                        style="width: 8%; height: 8%">
     
                                                 </div>
                                             </div>
