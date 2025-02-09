@@ -441,11 +441,11 @@
                                             <div class="d-flex align-items-center gap-2 flex-wrap">
                                                 <div class="star-rating">
                                                     <rating-component :readonly="true" :showrating="false"
-                                                        :ratingvalue="{{ $serviceData['provider']['providers_service_rating'] }}" />
+                                                        :ratingvalue="{{ $data['provider']['providers_service_rating'] }}" />
                                                 </div>
                                                 <h6 class="lh-sm">
-                                                    {{ round($serviceData['provider']['providers_service_rating'], 1) }}</h6><a
-                                                    href="{{ route('rating.all', ['provider_id' => $serviceData['provider']['id']]) }}">({{ $serviceData['provider']['total_service_rating'] }}
+                                                    {{ round($data['provider']['providers_service_rating'], 1) }}</h6><a
+                                                    href="{{ route('rating.all', ['provider_id' => $data['provider']['id']]) }}">({{ $data['provider']['total_service_rating'] }}
                                                     {{ __('messages.reviews') }})</a>
                                             </div>
             
