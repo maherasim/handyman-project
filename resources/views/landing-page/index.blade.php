@@ -442,7 +442,7 @@
                                                 <div class="star-rating">
                                                     <rating-component :readonly="true" :showrating="false" :ratingvalue="1" />
                                                 </div>
-                                                <h6 class="lh-sm">1.0</h6>
+                                                <h6 class="lh-sm">1</h6>
                                                 <a href="#">(1 {{ __('messages.reviews') }})</a>
                                             </div>
                                             
