@@ -418,14 +418,14 @@
 
                                         
                                             <div class="d-flex align-items-center justify-content-between" style="width: 100%">
-                                                
+                                                <div class="d-flex align-items-center">
                                                 <img src="{{ getSingleMedia($data->providers, 'profile_image', null) }}"
                                                     alt="service" class="img-fluid rounded-3 object-cover avatar-24">
                                                 <a href="{{ route('provider.detail', $data->providers->id) }}">
                                                     <span
                                                         class="font-size-14 service-user-name">{{ $data->providers->display_name }}</span>
                                                 </a>
-                                             
+                                            </div>
                                                 <div class="d-flex align-items-center  mt-2 justify-content-end">
                                                     <img src="{{ asset('images/plans/icon.jpg') }}" alt="icon"
                                                         style="width: 20%; height: 70%; margin-right: 10px;"> <img
