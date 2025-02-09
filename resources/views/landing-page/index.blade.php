@@ -245,9 +245,9 @@
                                                 {{ $jobRequest->provider->username ?? 'Unknown' }}</p>
                                         </div>
                                         <!-- Status -->
-                                        <h5 style="font-weight: 100;">Status: <span
-                                                style="font-weight: 500; font-size: 17px;">{{ $jobRequest->status }}</span>
-                                        </h5>
+                                        <h6 style="font-weight: 100;">Status: <span
+                                                style="font-weight: 100; font-size: 13px;">{{ $jobRequest->status }}</span>
+                                        </h6>
                                         <div class="d-flex align-items-center gap-2">
                                             <a href="#"><img
                                                     src="https://cdn.pixabay.com/photo/2021/06/15/12/51/facebook-6338507_1280.png"
