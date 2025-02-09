@@ -187,7 +187,8 @@
                     @foreach ($jobRequests as $jobRequest)
                     <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
                         <a href="{{ route('job.details', $jobRequest->id) }}" class="card-link">
-                            <div class="card mt-5 p-3" style="position: relative; background: #FAF9FF; border-radius: 10px;">
+                            <div class="card mt-5 p-3"
+                                style="position: relative; background: #FAF9FF; border-radius: 10px; height: 450px; display: flex; flex-direction: column; justify-content: space-between;">
                                 <!-- Card Image -->
                                 <div class="card-imgd" style="position: relative;">
                                     <img class="card-img-top"
@@ -204,27 +205,23 @@
                                         style="position: absolute; top: 10px; right: 10px; padding: 7px; color: #8384AE; border-radius: 50%;"></i>
                                 </div>
                                 <!-- Card Content -->
-                                <div class="card-body">
-                                    <!-- Title with Social Icons -->
-                                    <div class="d-flex justify-content-between align-items-center mb-3">
-                                        <h5 class="card-title" style="font-weight: 150; font-size: 18px; margin: 0;">{{ $jobRequest->title }}</h5>
-                                        <div class="d-flex gap-2">
-                                            <a href="#"><img
-                                                    src="https://cdn.pixabay.com/photo/2021/06/15/12/51/facebook-6338507_1280.png"
-                                                    alt="Facebook" style="width: 24px;"></a>
-                                            <a href="#"><img
-                                                    src="https://upload.wikimedia.org/wikipedia/commons/9/95/Instagram_logo_2022.svg"
-                                                    alt="Instagram" style="width: 24px;"></a>
-                                            <a href="#"><img
-                                                    src="https://cdn.pixabay.com/photo/2015/03/10/17/30/twitter-667462_640.png"
-                                                    alt="Twitter" style="width: 24px;"></a>
-                                            <a href="#"><img
-                                                    src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRokEYt0yyh6uNDKL8uksVLlhZ35laKNQgZ9g&s"
-                                                    alt="LinkedIn" style="width: 24px;"></a>
-                                        </div>
+                                <div class="card-body" style="flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between;">
+                                    <h5 class="card-title text-truncate" style="font-weight: 300;">{{ $jobRequest->title }}</h5>
+                                    <div class="d-flex justify-content-start align-items-center gap-2 mt-2">
+                                        <a href="#"><img
+                                                src="https://cdn.pixabay.com/photo/2021/06/15/12/51/facebook-6338507_1280.png"
+                                                alt="Facebook" style="width: 30px; border-radius: 8px;"></a>
+                                        <a href="#"><img
+                                                src="https://upload.wikimedia.org/wikipedia/commons/9/95/Instagram_logo_2022.svg"
+                                                alt="Instagram" style="width: 30px; border-radius: 8px;"></a>
+                                        <a href="#"><img
+                                                src="https://cdn.pixabay.com/photo/2015/03/10/17/30/twitter-667462_640.png"
+                                                alt="Twitter" style="width: 30px; border-radius: 8px;"></a>
+                                        <a href="#"><img
+                                                src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRokEYt0yyh6uNDKL8uksVLlhZ35laKNQgZ9g&s"
+                                                alt="LinkedIn" style="width: 30px; border-radius: 8px;"></a>
                                     </div>
-                                    <!-- Other Card Details -->
-                                    <h5 class="mb-1">
+                                    <h5 class="mb-1 text-truncate">
                                         <span style="font-weight: 300;">
                                             @if ($jobRequest->city && $jobRequest->country)
                                                 {{ $jobRequest->city->name }} - {{ $jobRequest->country->name }}
@@ -237,9 +234,7 @@
                                     <div class="d-flex align-items-center gap-2">
                                         <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQnnM0ib-pYCZg4DbbB_T5_mfxpqrDHYXFLy208bjvHjIM5q1FF4lzLvNFp2qZ5Eo11orA&usqp=CAU"
                                             alt="Provider" style="width: 35px; border-radius: 50%;">
-                                        <p style="margin: 0; color: #8081dc;">
-                                            {{ $jobRequest->provider->username ?? 'Unknown' }}
-                                        </p>
+                                        <p style="margin: 0; color: #8081dc;">{{ $jobRequest->provider->username ?? 'Unknown' }}</p>
                                     </div>
                                     <h5 style="font-weight: 600;">Status: <span
                                             style="font-weight: 500; font-size: 17px;">{{ $jobRequest->status }}</span>
@@ -248,6 +243,7 @@
                             </div>
                         </a>
                     </div>
+                    
                     
                     @endforeach
                 </div>
