@@ -334,7 +334,7 @@
                         </div>
                     @endif
                     <div class="mt-5 pt-lg-5 pt-3">
-                        <h5 class="mb-3">{{ __('landingpage.about_provider') }}</h5>
+                        <h5 class="mb-3">{{ __('landingpage.about_provider') }}</h5> 
                         <div class="p-5 border rounded-3 about-provider-box">
                             <div
                                 class="mb-4 pb-4 border-bottom d-flex align-items-sm-center aling-items-start flex-sm-row flex-column gap-5">
@@ -599,7 +599,7 @@
                     @endif --}}
                  
 
-                    <div class="bg-light   pl-5 pr-5 pb-0 rounded-3 mt-0 pt-0">
+                    <div class="bg-light   pl-5 pr-5 pb-0 rounded-3 mt-0 pt-0 ">
                         <div class="service d-flex justify-content-center" 
      style="position: relative; z-index: 1111; margin: auto; 
             background-image: url('{{ asset('images/icon/blueicon.jpg') }}'); 
@@ -624,7 +624,10 @@
                         <div class="d-flex align-items-center  mt-2 justify-content-evenly">
                             <img src="{{ asset('images/plans/icon.jpg') }}" alt="icon"
                                 style="width: 20%; height: 70%; margin-right: 10px;">
-                                reviwss
+                                <h6 class="lh-sm">
+                                    {{ round($serviceData['provider']['providers_service_rating'], 1) }}</h6><a
+                                    href="{{ route('rating.all', ['provider_id' => $serviceData['provider']['id']]) }}">({{ $serviceData['provider']['total_service_rating'] }}
+                                    {{ __('messages.reviews') }})</a>
                                 <img
                                 src="{{ asset('images/plans/icon.jpg') }}" alt="icon"
                                 style="width: 20%; height: 8%">
