@@ -384,7 +384,7 @@
                                             @endif
                                         </div>
                                         <ul class="list-inline p-0 mt-0 mb-0 price-content">
-                                         <div class="d-flex justify-content-center">
+                                         <div class="d-flex justify-content-center " style="margin-top:-20px">
                                             @if ($data->price == 0)
                                                 <li
                                                     class="text-primary fw-500 d-inline-block position-relative font-size-18">
