@@ -205,7 +205,7 @@
                                         style="position: absolute; top: 10px; right: 10px; padding: 7px; color: #8384AE; border-radius: 50%;"></i>
                                 </div>
                                 <!-- Card Content -->
-                                <div class="card-body pt-2 pb-2 pl-0 pr-0" style="flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; p">
+                                <div class="card-body pt-2 pb-2" style="flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; p">
                                     <!-- Title and Social Icons -->
                                     <div class="d-flex justify-content-between align-items-center">
                                         <h5 class="card-title text-truncate" style="font-size: 18px;">
