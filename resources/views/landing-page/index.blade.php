@@ -407,7 +407,7 @@
 
                                        
                                         <p style="font-weight: 600;">
-                                            {{ $data->city ? $data->city->name : 'N/A' }}-{{ $data->country ? $data->country->name : 'N/A' }}
+                                            {{ $data->city ? $data->city->name : 'N/A asim' }}-{{ $data->country ? $data->country->name : 'N/A' }}
                                         </p>
 
                                         <div class="mt-3">
