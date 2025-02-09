@@ -410,11 +410,11 @@
                                             class="service-heading mt-2 d-block p-0">
                                             <h5 class="service-heading service-title font-size-1 line-count-2"
                                                 style="font-size:12px">
-                                                {{ $data->name }}</h5>
+                                                <b>{{ $data->name }}</b> </h5>
                                         </a>
 
 
-                                        <p class="mt-0 mb-0" style="font-weight: 600;  ">
+                                        <p class="mt-0 mb-0" style="font-size: 12;  ">
                                             {{ $data->city ? $data->city->name : 'City' }}-{{ $data->country ? $data->country->name : 'Country' }}
                                         </p>
 
@@ -488,225 +488,268 @@
                 </div>
             @endif
 
-            featuredrequest
+
+
+
+
+
+
 
 
 
 
 
             {{-- //Featured Service --}}
+            @if ($sectionData && isset($sectionData['section_4']) && $sectionData['section_4']['section_4'] == 1)
+            <div>
+                <div class="service-img d-flex align-items-center justify-content-between flex-wrap gap-2">
+                    <div class="iq-title-box mb-0">
+                        <h3 class="text-capitalize line-count-1">{{ $sectionData['section_4']['title'] }}
+                            <div class="highlighted-text">
+                                <span class="highlighted-text-swipe"></span>
+                                <span class="highlighted-image">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="155" height="12"
+                                        viewBox="0 0 155 12" fill="none">
+                                        <path d="M2.5 9.5C3.16964 9.26081 78.8393 -2.45948 152.5 4.9554"
+                                            stroke="currentColor" stroke-width="4" stroke-linecap="round"
+                                            stroke-linejoin="round" />
+                                    </svg>
+                                </span>
+                            </div>
+                        </h3>
+                    </div>
+                    <a href="{{ route('service.list') }}"
+                        class="btn btn-link p-0 flex-shrink-0">{{ __('messages.view_all') }}</a>
+                </div> 
+                <div class="container">
+                    <div class="row">
+                        @foreach ($featuredrequest  as $data)
+                            <div class="col-md-3"> <!-- Changed from col-md-4 to col-md-3 -->
+                                <div class="service-box-card bg-light rounded-3 mb-3"
+                                    data-service-id="{{ $data->id }}">
+                                    <div class="iq-image position-relative">
+                                        @if ($data->visit_type == 'ONLINE')
+                                            <span class="online-service"></span>
+                                        @endif
+                                        <a href="{{ route('service.detail', $data->id) }}" class="service-img">
+                                            <img src="{{ getSingleMedia($data, 'service_attachment', null) }}"
+                                                alt="service"
+                                                class="service-asim w-100 object-cover img-fluid rounded-3">
+                                        </a>
 
-            
-        </div>
-    </div>
-
-
-    @if ($auth_user_id)
-        <!-- Recently Viewed Service -->
-        <div class="section-padding bg-light our-service">
-            <div class="container">
-                @if ($sectionData && isset($sectionData['section_8']) && $sectionData['section_8']['section_8'] == 1)
-                <div>
-                    <div class="service-img d-flex align-items-center justify-content-between flex-wrap gap-2">
-                        <div class="iq-title-box mb-0">
-                            <h3 class="text-capitalize line-count-1">{{ $sectionData['section_3']['title'] }}
-                                <div class="highlighted-text">
-                                    <span class="highlighted-text-swipe"></span>
-                                    <span class="highlighted-image">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="155" height="12"
-                                            viewBox="0 0 155 12" fill="none">
-                                            <path d="M2.5 9.5C3.16964 9.26081 78.8393 -2.45948 152.5 4.9554"
-                                                stroke="currentColor" stroke-width="4" stroke-linecap="round"
-                                                stroke-linejoin="round" />
-                                        </svg>
-                                    </span>
-                                </div>
-                            </h3>
-                        </div>
-                        <a href="{{ route('service.list') }}"
-                            class="btn btn-link p-0 flex-shrink-0">{{ __('messages.view_all') }}</a>
-                    </div> 
-                    <div class="container">
-                        <div class="row">
-                            @foreach ($featuredrequest as $data)
-                                <div class="col-md-3"> <!-- Changed from col-md-4 to col-md-3 -->
-                                    <div class="service-box-card bg-light rounded-3 mb-3"
-                                        data-service-id="{{ $data->id }}">
-                                        <div class="iq-image position-relative">
-                                            @if ($data->visit_type == 'ONLINE')
-                                                <span class="online-service"></span>
-                                            @endif
-                                            <a href="{{ route('service.detail', $data->id) }}" class="service-img">
-                                                <img src="{{ getSingleMedia($data, 'service_attachment', null) }}"
-                                                    alt="service"
-                                                    class="service-asim w-100 object-cover img-fluid rounded-3">
-                                            </a>
-
-                                            @if (auth()->check() && auth()->user()->hasRole('user'))
-                                                @if ($featuredrequest->isEmpty())
-                                                    <form method="POST" id="favoriteForm">
-                                                        @csrf
-                                                        <input type="hidden" name="service_id" class="service_id"
-                                                            value="{{ $data->id }}">
-                                                        <input type="hidden" name="user_id" id="user_id"
-                                                            value="{{ Auth::user()->id }}">
-                                                        <button type="button"
-                                                            class="btn-link serv-whishlist text-primary save_fav">
-                                                            <svg width="12" height="13" viewBox="0 0 12 13"
-                                                                fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                                <path fill-rule="evenodd" clip-rule="evenodd"
-                                                                    d="M1.43593 6.29916C0.899433 4.62416 1.52643 2.70966 3.28493 2.14316C4.20993 1.84466 5.23093 2.02066 5.99993 2.59916C6.72743 2.03666 7.78593 1.84666 8.70993 2.14316C10.4684 2.70966 11.0994 4.62416 10.5634 6.29916C9.72843 8.95416 5.99993 10.9992 5.99993 10.9992C5.99993 10.9992 2.29893 8.98516 1.43593 6.29916Z"
-                                                                    stroke="currentColor" stroke-width="1.5"
-                                                                    stroke-linecap="round" stroke-linejoin="round" />
-                                                                <path
-                                                                    d="M8 3.84998C8.535 4.02298 8.913 4.50048 8.9585 5.06098"
-                                                                    stroke="currentColor" stroke-width="1.5"
-                                                                    stroke-linecap="round" stroke-linejoin="round" />
-                                                            </svg>
-                                                        </button>
-                                                    </form>
-                                                @else
-                                                    <form method="POST" id="favoriteForm">
-                                                        @csrf
-                                                        <input type="hidden" name="service_id" class="service_id"
-                                                            value="{{ $data->id }}">
-                                                        <input type="hidden" name="user_id" id="user_id"
-                                                            value="{{ Auth::user()->id }}">
-                                                        <button type="button"
-                                                            class="btn-link serv-whishlist text-primary delete_fav">
-                                                            <svg width="12" height="13" viewBox="0 0 12 13"
-                                                                fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                                                                <path fill-rule="evenodd" clip-rule="evenodd"
-                                                                    d="M1.43593 6.29916C0.899433 4.62416 1.52643 2.70966 3.28493 2.14316C4.20993 1.84466 5.23093 2.02066 5.99993 2.59916C6.72743 2.03666 7.78593 1.84666 8.70993 2.14316C10.4684 2.70966 11.0994 4.62416 10.5634 6.29916C9.72843 8.95416 5.99993 10.9992 5.99993 10.9992C5.99993 10.9992 2.29893 8.98516 1.43593 6.29916Z"
-                                                                    stroke="currentColor" stroke-width="1.5"
-                                                                    stroke-linecap="round" stroke-linejoin="round"></path>
-                                                                <path
-                                                                    d="M8 3.84998C8.535 4.02298 8.913 4.50048 8.9585 5.06098"
-                                                                    stroke="currentColor" stroke-width="1.5"
-                                                                    stroke-linecap="round" stroke-linejoin="round"></path>
-                                                            </svg>
-                                                        </button>
-                                                    </form>
-                                                @endif
-                                            @else
-                                                <form method="GET" id="favoriteForm"
-                                                    action="{{ route('user.login') }}">
+                                        @if (auth()->check() && auth()->user()->hasRole('user'))
+                                            @if ($servicerequest->isEmpty())
+                                                <form method="POST" id="favoriteForm">
                                                     @csrf
-                                                    <button type="submit" class="btn-link serv-whishlist text-primary">
+                                                    <input type="hidden" name="service_id" class="service_id"
+                                                        value="{{ $data->id }}">
+                                                    <input type="hidden" name="user_id" id="user_id"
+                                                        value="{{ Auth::user()->id }}">
+                                                    <button type="button"
+                                                        class="btn-link serv-whishlist text-primary save_fav">
                                                         <svg width="12" height="13" viewBox="0 0 12 13"
                                                             fill="none" xmlns="http://www.w3.org/2000/svg">
                                                             <path fill-rule="evenodd" clip-rule="evenodd"
                                                                 d="M1.43593 6.29916C0.899433 4.62416 1.52643 2.70966 3.28493 2.14316C4.20993 1.84466 5.23093 2.02066 5.99993 2.59916C6.72743 2.03666 7.78593 1.84666 8.70993 2.14316C10.4684 2.70966 11.0994 4.62416 10.5634 6.29916C9.72843 8.95416 5.99993 10.9992 5.99993 10.9992C5.99993 10.9992 2.29893 8.98516 1.43593 6.29916Z"
                                                                 stroke="currentColor" stroke-width="1.5"
                                                                 stroke-linecap="round" stroke-linejoin="round" />
-                                                            <path d="M8 3.84998C8.535 4.02298 8.913 4.50048 8.9585 5.06098"
+                                                            <path
+                                                                d="M8 3.84998C8.535 4.02298 8.913 4.50048 8.9585 5.06098"
                                                                 stroke="currentColor" stroke-width="1.5"
                                                                 stroke-linecap="round" stroke-linejoin="round" />
                                                         </svg>
                                                     </button>
                                                 </form>
-                                            @endif
-                                        </div>
-                                        <ul class="list-inline p-0 mt-0 mb-0 price-content">
-                                            <div class="service d-flex justify-content-center "
-                                                style="position:relative; z-index:1111; margin:auto; background-image: url('{{ asset('images/icon/bannerbg.jpg') }}'); background-size: cover; width:68% ; margin-top:-32px;  background-repeat: no-repeat; background-position: center; padding: 10px 20px; color: white; font-weight: 600; font-size: 18px; border-radius: 10px; border: 3px solid #E1DCDD;">
-
-                                                @if ($data->price == 0)
-                                                    <li
-                                                        class="text-white fw-500 d-inline-block position-relative font-size-18">
-                                                        Free</li>
-                                                @else
-                                                    <li
-                                                        class="text-white fw-500 d-inline-block position-relative font-size-18">
-                                                        {{ getPriceFormat($data->price) }}
-                                                    </li>
-                                                @endif
-                                            </div>
-                                        </ul>
-
-
-                                        <a href="{{ route('service.detail', $data->id) }}"
-                                            class="service-heading mt-2 d-block p-0">
-                                            <h5 class="service-heading service-title font-size-1 line-count-2"
-                                                style="font-size:12px">
-                                                {{ $data->name }}</h5>
-                                        </a>
-
-
-                                        <p class="mt-0 mb-0" style="font-weight: 600;  ">
-                                            {{ $data->city ? $data->city->name : 'City' }}-{{ $data->country ? $data->country->name : 'Country' }}
-                                        </p>
-
-
-                                        <div class="d-flex align-items-center justify-content-between"
-                                            style="width: 100%">
-                                            <div class="d-flex align-items-center">
-                                                <img src="{{ getSingleMedia($data->providers, 'profile_image', null) }}"
-                                                    alt="service" class="img-fluid rounded-3 object-cover avatar-24">
-                                                <a href="{{ route('provider.detail', $data->providers->id) }}">
-                                                    <span
-                                                        class="font-size-14 service-user-name">{{ $data->providers->display_name }}</span>
-                                                </a>
-                                            </div>
-                                            <div class="d-flex align-items-center  mt-2 justify-content-end">
-                                                <img src="{{ asset('images/plans/icon.jpg') }}" alt="icon"
-                                                    style="width: 20%; height: 70%; margin-right: 10px;"> <img
-                                                    src="{{ asset('images/plans/icon.jpg') }}" alt="icon"
-                                                    style="width: 20%; height: 8%">
-
-                                            </div>
-                                        </div>
-                                        <div class="d-flex align-items-center  mt-2">
-                                            @if ($data->avg_rating > 0)
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12"
-                                                    viewBox="0 0 12 12" fill="none" class="service-rating">
-                                                    <path d="M6.58578 0.85525L7.92167..." fill="currentColor" />
-                                                </svg>
-                                                <h6 class="font-size-14 mb-0">
-                                                    {{ $data->avg_rating }}
-                                                    <a href="{{ route('rating.all', ['service_id' => $data->id]) }}"
-                                                        class="text-body ms-1">
-                                                        ({{ $data->total_reviews }}
-                                                        {{ $data->total_reviews > 1 ? __('messages.reviews') : __('messages.review') }})
-                                                    </a>
-
-                                                </h6>
                                             @else
-                                                <h6 class="font-size-14 mb-0 text-muted">
-                                                    {{ __('no_reviews_yet') }}</h6>
+                                                <form method="POST" id="favoriteForm">
+                                                    @csrf
+                                                    <input type="hidden" name="service_id" class="service_id"
+                                                        value="{{ $data->id }}">
+                                                    <input type="hidden" name="user_id" id="user_id"
+                                                        value="{{ Auth::user()->id }}">
+                                                    <button type="button"
+                                                        class="btn-link serv-whishlist text-primary delete_fav">
+                                                        <svg width="12" height="13" viewBox="0 0 12 13"
+                                                            fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                                            <path fill-rule="evenodd" clip-rule="evenodd"
+                                                                d="M1.43593 6.29916C0.899433 4.62416 1.52643 2.70966 3.28493 2.14316C4.20993 1.84466 5.23093 2.02066 5.99993 2.59916C6.72743 2.03666 7.78593 1.84666 8.70993 2.14316C10.4684 2.70966 11.0994 4.62416 10.5634 6.29916C9.72843 8.95416 5.99993 10.9992 5.99993 10.9992C5.99993 10.9992 2.29893 8.98516 1.43593 6.29916Z"
+                                                                stroke="currentColor" stroke-width="1.5"
+                                                                stroke-linecap="round" stroke-linejoin="round"></path>
+                                                            <path
+                                                                d="M8 3.84998C8.535 4.02298 8.913 4.50048 8.9585 5.06098"
+                                                                stroke="currentColor" stroke-width="1.5"
+                                                                stroke-linecap="round" stroke-linejoin="round"></path>
+                                                        </svg>
+                                                    </button>
+                                                </form>
                                             @endif
-                                            <strong>{{ $completedBookingCount }} Bookings</strong>
-                                        </div>
-
-
-                                        <div class="d-flex mt-0 " style="gap: 18px; justify-content: center;">
-                                            <a href="#"><img
-                                                    src="https://cdn.pixabay.com/photo/2021/06/15/12/51/facebook-6338507_1280.png"
-                                                    style="width: 30px; border-radius: 8px;" alt=""></a>
-                                            <a href="#"><img
-                                                    src="https://upload.wikimedia.org/wikipedia/commons/9/95/Instagram_logo_2022.svg"
-                                                    style="width: 30px; border-radius: 8px;" alt=""></a>
-                                            <a href="#"><img
-                                                    src="https://cdn.pixabay.com/photo/2015/03/10/17/30/twitter-667462_640.png"
-                                                    style="width: 30px; border-radius: 8px;" alt=""></a>
-                                            <a href="#"><img
-                                                    src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRokEYt0yyh6uNDKL8uksVLlhZ35laKNQgZ9g&s"
-                                                    style="width: 30px; border-radius: 8px;" alt=""></a>
-                                        </div>
-
+                                        @else
+                                            <form method="GET" id="favoriteForm"
+                                                action="{{ route('user.login') }}">
+                                                @csrf
+                                                <button type="submit" class="btn-link serv-whishlist text-primary">
+                                                    <svg width="12" height="13" viewBox="0 0 12 13"
+                                                        fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                        <path fill-rule="evenodd" clip-rule="evenodd"
+                                                            d="M1.43593 6.29916C0.899433 4.62416 1.52643 2.70966 3.28493 2.14316C4.20993 1.84466 5.23093 2.02066 5.99993 2.59916C6.72743 2.03666 7.78593 1.84666 8.70993 2.14316C10.4684 2.70966 11.0994 4.62416 10.5634 6.29916C9.72843 8.95416 5.99993 10.9992 5.99993 10.9992C5.99993 10.9992 2.29893 8.98516 1.43593 6.29916Z"
+                                                            stroke="currentColor" stroke-width="1.5"
+                                                            stroke-linecap="round" stroke-linejoin="round" />
+                                                        <path d="M8 3.84998C8.535 4.02298 8.913 4.50048 8.9585 5.06098"
+                                                            stroke="currentColor" stroke-width="1.5"
+                                                            stroke-linecap="round" stroke-linejoin="round" />
+                                                    </svg>
+                                                </button>
+                                            </form>
+                                        @endif
                                     </div>
+                                    <ul class="list-inline p-0 mt-0 mb-0 price-content">
+                                        <div class="service d-flex justify-content-center "
+                                            style="position:relative; z-index:1111; margin:auto; background-image: url('{{ asset('images/icon/bannerbg.jpg') }}'); background-size: cover; width:68% ; margin-top:-32px;  background-repeat: no-repeat; background-position: center; padding: 10px 20px; color: white; font-weight: 600; font-size: 18px; border-radius: 10px; border: 3px solid #E1DCDD;">
+
+                                            @if ($data->price == 0)
+                                                <li
+                                                    class="text-white fw-500 d-inline-block position-relative font-size-18">
+                                                    Free</li>
+                                            @else
+                                                <li
+                                                    class="text-white fw-500 d-inline-block position-relative font-size-18">
+                                                    {{ getPriceFormat($data->price) }}
+                                                </li>
+                                            @endif
+                                        </div>
+                                    </ul>
+
+
+                                    <a href="{{ route('service.detail', $data->id) }}"
+                                        class="service-heading mt-2 d-block p-0">
+                                        <h5 class="service-heading service-title font-size-1 line-count-2"
+                                            style="font-size:14px">
+                                           <b>{{ $data->name }}</b> </h5>
+                                    </a>
+
+
+                                    <p class="mt-0 mb-0" style="font-size: 12;  ">
+                                        {{ $data->city ? $data->city->name : 'City' }}-{{ $data->country ? $data->country->name : 'Country' }}
+                                    </p>
+
+
+                                    <div class="d-flex align-items-center justify-content-between"
+                                        style="width: 100%">
+                                        <div class="d-flex align-items-center">
+                                            <img src="{{ getSingleMedia($data->providers, 'profile_image', null) }}"
+                                                alt="service" class="img-fluid rounded-3 object-cover avatar-24">
+                                            <a href="{{ route('provider.detail', $data->providers->id) }}">
+                                                <span
+                                                    class="font-size-14 service-user-name">{{ $data->providers->display_name }}</span>
+                                            </a>
+                                        </div>
+                                        <div class="d-flex align-items-center  mt-2 justify-content-end">
+                                            <img src="{{ asset('images/plans/icon.jpg') }}" alt="icon"
+                                                style="width: 20%; height: 70%; margin-right: 10px;"> <img
+                                                src="{{ asset('images/plans/icon.jpg') }}" alt="icon"
+                                                style="width: 20%; height: 8%">
+
+                                        </div>
+                                    </div>
+                                    <div class="d-flex align-items-center  mt-2">
+                                        @if ($data->avg_rating > 0)
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12"
+                                                viewBox="0 0 12 12" fill="none" class="service-rating">
+                                                <path d="M6.58578 0.85525L7.92167..." fill="currentColor" />
+                                            </svg>
+                                            <h6 class="font-size-14 mb-0">
+                                                {{ $data->avg_rating }}
+                                                <a href="{{ route('rating.all', ['service_id' => $data->id]) }}"
+                                                    class="text-body ms-1">
+                                                    ({{ $data->total_reviews }}
+                                                    {{ $data->total_reviews > 1 ? __('messages.reviews') : __('messages.review') }})
+                                                </a>
+
+                                            </h6>
+                                        @else
+                                            <h6 class="font-size-14 mb-0 text-muted">
+                                                {{ __('no_reviews_yet') }}</h6>
+                                        @endif
+                                        <strong>{{ $completedBookingCount }} Bookings</strong>
+                                    </div>
+
+
+                                    <div class="d-flex mt-0 " style="gap: 18px; justify-content: center;">
+                                        <a href="#"><img
+                                                src="https://cdn.pixabay.com/photo/2021/06/15/12/51/facebook-6338507_1280.png"
+                                                style="width: 30px; border-radius: 8px;" alt=""></a>
+                                        <a href="#"><img
+                                                src="https://upload.wikimedia.org/wikipedia/commons/9/95/Instagram_logo_2022.svg"
+                                                style="width: 30px; border-radius: 8px;" alt=""></a>
+                                        <a href="#"><img
+                                                src="https://cdn.pixabay.com/photo/2015/03/10/17/30/twitter-667462_640.png"
+                                                style="width: 30px; border-radius: 8px;" alt=""></a>
+                                        <a href="#"><img
+                                                src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRokEYt0yyh6uNDKL8uksVLlhZ35laKNQgZ9g&s"
+                                                style="width: 30px; border-radius: 8px;" alt=""></a>
+                                    </div>
+
                                 </div>
-                            @endforeach
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+
+
+
+
+
+            </div>
+        @endif
+          
+        </div>
+    </div>
+
+    @if ($auth_user_id)
+        <!-- Recently Viewed Service -->
+        @if ($sectionData && isset($sectionData['section_8']) && $sectionData['section_8']['section_8'] == 1)
+            @php
+                $recentlyViewed = session()->get('recently_viewed:' . $auth_user_id, []);
+                session(['recently_viewed:' . $auth_user_id => $recentlyViewed]);
+            @endphp
+            @if (!empty($recentlyViewed))
+                <div class="section-padding">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-lg-2 col-md-none"></div>
+                            <div class="col-lg-8 col-md-12">
+                                <div class="iq-title-box text-center center">
+                                    <h3 class="text-capitalize line-count-1">{{ $sectionData['title'] }}
+                                        <span class="highlighted-text">
+                                            <span class="highlighted-text-swipe"></span>
+                                            <span class="highlighted-image">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="130" height="11"
+                                                    viewBox="0 0 130 11" fill="none">
+                                                    <path d="M2 9C2.5625 8.76081 66.125 -2.95948 128 4.4554"
+                                                        stroke="currentColor" stroke-width="4" stroke-linecap="round"
+                                                        stroke-linejoin="round" />
+                                                </svg>
+                                            </span>
+                                        </span>
+                                    </h3>
+                                    <p class="iq-title-desc line-count-3 text-body mt-3 mb-0">
+                                        {{ $sectionData['section_8']['description'] ?? null }}</p>
+
+                                </div>
+                            </div>
+                            <div class="col-lg-2 col-md-none"></div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12">
+                                <service-slider-section :user_id="{{ json_encode($auth_user_id) }}"
+                                    :favourite="{{ json_encode($favourite) }}" :type="'recently_view'" />
+                            </div>
                         </div>
                     </div>
-
-
-
-
-
                 </div>
             @endif
-
+        @endif
     @endif
 
     <!-- Provider -->
