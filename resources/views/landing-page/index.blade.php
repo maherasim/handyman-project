@@ -384,6 +384,7 @@
                                             @endif
                                         </div>
                                         <ul class="list-inline p-0 mt-0 mb-0 price-content">
+                                         <div class="d-flex justify-content-center">
                                             @if ($data->price == 0)
                                                 <li
                                                     class="text-primary fw-500 d-inline-block position-relative font-size-18">
@@ -395,7 +396,9 @@
                                                 </li>
                                             @endif
                                             
-                                        </ul>
+                                        </ul> 
+                                    </div></div>
+
                                         <a href="{{ route('service.detail', $data->id) }}"
                                             class="service-heading mt-4 d-block p-0">
                                             <h5 class="service-heading service-title font-size-18 line-count-2">
