@@ -600,7 +600,7 @@
                  
 
                     <div class="bg-light   pl-5 pr-5 pb-0 rounded-3 mt-0 pt-0">
-                        <div class="service d-flex justify-content-center " style="position:relative; z-index:1111; margin:auto; background-image: url('{{ asset('images/icon/bannerbg.jpg') }}'); background-size: cover; width:100% ;   background-repeat: no-repeat; background-position: center; padding: 10px 20px; color: #fff; font-weight: 600; font-size: 18px; border-radius: 10px; border: 3px solid #E1DCDD;">
+                        <div class="service d-flex justify-content-center " style="position:relative; z-index:1111; margin:auto; background-image: url('{{ asset('images/icon/blueicon.jpg') }}'); background-size: cover; width:100% ;   background-repeat: no-repeat; background-position: center; padding: 10px 20px; color: #fff; font-weight: 600; font-size: 18px; border-radius: 10px; border: 3px solid #E1DCDD;">
                             <h3 class="fw-200 d-inline-block position-relative"
                             style=" 
            color: white;
