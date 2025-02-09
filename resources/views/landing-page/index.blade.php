@@ -210,7 +210,7 @@
                                     <!-- Title and Social Icons -->
                                     <div class="d-flex justify-content-between align-items-center">
                                         <h5 class="categories-name text-capitalize " style="font-size: 15px;">
-                                            {{ $jobRequest->title }}
+                                           <b>{{ $jobRequest->title }}</b> 
                                         </h5>
                                         <div class="d-flex align-items-center gap-2">
                                             <a href="#"><img
