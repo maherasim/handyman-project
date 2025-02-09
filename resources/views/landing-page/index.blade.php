@@ -417,13 +417,20 @@
                                         </p>
 
                                         <div class="mt-3">
-                                            <div class="d-flex align-items-center gap-2">
+                                            <div class="d-flex align-items-center  gap-2  justify-content-between">
                                                 <img src="{{ getSingleMedia($data->providers, 'profile_image', null) }}"
                                                     alt="service" class="img-fluid rounded-3 object-cover avatar-24">
                                                 <a href="{{ route('provider.detail', $data->providers->id) }}">
                                                     <span
                                                         class="font-size-14 service-user-name">{{ $data->providers->display_name }}</span>
                                                 </a>
+                                                <div class="d-flex align-items-center gap-1 f-none mt-2">
+                                                    <img src="{{ asset('images/plans/icon.jpg') }}" alt="icon"
+                                                        style="width: 23%; height: 23%; margin-right: 10px;"> <img
+                                                        src="{{ asset('images/plans/icon.jpg') }}" alt="icon"
+                                                        style="width: 23%; height: 23%">
+    
+                                                </div>
                                             </div>
                                             <div class="d-flex align-items-center gap-1 f-none mt-2">
                                                 @if ($data->avg_rating > 0)
@@ -446,13 +453,7 @@
                                                 @endif
                                                 <strong>{{ $completedBookingCount }} Bookings</strong>
                                             </div>
-                                            <div class="d-flex align-items-center gap-1 f-none mt-2">
-                                                <img src="{{ asset('images/plans/icon.jpg') }}" alt="icon"
-                                                    style="width: 23%; height: 23%; margin-right: 10px;"> <img
-                                                    src="{{ asset('images/plans/icon.jpg') }}" alt="icon"
-                                                    style="width: 23%; height: 23%">
-
-                                            </div>
+                                            
                                             <br>
                                             <div class="d-flex mt-8 " style="gap: 18px; justify-content: center;">
                                                 <a href="#"><img
