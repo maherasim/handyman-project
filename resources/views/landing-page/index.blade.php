@@ -384,7 +384,7 @@
                                             @endif
                                         </div>
                                         <ul class="list-inline p-0 mt-0 mb-0 price-content">
-                                         <div class="d-flex justify-content-center " style="margin-top:-20px;  position:relative; z-index:1111; background-image: url('{{ asset('images/icon/bannerbg.jpg') }}'); background-size: cover; width:68% ; background-repeat: no-repeat; background-position: center; padding: 10px 20px; color: #fff; font-weight: 600; font-size: 18px; border-radius: 10px; border: 3px solid #E1DCDD;">
+                                         <div class="d-flex justify-content-center " style="margin-top:-20px;  position:relative; z-index:1111; margin-auto; background-image: url('{{ asset('images/icon/bannerbg.jpg') }}'); background-size: cover; width:68% ; background-repeat: no-repeat; background-position: center; padding: 10px 20px; color: #fff; font-weight: 600; font-size: 18px; border-radius: 10px; border: 3px solid #E1DCDD;">
                                             @if ($data->price == 0)
                                                 <li
                                                     class="text-primary fw-500 d-inline-block position-relative font-size-18">
