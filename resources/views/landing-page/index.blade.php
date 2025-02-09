@@ -647,8 +647,8 @@
                                             <div class="star-rating">
                                                 <rating-component :readonly="true" :showrating="false" :ratingvalue="1" />
                                             </div>
-                                            <h6 class="lh-sm">2</h6>
-                                            <a href="#">(2 {{ __('messages.reviews') }})</a>
+                                            <h6 class="lh-sm">5</h6>
+                                            <a href="#">(5 {{ __('messages.reviews') }})</a>
                                         </div>
                                         
                                         <strong>{{ $completedBookingCount }} Bookings</strong>
