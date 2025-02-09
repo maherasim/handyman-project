@@ -238,7 +238,8 @@
                                         </span>
                                     </h5>
                                     <!-- Published Info -->
-                                    <h5 class="mb-1" style="font-weight: 300;">Published at:   {{ $jobRequest->created_at }}</h5>
+                                    <h5 class="mb-1" style="font-weight: 300;">Published at: {{ $jobRequest->created_at->format('d M Y') }}</h5>
+
                                    
                                     <div class="d-flex align-items-center gap-2">
                                         <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQnnM0ib-pYCZg4DbbB_T5_mfxpqrDHYXFLy208bjvHjIM5q1FF4lzLvNFp2qZ5Eo11orA&usqp=CAU"
