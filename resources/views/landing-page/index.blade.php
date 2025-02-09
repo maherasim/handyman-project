@@ -201,7 +201,7 @@
                                     <!-- Card Image -->
                                     <div class="card-imgd" style="position: relative;">
                                         <img class="card-img-top"
-                                            src=""
+                                            src="{{ asset('images/post-job/ac_refresh_and_revive.png') }}"
                                             alt="Card image cap"
                                             style="border-radius: 10px; width: 100%; height: 200px; object-fit: cover;">
                                         <!-- Price Overlay -->
