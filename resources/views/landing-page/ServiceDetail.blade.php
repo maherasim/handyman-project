@@ -610,7 +610,7 @@
            padding: 10px 15px; 
            
            display: inline-block; 
-           width: 180px; 
+           width: 100% 
            margin: auto;">
                             Provider Details
                         </h3>           
