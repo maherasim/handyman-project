@@ -209,7 +209,7 @@
                                 <div class="card-body p-2" style="flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; p">
                                     <!-- Title and Social Icons -->
                                     <div class="d-flex justify-content-between align-items-center">
-                                        <h5 class="categories-name text-capitalize mt-4 mb-2 line-count-1" style="font-size: 18px;">
+                                        <h5 class="categories-name text-capitalize " style="font-size: 18px;">
                                             {{ $jobRequest->title }}
                                         </h5>
                                         <div class="d-flex align-items-center gap-2">
