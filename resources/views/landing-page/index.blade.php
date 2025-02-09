@@ -456,7 +456,7 @@
                                                 <strong>{{ $completedBookingCount }} Bookings</strong>
                                             </div>
                                             
-                                            <br>
+                                           
                                             <div class="d-flex mt-2 " style="gap: 18px; justify-content: center;">
                                                 <a href="#"><img
                                                         src="https://cdn.pixabay.com/photo/2021/06/15/12/51/facebook-6338507_1280.png"
