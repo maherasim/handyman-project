@@ -228,7 +228,7 @@
                                         </div>
                                     </div>
                                     <!-- Location -->
-                                    <h5 class="mt-0 mb-1 text-truncate">
+                                    <h5 class="mt-0 mb-0 text-truncate">
                                         <span style="font-size: 16px;">
                                             @if ($jobRequest->city && $jobRequest->country)
                                                 {{ $jobRequest->city->name }} - {{ $jobRequest->country->name }}
@@ -238,7 +238,7 @@
                                         </span>
                                     </h5>
                                     <!-- Published Info -->
-                                    <h5 class="mb-1" style="font-weight: 300;">Published at: {{ $jobRequest->created_at->toDateString() }}</h5>
+                                    <h5 class="mb-0" style="font-weight: 300;">Published at: {{ $jobRequest->created_at->toDateString() }}</h5>
 
                                    
                                     <div class="d-flex align-items-center gap-2">
