@@ -238,7 +238,7 @@
                                         </span>
                                     </h5>
                                     <!-- Published Info -->
-                                    <h5 class="mb-1" style="font-weight: 300;">Published at: {{ $jobRequest->created_at->format('d M Y') }}</h5>
+                                    <h5 class="mb-1" style="font-weight: 300;">Published at: {{ $jobRequest->created_at->toDateString() }}</h5>
 
                                    
                                     <div class="d-flex align-items-center gap-2">
