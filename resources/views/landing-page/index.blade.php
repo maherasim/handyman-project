@@ -185,7 +185,7 @@
                 <!-- Display Job Requests Cards Similar to Category Section -->
                 <div class="row">
                     @foreach ($jobRequests as $jobRequest)
-                    <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+                    <div class="col-lg-3 col-md-4 col-12 mb-4">
                         <a href="{{ route('job.details', $jobRequest->id) }}" class="card-link">
                             <div class="card mt-5 p-3"
                                 style="position: relative; background: #FAF9FF; border-radius: 10px; height: 450px; display: flex; flex-direction: column; justify-content: space-between;">
