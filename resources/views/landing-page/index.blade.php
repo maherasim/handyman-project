@@ -207,7 +207,7 @@
                                         <!-- Price Overlay -->
                                         <div
                                             style="position: absolute; bottom: -20px; left: 50%; transform: translateX(-50%); width:68%; background-image: url('{{ asset('images/icon/bannerbg.jpg') }}'); background-size: cover; background-repeat: no-repeat; background-position: center; padding: 10px 20px; color: #fff; font-weight: 600; font-size: 18px; border-radius: 10px; border: 3px solid #E1DCDD;">
-                                            € {{ $jobRequest->price }}/{{ $jobRequest->type }}
+                                            € {{ $jobRequest->price }}  / {{ $jobRequest->type }}
                                         </div>
                                         <!-- Heart Icon -->
                                         <i class='bx bx-heart'
