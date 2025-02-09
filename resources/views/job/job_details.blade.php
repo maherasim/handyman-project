@@ -33,7 +33,7 @@
                    <h3 class="fw-200 d-inline-block position-relative"
                        style="color: white; font-size: 15px; font-weight: bold; text-align: center; 
                               padding: 10px 15px; display: inline-block; width: 90%; margin: auto;">
-                    About Job Request
+                    About
                    </h3>            
                </div> <br>
                        <p>{{ $jobrequest->description }}</p>
