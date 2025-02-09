@@ -286,7 +286,7 @@
         <div class="container">
             @if ($sectionData && isset($sectionData['section_3']) && $sectionData['section_3']['section_3'] == 1)
                 <div>
-                    <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+                    <div class="service-img d-flex align-items-center justify-content-between flex-wrap gap-2">
                         <div class="iq-title-box mb-0">
                             <h3 class="text-capitalize line-count-1">{{ $sectionData['section_3']['title'] }}
                                 <div class="highlighted-text">
