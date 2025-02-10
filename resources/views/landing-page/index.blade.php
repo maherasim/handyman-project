@@ -206,7 +206,7 @@
                                             style="border-radius: 10px; width: 100%; height: 200px; object-fit: cover;">
                                         <!-- Price Overlay -->
                                         <div
-                                            style="position: absolute; bottom: -20px; left: 50%; transform: translateX(-50%); width:68%; background-image: url('{{ asset('images/icon/bannerbg.jpg') }}'); background-size: cover; background-repeat: no-repeat; background-position: center; padding: 10px 20px; color: #fff; font-weight: 600; font-size: 18px; border-radius: 10px; border: 3px solid #E1DCDD;">
+                                            style="position: absolute; bottom: -20px; left: 50%; transform: translateX(-50%); width:68%; background-image: url('{{ asset('images/icon/newbanner.jpg') }}'); background-size: cover; background-repeat: no-repeat; background-position: center; padding: 10px 20px; color: #fff; font-weight: 600; font-size: 18px; border-radius: 10px; border: 3px solid #E1DCDD;">
                                             € {{ $jobRequest->price }}  / {{ $jobRequest->type }}
                                         </div>
                                         <!-- Heart Icon -->
@@ -391,7 +391,7 @@
                                         </div>
                                         <ul class="list-inline p-0 mt-0 mb-0 price-content">
                                             <div class="service d-flex justify-content-center "
-                                                style="position:relative; z-index:1111; margin:auto; background-image: url('{{ asset('images/icon/bannerbg.jpg') }}'); background-size: cover; width:68% ; margin-top:-32px;  background-repeat: no-repeat; background-position: center; padding: 10px 20px; color: white; font-weight: 600; font-size: 18px; border-radius: 10px; border: 3px solid #E1DCDD;">
+                                                style="position:relative; z-index:1111; margin:auto; background-image: url('{{ asset('images/icon/newbanner.jpg') }}'); background-size: cover; width:68% ; margin-top:-32px;  background-repeat: no-repeat; background-position: center; padding: 10px 20px; color: white; font-weight: 600; font-size: 18px; border-radius: 10px; border: 3px solid #E1DCDD;">
 
                                                 @if ($data->price == 0)
                                                     <li
@@ -595,7 +595,7 @@
                                     </div>
                                     <ul class="list-inline p-0 mt-0 mb-0 price-content">
                                         <div class="service d-flex justify-content-center "
-                                            style="position:relative; z-index:1111; margin:auto; background-image: url('{{ asset('images/icon/bannerbg.jpg') }}'); background-size: cover; width:68% ; margin-top:-32px;  background-repeat: no-repeat; background-position: center; padding: 10px 20px; color: white; font-weight: 600; font-size: 18px; border-radius: 10px; border: 3px solid #E1DCDD;">
+                                            style="position:relative; z-index:1111; margin:auto; background-image: url('{{ asset('images/icon/newbanner.jpg') }}'); background-size: cover; width:68% ; margin-top:-32px;  background-repeat: no-repeat; background-position: center; padding: 10px 20px; color: white; font-weight: 600; font-size: 18px; border-radius: 10px; border: 3px solid #E1DCDD;">
 
                                             @if ($data->price == 0)
                                                 <li
