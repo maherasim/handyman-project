@@ -1,7 +1,3 @@
-@extends('landing-page.layouts.default')
-@section('content')
-
-
 
 <style>
    .price-box {
@@ -295,4 +291,3 @@
 });
 });
 </script>
-@endsection
