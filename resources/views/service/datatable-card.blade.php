@@ -132,8 +132,8 @@
          </div>
      
       
-         <div class="d-flex align-items-center  mt-2">
-            <div class="d-flex align-items-center  mt-2">
+         <div class="d-flex align-items-center ">
+            <div class="d-flex align-items-center ">
                <div class="d-flex align-items-center gap-2 flex-wrap ml-2">
                    <div class="star-rating">
                        <rating-component :readonly="true" :showrating="false" :ratingvalue="1" />
@@ -150,7 +150,7 @@
       
          
         
-      <div class="d-flex align-items-center gap-1 f-none mt-2">
+      <div class="d-flex align-items-center gap-1 f-none">
          @if($totalRating > 0)
          <svg xmlns=" " width="12" height="12" viewBox="0 0 12 12" fill="none"
             class="service-rating">
