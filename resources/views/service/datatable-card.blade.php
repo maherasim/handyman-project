@@ -1,3 +1,8 @@
+@extends('landing-page.layouts.default')
+@section('content')
+
+
+
 <style>
    .price-box {
       background-color: #007bff; /* Blue background */
@@ -290,3 +295,4 @@
 });
 });
 </script>
+@endsection
