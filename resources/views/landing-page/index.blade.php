@@ -642,16 +642,15 @@
 
                                         </div>
                                     </div>
-                                    <div class="d-flex align-items-center  mt-2">
+                                    <div class="d-flex align-items-center mt-2 gap-3"> 
                                         <div class="d-flex align-items-center gap-2 flex-wrap ml-2">
                                             <div class="star-rating">
-                                                <rating-component :readonly="true" :showrating="false" :ratingvalue="5" />
+                                                <rating-component :readonly="true" :showrating="false" :ratingvalue="1" />
                                             </div>
-                                            <h6 class="lh-sm">5</h6>
+                                            <h6 class="lh-sm mb-0">1</h6>
                                             <a href="#">(1 {{ __('messages.reviews') }})</a>
                                         </div>
-                                        
-                                        <p mt-2>{{ $completedBookingCount }} Bookings</p>
+                                        <p class="mb-0">{{ $completedBookingCount }} Bookings</p>
                                     </div>
 
 
