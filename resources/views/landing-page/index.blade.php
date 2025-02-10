@@ -652,7 +652,7 @@
                                             <a href="#">(1 {{ __('messages.reviews') }})</a>
                                         </div>
                                         
-                                        <p>{{ $completedBookingCount }} Bookings</p>
+                                        <p mt-2>{{ $completedBookingCount }} Bookings</p>
                                     </div>
 
 
