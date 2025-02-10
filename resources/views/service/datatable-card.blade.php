@@ -104,8 +104,9 @@
    <a href="{{ route('service.detail', $data->id) }}"
       class="service-heading mt-2 d-block p-0">
       <h5 class="service-heading service-title font-size-1 line-count-2"
-          style="font-size:11px">
-         <b>{{ $data->name }}</b> </h5>
+          style="font-size:13px">
+          <h5><b>{{ Str::words($data->name, 3, '') }}</b></h5>
+         </h5>
   </a>
   
   <p class="mt-0 mb-0" style="font-size: 12;  ">
@@ -134,15 +135,17 @@
      
       
          <div class="d-flex align-items-center ">
-            <div class="d-flex align-items-center mt-2 gap-3"> 
+            <div class="d-flex align-items-center ">
                <div class="d-flex align-items-center gap-2 flex-wrap ml-2">
                    <div class="star-rating">
-                       <rating-component :readonly="true" :showrating="false" :ratingvalue="2" />
+                       <rating-component :readonly="true" :showrating="false" :ratingvalue="1" />
                    </div>
-                   <h6 class="lh-sm mb-0">2</h6>
-                   <a href="#">(2 {{ __('messages.reviews') }})</a>
+                   <h6 class="lh-sm">1</h6>
+                   <a href="#">(1 {{ __('messages.reviews') }})</a>
                </div>
-               <p class="mb-0">{{ $completedBookingCount }} Bookings</p>
+               
+
+               <strong>{{ $completedBookingCount }} Bookings</strong>
            </div>
 
         </div>
