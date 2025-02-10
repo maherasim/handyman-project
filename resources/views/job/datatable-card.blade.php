@@ -135,7 +135,7 @@
                      </div>
                  @else
 
-                 @foreach ($jobRequests as $jobRequest)
+                 @foreach ($jobrequest as $jobRequest)
                  <div class="col-lg-3 col-md-4 col-12 mb-0">
                      <a href="{{ route('job.details', $jobRequest->id) }}" class="card-link">
                          <div class="card mt-5 p-3"
