@@ -165,8 +165,8 @@
               <a href="{{ route('rating.all', ['service_id' => $data->id]) }}" class="text-body ms-1">({{$totalReviews }} {{__('messages.review')}})</a></h6>
             @endif
          @endif
-      </div> <br>
-      <div class="d-flex mt-10 " style="gap: 14px; justify-content: center;">
+      </div>  
+      <div class="d-flex" style="gap: 14px; justify-content: center;">
          <a href="#"><img
                  src="https://cdn.pixabay.com/photo/2021/06/15/12/51/facebook-6338507_1280.png"
                  style="width: 30px; border-radius: 8px;" alt=""></a>
