@@ -113,23 +113,24 @@
 </p>  
 
   
-         <div class="d-flex align-items-center justify-content-between w-100">
-            <div class="d-flex align-items-center flex-nowrap">
-               <img src="{{ getSingleMedia($data->providers, 'profile_image', null) }}"
-                  alt="service" class="img-fluid rounded-3 object-cover avatar-24">
-               <a href="{{ route('provider.detail', $data->providers->id) }}" class="ml-2">
-                  <span class="font-size-14 service-user-name" style="white-space: nowrap;">
-                        {{ $data->providers->display_name }}
-                  </span>
-               </a>
-            </div>
-            <div class="d-flex align-items-center justify-content-end">
-               <img src="{{ asset('images/icon/freeicon.jpg') }}" alt="icon"
-                  style="width: 20px; height: 20px; margin-right: 10px;">
-               <img src="{{ asset('images/icon/verified.jpg') }}" alt="icon"
-                  style="width: 20px; height: 20px;">
-            </div>
-         </div>
+<div class="d-flex align-items-center justify-content-between w-100">
+   <div class="d-flex align-items-center flex-nowrap" style="padding-left: 10px;">
+       <img src="{{ getSingleMedia($data->providers, 'profile_image', null) }}"
+           alt="service" class="img-fluid rounded-3 object-cover avatar-24">
+       <a href="{{ route('provider.detail', $data->providers->id) }}" class="ml-2">
+           <span class="font-size-14 service-user-name" style="white-space: nowrap;">
+               {{ $data->providers->display_name }}
+           </span>
+       </a>
+   </div>
+   <div class="d-flex align-items-center justify-content-end">
+       <img src="{{ asset('images/icon/freeicon.jpg') }}" alt="icon"
+           style="width: 20px; height: 20px; margin-right: 10px;">
+       <img src="{{ asset('images/icon/verified.jpg') }}" alt="icon"
+           style="width: 20px; height: 20px;">
+   </div>
+</div>
+
      
       
          <div class="d-flex align-items-center ">
