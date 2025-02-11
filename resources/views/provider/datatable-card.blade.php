@@ -68,10 +68,11 @@
       ({{ round($providers_service_rating, 1) }})
   </div>
   <h6 class="text-primary text-capitalize mt-2 line-count-1">{{ $data->designation }}</h6>
-  <h5  class="mb-0 text-dark" style="font-weight: 100;">
+  <p class="mt-0 mb-0" style="font-size: 12;  ">
       <div>
           {{ $data->city->name }} -{{ $data->country->name }}
-  </h5>
+      </p>
+  
 </div>
 <div class="d-flex align-items-center justify-content-center gap-3 mt-1">
 <a href="#">
