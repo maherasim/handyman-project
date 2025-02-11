@@ -301,14 +301,6 @@
                             </div>
                             @endif -->
                                 {{-- @if(!empty( $advancedPaymentSetting) && $advancedPaymentSetting == 1) --}}
-                              
-                                {{-- @endif --}}
-                                <div class="form-group col-md-4" id="amount">
-                                    {{ html()->label(__('messages.advance_payment_amount').' <span class="text-danger"></span> (%)', 'advance_payment_amount')->class('form-control-label')}}
-                                    {{ html()->number('advance_payment_amount', $servicedata->advance_payment_amount)->placeholder(__('messages.amount'))->class('form-control')->id('advance_payment_amount')->attributes(['min' => 1, 'max' => 99])}}
-                                    <small class="help-block with-errors text-danger"></small>
-                                </div>
-
                                 <div class="form-group col-md-3" id="is_enable_advance">
                                     <div class="custom-control custom-switch">
                                         {{ html()->checkbox('is_enable_advance_payment', $servicedata->is_enable_advance_payment)->class('custom-control-input')->id('is_enable_advance_payment')}}
@@ -316,6 +308,12 @@
                                             for="is_enable_advance_payment">{{ __('messages.enable_advanced_payment')  }}
                                         </label>
                                     </div>
+                                </div>
+                                {{-- @endif --}}
+                                <div class="form-group col-md-4" id="amount">
+                                    {{ html()->label(__('messages.advance_payment_amount').' <span class="text-danger"></span> (%)', 'advance_payment_amount')->class('form-control-label')}}
+                                    {{ html()->number('advance_payment_amount', $servicedata->advance_payment_amount)->placeholder(__('messages.amount'))->class('form-control')->id('advance_payment_amount')->attributes(['min' => 1, 'max' => 99])}}
+                                    <small class="help-block with-errors text-danger"></small>
                                 </div>
                             </div>
     
@@ -401,7 +399,7 @@
         $('#advance_payment_amount').prop('required', value);
     }
 
-    
+ 
 
     function updateAmountVisibility(type, isEnableAdvancePayment) {
         if (type === 'fixed' && !$("#is_enable_advance").hasClass('d-none') && isEnableAdvancePayment) {
