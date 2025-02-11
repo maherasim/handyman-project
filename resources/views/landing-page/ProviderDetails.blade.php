@@ -253,9 +253,7 @@
                             </div>
                         </div>
 
-                        <service-list-section :user_id="{{ json_encode($auth_user_id) }}"
-                            :service="{{ json_encode($providerData['service']) }}" :is_provider_detail={{ true }}
-                            :max_records="6" :favourite="{{ json_encode($favourite) }}"></service-list-section>
+                     
                     @endif
 
                     <div class="row align-items-center mb-5 mt-5">
