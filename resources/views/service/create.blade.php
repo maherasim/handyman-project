@@ -379,40 +379,7 @@
 
     var isEnableAdvancePayment = $("input[name='is_enable_advance_payment']").prop('checked');
 
-    var priceType = $("#price_type").val();
-
-    enableAdvancePayment(priceType);
-    checkEnablePayment(isEnableAdvancePayment);
-
-    $("#is_enable_advance_payment").change(function() {
-        isEnableAdvancePayment = $(this).prop('checked');
-        checkEnablePayment(isEnableAdvancePayment);
-        updateAmountVisibility(priceType, isEnableAdvancePayment);
-    });
-
-    $("#price_type").change(function() {
-        priceType = $(this).val();
-        enableAdvancePayment(priceType);
-        updateAmountVisibility(priceType, isEnableAdvancePayment);
-    });
-
-    function checkEnablePayment(value) {
-        $("#amount").toggleClass('d-none', !value);
-        $('#advance_payment_amount').prop('required', value);
-    }
-
-    function enableAdvancePayment(type) {
-        $("#is_enable_advance").toggleClass('d-none', type !== 'fixed');
-    }
-
-    function updateAmountVisibility(type, isEnableAdvancePayment) {
-        if (type === 'fixed' && !$("#is_enable_advance").hasClass('d-none') && isEnableAdvancePayment) {
-            $("#amount").removeClass('d-none');
-        } else {
-            $("#amount").addClass('d-none');
-        }
-    }
-
+    
     (function($) {
         "use strict";
         $(document).ready(function() {
