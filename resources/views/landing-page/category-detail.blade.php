@@ -62,7 +62,9 @@
 
                        @if( $serviceData )
                         <div class="tab-pane active show" id="all">
-                                <service-list-section :user_id="{{json_encode($auth_user_id)}}" :service="{{ json_encode($serviceData) }}" :favourite="{{json_encode($favourite)}}" ></service-list-section>
+                                <!-- <service-list-section :user_id="{{json_encode($auth_user_id)}}" :service="{{ json_encode($serviceData) }}" :favourite="{{json_encode($favourite)}}" ></service-list-section> -->
+
+                                <remote-service-page link="{{ route('category-detail-service.data', ['id' => request()->id, 'type' => $type, 'latitude' => $latitude, 'longitude' => $longitude, 'col' => 3]) }}"></remote-service-page>
                         </div>
                         @endif
                         @foreach($sub_category as $subCategory)

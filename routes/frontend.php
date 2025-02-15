@@ -73,6 +73,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 Route::get('/category-datatable', [FrontendController::class, 'categoryDatatable'])->name('category.data');
 Route::get('/subcategory-datatable', [FrontendController::class, 'subCategoryDatatable'])->name('subcategory.data');
 Route::get('/service-datatable', [FrontendController::class, 'serviceDatatable'])->name('service.data');
+Route::get('/category-detail-service-datatable', [FrontendController::class, 'categoryDetailServiceDatatable'])->name('category-detail-service.data');
 Route::get('/blog-datatable', [FrontendController::class, 'blogDatatable'])->name('blog.data');
 Route::get('/provider-datatable', [FrontendController::class, 'providerDatatable'])->name('provider.data');
 

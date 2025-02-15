@@ -15,6 +15,7 @@ import CategorySection from './sections/CategorySection.vue'
 import CategoryPage from './sections/CategoryPage.vue'
 import SubCategoryPage from './sections/SubCategoryPage.vue'
 import ServicePage from './sections/ServicesPage.vue'
+import RemoteServicesPage from './sections/RemoteServicesPage.vue'
 import BlogPage from './sections/BlogPage.vue'
 import ProviderPage from './sections/ProviderPage.vue'
 import BookingPage from './sections/BookingPage.vue'
@@ -55,6 +56,7 @@ app.component('category-section', CategorySection)
 app.component('category-page', CategoryPage)
 app.component('subcategory-page', SubCategoryPage)
 app.component('service-page', ServicePage)
+app.component('remote-service-page', RemoteServicesPage)
 app.component('blog-page', BlogPage)
 app.component('provider-page', ProviderPage)
 app.component('booking-page', BookingPage)

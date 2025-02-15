@@ -452,10 +452,12 @@
                             data-laptop="2" data-tab="2" data-mobile="1" data-mobile-sm="1" data-autoplay="true"
                             data-loop="true" data-navigation="false" data-pagination="false">
 
-                            <landing-servicedetailsection-section
+                            <remote-service-page link="{{ route('category-detail-service.data', ['id' => $serviceData['service_detail']['category_id'], 'limit' => 3]) }}"></remote-service-page>
+
+                            <!-- <landing-servicedetailsection-section
                                 :service="{{ json_encode($serviceData['related_service']) }}"
                                 :user_id="{{ $userId }}"
-                                :favourite="{{ json_encode($favouriteServiceData) }}"></landing-servicedetailsection-section>
+                                :favourite="{{ json_encode($favouriteServiceData) }}"></landing-servicedetailsection-section> -->
                         </div>
                     </div>
                 </div>
