@@ -1,186 +1,61 @@
 <x-master-layout>
-    <div class="container-fluid">
+    <form method="POST" action="{{ route('postJobRequest.save') }}" enctype="multipart/form-data" id="postJob">
+        @csrf
+        <input type="hidden" name="id">
+        
         <div class="row">
-            <div class="col-lg-12">
-                <div class="card card-block card-stretch">
-                    <div class="card-body p-0">
-                        <div class="d-flex justify-content-between align-items-center p-3 flex-wrap gap-3">
-                            <h5 class="font-weight-bold">{{ $pageTitle ?? __('messages.list') }}</h5>
-                            <a href="{{ route('post-job-request.index') }}" class="float-right btn btn-sm btn-primary"><i class="fa fa-angle-double-left"></i> {{ __('messages.back') }}</a>
-                        </div>
-                    </div>
-                </div>
+            <div class="form-group col-md-2">
+                <label for="title" class="form-control-label">{{ __('messages.title') }} <span class="text-danger">*</span></label>
+                <input type="text" name="title" value="{{ old('title') }}" placeholder="{{ __('messages.title') }}" class="form-control" required>
+                <small class="help-block with-errors text-danger"></small>
             </div>
-            <div class="col-lg-12">
-                <div class="card">
-                    <div class="card-body">
-                        {{ Form::model($postJob,['method' => 'POST','route'=>'postJobRequest.save', 'enctype'=>'multipart/form-data', 'data-toggle'=>"validator" ,'id'=>'postJob'] ) }}
-
-                        {{ Form::hidden('id') }}
-                        <div class="row">
-                        </div>
-                        <div class="row">
-                            <div class="form-group col-md-2">
-                                {{ Form::label('title', __('messages.title').' <span class="text-danger">*</span>', ['class' => 'form-control-label'], false) }}
-                                {{ Form::text('title', old('title'), ['placeholder' => __('messages.title'), 'class' => 'form-control', 'title' => 'Please enter alphabetic characters and spaces only','required']) }}
-                                <small class="help-block with-errors text-danger"></small>
-                            </div>
-
-                            <div class="form-group col-md-2">
-                                {{ Form::label('country', __('messages.country').' <span class="text-danger">*</span>', ['class' => 'form-control-label'], false) }}
-                                {{ Form::select('country_id', [optional($postJob->country)->id => optional($postJob->country)->name], optional($postJob->category)->id, [
-                                    'class' => 'select2js form-group category',
-                                    'required',
-                                    'id' => 'country_id',
-                                    'data-placeholder' => __('messages.select_name',[ 'select' => __('messages.country') ]),
-                                    'data-ajax--url' => route('ajax-list', ['type' => 'country']),
-                                ]) }}
-                            </div>
-
-                            <div class="form-group col-md-2">
-                                {{ Form::label('city_id', __('messages.select_name',[ 'select' => __('messages.city') ]).' <span class="text-danger">*</span>',['class'=>'form-control-label'],false) }}
-                                <br />
-                                {{ Form::select('city_id', [], [
-                                                'class' => 'select2js form-group category',
-                                                'required',
-                                                'data-placeholder' => __('messages.select_name',[ 'select' => __('messages.city') ]),
-                                ]) }}
-                            </div>
-
-                            <div class="form-group col-md-2">
-                                {{ Form::label('category', __('messages.category').' <span class="text-danger">*</span>', ['class' => 'form-control-label'], false) }}
-                                {{ Form::select('category_id', [optional($postJob->category_id)->id => optional($postJob->category)->name], optional($postJob->category)->id, [
-                                    'class' => 'select2js form-group category',
-                                    'required',
-                                    'id' => 'category_id',
-                                    'data-placeholder' => __('messages.select_name',[ 'select' => __('messages.category') ]),
-                                    'data-ajax--url' => route('ajax-list', ['type' => 'category']),
-                                ]) }}
-                            </div>
-
-                            <div class="form-group col-md-2">
-                                {{ Form::label('subcategory_id', __('messages.select_name',[ 'select' => __('messages.subcategory') ]).' <span class="text-danger">*</span>',['class'=>'form-control-label'],false) }}
-                            <br />
-                            {{ Form::select('subcategory_id', [], [
-                                        'class' => 'select2js form-group subcategory_id',
-                                        'required',
-                                        'data-placeholder' => __('messages.select_name',[ 'select' => __('messages.subcategory') ]),
-                                    ]) }}
-                            </div>
-                                    {{--
-                                <div class="form-group col-md-4">
-                                    {{ Form::label('name', __('messages.select_name',[ 'select' => __('messages.provider') ]).' <span class="text-danger">*</span>',['class'=>'form-control-label'],false) }}
-                                    <br />
-                                    {{ Form::select('provider_id', [optional($postJob->provider)->id => optional($postJob->provider)->name], optional($postJob->provider)->id, [
-                                                'class' => 'select2js form-group provider',
-                                                'required',
-                                                'id' => 'provider_id',
-                                                'data-placeholder' => __('messages.select_name',[ 'select' => __('messages.provider') ]),
-                                                'data-ajax--url' => route('ajax-list', ['type' => 'provider']),
-                                            ]) }}
-
-                                </div> --}}
-                        </div>
-
-
-                        <div class="row">
-                            <div class="form-group col-md-2" id="price_div">
-                                {{ Form::label('price',__('messages.price').' <span class="text-danger">*</span>',['class'=>'form-control-label'],false) }}
-                                {{ Form::number('price',null, [ 'min' => 1, 'step' => 'any' , 'placeholder' => __('messages.price'),'class' =>'form-control', 'required','id' => 'price' ]) }}
-                                <small class="help-block with-errors text-danger"></small>
-                            </div>
-
-                            <div class="form-group col-md-2">
-                                {{ Form::label('start_date', __('messages.start_date').' <span class="text-danger">*</span>', ['class' => 'form-control-label'], false) }}
-                                {{ Form::date('start_date', isset($postJob->start_date) ? $postJob->start_date : null, ['class' => 'form-control', 'id' => 'start_date','required']) }}
-                                <small class="help-block with-errors text-danger"></small>
-                            </div>
-                            <div class="form-group col-md-2">
-                                {{ Form::label('end_date', __('messages.end_date').' <span class="text-danger">*</span>', ['class' => 'form-control-label'], false) }}
-                                {{ Form::date('end_date', isset($postJob->end_date) ? $postJob->end_date : null, ['class' => 'form-control','id' => 'end_date', 'required']) }}
-                                <small class="help-block with-errors text-danger"></small>
-                            </div>
-
-                            <div class="form-group col-md-2">
-                                {{ Form::label('total_day_div', __('messages.total_days').' <span class="text-danger">*</span>',['class'=>'form-control-label'],false) }}
-                                {{ Form::number('total_day',null, [ 'min' => 1, 'step' => 'any' , 'placeholder' => __('messages.total_days'),'class' =>'form-control', 'id' => 'total_day_div', 'required','disabled' ]) }}
-                                <small class="help-block with-errors text-danger"></small>
-                            </div>
-
-                            {{ Form::hidden('total_days', null, ['id' => 'hidden_total_days']) }}
-                            {{ Form::hidden('total_hours', null, ['id' => 'hidden_total_hours']) }}
-
-                            <div class="form-group col-md-2">
-                                {{ Form::label('total_hours_div', __('messages.total_hours').' <span class="text-danger">*</span>',['class'=>'form-control-label'],false) }}
-                                {{ Form::number('total_hours',null, [ 'min' => 1, 'step' => 'any' , 'placeholder' => __('messages.total_hours'),'class' =>'form-control', 'id' => 'total_hours_div', 'required' ]) }}
-                                <small class="help-block with-errors text-danger"></small>
-                            </div>
-
-                        </div>
-
-                        <div class="row">
-                            <div class="form-group col-md-6">
-                                {{ Form::label('description',__('messages.description'), ['class' => 'form-control-label'])}}
-                                {{ Form::textarea('description', null, ['class'=>"form-control textarea" , 'rows'=> 3 , 'placeholder'=> __('messages.description') ]) }}
-                            </div>
-                            {{-- <div class="form-group custom-file col-md-6 mt-30">
-                                {{ Form::file('image[]', ['class'=>"custom-file-input custom-file-input-sm detail", 'id'=>"image", 'lang'=>"en", 'accept'=>"image/*", 'multiple']) }}
-                                <label class="custom-file-label upload-label" for="image">{{ __('messages.image') }}</label>
-                            </div> --}}
-                            <div class="form-group custom-file col-md-6 mt-30">
-                                {{ Form::file('image[]', ['class'=>"custom-file-input custom-file-input-sm detail", 'id'=>"image", 'lang'=>"en", 'accept'=>"image/*", 'multiple']) }}
-                                <label class="custom-file-label upload-label" for="image">{{ __('messages.image') }}</label>
-                                <div id="imageContainer"></div>
-                                <button id="showMoreButton" class="btn btn-primary mt-3" style="display: none;">Show More</button>
-
-                            </div>
-                        </div>
-                {{--
-                        @if(auth()->user()->hasAnyRole(['admin','demo_admin']))
-                            <div class="form-group col-md-4">
-                                {{ Form::label('name', __('messages.select_name',[ 'select' => __('messages.provider') ]).' <span class="text-danger">*</span>',['class'=>'form-control-label'],false) }}
-                <br />
-                {{ Form::select('provider_id', [ optional($servicedata->providers)->id => optional($servicedata->providers)->display_name ], optional($servicedata->providers)->id, [
-                                            'class' => 'select2js form-group',
-                                            'id' => 'provider_id',
-                                            'required',
-                                            'data-placeholder' => __('messages.select_name',[ 'select' => __('messages.provider') ]),
-                                            'data-ajax--url' => route('ajax-list', ['type' => 'provider']),
-                                        ]) }}
+    
+            <div class="form-group col-md-2">
+                <label for="country_id" class="form-control-label">{{ __('messages.country') }} <span class="text-danger">*</span></label>
+                <select name="country_id" class="select2js form-group category" required id="country_id">
+                    <option value="">{{ __('messages.select_name', ['select' => __('messages.country')]) }}</option>
+                    @foreach($countries as $id => $name)
+                        <option value="{{ $id }}">{{ $name }}</option>
+                    @endforeach
+                </select>
             </div>
-            @endif --}}
-
-
-            {{-- <div class="form-group col-md-4" id="job_price_div">
-                            {{ Form::label('job_price',__('messages.job_price').' <span class="text-danger">*</span>',['class'=>'form-control-label'],false) }}
-            {{ Form::number('job_price',null, [ 'min' => 1, 'step' => 'any' , 'placeholder' => __('messages.job_price'),'class' =>'form-control', 'required','id' => 'job_price' ]) }}
-            <small class="help-block with-errors text-danger"></small>
-        </div> --}}
-
-    {{-- </div> --}}
-
-    {{ Form::submit(__('messages.save'), ['class'=>'btn btn-md btn-primary float-right']) }}
-    {{ Form::close() }}
-    <!-- Image Modal -->
-    <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="imageModalLabel">{{ __('messages.image') }}</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ __('messages.close') }}">X</button>
-                </div>
-                <div class="modal-body">
-                    <!-- Images will be displayed here -->
-                </div>
+    
+            <div class="form-group col-md-2">
+                <label for="city_id" class="form-control-label">{{ __('messages.city') }} <span class="text-danger">*</span></label>
+                <select name="city_id" class="select2js form-group category" required>
+                    <option value="">{{ __('messages.select_name', ['select' => __('messages.city')]) }}</option>
+                </select>
+            </div>
+    
+            <div class="form-group col-md-2">
+                <label for="category_id" class="form-control-label">{{ __('messages.category') }} <span class="text-danger">*</span></label>
+                <select name="category_id" class="select2js form-group category" required id="category_id">
+                    <option value="">{{ __('messages.select_name', ['select' => __('messages.category')]) }}</option>
+                    @foreach($categories as $id => $name)
+                        <option value="{{ $id }}">{{ $name }}</option>
+                    @endforeach
+                </select>
             </div>
         </div>
-    </div>
-
-    </div>
-    </div>
-    </div>
-    </div>
-    </div>
+    
+        <div class="row">
+            <div class="form-group col-md-2">
+                <label for="price" class="form-control-label">{{ __('messages.price') }} <span class="text-danger">*</span></label>
+                <input type="number" name="price" min="1" step="any" placeholder="{{ __('messages.price') }}" class="form-control" required>
+                <small class="help-block with-errors text-danger"></small>
+            </div>
+        </div>
+    
+        <div class="row">
+            <div class="form-group col-md-6">
+                <label for="description" class="form-control-label">{{ __('messages.description') }}</label>
+                <textarea name="description" class="form-control textarea" rows="3" placeholder="{{ __('messages.description') }}"></textarea>
+            </div>
+        </div>
+    
+        <button type="submit" class="btn btn-md btn-primary float-right">{{ __('messages.save') }}</button>
+    </form>
+    
 
 
     @section('bottom_script')
