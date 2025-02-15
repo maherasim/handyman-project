@@ -1,61 +1,107 @@
 <x-master-layout>
-    <form method="POST" action="{{ route('postJobRequest.save') }}" enctype="multipart/form-data" id="postJob">
+    
+
+    <form method="POST" action="{{ route('postJobRequest.save') }}" enctype="multipart/form-data" data-toggle="validator" id="postJob">
         @csrf
         <input type="hidden" name="id">
-        
         <div class="row">
             <div class="form-group col-md-2">
                 <label for="title" class="form-control-label">{{ __('messages.title') }} <span class="text-danger">*</span></label>
-                <input type="text" name="title" value="{{ old('title') }}" placeholder="{{ __('messages.title') }}" class="form-control" required>
-                <small class="help-block with-errors text-danger"></small>
+                <input type="text" name="title" value="{{ old('title') }}" class="form-control" placeholder="{{ __('messages.title') }}" required>
             </div>
-    
+            
             <div class="form-group col-md-2">
                 <label for="country_id" class="form-control-label">{{ __('messages.country') }} <span class="text-danger">*</span></label>
-                <select name="country_id" class="select2js form-group category" required id="country_id">
-                    <option value="">{{ __('messages.select_name', ['select' => __('messages.country')]) }}</option>
-                    @foreach($countries as $id => $name)
-                        <option value="{{ $id }}">{{ $name }}</option>
-                    @endforeach
+                <select name="country_id" id="country_id" class="select2js form-group category" required data-placeholder="{{ __('messages.select_name', ['select' => __('messages.country')]) }}" data-ajax--url="{{ route('ajax-list', ['type' => 'country']) }}">
+                    <option value="{{ optional($postJob->country)->id }}">{{ optional($postJob->country)->name }}</option>
                 </select>
             </div>
-    
+            
             <div class="form-group col-md-2">
-                <label for="city_id" class="form-control-label">{{ __('messages.city') }} <span class="text-danger">*</span></label>
-                <select name="city_id" class="select2js form-group category" required>
-                    <option value="">{{ __('messages.select_name', ['select' => __('messages.city')]) }}</option>
-                </select>
-            </div>
-    
-            <div class="form-group col-md-2">
-                <label for="category_id" class="form-control-label">{{ __('messages.category') }} <span class="text-danger">*</span></label>
-                <select name="category_id" class="select2js form-group category" required id="category_id">
-                    <option value="">{{ __('messages.select_name', ['select' => __('messages.category')]) }}</option>
-                    @foreach($categories as $id => $name)
-                        <option value="{{ $id }}">{{ $name }}</option>
-                    @endforeach
+                <label for="city_id" class="form-control-label">{{ __('messages.select_name', ['select' => __('messages.city')]) }} <span class="text-danger">*</span></label>
+                <select name="city_id" class="select2js form-group category" required data-placeholder="{{ __('messages.select_name', ['select' => __('messages.city')]) }}">
                 </select>
             </div>
         </div>
-    
+        
         <div class="row">
             <div class="form-group col-md-2">
                 <label for="price" class="form-control-label">{{ __('messages.price') }} <span class="text-danger">*</span></label>
-                <input type="number" name="price" min="1" step="any" placeholder="{{ __('messages.price') }}" class="form-control" required>
-                <small class="help-block with-errors text-danger"></small>
+                <input type="number" name="price" class="form-control" min="1" step="any" placeholder="{{ __('messages.price') }}" required>
+            </div>
+            
+            <div class="form-group col-md-2">
+                <label for="start_date" class="form-control-label">{{ __('messages.start_date') }} <span class="text-danger">*</span></label>
+                <input type="date" name="start_date" class="form-control" required>
+            </div>
+            
+            <div class="form-group col-md-2">
+                <label for="end_date" class="form-control-label">{{ __('messages.end_date') }} <span class="text-danger">*</span></label>
+                <input type="date" name="end_date" class="form-control" required>
             </div>
         </div>
-    
+        
         <div class="row">
             <div class="form-group col-md-6">
                 <label for="description" class="form-control-label">{{ __('messages.description') }}</label>
                 <textarea name="description" class="form-control textarea" rows="3" placeholder="{{ __('messages.description') }}"></textarea>
             </div>
         </div>
-    
-        <button type="submit" class="btn btn-md btn-primary float-right">{{ __('messages.save') }}</button>
+        
+        <button type="submit" class="btn btn-primary">Submit</button>
     </form>
     
+
+
+
+
+
+                {{--
+                        @if(auth()->user()->hasAnyRole(['admin','demo_admin']))
+                            <div class="form-group col-md-4">
+                                {{ Form::label('name', __('messages.select_name',[ 'select' => __('messages.provider') ]).' <span class="text-danger">*</span>',['class'=>'form-control-label'],false) }}
+                <br />
+                {{ Form::select('provider_id', [ optional($servicedata->providers)->id => optional($servicedata->providers)->display_name ], optional($servicedata->providers)->id, [
+                                            'class' => 'select2js form-group',
+                                            'id' => 'provider_id',
+                                            'required',
+                                            'data-placeholder' => __('messages.select_name',[ 'select' => __('messages.provider') ]),
+                                            'data-ajax--url' => route('ajax-list', ['type' => 'provider']),
+                                        ]) }}
+            </div>
+            @endif --}}
+
+
+            {{-- <div class="form-group col-md-4" id="job_price_div">
+                            {{ Form::label('job_price',__('messages.job_price').' <span class="text-danger">*</span>',['class'=>'form-control-label'],false) }}
+            {{ Form::number('job_price',null, [ 'min' => 1, 'step' => 'any' , 'placeholder' => __('messages.job_price'),'class' =>'form-control', 'required','id' => 'job_price' ]) }}
+            <small class="help-block with-errors text-danger"></small>
+        </div> --}}
+
+    {{-- </div> --}}
+
+    {{ Form::submit(__('messages.save'), ['class'=>'btn btn-md btn-primary float-right']) }}
+    {{ Form::close() }}
+    <!-- Image Modal -->
+    <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="imageModalLabel">{{ __('messages.image') }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ __('messages.close') }}">X</button>
+                </div>
+                <div class="modal-body">
+                    <!-- Images will be displayed here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    </div>
+    </div>
+    </div>
+    </div>
+    </div>
 
 
     @section('bottom_script')
