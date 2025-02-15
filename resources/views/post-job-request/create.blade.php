@@ -80,8 +80,12 @@
 
     {{-- </div> --}}
 
-    {{ Form::submit(__('messages.save'), ['class'=>'btn btn-md btn-primary float-right']) }}
-    {{ Form::close() }}
+    <form method="POST" action="{{ route('postJobRequest.save') }}" enctype="multipart/form-data" data-toggle="validator" id="postJob">
+        <input type="hidden" name="id">
+    
+        <button type="submit" class="btn btn-md btn-primary float-right">{{ __('messages.save') }}</button>
+    </form>
+    
     <!-- Image Modal -->
     <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
@@ -96,13 +100,7 @@
             </div>
         </div>
     </div>
-
-    </div>
-    </div>
-    </div>
-    </div>
-    </div>
-
+    
 
     @section('bottom_script')
     <style>
