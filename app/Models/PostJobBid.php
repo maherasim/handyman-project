@@ -9,7 +9,7 @@ class PostJobBid extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'post_request_id', 'provider_id', 'price' ,'duration','customer_id'
+        'post_request_id', 'provider_id', 'price' ,'duration','customer_id','title'
     ];
 
     protected $casts = [

@@ -222,6 +222,7 @@ public function index(Request $request)
     public function store(Request $request)
     {
         $data = $request->all();
+       
             Log::info($data);
             $bidData = '';
             if(isset($data['post_request_id'])){
@@ -229,6 +230,7 @@ public function index(Request $request)
                 $bidData = PostJobBid::where('id',$postRequestId)->first();
                 // dd($bidData);
                 $data['job_price'] = $bidData->price;
+                $data['title'] = $bidData->title;
                 $data['duration'] = $bidData->duration;
                 $data['provider_id'] = $bidData->provider_id;
             }
