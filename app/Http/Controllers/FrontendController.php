@@ -306,8 +306,8 @@ class FrontendController extends Controller
    $query = Service::where('service_type', 'service')->where('status', 1);
 
     // Apply filters (existing logic)
-    if ($request->type == 'provider-service') {
-        $query->where('provider_id', $request->id);
+    if ($request->provider_id) {
+        $query->where('provider_id', $request->provider_id);
     }
     if ($request->type == 'subcategory-service') {
         $query->whereHas('subcategory', function ($q) use ($request) {
@@ -463,6 +463,7 @@ class FrontendController extends Controller
             $auth_user_id=null;
             $favourite=null;
          }
+
         return view('landing-page.ProviderDetails', compact('providerData','why_choose_me','datetime','completed_services','satisfy_customers','auth_user_id','favourite'));
     }
 

@@ -252,10 +252,11 @@
                                     href="{{ route('service.list', ['provider_id' => $providerData['data']['id']]) }}">{{ __('messages.view_all') }}</a>
                             </div>
                         </div>
+                        <remote-service-page link="{{ route('category-detail-service.data', ['provider_id' => $providerData['data']['id'], 'limit' => 3]) }}"></remote-service-page>
 
-                        <service-list-section :user_id="{{ json_encode($auth_user_id) }}"
+                        <!-- <service-list-section :user_id="{{ json_encode($auth_user_id) }}"
                             :service="{{ json_encode($providerData['service']) }}" :is_provider_detail={{ true }}
-                            :max_records="6" :favourite="{{ json_encode($favourite) }}"></service-list-section>
+                            :max_records="6" :favourite="{{ json_encode($favourite) }}"></service-list-section> -->
                     @endif
 
                     <div class="row align-items-center mb-5 mt-5">
