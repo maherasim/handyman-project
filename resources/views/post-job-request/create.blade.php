@@ -81,6 +81,7 @@
     {{-- </div> --}}
 
     <form method="POST" action="{{ route('postJobRequest.save') }}" enctype="multipart/form-data" data-toggle="validator" id="postJob">
+        @csrf
         <input type="hidden" name="id">
     
         <button type="submit" class="btn btn-md btn-primary float-right">{{ __('messages.save') }}</button>
