@@ -55,13 +55,7 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                      
-
-
-
-
-
+                        </div> 
 
                         {{ html()->form()->close() }}
                     </div>
@@ -112,18 +106,4 @@
         });
     </script>
     @endsection
-</x-master-layout>
-
-
-
-
-
-
-
-
-
-
-
-
-
- 
+</x-master-layout> 

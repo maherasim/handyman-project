@@ -306,6 +306,7 @@ class ServiceController extends Controller
                 $visittype = [
                     'ON_SITE' => 'On Site',
                     'ONLINE' => 'Online',
+                    'Hybrid' => 'Hybrid',
                 ];
             } else {
                 $visittype = [
