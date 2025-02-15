@@ -17,11 +17,12 @@
                     <div class="card-body p-0">
                         <div class="d-flex justify-content-between align-items-center p-3 flex-wrap gap-3">
                             <h5 class="font-weight-bold">{{ $pageTitle ?? trans('messages.list') }}</h5>
-                            @if (auth()->user()->user_type == 'provider')
-                                <a href="{{ route('post-job-request.create') }}"
-                                    class="float-right mr-1 btn btn-sm btn-primary"><i class="fa fa-plus-circle"></i>
-                                    {{ trans('messages.add_form_title', ['form' => trans(' Post Request')]) }}</a>
-                            @endif
+                            @if (auth()->user()->user_type == 'user' || auth()->user()->user_type == 'admin') 
+                            <a href="{{ route('post-job-request.create') }}" class="float-right mr-1 btn btn-sm btn-primary">
+                                <i class="fa fa-plus-circle"></i> {{ trans('messages.add_form_title', ['form' => trans(' Post Request')]) }}
+                            </a>
+                        @endif
+                        
                         </div>
   
                     </div>
