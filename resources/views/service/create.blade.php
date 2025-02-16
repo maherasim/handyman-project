@@ -20,7 +20,7 @@
                         {{ html()->form('POST', route('service.store'))->attribute('enctype', 'multipart/form-data')->attribute('data-toggle', 'validator')->id('service')->open() }}
                         {{ html()->hidden('id', $servicedata->id ?? null) }}
 
-                        <div class="row">
+                       
                             <div class="form-group col-md-4">
                                 {{ html()->label(__('messages.name') . ' <span class="text-danger">*</span>', 'name')->class('form-control-label') }}
                                 {{ html()->text('name', $servicedata->name)->placeholder(__('messages.name'))->class('form-control')->attributes(['title' => 'Please enter alphabetic characters and spaces only']) }}
