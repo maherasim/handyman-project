@@ -25,7 +25,7 @@
             <div class="col-md-4 mt-3">
                 <h5 class="mt-4">$ {{ $jobrequest->price }} <span class="text-dark"><b>/ Hour</b></span> </h5>
                 <p class="mb-0">{{ $jobrequest->description }}</p>
-                <a href="#">Read More</a>
+                <button id="readMoreBtn" class="btn btn-link p-0" style="display: none;">Read More</button>
                 <hr>
                 <button class="btn btn-cont text-white col-md-12" style="background: #5F60BA; padding: 10px;">Continue</button>
                 <div class="d-flex align-items-center justify-content-center gap-3 mt-3 mb-3">
@@ -48,7 +48,7 @@
                 </div>
                 <button class="btn btn-job col-md-12" style="background: #018E27; border-radius: 50px; color: white;padding: 10px;">About Job Request</button>
                 <ul class="pl-0 mt-3" style="list-style: none; font-weight: 500; ">
-                    <li><a href="#" class="text-dark"> <b>Published at: </b>  NYC
+                    <li><a href="#" class="text-dark"> <b>Published at: </b>  {{ $jobrequest->created_at?? 'N/A'}}
                     </a></li>
                     <li><a href="#" class="text-dark"> <b>Customer :</b> {{ $jobrequest->customer->username?? 'N/A'}}
                     </a></li>
@@ -67,8 +67,8 @@
                     </a></li>
                     <li><a href="#" class="text-dark"> <b>Total Bids:</b>  {{ $totalBids }}
                     </a></li>
-                    <li><a href="#" class="text-dark"> <b>Total Views:</b>
-                    </a></li>
+                    <li><a href="#" class="text-dark"> <b>Total Views:</b>{{ rand(1, 5) }} </a></li>
+
                 </ul>
                 <button class="btn btn-green" style="background: #59E054; color: #fff; border: 5px solid #F0F0F0; padding: 10px 30px; border-radius: 50px; font-weight: 800; display: flex; margin: auto;">APPLY NOW</button>
                 <p class="text-dark text-center"><b>(can apply only if Status "Open")</b></p>
@@ -78,5 +78,23 @@
 
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
  
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var description = document.getElementById("description");
+            var readMoreBtn = document.getElementById("readMoreBtn");
+            var maxHeight = 50; // Approximate height for 3 lines
 
+            if (description.scrollHeight > maxHeight) {
+                description.style.height = maxHeight + "px";
+                description.style.overflow = "hidden";
+                description.style.textOverflow = "ellipsis";
+                readMoreBtn.style.display = "inline";
+            }
+
+            readMoreBtn.addEventListener("click", function() {
+                description.style.height = "auto";
+                readMoreBtn.style.display = "none";
+            });
+        });
+    </script>
     @endsection
