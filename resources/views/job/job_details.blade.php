@@ -87,7 +87,7 @@
         document.addEventListener("DOMContentLoaded", function() {
             var description = document.getElementById("description");
             var readMoreBtn = document.getElementById("readMoreBtn");
-            var maxHeight = 50; // Approximate height for 3 lines
+            var maxHeight = 20; // Approximate height for 3 lines
 
             if (description.scrollHeight > maxHeight) {
                 description.style.height = maxHeight + "px";
