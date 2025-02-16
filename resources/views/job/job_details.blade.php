@@ -24,8 +24,16 @@
             </div> 
             <div class="col-md-4 mt-3">
                 <h5 class="mt-4">$ {{ $jobrequest->price }} <span class="text-dark"><b>/ Hour</b></span> </h5>
-                <p class="mb-0">{{ $jobrequest->description }}</p>
+                <p class="mb-0" id="description">
+                    {{ Str::words($jobrequest->description, 10, '...') }}
+                </p>
                 <button id="readMoreBtn" class="btn btn-link p-0" style="display: none;">Read More</button>
+                
+                <!-- Full Description (Hidden initially) -->
+                <p id="fullDescription" class="mb-0" style="display: none;">
+                    {{ $jobrequest->description }}
+                </p>
+                
                 <hr>
                 <button class="btn btn-cont text-white col-md-12" style="background: #5F60BA; padding: 10px;">Continue</button>
                 <div class="d-flex align-items-center justify-content-center gap-3 mt-3 mb-3">
@@ -84,22 +92,23 @@
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
  
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            var description = document.getElementById("description");
-            var readMoreBtn = document.getElementById("readMoreBtn");
-            var maxHeight = 20; // Approximate height for 3 lines
-
-            if (description.scrollHeight > maxHeight) {
-                description.style.height = maxHeight + "px";
-                description.style.overflow = "hidden";
-                description.style.textOverflow = "ellipsis";
-                readMoreBtn.style.display = "inline";
+        document.addEventListener('DOMContentLoaded', function() {
+            const description = document.getElementById('description');
+            const readMoreBtn = document.getElementById('readMoreBtn');
+            const fullDescription = document.getElementById('fullDescription');
+    
+            // Check if the description has more than 20 words
+            if (description.textContent.length < fullDescription.textContent.length) {
+                readMoreBtn.style.display = 'inline';  // Show the "Read More" button
             }
-
-            readMoreBtn.addEventListener("click", function() {
-                description.style.height = "auto";
-                readMoreBtn.style.display = "none";
+    
+            // When "Read More" is clicked
+            readMoreBtn.addEventListener('click', function() {
+                description.style.display = 'none';  // Hide the short description
+                fullDescription.style.display = 'block';  // Show the full description
+                readMoreBtn.style.display = 'none';  // Hide the "Read More" button
             });
         });
     </script>
+    
     @endsection
