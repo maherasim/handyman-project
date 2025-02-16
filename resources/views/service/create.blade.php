@@ -20,43 +20,48 @@
                         {{ html()->form('POST', route('service.store'))->attribute('enctype', 'multipart/form-data')->attribute('data-toggle', 'validator')->id('service')->open() }}
                         {{ html()->hidden('id', $servicedata->id ?? null) }}
 
-                       
+                        <div class="row">
                             <div class="form-group col-md-4">
                                 {{ html()->label(__('messages.name') . ' <span class="text-danger">*</span>', 'name')->class('form-control-label') }}
                                 {{ html()->text('name', $servicedata->name)->placeholder(__('messages.name'))->class('form-control')->attributes(['title' => 'Please enter alphabetic characters and spaces only']) }}
                                 <small class="help-block with-errors text-danger"></small>
                             </div>
 
-                            {{ html()->label(__('messages.select_name', ['select' => __('messages.category')]) . ' <span class="text-danger">*</span>')
-                            ->class('form-control-label') }}
-                        <br />
-                        {{ html()->select(
-                            'category_id',
-                            [optional($servicedata->category)->id => optional($servicedata->category)->name],
-                            optional($servicedata->category)->id
-                        )
-                            ->class('select2js form-group category')
-                            ->attribute('required')
-                            ->id('category_id')
-                            ->attribute('data-placeholder', __('messages.select_name', ['select' => __('messages.category')]))
-                            ->attribute('data-ajax--url', route('ajax-list', ['type' => 'category'])) }}
-                        
-
-                        <div class="form-group col-md-4">
-                            {{ html()->label(__('messages.select_name', ['select' => __('messages.subcategory')]))
+                            <div class="form-group col-md-4">
+                                {{ html()->label(__('messages.select_name', ['select' => __('messages.category')]) . ' <span class="text-danger">*</span>')
                                 ->class('form-control-label') }}
                             <br />
-                            {{ html()->select('subcategory_id', [])
-                                ->class('select2js form-group subcategory_id')
-                                ->attribute('data-placeholder', __('messages.select_name', ['select' => __('messages.subcategory')])) }}
+                            {{ html()->select(
+                                'category_id',
+                                [optional($servicedata->category)->id => optional($servicedata->category)->name],
+                                optional($servicedata->category)->id
+                            )
+                                ->class('select2js form-group category')
+                                ->attribute('required')
+                                ->id('category_id')
+                                ->attribute('data-placeholder', __('messages.select_name', ['select' => __('messages.category')]))
+                                ->attribute('data-ajax--url', route('ajax-list', ['type' => 'category'])) }}
+                              
+
+
+
+
+                            </div>
+                            <div class="form-group col-md-4">
+                                {{ html()->label(__('messages.select_name', ['select' => __('messages.subcategory')]))
+                                    ->class('form-control-label') }}
+                                <br />
+                                {{ html()->select('subcategory_id', [])
+                                    ->class('select2js form-group subcategory_id')
+                                    ->attribute('data-placeholder', __('messages.select_name', ['select' => __('messages.subcategory')])) }}
+                            </div>
+                            
+
+
+
+
+
                         </div>
-                        
-
-
-
-
-
-
                             <div class="form-group col-md-6">
                                 {{ html()->label(__('messages.select_name', ['select' => __('messages.country')]), 'country_id')->class('form-control-label') }}
                                 <br />
