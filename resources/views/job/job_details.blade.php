@@ -48,8 +48,13 @@
                 </div>
                 <button class="btn btn-job col-md-12" style="background: #018E27; border-radius: 50px; color: white;padding: 10px;">About Job Request</button>
                 <ul class="pl-0 mt-3" style="list-style: none; font-weight: 500; ">
-                    <li><a href="#" class="text-dark"> <b>Published at: </b>  {{ $jobrequest->created_at?? 'N/A'}}
-                    </a></li>
+                    <li>
+                        <a href="#" class="text-dark">
+                            <b>Published at: </b> 
+                            {{ $jobrequest->created_at ? $jobrequest->created_at->format('Y-m-d') : 'N/A' }}
+                        </a>
+                    </li>
+                    
                     <li><a href="#" class="text-dark"> <b>Customer :</b> {{ $jobrequest->customer->username?? 'N/A'}}
                     </a></li>
                    
