@@ -84,7 +84,14 @@
                     <li><a href="#" class="text-dark"> <b>Total Views:</b>{{ rand(1, 5) }} </a></li>
 
                 </ul>
-                <button class="btn btn-green" style="background: #59E054; color: #fff; border: 5px solid #F0F0F0; padding: 10px 30px; border-radius: 50px; font-weight: 800; display: flex; margin: auto;">APPLY NOW</button>
+                <a href="{{ auth()->check() ? route('post-job-request.index') : route('login') }}" 
+                    class="btn btn-green" 
+                    style="background: #59E054; color: #fff; border: 5px solid #F0F0F0; padding: 10px 30px; border-radius: 50px; font-weight: 800; display: flex; margin: auto; text-decoration: none; text-align: center;">
+                    APPLY NOW
+                 </a>
+                   
+                
+                
                 <p class="text-dark text-center"><b>(can apply only if Status "Open")</b></p>
             </div> 
         </div>
