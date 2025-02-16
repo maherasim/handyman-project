@@ -606,7 +606,7 @@
      style="position: relative; z-index: 1111; margin: auto; 
             background-image: url('{{ asset('images/icon/blueicon.jpg') }}'); 
             background-size: cover; 
-            width: 80%; 
+            width: 60%; 
             border-radius: 10px;  
             background-repeat: no-repeat; 
             background-position: center; 
@@ -616,7 +616,7 @@
             font-size: 18px; 
             border: 3px solid #E1DCDD;">
     <h3 class="fw-200 d-inline-block position-relative"
-        style="color: white; font-size: 15px; font-weight: bold; text-align: center; 
+        style="color: white; font-size: 12px; font-weight: bold; text-align: center; 
                padding: 10px 15px; display: inline-block; width: 90%; margin: auto;">
         Provider Details
     </h3>            
