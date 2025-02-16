@@ -637,7 +637,7 @@ $menu->add('<span>'.__('Favourit Provider').'</span><span class="custom-tooltip"
                 ->data('permission', 'service list');
         }
 
-        if (auth()->user()->user_type == 'provider' || auth()->user()->user_type == 'user') {
+        if(auth()->user()->user_type == 'provider' ){
     $menu
         ->add(
             '<span>' .
@@ -659,7 +659,7 @@ $menu->add('<span>'.__('Favourit Provider').'</span><span class="custom-tooltip"
 }
 
         // Set the required permission for this item
-        if(auth()->user()->user_type == 'provider' ){
+        
 
 $menu->add('<span>'.__('Job Request').'</span><span class="custom-tooltip"><span class="tooltip-text">'.__('messages.messages.custom_job').'</span></span>', ['route' => 'post-job-request.index'])
 ->prepend(' <svg width="15" height="15" class="sidebar-menu-icon" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -673,7 +673,31 @@ $menu->add('<span>'.__('Job Request').'</span><span class="custom-tooltip"><span
 ->nickname('custom_job')
 ->data('permission', 'payment list');
 
-}
+ 
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
         if(auth()->user()->user_type == 'provider' ){
