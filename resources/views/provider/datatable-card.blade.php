@@ -9,7 +9,7 @@
   <div class="d-flex align-items-center justify-content-around mt-3 gap-2">
       <!-- First icon -->
       <img src="{{ asset('images/icon/verified.jpg') }}" alt="icon"
-          style="width: 14%; height: 23%; margin-right: 8px;">
+          style="width: 14%; height: 23%; margin-right: 10px;">
 
       <!-- Display name with ellipsis for overflow -->
       <a href="{{ route('provider.detail', $data->id) }}"
