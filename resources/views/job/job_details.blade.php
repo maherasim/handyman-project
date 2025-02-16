@@ -29,7 +29,7 @@
                 </p>
                 <button id="readMoreBtn" class="btn btn-link p-0" style="display: none;">Read More</button>
                 
-                <button id="dslpdsalsa df d,finaf fwkasim ria s">   </button>
+                {{-- <button id="dslpdsalsa df d,finaf fwkasim ria s">   </button> --}}
                 <!-- Full Description (Hidden initially) -->
                 <p id="fullDescription" class="mb-0" style="display: none;">
                     {{ $jobrequest->description }}
