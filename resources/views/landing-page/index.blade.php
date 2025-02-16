@@ -415,7 +415,7 @@
                                         </a>
 
 
-                                        <p class="mt-0 mb-0" style="font-size: 12;  ">
+                                        <p class="mt-0 mb-0" style="font-size: 10;  ">
                                             {{ $data->city ? $data->city->name : 'City' }}-{{ $data->country ? $data->country->name : 'Country' }}
                                         </p>
 
@@ -619,7 +619,7 @@
                                     </a>
 
 
-                                    <p class="mt-0 mb-0" style="font-size: 12;  ">
+                                    <p class="mt-0 mb-0" style="font-size: 10;  ">
                                         {{ $data->city ? $data->city->name : 'City' }}-{{ $data->country ? $data->country->name : 'Country' }}
                                     </p>
 
