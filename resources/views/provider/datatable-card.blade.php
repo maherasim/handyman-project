@@ -13,9 +13,12 @@
 
       <!-- Display name with ellipsis for overflow -->
       <a href="{{ route('provider.detail', $data->id) }}"
-          style="flex-grow: 1; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">
-          <h5 class="provider-heading line-count-1" style="margin: 0;">{{ $data->display_name }}</h5>
-      </a>
+        style="flex-grow: 1; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">
+         <h5 class="provider-heading line-count-1" style="margin: 0; font-size: 12px; line-height: 1.2;">
+             {{ $data->display_name }}
+         </h5>
+     </a>
+     
 
       <!-- Verified icon (if applicable) -->
       @php
