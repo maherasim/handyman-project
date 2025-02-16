@@ -17,8 +17,11 @@
                                 <img src="{{ $providerData['data']['profile_image'] }}" alt="provider"
                                     class="avatar-180 img-fluid rounded-circle object-cover border border-5 border-white bg-primary-subtle">
                                 <div class="d-flex align-items-center justify-content-center gap-2 mt-3">
+                                    <img src="{{ asset('images/icon/freeicon.jpg') }}" alt="icon" style="width: 14%; height: 23%;">
                                     <h5 class="m-0 text-white text-capitalize">{{ $providerData['data']['display_name'] }}
                                     </h5>
+                                    <img src="{{ asset('images/icon/verified.jpg') }}" alt="icon"
+          style="width: 14%; height: 23%; margin-right: 10px;">
                                     <span class="text-primary">
                                         @php
                                             $providerDocuments = $providerData['document_detail'] ?? null;
