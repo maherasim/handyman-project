@@ -1,22 +1,11 @@
 <template>
     <div class="tab-slider">
         <!-- Main Swiper -->
-        <Swiper
-            class="swiper-content position-relative overflow-hidden"
-            :modules="[Controller]"
-            :slidesPerView="1"
-            :grabCursor="true"
-            @swiper="setMainSwiper"
-            :controller="{ control: thumbSwiper }"
-        >
+        <Swiper class="swiper-content position-relative overflow-hidden" :modules="[Controller]" :slidesPerView="1"
+            :grabCursor="true" @swiper="setMainSwiper">
             <SwiperSlide v-for="(data, index) in props.attachments" :key="index">
                 <div>
-                    <img
-                        :src="data"
-                        alt=""
-                        loading="lazy"
-                        class="img-fluid object-cover rounded-3"
-                    />
+                    <img :src="data" alt="" loading="lazy" class="img-fluid object-cover rounded-3" />
                 </div>
             </SwiperSlide>
         </Swiper>
@@ -24,26 +13,13 @@
 
     <div class="tab-slider mt-3">
         <!-- Thumbnail Swiper -->
-        <Swiper
-            class="swiper-thumb overflow-hidden"
-            :modules="[Controller]"
-            :slidesPerView="4"
-            :spaceBetween="10"
-            :watchSlidesProgress="true"
-            :grabCursor="true"
-            :slideToClickedSlide="true"
-            @swiper="setThumbSwiper"
-            @click="updateMainSwiper"
-            :controller="{ control: mainSwiper }"
-        >
+        <Swiper class="swiper-thumb overflow-hidden" :modules="[Controller]" :slidesPerView="4" :spaceBetween="10"
+            :watchSlidesProgress="true" :grabCursor="true" :slideToClickedSlide="true" @swiper="setThumbSwiper"
+            @click="updateMainSwiper">
             <SwiperSlide v-for="(data, index) in props.attachments" :key="index">
                 <div class="thumb-wrapper p-1 rounded-3">
-                    <img
-                        :src="data"
-                        alt=""
-                        loading="lazy"
-                        class="img-fluid object-cover rounded-3"
-                    />
+                    <img :src="data" alt="" loading="lazy" class="img-fluid object-cover rounded-3"
+                        @click="updateMainSwiper(index)" />
                 </div>
             </SwiperSlide>
         </Swiper>
@@ -51,7 +27,7 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, nextTick } from "vue";
 import { Swiper, SwiperSlide } from "swiper/vue";
 import { Controller } from "swiper";
 
@@ -71,10 +47,11 @@ const setThumbSwiper = (swiper) => {
 };
 
 // Function to update main Swiper when a thumbnail is clicked
-const updateMainSwiper = (swiper) => {
-    if (thumbSwiper.value && mainSwiper.value) {
-        const activeIndex = thumbSwiper.value.activeIndex; // Get the active index of the thumbnail Swiper
-        mainSwiper.value.slideTo(activeIndex); // Move the main Swiper to the same index
+const updateMainSwiper = (index) => {
+    if (mainSwiper.value) {
+        nextTick(() => {
+            mainSwiper.value.slideTo(index); // Move the main Swiper to the clicked index
+        });
     }
 };
 </script>
