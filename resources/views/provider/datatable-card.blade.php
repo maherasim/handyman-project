@@ -78,22 +78,27 @@
   
 </div>
 <div class="d-flex align-items-center justify-content-center gap-3 mt-1">
-<a href="#">
-    <img src="https://cdn.pixabay.com/photo/2021/06/15/12/51/facebook-6338507_1280.png" 
-        style="width: 30px; border-radius: 8px;" alt="">
-</a>
-<a href="#">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/9/95/Instagram_logo_2022.svg" 
-        style="width: 30px; border-radius: 8px;" alt="">
-</a>
-<a href="#">
-    <img src="https://cdn.pixabay.com/photo/2015/03/10/17/30/twitter-667462_640.png" 
-        style="width: 30px; border-radius: 8px;" alt="">
-</a>
-<a href="#">
-    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRokEYt0yyh6uNDKL8uksVLlhZ35laKNQgZ9g&s"
-        style="width: 30px; border-radius: 8px;" alt="">
-</a>
+    <!-- Facebook Link -->
+    <a href="https://www.facebook.com" target="_blank">
+        <img src="https://cdn.pixabay.com/photo/2021/06/15/12/51/facebook-6338507_1280.png" 
+            style="width: 30px; border-radius: 8px;" alt="Facebook">
+    </a>
+    <!-- Instagram Link -->
+    <a href="https://www.instagram.com" target="_blank">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/9/95/Instagram_logo_2022.svg" 
+            style="width: 30px; border-radius: 8px;" alt="Instagram">
+    </a>
+    <!-- Twitter Link -->
+    <a href="https://www.twitter.com" target="_blank">
+        <img src="https://cdn.pixabay.com/photo/2015/03/10/17/30/twitter-667462_640.png" 
+            style="width: 30px; border-radius: 8px;" alt="Twitter">
+    </a>
+    <!-- LinkedIn Link -->
+    <a href="https://www.linkedin.com" target="_blank">
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRokEYt0yyh6uNDKL8uksVLlhZ35laKNQgZ9g&s"
+            style="width: 30px; border-radius: 8px;" alt="LinkedIn">
+    </a>
 </div>
+
 
 </div>
