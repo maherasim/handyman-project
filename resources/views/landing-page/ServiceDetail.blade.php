@@ -625,7 +625,7 @@
                         <img src="{{ asset('images/icon/backgroundimageprovider.png') }}" alt="" class="d-flex m-auto">
                         <div class="d-flex align-items-center  mt-2 justify-content-evenly">
                             <img src="{{ asset('images/plans/icon.jpg') }}" alt="icon"
-                                style="width: 20%; height: 70%; margin-right: 10px;">
+                                style="width: 15%; height: 70%; margin-right: 10px;">
                                 
 
                                 <div class="d-flex align-items-center gap-2 flex-wrap">
@@ -643,7 +643,7 @@
                                 
                                 <img
                                 src="{{ asset('images/plans/icon.jpg') }}" alt="icon"
-                                style="width: 20%; height: 8%">
+                                style="width: 15%; height: 8%">
 
                         </div>
 
