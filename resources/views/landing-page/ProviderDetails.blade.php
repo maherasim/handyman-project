@@ -20,8 +20,7 @@
                                     <img src="{{ asset('images/icon/freeicon.jpg') }}" alt="icon" style="width: 14%; height: 23%;">
                                     <h5 class="m-0 text-white text-capitalize">{{ $providerData['data']['display_name'] }}
                                     </h5>
-                                    <img src="{{ asset('images/icon/verified.jpg') }}" alt="icon"
-          style="width: 14%; height: 23%; margin-right: 10px;">
+                                    <img src="{{ asset('images/icon/verified.jpg') }}" alt="icon"style="width: 14%; height: 23%; margin-right: 10px;">
                                     <span class="text-primary">
                                         @php
                                             $providerDocuments = $providerData['document_detail'] ?? null;
