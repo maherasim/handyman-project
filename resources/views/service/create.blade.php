@@ -28,40 +28,40 @@
                             </div>
 
                             <div class="form-group col-md-4">
-                                {{ html()->label(__('messages.select_name', ['select' => __('messages.category')]) . ' <span class="text-danger">*</span>')
-                                ->class('form-control-label') }}
-                            <br />
-                            {{ html()->select(
-                                'category_id',
-                                [optional($servicedata->category)->id => optional($servicedata->category)->name],
-                                optional($servicedata->category)->id
-                            )
-                                ->class('select2js form-group category')
-                                ->attribute('required')
-                                ->id('category_id')
-                                ->attribute('data-placeholder', __('messages.select_name', ['select' => __('messages.category')]))
-                                ->attribute('data-ajax--url', route('ajax-list', ['type' => 'category'])) }}
-                              
-
-
-
+                                {{ Form::label('name', __('messages.select_name', ['select' => __('messages.category')]) . ' <span class="text-danger">*</span>', ['class' => 'form-control-label'], false) }}
+                                <br />
+                                {{ Form::select(
+                                    'category_id',
+                                    [optional($servicedata->category)->id => optional($servicedata->category)->name],
+                                    optional($servicedata->category)->id,
+                                    [
+                                        'class' => 'select2js form-group category',
+                                        'required',
+                                        'id' => 'category_id',
+                                        'data-placeholder' => __('messages.select_name', ['select' => __('messages.category')]),
+                                        'data-ajax--url' => route('ajax-list', ['type' => 'category']),
+                                    ],
+                                ) }}
 
                             </div>
                             <div class="form-group col-md-4">
-                                {{ html()->label(__('messages.select_name', ['select' => __('messages.subcategory')]))
-                                    ->class('form-control-label') }}
+                                {{ Form::label('subcategory_id', __('messages.select_name', ['select' => __('messages.subcategory')]), ['class' => 'form-control-label'], false) }}
                                 <br />
-                                {{ html()->select('subcategory_id', [])
-                                    ->class('select2js form-group subcategory_id')
-                                    ->attribute('data-placeholder', __('messages.select_name', ['select' => __('messages.subcategory')])) }}
+                                {{ Form::select(
+                                    'subcategory_id',
+                                    [],
+                                    [
+                                        'class' => 'select2js form-group subcategory_id',
+                                        'data-placeholder' => __('messages.select_name', ['select' => __('messages.subcategory')]),
+                                    ],
+                                ) }}
                             </div>
-                            
 
 
-                        </div>
 
 
-                        </div>
+
+
                             <div class="form-group col-md-6">
                                 {{ html()->label(__('messages.select_name', ['select' => __('messages.country')]), 'country_id')->class('form-control-label') }}
                                 <br />
