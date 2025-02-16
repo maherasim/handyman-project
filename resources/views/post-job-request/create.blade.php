@@ -38,6 +38,13 @@
                 <label for="end_date" class="form-control-label">{{ __('messages.end_date') }} <span class="text-danger">*</span></label>
                 <input type="date" name="end_date" class="form-control" required>
             </div>
+
+            <!-- Add Total Days Field -->
+            <div class="form-group col-md-2">
+                <label for="total_day_div" class="form-control-label">{{ __('messages.total_days') }}</label>
+                <input type="text" id="total_day_div" class="form-control" readonly>
+                <input type="hidden" id="hidden_total_days" name="total_days">
+            </div>
         </div>
 
         <div class="row">
@@ -137,18 +144,14 @@
                             if (diffDays > 0) {
                                 $('#total_day_div').val(diffDays);
                                 $('#hidden_total_days').val(diffDays);
-                                $('#total_hours_div').val(diffDays * 24).attr('max', diffDays * 24);
-                                $('#hidden_total_hours').val(diffDays * 24).attr('max', diffDays * 24);
                             } else {
                                 $('#total_day_div').val(0);
                                 $('#hidden_total_days').val(0);
-                                $('#total_hours_div').val(0 * 24).attr('max', 0 * 24);
-                                $('#hidden_total_hours').val(0 * 24).attr('max', 0 * 24);
                             }
                         }
                     } else {
                         $('#hidden_total_days').val(0);
-                        $('#total_day_div').val(0).attr('max', 0);
+                        $('#total_day_div').val(0);
                     }
                 }
 
@@ -267,8 +270,7 @@
             $(".btn-close").click(function(){
                 $('#imageModal').modal('hide');
             });
-
         })(jQuery);
     </script>
-    @endsection
+@endsection
 </x-master-layout>
