@@ -40,20 +40,26 @@
                          </div>
  
                          <div class="form-group col-md-2">
-                            {{ html()->label(__('messages.select_name', ['select' => __('messages.category')]) . ' <span class="text-danger">*</span>', 'name')->class('form-control-label') }}
+                            {{ html()->label(__('messages.select_name', ['select' => __('messages.category')]) . ' <span class="text-danger">*</span>', 'category_id')->class('form-control-label') }}
                             <br />
                             {{ html()->select(
                                     'category_id',
-                                    [optional($servicedata->category)->id => optional($servicedata->category)->name],
-                                    optional($servicedata->category)->id,
-                                )->class('select2js form-group category')->required()->id('category_id')->attribute('data-placeholder', __('messages.select_name', ['select' => __('messages.category')]))->attribute('data-ajax--url', route('ajax-list', ['type' => 'category'])) }}
-
+                                    isset($servicedata) && $servicedata->category ? [$servicedata->category->id => $servicedata->category->name] : [],
+                                    isset($servicedata) && $servicedata->category ? $servicedata->category->id : null
+                                )->class('select2js form-group category')
+                                 ->required()
+                                 ->id('category_id')
+                                 ->attribute('data-placeholder', __('messages.select_name', ['select' => __('messages.category')]))
+                                 ->attribute('data-ajax--url', route('ajax-list', ['type' => 'category'])) 
+                            }}
                         </div>
+                        
                         <div class="form-group col-md-2">
                             {{ html()->label(__('messages.select_name', ['select' => __('messages.subcategory')]), 'subcategory_id')->class('form-control-label') }}
                             <br />
                             {{ html()->select('subcategory_id', [])->class('select2js form-group subcategory_id')->attribute('data-placeholder', __('messages.select_name', ['select' => __('messages.subcategory')])) }}
                         </div>
+                        
                       </div>
  
                       <div class="row">
