@@ -158,13 +158,18 @@ class PostJobRequestController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(Request $request)
     {
+        $id = $request->id;
+
+        
+
+        $servicedata = Service::find($id);
           $auth_user = authSession();
          $postJob = new PostJobRequest;
         // $pageTitle = __('messages.update_form_title',['form'=> __('messages.post_job')]);
         $pageTitle = __('messages.create_form_title',['form'=> __('messages.post_job')]);
-        return view('post-job-request.create',compact('postJob','pageTitle','auth_user'));
+        return view('post-job-request.create',compact('postJob','pageTitle','auth_user','servicedata'));
 
     }
 

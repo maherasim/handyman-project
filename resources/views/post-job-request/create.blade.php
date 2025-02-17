@@ -40,14 +40,20 @@
                          </div>
  
                          <div class="form-group col-md-2">
-                            <label for="category_id">{{ __('messages.category') }} <span class="text-danger">*</span></label>
-                            <select name="category_id" id="category_id" class="select2js form-group category" required></select>
-                         </div>
- 
-                         <div class="form-group col-md-2">
-                            <label for="subcategory_id">{{ __('messages.subcategory') }} <span class="text-danger">*</span></label>
-                            <select name="subcategory_id" id="subcategory_id" class="select2js form-group subcategory_id" required></select>
-                         </div>
+                            {{ html()->label(__('messages.select_name', ['select' => __('messages.category')]) . ' <span class="text-danger">*</span>', 'name')->class('form-control-label') }}
+                            <br />
+                            {{ html()->select(
+                                    'category_id',
+                                    [optional($servicedata->category)->id => optional($servicedata->category)->name],
+                                    optional($servicedata->category)->id,
+                                )->class('select2js form-group category')->required()->id('category_id')->attribute('data-placeholder', __('messages.select_name', ['select' => __('messages.category')]))->attribute('data-ajax--url', route('ajax-list', ['type' => 'category'])) }}
+
+                        </div>
+                        <div class="form-group col-md-2">
+                            {{ html()->label(__('messages.select_name', ['select' => __('messages.subcategory')]), 'subcategory_id')->class('form-control-label') }}
+                            <br />
+                            {{ html()->select('subcategory_id', [])->class('select2js form-group subcategory_id')->attribute('data-placeholder', __('messages.select_name', ['select' => __('messages.subcategory')])) }}
+                        </div>
                       </div>
  
                       <div class="row">
@@ -156,6 +162,84 @@
             toolbar: 'undo redo | bold italic | bullist numlist | link image preview',
             menubar: false
         });
+        $(document).ready(function() {
+                  var provider_id = "{{ isset($servicedata->provider_id) ? $servicedata->provider_id : '' }}";
+                  var provider_address_id = "{{ isset($data) ? $data : [] }}";
+
+                  var category_id = "{{ isset($servicedata->category_id) ? $servicedata->category_id : '' }}";
+                  var subcategory_id =
+                      "{{ isset($servicedata->subcategory_id) ? $servicedata->subcategory_id : '' }}";
+
+                  var country_id = "{{ isset($servicedata->country_id) ? $servicedata->country_id : 0 }}";
+                  var city_id = "{{ isset($servicedata->city_id) ? $servicedata->city_id : 0 }}";
+                  var price_type = "{{ isset($servicedata->type) ? $servicedata->type : '' }}";
+
+                  providerAddress(provider_id, provider_address_id)
+                  getSubCategory(category_id, subcategory_id)
+                  priceformat(price_type)
+
+                  $(document).on('change', '#provider_id', function() {
+                      var provider_id = $(this).val();
+                      $('#provider_address_id').empty();
+                      providerAddress(provider_id, provider_address_id);
+                  })
+                  $(document).on('change', '#category_id', function() {
+                      var category_id = $(this).val();
+                      $('#subcategory_id').empty();
+                      getSubCategory(category_id, subcategory_id);
+                  })
+                  $(document).on('change', '#price_type', function() {
+                      var price_type = $(this).val();
+                      priceformat(price_type);
+                  })
+
+                  $(document).on('change', '#country_id', function() {
+                      var country = $(this).val();
+                      $('#city_id').empty();
+                      cityName(country);
+                  })
+
+                  $(document).on('change', '#city_id', function() {
+                      var city = $(this).val();
+                      console.log('selected city', city);
+                  })
+
+                  $('.galary').each(function(index, value) {
+                      let galleryClass = $(value).attr('data-gallery');
+                      $(galleryClass).magnificPopup({
+                          delegate: 'a#attachment_files',
+                          type: 'image',
+                          gallery: {
+                              enabled: true,
+                              navigateByImgClick: true,
+                              preload: [0,
+                                  1
+                              ] // Will preload 0 - before current, and 1 after the current image
+                          },
+                          callbacks: {
+                              elementParse: function(item) {
+                                  if (item.el[0].className.includes('video')) {
+                                      item.type = 'iframe',
+                                          item.iframe = {
+                                              markup: '<div class="mfp-iframe-scaler">' +
+                                                  '<div class="mfp-close"></div>' +
+                                                  '<iframe class="mfp-iframe" frameborder="0" allowfullscreen></iframe>' +
+                                                  '<div class="mfp-title">Some caption</div>' +
+                                                  '</div>'
+                                          }
+                                  } else {
+                                      item.type = 'image',
+                                          item.tLoading = 'Loading image #%curr%...',
+                                          item.mainClass = 'mfp-img-mobile',
+                                          item.image = {
+                                              tError: '<a href="%url%">The image #%curr%</a> could not be loaded.'
+                                          }
+                                  }
+                              }
+                          }
+                      })
+                  })
+              })
     </script>
     @endsection
  </x-master-layout>
