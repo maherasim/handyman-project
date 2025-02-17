@@ -328,7 +328,261 @@
     @php
         $data = $servicedata->providerServiceAddress->pluck('provider_address_id')->implode(',');
     @endphp
-     
+      @section('bottom_script')
+      <script type="text/javascript">
+          var discountInput = document.getElementById('discount');
+          var discountError = document.getElementById('discount-error');
+
+
+          document.addEventListener('DOMContentLoaded', function() {
+              var initialProviderId = document.getElementById('provider_id').value;
+              selectprovider({
+                  value: initialProviderId
+              });
+              document.getElementById('add_provider_address_link').addEventListener('click', function(event) {
+                  event.preventDefault();
+                  var providerId = document.getElementById('provider_id').value;
+                  var providerAddressCreateUrl =
+                      "{{ route('provideraddress.create', ['provideraddress' => '']) }}";
+                  providerAddressCreateUrl = providerAddressCreateUrl.replace('provideraddress=',
+                      'provideraddress=' + providerId);
+                  window.location.href = providerAddressCreateUrl;
+              });
+
+
+
+
+
+          });
+
+          function selectprovider(selectElement) {
+
+              var providerId = selectElement.value;
+              var addProviderAddressLink = document.getElementById('add_provider_address_link');
+
+              if (providerId) {
+                  addProviderAddressLink.classList.remove('d-none');
+              } else {
+                  addProviderAddressLink.classList.add('d-none');
+              }
+          }
+
+
+          discountInput.addEventListener('input', function() {
+              var discountValue = parseFloat(discountInput.value);
+              if (isNaN(discountValue) || discountValue < 0 || discountValue > 99) {
+                  discountError.textContent = "{{ __('Discount value should be between 0 to 99') }}";
+              } else {
+                  discountError.textContent = "";
+              }
+          });
+
+          var isEnableAdvancePayment = $("input[name='is_enable_advance_payment']").prop('checked');
+
+          var priceType = $("#price_type").val();
+
+          enableAdvancePayment(priceType);
+          checkEnablePayment(isEnableAdvancePayment);
+
+          $("#is_enable_advance_payment").change(function() {
+              isEnableAdvancePayment = $(this).prop('checked');
+              checkEnablePayment(isEnableAdvancePayment);
+              updateAmountVisibility(priceType, isEnableAdvancePayment);
+          });
+
+          $("#price_type").change(function() {
+              priceType = $(this).val();
+              enableAdvancePayment(priceType);
+              updateAmountVisibility(priceType, isEnableAdvancePayment);
+          });
+
+          function checkEnablePayment(value) {
+              $("#amount").toggleClass('d-none', !value);
+              $('#advance_payment_amount').prop('required', value);
+          }
+
+          function enableAdvancePayment(type) {
+              $("#is_enable_advance").toggleClass('d-none', type !== 'fixed');
+          }
+
+          function updateAmountVisibility(type, isEnableAdvancePayment) {
+              if (type === 'fixed' && !$("#is_enable_advance").hasClass('d-none') && isEnableAdvancePayment) {
+                  $("#amount").removeClass('d-none');
+              } else {
+                  $("#amount").addClass('d-none');
+              }
+          }
+
+          (function($) {
+              "use strict";
+              $(document).ready(function() {
+                  var provider_id = "{{ isset($servicedata->provider_id) ? $servicedata->provider_id : '' }}";
+                  var provider_address_id = "{{ isset($data) ? $data : [] }}";
+
+                  var category_id = "{{ isset($servicedata->category_id) ? $servicedata->category_id : '' }}";
+                  var subcategory_id =
+                      "{{ isset($servicedata->subcategory_id) ? $servicedata->subcategory_id : '' }}";
+
+                  var country_id = "{{ isset($servicedata->country_id) ? $servicedata->country_id : 0 }}";
+                  var city_id = "{{ isset($servicedata->city_id) ? $servicedata->city_id : 0 }}";
+                  var price_type = "{{ isset($servicedata->type) ? $servicedata->type : '' }}";
+
+                  providerAddress(provider_id, provider_address_id)
+                  getSubCategory(category_id, subcategory_id)
+                  priceformat(price_type)
+
+                  $(document).on('change', '#provider_id', function() {
+                      var provider_id = $(this).val();
+                      $('#provider_address_id').empty();
+                      providerAddress(provider_id, provider_address_id);
+                  })
+                  $(document).on('change', '#category_id', function() {
+                      var category_id = $(this).val();
+                      $('#subcategory_id').empty();
+                      getSubCategory(category_id, subcategory_id);
+                  })
+                  $(document).on('change', '#price_type', function() {
+                      var price_type = $(this).val();
+                      priceformat(price_type);
+                  })
+
+                  $(document).on('change', '#country_id', function() {
+                      var country = $(this).val();
+                      $('#city_id').empty();
+                      cityName(country);
+                  })
+
+                  $(document).on('change', '#city_id', function() {
+                      var city = $(this).val();
+                      console.log('selected city', city);
+                  })
+
+                  $('.galary').each(function(index, value) {
+                      let galleryClass = $(value).attr('data-gallery');
+                      $(galleryClass).magnificPopup({
+                          delegate: 'a#attachment_files',
+                          type: 'image',
+                          gallery: {
+                              enabled: true,
+                              navigateByImgClick: true,
+                              preload: [0,
+                                  1
+                              ] // Will preload 0 - before current, and 1 after the current image
+                          },
+                          callbacks: {
+                              elementParse: function(item) {
+                                  if (item.el[0].className.includes('video')) {
+                                      item.type = 'iframe',
+                                          item.iframe = {
+                                              markup: '<div class="mfp-iframe-scaler">' +
+                                                  '<div class="mfp-close"></div>' +
+                                                  '<iframe class="mfp-iframe" frameborder="0" allowfullscreen></iframe>' +
+                                                  '<div class="mfp-title">Some caption</div>' +
+                                                  '</div>'
+                                          }
+                                  } else {
+                                      item.type = 'image',
+                                          item.tLoading = 'Loading image #%curr%...',
+                                          item.mainClass = 'mfp-img-mobile',
+                                          item.image = {
+                                              tError: '<a href="%url%">The image #%curr%</a> could not be loaded.'
+                                          }
+                                  }
+                              }
+                          }
+                      })
+                  })
+              })
+
+              function providerAddress(provider_id, provider_address_id = "") {
+                  var provider_address_route =
+                      "{{ route('ajax-list', ['type' => 'provider_address', 'provider_id' => '']) }}" + provider_id;
+                  provider_address_route = provider_address_route.replace('amp;', '');
+
+                  $.ajax({
+                      url: provider_address_route,
+                      success: function(result) {
+                          $('#provider_address_id').select2({
+                              width: '100%',
+                              placeholder: "{{ trans('messages.select_name', ['select' => trans('messages.provider_address')]) }}",
+                              data: result.results
+                          });
+                          if (provider_address_id != "") {
+                              $('#provider_address_id').val(provider_address_id.split(',')).trigger('change');
+                          }
+                      }
+                  });
+              }
+
+              function getSubCategory(category_id, subcategory_id = "") {
+                  var get_subcategory_list =
+                      "{{ route('ajax-list', ['type' => 'subcategory_list', 'category_id' => '']) }}" + category_id;
+                  get_subcategory_list = get_subcategory_list.replace('amp;', '');
+
+                  $.ajax({
+                      url: get_subcategory_list,
+                      success: function(result) {
+                          $('#subcategory_id').select2({
+                              width: '100%',
+                              placeholder: "{{ trans('messages.select_name', ['select' => trans('messages.subcategory')]) }}",
+                              data: result.results
+                          });
+                          if (subcategory_id != "") {
+                              $('#subcategory_id').val(subcategory_id).trigger('change');
+                          }
+                      }
+                  });
+              }
+              var price = "{{ isset($servicedata->price) ? $servicedata->price : '' }}";
+              var discount = "{{ isset($servicedata->discount) ? $servicedata->discount : '' }}";
+
+              function priceformat(value) {
+                  if (value == 'free') {
+                      $('#price').val(0);
+                      $('#price').attr("readonly", true)
+
+                      $('#discount').val(0);
+                      $('#discount').attr("readonly", true)
+
+                  } else {
+                      $('#price').val(price);
+                      $('#price').attr("readonly", false)
+                      $('#discount').val(discount);
+                      $('#discount').attr("readonly", false)
+                  }
+              }
+
+              function cityName(country, city = "") {
+                  var city_route = "{{ route('ajax-list', ['type' => 'cityFromCountry', 'country_id' => '']) }}" +
+                      country;
+                  city_route = city_route.replace('amp;', '');
+
+                  $('#city_id').select2({
+                      width: '100%',
+                      placeholder: "{{ __('messages.select_name', ['select' => __('messages.city')]) }}",
+                  });
+
+                  $.ajax({
+                      url: city_route,
+                      success: function(result) {
+                          // Clear existing options
+                          $('#city_id').empty();
+
+                          // Append new options based on the result
+                          result.forEach(function(city) {
+                              var option = new Option(city.name, city.id, false, false);
+                              $('#city_id').append(option);
+                          });
+
+                          // If a specific city is selected, set it as the default value
+                          if (city !== null && city !== 0) {
+                              $("#city_id").val(city).trigger('change');
+                          }
+                      }
+                  });
+              }
+          })(jQuery);
+      </script>
        <script>
         tinymce.init({
             selector: '#description', // Target the ID of your textarea
@@ -345,5 +599,5 @@
             menubar: false
         });
     </script>
-  @endsection
+  
 </x-master-layout>
