@@ -278,7 +278,8 @@
                   $(document).ready(function() {
                       var provider_id = "{{ isset($servicedata->provider_id) ? $servicedata->provider_id : '' }}";
                     //  var provider_address_id = "{{ isset($data) ? $data : [] }}";
-  
+                    var provider_address_id = @json(isset($data) ? $data : []);
+
                       var category_id = "{{ isset($servicedata->category_id) ? $servicedata->category_id : '' }}";
                       var subcategory_id =
                           "{{ isset($servicedata->subcategory_id) ? $servicedata->subcategory_id : '' }}";
