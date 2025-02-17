@@ -8,7 +8,7 @@
                             <h5 class="fw-bold">{{ $pageTitle ?? __('messages.list') }}</h5>
                             <a href="{{ route('handyman.index') }}" class=" float-end btn btn-sm btn-primary"><i
                                     class="fa fa-angle-double-left"></i> {{ __('messages.back') }}</a>
-                            @if($auth_user->can('handyman list'))
+                            @if ($auth_user->can('handyman list'))
                             @endif
                         </div>
                     </div>
@@ -18,29 +18,29 @@
                 <div class="card">
                     <div class="card-body">
                         {{ html()->form('POST', route('handyman.store'))->attribute('enctype', 'multipart/form-data')->attribute('data-toggle', 'validator')->id('handyman')->open() }}
-                        {{ html()->hidden('id',$handymandata->id ?? null) }}
+                        {{ html()->hidden('id', $handymandata->id ?? null) }}
                         {{ html()->hidden('user_type', 'handyman') }}
                         <div class="row">
                             <div class="form-group col-md-4">
-                                {{ html()->label(__('messages.first_name').' <span class="text-danger">*</span>', 'first_name')->class('form-control-label') }}
+                                {{ html()->label(__('messages.first_name') . ' <span class="text-danger">*</span>', 'first_name')->class('form-control-label') }}
                                 {{ html()->text('first_name', $handymandata->first_name)->placeholder(__('messages.first_name'))->class('form-control')->required() }}
                                 <small class="help-block with-errors text-danger"></small>
                             </div>
-                    
+
                             <div class="form-group col-md-4">
-                                {{ html()->label(__('messages.last_name').' <span class="text-danger">*</span>', 'last_name')->class('form-control-label') }}
+                                {{ html()->label(__('messages.last_name') . ' <span class="text-danger">*</span>', 'last_name')->class('form-control-label') }}
                                 {{ html()->text('last_name', $handymandata->last_name)->placeholder(__('messages.last_name'))->class('form-control')->required() }}
                                 <small class="help-block with-errors text-danger"></small>
                             </div>
-                    
+
                             <div class="form-group col-md-4">
-                                {{ html()->label(__('messages.username').' <span class="text-danger">*</span>', 'username')->class('form-control-label') }}
+                                {{ html()->label(__('messages.username') . ' <span class="text-danger">*</span>', 'username')->class('form-control-label') }}
                                 {{ html()->text('username', $handymandata->username)->placeholder(__('messages.username'))->class('form-control')->required() }}
                                 <small class="help-block with-errors text-danger"></small>
                             </div>
-                    
+
                             <div class="form-group col-md-4">
-                                {{ html()->label(__('messages.email').' <span class="text-danger">*</span>', 'email')->class('form-control-label') }}
+                                {{ html()->label(__('messages.email') . ' <span class="text-danger">*</span>', 'email')->class('form-control-label') }}
                                 {{ html()->email('email', $handymandata->email)->placeholder(__('messages.email'))->class('form-control')->required()->attribute('pattern', '[^@]+@[^@]+\.[a-zA-Z]{2,}')->attribute('title', 'Please enter a valid email address') }}
                                 <small class="help-block with-errors text-danger"></small>
                             </div>
@@ -49,33 +49,34 @@
                                 {{ html()->text('company_name', $handymandata->company_name)->placeholder(__('Company Name'))->class('form-control')->required() }}
                                 <small class="help-block with-errors text-danger"></small>
                             </div>
-        
+
                             <div class="form-group col-md-4">
                                 {{ html()->label(__('Vat Number') . ' <span class="text-danger">*</span>')->class('form-control-label')->for('company_name') }}
                                 {{ html()->text('vat_number', $handymandata->vat_number)->placeholder(__('Vat Number'))->class('form-control')->required() }}
                                 <small class="help-block with-errors text-danger"></small>
                             </div>
-                            
-        
+
+
                             <div class="form-group col-md-4">
                                 {{ html()->label(__('skills') . ' <span class="text-danger">*</span>')->class('form-control-label')->for('skills') }}
                                 {{ html()->text('skills', $handymandata->skills)->placeholder(__('skills'))->class('form-control')->required() }}
                                 <small class="help-block with-errors text-danger"></small>
                             </div>
                             <div class="form-group col-md-4">
-                                {{ html()->label(__('messages.select_name', ['select' => __('Language')]), 'languages')->class('form-control-label') }} <br />
+                                {{ html()->label(__('messages.select_name', ['select' => __('Language')]), 'languages')->class('form-control-label') }}
+                                <br />
                                 {{ html()->select(
-                                    'languages[]', // Use [] to allow multiple selections
-                                    [
-                                        'english' => 'English', 
-                                        'french' => 'French', 
-                                        'chinese' => 'Chinese', 
-                                        'urdu' => 'Urdu', 
-                                        'spanish' => 'Spanish',
-                                        'german' => 'German'
-                                    ], // Static language options
-                                    old('languages', $handymandata->languages ?? []), // Retain old value or user data
-                                )->class('form-group select2js')->multiple()->attribute('data-placeholder', __('select_name', ['select' => __('messages.language')])) }}
+                                        'languages[]', // Use [] to allow multiple selections
+                                        [
+                                            'english' => 'English',
+                                            'french' => 'French',
+                                            'chinese' => 'Chinese',
+                                            'urdu' => 'Urdu',
+                                            'spanish' => 'Spanish',
+                                            'german' => 'German',
+                                        ], // Static language options
+                                        old('languages', $handymandata->languages ?? []), // Retain old value or user data
+                                    )->class('form-group select2js')->multiple()->attribute('data-placeholder', __('select_name', ['select' => __('messages.language')])) }}
                             </div>
                             <div class="form-group col-md-4">
                                 {{ html()->label(__('experience'), 'experience')->class('form-control-label') }}
@@ -95,132 +96,121 @@
                                 {{ html()->text('certification', $handymandata->certification)->placeholder(__('Certification'))->class('form-control')->required() }}
                                 <small class="help-block with-errors text-danger"></small>
                             </div>
-        
+
                             <div class="form-group col-md-4">
                                 {{ html()->label(__('Availability') . ' <span class="text-danger">*</span>')->class('form-control-label')->for('availability') }}
-                                {{ html()->select('availability', [
-                                    'full_time' => 'Full-time',
-                                    'part_time' => 'Part-time'
-                                ], $handymandata->availability)->class('form-control')->required()->placeholder(__('Select Availability')) }}
+                                {{ html()->select(
+                                        'availability',
+                                        [
+                                            'full_time' => 'Full-time',
+                                            'part_time' => 'Part-time',
+                                        ],
+                                        $handymandata->availability,
+                                    )->class('form-control')->required()->placeholder(__('Select Availability')) }}
                                 <small class="help-block with-errors text-danger"></small>
                             </div>
-                            
+
                             <div class="form-group col-md-4">
                                 {{ html()->label(__('Mobility') . ' <span class="text-danger">*</span>')->class('form-control-label')->for('mobility') }}
                                 {{ html()->text('mobility', $handymandata->mobility)->placeholder(__('Mobility'))->class('form-control')->required() }}
                                 <small class="help-block with-errors text-danger"></small>
                             </div>
                             @if (!isset($handymandata->id) || $handymandata->id == null)
-                            <div class="form-group col-md-4">
-                                {{ html()->label(__('messages.password').' <span class="text-danger">*</span>', 'password')->class('form-control-label') }}
-                                {{ html()->password('password')->class('form-control')->placeholder(__('messages.password'))->required()->attribute('autocomplete', 'new-password') }}
-                                <small class="help-block with-errors text-danger"></small>
-                            </div>
+                                <div class="form-group col-md-4">
+                                    {{ html()->label(__('messages.password') . ' <span class="text-danger">*</span>', 'password')->class('form-control-label') }}
+                                    {{ html()->password('password')->class('form-control')->placeholder(__('messages.password'))->required()->attribute('autocomplete', 'new-password') }}
+                                    <small class="help-block with-errors text-danger"></small>
+                                </div>
                             @endif
-                            @if(auth()->user()->hasAnyRole(['admin','demo_admin']))
-                            <div class="form-group col-md-4">
-                                {{ html()->label(__('messages.select_name', ['select' => __('messages.providers')]).' <span class="text-danger">*</span>', 'provider_id')->class('form-control-label') }}
-                                <br />
-                                {{ html()->select('provider_id', [optional($handymandata->providers)->id => optional($handymandata->providers)->display_name], optional($handymandata->providers)->id)
-                                    ->class('select2js form-group providers')
-                                    ->required()
-                                    ->attribute('data-placeholder', __('messages.select_name', ['select' => __('messages.providers')]))
-                                    ->attribute('data-ajax--url', route('ajax-list', ['type' => 'provider'])) 
-                                    }}
-                            </div>
+                            @if (auth()->user()->hasAnyRole(['admin', 'demo_admin']))
+                                <div class="form-group col-md-4">
+                                    {{ html()->label(__('messages.select_name', ['select' => __('messages.providers')]) . ' <span class="text-danger">*</span>', 'provider_id')->class('form-control-label') }}
+                                    <br />
+                                    {{ html()->select(
+                                            'provider_id',
+                                            [optional($handymandata->providers)->id => optional($handymandata->providers)->display_name],
+                                            optional($handymandata->providers)->id,
+                                        )->class('select2js form-group providers')->required()->attribute('data-placeholder', __('messages.select_name', ['select' => __('messages.providers')]))->attribute('data-ajax--url', route('ajax-list', ['type' => 'provider'])) }}
+                                </div>
                             @endif
                             <div class="form-group col-md-4">
-                                {{ html()->label(__('messages.select_name', ['select' => __('messages.handymantype')]).' <span class="text-danger">*</span>', 'handymantype_id')->class('form-control-label') }}
+                                {{ html()->label(__('messages.select_name', ['select' => __('messages.handymantype')]) . ' <span class="text-danger">*</span>', 'handymantype_id')->class('form-control-label') }}
                                 <br />
-                                {{ html()->select('handymantype_id', [], old('handymantype_id'))
-                                    ->class('select2js form-group handymantype_id')
-                                    ->id('handymantype_id')
-                                    ->required()
-                                    ->attribute('data-placeholder', __('messages.select_name', ['select' => __('messages.handymantype')])) 
-                                    
-                                    }}
+                                {{ html()->select('handymantype_id', [], old('handymantype_id'))->class('select2js form-group handymantype_id')->id('handymantype_id')->required()->attribute('data-placeholder', __('messages.select_name', ['select' => __('messages.handymantype')])) }}
                             </div>
-                    
+
                             <div class="form-group col-md-4">
-                                {{ html()->label(__('messages.select_name', ['select' => __('messages.provider_address')]).' <span class="text-danger">*</span>', 'name')->class('form-control-label') }}
+                                {{ html()->label(__('messages.select_name', ['select' => __('messages.provider_address')]) . ' <span class="text-danger">*</span>', 'name')->class('form-control-label') }}
                                 <br />
-                                {{ html()->select('service_address_id', [], old('service_address_id'))
-                                    ->class('select2js form-group service_address_id')
-                                    ->id('service_address_id')
-                                    ->required()
-                                    ->attribute('data-placeholder', __('messages.select_name', ['select' => __('messages.provider_address')])) 
-                                    }}
+                                {{ html()->select('service_address_id', [], old('service_address_id'))->class('select2js form-group service_address_id')->id('service_address_id')->required()->attribute('data-placeholder', __('messages.select_name', ['select' => __('messages.provider_address')])) }}
                             </div>
-                    
+
                             <div class="form-group col-md-4">
-                                {{ html()->label(__('messages.select_name', ['select' => __('messages.country')]).' <span class="text-danger">*</span>', 'country_id')->class('form-control-label') }}
+                                {{ html()->label(__('messages.select_name', ['select' => __('messages.country')]) . ' <span class="text-danger">*</span>', 'country_id')->class('form-control-label') }}
                                 <br />
-                                {{ html()->select('country_id', [optional($handymandata->country)->id => optional($handymandata->country)->name], optional($handymandata->country)->id)
-                                    ->class('select2js form-group country')
-                                    ->required()
-                                    ->attribute('data-placeholder', __('messages.select_name', ['select' => __('messages.country')]))
-                                    ->attribute('data-ajax--url', route('ajax-list', ['type' => 'country'])) 
-                                    }}
+                                {{ html()->select(
+                                        'country_id',
+                                        [optional($handymandata->country)->id => optional($handymandata->country)->name],
+                                        optional($handymandata->country)->id,
+                                    )->class('select2js form-group country')->required()->attribute('data-placeholder', __('messages.select_name', ['select' => __('messages.country')]))->attribute('data-ajax--url', route('ajax-list', ['type' => 'country'])) }}
                             </div>
-                    
+
                             <div class="form-group col-md-4">
-                                {{ html()->label(__('messages.select_name', ['select' => __('messages.state')]).' <span class="text-danger">*</span>', 'state_id')->class('form-control-label') }}
+                                {{ html()->label(__('messages.select_name', ['select' => __('messages.state')]) . ' <span class="text-danger">*</span>', 'state_id')->class('form-control-label') }}
                                 <br />
-                                {{ html()->select('state_id', [], [])
-                                    ->class('select2js form-group state_id')
-                                    ->required()
-                                    ->attribute('data-placeholder', __('messages.select_name', ['select' => __('messages.state')]))       
-                                    }}
+                                {{ html()->select('state_id', [], [])->class('select2js form-group state_id')->required()->attribute('data-placeholder', __('messages.select_name', ['select' => __('messages.state')])) }}
                             </div>
-                    
+
                             <div class="form-group col-md-4">
-                                {{ html()->label(__('messages.select_name', ['select' => __('messages.city')]).' <span class="text-danger">*</span>', 'city_id')->class('form-control-label') }}
+                                {{ html()->label(__('messages.select_name', ['select' => __('messages.city')]) . ' <span class="text-danger">*</span>', 'city_id')->class('form-control-label') }}
                                 <br />
-                                {{ html()->select('city_id', [], old('city_id'))
-                                    ->class('select2js form-group city_id')->required()->attribute('data-placeholder', __('messages.select_name', ['select' => __('messages.city')])) }}
+                                {{ html()->select('city_id', [], old('city_id'))->class('select2js form-group city_id')->required()->attribute('data-placeholder', __('messages.select_name', ['select' => __('messages.city')])) }}
                             </div>
-                    
+
                             <div class="form-group col-md-4">
-                                {{ html()->label(__('messages.contact_number').' <span class="text-danger">*</span>', 'contact_number')->class('form-control-label') }}
+                                {{ html()->label(__('messages.contact_number') . ' <span class="text-danger">*</span>', 'contact_number')->class('form-control-label') }}
                                 {{ html()->text('contact_number', $handymandata->contact_number)->placeholder(__('messages.contact_number'))->class('form-control contact_number')->required() }}
-                                      {{-- //'maxlength' => 20, // Maximum 20 characters allowed
+                                {{-- //'maxlength' => 20, // Maximum 20 characters allowed
                                       //'pattern' => '^(\+|-)?\d+$', // Accepts '+' and numeric characters only --}}
                                 <small class="help-block with-errors text-danger" id="contact_number_err"></small>
                             </div>
-                    
+
                             <div class="form-group col-md-4">
-                                {{ html()->label(__('messages.status').' <span class="text-danger">*</span>', 'status')->class('form-control-label') }}
+                                {{ html()->label(__('messages.status') . ' <span class="text-danger">*</span>', 'status')->class('form-control-label') }}
                                 {{ html()->select('status', ['1' => __('messages.active'), '0' => __('messages.inactive')], old('status'))->class('form-control select2js')->required() }}
                             </div>
-                    
+
                             <div class="form-group col-md-4">
-                                <label class="form-control-label" for="profile_image">{{ __('messages.profile_image') }}
+                                <label class="form-control-label"
+                                    for="profile_image">{{ __('messages.profile_image') }}
                                 </label>
                                 <div class="custom-file">
-                                    <input type="file" name="profile_image" class="custom-file-input" accept="image/*">
+                                    <input type="file" name="profile_image" class="custom-file-input"
+                                        accept="image/*">
                                     <label
-                                        class="custom-file-label upload-label">{{  __('messages.choose_file',['file' =>  __('messages.profile_image') ]) }}</label>
+                                        class="custom-file-label upload-label">{{ __('messages.choose_file', ['file' => __('messages.profile_image')]) }}</label>
                                 </div>
                                 <!-- <span class="selected_file"></span> -->
                             </div>
-                    
-                            @if(getMediaFileExit($handymandata, 'profile_image'))
-                            <div class="col-md-2 mb-2 position-relative">
-                                <img id="profile_image_preview" src="{{getSingleMedia($handymandata,'profile_image')}}"
-                                    alt="#" class="attachment-image mt-1">
-                                <a class="text-danger remove-file"
-                                    href="{{ route('remove.file', ['id' => $handymandata->id, 'type' => 'profile_image']) }}"
-                                    data--submit="confirm_form" data--confirmation='true' data--ajax="true"
-                                    data-toggle="tooltip"
-                                    title='{{ __("messages.remove_file_title" , ["name" =>  __("messages.image") ]) }}'
-                                    data-title='{{ __("messages.remove_file_title" , ["name" =>  __("messages.image") ]) }}'
-                                    data-message='{{ __("messages.remove_file_msg") }}'>
-                                    <i class="ri-close-circle-line"></i>
-                                </a>
-                            </div>
+
+                            @if (getMediaFileExit($handymandata, 'profile_image'))
+                                <div class="col-md-2 mb-2 position-relative">
+                                    <img id="profile_image_preview"
+                                        src="{{ getSingleMedia($handymandata, 'profile_image') }}" alt="#"
+                                        class="attachment-image mt-1">
+                                    <a class="text-danger remove-file"
+                                        href="{{ route('remove.file', ['id' => $handymandata->id, 'type' => 'profile_image']) }}"
+                                        data--submit="confirm_form" data--confirmation='true' data--ajax="true"
+                                        data-toggle="tooltip"
+                                        title='{{ __('messages.remove_file_title', ['name' => __('messages.image')]) }}'
+                                        data-title='{{ __('messages.remove_file_title', ['name' => __('messages.image')]) }}'
+                                        data-message='{{ __('messages.remove_file_msg') }}'>
+                                        <i class="ri-close-circle-line"></i>
+                                    </a>
+                                </div>
                             @endif
-                    
-                             
+
+
                             <div class="form-group col-md-12">
                                 {{ html()->label(__('Address'), 'address')->class('form-control-label') }}
                                 {{ html()->textarea('address', $handymandata->address)->class('form-control textarea')->rows(2)->placeholder(__('address')) }}
@@ -236,140 +226,140 @@
         </div>
     </div>
     @section('bottom_script')
-    <script type="text/javascript">
-    (function($) {
-        "use strict";
-        $(document).ready(function() {
-            var country_id = "{{ isset($handymandata->country_id) ? $handymandata->country_id : 0 }}";
-            var state_id = "{{ isset($handymandata->state_id) ? $handymandata->state_id : 0 }}";
-            var city_id = "{{ isset($handymandata->city_id) ? $handymandata->city_id : 0 }}";
+        <script type="text/javascript">
+            (function($) {
+                "use strict";
+                $(document).ready(function() {
+                    var country_id = "{{ isset($handymandata->country_id) ? $handymandata->country_id : 0 }}";
+                    var state_id = "{{ isset($handymandata->state_id) ? $handymandata->state_id : 0 }}";
+                    var city_id = "{{ isset($handymandata->city_id) ? $handymandata->city_id : 0 }}";
 
-            var provider_id = "{{ isset($handymandata->provider_id) ? $handymandata->provider_id : '' }}";
-            var service_address_id =
-                "{{ isset($handymandata->service_address_id) ? $handymandata->service_address_id : 0 }}";
-            var handymantype_id =
-                "{{ isset($handymandata->handymantype_id) ? $handymandata->handymantype_id : 0 }}";
+                    var provider_id = "{{ isset($handymandata->provider_id) ? $handymandata->provider_id : '' }}";
+                    var service_address_id =
+                        "{{ isset($handymandata->service_address_id) ? $handymandata->service_address_id : 0 }}";
+                    var handymantype_id =
+                        "{{ isset($handymandata->handymantype_id) ? $handymandata->handymantype_id : 0 }}";
 
-            stateName(country_id, state_id);
-            providerAddress(provider_id, service_address_id)
-            handymanType(provider_id, handymantype_id)
-            $(document).on('change', '#country_id', function() {
-                var country = $(this).val();
-                $('#state_id').empty();
-                $('#city_id').empty();
-                stateName(country);
-            })
-            $(document).on('change', '#state_id', function() {
-                var state = $(this).val();
-                $('#city_id').empty();
-                cityName(state, city_id);
-            })
-            $(document).on('change', '#provider_id', function() {
-                var provider_id = $(this).val();
-                $('#service_address_id').empty();
-                $('#handymantype_id').empty();
-                providerAddress(provider_id, service_address_id);
-                handymanType(provider_id, handymantype_id)
-            })
+                    stateName(country_id, state_id);
+                    providerAddress(provider_id, service_address_id)
+                    handymanType(provider_id, handymantype_id)
+                    $(document).on('change', '#country_id', function() {
+                        var country = $(this).val();
+                        $('#state_id').empty();
+                        $('#city_id').empty();
+                        stateName(country);
+                    })
+                    $(document).on('change', '#state_id', function() {
+                        var state = $(this).val();
+                        $('#city_id').empty();
+                        cityName(state, city_id);
+                    })
+                    $(document).on('change', '#provider_id', function() {
+                        var provider_id = $(this).val();
+                        $('#service_address_id').empty();
+                        $('#handymantype_id').empty();
+                        providerAddress(provider_id, service_address_id);
+                        handymanType(provider_id, handymantype_id)
+                    })
 
-        })
-        $(document).on('keyup', '.contact_number', function() {
-            var contactNumberInput = document.getElementById('contact_number');
-            var inputValue = contactNumberInput.value;
-            inputValue = inputValue.replace(/[^0-9+\- ]/g, '');
-            if (inputValue.length > 15) {
-                inputValue = inputValue.substring(0, 15);
-                $('#contact_number_err').text('Contact number should not exceed 15 characters');
-            } else {
-                $('#contact_number_err').text('');
-            }
-            contactNumberInput.value = inputValue;
-            if (inputValue.match(/^[0-9+\- ]+$/)) {
-                $('#contact_number_err').text('');
-            } else {
-                $('#contact_number_err').text('Please enter a valid mobile number');
-            }
-        });
-
-
-        function stateName(country, state = "") {
-            var state_route = "{{ route('ajax-list', [ 'type' => 'state','country_id' =>'']) }}" + country;
-            state_route = state_route.replace('amp;', '');
-
-            $.ajax({
-                url: state_route,
-                success: function(result) {
-                    $('#state_id').select2({
-                        width: '100%',
-                        placeholder: "{{ trans('messages.select_name',['select' => trans('messages.state')]) }}",
-                        data: result.results
-                    });
-                    if (state != null) {
-                        $("#state_id").val(state).trigger('change');
+                })
+                $(document).on('keyup', '.contact_number', function() {
+                    var contactNumberInput = document.getElementById('contact_number');
+                    var inputValue = contactNumberInput.value;
+                    inputValue = inputValue.replace(/[^0-9+\- ]/g, '');
+                    if (inputValue.length > 15) {
+                        inputValue = inputValue.substring(0, 15);
+                        $('#contact_number_err').text('Contact number should not exceed 15 characters');
+                    } else {
+                        $('#contact_number_err').text('');
                     }
-                }
-            });
-        }
-
-        function cityName(state, city = "") {
-            var city_route = "{{ route('ajax-list', [ 'type' => 'city' ,'state_id' =>'']) }}" + state;
-            city_route = city_route.replace('amp;', '');
-
-            $.ajax({
-                url: city_route,
-                success: function(result) {
-                    $('#city_id').select2({
-                        width: '100%',
-                        placeholder: "{{ trans('messages.select_name',['select' => trans('messages.city')]) }}",
-                        data: result.results
-                    });
-                    if (city != null || city != 0) {
-                        $("#city_id").val(city).trigger('change');
+                    contactNumberInput.value = inputValue;
+                    if (inputValue.match(/^[0-9+\- ]+$/)) {
+                        $('#contact_number_err').text('');
+                    } else {
+                        $('#contact_number_err').text('Please enter a valid mobile number');
                     }
-                }
-            });
-        }
+                });
 
-        function providerAddress(provider_id, service_address_id = "") {
-            var provider_address_route =
-                "{{ route('ajax-list', [ 'type' => 'provider_address','provider_id' =>'']) }}" + provider_id;
-            provider_address_route = provider_address_route.replace('amp;', '');
 
-            $.ajax({
-                url: provider_address_route,
-                success: function(result) {
-                    $('#service_address_id').select2({
-                        width: '100%',
-                        placeholder: "{{ trans('messages.select_name',['select' => trans('messages.provider_address')]) }}",
-                        data: result.results
+                function stateName(country, state = "") {
+                    var state_route = "{{ route('ajax-list', ['type' => 'state', 'country_id' => '']) }}" + country;
+                    state_route = state_route.replace('amp;', '');
+
+                    $.ajax({
+                        url: state_route,
+                        success: function(result) {
+                            $('#state_id').select2({
+                                width: '100%',
+                                placeholder: "{{ trans('messages.select_name', ['select' => trans('messages.state')]) }}",
+                                data: result.results
+                            });
+                            if (state != null) {
+                                $("#state_id").val(state).trigger('change');
+                            }
+                        }
                     });
-                    if (service_address_id != "") {
-                        $('#service_address_id').val(service_address_id).trigger('change');
-                    }
                 }
-            });
-        }
 
-        function handymanType(provider_id, handymantype_id = "") {
-            var handymantype_route =
-                "{{ route('ajax-list', [ 'type' => 'handymantype','provider_id' =>'']) }}" + provider_id;
-            handymantype_route = handymantype_route.replace('amp;', '');
+                function cityName(state, city = "") {
+                    var city_route = "{{ route('ajax-list', ['type' => 'city', 'state_id' => '']) }}" + state;
+                    city_route = city_route.replace('amp;', '');
 
-            $.ajax({
-                url: handymantype_route,
-                success: function(result) {
-                    $('#handymantype_id').select2({
-                        width: '100%',
-                        placeholder: "{{ trans('messages.select_name',['select' => trans('messages.handymantype')]) }}",
-                        data: result.results
+                    $.ajax({
+                        url: city_route,
+                        success: function(result) {
+                            $('#city_id').select2({
+                                width: '100%',
+                                placeholder: "{{ trans('messages.select_name', ['select' => trans('messages.city')]) }}",
+                                data: result.results
+                            });
+                            if (city != null || city != 0) {
+                                $("#city_id").val(city).trigger('change');
+                            }
+                        }
                     });
-                    if (handymantype_id != "") {
-                        $('#handymantype_id').val(handymantype_id).trigger('change');
-                    }
                 }
-            });
-        }
-    })(jQuery);
-    </script>
+
+                function providerAddress(provider_id, service_address_id = "") {
+                    var provider_address_route =
+                        "{{ route('ajax-list', ['type' => 'provider_address', 'provider_id' => '']) }}" + provider_id;
+                    provider_address_route = provider_address_route.replace('amp;', '');
+
+                    $.ajax({
+                        url: provider_address_route,
+                        success: function(result) {
+                            $('#service_address_id').select2({
+                                width: '100%',
+                                placeholder: "{{ trans('messages.select_name', ['select' => trans('messages.provider_address')]) }}",
+                                data: result.results
+                            });
+                            if (service_address_id != "") {
+                                $('#service_address_id').val(service_address_id).trigger('change');
+                            }
+                        }
+                    });
+                }
+
+                function handymanType(provider_id, handymantype_id = "") {
+                    var handymantype_route =
+                        "{{ route('ajax-list', ['type' => 'handymantype', 'provider_id' => '']) }}" + provider_id;
+                    handymantype_route = handymantype_route.replace('amp;', '');
+
+                    $.ajax({
+                        url: handymantype_route,
+                        success: function(result) {
+                            $('#handymantype_id').select2({
+                                width: '100%',
+                                placeholder: "{{ trans('messages.select_name', ['select' => trans('messages.handymantype')]) }}",
+                                data: result.results
+                            });
+                            if (handymantype_id != "") {
+                                $('#handymantype_id').val(handymantype_id).trigger('change');
+                            }
+                        }
+                    });
+                }
+            })(jQuery);
+        </script>
     @endsection
 </x-master-layout>

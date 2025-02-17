@@ -3,7 +3,7 @@
         @csrf
         <input type="hidden" name="id">
 
-        <div class="row">
+       
             <div class="form-group col-md-2">
                 <label for="title" class="form-control-label">{{ __('messages.title') }} <span class="text-danger">*</span></label>
                 <input type="text" name="title" value="{{ old('title') }}" class="form-control" placeholder="{{ __('messages.title') }}" required>
@@ -23,6 +23,48 @@
             </div>
         </div>
 
+        <div class="row">
+
+        <div class="form-group col-md-4">
+            {{ html()->label(__('messages.select_name', ['select' => __('messages.country')]).' <span class="text-danger">*</span>', 'country_id')->class('form-control-label') }}
+            <br />
+            {{ html()->select('country_id', [optional($handymandata->country)->id => optional($handymandata->country)->name], optional($handymandata->country)->id)
+                ->class('select2js form-group country')
+                ->required()
+                ->attribute('data-placeholder', __('messages.select_name', ['select' => __('messages.country')]))
+                ->attribute('data-ajax--url', route('ajax-list', ['type' => 'country'])) 
+                }}
+        </div>
+
+        <div class="form-group col-md-4">
+            {{ html()->label(__('messages.select_name', ['select' => __('messages.state')]).' <span class="text-danger">*</span>', 'state_id')->class('form-control-label') }}
+            <br />
+            {{ html()->select('state_id', [], [])
+                ->class('select2js form-group state_id')
+                ->required()
+                ->attribute('data-placeholder', __('messages.select_name', ['select' => __('messages.state')]))       
+                }}
+        </div>
+
+        <div class="form-group col-md-4">
+            {{ html()->label(__('messages.select_name', ['select' => __('messages.city')]).' <span class="text-danger">*</span>', 'city_id')->class('form-control-label') }}
+            <br />
+            {{ html()->select('city_id', [], old('city_id'))
+                ->class('select2js form-group city_id')->required()->attribute('data-placeholder', __('messages.select_name', ['select' => __('messages.city')])) }}
+        </div>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+        
         <div class="row">
             <div class="form-group col-md-2">
                 <label for="price" class="form-control-label">{{ __('messages.price') }} <span class="text-danger">*</span></label>
@@ -80,197 +122,141 @@
     </div>
 
     @section('bottom_script')
-    <style>
-        #imageContainer img {
-            width: 100%;
-            height: auto;
-            max-height: 150px;
-            margin-bottom: 10px;
-            margin-right: 10px;
-        }
-        #imageModal .modal-body img {
-            width: 27%;
-            height: 150px;
-            margin-right: 10px;
-            margin-bottom: 10px;
-        }
-    </style>
-    <script type="text/javascript">
-        (function($) {
-            "use strict";
+        <script type="text/javascript">
+            (function($) {
+                "use strict";
+                $(document).ready(function() {
+                    var country_id = "{{ isset($handymandata->country_id) ? $handymandata->country_id : 0 }}";
+                    var state_id = "{{ isset($handymandata->state_id) ? $handymandata->state_id : 0 }}";
+                    var city_id = "{{ isset($handymandata->city_id) ? $handymandata->city_id : 0 }}";
 
-            $(document).ready(function() {
-                var provider_id = "{{ isset($postJob->provider_id) ? $postJob->provider_id : '' }}";
-                var category_id = "{{ isset($postJob->category_id) ? $postJob->category_id : '' }}";
-                var subcategory_id = "{{ isset($postJob->subcategory_id) ? $postJob->subcategory_id : '' }}";
-                var country_id = "{{ isset($postJob->country_id) ? $postJob->country_id : '' }}";
-                var state_id = "{{ isset($postJob->state_id) ? $postJob->state_id : '' }}";
-                var city_id = "{{ isset($postJob->city_id) ? $postJob->city_id : '' }}";
-                getSubCategory(category_id, subcategory_id);
-                getCity(country_id, city_id);
+                    var provider_id = "{{ isset($handymandata->provider_id) ? $handymandata->provider_id : '' }}";
+                    var service_address_id =
+                        "{{ isset($handymandata->service_address_id) ? $handymandata->service_address_id : 0 }}";
+                    var handymantype_id =
+                        "{{ isset($handymandata->handymantype_id) ? $handymandata->handymantype_id : 0 }}";
 
-                $(document).on('change', '#category_id', function() {
-                    var category_id = $(this).val();
-                    $('#subcategory_id').empty();
-                    getSubCategory(category_id, subcategory_id);
+                    stateName(country_id, state_id);
+                    providerAddress(provider_id, service_address_id)
+                    handymanType(provider_id, handymantype_id)
+                    $(document).on('change', '#country_id', function() {
+                        var country = $(this).val();
+                        $('#state_id').empty();
+                        $('#city_id').empty();
+                        stateName(country);
+                    })
+                    $(document).on('change', '#state_id', function() {
+                        var state = $(this).val();
+                        $('#city_id').empty();
+                        cityName(state, city_id);
+                    })
+                    $(document).on('change', '#provider_id', function() {
+                        var provider_id = $(this).val();
+                        $('#service_address_id').empty();
+                        $('#handymantype_id').empty();
+                        providerAddress(provider_id, service_address_id);
+                        handymanType(provider_id, handymantype_id)
+                    })
+
+                })
+                $(document).on('keyup', '.contact_number', function() {
+                    var contactNumberInput = document.getElementById('contact_number');
+                    var inputValue = contactNumberInput.value;
+                    inputValue = inputValue.replace(/[^0-9+\- ]/g, '');
+                    if (inputValue.length > 15) {
+                        inputValue = inputValue.substring(0, 15);
+                        $('#contact_number_err').text('Contact number should not exceed 15 characters');
+                    } else {
+                        $('#contact_number_err').text('');
+                    }
+                    contactNumberInput.value = inputValue;
+                    if (inputValue.match(/^[0-9+\- ]+$/)) {
+                        $('#contact_number_err').text('');
+                    } else {
+                        $('#contact_number_err').text('Please enter a valid mobile number');
+                    }
                 });
 
-                $(document).on('change', '#country_id', function() {
-                    var country_id = $(this).val();
-                    getCity(country_id, city_id);
-                });
 
-                // Set minimum selectable dates
-                function setMinDates() {
-                    var today = new Date().toISOString().split('T')[0];
-                    $('#start_date').attr('min', today);
-                    $('#end_date').attr('min', today);
-                }
+                function stateName(country, state = "") {
+                    var state_route = "{{ route('ajax-list', ['type' => 'state', 'country_id' => '']) }}" + country;
+                    state_route = state_route.replace('amp;', '');
 
-                // Calculate days between dates
-                function calculateDays() {
-                    var startDate = $('#start_date').val();
-                    var endDate = $('#end_date').val();
-
-                    if (startDate && endDate) {
-                        if (startDate > endDate) {
-                            $('#start_date_error').css('display', 'block');
-                        } else {
-                            $('#start_date_error').css('display', 'none');
-                            var start = new Date(startDate);
-                            var end = new Date(endDate);
-                            var diffTime = end - start;
-                            var diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
-                            if (diffDays > 0) {
-                                $('#total_day_div').val(diffDays);
-                                $('#hidden_total_days').val(diffDays);
-                            } else {
-                                $('#total_day_div').val(0);
-                                $('#hidden_total_days').val(0);
+                    $.ajax({
+                        url: state_route,
+                        success: function(result) {
+                            $('#state_id').select2({
+                                width: '100%',
+                                placeholder: "{{ trans('messages.select_name', ['select' => trans('messages.state')]) }}",
+                                data: result.results
+                            });
+                            if (state != null) {
+                                $("#state_id").val(state).trigger('change');
                             }
                         }
-                    } else {
-                        $('#hidden_total_days').val(0);
-                        $('#total_day_div').val(0);
-                    }
-                }
-
-                setMinDates();
-                $('#start_date, #end_date').on('change', function() {
-                    calculateDays();
-                    var startDate = $('#start_date').val();
-                    if (startDate) {
-                        $('#end_date').attr('min', startDate);
-                    } else {
-                        setMinDates();
-                    }
-                });
-            });
-
-            function getSubCategory(category_id, subcategory_id = "") {
-                var get_subcategory_list = "{{ route('ajax-list', [ 'type' => 'subcategory_list','category_id' =>'']) }}" + category_id;
-                get_subcategory_list = get_subcategory_list.replace('amp;', '');
-
-                $.ajax({
-                    url: get_subcategory_list,
-                    success: function(result) {
-                        $('#subcategory_id').select2({
-                            width: '100%',
-                            placeholder: "{{ trans('messages.select_name',['select' => trans('messages.subcategory')]) }}",
-                            data: result.results
-                        });
-                        if (subcategory_id != "") {
-                            $('#subcategory_id').val(subcategory_id).trigger('change');
-                        }
-                    }
-                });
-            }
-
-            function getCity(country, city = "") {
-                var city_route = "{{ route('ajax-list', [ 'type' => 'cityFromCountry' ,'country_id' =>'']) }}" + country;
-                city_route = city_route.replace('amp;', '');
-
-                $('#city_id').select2({
-                    width: '100%',
-                    placeholder: "{{ __('messages.select_name',['select' => __('messages.city')]) }}",
-                });
-
-                $.ajax({
-                    url: city_route,
-                    success: function(result) {
-                        $('#city_id').empty();
-                        result.forEach(function(city) {
-                            var option = new Option(city.name, city.id, false, false);
-                            $('#city_id').append(option);
-                        });
-                        if (city !== null && city !== 0) {
-                            $("#city_id").val(city).trigger('change');
-                        }
-                    }
-                });
-            }
-
-            function displaySelectedImage(input) {
-                var files = input.files;
-                if (files && files[0]) {
-                    var reader = new FileReader();
-                    reader.onload = function (e) {
-                        $('#selectedImage').attr('src', e.target.result).show();
-                    };
-                    reader.readAsDataURL(files[0]);
-                }
-            }
-
-            var selectedImages = [];
-            $("#image").change(function(event) {
-                var files = event.target.files;
-                if (files && files.length > 0) {
-                    $('#imageContainer').empty();
-                    selectedImages = [];
-                    var maxImages = Math.min(files.length, 3);
-                    for (var i = 0; i < files.length; i++) {
-                        var imageUrl = URL.createObjectURL(files[i]);
-                        selectedImages.push(imageUrl);
-                        if (i < maxImages) {
-                            var img = $('<img>').attr({
-                                'src': imageUrl,
-                                'alt': 'Selected Image',
-                                'style': 'width: 27%; height: auto; max-height: 90px;',
-                                'class': 'img-fluid mt-2',
-                            });
-                            $('#imageContainer').append(img);
-                        }
-                    }
-                    if (files.length > 3) {
-                        $('#showMoreButton').show();
-                    } else {
-                        $('#showMoreButton').hide();
-                    }
-                }
-            });
-
-            $('#showMoreButton').click(function() {
-                openImagePopup(selectedImages);
-            });
-
-            function openImagePopup(images) {
-                var modal = $('#imageModal');
-                modal.modal('show');
-                modal.find('.modal-body').empty();
-                images.forEach(function(imageUrl) {
-                    var img = $('<img>').attr({
-                        'src': imageUrl,
-                        'alt': 'Selected Image',
-                        'style': 'width: 27%; height: 90px; margin-right: 10px;'
                     });
-                    modal.find('.modal-body').append(img);
-                });
-            }
+                }
 
-            $(".btn-close").click(function(){
-                $('#imageModal').modal('hide');
-            });
-        })(jQuery);
-    </script>
+                function cityName(state, city = "") {
+                    var city_route = "{{ route('ajax-list', ['type' => 'city', 'state_id' => '']) }}" + state;
+                    city_route = city_route.replace('amp;', '');
+
+                    $.ajax({
+                        url: city_route,
+                        success: function(result) {
+                            $('#city_id').select2({
+                                width: '100%',
+                                placeholder: "{{ trans('messages.select_name', ['select' => trans('messages.city')]) }}",
+                                data: result.results
+                            });
+                            if (city != null || city != 0) {
+                                $("#city_id").val(city).trigger('change');
+                            }
+                        }
+                    });
+                }
+
+                function providerAddress(provider_id, service_address_id = "") {
+                    var provider_address_route =
+                        "{{ route('ajax-list', ['type' => 'provider_address', 'provider_id' => '']) }}" + provider_id;
+                    provider_address_route = provider_address_route.replace('amp;', '');
+
+                    $.ajax({
+                        url: provider_address_route,
+                        success: function(result) {
+                            $('#service_address_id').select2({
+                                width: '100%',
+                                placeholder: "{{ trans('messages.select_name', ['select' => trans('messages.provider_address')]) }}",
+                                data: result.results
+                            });
+                            if (service_address_id != "") {
+                                $('#service_address_id').val(service_address_id).trigger('change');
+                            }
+                        }
+                    });
+                }
+
+                function handymanType(provider_id, handymantype_id = "") {
+                    var handymantype_route =
+                        "{{ route('ajax-list', ['type' => 'handymantype', 'provider_id' => '']) }}" + provider_id;
+                    handymantype_route = handymantype_route.replace('amp;', '');
+
+                    $.ajax({
+                        url: handymantype_route,
+                        success: function(result) {
+                            $('#handymantype_id').select2({
+                                width: '100%',
+                                placeholder: "{{ trans('messages.select_name', ['select' => trans('messages.handymantype')]) }}",
+                                data: result.results
+                            });
+                            if (handymantype_id != "") {
+                                $('#handymantype_id').val(handymantype_id).trigger('change');
+                            }
+                        }
+                    });
+                }
+            })(jQuery);
+        </script>
+    @endsection
 @endsection
 </x-master-layout>
