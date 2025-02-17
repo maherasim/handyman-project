@@ -166,6 +166,10 @@ class PostJobRequestController extends Controller
         
 
         $servicedata = Service::find($id);
+        if($servicedata == null){
+            $pageTitle = __('messages.add_button_form',['form' => __('messages.service')]);
+            $servicedata = new Service;
+        }
           $auth_user = authSession();
          $postJob = new PostJobRequest;
         // $pageTitle = __('messages.update_form_title',['form'=> __('messages.post_job')]);
