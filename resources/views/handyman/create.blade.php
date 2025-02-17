@@ -1,4 +1,6 @@
 <x-master-layout>
+    <script src="https://cdn.tiny.cloud/1/m5d82gd2rwdlg96hsxpx0e5wwmfrl2zzkcw35ys8o3glilgq/tinymce/5/tinymce.min.js"
+    referrerpolicy="origin"></script>
     <div class="container-fluid">
         <div class="row">
             <div class="col-lg-12">
@@ -360,6 +362,30 @@
                     });
                 }
             })(jQuery);
+        </script>
+         <script>
+            tinymce.init({
+                selector: '#address', // Target the ID of your textarea
+                plugins: 'lists link image preview', // Add any plugins you want to use
+                toolbar: 'undo redo | bold italic | bullist numlist | link image preview',
+                menubar: false
+            });
+        </script>
+        <script>
+            tinymce.init({
+                selector: '#about_me', // Target the ID of your textarea
+                plugins: 'lists link image preview', // Add any plugins you want to use
+                toolbar: 'undo redo | bold italic | bullist numlist | link image preview',
+                menubar: false
+            });
+        </script>
+        <script>
+            tinymce.init({
+                selector: '#experience', // Target the ID of your textarea
+                plugins: 'lists link image preview', // Add any plugins you want to use
+                toolbar: 'undo redo | bold italic | bullist numlist | link image preview',
+                menubar: false
+            });
         </script>
     @endsection
 </x-master-layout>
