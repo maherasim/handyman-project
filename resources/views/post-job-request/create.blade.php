@@ -1,6 +1,7 @@
 <x-master-layout>
    
     
+    asim
 
     @section('bottom_script')
     <style>
