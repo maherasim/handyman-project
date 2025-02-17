@@ -162,30 +162,32 @@
        });
     </script>
      <script>
-        function getSubCategory(category_id, selected_subcategory_id = null) {
-    if (category_id) {
-        $.ajax({
-            url: "{{ route('ajax-list', ['type' => 'subcategory']) }}",
-            type: "GET",
-            data: { category_id: category_id },
-            success: function(response) {
-                $('#subcategory_id').empty().append('<option value="">{{ __("messages.select_name", ["select" => __("messages.subcategory")]) }}</option>');
+     function getSubCategory(category_id, subcategory_id = "") {
+    console.log("Fetching subcategories for category_id:", category_id); // Debugging line
 
-                if (response.length > 0) {
-                    $.each(response, function(index, subcategory) {
-                        let selected = selected_subcategory_id == subcategory.id ? "selected" : "";
-                        $('#subcategory_id').append('<option value="' + subcategory.id + '" ' + selected + '>' + subcategory.name + '</option>');
-                    });
-                }
-            },
-            error: function() {
-                console.error("Failed to fetch subcategories");
+    var get_subcategory_list =
+        "{{ route('ajax-list', ['type' => 'subcategory_list', 'category_id' => '']) }}" + category_id;
+    get_subcategory_list = get_subcategory_list.replace('amp;', '');
+
+    $.ajax({
+        url: get_subcategory_list,
+        success: function(result) {
+            console.log("Subcategory Data Received:", result); // Debugging line
+            $('#subcategory_id').select2({
+                width: '100%',
+                placeholder: "{{ trans('messages.select_name', ['select' => trans('messages.subcategory')]) }}",
+                data: result.results
+            });
+            if (subcategory_id != "") {
+                $('#subcategory_id').val(subcategory_id).trigger('change');
             }
-        });
-    } else {
-        $('#subcategory_id').empty().append('<option value="">{{ __("messages.select_name", ["select" => __("messages.subcategory")]) }}</option>');
-    }
+        },
+        error: function(xhr, status, error) {
+            console.log("Error fetching subcategories:", error); // Debugging line
+        }
+    });
 }
+
 
         tinymce.init({
             selector: '#description',
