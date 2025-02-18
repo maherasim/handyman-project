@@ -365,50 +365,383 @@ $data['datetime'] = $sitesetup ? json_decode($sitesetup->value) : null;
     {
         $items = array();
         $value = $request->q;
-    
+
         $auth_user = authSession();
-        
-        // Your previous switch cases...
-        case 'country':
-            $items = \App\Models\Country::select('id', 'name as text');
-            if ($value != '') {
-                $items->where('name', 'LIKE', $value . '%');
-            }
-            $items = $items->get();
-            break;
-    
-        case 'state':
-            $items = \App\Models\State::select('id', 'name as text');
-            if (isset($request->country_id)) {
-                $items->where('country_id', $request->country_id);
-            }
-            if ($value != '') {
-                $items->where('name', 'LIKE', $value . '%');
-            }
-            $items = $items->get();
-            break;
-    
-        case 'city':
-            // If no state is provided, we fetch cities based on country only
-            $items = \App\Models\City::select('id', 'name as text');
+        switch ($request->type) {
+            case 'permission':
+                $items = \App\Models\Permission::select('id', 'name as text')->whereNull('parent_id');
+                if ($value != '') {
+                    $items->where('name', 'LIKE', $value . '%');
+                }
+                $items = $items->get();
+                break;
+            case 'category':
+                $items = \App\Models\Category::select('id', 'name as text')->where('status', 1);
+                if (isset($request->is_featured)) {
+                    $items->where('is_featured', $request->is_featured);
+                }
+                if ($value != '') {
+                    $items->where('name', 'LIKE', '%' . $value . '%');
+                }
+                if (isset($request->provider_id) && $request->provider_id !== null) {
+                    $items->whereHas('services', function ($query) use ($request) {
+                        $query->where('provider_id', $request->provider_id);
+                    });
+                }
+                $items = $items->get();
+                break;
+            case 'subcategory':
+                $items = \App\Models\SubCategory::select('id', 'name as text')->where('status', 1);
+
+                if ($value != '') {
+                    $items->where('name', 'LIKE', '%' . $value . '%');
+                }
+
+                $items = $items->get();
+                break;
+            case 'provider':
+                $items = \App\Models\User::select('id', 'display_name as text')
+                    ->where('user_type', 'provider')
+                    ->where('status', 1);
+
+                if ($value != '') {
+                    $items->where('display_name', 'LIKE', $value . '%');
+                }
+
+                $items = $items->get();
+                break;
+
+            case 'user':
+                $items = \App\Models\User::select('id', 'display_name as text')
+                    ->where('user_type', 'user')
+                    ->where('status', 1);
+
+                if ($value != '') {
+                    $items->where('display_name', 'LIKE', $value . '%');
+                }
+
+                $items = $items->get();
+                break;
+
+            case 'provider-user':
+                $items = \App\Models\User::select('id', 'display_name as text')
+                    ->where('user_type', 'provider')->orWhere('user_type', 'user')
+                    ->where('status', 1);
+
+                if ($value != '') {
+                    $items->where('display_name', 'LIKE', $value . '%');
+                }
+
+                $items = $items->get();
+                break;
             
-            if (isset($request->country_id)) {
-                $items->where('country_id', $request->country_id);
-            } elseif (isset($request->state_id)) {
-                $items->where('state_id', $request->state_id); // If state is provided
-            }
-    
-            if ($value != '') {
-                $items->where('name', 'LIKE', $value . '%');
-            }
-            $items = $items->get();
-            break;
-        
-        // The rest of your cases...
-    
+            case 'provider-user-handyman':
+                $items = \App\Models\User::select('id', 'display_name as text')
+                    ->whereIn('user_type', ['provider','user','handyman'])
+                    ->where('status', 1);
+
+                if ($value != '') {
+                    $items->where('display_name', 'LIKE', $value . '%');
+                }
+
+                $items = $items->get();
+                break;
+
+            case 'handyman':
+                $items = \App\Models\User::select('id', 'display_name as text')
+                    ->where('user_type', 'handyman')
+                    ->where('status', 1);
+
+                if (isset($request->provider_id)) {
+                    $items->where('provider_id', $request->provider_id);
+                }
+
+                if (isset($request->booking_id)) {
+                    $booking_data = Booking::find($request->booking_id);
+
+                    $service_address = $booking_data->handymanByAddress;
+                    if ($service_address != null) {
+                        $items->where('service_address_id', $service_address->id);
+                    }
+                }
+
+                if ($value != '') {
+                    $items->where('display_name', 'LIKE', $value . '%');
+                }
+
+                $items = $items->get();
+                break;
+            case 'service':
+                $items = \App\Models\Service::select('id', 'name as text')->where('status', 1);
+
+                if ($value != '') {
+                    $items->where('name', 'LIKE', '%' . $value . '%');
+                }
+                if (isset($request->provider_id)) {
+                    $items->where('provider_id', $request->provider_id);
+                }
+
+                if (isset($request->top_rated)) {
+                    $minRating = $request->top_rated['min'] ?? 0;
+                    $maxRating = $request->top_rated['max'] ?? 5;
+
+                    $topRatedServiceIds = BookingRating::select('service_id', \DB::raw('COALESCE(AVG(rating), 0) as avg_rating'))
+                        ->groupBy('service_id')
+                        ->havingRaw('avg_rating >= ?', [$minRating])
+                        ->havingRaw('avg_rating <= ?', [$maxRating])
+                        ->orderByDesc('avg_rating')
+                        ->pluck('service_id')
+                        ->toArray();
+
+                        if (!empty($topRatedServiceIds)) {
+                            $items->whereIn('id', $topRatedServiceIds)
+                                ->orderByRaw("FIELD(id, " . implode(',', $topRatedServiceIds) . ")");
+                        } else {
+                            // Optional: Handle case where no services match the criteria
+                            $items->whereRaw('0 = 1'); // Ensures no results are returned
+                        }
+                }
+
+                if (isset($request->is_featured)) {
+                    $items->where('is_featured', 1);
+                }
+
+
+                $items = $items->get();
+
+
+                break;
+            case 'service-list':
+                $items = \App\Models\Service::select('id', 'name as text')
+                ->where('status', 1)
+                ->where('service_type', 'service');
+                // Apply search filter if $value is provided
+                if (!empty($value)) {
+                    $items->where('name', 'LIKE', '%' . $value . '%');
+                }
+                
+                // Filter by provider_id if it's provided in the request
+                if ($request->filled('provider_id')) {
+                    $items->where('provider_id', $request->provider_id);
+                }
+                
+                // Filter by handyman_id if it's provided in the request
+                if ($request->filled('handyman_id')) {
+                    $providerId = \App\Models\User::where('id', $request->handyman_id)
+                        ->where('user_type', 'handyman')
+                        ->value('provider_id'); // Single value fetched
+                    if ($providerId) {
+                        $items->where('provider_id', $providerId);
+                    }
+                }
+
+                $items = $items->get();
+                break;
+            case 'providertype':
+                $items = \App\Models\ProviderType::where('status', 1);
+
+                if ($value != '') {
+                    $items->where('name', 'LIKE', $value . '%');
+                }
+
+                $items = $items->get()->map(function ($item) {
+                    $text = $item->name . ' (';
+
+                    if ($item->type === 'percent') {
+                        $text .= $item->commission . '%';
+                    } elseif ($item->type === 'fixed') {
+                        $text .= getPriceFormat($item->commission);
+                    } else {
+                        $text .= $item->commission;
+                    }
+
+                    $text .= ')';
+
+                    return [
+                        'id' => $item->id,
+                        'text' => $text,
+                    ];
+                });
+
+                break;
+
+            case 'coupon':
+                $items = \App\Models\Coupon::select('id', 'code as text')->where('status', 1);
+
+                if ($value != '') {
+                    $items->where('code', 'LIKE', '%' . $value . '%');
+                }
+
+                $items = $items->where('status', 1)->get();
+                break;
+
+            case 'bank':
+                $items = \App\Models\Bank::select('id', 'bank_name as text')->where('provider_id', $request->provider_id)->where('status', 1);
+
+                if ($value != '') {
+                    $items->where('name', 'LIKE', $value . '%');
+                }
+                $items = $items->get();
+                break;
+
+            case 'country':
+                $items = \App\Models\Country::select('id', 'name as text');
+
+                if ($value != '') {
+                    $items->where('name', 'LIKE', $value . '%');
+                }
+                $items = $items->get();
+                break;
+            case 'state':
+                $items = \App\Models\State::select('id', 'name as text');
+                if (isset($request->country_id)) {
+                    $items->where('country_id', $request->country_id);
+                }
+                if ($value != '') {
+                    $items->where('name', 'LIKE', $value . '%');
+                }
+                $items = $items->get();
+                break;
+            case 'city':
+                $items = \App\Models\City::select('id', 'name as text');
+                if (isset($request->state_id)) {
+                    $items->where('state_id', $request->state_id);
+                }
+                if ($value != '') {
+                    $items->where('name', 'LIKE', $value . '%');
+                }
+                $items = $items->get();
+                break;
+            case 'booking_status':
+                $items = \App\Models\BookingStatus::select('id', 'label as text');
+
+                if ($value != '') {
+                    $items->where('label', 'LIKE', $value . '%');
+                }
+                $items = $items->get();
+                break;
+            case 'currency':
+                $items = \DB::table('countries')->select(\DB::raw('id id,CONCAT(name , " ( " , symbol ," ) ") text'));
+
+                $items->whereNotNull('symbol')->where('symbol', '!=', '');
+                if ($value != '') {
+                    $items->where('name', 'LIKE', $value . '%')->orWhere('currency_code', 'LIKE', $value . '%');
+                }
+                $items = $items->get();
+                break;
+            case 'country_code':
+                $items = \DB::table('countries')->select(\DB::raw('code id,name text'));
+                if ($value != '') {
+                    $items->where('name', 'LIKE', $value . '%')->orWhere('code', 'LIKE', $value . '%');
+                }
+                $items = $items->get();
+                break;
+
+            case 'time_zone':
+                $items = timeZoneList();
+
+                foreach ($items as $k => $v) {
+
+                    if ($value != '') {
+                        if (strpos($v, $value) !== false) {
+                        } else {
+                            unset($items[$k]);
+                        }
+                    }
+                }
+
+                $data = [];
+                $i = 0;
+                foreach ($items as $key => $row) {
+                    $data[$i] = [
+                        'id'    => $key,
+                        'text'  => $row,
+                    ];
+                    $i++;
+                }
+                $items = $data;
+                break;
+            case 'provider_address':
+                $provider_id = !empty($request->provider_id) ? $request->provider_id : $auth_user->id;
+                $items = \App\Models\ProviderAddressMapping::select('id', 'address as text', 'latitude', 'longitude', 'status')->where('provider_id', $provider_id)->where('status', 1);
+                $items = $items->get();
+                break;
+
+            case 'provider_tax':
+                $provider_id = !empty($request->provider_id) ? $request->provider_id : $auth_user->id;
+                $items = \App\Models\Tax::select('id', 'title as text')->where('status', 1);
+                $items = $items->get();
+                break;
+
+            case 'documents':
+                $items = \App\Models\Documents::select('id', 'name', 'status', 'is_required', \DB::raw('(CASE WHEN is_required = 1 THEN CONCAT(name," * ") ELSE CONCAT(name,"") END) AS text'))->where('status', 1);
+                if ($value != '') {
+                    $items->where('name', 'LIKE', $value . '%');
+                }
+                $items = $items->get();
+                break;
+            case 'handymantype':
+                $items = \App\Models\HandymanType::where('status', 1);
+
+                if ($value != '') {
+                    $items->where('name', 'LIKE', $value . '%');
+                }
+
+                $provider_id = $request->provider_id ?? $auth_user->id;
+
+                // Get all admin IDs
+                $adminIds = \App\Models\User::where('user_type', 'admin')->pluck('id')->toArray();
+
+                // Filter by created_by, which could include the provider ID and admin IDs
+                $items->whereIn('created_by', array_merge([$provider_id], $adminIds));
+
+                // Retrieve the results and map them
+                $items = $items->get()->map(function ($item) {
+                    $text = $item->name . ' (';
+
+                    if ($item->type === 'percent') {
+                        $text .= $item->commission . '%';
+                    } elseif ($item->type === 'fixed') {
+                        $text .= getPriceFormat($item->commission); // No country symbol included
+                    } else {
+                        $text .= $item->commission;
+                    }
+
+                    $text .= ')';
+
+                    return [
+                        'id' => $item->id,
+                        'text' => $text,
+                    ];
+                });
+
+                break;
+            case 'subcategory_list':
+                $category_id = !empty($request->category_id) ? $request->category_id : '';
+                $items = \App\Models\SubCategory::select('id', 'name as text')->where('category_id', $category_id)->where('status', 1);
+                $items = $items->get();
+                break;
+            case 'service_package':
+                $service_id = !empty($request->service_id) ? $request->service_id : $auth_user->id;
+                $items = \App\Models\ServicePackage::select('id', 'description as text', 'status')->where('provider_id', $service_id)->where('status', 1);
+                $items = $items->get();
+                break;
+            case 'all_user':
+                $items = \App\Models\User::select('id', 'display_name as text')
+                    ->where('status', 1);
+
+                if ($value != '') {
+                    $items->where('display_name', 'LIKE', $value . '%');
+                }
+
+                $items = $items->get();
+                break;
+            default:
+                break;
+        }
         return response()->json(['status' => 'true', 'results' => $items]);
     }
-    
+
     public function removeFile(Request $request)
     {
         if (demoUserPermission()) {
