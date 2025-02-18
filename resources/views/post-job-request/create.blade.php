@@ -163,7 +163,16 @@
                                     <small class="help-block with-errors text-danger"></small>
                                 </div>
                             </div>
-
+                            <div class="row">
+                            <div class="form-group col-md-12">
+                                <label for="title">{{ __('messages.title') }} <span
+                                        class="text-danger">*</span></label>
+                                <input type="text" name="requirnment" id="requirnment" class="form-control"
+                                    placeholder="{{ __('Requirnments') }}"
+                                    title=""
+                                    value="{{ old('requirnment', $postJob->requirnment) }}" required>
+                                <small class="help-block with-errors text-danger"></small>
+                            </div></div>
                             <div class="row">
                                 <div class="form-group col-md-6">
                                     <label for="description">{{ __('messages.description') }}</label>
