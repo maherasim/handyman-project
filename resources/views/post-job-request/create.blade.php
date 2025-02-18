@@ -63,7 +63,6 @@
                                     <br />
                                     {{ html()->select('subcategory_id', $subcategories->pluck('name', 'id'), null)->class('select2js form-group subcategory_id')->attribute('data-placeholder', __('messages.select_name', ['select' => __('messages.subcategory')])) }}
                                 </div>
-
                             </div>
 
                             <!-- Second row with 4 fields -->
@@ -230,32 +229,13 @@
             });
         </script>
 
-
-       
         <script>
             tinymce.init({
                 selector: '#description', // Target the ID of your textarea
                 plugins: 'lists link image preview', // Add any plugins you want to use
                 toolbar: 'undo redo | bold italic | bullist numlist | link image preview',
                 menubar: false
-            });
-        </script>
-    @section('bottom_script')
-        <script>
-            tinymce.init({
-                selector: '#description', // Target the ID of your textarea
-                plugins: 'lists link image preview', // Add any plugins you want to use
-                toolbar: 'undo redo | bold italic | bullist numlist | link image preview',
-                menubar: false
-            });
-            $(document).ready(function() {
-                // Initialize select2 for the requirements select
-                $('#requirements').select2({
-                    placeholder: "{{ __('Select requirements') }}", // Optional placeholder
-                    allowClear: true // Allows the user to clear selections
-                });
             });
         </script>
     @endsection
-@endsection
 </x-master-layout>
