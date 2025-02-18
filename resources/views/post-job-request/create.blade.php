@@ -38,10 +38,7 @@
                              </select>
                           </div>
                           
-                          <div class="form-group col-md-2">
-                             <label for="city_id">{{ __('messages.select_name', ['select' => __('messages.city')]) }} <span class="text-danger">*</span></label>
-                             <select name="city_id" id="city_id" class="select2js form-group category" required data-placeholder="{{ __('messages.select_name', ['select' => __('messages.city')]) }}"></select>
-                          </div>
+                          
                           
                           <div class="form-group col-md-2">
                              <label for="category_id">{{ __('messages.category') }} <span class="text-danger">*</span></label>
