@@ -172,13 +172,14 @@
                                     title=""
                                     value="{{ old('requirnment', $postJob->requirnment) }}" required>
                                 <small class="help-block with-errors text-danger"></small>
-                            </div></div>
+                            </div>
                             <div class="row">
                                 <div class="form-group col-md-6">
                                     <label for="description">{{ __('messages.description') }}</label>
                                     <textarea name="description" id="description" class="form-control textarea" rows="3"
                                         placeholder="{{ __('messages.description') }}">{{ old('description', $postJob->description) }}</textarea>
-                                </div>
+                                </div> </div>
+                                <div class="row">
                                 <div class="form-group col-md-6">
                                     <label for="title">{{ __('Requirment') }} <span
                                             class="text-danger">*</span></label>
