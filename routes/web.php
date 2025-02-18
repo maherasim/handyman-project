@@ -492,7 +492,7 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
         Route::get('index_data', [NotificationTemplatesController::class, 'index_data'])->name('index_data');
         Route::get('trashed', [NotificationTemplatesController::class, 'trashed'])->name('trashed');
         Route::patch('trashed/{id}', [NotificationTemplatesController::class, 'restore'])->name('restore');
-    //    Route::get('ajax-list', [NotificationTemplatesController::class, 'getAjaxList'])->name('ajax-list');
+      Route::get('ajax-list', [NotificationTemplatesController::class, 'getAjaxList'])->name('ajax-list');
         Route::get('notification-buttons', [NotificationTemplatesController::class, 'notificationButton'])->name('notification-buttons');
         Route::get('notification-template', [NotificationTemplatesController::class, 'notificationTemplate'])->name('notification-template');
         Route::post('channels-update', [NotificationTemplatesController::class, 'updateChanels'])->name('settings.update');
@@ -508,7 +508,7 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
         Route::get('index_data', [MailTemplatesController::class, 'index_data'])->name('index_data');
         Route::get('trashed', [MailTemplatesController::class, 'trashed'])->name('trashed');
         Route::patch('trashed/{id}', [MailTemplatesController::class, 'restore'])->name('restore');
-    //    Route::get('ajax-list', [MailTemplatesController::class, 'getAjaxList'])->name('ajax-list');
+     Route::get('ajax-list', [MailTemplatesController::class, 'getAjaxList'])->name('ajax-list');
         Route::get('notification-buttons', [MailTemplatesController::class, 'mailButton'])->name('notification-buttons');
         Route::get('notification-template', [MailTemplatesController::class, 'mailTemplate'])->name('notification-template');
         Route::post('channels-update', [MailTemplatesController::class, 'updateChanels'])->name('settings.update');

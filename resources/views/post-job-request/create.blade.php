@@ -175,7 +175,7 @@
                                     <label for="title">{{ __('Requirment') }} <span
                                             class="text-danger">*</span></label>
                                     <input type="text" name="requirnment" id="requirnment" class="form-control"
-                                        placeholder="{{ __('messages.title') }}" title="requirnment"
+                                        placeholder="{{ __('requirnment') }}" title="requirnment"
                                         value="{{ old('title', $postJob->requirnment) }}" required>
                                     <small class="help-block with-errors text-danger"></small>
                                 </div></div>
