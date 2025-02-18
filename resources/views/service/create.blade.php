@@ -55,8 +55,8 @@
                                     required
                                     data-placeholder="{{ __('messages.select_name', ['select' => __('messages.country')]) }}"
                                     data-ajax--url="{{ route('ajax-list', ['type' => 'country']) }}">
-                                    <option value="{{ optional($postJob->country)->id }}" selected>
-                                        {{ optional($postJob->country)->name }}
+                                    <option value="{{ optional($servicedata->country)->id }}" selected>
+                                        {{ optional($servicedata->country)->name }}
                                     </option>
                                 </select>
                             </div>
@@ -587,11 +587,11 @@
             (function($) {
                 "use strict";
                 $(document).ready(function() {
-                    var country_id = "{{ isset($postJob->country_id) ? $postJob->country_id : '' }}";
-                    var state_id = "{{ isset($postJob->state_id) ? $postJob->state_id : '' }}";
-                    var city_id = "{{ isset($postJob->city_id) ? $postJob->city_id : '' }}";
-                    var category_id = "{{ isset($postJob->category_id) ? $postJob->category_id : '' }}";
-                    var subcategory_id = "{{ isset($postJob->subcategory_id) ? $postJob->subcategory_id : '' }}";
+                    var country_id = "{{ isset($servicedata->country_id) ? $servicedata->country_id : '' }}";
+                    var state_id = "{{ isset($servicedata->state_id) ? $servicedata->state_id : '' }}";
+                    var city_id = "{{ isset($servicedata->city_id) ? $servicedata->city_id : '' }}";
+                    var category_id = "{{ isset($servicedata->category_id) ? $servicedata->category_id : '' }}";
+                    var subcategory_id = "{{ isset($servicedata->subcategory_id) ? $servicedata->subcategory_id : '' }}";
 
                     getStates(country_id, state_id); // Initial load of states based on country
                     getCities(state_id, city_id); // Initial load of cities based on state
