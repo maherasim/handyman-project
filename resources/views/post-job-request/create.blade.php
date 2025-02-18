@@ -124,6 +124,31 @@
     </div>
 
     @section('bottom_script')
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script>
+   $(document).ready(function() {
+       $('#category_id').on('change', function() {
+           var category_id = $(this).val();
+           if (category_id) {
+               $.ajax({
+                   url: "{{ route('get-subcategories') }}",
+                   type: "GET",
+                   data: { category_id: category_id },
+                   success: function(data) {
+                       $('#subcategory_id').empty();
+                       $('#subcategory_id').append('<option value="">' + "{{ __('messages.select_name', ['select' => __('messages.subcategory')]) }}" + '</option>');
+                       $.each(data, function(key, value) {
+                           $('#subcategory_id').append('<option value="' + key + '">' + value + '</option>');
+                       });
+                   }
+               });
+           } else {
+               $('#subcategory_id').empty();
+           }
+       });
+   });
+</script>
+
         <script>
             $(document).ready(function() {
                 function setMinDates() {

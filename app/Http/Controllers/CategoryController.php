@@ -39,7 +39,13 @@ class CategoryController extends Controller
         $assets = ['datatable'];
         return view('category.index', compact('pageTitle','auth_user','assets','filter'));
     }
-
+    public function getSubcategories(Request $request)
+    {
+        $subcategories = SubCategory::where('category_id', $request->category_id)
+                                     ->pluck('name', 'id');
+    
+        return response()->json($subcategories);
+    }
 
     public function index_data(DataTables $datatable,Request $request)
     {

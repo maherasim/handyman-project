@@ -522,7 +522,7 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
     Route::get('save-wallet-stripe-payment/{id}', [App\Http\Controllers\WalletController::class, 'saveWalletStripePayment']);
     Route::get('check-image/{id}', [App\Http\Controllers\HomeController::class, 'checkImage'])->name('check-image');
 });
-Route::get('/ajax-list', [HomeController::class, 'getAjaxList'])->name('ajax-list');
+Route::get('/asimajax-list', [HomeController::class, 'getAjaxList'])->name('ajax-list');
 Route::post('/service-list', [HomeController::class, 'getAjaxServiceList'])->name('service-list');
 
 
@@ -549,3 +549,6 @@ Route::get('myservice-index-data',[ServiceController::class,'myindex_data'])->na
 Route::get('my-provider',[ProviderController::class,'myindex'])->name('myprovider');
 Route::get('myprovider-index-data',[ProviderController::class,'myindex_data'])->name('myprovider.provider-index-data');
 
+
+
+Route::get('/get-subcategories', [CategoryController::class, 'getSubcategories'])->name('get-subcategories');
