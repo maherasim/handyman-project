@@ -45,14 +45,10 @@
 
 
 
-
-
-
-                            <div class="form-group col-md-2">
-                                <label for="country_id">{{ __('messages.country') }} <span
-                                        class="text-danger">*</span></label>
-                                <select name="country_id" id="country_id" class="select2js form-group category"
-                                    required
+                            <div class="col-md-4">
+                                <label for="country_id">{{ __('messages.select_name', ['select' => __('messages.country')]) }}</label>
+                                <br />
+                                <select name="country_id" id="country_id" class="select2js country"
                                     data-placeholder="{{ __('messages.select_name', ['select' => __('messages.country')]) }}"
                                     data-ajax--url="{{ route('ajax-list', ['type' => 'country']) }}">
                                     <option value="{{ optional($servicedata->country)->id }}" selected>
@@ -60,6 +56,7 @@
                                     </option>
                                 </select>
                             </div>
+                             
 
                             <div class="form-group col-md-2">
                                 <label
