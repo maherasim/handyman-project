@@ -60,7 +60,7 @@
                         <div class="form-group col-md-2">
                             <label for="price_type">{{ __('Pice Type') }} <span
                                     class="text-danger">*</span></label>
-                            <select name="price_type" id="price_type" class="form-control" required>
+                            <select name="job_price" id="job_price" class="form-control" required>
                                 <option value="fixed">{{ __('Fixed') }}</option>
                                 <option value="hourly">{{ __('Hourly') }}</option>
                                 <option value="daily">{{ __('Daily') }}</option>
@@ -70,7 +70,7 @@
                         <div class="form-group col-md-2">
                             <label for="job_type">{{ __('Job Type') }} <span
                                     class="text-danger">*</span></label>
-                            <select name="job_type" id="job_type" class="form-control" required>
+                            <select name="type" id="type" class="form-control" required>
                                 <option value="onsite">{{ __('Onsite') }}</option>
                                 <option value="remote">{{ __('Remote/Homeoffice') }}</option>
                                 <option value="hybrid">{{ __('Hybrid') }}</option>
@@ -116,7 +116,11 @@
                              <label for="description">{{ __('messages.description') }}</label>
                              <textarea name="description" id="description" class="form-control textarea" rows="3" placeholder="{{ __('messages.description') }}">{{ old('description', $postJob->description) }}</textarea>
                           </div>
-                          
+                          <div class="form-group col-md-6">
+                            <label for="title">{{ __('Requirment') }} <span class="text-danger">*</span></label>
+                            <input type="text" name="requirnment" id="title" class="form-control" placeholder="{{ __('messages.title') }}" title="requirnment" value="{{ old('title', $postJob->requirnment) }}" required>
+                            <small class="help-block with-errors text-danger"></small>
+                         </div>
                           <div class="form-group custom-file col-md-6 mt-30">
                              <label for="image" class="custom-file-label upload-label">{{ __('messages.image') }}</label>
                              <input type="file" name="image[]" id="image" class="custom-file-input custom-file-input-sm detail" accept="image/*" multiple>
