@@ -85,8 +85,11 @@
                                         </div>
                                     @endif
                                 @endif
-                                <div class="table-responsive mt-5">
-                                    <table class="table table-borderless text-start mb-0">
+                                <div class="table-responsive mt-5" style="overflow-x: auto;">
+ 
+                                    <table class="table table-borderless text-start mb-0" style="table-layout: fixed; width: 100%;">
+
+                                   
                                         <tbody>
                                             
                                             <tr class="px-0">
