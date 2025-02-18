@@ -144,7 +144,7 @@
                                                     <h6 class="text-white m-0 lh-base">{{ __('landingpage.designation') }}:
                                                     </h6>
                                                 </td>
-                                                <td class="text-end pe-0">
+                                                <td class=" pe-0">
 
                                                     <span class="text-white">
                                                         {{ $providerData['data']['designation'] }}</span>
@@ -154,7 +154,7 @@
                                                 <td class="px-0">
                                                     <h6 class="text-white m-0 lh-base">Language:</h6> 
                                                 </td>
-                                                <td class="text-end pe-0">
+                                                <td class=" pe-0">
                                                     @if (isset($providerData['data']['languages']) && is_array($providerData['data']['languages'])) 
                                                         <span class="text-white">
                                                             {{ implode(', ', $providerData['data']['languages']) }}
@@ -170,7 +170,7 @@
                                                 <td class="px-0">
                                                     <h6 class="text-white m-0 lh-base">Availability:</h6>
                                                 </td>
-                                                <td class="text-end pe-0">
+                                                <td class=" pe-0">
                                                     @if (isset($providerData['data']['availability']))
                                                         <span
                                                             class="text-white">{{ $providerData['data']['availability'] }}</span>
@@ -184,7 +184,7 @@
                                                 <td class="px-0">
                                                     <h6 class="text-white m-0 lh-base">Skills:</h6>
                                                 </td>
-                                                <td class="text-end pe-0">
+                                                <td class=" pe-0">
 
                                                     <span class="text-white"> {{ $providerData['data']['skills'] }}</span>
                                                 </td>
@@ -193,7 +193,7 @@
                                                 <td class="px-0">
                                                     <h6 class="text-white m-0 lh-base">Experince:</h6>
                                                 </td>
-                                                <td class="text-end pe-0">
+                                                <td class=" pe-0">
 
                                                     <span class="text-white">
                                                         {{ $providerData['data']['experience'] }}</span>
@@ -203,7 +203,7 @@
                                                 <td class="px-0">
                                                     <h6 class="text-white m-0 lh-base">Mobility:</h6>
                                                 </td>
-                                                <td class="text-end pe-0">
+                                                <td class=" pe-0">
 
                                                     <span class="text-white">
                                                         {{ $providerData['data']['mobility'] }}</span>
@@ -213,7 +213,7 @@
                                                 <td class="px-0">
                                                     <h6 class="text-white m-0 lh-base">Education:</h6>
                                                 </td>
-                                                <td class="text-end pe-0">
+                                                <td class=" pe-0">
 
                                                     <span class="text-white">
                                                         {{ $providerData['data']['education'] }}</span>
@@ -223,7 +223,7 @@
                                                 <td class="px-0">
                                                     <h6 class="text-white m-0 lh-base">Certificate:</h6>
                                                 </td>
-                                                <td class="text-end pe-0">
+                                                <td class=" pe-0">
 
                                                     <span class="text-white">
                                                         {{ $providerData['data']['certification'] }}</span>
