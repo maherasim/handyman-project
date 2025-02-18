@@ -69,7 +69,26 @@
                              <input type="date" name="end_date" id="end_date" class="form-control" required value="{{ old('end_date', $postJob->end_date) }}">
                              <small class="help-block with-errors text-danger"></small>
                           </div>
-                          
+                          <div class="form-group col-md-3">
+                            <label for="price_type">{{ __('messages.price_type') }} <span
+                                    class="text-danger">*</span></label>
+                            <select name="price_type" id="price_type" class="form-control" required>
+                                <option value="fixed">{{ __('Fixed') }}</option>
+                                <option value="hourly">{{ __('Hourly') }}</option>
+                                <option value="daily">{{ __('Daily') }}</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group col-md-3">
+                            <label for="job_type">{{ __('messages.job_type') }} <span
+                                    class="text-danger">*</span></label>
+                            <select name="job_type" id="job_type" class="form-control" required>
+                                <option value="onsite">{{ __('Onsite') }}</option>
+                                <option value="remote">{{ __('Remote/Homeoffice') }}</option>
+                                <option value="hybrid">{{ __('Hybrid') }}</option>
+                            </select>
+                        </div>
+
                           <div class="form-group col-md-2">
                              <label for="total_day_div">{{ __('messages.total_days') }} <span class="text-danger">*</span></label>
                              <input type="number" name="total_day" id="total_day_div" class="form-control" min="1" step="any" placeholder="{{ __('messages.total_days') }}" required disabled>
@@ -364,5 +383,17 @@
            });
        })(jQuery);
     </script>
+    <script>
+         <script src="https://cdn.tiny.cloud/1/m5d82gd2rwdlg96hsxpx0e5wwmfrl2zzkcw35ys8o3glilgq/tinymce/5/tinymce.min.js"
+        referrerpolicy="origin"></script>
+
+        tinymce.init({
+            selector: '#description', // Target the ID of your textarea
+            plugins: 'lists link image preview', // Add any plugins you want to use
+            toolbar: 'undo redo | bold italic | bullist numlist | link image preview',
+            menubar: false
+        });
+    </script>
+
     @endsection
  </x-master-layout>
