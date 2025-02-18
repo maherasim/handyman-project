@@ -178,7 +178,6 @@ class PostJobRequestController extends Controller
         // $pageTitle = __('messages.update_form_title',['form'=> __('messages.post_job')]);
         $pageTitle = __('messages.create_form_title',['form'=> __('messages.post_job')]);
         $subcategories=SubCategory::where('status','1')->get();
-        //dd( $subcategories);
         return view('post-job-request.create',compact('postJob','pageTitle','auth_user','servicedata','subcategories'));
 
     }

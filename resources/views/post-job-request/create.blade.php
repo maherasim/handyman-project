@@ -65,7 +65,24 @@
                                 </div>
 
                             </div>
-
+                            <div class="form-group col-md-2">
+                                <label for="category_id">{{ __('messages.category') }} <span class="text-danger">*</span></label>
+                                <select name="category_id" id="category_id" class="select2js form-group category" required 
+                                    data-placeholder="{{ __('messages.select_name', ['select' => __('messages.category')]) }}" 
+                                    data-ajax--url="{{ route('ajax-list', ['type' => 'category']) }}">
+                                    <option value="{{ optional($postJob->category_id)->id }}">{{ optional($postJob->category)->name }}</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group col-md-2">
+                                <label for="subcategory_id">{{ __('messages.select_name', ['select' => __('messages.subcategory')]) }} <span class="text-danger">*</span></label>
+                                <br />
+                                <select name="subcategory_id" id="subcategory_id" class="select2js form-group subcategory_id" required 
+                                    data-placeholder="{{ __('messages.select_name', ['select' => __('messages.subcategory')]) }}">
+                                    <!-- Subcategories will be populated dynamically -->
+                                </select>
+                            </div>
+                            
                             <!-- Second row with 4 fields -->
                             <div class="row">
                                 <div class="form-group col-md-3">
