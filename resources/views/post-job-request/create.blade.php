@@ -27,17 +27,17 @@
 
                             <!-- First row with 4 fields -->
                             <div class="row">
-                                <div class="form-group col-md-3">
+                                <div class="form-group col-md-2">
                                     <label for="title">{{ __('messages.title') }} <span class="text-danger">*</span></label>
                                     <input type="text" name="title" id="title" class="form-control" placeholder="{{ __('messages.title') }}" required>
                                 </div>
 
-                                <div class="form-group col-md-3">
+                                <div class="form-group col-md-2">
                                     <label for="country_id">{{ __('messages.country') }} <span class="text-danger">*</span></label>
                                     <select name="country_id" id="country_id" class="select2js form-group category" required></select>
                                 </div>
 
-                                <div class="form-group col-md-3">
+                                <div class="form-group col-md-2">
                                     <label for="city_id">{{ __('messages.city') }} <span class="text-danger">*</span></label>
                                     <select name="city_id" id="city_id" class="select2js form-group category" required></select>
                                 </div>
@@ -52,7 +52,7 @@
                                         ->attribute('data-placeholder', __('messages.select_name', ['select' => __('messages.category')]))
                                         ->attribute('data-ajax--url', route('ajax-list', ['type' => 'category'])) }}
                                 </div>
-                                <div class="form-group col-md-4">
+                                <div class="form-group col-md-3">
                                     {{ html()->label(__('messages.select_name', ['select' => __('messages.subcategory')]), 'subcategory_id')->class('form-control-label') }}
                                     <br />
                                     {{ html()->select('subcategory_id', $subcategories->pluck('name', 'id'), null)
