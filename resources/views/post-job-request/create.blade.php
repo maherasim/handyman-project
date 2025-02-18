@@ -174,9 +174,9 @@
                                 <div class="form-group col-md-6">
                                     <label for="title">{{ __('Requirment') }} <span
                                             class="text-danger">*</span></label>
-                                    <input type="text" name="requirnment" id="requirnment" class="form-control"
-                                        placeholder="{{ __('requirnment') }}" title="requirnment"
-                                        value="{{ old('title', $postJob->requirnment) }}" required>
+                                    <input type="text" name="requirement" id="requirement" class="form-control"
+                                        placeholder="{{ __('requirement') }}" title="requirement"
+                                        value="{{ old('title', $postJob->requirement) }}" required>
                                     <small class="help-block with-errors text-danger"></small>
                                 </div></div>
                                 <div class="form-group custom-file col-md-6 mt-30">
@@ -433,7 +433,7 @@
         </script>
         <script>
             tinymce.init({
-                selector: '#requirnment', // Target the textarea
+                selector: '#requirement', // Target the textarea
                 plugins: 'lists link image preview', // Add plugins
                 toolbar: 'undo redo | bold italic | bullist numlist | link image preview',
                 menubar: false
