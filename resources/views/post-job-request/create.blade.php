@@ -198,12 +198,12 @@
                                     });
                                 } else {
                                     console.error("Invalid data format:",
-                                    data); // Log an error if data is not an object
+                                        data); // Log an error if data is not an object
                                 }
 
                                 // Refresh select2 after updating options
                                 $('#subcategory_id')
-                            .select2(); // Re-initialize select2 for new options
+                                    .select2(); // Re-initialize select2 for new options
                             },
                             error: function(xhr, status, error) {
                                 console.error("Error fetching subcategories:", xhr.responseText);
@@ -219,68 +219,70 @@
 
 
         <script>
-        $(document).ready(function() {
-    function setMinDates() {
-        var today = new Date().toISOString().split('T')[0];
-        $('#start_date, #end_date').attr('min', today); // Ensure dates are not in the past
-    }
-
-    function calculateDays() {
-        var startDate = $('#start_date').val();
-        var endDate = $('#end_date').val();
-
-        if (startDate && endDate && startDate <= endDate) {
-            var start = new Date(startDate);
-            var end = new Date(endDate);
-            var diffTime = end - start; // Time difference in milliseconds
-            var diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1; // Convert to days and add 1 to include start date
-
-            // Update Total Days and Total Hours
-            $('#total_days').val(diffDays);
-            $('#total_hours').val(diffDays * 24); // Assuming 24 hours in a day for full days
-        } else {
-            $('#total_days').val(''); // Clear total days if the dates are not valid
-            $('#total_hours').val(''); // Clear total hours if the dates are not valid
+         <script>
+    $(document).ready(function() {
+        function setMinDates() {
+            var today = new Date().toISOString().split('T')[0];
+            $('#start_date, #end_date').attr('min', today); // Ensure dates are not in the past
         }
-    }
 
-    setMinDates(); // Set today's date as the minimum date for start and end date
+        function calculateDays() {
+            var startDate = $('#start_date').val();
+            var endDate = $('#end_date').val();
 
-    $('#start_date, #end_date').on('change', function() {
-        calculateDays();
+            if (startDate && endDate && startDate <= endDate) {
+                var start = new Date(startDate);
+                var end = new Date(endDate);
+                var diffTime = end - start; // Time difference in milliseconds
+                var diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1; // Convert to days and add 1 to include start date
 
-        var startDate = $('#start_date').val();
-        if (startDate) {
-            $('#end_date').attr('min', startDate); // Ensure end date can't be before start date
-        }
-    });
-
-    // For the image preview functionality
-    $("#image").change(function(event) {
-        var files = event.target.files;
-        $('#imageContainer').empty(); // Clear previous images
-
-        if (files.length > 0) {
-            for (var i = 0; i < Math.min(files.length, 3); i++) {
-                var imageUrl = URL.createObjectURL(files[i]);
-                var img = $('<img>').attr({
-                    'src': imageUrl,
-                    'class': 'img-fluid mt-2',
-                    'style': 'width: 27%; height: 90px;'
-                });
-                $('#imageContainer').append(img);
+                // Update Total Days and Total Hours
+                $('#total_days').val(diffDays);
+                $('#total_hours').val(diffDays * 24); // Assuming 24 hours in a day for full days
+            } else {
+                $('#total_days').val(''); // Clear total days if the dates are not valid
+                $('#total_hours').val(''); // Clear total hours if the dates are not valid
             }
         }
-    });
 
-    // For requirements field
-    $('#requirements').select2({
-        placeholder: "{{ __('Select requirements') }}", 
-        allowClear: true
-    });
-});
+        setMinDates(); // Set today's date as the minimum date for start and end date
 
-        
+        // Trigger calculateDays when either start_date or end_date is changed
+        $('#start_date, #end_date').on('change', function() {
+            calculateDays();
+
+            var startDate = $('#start_date').val();
+            if (startDate) {
+                $('#end_date').attr('min', startDate); // Ensure end date can't be before start date
+            }
+        });
+
+        // For the image preview functionality
+        $("#image").change(function(event) {
+            var files = event.target.files;
+            $('#imageContainer').empty(); // Clear previous images
+
+            if (files.length > 0) {
+                for (var i = 0; i < Math.min(files.length, 3); i++) {
+                    var imageUrl = URL.createObjectURL(files[i]);
+                    var img = $('<img>').attr({
+                        'src': imageUrl,
+                        'class': 'img-fluid mt-2',
+                        'style': 'width: 27%; height: 90px;'
+                    });
+                    $('#imageContainer').append(img);
+                }
+            }
+        });
+
+        // For requirements field
+        $('#requirements').select2({
+            placeholder: "{{ __('Select requirements') }}", 
+            allowClear: true
+        });
+    });
+</script>
+
         </script>
         <script>
             tinymce.init({
