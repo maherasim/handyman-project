@@ -163,8 +163,7 @@
             </div>
         </div>
     </div>
-  <script>
-    $(document).ready(function() {
+  <script>$(document).ready(function() {
     // First, set min dates
     function setMinDates() {
         var today = new Date().toISOString().split('T')[0];
@@ -198,7 +197,7 @@
         allowClear: true // Allows the user to clear selections
     });
 
-    // Initialize TinyMCE
+    // Initialize TinyMCE for the description field
     tinymce.init({
         selector: '#description', // Target the ID of your textarea
         plugins: 'lists link image preview', // Add any plugins you want to use
@@ -207,7 +206,7 @@
     });
 
     // Set minimum dates on page load
-    setMinDates();
+    setMinDates(); 
 
     // Trigger calculateDays when either start_date or end_date is changed
     $('#start_date, #end_date').on('change', function() {
@@ -238,6 +237,5 @@
         }
     });
 });
-
-  </script>
+</script>
 </x-master-layout>
