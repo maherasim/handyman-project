@@ -163,7 +163,23 @@
             </div>
         </div>
     </div>
-
+    @section('bottom_script')
+    <script>
+        tinymce.init({
+            selector: '#description', // Target the ID of your textarea
+            plugins: 'lists link image preview', // Add any plugins you want to use
+            toolbar: 'undo redo | bold italic | bullist numlist | link image preview',
+            menubar: false
+        });
+        $(document).ready(function() {
+            // Initialize select2 for the requirements select
+            $('#requirements').select2({
+                placeholder: "{{ __('Select requirements') }}", // Optional placeholder
+                allowClear: true // Allows the user to clear selections
+            });
+        });
+    </script>
+@endsection
     @section('bottom_script')
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
         <script>
@@ -243,21 +259,5 @@
             });
         </script>
    
-        <script>
-            tinymce.init({
-                selector: '#description', // Target the ID of your textarea
-                plugins: 'lists link image preview', // Add any plugins you want to use
-                toolbar: 'undo redo | bold italic | bullist numlist | link image preview',
-                menubar: false
-            });
-            $(document).ready(function() {
-                // Initialize select2 for the requirements select
-                $('#requirements').select2({
-                    placeholder: "{{ __('Select requirements') }}", // Optional placeholder
-                    allowClear: true // Allows the user to clear selections
-                });
-            });
-        </script>
-    
 @endsection
 </x-master-layout>
