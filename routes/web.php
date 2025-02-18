@@ -127,7 +127,7 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
         Route::get('index_data', [CategoryController::class, 'index_data'])->name('category.index_data');
         Route::post('category-bulk-action', [CategoryController::class, 'bulk_action'])->name('category.bulk-action');
         Route::post('category-action', [CategoryController::class, 'action'])->name('category.action');
-        Route::post('category/{id}', [CategoryController::class, 'destroy'])->name('category.destroy');
+        Route::post('category/{id}', [CategoryController::class, 'destroy'])->name('category2.destroy');
     });
     Route::post('check-in-trash', [CategoryController::class, 'check_in_trash'])->name('check-in-trash');
 
@@ -522,7 +522,7 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
     Route::get('save-wallet-stripe-payment/{id}', [App\Http\Controllers\WalletController::class, 'saveWalletStripePayment']);
     Route::get('check-image/{id}', [App\Http\Controllers\HomeController::class, 'checkImage'])->name('check-image');
 });
-Route::get('/asimajax-list', [HomeController::class, 'getAjaxList'])->name('ajax-list');
+Route::get('/ajax-list', [HomeController::class, 'getAjaxList'])->name('ajax-list');
 Route::post('/service-list', [HomeController::class, 'getAjaxServiceList'])->name('service-list');
 
 
