@@ -229,5 +229,5 @@
 </script>
 @endsection
 
-@endsection
+ 
 </x-master-layout>
