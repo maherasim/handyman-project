@@ -137,7 +137,7 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
         Route::post('service-bulk-action', [ServiceController::class, 'bulk_action'])->name('service.bulk-action');
         Route::get('user-service-list', [ServiceController::class, 'getUserServiceList'])->name('service.user-service-list');
         Route::post('service-action', [ServiceController::class, 'action'])->name('service.action');
-        Route::post('service/{id}', [ServiceController::class, 'destroy'])->name('service.destroy');
+        Route::post('service/{id}', [ServiceController::class, 'destroy'])->name('service2.destroy');
         Route::get('user-service-index-data', [UserServiceListController::class, 'index_data'])->name('service.user-index-data');
     });
     Route::get('provider-change-password', [ProviderController::class, 'getChangePassword'])->name('provider.getchangepassword');
