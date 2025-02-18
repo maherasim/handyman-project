@@ -162,25 +162,16 @@ class PostJobRequestController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create(Request $request)
+    public function create()
     {
-        $id = $request->id;
-
-        
-
-        $servicedata = Service::find($id);
-        if($servicedata == null){
-            $pageTitle = __('messages.add_button_form',['form' => __('messages.service')]);
-            $servicedata = new Service;
-        }
           $auth_user = authSession();
-         $postJob = new PostJobRequest;
+        $postJob = new PostJobRequest;
         // $pageTitle = __('messages.update_form_title',['form'=> __('messages.post_job')]);
         $pageTitle = __('messages.create_form_title',['form'=> __('messages.post_job')]);
-        $subcategories=SubCategory::where('status','1')->get();
-        return view('post-job-request.create',compact('postJob','pageTitle','auth_user','servicedata','subcategories'));
+        return view('post-job-request.create',compact('postJob','pageTitle','auth_user'));
 
     }
+
 
     /**
      * Store a newly created resource in storage.
