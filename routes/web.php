@@ -551,4 +551,5 @@ Route::get('myprovider-index-data',[ProviderController::class,'myindex_data'])->
 
 
 
-Route::get('/get-subcategories', [CategoryController::class, 'getSubcategories'])->name('get-subcategories');
+//Route::get('/get-subcategories', [CategoryController::class, 'getSubcategories'])->name('get-subcategories');
+Route::get('get-subcategories', 'CategoryController@getSubcategories')->name('get-subcategories');

@@ -1,6 +1,9 @@
 <x-master-layout>
     <script src="https://cdn.tiny.cloud/1/m5d82gd2rwdlg96hsxpx0e5wwmfrl2zzkcw35ys8o3glilgq/tinymce/5/tinymce.min.js"
         referrerpolicy="origin"></script>
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+
     <div class="container-fluid">
         <div class="row">
             <div class="col-lg-12">
@@ -125,8 +128,11 @@
 
     @section('bottom_script')
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-<script>
-   $(document).ready(function() {
+ <script>
+    $(document).ready(function() {
+    // Initialize select2 for the subcategory select
+    $('#subcategory_id').select2();
+
     $('#category_id').on('change', function() {
         var category_id = $(this).val();
         if (category_id) {
@@ -146,7 +152,8 @@
                         $('#subcategory_id').append('<option value="' + key + '">' + value + '</option>');
                     });
 
-                    $('#subcategory_id').trigger('change'); // Refresh select2
+                    // Trigger a change to refresh select2 after populating options
+                    $('#subcategory_id').select2(); // Initialize select2 after options are added
                 },
                 error: function(xhr, status, error) {
                     console.error("Error fetching subcategories:", xhr.responseText);
@@ -158,7 +165,8 @@
     });
 });
 
-</script>
+ </script>
+
 
         <script>
             $(document).ready(function() {
