@@ -66,9 +66,8 @@
                         <div class="mt-5 pt-lg-5 pt-3">
                             <h5 class="mb-3">{{ __('Minimum Booking') }}</h5>
                             <p class="m-0">
-                                {{-- {{ $serviceData['service_detail']['minimum_booking'] }} --}}
-                                {{ html_entity_decode(strip_tags($serviceData['service_detail']['minimum_booking'])) }}
-
+                                {{ $serviceData['service_detail']['minimum_booking'] }}
+                                
                             </p>
                         </div>
                     @endif
