@@ -49,6 +49,7 @@ class ServiceDetailResource extends JsonResource
             'price_format'  => getPriceFormat($this->price),
             'type'          => $this->type,
             'discount'      => $this->discount,
+            'minimum_booking'      => $this->minimum_booking,
             'duration'      => $this->duration,
             'status'        => $this->status,
             'description'   => $this->description,
