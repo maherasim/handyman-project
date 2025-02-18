@@ -78,20 +78,20 @@
                           </div>
                           
                           <div class="form-group col-md-2">
-                             <label for="start_date">{{ __('messages.start_date') }} <span class="text-danger">*</span></label>
+                             <label for="start_date">{{ __('Start Date') }} <span class="text-danger">*</span></label>
                              <input type="date" name="start_date" id="start_date" class="form-control" required value="{{ old('start_date', $postJob->start_date) }}">
                              <small class="help-block with-errors text-danger"></small>
                           </div>
                           
                           <div class="form-group col-md-2">
-                             <label for="end_date">{{ __('messages.end_date') }} <span class="text-danger">*</span></label>
+                             <label for="end_date">{{ __('End Date') }} <span class="text-danger">*</span></label>
                              <input type="date" name="end_date" id="end_date" class="form-control" required value="{{ old('end_date', $postJob->end_date) }}">
                              <small class="help-block with-errors text-danger"></small>
                           </div>
                         
 
                           <div class="form-group col-md-2">
-                             <label for="total_day_div">{{ __('messages.total_days') }} <span class="text-danger">*</span></label>
+                             <label for="total_day_div">{{ __('Total Days') }} <span class="text-danger">*</span></label>
                              <input type="number" name="total_day" id="total_day_div" class="form-control" min="1" step="any" placeholder="{{ __('messages.total_days') }}" required disabled>
                              <small class="help-block with-errors text-danger"></small>
                           </div>
