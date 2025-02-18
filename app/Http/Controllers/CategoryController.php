@@ -40,19 +40,13 @@ class CategoryController extends Controller
         return view('category.index', compact('pageTitle','auth_user','assets','filter'));
     }
     public function getSubcategories(Request $request)
-{
+    {
+        dd([
+            'Category ID Received' => $request->category_id,
+            'Subcategories Fetched' => SubCategory::where('category_id', $request->category_id)->pluck('name', 'id')
+        ]);
+    }
     
-    dd(SubCategory::where('category_id', $request->category_id)->pluck('name', 'id'));
-
-    
-    
-    $subcategories = SubCategory::where('category_id', $request->category_id)
-                                ->pluck('name', 'id');
-
-    \Log::info('Subcategories fetched: ' . json_encode($subcategories)); // Debugging
-
-    return response()->json($subcategories);
-}
 
 
     public function index_data(DataTables $datatable,Request $request)
