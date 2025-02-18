@@ -182,7 +182,8 @@
                         var start = new Date(startDate);
                         var end = new Date(endDate);
                         var diffTime = end - start; // Time difference in milliseconds
-                        var diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1; // Convert to days and add 1 to include start date
+                        var diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) +
+                        1; // Convert to days and add 1 to include start date
 
                         // Update Total Days and Total Hours
                         $('#total_days').val(diffDays);
@@ -225,11 +226,13 @@
 
                 // For requirements field
                 $('#requirements').select2({
-                    placeholder: "{{ __('Select requirements') }}", 
+                    placeholder: "{{ __('Select requirements') }}",
                     allowClear: true
                 });
             });
         </script>
+
+
 
         <script>
             tinymce.init({
@@ -239,5 +242,22 @@
                 menubar: false
             });
         </script>
+    @section('bottom_script')
+        <script>
+            tinymce.init({
+                selector: '#description', // Target the ID of your textarea
+                plugins: 'lists link image preview', // Add any plugins you want to use
+                toolbar: 'undo redo | bold italic | bullist numlist | link image preview',
+                menubar: false
+            });
+            $(document).ready(function() {
+                // Initialize select2 for the requirements select
+                $('#requirements').select2({
+                    placeholder: "{{ __('Select requirements') }}", // Optional placeholder
+                    allowClear: true // Allows the user to clear selections
+                });
+            });
+        </script>
     @endsection
+@endsection
 </x-master-layout>
