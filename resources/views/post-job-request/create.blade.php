@@ -117,6 +117,7 @@
                                         readonly>
                                 </div>
 
+
                                 <div class="form-group col-md-3">
                                     <label for="total_hours">{{ __('Total Hours') }} <span
                                             class="text-danger">*</span></label>
@@ -165,7 +166,7 @@
 
     @section('bottom_script')
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-         <script>
+        <script>
             $(document).ready(function() {
                 function setMinDates() {
                     var today = new Date().toISOString().split('T')[0];
@@ -230,32 +231,13 @@
             });
         </script>
 
-
-       
         <script>
             tinymce.init({
                 selector: '#description', // Target the ID of your textarea
                 plugins: 'lists link image preview', // Add any plugins you want to use
                 toolbar: 'undo redo | bold italic | bullist numlist | link image preview',
                 menubar: false
-            });
-        </script>
-    @section('bottom_script')
-        <script>
-            tinymce.init({
-                selector: '#description', // Target the ID of your textarea
-                plugins: 'lists link image preview', // Add any plugins you want to use
-                toolbar: 'undo redo | bold italic | bullist numlist | link image preview',
-                menubar: false
-            });
-            $(document).ready(function() {
-                // Initialize select2 for the requirements select
-                $('#requirements').select2({
-                    placeholder: "{{ __('Select requirements') }}", // Optional placeholder
-                    allowClear: true // Allows the user to clear selections
-                });
             });
         </script>
     @endsection
-@endsection
 </x-master-layout>
