@@ -2,7 +2,13 @@
 
 
 @section('content')
+<style>
+    .table td {
+    word-wrap: break-word;
+    white-space: normal;
+}
 
+</style>
     <div class="section-padding position-relative px-0">
         <div class="container">
             <div class="row">
@@ -75,14 +81,7 @@
                                 <div class="table-responsive mt-5">
                                     <table class="table table-borderless text-start mb-0">
                                         <tbody>
-                                            {{-- <tr>
-                                 <td class="px-0">
-                                    <h6 class="text-white m-0 lh-base">{{__('auth.email')}}:</h6>
-                                 </td>
-                                 <td class=" pe-0">
-                                    <a href="mailto:{{$providerData['data']['email']}}" class="text-white">{{ $providerData['data']['email'] }}</a>
-                                 </td>
-                              </tr> --}}
+                                            
                                             <tr class="px-0">
                                                 <img src="" style="width: 110px;" alt="">
                                             </tr>
