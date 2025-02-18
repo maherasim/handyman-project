@@ -52,6 +52,25 @@
                        </div>
                        
                        <div class="row">
+                        <div class="form-group col-md-2">
+                            <label for="price_type">{{ __('Pice Type') }} <span
+                                    class="text-danger">*</span></label>
+                            <select name="price_type" id="price_type" class="form-control" required>
+                                <option value="fixed">{{ __('Fixed') }}</option>
+                                <option value="hourly">{{ __('Hourly') }}</option>
+                                <option value="daily">{{ __('Daily') }}</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group col-md-2">
+                            <label for="job_type">{{ __('Job Type') }} <span
+                                    class="text-danger">*</span></label>
+                            <select name="job_type" id="job_type" class="form-control" required>
+                                <option value="onsite">{{ __('Onsite') }}</option>
+                                <option value="remote">{{ __('Remote/Homeoffice') }}</option>
+                                <option value="hybrid">{{ __('Hybrid') }}</option>
+                            </select>
+                        </div>
                           <div class="form-group col-md-2" id="price_div">
                              <label for="price">{{ __('messages.price') }} <span class="text-danger">*</span></label>
                              <input type="number" name="price" id="price" class="form-control" min="1" step="any" placeholder="{{ __('messages.price') }}" required value="{{ old('price', $postJob->price) }}">
@@ -69,25 +88,7 @@
                              <input type="date" name="end_date" id="end_date" class="form-control" required value="{{ old('end_date', $postJob->end_date) }}">
                              <small class="help-block with-errors text-danger"></small>
                           </div>
-                          <div class="form-group col-md-3">
-                            <label for="price_type">{{ __('messages.price_type') }} <span
-                                    class="text-danger">*</span></label>
-                            <select name="price_type" id="price_type" class="form-control" required>
-                                <option value="fixed">{{ __('Fixed') }}</option>
-                                <option value="hourly">{{ __('Hourly') }}</option>
-                                <option value="daily">{{ __('Daily') }}</option>
-                            </select>
-                        </div>
-
-                        <div class="form-group col-md-3">
-                            <label for="job_type">{{ __('messages.job_type') }} <span
-                                    class="text-danger">*</span></label>
-                            <select name="job_type" id="job_type" class="form-control" required>
-                                <option value="onsite">{{ __('Onsite') }}</option>
-                                <option value="remote">{{ __('Remote/Homeoffice') }}</option>
-                                <option value="hybrid">{{ __('Hybrid') }}</option>
-                            </select>
-                        </div>
+                        
 
                           <div class="form-group col-md-2">
                              <label for="total_day_div">{{ __('messages.total_days') }} <span class="text-danger">*</span></label>
