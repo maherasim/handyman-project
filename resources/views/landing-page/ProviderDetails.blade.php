@@ -79,7 +79,7 @@
                                  <td class="px-0">
                                     <h6 class="text-white m-0 lh-base">{{__('auth.email')}}:</h6>
                                  </td>
-                                 <td class="text-end pe-0">
+                                 <td class=" pe-0">
                                     <a href="mailto:{{$providerData['data']['email']}}" class="text-white">{{ $providerData['data']['email'] }}</a>
                                  </td>
                               </tr> --}}
@@ -91,7 +91,7 @@
                                                     <h6 class="text-white m-0 lh-base">{{ __('landingpage.projects') }}:
                                                     </h6>
                                                 </td>
-                                                <td class="text-end pe-0">
+                                                <td class=" pe-0">
 
                                                     <span class="text-white">{{ $completed_services }}
                                                         {{ __('landingpage.project_completed') }}</span>
@@ -101,13 +101,13 @@
                                                 <td class="px-0">
                                                     <h6 class="text-white m-0 lh-base">{{ __('messages.customer') }}:</h6>
                                                 </td>
-                                                <td class="text-end pe-0">
+                                                <td class=" pe-0">
 
                                                     <span class="text-white">{{ $satisfy_customers }}
                                                         {{ __('landingpage.satisfy_customers') }}</span>
                                                 </td>
                                             </tr>
-                                            <tr class="text-end pe-0">
+                                            <tr class=" pe-0">
                                                 <div class="d-flex align-items-center justify-content-center gap-3 mt-3">
                                                     <a href="#">
                                                         <img src="https://cdn.pixabay.com/photo/2021/06/15/12/51/facebook-6338507_1280.png"
@@ -133,7 +133,7 @@
                                                     <h6 class="text-white m-0 lh-base">
                                                         {{ __('landingpage.member_since') }}:</h6>
                                                 </td>
-                                                <td class="text-end pe-0">
+                                                <td class=" pe-0">
 
                                                     <span class="text-white">
                                                         {{ date("$datetime->date_format", strtotime($providerData['data']['created_at'])) }}</span>
