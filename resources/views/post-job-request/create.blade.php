@@ -77,6 +77,17 @@
                                     <input type="number" name="price" id="price" class="form-control"
                                         min="1" required>
                                 </div>
+                                <div class="form-group col-md-2">
+                                    <label for="price_type">{{ __('messages.price_type') }} <span class="text-danger">*</span></label>
+                                    <select name="price_type" id="price_type" class="form-control" required>
+                                        <option value="fixed">{{ __('Fixed') }}</option>
+                                        <option value="hourly">{{ __('Hourly') }}</option>
+                                        <option value="daily">{{ __('Daily') }}</option>
+                                    </select>
+                                </div>
+
+
+
 
                                 <div class="form-group col-md-2">
                                     <label for="start_date">{{ __('Start Date') }} <span
