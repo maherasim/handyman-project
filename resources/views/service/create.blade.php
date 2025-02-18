@@ -21,13 +21,13 @@
                         {{ html()->hidden('id', $servicedata->id ?? null) }}
 
                         <div class="row">
-                            <div class="form-group col-md-4">
+                            <div class="form-group col-md-2">
                                 {{ html()->label(__('messages.name') . ' <span class="text-danger">*</span>', 'name')->class('form-control-label') }}
                                 {{ html()->text('name', $servicedata->name)->placeholder(__('messages.name'))->class('form-control')->attributes(['title' => 'Please enter alphabetic characters and spaces only']) }}
                                 <small class="help-block with-errors text-danger"></small>
                             </div>
 
-                            <div class="form-group col-md-4">
+                            <div class="form-group col-md-2">
                                 {{ html()->label(__('messages.select_name', ['select' => __('messages.category')]) . ' <span class="text-danger">*</span>', 'name')->class('form-control-label') }}
                                 <br />
                                 {{ html()->select(
@@ -37,7 +37,7 @@
                                     )->class('select2js form-group category')->required()->id('category_id')->attribute('data-placeholder', __('messages.select_name', ['select' => __('messages.category')]))->attribute('data-ajax--url', route('ajax-list', ['type' => 'category'])) }}
 
                             </div>
-                            <div class="form-group col-md-4">
+                            <div class="form-group col-md-2">
                                 {{ html()->label(__('messages.select_name', ['select' => __('messages.subcategory')]), 'subcategory_id')->class('form-control-label') }}
                                 <br />
                                 {{ html()->select('subcategory_id', [])->class('select2js form-group subcategory_id')->attribute('data-placeholder', __('messages.select_name', ['select' => __('messages.subcategory')])) }}
