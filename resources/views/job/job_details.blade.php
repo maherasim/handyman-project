@@ -80,17 +80,17 @@
                     </a></li>
                     <li><a href="#" class="text-dark"> <b>Category: </b>{{ $jobrequest->category->name?? 'N/A'}}
                     </a></li>
-                    <li><a href="#" class="text-dark"> <b>Type:</b>  <span> {{ $jobrequest->type?? 'N/A'}}</span>
+                    <li><a  class="text-dark"> <b>Type:</b>  <span> {{ $jobrequest->type?? 'N/A'}}</span>
                     </a></li>
-                    <li><a href="#" class="text-dark"> <b>Start Date:</b> {{ $jobrequest->start_date->format('Y-m-d')?? 'N/A'}}
+                    <li><a  class="text-dark"> <b>Start Date:</b> {{ $jobrequest->start_date->format('Y-m-d')?? 'N/A'}}
                     </a></li>
-                    <li><a href="#" class="text-dark"> <b>End Date:</b> {{ $jobrequest->end_date->format('Y-m-d')?? 'N/A'}}
+                    <li><a  class="text-dark"> <b>End Date:</b> {{ $jobrequest->end_date->format('Y-m-d')?? 'N/A'}}
                     </a></li>
-                    <li><a href="#" class="text-dark"><b>Status:</b>  {{ $jobrequest->status?? 'N/A'}}
+                    <li><a  class="text-dark"><b>Status:</b>  {{ $jobrequest->status?? 'N/A'}}
                     </a></li>
-                    <li><a href="#" class="text-dark"> <b>Total Bids:</b>  {{ $totalBids }}
+                    <li><a  class="text-dark"> <b>Total Bids:</b>  {{ $totalBids }}
                     </a></li>
-                    <li><a href="#" class="text-dark"> <b>Total Views:</b>{{ rand(1, 5) }} </a></li>
+                    <li><a  class="text-dark"> <b>Total Views:</b>{{ rand(1, 5) }} </a></li>
 
                 </ul>
                 <a href="{{ auth()->check() ? route('post-job-request.index') : route('login') }}" 
