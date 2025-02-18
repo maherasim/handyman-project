@@ -163,16 +163,7 @@
                                     <small class="help-block with-errors text-danger"></small>
                                 </div>
                             </div>
-                            <div class="row">
-                            <div class="form-group col-md-12">
-                                <label for="title">{{ __('messages.title') }} <span
-                                        class="text-danger">*</span></label>
-                                <input type="text" name="requirnment" id="requirnment" class="form-control"
-                                    placeholder="{{ __('Requirnments') }}"
-                                    title=""
-                                    value="{{ old('requirnment', $postJob->requirnment) }}" required>
-                                <small class="help-block with-errors text-danger"></small>
-                            </div>
+                            
                             <div class="row">
                                 <div class="form-group col-md-6">
                                     <label for="description">{{ __('messages.description') }}</label>
@@ -428,17 +419,15 @@
 
             })(jQuery);
         </script>
-        <script>
-            < script src = "https://cdn.tiny.cloud/1/m5d82gd2rwdlg96hsxpx0e5wwmfrl2zzkcw35ys8o3glilgq/tinymce/5/tinymce.min.js"
-            referrerpolicy = "origin" >
-        </script>
+        <script src="https://cdn.tiny.cloud/1/m5d82gd2rwdlg96hsxpx0e5wwmfrl2zzkcw35ys8o3glilgq/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
 
-        tinymce.init({
-        selector: '#description', // Target the ID of your textarea
-        plugins: 'lists link image preview', // Add any plugins you want to use
-        toolbar: 'undo redo | bold italic | bullist numlist | link image preview',
-        menubar: false
-        });
+         <script>
+            tinymce.init({
+                selector: '#description', // Target the textarea
+                plugins: 'lists link image preview', // Add plugins
+                toolbar: 'undo redo | bold italic | bullist numlist | link image preview',
+                menubar: false
+            });
         </script>
     @endsection
 </x-master-layout>
