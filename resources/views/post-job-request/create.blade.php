@@ -10,7 +10,7 @@
                 <div class="card card-block card-stretch">
                     <div class="card-body p-0">
                         <div class="d-flex justify-content-between align-items-center p-3 flex-wrap gap-3">
-                            <h5 class="font-weight-bold">{{ $pageTitle ?? __('messages.list') }}</h5>
+                            <h5 class="font-weight-bold">Create Job Request</h5>
                             <a href="{{ route('post-job-request.index') }}" class="float-right btn btn-sm btn-primary">
                                 <i class="fa fa-angle-double-left"></i> {{ __('messages.back') }}
                             </a>
@@ -79,27 +79,27 @@
                                 </div>
 
                                 <div class="form-group col-md-2">
-                                    <label for="start_date">{{ __('messages.start_date') }} <span
+                                    <label for="start_date">{{ __('Start Date') }} <span
                                             class="text-danger">*</span></label>
                                     <input type="date" name="start_date" id="start_date" class="form-control"
                                         required>
                                 </div>
 
                                 <div class="form-group col-md-2">
-                                    <label for="end_date">{{ __('messages.end_date') }} <span
+                                    <label for="end_date">{{ __('End Date') }} <span
                                             class="text-danger">*</span></label>
                                     <input type="date" name="end_date" id="end_date" class="form-control" required>
                                 </div>
 
                                 <!-- NEW TOTAL DAYS FIELD -->
                                 <div class="form-group col-md-2">
-                                    <label for="total_days">{{ __('messages.total_days') }}</label>
+                                    <label for="total_days">{{ __('Total days') }}</label>
                                     <input type="number" name="total_days" id="total_days" class="form-control"
                                         readonly>
                                 </div>
 
                                 <div class="form-group col-md-2">
-                                    <label for="total_hours">{{ __('messages.total_hours') }} <span
+                                    <label for="total_hours">{{ __('Total Hours') }} <span
                                             class="text-danger">*</span></label>
                                     <input type="number" name="total_hours" id="total_hours" class="form-control"
                                         readonly>
