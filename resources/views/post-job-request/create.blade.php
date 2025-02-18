@@ -52,6 +52,14 @@
                                         ->attribute('data-placeholder', __('messages.select_name', ['select' => __('messages.category')]))
                                         ->attribute('data-ajax--url', route('ajax-list', ['type' => 'category'])) }}
                                 </div>
+                                <div class="form-group col-md-4">
+                                    {{ html()->label(__('messages.select_name', ['select' => __('messages.subcategory')]), 'subcategory_id')->class('form-control-label') }}
+                                    <br />
+                                    {{ html()->select('subcategory_id', $subcategories->pluck('name', 'id'), null)
+                                        ->class('select2js form-group subcategory_id')
+                                        ->attribute('data-placeholder', __('messages.select_name', ['select' => __('messages.subcategory')])) }}
+                                </div>
+                                
                             </div>
 
                             <!-- Second row with 4 fields -->
