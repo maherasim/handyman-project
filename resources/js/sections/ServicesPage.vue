@@ -2,11 +2,18 @@
     <section ref="servicesection">
 
       <div class="row align-items-center">
-          <div class="col-lg-6">
+          <div class="col-lg-12">
               <div class="row gx-3">
                   <div class="col-sm-4">
                     <select ref="categoryDropdownRef" id="categoryDropdown" v-model="selectedCategory" class="me-5 form-select select2" :disabled="isEmpty">
                         <option value="">{{$t('landingpage.all_categories')}}</option>
+                        <option v-for="category in category_data" :key="category.id" :value="category.id">{{ category.name }}</option>
+                    </select>
+                    
+                  </div>
+                  <div class="col-sm-4">
+                    <select ref="categoryDropdownRef" id="categoryDropdown" v-model="selectedCategory" class="me-5 form-select select2" :disabled="isEmpty">
+                        <option value="">{{$t('Sub Categories')}}</option>
                         <option v-for="category in category_data" :key="category.id" :value="category.id">{{ category.name }}</option>
                     </select>
                     
@@ -23,51 +30,10 @@
                           <option :value="price" v-for="price in priceRanges" :key="price">{{ CURRENCY_SYMBOL }} {{ price }}</option>
                       </select>
                   </div>
-                  <div class="col-sm-4 mt-sm-0 mt-3">
-                      <select ref="priceDropdownRef" id="priceDropdown" v-model="selectedPriceRange" class="me-5 form-select select2" :disabled="isEmpty">
-                          <option value="">{{$t('landingpage.all_price')}}</option>
-                          <option :value="price" v-for="price in priceRanges" :key="price">{{ CURRENCY_SYMBOL }} {{ price }}</option>
-                      </select>
-                  </div>
+                  
               </div>
           </div>
-          <div class="col-lg-6 mt-lg-0 mt-3">
-              <div class="row">
-                  <div class="col-l2">
-                      <div class="d-flex align-items-center flex-sm-row flex-column gap-3 justify-content-lg-end">
-                          <div class="d-flex align-items-center gap-1 flex-shrink-0">
-                            <h6 class="text-body flex-shrink-0">{{$t('landingpage.sort_by')}}:</h6>
-                            <select ref="sortOptionRef" v-model="selectedSortOption" class="form-select select2" :disabled="isEmpty">
-                              <option value="">{{$t('landingpage.select')}}</option>
-                              <option value="best_selling">{{$t('landingpage.best_selling')}}</option>
-                              <option value="top_rated">{{$t('landingpage.top_rated')}}</option>
-                              <option value="newest">{{$t('landingpage.newest')}}</option>
-                            </select>
-                          </div>
-                          <div class="flex-shrink-0">
-                            <div class="search-form input-group flex-nowrap align-items-center">
-                              <input type="text" class="form-control rounded-3" v-model="search" placeholder="Search" :disabled="isEmpty">
-                              <span v-if="search" class="input-group-text search-icon position-absolute text-body" @click="clearSearch" style="cursor: pointer;">
-                                  <svg class="icon-20" width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                      <line x1="6" y1="18" x2="18" y2="6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></line>
-                                      <line x1="6" y1="6" x2="18" y2="18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></line>
-                                  </svg>
-                              </span>
-                              <span v-else class="input-group-text search-icon position-absolute text-body">
-                                <svg class="icon-20" width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                  <circle cx="11.7669" cy="11.7666" r="8.98856" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                                  </circle>
-                                  <path d="M18.0186 18.4851L21.5426 22" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                                  </path>
-                                </svg>
-                              </span>
-                            </div>
-                          </div>
-                          <button  v-if="checkDropdowns" class="btn btn-outline-primary" @click="refreshDropdowns" :disabled="isEmpty">{{$t('landingpage.reset')}}</button>
-                      </div>
-                  </div>
-              </div>
-          </div>
+          
       </div>
 
       <div class="table-responsive rounded py-4">
