@@ -419,8 +419,10 @@
 
             })(jQuery);
         </script>
-        <script src="https://cdn.tiny.cloud/1/m5d82gd2rwdlg96hsxpx0e5wwmfrl2zzkcw35ys8o3glilgq/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
-
+        <script>
+            < script src = "https://cdn.tiny.cloud/1/m5d82gd2rwdlg96hsxpx0e5wwmfrl2zzkcw35ys8o3glilgq/tinymce/5/tinymce.min.js"
+            referrerpolicy = "origin" >
+        </script>
          <script>
             tinymce.init({
                 selector: '#description', // Target the textarea
