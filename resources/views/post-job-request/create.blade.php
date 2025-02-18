@@ -38,8 +38,10 @@
                                 </div>
 
                                 <div class="form-group col-md-2">
-                                    <label for="country_id">{{ __('messages.country') }} <span class="text-danger">*</span></label>
-                                    <select name="country_id" id="country_id" class="select2js form-group category" required
+                                    <label for="country_id">{{ __('messages.country') }} <span
+                                            class="text-danger">*</span></label>
+                                    <select name="country_id" id="country_id" class="select2js form-group category"
+                                        required
                                         data-placeholder="{{ __('messages.select_name', ['select' => __('messages.country')]) }}"
                                         data-ajax--url="{{ route('ajax-list', ['type' => 'country']) }}">
                                         <option value="{{ optional($postJob->country)->id }}" selected>
@@ -47,17 +49,22 @@
                                         </option>
                                     </select>
                                 </div>
-                                
+
                                 <div class="form-group col-md-2">
-                                    <label for="state_id">{{ __('messages.select_name', ['select' => __('messages.state')]) }} <span class="text-danger">*</span></label>
-                                    <select name="state_id" id="state_id" class="select2js form-group category" required
+                                    <label
+                                        for="state_id">{{ __('messages.select_name', ['select' => __('messages.state')]) }}
+                                        <span class="text-danger">*</span></label>
+                                    <select name="state_id" id="state_id" class="select2js form-group category"
+                                        required
                                         data-placeholder="{{ __('messages.select_name', ['select' => __('messages.state')]) }}">
                                         <!-- State options will be populated dynamically -->
                                     </select>
                                 </div>
-                                
+
                                 <div class="form-group col-md-2">
-                                    <label for="city_id">{{ __('messages.select_name', ['select' => __('messages.city')]) }} <span class="text-danger">*</span></label>
+                                    <label
+                                        for="city_id">{{ __('messages.select_name', ['select' => __('messages.city')]) }}
+                                        <span class="text-danger">*</span></label>
                                     <select name="city_id" id="city_id" class="select2js form-group category" required
                                         data-placeholder="{{ __('messages.select_name', ['select' => __('messages.city')]) }}">
                                         <!-- City options will be populated dynamically -->
@@ -110,8 +117,8 @@
                                     <label for="price">{{ __('messages.price') }} <span
                                             class="text-danger">*</span></label>
                                     <input type="number" name="price" id="price" class="form-control"
-                                        min="1" step="any" placeholder="{{ __('messages.price') }}" required
-                                        value="{{ old('price', $postJob->price) }}">
+                                        min="1" step="any" placeholder="{{ __('messages.price') }}"
+                                        required value="{{ old('price', $postJob->price) }}">
                                     <small class="help-block with-errors text-danger"></small>
                                 </div>
 
@@ -237,125 +244,180 @@
             }
         </style>
 
-<script type="text/javascript">
-    (function($) {
-        "use strict";
-        $(document).ready(function() {
-            var country_id = "{{ isset($postJob->country_id) ? $postJob->country_id : '' }}";
-            var state_id = "{{ isset($postJob->state_id) ? $postJob->state_id : '' }}";
-            var city_id = "{{ isset($postJob->city_id) ? $postJob->city_id : '' }}";
-            var category_id = "{{ isset($postJob->category_id) ? $postJob->category_id : '' }}";
-            var subcategory_id = "{{ isset($postJob->subcategory_id) ? $postJob->subcategory_id : '' }}";
+        <script type="text/javascript">
+            (function($) {
+                "use strict";
+                $(document).ready(function() {
+                    var country_id = "{{ isset($postJob->country_id) ? $postJob->country_id : '' }}";
+                    var state_id = "{{ isset($postJob->state_id) ? $postJob->state_id : '' }}";
+                    var city_id = "{{ isset($postJob->city_id) ? $postJob->city_id : '' }}";
+                    var category_id = "{{ isset($postJob->category_id) ? $postJob->category_id : '' }}";
+                    var subcategory_id = "{{ isset($postJob->subcategory_id) ? $postJob->subcategory_id : '' }}";
 
-            getStates(country_id, state_id); // Initial load of states based on country
-            getCities(state_id, city_id); // Initial load of cities based on state
-            getSubCategory(category_id, subcategory_id); // Initial load of subcategory based on category
+                    getStates(country_id, state_id); // Initial load of states based on country
+                    getCities(state_id, city_id); // Initial load of cities based on state
+                    getSubCategory(category_id, subcategory_id); // Initial load of subcategory based on category
 
-            // Fetch states based on selected country
-            $(document).on('change', '#country_id', function() {
-                var selectedCountryId = $(this).val();
-                getStates(selectedCountryId, state_id);
-            });
+                    // Fetch states based on selected country
+                    $(document).on('change', '#country_id', function() {
+                        var selectedCountryId = $(this).val();
+                        getStates(selectedCountryId, state_id);
+                    });
 
-            // Fetch cities based on selected state
-            $(document).on('change', '#state_id', function() {
-                var selectedStateId = $(this).val();
-                getCities(selectedStateId, city_id);
-            });
+                    // Fetch cities based on selected state
+                    $(document).on('change', '#state_id', function() {
+                        var selectedStateId = $(this).val();
+                        getCities(selectedStateId, city_id);
+                    });
 
-            // Fetch subcategories based on selected category
-            $(document).on('change', '#category_id', function() {
-                var selectedCategoryId = $(this).val();
-                getSubCategory(selectedCategoryId, subcategory_id);
-            });
-        });
-
-        // Function to fetch states
-        function getStates(country_id, selectedState = "") {
-            if (country_id != '') {
-                var getStateListUrl = "{{ route('ajax-list', ['type' => 'state', 'country_id' => '']) }}" + country_id;
-                getStateListUrl = getStateListUrl.replace('amp;', '');
-
-                $('#state_id').select2({
-                    width: '100%',
-                    placeholder: "{{ __('messages.select_name', ['select' => __('messages.state')]) }}",
+                    // Fetch subcategories based on selected category
+                    $(document).on('change', '#category_id', function() {
+                        var selectedCategoryId = $(this).val();
+                        getSubCategory(selectedCategoryId, subcategory_id);
+                    });
                 });
 
-                $.ajax({
-                    url: getStateListUrl,
-                    success: function(result) {
-                        $('#state_id').empty();
-                        result.results.forEach(function(state) {
-                            var option = new Option(state.text, state.id, false, false);
-                            $('#state_id').append(option);
+                // Function to fetch states
+                function getStates(country_id, selectedState = "") {
+                    if (country_id != '') {
+                        var getStateListUrl = "{{ route('ajax-list', ['type' => 'state', 'country_id' => '']) }}" +
+                            country_id;
+                        getStateListUrl = getStateListUrl.replace('amp;', '');
+
+                        $('#state_id').select2({
+                            width: '100%',
+                            placeholder: "{{ __('messages.select_name', ['select' => __('messages.state')]) }}",
                         });
 
-                        if (selectedState !== null && selectedState !== 0) {
-                            $("#state_id").val(selectedState).trigger('change');
-                        }
+                        $.ajax({
+                            url: getStateListUrl,
+                            success: function(result) {
+                                $('#state_id').empty();
+                                result.results.forEach(function(state) {
+                                    var option = new Option(state.text, state.id, false, false);
+                                    $('#state_id').append(option);
+                                });
+
+                                if (selectedState !== null && selectedState !== 0) {
+                                    $("#state_id").val(selectedState).trigger('change');
+                                }
+                            }
+                        });
                     }
-                });
-            }
-        }
+                }
 
-        // Function to fetch cities based on selected state
-        function getCities(state_id, selectedCity = "") {
-            if (state_id != '') {
-                var getCityListUrl = "{{ route('ajax-list', ['type' => 'city', 'state_id' => '']) }}" + state_id;
-                getCityListUrl = getCityListUrl.replace('amp;', '');
+                // Function to fetch cities based on selected state
+                function getCities(state_id, selectedCity = "") {
+                    if (state_id != '') {
+                        var getCityListUrl = "{{ route('ajax-list', ['type' => 'city', 'state_id' => '']) }}" + state_id;
+                        getCityListUrl = getCityListUrl.replace('amp;', '');
 
-                $('#city_id').select2({
-                    width: '100%',
-                    placeholder: "{{ __('messages.select_name', ['select' => __('messages.city')]) }}",
-                });
-
-                $.ajax({
-                    url: getCityListUrl,
-                    success: function(result) {
-                        $('#city_id').empty();
-                        result.results.forEach(function(city) {
-                            var option = new Option(city.text, city.id, false, false);
-                            $('#city_id').append(option);
+                        $('#city_id').select2({
+                            width: '100%',
+                            placeholder: "{{ __('messages.select_name', ['select' => __('messages.city')]) }}",
                         });
 
-                        if (selectedCity !== null && selectedCity !== 0) {
-                            $("#city_id").val(selectedCity).trigger('change');
-                        }
+                        $.ajax({
+                            url: getCityListUrl,
+                            success: function(result) {
+                                $('#city_id').empty();
+                                result.results.forEach(function(city) {
+                                    var option = new Option(city.text, city.id, false, false);
+                                    $('#city_id').append(option);
+                                });
+
+                                if (selectedCity !== null && selectedCity !== 0) {
+                                    $("#city_id").val(selectedCity).trigger('change');
+                                }
+                            }
+                        });
                     }
-                });
-            }
-        }
+                }
+                function setMinDates() {
+               var today = new Date().toISOString().split('T')[0];
+               $('#start_date').attr('min', today);
+               $('#end_date').attr('min', today);
+           }
+       
+           // Function to calculate days between dates
+           function calculateDays() {
+               var startDate = $('#start_date').val();
+               var endDate = $('#end_date').val();
+       
+               if (startDate && endDate) {
+                   if (startDate > endDate) {
+                       $('#start_date_error').css('display', 'block');
+                   } else {
+                       $('#start_date_error').css('display', 'none');
+       
+                       var start = new Date(startDate);
+                       var end = new Date(endDate);
+                       var diffTime = end - start;
+                       var diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+                       console.log(diffDays * 24);
+                       if (diffDays > 0) {
+                           $('#total_day_div').val(diffDays);
+                           $('#hidden_total_days').val(diffDays);
+                           $('#total_hours_div').val(diffDays * 24).attr('max', diffDays * 24);
+                           $('#hidden_total_hours').val(diffDays * 24).attr('max', diffDays * 24);
+                       } else {
+                           $('#total_day_div').val(0);
+                           $('#hidden_total_days').val(0);
+                           $('#total_hours_div').val(0 * 24).attr('max', 0 * 24);
+                           $('#hidden_total_hours').val(0 * 24).attr('max', 0 * 24);
+                       }
+                   }
+               } else {
+                   $('#hidden_total_days').val(0);
+                   $('#total_day_div').val(0).attr('max', 0); // Added missing period here
+               }
+           }
+       
+           // Set initial min dates
+           setMinDates();
+       
+           // Attach event listeners
+           $('#start_date, #end_date').on('change', function() {
+               calculateDays();
+               var startDate = $('#start_date').val();
+               if (startDate) {
+                   $('#end_date').attr('min', startDate);
+               } else {
+                   setMinDates();
+               }
+           });
+                // Function to fetch subcategories based on selected category
+                function getSubCategory(category_id, selectedSubCategory = "") {
+                    if (category_id != '') {
+                        var getSubCategoryListUrl =
+                            "{{ route('ajax-list', ['type' => 'subcategory_list', 'category_id' => '']) }}" + category_id;
+                        getSubCategoryListUrl = getSubCategoryListUrl.replace('amp;', '');
 
-        // Function to fetch subcategories based on selected category
-        function getSubCategory(category_id, selectedSubCategory = "") {
-            if (category_id != '') {
-                var getSubCategoryListUrl = "{{ route('ajax-list', ['type' => 'subcategory_list', 'category_id' => '']) }}" + category_id;
-                getSubCategoryListUrl = getSubCategoryListUrl.replace('amp;', '');
-
-                $('#subcategory_id').select2({
-                    width: '100%',
-                    placeholder: "{{ __('messages.select_name', ['select' => __('messages.subcategory')]) }}",
-                });
-
-                $.ajax({
-                    url: getSubCategoryListUrl,
-                    success: function(result) {
-                        $('#subcategory_id').empty();
-                        result.results.forEach(function(subcategory) {
-                            var option = new Option(subcategory.text, subcategory.id, false, false);
-                            $('#subcategory_id').append(option);
+                        $('#subcategory_id').select2({
+                            width: '100%',
+                            placeholder: "{{ __('messages.select_name', ['select' => __('messages.subcategory')]) }}",
                         });
 
-                        if (selectedSubCategory !== null && selectedSubCategory !== 0) {
-                            $("#subcategory_id").val(selectedSubCategory).trigger('change');
-                        }
-                    }
-                });
-            }
-        }
+                        $.ajax({
+                            url: getSubCategoryListUrl,
+                            success: function(result) {
+                                $('#subcategory_id').empty();
+                                result.results.forEach(function(subcategory) {
+                                    var option = new Option(subcategory.text, subcategory.id, false,
+                                        false);
+                                    $('#subcategory_id').append(option);
+                                });
 
-    })(jQuery);
-</script>
+                                if (selectedSubCategory !== null && selectedSubCategory !== 0) {
+                                    $("#subcategory_id").val(selectedSubCategory).trigger('change');
+                                }
+                            }
+                        });
+                    }
+                }
+
+            })(jQuery);
+        </script>
         <script>
             < script src = "https://cdn.tiny.cloud/1/m5d82gd2rwdlg96hsxpx0e5wwmfrl2zzkcw35ys8o3glilgq/tinymce/5/tinymce.min.js"
             referrerpolicy = "origin" >
