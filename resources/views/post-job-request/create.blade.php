@@ -54,7 +54,7 @@
                                             [optional($servicedata->category)->id => optional($servicedata->category)->name],
                                             optional($servicedata->category)->id,
                                         )->class('select2js form-group category')->required()->id('category_id')->attribute('data-placeholder', __('messages.select_name', ['select' => __('messages.category')]))->attribute('data-ajax--url', route('ajax-list', ['type' => 'category'])) }}
-
+    
                                 </div>
                                 <div class="form-group col-md-4">
                                     {{ html()->label(__('messages.select_name', ['select' => __('messages.subcategory')]), 'subcategory_id')->class('form-control-label') }}
@@ -124,50 +124,48 @@
     </div>
 
     @section('bottom_script')
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-        <script>
-            $(document).ready(function() {
-                $('#category_id').on('change', function() {
-                    var category_id = $(this).val();
-                    console.log("Selected Category ID:", category_id); // Debugging
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+ <script>
+    $(document).ready(function() {
+    $('#category_id').on('change', function() {
+        var category_id = $(this).val();
+        console.log("Selected Category ID:", category_id); // Debugging
 
-                    if (category_id) {
-                        $.ajax({
-                            url: "{{ route('get-subcategories') }}",
-                            type: "GET",
-                            data: {
-                                category_id: category_id
-                            },
-                            dataType: "json",
-                            beforeSend: function() {
-                                console.log("Sending request to get subcategories...");
-                            },
-                            success: function(data) {
-                                console.log("Subcategories Loaded:", data); // Debugging
+        if (category_id) {
+            $.ajax({
+                url: "{{ route('get-subcategories') }}",
+                type: "GET",
+                data: { category_id: category_id },
+                dataType: "json",
+                beforeSend: function() {
+                    console.log("Sending request to get subcategories...");
+                },
+                success: function(data) {
+                    console.log("Subcategories Loaded:", data); // Debugging
 
-                                $('#subcategory_id').empty().append('<option value="">' +
-                                    "{{ __('messages.select_name', ['select' => __('messages.subcategory')]) }}" +
-                                    '</option>');
+                    $('#subcategory_id').empty().append('<option value="">' + 
+                        "{{ __('messages.select_name', ['select' => __('messages.subcategory')]) }}" + 
+                        '</option>');
 
-                                $.each(data, function(key, value) {
-                                    $('#subcategory_id').append('<option value="' + key +
-                                        '">' + value + '</option>');
-                                });
+                    $.each(data, function(key, value) {
+                        $('#subcategory_id').append('<option value="' + key + '">' + value + '</option>');
+                    });
 
-                                $('#subcategory_id').trigger('change'); // Refresh select2
-                            },
-                            error: function(xhr, status, error) {
-                                console.error("AJAX Error:", xhr.status, xhr.statusText);
-                                console.error("Response:", xhr.responseText);
-                            }
-                        });
-                    } else {
-                        console.log("No category selected, clearing subcategories.");
-                        $('#subcategory_id').empty().trigger('change'); // Clear dropdown
-                    }
-                });
+                    $('#subcategory_id').trigger('change'); // Refresh select2
+                },
+                error: function(xhr, status, error) {
+                    console.error("AJAX Error:", xhr.status, xhr.statusText);
+                    console.error("Response:", xhr.responseText);
+                }
             });
-        </script>
+        } else {
+            console.log("No category selected, clearing subcategories.");
+            $('#subcategory_id').empty().trigger('change'); // Clear dropdown
+        }
+    });
+});
+
+ </script>
 
         <script>
             $(document).ready(function() {
@@ -229,10 +227,10 @@
                 toolbar: 'undo redo | bold italic | bullist numlist | link image preview',
                 menubar: false
             });
-        </script>
-
-
-
+            
+        </script>      
+        
+         
+           
     @endsection
-@endsection
 </x-master-layout>
