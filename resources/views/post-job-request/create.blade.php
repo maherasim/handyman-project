@@ -38,15 +38,13 @@
                                 <div class="form-group col-md-2">
                                     <label for="country_id">{{ __('messages.country') }} <span
                                             class="text-danger">*</span></label>
-                                    <select name="country_id" id="country_id" class="select2js form-group category"
-                                        required></select>
+                                    <select name="country_id" id="country_id" class="form-control select2" required></select>
                                 </div>
 
                                 <div class="form-group col-md-2">
                                     <label for="city_id">{{ __('messages.city') }} <span
                                             class="text-danger">*</span></label>
-                                    <select name="city_id" id="city_id" class="select2js form-group category"
-                                        required></select>
+                                    <select name="city_id" id="city_id" class="form-control select2" required></select>
                                 </div>
 
                                 <div class="form-group col-md-3">
@@ -56,12 +54,12 @@
                                             'category_id',
                                             [optional($servicedata->category)->id => optional($servicedata->category)->name],
                                             optional($servicedata->category)->id,
-                                        )->class('select2js form-group category')->required()->id('category_id')->attribute('data-placeholder', __('messages.select_name', ['select' => __('messages.category')]))->attribute('data-ajax--url', route('ajax-list', ['type' => 'category'])) }}
+                                        )->class('form-control select2')->required()->id('category_id')->attribute('data-placeholder', __('messages.select_name', ['select' => __('messages.category')]))->attribute('data-ajax--url', route('ajax-list', ['type' => 'category'])) }}
                                 </div>
                                 <div class="form-group col-md-3">
                                     {{ html()->label(__('messages.select_name', ['select' => __('messages.subcategory')]), 'subcategory_id')->class('form-control-label') }}
                                     <br />
-                                    {{ html()->select('subcategory_id', $subcategories->pluck('name', 'id'), null)->class('select2js form-group subcategory_id')->attribute('data-placeholder', __('messages.select_name', ['select' => __('messages.subcategory')])) }}
+                                    {{ html()->select('subcategory_id', $subcategories->pluck('name', 'id'), null)->class('form-control select2')->attribute('data-placeholder', __('messages.select_name', ['select' => __('messages.subcategory')])) }}
                                 </div>
                             </div>
 
@@ -166,6 +164,12 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
         <script>
             $(document).ready(function() {
+                // Initialize Select2 after page load
+                $('.select2').select2({
+                    placeholder: "{{ __('Select an option') }}",
+                    allowClear: true
+                });
+
                 function setMinDates() {
                     var today = new Date().toISOString().split('T')[0];
                     $('#start_date, #end_date').attr('min', today); // Ensure dates are not in the past
@@ -219,12 +223,6 @@
                             $('#imageContainer').append(img);
                         }
                     }
-                });
-
-                // For requirements field
-                $('#requirements').select2({
-                    placeholder: "{{ __('Select requirements') }}", 
-                    allowClear: true
                 });
             });
         </script>
