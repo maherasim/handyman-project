@@ -18,15 +18,25 @@
                     <br>
                    
                        <b class="heading_text">About Job Request</b> <br>
-                       <p>{{ $jobrequest->description }}</p>
+                       <p> {{ strip_tags($jobrequest->description) }}</p>
+                    </b> 
+                </div>
+
+                <br>
+                <div>
+                    <br>
+                   
+                       <b class="heading_text">Requirnments</b> <br>
+                       <p> {{ strip_tags($jobrequest->requirnment) }}</p>
                     </b> 
                 </div>
             </div> 
             <div class="col-md-4 mt-3">
                 <h5 class="mt-4">$ {{ $jobrequest->price }} <span class="text-dark"><b>/ Hour</b></span> </h5>
                 <p class="mb-0" id="description">
-                    {{ Str::words($jobrequest->description, 10, '...') }}
+                    {{ Str::words(strip_tags($jobrequest->description), 10, '...') }}
                 </p>
+                
                 <button id="readMoreBtn" class="btn btn-link p-0" style="display: none;">Read More</button>
                 
                
