@@ -37,12 +37,8 @@
                                         <div>
                                             {{ $serviceData['provider']['city']['name'] ?? 'N/A' }} -
                                             {{ $serviceData['provider']['country']['name'] ?? 'N/A' }}
-
-
+ 
                                         </div>
-
-
-
                                     </h6>
                                 </li>
                             @endif
