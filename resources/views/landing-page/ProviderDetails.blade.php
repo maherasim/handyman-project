@@ -3,10 +3,17 @@
 
 @section('content')
 <style>
-    .table td {
+.table {
+    table-layout: fixed;
+    width: 100%;
+}
+
+.table td {
+    overflow-wrap: break-word;
     word-wrap: break-word;
     white-space: normal;
 }
+
 
 </style>
     <div class="section-padding position-relative px-0">
