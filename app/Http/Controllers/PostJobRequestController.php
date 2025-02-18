@@ -231,7 +231,7 @@ class PostJobRequestController extends Controller
             return comman_message_response($message);
 		}
 
-		return redirect(route('service.index'))->withSuccess($message);
+		return redirect(route('post-job-request.index'))->withSuccess($message);
     }
 
     /**
