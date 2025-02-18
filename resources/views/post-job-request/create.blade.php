@@ -1,8 +1,8 @@
 <x-master-layout>
     <script src="https://cdn.tiny.cloud/1/m5d82gd2rwdlg96hsxpx0e5wwmfrl2zzkcw35ys8o3glilgq/tinymce/5/tinymce.min.js"
         referrerpolicy="origin"></script>
-        <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
-<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
 
     <div class="container-fluid">
         <div class="row">
@@ -57,7 +57,7 @@
                                             [optional($servicedata->category)->id => optional($servicedata->category)->name],
                                             optional($servicedata->category)->id,
                                         )->class('select2js form-group category')->required()->id('category_id')->attribute('data-placeholder', __('messages.select_name', ['select' => __('messages.category')]))->attribute('data-ajax--url', route('ajax-list', ['type' => 'category'])) }}
-    
+
                                 </div>
                                 <div class="form-group col-md-4">
                                     {{ html()->label(__('messages.select_name', ['select' => __('messages.subcategory')]), 'subcategory_id')->class('form-control-label') }}
@@ -127,46 +127,54 @@
     </div>
 
     @section('bottom_script')
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
- <script>
-    $(document).ready(function() {
-    // Initialize select2 for the subcategory select
-    $('#subcategory_id').select2();
-
-    $('#category_id').on('change', function() {
-        var category_id = $(this).val();
-        if (category_id) {
-            $.ajax({
-                url: "{{ route('get-subcategories') }}",
-                type: "GET",
-                data: { category_id: category_id },
-                dataType: "json",
-                success: function(data) {
-                    console.log("Subcategories Loaded:", data); // Debugging
-                    
-                    $('#subcategory_id').empty().append('<option value="">' + 
-                        "{{ __('messages.select_name', ['select' => __('messages.subcategory')]) }}" + 
-                        '</option>');
-
-                    $.each(data, function(key, value) {
-                        $('#subcategory_id').append('<option value="' + key + '">' + value + '</option>');
-                    });
-
-                    // Trigger a change to refresh select2 after populating options
-                    $('#subcategory_id').select2(); // Initialize select2 after options are added
-                },
-                error: function(xhr, status, error) {
-                    console.error("Error fetching subcategories:", xhr.responseText);
-                }
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+        <script>
+            $(document).ready(function() {
+                // Initialize select2 for subcategory dropdown
+                $('#subcategory_id').select2();
+            
+                // Listen for category change event
+                $('#category_id').on('change', function() {
+                    var category_id = $(this).val();
+                    if (category_id) {
+                        $.ajax({
+                            url: "{{ route('get-subcategories') }}", // Ensure this route exists
+                            type: "GET",
+                            data: { category_id: category_id },
+                            dataType: "json",
+                            success: function(data) {
+                                console.log("Subcategories Loaded:", data); // Debugging log
+                                
+                                // Clear the subcategory dropdown before adding new options
+                                $('#subcategory_id').empty().append('<option value="">' + 
+                                    "{{ __('messages.select_name', ['select' => __('messages.subcategory')]) }}" + 
+                                    '</option>');
+            
+                                // Check if the response data is correct
+                                if (data && typeof data === 'object') {
+                                    $.each(data, function(key, value) {
+                                        // Append new subcategory options
+                                        $('#subcategory_id').append('<option value="' + key + '">' + value + '</option>');
+                                    });
+                                } else {
+                                    console.error("Invalid data format:", data); // Log an error if data is not an object
+                                }
+            
+                                // Refresh select2 after updating options
+                                $('#subcategory_id').select2(); // Re-initialize select2 for new options
+                            },
+                            error: function(xhr, status, error) {
+                                console.error("Error fetching subcategories:", xhr.responseText);
+                            }
+                        });
+                    } else {
+                        // If no category is selected, clear the subcategory dropdown
+                        $('#subcategory_id').empty().trigger('change');
+                    }
+                });
             });
-        } else {
-            $('#subcategory_id').empty().trigger('change'); // Clear dropdown
-        }
-    });
-});
-
- </script>
-
+            </script>
+            
 
         <script>
             $(document).ready(function() {
@@ -228,19 +236,16 @@
                 toolbar: 'undo redo | bold italic | bullist numlist | link image preview',
                 menubar: false
             });
-            
         </script>
-          @section('bottom_script')
-        
-          <script>
-              tinymce.init({
-                  selector: '#description', // Target the ID of your textarea
-                  plugins: 'lists link image preview', // Add any plugins you want to use
-                  toolbar: 'undo redo | bold italic | bullist numlist | link image preview',
-                  menubar: false
-              });
-          </script>
-          
-      @endsection
+    @section('bottom_script')
+        <script>
+            tinymce.init({
+                selector: '#description', // Target the ID of your textarea
+                plugins: 'lists link image preview', // Add any plugins you want to use
+                toolbar: 'undo redo | bold italic | bullist numlist | link image preview',
+                menubar: false
+            });
+        </script>
     @endsection
+@endsection
 </x-master-layout>
