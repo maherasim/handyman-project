@@ -41,7 +41,10 @@ class CategoryController extends Controller
     }
     public function getSubcategories(Request $request)
 {
-    \Log::info('Category ID received: ' . $request->category_id); // Debugging
+    
+    dd(SubCategory::where('category_id', $request->category_id)->pluck('name', 'id'));
+
+    
     
     $subcategories = SubCategory::where('category_id', $request->category_id)
                                 ->pluck('name', 'id');
