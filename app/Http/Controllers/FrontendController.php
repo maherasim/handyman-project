@@ -498,7 +498,7 @@ class FrontendController extends Controller
         $apiRequest = new Request(['service_id' => $service_id, 'per_page' => 'all']);
         $service = $serviceController->getServiceDetail($apiRequest);
         $serviceData = json_decode($service->content(), true);
-
+dd( $serviceData);
         $sitesetup = Setting::where('type','site-setup')->where('key', 'site-setup')->first();
         $date_time = json_decode($sitesetup->value);
         $favouriteServiceData = [];
