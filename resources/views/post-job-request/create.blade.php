@@ -199,8 +199,9 @@
                             <br>
                             <br>
                             <br>
+                            <div class="form-group custom-file col-md-3 mt-30">
                             <button type="submit"
-                                class="btn btn-md btn-primary float-right">{{ __('messages.save') }}</button>
+                                class="btn btn-md btn-primary float-right">{{ __('messages.save') }}</button></div><div class="form-group custom-file col-md-9 mt-30"></div>
                         </form>
 
                         <!-- Image Modal -->
