@@ -82,9 +82,9 @@
                     </a></li>
                     <li><a href="#" class="text-dark"> <b>Type:</b>  <span> {{ $jobrequest->type?? 'N/A'}}</span>
                     </a></li>
-                    <li><a href="#" class="text-dark"> <b>Start Date:</b> {{ $jobrequest->start_date?? 'N/A'}}
+                    <li><a href="#" class="text-dark"> <b>Start Date:</b> {{ $jobrequest->start_date->format('Y-m-d')?? 'N/A'}}
                     </a></li>
-                    <li><a href="#" class="text-dark"> <b>End Date:</b> {{ $jobrequest->end_date?? 'N/A'}}
+                    <li><a href="#" class="text-dark"> <b>End Date:</b> {{ $jobrequest->end_date->format('Y-m-d')?? 'N/A'}}
                     </a></li>
                     <li><a href="#" class="text-dark"><b>Status:</b>  {{ $jobrequest->status?? 'N/A'}}
                     </a></li>
