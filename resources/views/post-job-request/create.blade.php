@@ -63,7 +63,6 @@
                                     <br />
                                     {{ html()->select('subcategory_id', $subcategories->pluck('name', 'id'), null)->class('select2js form-group subcategory_id')->attribute('data-placeholder', __('messages.select_name', ['select' => __('messages.subcategory')])) }}
                                 </div>
-
                             </div>
 
                             <!-- Second row with 4 fields -->
@@ -167,147 +166,76 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
         <script>
             $(document).ready(function() {
-                // Initialize select2 for subcategory dropdown
-                $('#subcategory_id').select2();
+                function setMinDates() {
+                    var today = new Date().toISOString().split('T')[0];
+                    $('#start_date, #end_date').attr('min', today); // Ensure dates are not in the past
+                }
 
-                // Listen for category change event
-                $('#category_id').on('change', function() {
-                    var category_id = $(this).val();
-                    if (category_id) {
-                        $.ajax({
-                            url: "{{ route('get-subcategories') }}", // Ensure this route exists
-                            type: "GET",
-                            data: {
-                                category_id: category_id
-                            },
-                            dataType: "json",
-                            success: function(data) {
-                                console.log("Subcategories Loaded:", data); // Debugging log
+                function calculateDays() {
+                    var startDate = $('#start_date').val();
+                    var endDate = $('#end_date').val();
 
-                                // Clear the subcategory dropdown before adding new options
-                                $('#subcategory_id').empty().append('<option value="">' +
-                                    "{{ __('messages.select_name', ['select' => __('messages.subcategory')]) }}" +
-                                    '</option>');
+                    // Proceed only if both dates are selected and startDate is less than or equal to endDate
+                    if (startDate && endDate && startDate <= endDate) {
+                        var start = new Date(startDate);
+                        var end = new Date(endDate);
+                        var diffTime = end - start; // Time difference in milliseconds
+                        var diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1; // Convert to days and add 1 to include start date
 
-                                // Check if the response data is correct
-                                if (data && typeof data === 'object') {
-                                    $.each(data, function(key, value) {
-                                        // Append new subcategory options
-                                        $('#subcategory_id').append('<option value="' +
-                                            key + '">' + value + '</option>');
-                                    });
-                                } else {
-                                    console.error("Invalid data format:",
-                                        data); // Log an error if data is not an object
-                                }
-
-                                // Refresh select2 after updating options
-                                $('#subcategory_id')
-                                    .select2(); // Re-initialize select2 for new options
-                            },
-                            error: function(xhr, status, error) {
-                                console.error("Error fetching subcategories:", xhr.responseText);
-                            }
-                        });
+                        // Update Total Days and Total Hours
+                        $('#total_days').val(diffDays);
+                        $('#total_hours').val(diffDays * 24); // Assuming 24 hours in a day for full days
                     } else {
-                        // If no category is selected, clear the subcategory dropdown
-                        $('#subcategory_id').empty().trigger('change');
+                        $('#total_days').val(''); // Clear total days if the dates are not valid
+                        $('#total_hours').val(''); // Clear total hours if the dates are not valid
+                    }
+                }
+
+                setMinDates(); // Set today's date as the minimum date for start and end date
+
+                // Trigger calculateDays when either start_date or end_date is changed
+                $('#start_date, #end_date').on('change', function() {
+                    calculateDays();
+
+                    var startDate = $('#start_date').val();
+                    if (startDate) {
+                        $('#end_date').attr('min', startDate); // Ensure end date can't be before start date
                     }
                 });
-            });
-        </script>
 
+                // For the image preview functionality
+                $("#image").change(function(event) {
+                    var files = event.target.files;
+                    $('#imageContainer').empty(); // Clear previous images
 
-        <script>
-         <script>
-    $(document).ready(function() {
-        function setMinDates() {
-            var today = new Date().toISOString().split('T')[0];
-            $('#start_date, #end_date').attr('min', today); // Ensure dates are not in the past
-        }
-
-        function calculateDays() {
-            var startDate = $('#start_date').val();
-            var endDate = $('#end_date').val();
-
-            if (startDate && endDate && startDate <= endDate) {
-                var start = new Date(startDate);
-                var end = new Date(endDate);
-                var diffTime = end - start; // Time difference in milliseconds
-                var diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1; // Convert to days and add 1 to include start date
-
-                // Update Total Days and Total Hours
-                $('#total_days').val(diffDays);
-                $('#total_hours').val(diffDays * 24); // Assuming 24 hours in a day for full days
-            } else {
-                $('#total_days').val(''); // Clear total days if the dates are not valid
-                $('#total_hours').val(''); // Clear total hours if the dates are not valid
-            }
-        }
-
-        setMinDates(); // Set today's date as the minimum date for start and end date
-
-        // Trigger calculateDays when either start_date or end_date is changed
-        $('#start_date, #end_date').on('change', function() {
-            calculateDays();
-
-            var startDate = $('#start_date').val();
-            if (startDate) {
-                $('#end_date').attr('min', startDate); // Ensure end date can't be before start date
-            }
-        });
-
-        // For the image preview functionality
-        $("#image").change(function(event) {
-            var files = event.target.files;
-            $('#imageContainer').empty(); // Clear previous images
-
-            if (files.length > 0) {
-                for (var i = 0; i < Math.min(files.length, 3); i++) {
-                    var imageUrl = URL.createObjectURL(files[i]);
-                    var img = $('<img>').attr({
-                        'src': imageUrl,
-                        'class': 'img-fluid mt-2',
-                        'style': 'width: 27%; height: 90px;'
-                    });
-                    $('#imageContainer').append(img);
-                }
-            }
-        });
-
-        // For requirements field
-        $('#requirements').select2({
-            placeholder: "{{ __('Select requirements') }}", 
-            allowClear: true
-        });
-    });
-</script>
-
-        </script>
-        <script>
-            tinymce.init({
-                selector: '#description', // Target the ID of your textarea
-                plugins: 'lists link image preview', // Add any plugins you want to use
-                toolbar: 'undo redo | bold italic | bullist numlist | link image preview',
-                menubar: false
-            });
-        </script>
-    @section('bottom_script')
-        <script>
-            tinymce.init({
-                selector: '#description', // Target the ID of your textarea
-                plugins: 'lists link image preview', // Add any plugins you want to use
-                toolbar: 'undo redo | bold italic | bullist numlist | link image preview',
-                menubar: false
-            });
-            $(document).ready(function() {
-                // Initialize select2 for the requirements select
-                $('#requirements').select2({
-                    placeholder: "{{ __('Select requirements') }}", // Optional placeholder
-                    allowClear: true // Allows the user to clear selections
+                    if (files.length > 0) {
+                        for (var i = 0; i < Math.min(files.length, 3); i++) {
+                            var imageUrl = URL.createObjectURL(files[i]);
+                            var img = $('<img>').attr({
+                                'src': imageUrl,
+                                'class': 'img-fluid mt-2',
+                                'style': 'width: 27%; height: 90px;'
+                            });
+                            $('#imageContainer').append(img);
+                        }
+                    }
                 });
+
+                // For requirements field
+                $('#requirements').select2({
+                    placeholder: "{{ __('Select requirements') }}", 
+                    allowClear: true
+                });
+            });
+        </script>
+
+        <script>
+            tinymce.init({
+                selector: '#description', // Target the ID of your textarea
+                plugins: 'lists link image preview', // Add any plugins you want to use
+                toolbar: 'undo redo | bold italic | bullist numlist | link image preview',
+                menubar: false
             });
         </script>
     @endsection
-@endsection
 </x-master-layout>
