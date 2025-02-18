@@ -237,87 +237,174 @@
             }
         </style>
 
-<script type="text/javascript">
-    (function($) {
-        "use strict";
-        $(document).ready(function() {
-            var country_id = "{{ isset($postJob->country_id) ? $postJob->country_id : '' }}";
-            var state_id = "{{ isset($postJob->state_id) ? $postJob->state_id : '' }}";
-            var city_id = "{{ isset($postJob->city_id) ? $postJob->city_id : '' }}";
-            getStates(country_id, state_id); // Initial load of states based on country
-            getCities(state_id, city_id); // Initial load of cities based on state
+        <script type="text/javascript">
+            (function($) {
+                "use strict";
 
-            // Fetch states based on selected country
-            $(document).on('change', '#country_id', function() {
-                var selectedCountryId = $(this).val();
-                getStates(selectedCountryId, state_id);
-            });
+                $(document).ready(function() {
+                    var provider_id = "{{ isset($postJob->provider_id) ? $postJob->provider_id : '' }}";
+                    var category_id = "{{ isset($postJob->category_id) ? $postJob->category_id : '' }}";
+                    var subcategory_id = "{{ isset($postJob->subcategory_id) ? $postJob->subcategory_id : '' }}";
+                    var country_id = "{{ isset($postJob->country_id) ? $postJob->country_id : '' }}";
+                    var state_id = "{{ isset($postJob->state_id) ? $postJob->state_id : '' }}";
+                    var city_id = "{{ isset($postJob->city_id) ? $postJob->city_id : '' }}";
+                    getSubCategory(category_id, subcategory_id)
+                    getCity(country_id, city_id);
 
-            // Fetch cities based on selected state
-            $(document).on('change', '#state_id', function() {
-                var selectedStateId = $(this).val();
-                getCities(selectedStateId, city_id);
-            });
-        });
+                    $(document).on('change', '#category_id', function() {
+                        var category_id = $(this).val();
+                        $('#subcategory_id').empty();
+                        // console.log(category_id + ' : ' + subcategory_id );
+                        getSubCategory(category_id, subcategory_id);
+                    })
 
-        // Function to fetch states
-        function getStates(country_id, selectedState = "") {
-            if (country_id != '') {
-                var getStateListUrl = "{{ route('ajax-list', ['type' => 'state', 'country_id' => '']) }}" + country_id;
-                getStateListUrl = getStateListUrl.replace('amp;', '');
+                    $(document).on('change', '#country_id', function() {
+                        // console.log("country_id");
+                        var country_id = $(this).val();
+                        // $('#city_id').empty();
+                        getCity(country_id, city_id);
+                    });
 
-                $('#state_id').select2({
-                    width: '100%',
-                    placeholder: "{{ __('messages.select_name', ['select' => __('messages.state')]) }}",
-                });
+                    // Function to set minimum selectable dates
+                    function setMinDates() {
+                        var today = new Date().toISOString().split('T')[0];
+                        $('#start_date').attr('min', today);
+                        $('#end_date').attr('min', today);
+                    }
 
-                $.ajax({
-                    url: getStateListUrl,
-                    success: function(result) {
-                        $('#state_id').empty();
-                        result.results.forEach(function(state) {
-                            var option = new Option(state.text, state.id, false, false);
-                            $('#state_id').append(option);
-                        });
+                    // Function to calculate days between dates
+                    function calculateDays() {
+                        var startDate = $('#start_date').val();
+                        var endDate = $('#end_date').val();
 
-                        if (selectedState !== null && selectedState !== 0) {
-                            $("#state_id").val(selectedState).trigger('change');
+                        if (startDate && endDate) {
+                            if (startDate > endDate) {
+                                $('#start_date_error').css('display', 'block');
+                            } else {
+                                $('#start_date_error').css('display', 'none');
+
+                                var start = new Date(startDate);
+                                var end = new Date(endDate);
+                                var diffTime = end - start;
+                                var diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+                                console.log(diffDays * 24);
+                                if (diffDays > 0) {
+                                    $('#total_day_div').val(diffDays);
+                                    $('#hidden_total_days').val(diffDays);
+                                    $('#total_hours_div').val(diffDays * 24).attr('max', diffDays * 24);
+                                    $('#hidden_total_hours').val(diffDays * 24).attr('max', diffDays * 24);
+                                } else {
+                                    $('#total_day_div').val(0);
+                                    $('#hidden_total_days').val(0);
+                                    $('#total_hours_div').val(0 * 24).attr('max', 0 * 24);
+                                    $('#hidden_total_hours').val(0 * 24).attr('max', 0 * 24);
+                                }
+                            }
+                        } else {
+                            $('#hidden_total_days').val(0);
+                            $('#total_day_div').val(0).attr('max', 0); // Added missing period here
                         }
                     }
+
+                    // Set initial min dates
+                    setMinDates();
+
+                    // Attach event listeners
+                    $('#start_date, #end_date').on('change', function() {
+                        calculateDays();
+                        var startDate = $('#start_date').val();
+                        if (startDate) {
+                            $('#end_date').attr('min', startDate);
+                        } else {
+                            setMinDates();
+                        }
+                    });
+
+
                 });
-            }
-        }
 
-        // Function to fetch cities based on selected state
-        function getCities(state_id, selectedCity = "") {
-            if (state_id != '') {
-                var getCityListUrl = "{{ route('ajax-list', ['type' => 'city', 'state_id' => '']) }}" + state_id;
-                getCityListUrl = getCityListUrl.replace('amp;', '');
 
-                $('#city_id').select2({
-                    width: '100%',
-                    placeholder: "{{ __('messages.select_name', ['select' => __('messages.city')]) }}",
-                });
 
-                $.ajax({
-                    url: getCityListUrl,
-                    success: function(result) {
-                        $('#city_id').empty();
-                        result.results.forEach(function(city) {
-                            var option = new Option(city.text, city.id, false, false);
-                            $('#city_id').append(option);
+                function getSubCategory(category_id, subcategory_id = "") {
+                    // console.log('s');
+                    var get_subcategory_list =
+                        "{{ route('ajax-list', ['type' => 'subcategory_list', 'category_id' => '']) }}" + category_id;
+                    get_subcategory_list = get_subcategory_list.replace('amp;', '');
+
+                    $.ajax({
+                        url: get_subcategory_list,
+                        success: function(result) {
+                            // console.log(result);
+                            $('#subcategory_id').select2({
+                                width: '100%',
+                                placeholder: "{{ trans('messages.select_name', ['select' => trans('messages.subcategory')]) }}",
+                                data: result.results
+                            });
+                            if (subcategory_id != "") {
+                                $('#subcategory_id').val(subcategory_id).trigger('change');
+                            }
+                        }
+                    });
+                }
+
+
+
+                function getCity(country_id, city = "") {
+                    if (country_id != '') {
+                        var get_city_list = "{{ route('ajax-list', ['type' => 'cityFromCountry', 'country_id' => '']) }}" +
+                            country_id;
+                        get_city_list = get_city_list.replace('amp;', '');
+
+                        $('#city_id').select2({
+                            width: '100%',
+                            placeholder: "{{ __('messages.select_name', ['select' => __('messages.city')]) }}",
                         });
 
-                        if (selectedCity !== null && selectedCity !== 0) {
-                            $("#city_id").val(selectedCity).trigger('change');
-                        }
-                    }
-                });
-            }
-        }
+                        $.ajax({
+                            url: get_city_list,
+                            success: function(result) {
+                                $('#city_id').empty();
+                                result.forEach(function(city) {
+                                    var option = new Option(city.name, city.id, false, false);
+                                    $('#city_id').append(option);
+                                });
 
-    })(jQuery);
-</script>
+                                if (city !== null && city !== 0) {
+                                    $("#city_id").val(city).trigger('change');
+                                }
+                            }
+                        });
+                    }
+                }
+
+
+                $('#showMoreButton').click(function() {
+                    openImagePopup(selectedImages);
+                });
+
+                function openImagePopup(images) {
+                    // console.log('images', images);
+                    var modal = $('#imageModal');
+                    modal.modal('show');
+
+                    modal.find('.modal-body').empty();
+
+                    images.forEach(function(imageUrl) {
+                        var img = $('<img>').attr({
+                            'src': imageUrl,
+                            'alt': 'Selected Image',
+                            'style': 'width: 27%; height: 90px; margin-right: 10px;' // Add margin between images
+                        });
+
+                        modal.find('.modal-body').append(img);
+                    });
+                }
+
+                $(".btn-close").click(function() {
+                    $('#imageModal').modal('hide');
+                });
+            })(jQuery);
+        </script>
         <script>
             < script src = "https://cdn.tiny.cloud/1/m5d82gd2rwdlg96hsxpx0e5wwmfrl2zzkcw35ys8o3glilgq/tinymce/5/tinymce.min.js"
             referrerpolicy = "origin" >
