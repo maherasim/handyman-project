@@ -222,8 +222,17 @@
             });
             
         </script>
-          
+          @section('bottom_script')
         
+          <script>
+              tinymce.init({
+                  selector: '#description', // Target the ID of your textarea
+                  plugins: 'lists link image preview', // Add any plugins you want to use
+                  toolbar: 'undo redo | bold italic | bullist numlist | link image preview',
+                  menubar: false
+              });
+          </script>
           
+      @endsection
     @endsection
 </x-master-layout>
