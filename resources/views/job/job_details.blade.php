@@ -82,10 +82,21 @@
                     </a></li>
                     <li><a  class="text-dark"> <b>Type:</b>  <span> {{ $jobrequest->type?? 'N/A'}}</span>
                     </a></li>
-                    <li><a  class="text-dark"> <b>Start Date:</b> {{ $jobrequest->start_date->format('Y-m-d')?? 'N/A'}}
-                    </a></li>
-                    <li><a  class="text-dark"> <b>End Date:</b> {{ $jobrequest->end_date->format('Y-m-d')?? 'N/A'}}
-                    </a></li>
+                    <li>
+                        <a class="text-dark">
+                            <b>Start Date:</b>
+                            {{ optional($jobrequest->start_date)->format('Y-m-d') ?? 'N/A' }}
+                        </a>
+                    </li>
+                    
+                    
+                    <li>
+                        <a class="text-dark">
+                            <b>End Date:</b>
+                            {{ optional($jobrequest->end_date)->format('Y-m-d') ?? 'N/A' }}
+                        </a>
+                    </li>
+                    
                     <li><a  class="text-dark"><b>Status:</b>  {{ $jobrequest->status?? 'N/A'}}
                     </a></li>
                     <li><a  class="text-dark"> <b>Total Bids:</b>  {{ $totalBids }}
