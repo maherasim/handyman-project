@@ -169,8 +169,8 @@
                                     <label for="description">{{ __('messages.description') }}</label>
                                     <textarea name="description" id="description" class="form-control textarea" rows="3"
                                         placeholder="{{ __('messages.description') }}">{{ old('description', $postJob->description) }}</textarea>
-                                </div> </div>
-                                <div class="row">
+                                </div> 
+                                
                                 <div class="form-group col-md-6">
                                     <label for="title">{{ __('Requirment') }} <span
                                             class="text-danger">*</span></label>
@@ -178,7 +178,7 @@
                                         placeholder="{{ __('messages.title') }}" title="requirnment"
                                         value="{{ old('title', $postJob->requirnment) }}" required>
                                     <small class="help-block with-errors text-danger"></small>
-                                </div>
+                                </div></div>
                                 <div class="form-group custom-file col-md-6 mt-30">
                                     <label for="image"
                                         class="custom-file-label upload-label">{{ __('messages.image') }}</label>
