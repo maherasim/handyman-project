@@ -23,6 +23,12 @@
                           <option :value="price" v-for="price in priceRanges" :key="price">{{ CURRENCY_SYMBOL }} {{ price }}</option>
                       </select>
                   </div>
+                  <div class="col-sm-4 mt-sm-0 mt-3">
+                      <select ref="priceDropdownRef" id="priceDropdown" v-model="selectedPriceRange" class="me-5 form-select select2" :disabled="isEmpty">
+                          <option value="">{{$t('landingpage.all_price')}}</option>
+                          <option :value="price" v-for="price in priceRanges" :key="price">{{ CURRENCY_SYMBOL }} {{ price }}</option>
+                      </select>
+                  </div>
               </div>
           </div>
           <div class="col-lg-6 mt-lg-0 mt-3">
