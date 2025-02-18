@@ -124,110 +124,115 @@
     </div>
 
     @section('bottom_script')
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-<script>
-    $(document).ready(function() {
-        // Handle Category Change
-        $('#category_id').on('change', function() {
-            var category_id = $(this).val();
-            console.log("Selected Category ID:", category_id); // Debugging
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+        <script>
+            $(document).ready(function() {
+                $('#category_id').on('change', function() {
+                    var category_id = $(this).val();
+                    console.log("Selected Category ID:", category_id); // Debugging
 
-            if (category_id) {
-                $.ajax({
-                    url: "{{ route('get-subcategories') }}",
-                    type: "GET",
-                    data: { category_id: category_id },
-                    dataType: "json",
-                    beforeSend: function() {
-                        console.log("Sending request to get subcategories...");
-                    },
-                    success: function(data) {
-                        console.log("Subcategories Loaded:", data); // Debugging
-                        
-                        $('#subcategory_id').empty().append('<option value="">' + 
-                            "{{ __('messages.select_name', ['select' => __('messages.subcategory')]) }}" + 
-                            '</option>');
+                    if (category_id) {
+                        $.ajax({
+                            url: "{{ route('get-subcategories') }}",
+                            type: "GET",
+                            data: {
+                                category_id: category_id
+                            },
+                            dataType: "json",
+                            beforeSend: function() {
+                                console.log("Sending request to get subcategories...");
+                            },
+                            success: function(data) {
+                                console.log("Subcategories Loaded:", data); // Debugging
 
-                        $.each(data, function(key, value) {
-                            $('#subcategory_id').append('<option value="' + key + '">' + value + '</option>');
+                                $('#subcategory_id').empty().append('<option value="">' +
+                                    "{{ __('messages.select_name', ['select' => __('messages.subcategory')]) }}" +
+                                    '</option>');
+
+                                $.each(data, function(key, value) {
+                                    $('#subcategory_id').append('<option value="' + key +
+                                        '">' + value + '</option>');
+                                });
+
+                                $('#subcategory_id').trigger('change'); // Refresh select2
+                            },
+                            error: function(xhr, status, error) {
+                                console.error("AJAX Error:", xhr.status, xhr.statusText);
+                                console.error("Response:", xhr.responseText);
+                            }
                         });
-
-                        $('#subcategory_id').trigger('change'); // Refresh select2
-                    },
-                    error: function(xhr, status, error) {
-                        console.error("AJAX Error:", xhr.status, xhr.statusText);
-                        console.error("Response:", xhr.responseText);
+                    } else {
+                        console.log("No category selected, clearing subcategories.");
+                        $('#subcategory_id').empty().trigger('change'); // Clear dropdown
                     }
                 });
-            } else {
-                console.log("No category selected, clearing subcategories.");
-                $('#subcategory_id').empty().trigger('change'); // Clear dropdown
-            }
-        });
+            });
+        </script>
 
-        // Set Min Dates
-        function setMinDates() {
-            var today = new Date().toISOString().split('T')[0];
-            $('#start_date, #end_date').attr('min', today);
-        }
-
-        // Calculate Days and Hours
-        function calculateDays() {
-            var startDate = $('#start_date').val();
-            var endDate = $('#end_date').val();
-
-            if (startDate && endDate && startDate <= endDate) {
-                var start = new Date(startDate);
-                var end = new Date(endDate);
-                var diffDays = Math.ceil((end - start) / (1000 * 60 * 60 * 24)) + 1;
-
-                $('#total_days').val(diffDays); // Update Total Days
-                $('#total_hours').val(diffDays * 24); // Update Total Hours
-            } else {
-                $('#total_days').val('');
-                $('#total_hours').val('');
-            }
-        }
-
-        setMinDates();
-
-        $('#start_date, #end_date').on('change', function() {
-            calculateDays();
-
-            var startDate = $('#start_date').val();
-            if (startDate) {
-                $('#end_date').attr('min', startDate);
-            }
-        });
-
-        // Image Preview
-        $("#image").change(function(event) {
-            var files = event.target.files;
-            $('#imageContainer').empty();
-
-            if (files.length > 0) {
-                for (var i = 0; i < Math.min(files.length, 3); i++) {
-                    var imageUrl = URL.createObjectURL(files[i]);
-                    var img = $('<img>').attr({
-                        'src': imageUrl,
-                        'class': 'img-fluid mt-2',
-                        'style': 'width: 27%; height: 90px;'
-                    });
-                    $('#imageContainer').append(img);
+        <script>
+            $(document).ready(function() {
+                function setMinDates() {
+                    var today = new Date().toISOString().split('T')[0];
+                    $('#start_date, #end_date').attr('min', today);
                 }
-            }
-        });
 
-        // Initialize TinyMCE
-        tinymce.init({
-            selector: '#description',
-            plugins: 'lists link image preview',
-            toolbar: 'undo redo | bold italic | bullist numlist | link image preview',
-            menubar: false
-        });
-    });
-</script>
+                function calculateDays() {
+                    var startDate = $('#start_date').val();
+                    var endDate = $('#end_date').val();
+
+                    if (startDate && endDate && startDate <= endDate) {
+                        var start = new Date(startDate);
+                        var end = new Date(endDate);
+                        var diffDays = Math.ceil((end - start) / (1000 * 60 * 60 * 24)) + 1;
+
+                        $('#total_days').val(diffDays); // Update Total Days
+                        $('#total_hours').val(diffDays * 24); // Update Total Hours
+                    } else {
+                        $('#total_days').val('');
+                        $('#total_hours').val('');
+                    }
+                }
+
+                setMinDates();
+
+                $('#start_date, #end_date').on('change', function() {
+                    calculateDays();
+
+                    var startDate = $('#start_date').val();
+                    if (startDate) {
+                        $('#end_date').attr('min', startDate);
+                    }
+                });
+
+                $("#image").change(function(event) {
+                    var files = event.target.files;
+                    $('#imageContainer').empty();
+
+                    if (files.length > 0) {
+                        for (var i = 0; i < Math.min(files.length, 3); i++) {
+                            var imageUrl = URL.createObjectURL(files[i]);
+                            var img = $('<img>').attr({
+                                'src': imageUrl,
+                                'class': 'img-fluid mt-2',
+                                'style': 'width: 27%; height: 90px;'
+                            });
+                            $('#imageContainer').append(img);
+                        }
+                    }
+                });
+            });
+        </script>
+        <script>
+            tinymce.init({
+                selector: '#description', // Target the ID of your textarea
+                plugins: 'lists link image preview', // Add any plugins you want to use
+                toolbar: 'undo redo | bold italic | bullist numlist | link image preview',
+                menubar: false
+            });
+        </script>
+
+
+
+    @endsection
 @endsection
-
- 
 </x-master-layout>
