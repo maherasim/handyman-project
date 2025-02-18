@@ -125,24 +125,19 @@
 
     @section('bottom_script')
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
- <script>
-    $(document).ready(function() {
+<script>
+   $(document).ready(function() {
     $('#category_id').on('change', function() {
         var category_id = $(this).val();
-        console.log("Selected Category ID:", category_id); // Debugging
-
         if (category_id) {
             $.ajax({
                 url: "{{ route('get-subcategories') }}",
                 type: "GET",
                 data: { category_id: category_id },
                 dataType: "json",
-                beforeSend: function() {
-                    console.log("Sending request to get subcategories...");
-                },
                 success: function(data) {
                     console.log("Subcategories Loaded:", data); // Debugging
-
+                    
                     $('#subcategory_id').empty().append('<option value="">' + 
                         "{{ __('messages.select_name', ['select' => __('messages.subcategory')]) }}" + 
                         '</option>');
@@ -154,18 +149,16 @@
                     $('#subcategory_id').trigger('change'); // Refresh select2
                 },
                 error: function(xhr, status, error) {
-                    console.error("AJAX Error:", xhr.status, xhr.statusText);
-                    console.error("Response:", xhr.responseText);
+                    console.error("Error fetching subcategories:", xhr.responseText);
                 }
             });
         } else {
-            console.log("No category selected, clearing subcategories.");
             $('#subcategory_id').empty().trigger('change'); // Clear dropdown
         }
     });
 });
 
- </script>
+</script>
 
         <script>
             $(document).ready(function() {
@@ -228,9 +221,18 @@
                 menubar: false
             });
             
-        </script>      
+        </script>
+          @section('bottom_script')
         
-         
-           
+          <script>
+              tinymce.init({
+                  selector: '#description', // Target the ID of your textarea
+                  plugins: 'lists link image preview', // Add any plugins you want to use
+                  toolbar: 'undo redo | bold italic | bullist numlist | link image preview',
+                  menubar: false
+              });
+          </script>
+          
+      @endsection
     @endsection
 </x-master-layout>
