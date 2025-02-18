@@ -159,23 +159,54 @@ class PostJobRequestController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+   
     public function create(Request $request)
     {
         $id = $request->id;
 
-        
+        $auth_user = authSession();
 
         $servicedata = Service::find($id);
+
+        $visittype = config('constant.VISIT_TYPE');
+
+        $settingdata = Setting::where('type','=','service-configurations')->first();
+
+        $advancedPaymentSetting=0;
+        $slotservice = 0;
+        $digital_services = 0;
+
+          if($settingdata) {
+
+              $settings = json_decode($settingdata->value, true);
+
+              $advancedPaymentSetting = $settings['advance_payment'];
+              $slotservice = $settings['slot_service'];
+              $digital_services = $settings['digital_services'];
+
+          }
+
+            if ($digital_services == 1) {
+                $visittype = [
+                    'ON_SITE' => 'On Site',
+                    'ONLINE' => 'Online',
+                    'Hybrid' => 'Hybrid',
+                ];
+            } else {
+                $visittype = [
+                    'ON_SITE' => 'On Site',
+                ];
+            }
+
+
+        $pageTitle = __('messages.update_form_title',['form'=> __('messages.service')]);
+
         if($servicedata == null){
             $pageTitle = __('messages.add_button_form',['form' => __('messages.service')]);
             $servicedata = new Service;
         }
-          $auth_user = authSession();
-         $postJob = new PostJobRequest;
-        // $pageTitle = __('messages.update_form_title',['form'=> __('messages.post_job')]);
-        $pageTitle = __('messages.create_form_title',['form'=> __('messages.post_job')]);
-        return view('post-job-request.create',compact('postJob','pageTitle','auth_user','servicedata'));
-
+         
+        return view('post-job-request.create', compact('pageTitle' ,'servicedata' ,'auth_user' , 'advancedPaymentSetting','visittype','slotservice'));
     }
 
     /**
