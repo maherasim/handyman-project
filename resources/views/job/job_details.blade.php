@@ -27,7 +27,7 @@
                     <br>
                    
                        <b class="heading_text">Requirnments</b> <br>
-                       <p> {{ strip_tags($jobrequest->requirnment) }}</p>
+                       <p> {{ strip_tags($jobrequest-> requirement) }}</p>
                     </b> 
                 </div>
             </div> 
