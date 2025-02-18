@@ -3,28 +3,45 @@
 
       <div class="row align-items-center">
           <div class="col-lg-12">
-              <div class="row gx-3">
-                  <div class="col-sm-4">
+              <div class="row gx-1">
+                  <div class="col-sm-2">
                     <select ref="categoryDropdownRef" id="categoryDropdown" v-model="selectedCategory" class="me-5 form-select select2" :disabled="isEmpty">
                         <option value="">{{$t('landingpage.all_categories')}}</option>
                         <option v-for="category in category_data" :key="category.id" :value="category.id">{{ category.name }}</option>
                     </select>
                     
                   </div>
-                  <div class="col-sm-4">
+                  <div class="col-sm-2">
                     <select ref="categoryDropdownRef" id="categoryDropdown" v-model="selectedCategory" class="me-5 form-select select2" :disabled="isEmpty">
                         <option value="">{{$t('Sub Categories')}}</option>
                         <option v-for="category in category_data" :key="category.id" :value="category.id">{{ category.name }}</option>
                     </select>
                     
                   </div>
-                  <div class="col-sm-4 mt-sm-0 mt-3">
+                  <div class="col-sm-2 mt-sm-0 mt-3">
                     <select ref="providerDropdownRef" id="providerDropdown" v-model="selectedProvider" class="me-5 form-select select2" :disabled="isEmpty">
                         <option value="">{{$t('landingpage.all_providers')}}</option>
                         <option v-for="providers in provider_data" :key="providers.id" :value="providers.id">{{ providers.first_name }}</option>
                     </select>
                   </div>
-                  <div class="col-sm-4 mt-sm-0 mt-3">
+                  <div class="col-sm-2 mt-sm-0 mt-3">
+                    <select ref="providerDropdownRef" id="providerDropdown" v-model="selectedProvider" class="me-5 form-select select2" :disabled="isEmpty">
+                        <option value="">{{$t('Filter by Country')}}</option>
+                        <option v-for="providers in provider_data" :key="providers.id" :value="providers.id">{{ providers.first_name }}</option>
+                    </select>
+                  </div>
+
+                  <div class="col-sm-2 mt-sm-0 mt-3">
+                    <select ref="providerDropdownRef" id="providerDropdown" v-model="selectedProvider" class="me-5 form-select select2" :disabled="isEmpty">
+                        <option value="">{{$t('Filter by City')}}</option>
+                        <option v-for="providers in provider_data" :key="providers.id" :value="providers.id">{{ providers.first_name }}</option>
+                    </select>
+                  </div>
+
+
+
+
+                  <div class="col-sm-2 mt-sm-0 mt-3">
                       <select ref="priceDropdownRef" id="priceDropdown" v-model="selectedPriceRange" class="me-5 form-select select2" :disabled="isEmpty">
                           <option value="">{{$t('landingpage.all_price')}}</option>
                           <option :value="price" v-for="price in priceRanges" :key="price">{{ CURRENCY_SYMBOL }} {{ price }}</option>
