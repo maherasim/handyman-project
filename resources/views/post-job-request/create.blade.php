@@ -128,7 +128,15 @@
                              <button type="button" id="showMoreButton" class="btn btn-primary mt-3" style="display: none;">Show More</button>
                           </div>
                        </div>
-                       
+                       <br>
+                       <br>
+                       <br>
+                       <br>
+                       <br>
+                       <br>
+                       <br>
+                       <br>
+                       <br>
                        <button type="submit" class="btn btn-md btn-primary float-right">{{ __('messages.save') }}</button>
                    </form>
                    
