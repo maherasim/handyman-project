@@ -163,79 +163,85 @@
             </div>
         </div>
     </div>
-  <script>$(document).ready(function() {
-    // First, set min dates
-    function setMinDates() {
-        var today = new Date().toISOString().split('T')[0];
-        $('#start_date, #end_date').attr('min', today); // Ensure dates are not in the past
-    }
 
-    // Calculate Total Days and Hours
-    function calculateDays() {
-        var startDate = $('#start_date').val();
-        var endDate = $('#end_date').val();
+    @section('bottom_script')
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+        <script>
+            $(document).ready(function() {
+                function setMinDates() {
+                    var today = new Date().toISOString().split('T')[0];
+                    $('#start_date, #end_date').attr('min', today); // Ensure dates are not in the past
+                }
 
-        // Proceed only if both dates are selected and startDate is less than or equal to endDate
-        if (startDate && endDate && startDate <= endDate) {
-            var start = new Date(startDate);
-            var end = new Date(endDate);
-            var diffTime = end - start; // Time difference in milliseconds
-            var diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1; // Convert to days and add 1 to include start date
+                function calculateDays() {
+                    var startDate = $('#start_date').val();
+                    var endDate = $('#end_date').val();
 
-            // Update Total Days and Total Hours
-            $('#total_days').val(diffDays);
-            $('#total_hours').val(diffDays * 24); // Assuming 24 hours in a day for full days
-        } else {
-            $('#total_days').val(''); // Clear total days if the dates are not valid
-            $('#total_hours').val(''); // Clear total hours if the dates are not valid
-        }
-    }
+                    // Proceed only if both dates are selected and startDate is less than or equal to endDate
+                    if (startDate && endDate && startDate <= endDate) {
+                        var start = new Date(startDate);
+                        var end = new Date(endDate);
+                        var diffTime = end - start; // Time difference in milliseconds
+                        var diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) +
+                        1; // Convert to days and add 1 to include start date
 
-    // Initialize Select2 for the requirements field
-    $('#requirements').select2({
-        placeholder: "{{ __('Select requirements') }}",
-        allowClear: true // Allows the user to clear selections
-    });
+                        // Update Total Days and Total Hours
+                        $('#total_days').val(diffDays);
+                        $('#total_hours').val(diffDays * 24); // Assuming 24 hours in a day for full days
+                    } else {
+                        $('#total_days').val(''); // Clear total days if the dates are not valid
+                        $('#total_hours').val(''); // Clear total hours if the dates are not valid
+                    }
+                }
 
-    // Initialize TinyMCE for the description field
-    tinymce.init({
-        selector: '#description', // Target the ID of your textarea
-        plugins: 'lists link image preview', // Add any plugins you want to use
-        toolbar: 'undo redo | bold italic | bullist numlist | link image preview',
-        menubar: false
-    });
+                setMinDates(); // Set today's date as the minimum date for start and end date
 
-    // Set minimum dates on page load
-    setMinDates(); 
+                // Trigger calculateDays when either start_date or end_date is changed
+                $('#start_date, #end_date').on('change', function() {
+                    calculateDays();
 
-    // Trigger calculateDays when either start_date or end_date is changed
-    $('#start_date, #end_date').on('change', function() {
-        calculateDays();
-        
-        // Update end_date min attribute if start_date is set
-        var startDate = $('#start_date').val();
-        if (startDate) {
-            $('#end_date').attr('min', startDate); // Ensure end date can't be before start date
-        }
-    });
-
-    // For the image preview functionality
-    $("#image").change(function(event) {
-        var files = event.target.files;
-        $('#imageContainer').empty(); // Clear previous images
-
-        if (files.length > 0) {
-            for (var i = 0; i < Math.min(files.length, 3); i++) {
-                var imageUrl = URL.createObjectURL(files[i]);
-                var img = $('<img>').attr({
-                    'src': imageUrl,
-                    'class': 'img-fluid mt-2',
-                    'style': 'width: 27%; height: 90px;'
+                    var startDate = $('#start_date').val();
+                    if (startDate) {
+                        $('#end_date').attr('min', startDate); // Ensure end date can't be before start date
+                    }
                 });
-                $('#imageContainer').append(img);
-            }
-        }
-    });
-});
-</script>
+
+                // For the image preview functionality
+                $("#image").change(function(event) {
+                    var files = event.target.files;
+                    $('#imageContainer').empty(); // Clear previous images
+
+                    if (files.length > 0) {
+                        for (var i = 0; i < Math.min(files.length, 3); i++) {
+                            var imageUrl = URL.createObjectURL(files[i]);
+                            var img = $('<img>').attr({
+                                'src': imageUrl,
+                                'class': 'img-fluid mt-2',
+                                'style': 'width: 27%; height: 90px;'
+                            });
+                            $('#imageContainer').append(img);
+                        }
+                    }
+                });
+
+                // For requirements field
+                $('#requirements').select2({
+                    placeholder: "{{ __('Select requirements') }}",
+                    allowClear: true
+                });
+            });
+        </script>
+
+
+
+        <script>
+            tinymce.init({
+                selector: '#description', // Target the ID of your textarea
+                plugins: 'lists link image preview', // Add any plugins you want to use
+                toolbar: 'undo redo | bold italic | bullist numlist | link image preview',
+                menubar: false
+            });
+        </script>
+   
+@endsection
 </x-master-layout>
