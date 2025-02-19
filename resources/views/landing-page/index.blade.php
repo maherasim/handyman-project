@@ -409,9 +409,10 @@
 
                                         <a href="{{ route('service.detail', $data->id) }}"
                                             class="service-heading mt-2 d-block p-0">
-                                            <h5 class="service-heading service-title font-size-1 line-count-2"
-                                                style="font-size:12px">
+                                            <h5 class="service-heading service-title  "style="font-size:15px">
                                                 <b>{{ $data->name }}</b> </h5>
+
+                                                
                                         </a>
 
 
@@ -613,9 +614,14 @@
 
                                     <a href="{{ route('service.detail', $data->id) }}"
                                         class="service-heading mt-2 d-block p-0">
-                                        <h5 class="service-heading service-title font-size-1 line-count-2"
-                                            style="font-size:14px">
+                                        <h5 class="service-heading text-capitalize"style="font-size:15px">
                                            <b>{{ $data->name }}</b> </h5>
+
+                                           
+
+
+
+
                                     </a>
 
 
