@@ -182,6 +182,7 @@
         });
 
         // Handle upgrade button click
+        // Handle upgrade button click
         $(document).on('click', '.upgrade-btn', function() {
             var planType = $(this).data('plan');
             var planId = $(this).data('id');
@@ -192,7 +193,28 @@
             $('#plan_name').text(planType + " Plan");
             $('#plan_amount').text(planAmount);
 
-            $('#upgradeModal').modal('show');
+            if (planType === "Free plan") {
+                // Automatically upgrade without payment
+                $.ajax({
+                    url: '{{ route('upgrade.free.plan') }}',
+                    type: 'POST',
+                    data: {
+                        _token: '{{ csrf_token() }}',
+                        plan_id: planId,
+                        plan_type: planType
+                    },
+                    success: function(response) {
+                        alert('You have been successfully upgraded to Free Plan.');
+                        location.reload();
+                    },
+                    error: function(error) {
+                        alert('Failed to upgrade to Free Plan.');
+                    }
+                });
+            } else {
+                // Show payment modal for paid plans
+                $('#upgradeModal').modal('show');
+            }
         });
 
         // Handle form submission

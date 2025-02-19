@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\UserFavouriteService;
 use App\Models\Plans;
+use App\Models\Country;
 use Stripe;
 use Illuminate\Support\Facades\Log;
 use App\Models\Booking;
@@ -417,6 +418,50 @@ class ProviderController extends Controller
             return redirect()->back()->with('error', 'Payment failed: ' . $e->getMessage());
         }
     }
+    public function upgradeFreePlan(Request $request)
+    {
+        $request->validate([
+            'plan_id' => 'required|exists:provider_subscriptions,id',
+            'plan_type' => 'required|string',
+        ]);
+    
+        $plan = ProviderSubscription::find($request->plan_id);
+    
+        if ($plan) {
+            $plan->plan_type = $request->plan_type;
+            $plan->amount = 0;
+            $plan->status = 'active';
+            $plan->start_at = now();
+            $plan->end_at = now()->addMonth(); // Example: 1-month free plan
+    
+            if ($plan->save()) {
+                return response()->json(['success' => 'Subscription upgraded to Free Plan successfully.']);
+            }
+        }
+    
+        return response()->json(['error' => 'Subscription upgrade failed.'], 500);
+    }
+    
+   
+        public function getCountries()
+        {
+            $countries = Country::select('id', 'name')->get();
+            return response()->json($countries);
+        }
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
     public function show($id, $withdrawAmount = 0)
 {
     $auth_user = authSession();

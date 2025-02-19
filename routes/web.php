@@ -157,6 +157,10 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
 
     Route::get('stripe', [ProviderController::class, 'stripe'])->name('stripe');
     Route::post('stripe', [ProviderController::class, 'stripePost'])->name('stripe.post');
+
+
+    Route::post('/upgrade/free-plan', [ProviderController::class, 'upgradeFreePlan'])->name('upgrade.free.plan');
+
     Route::post('provider-save-slot', [ProviderSlotController::class, 'store'])->name('providerslot.store');
     Route::group(['middleware' => ['permission:provider list']], function () {
         Route::resource('provider', ProviderController::class);
@@ -553,3 +557,6 @@ Route::get('myprovider-index-data',[ProviderController::class,'myindex_data'])->
 
 //Route::get('/get-subcategories', [CategoryController::class, 'getSubcategories'])->name('get-subcategories');
 Route::get('get-subcategories', 'CategoryController@getSubcategories')->name('get-subcategories');
+
+
+Route::get('/countries', [ProviderController::class, 'getCountries']);
