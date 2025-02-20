@@ -42,6 +42,7 @@ class PostJobRequestDetailResource extends JsonResource
             'country_id'       => $this->country_id,
             'city_id'          => $this->city_id,
             'requirement'      => $this->requirement,
+            'type'             => $this->type,
             'category_id'       => $this->category_id,
             'subcategory_id'     => $this->subcategory_id,
             'customer_id'       => $this->customer_id,
