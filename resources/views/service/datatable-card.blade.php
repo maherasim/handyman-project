@@ -151,7 +151,7 @@
                    <a href="#">(1 {{ __('messages.reviews') }})</a>
                </div>
                
-
+<br>
                <strong class="ml-3">{{ $completedBookingCount }} Bookings</strong>
            </div>
 
