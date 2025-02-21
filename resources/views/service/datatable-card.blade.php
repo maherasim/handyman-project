@@ -141,21 +141,18 @@
 
      
       
-         <div class="d-flex align-items-center ">
-            <div class="d-flex align-items-center ">
-               <div class="d-flex align-items-center gap-2 flex-wrap ml-2">
-                   <div class="star-rating">
-                       <rating-component :readonly="true" :showrating="false" :ratingvalue="1" />
-                   </div>
-                   <h6 class="lh-sm">1</h6>
-                   <a href="#">(1 {{ __('messages.reviews') }})</a>
-               </div>
-               
-<br>
-               <strong class="ml-3">{{ $completedBookingCount }} Bookings</strong>
-           </div>
+<div class="d-flex align-items-center">
+   <div class="d-flex align-items-center gap-2 flex-wrap">
+       <div class="star-rating">
+           <rating-component :readonly="true" :showrating="false" :ratingvalue="1" />
+       </div>
+       <h6 class="lh-sm">1</h6>
+       <a href="#">(1 {{ __('messages.reviews') }})</a>
+   </div>
 
-        </div>
+   <strong class="px-3">{{ $completedBookingCount }} Bookings</strong>
+</div>
+
       
          
         
