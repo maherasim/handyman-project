@@ -112,7 +112,7 @@
    <a href="{{ route('service.detail', $data->id) }}"
       class="service-heading mt-2 d-block p-0">
       <h5 class="service-heading text-capitalize"    style="font-size:15px">
-        <b>{{ Str::words($data->name, 3, '') }}</b> 
+        <b>{{  $data->name }}</b> 
          </h5>
   </a>
   
