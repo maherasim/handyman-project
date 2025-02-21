@@ -236,7 +236,13 @@
                     </p> 
                     <p class="mt-0 mb-3">
                         <h5>{{ __('Languages') }}</h5>
-                        {{ $providerData['data']['Languages'] }}
+                        @if (!empty($providerData['data']['languages']) && is_array($providerData['data']['languages'])) 
+        <span class="text-white">
+            {{ implode(', ', $providerData['data']['languages']) }}
+        </span>
+    @else
+        <span class="text-white">{{ __('messages.language') }}</span>
+    @endif
                     </p>
                     <p class="mt-0 mb-3">
                         <h5>{{ __('Education') }}</h5>
