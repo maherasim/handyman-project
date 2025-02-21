@@ -98,7 +98,14 @@
    @if($data->price==0)
    <li class="text-primary fw-500 d-inline-block position-relative font-size-18">Free</li>
    @else
-<li  class="text-white fw-500 d-inline-block position-relative font-size-18" @if($col) style="font-size:16px !important" @endif>{{ getPriceFormat($data->price) }} / {{ $data->type }}</li></div>
+   <li class="text-white fw-500 d-inline-block position-relative font-size-18" 
+   @if(isset($col) && $col) style="font-size:16px !important" @endif>
+   {{ getPriceFormat($data->price) }} / {{ $data->type }}
+</li>
+
+
+
+</div>
 
 </ul>
    @endif 
@@ -145,7 +152,7 @@
                </div>
                
 
-               <strong>{{ $completedBookingCount }} Bookings</strong>
+               <strong class="ml-3">{{ $completedBookingCount }} Bookings</strong>
            </div>
 
         </div>
