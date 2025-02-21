@@ -231,7 +231,8 @@
                     </p>
                     <p class="mt-0 mb-3">
                         <h5>{{ __('Experince') }}</h5>
-                        {{ $providerData['data']['{{ $providerData['data']['experience'] }}'] }}
+                        {{ $providerData['data']['experience'] }}
+                       
                     </p>
                     <p class="mt-0 mb-3">
                         <h5>{{ __('Languages') }}</h5>
@@ -245,7 +246,8 @@
                     </p>
                     <p class="mt-0 mb-3">
                         <h5>{{ __('Education') }}</h5>
-                        {{ $providerData['data']['{{ $providerData['data']['education'] }}'] }}
+                        {{ $providerData['data']['education'] }}
+                        
                     </p>
 
 
