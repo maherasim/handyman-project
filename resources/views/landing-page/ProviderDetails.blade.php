@@ -216,17 +216,17 @@
                     {{ $providerData['data']['experience'] }}
 
                     </p>
-                   
-                    <p class="mt-0 mb-3">
-                    <h5>{{ __('Education') }}</h5>
-                    {{ $providerData['data']['education'] }}
-
-                    </p>
                     <p class="mt-0 mb-3">
                         <h5>{{ __('Mobility') }}</h5>
                         {{ $providerData['data']['mobility'] }}
     
                         </p>
+                    <p class="mt-0 mb-3">
+                    <h5>{{ __('Education') }}</h5>
+                    {{ $providerData['data']['education'] }}
+
+                    </p>
+                  
     
                         <p class="mt-0 mb-3">
                             <h5>{{ __('Certificate') }}</h5>

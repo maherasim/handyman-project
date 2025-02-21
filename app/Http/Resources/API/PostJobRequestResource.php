@@ -34,6 +34,7 @@ class PostJobRequestResource extends JsonResource
             'provider_id'       => $this->provider_id,
             'customer_id'       => $this->customer_id,
             'status'            => $this->status,
+            'type'            => $this->type,
             'start_date'        => $this->start_date,
             'end_date'          => $this->end_date,
             'total_hours'       => $this->total_hours,
