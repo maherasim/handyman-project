@@ -190,29 +190,9 @@
                                                     @endif
                                                 </td>
                                             </tr>
+                                          
 
-
-                                            <tr>
-                                                <td class="px-0">
-                                                    <h6 class="text-white m-0 lh-base">Mobility:</h6>
-                                                </td>
-                                                <td class=" pe-0">
-
-                                                    <span class="text-white">
-                                                        {{ $providerData['data']['mobility'] }}</span>
-                                                </td>
-                                            </tr>
-
-                                            <tr>
-                                                <td class="px-0">
-                                                    <h6 class="text-white m-0 lh-base">Certificate:</h6>
-                                                </td>
-                                                <td class=" pe-0">
-
-                                                    <span class="text-white">
-                                                        {{ $providerData['data']['certification'] }}</span>
-                                                </td>
-                                            </tr>
+                                             
                                         </tbody>
                                     </table>
                                 </div>
@@ -241,8 +221,17 @@
                     {{ $providerData['data']['education'] }}
 
                     </p>
-
-
+                    <p class="mt-0 mb-3">
+                        <h5>{{ __('Mobility') }}</h5>
+                        {{ $providerData['data']['mobility'] }}
+    
+                        </p>
+    
+                        <p class="mt-0 mb-3">
+                            <h5>{{ __('Certificate') }}</h5>
+                            {{ $providerData['data']['certification'] }}
+        
+                            </p>
 
 
 
