@@ -2,20 +2,18 @@
 
 
 @section('content')
-<style>
-.table {
-    table-layout: fixed;
-    width: 100%;
-}
+    <style>
+        .table {
+            table-layout: fixed;
+            width: 100%;
+        }
 
-.table td {
-    overflow-wrap: break-word;
-    word-wrap: break-word;
-    white-space: normal;
-}
-
-
-</style>
+        .table td {
+            overflow-wrap: break-word;
+            word-wrap: break-word;
+            white-space: normal;
+        }
+    </style>
     <div class="section-padding position-relative px-0">
         <div class="container">
             <div class="row">
@@ -30,10 +28,11 @@
                                 <img src="{{ $providerData['data']['profile_image'] }}" alt="provider"
                                     class="avatar-180 img-fluid rounded-circle object-cover border border-5 border-white bg-primary-subtle">
                                 <div class="d-flex align-items-center justify-content-center gap-2 mt-3">
-                                    <img src="{{ asset('images/icon/freeicon.jpg') }}" alt="icon" style="width: 14%; height: 23%;">
+                                    <img src="{{ asset('images/icon/freeicon.jpg') }}" alt="icon"
+                                        style="width: 14%; height: 23%;">
                                     <h5 class="m-0 text-white text-capitalize">{{ $providerData['data']['display_name'] }}
                                     </h5>
-                                   
+
                                     <span class="text-primary">
                                         @php
                                             $providerDocuments = $providerData['document_detail'] ?? null;
@@ -59,7 +58,8 @@
                                             @endforeach
                                         @endif
                                     </span>
-                                    <img src="{{ asset('images/icon/verified.jpg') }}" alt="icon"style="width: 14%; height: 23%; margin-right: 10px;">
+                                    <img src="{{ asset('images/icon/verified.jpg') }}"
+                                        alt="icon"style="width: 14%; height: 23%; margin-right: 10px;">
                                 </div>
                                 <div class="d-flex align-items-center justify-content-center gap-1 mt-2">
                                     <div>
@@ -86,12 +86,13 @@
                                     @endif
                                 @endif
                                 <div class="table-responsive mt-5" style="overflow-x: auto;">
- 
-                                    <table class="table table-borderless text-start mb-0" style="table-layout: fixed; width: 100%;">
 
-                                   
+                                    <table class="table table-borderless text-start mb-0"
+                                        style="table-layout: fixed; width: 100%;">
+
+
                                         <tbody>
-                                            
+
                                             <tr class="px-0">
                                                 <img src="" style="width: 110px;" alt="">
                                             </tr>
@@ -159,12 +160,12 @@
                                                         {{ $providerData['data']['designation'] }}</span>
                                                 </td>
                                             </tr>
-                                            <tr> 
+                                            <tr>
                                                 <td class="px-0">
-                                                    <h6 class="text-white m-0 lh-base">Language:</h6> 
+                                                    <h6 class="text-white m-0 lh-base">Language:</h6>
                                                 </td>
                                                 <td class=" pe-0">
-                                                    @if (isset($providerData['data']['languages']) && is_array($providerData['data']['languages'])) 
+                                                    @if (isset($providerData['data']['languages']) && is_array($providerData['data']['languages']))
                                                         <span class="text-white">
                                                             {{ implode(', ', $providerData['data']['languages']) }}
                                                         </span>
@@ -173,7 +174,7 @@
                                                     @endif
                                                 </td>
                                             </tr>
-                                            
+
 
                                             <tr>
                                                 <td class="px-0">
@@ -189,8 +190,8 @@
                                                     @endif
                                                 </td>
                                             </tr>
-                                            
-                                             
+
+
                                             <tr>
                                                 <td class="px-0">
                                                     <h6 class="text-white m-0 lh-base">Mobility:</h6>
@@ -201,7 +202,7 @@
                                                         {{ $providerData['data']['mobility'] }}</span>
                                                 </td>
                                             </tr>
-                                            
+
                                             <tr>
                                                 <td class="px-0">
                                                     <h6 class="text-white m-0 lh-base">Certificate:</h6>
@@ -222,32 +223,23 @@
                 <div class="col-lg-8 mt-lg-0 mt-5">
                     <h3 class="text-capitalize mb-3">{{ __('landingpage.provider_personal_info') }}</h3>
                     <p class="mt-0 mb-3">
-                        <h5>{{ __('About Me') }}</h5>
-                        {{ $providerData['data']['about_me'] }}
+                    <h5>{{ __('About Me') }}</h5>
+                    {{ $providerData['data']['about_me'] }}
                     </p>
                     <p class="mt-0 mb-3">
-                        <h5>{{ __('Skills') }}</h5>
-                        {{ $providerData['data']['skills'] }}
+                    <h5>{{ __('Skills') }}</h5>
+                    {{ $providerData['data']['skills'] }}
                     </p>
                     <p class="mt-0 mb-3">
-                        <h5>{{ __('Experince') }}</h5>
-                        {{ $providerData['data']['experience'] }}
-                       
-                    </p> 
-                    <p class="mt-0 mb-3">
-                        <h5>{{ __('Languages') }}</h5>
-                        @if (!empty($providerData['data']['languages']) && is_array($providerData['data']['languages'])) 
-        <span class="text-white">
-            {{ implode(', ', $providerData['data']['languages']) }}
-        </span>
-    @else
-        <span class="text-white">{{ __('messages.language') }}</span>
-    @endif
+                    <h5>{{ __('Experince') }}</h5>
+                    {{ $providerData['data']['experience'] }}
+
                     </p>
+                   
                     <p class="mt-0 mb-3">
-                        <h5>{{ __('Education') }}</h5>
-                        {{ $providerData['data']['education'] }}
-                        
+                    <h5>{{ __('Education') }}</h5>
+                    {{ $providerData['data']['education'] }}
+
                     </p>
 
 
@@ -269,11 +261,12 @@
                                     href="{{ route('service.list', ['provider_id' => $providerData['data']['id']]) }}">{{ __('messages.view_all') }}</a>
                             </div>
                         </div>
-                        <remote-service-page link="{{ route('category-detail-service.data', ['provider_id' => $providerData['data']['id'], 'limit' => 3]) }}"></remote-service-page>
+                        <remote-service-page
+                            link="{{ route('category-detail-service.data', ['provider_id' => $providerData['data']['id'], 'limit' => 3]) }}"></remote-service-page>
 
                         <!-- <service-list-section :user_id="{{ json_encode($auth_user_id) }}"
-                            :service="{{ json_encode($providerData['service']) }}" :is_provider_detail={{ true }}
-                            :max_records="6" :favourite="{{ json_encode($favourite) }}"></service-list-section> -->
+                                :service="{{ json_encode($providerData['service']) }}" :is_provider_detail={{ true }}
+                                :max_records="6" :favourite="{{ json_encode($favourite) }}"></service-list-section> -->
                     @endif
 
                     <div class="row align-items-center mb-5 mt-5">
