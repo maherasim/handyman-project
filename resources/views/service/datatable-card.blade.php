@@ -116,9 +116,10 @@
          </h5>
   </a>
   
-  <p class="mt-0 mb-0" style="font-size: 12;  ">
-   {{ $data->city ? $data->city->name : 'City' }}-{{ $data->country ? $data->country->name : 'Country' }}
-</p>  
+  <h5  class="mt-0 mb-0 text-truncate" style="font-size: 12;">
+   <span style="font-size: 12px;"> {{ $data->city ? $data->city->name : 'City' }}-{{ $data->country ? $data->country->name : 'Country' }}</span>
+  
+  </h5>  
 
   
 <div class="d-flex align-items-center justify-content-between w-100">
