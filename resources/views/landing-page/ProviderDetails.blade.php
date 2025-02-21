@@ -159,7 +159,20 @@
                                                         {{ $providerData['data']['designation'] }}</span>
                                                 </td>
                                             </tr>
-                                            
+                                            <tr> 
+                                                <td class="px-0">
+                                                    <h6 class="text-white m-0 lh-base">Language:</h6> 
+                                                </td>
+                                                <td class=" pe-0">
+                                                    @if (isset($providerData['data']['languages']) && is_array($providerData['data']['languages'])) 
+                                                        <span class="text-white">
+                                                            {{ implode(', ', $providerData['data']['languages']) }}
+                                                        </span>
+                                                    @else
+                                                        <span class="text-white">{{ __('messages.language') }}</span>
+                                                    @endif
+                                                </td>
+                                            </tr>
                                             
 
                                             <tr>
@@ -220,16 +233,10 @@
                         <h5>{{ __('Experince') }}</h5>
                         {{ $providerData['data']['experience'] }}
                        
-                    </p>
+                    </p> 
                     <p class="mt-0 mb-3">
                         <h5>{{ __('Languages') }}</h5>
-                        @if (isset($providerData['data']['languages']) && is_array($providerData['data']['languages'])) 
-                        <span class="text-white">
-                            {{ implode(', ', $providerData['data']['languages']) }}
-                        </span>
-                    @else
-                        <span class="text-white">{{ __('messages.language') }}</span>
-                    @endif
+                        {{ $providerData['data']['Languages'] }}
                     </p>
                     <p class="mt-0 mb-3">
                         <h5>{{ __('Education') }}</h5>
