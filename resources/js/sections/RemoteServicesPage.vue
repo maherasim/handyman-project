@@ -9,7 +9,7 @@
   </template>
 
   <script setup>
-  import ServiceCard from '../components/ServiceCard.vue';
+  import ServiceCard from '../components/RemoteServiceCard.vue';
   import ServiceShimmer from '../shimmer/ServiceShimmer.vue';
   import { computed, onMounted, ref, watch } from 'vue';
   import { useSection } from '../store/index';

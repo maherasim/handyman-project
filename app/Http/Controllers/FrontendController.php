@@ -411,7 +411,9 @@ class FrontendController extends Controller
                 ->where('status', 'completed')
                 ->count();
 
-            return view('service.datatable-card', compact('data', 'totalReviews', 'totalRating', 'favouriteService', 'completedBookingCount'));
+            $col = 3;
+
+            return view('service.datatable-card', compact('data', 'totalReviews', 'totalRating', 'favouriteService', 'completedBookingCount', 'col'));
         })
         ->order(function ($query) {
             $query->orderBy('id', 'desc');

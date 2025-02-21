@@ -49,7 +49,7 @@
      <h5 class="service-title font-size-18 line-count-2">{{title }}</h5>
    </a>
    <ul class="list-inline p-0 mt-1 mb-0 price-content">
-    <li class="text-primary fw-500 d-inline-block position-relative font-size-18">
+    <li class="text-primary fw-500 d-inline-block position-relative" style="font-size: 16px">
         <span v-if="price>0">{{ formatCurrencyVue(price) }} <span v-if="discount && discount > 0"> ({{ discount }}% off)</span></span>
         <span v-else>Free</span>
     </li>

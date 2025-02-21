@@ -29,12 +29,15 @@ const useDataTable = ({ tableRef, columns, data = [], url = null, actionCallback
           if (tableRef.value.id === 'helpdesk-datatable') {
             // Add the specific classes if the condition is met
             $(tableRef.value).find('tbody').addClass('row row-cols-xl-3 row-cols-lg-3 row-cols-sm-2');
-          }else if (tableRef.value.id === 'remote-service-datatable') {
+          }
+          else if (tableRef.value.id === 'remote-service-datatable') {
             // Add the specific classes if the condition is met
-            $(tableRef.value).find('tbody').addClass('row row-cols-sm-2');
+            // $(tableRef.value).find('tbody').addClass('row row-cols-sm-2');
+            $(tableRef.value).find('tbody').addClass('row row-cols-lg-3 row-cols-sm-2');
             $('#remote-service-datatable_paginate').hide();
             $('#remote-service-datatable_length').hide();
-          } else {
+          }
+           else {
             // Optional: Add a different class or handle other cases
             $(tableRef.value).find('tbody').addClass('row row-cols-xl-4 row-cols-lg-3 row-cols-sm-2');
           }
