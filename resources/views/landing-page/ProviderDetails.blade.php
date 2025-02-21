@@ -189,15 +189,7 @@
                                                     @endif
                                                 </td>
                                             </tr>
-                                            <tr>
-                                                <td class="px-0">
-                                                    <h6 class="text-white m-0 lh-base">Skills:</h6>
-                                                </td>
-                                                <td class=" pe-0">
-
-                                                    <span class="text-white"> {{ $providerData['data']['skills'] }}</span>
-                                                </td>
-                                            </tr>
+                                            
                                             <tr>
                                                 <td class="px-0">
                                                     <h6 class="text-white m-0 lh-base">Experince:</h6>
@@ -251,7 +243,10 @@
                         <h5>{{ __('About Me') }}</h5>
                         {{ $providerData['data']['about_me'] }}
                     </p>
-
+                    <p class="mt-0 mb-3">
+                        <h5>{{ __('About Me') }}</h5>
+                        {{ $providerData['data']['skills'] }}
+                    </p>
 
                     @if (!empty($providerData['service']))
                         <div class="row align-items-center pt-3 mb-5">
