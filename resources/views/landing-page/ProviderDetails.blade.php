@@ -202,10 +202,11 @@
                 </div>
                 <div class="col-lg-8 mt-lg-0 mt-5">
                     <h3 class="text-capitalize mb-3">{{ __('landingpage.provider_personal_info') }}</h3>
-                    <p class="mt-0 mb-3">
-                    <h5>{{ __('About Me') }}</h5>
-                    {{ $providerData['data']['about_me'] }}
-                    </p>
+                    <div class="mt-0 mb-3">
+                        <h5>{{ __('About Me') }}</h5>
+                        {!! $providerData['data']['about_me'] !!}
+                    </div>
+                    
                     <p class="mt-0 mb-3">
                     <h5>{{ __('Skills') }}</h5>
                     {{ $providerData['data']['skills'] }}
