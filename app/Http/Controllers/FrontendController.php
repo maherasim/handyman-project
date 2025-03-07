@@ -649,7 +649,7 @@ class FrontendController extends Controller
     {
         // Use 'with' to eager-load the relationships, including 'postBidList'
         $jobrequest = PostJobRequest::with(['city', 'country', 'provider', 'postBidList'])->find($id);
-    
+   // dd(  $jobrequest);
         if (!$jobrequest) {
             abort(404); // Return 404 if the job doesn't exist
         }
