@@ -75,7 +75,7 @@ class FrontendController extends Controller
         // ->count();
         $servicerequest = Service::whereIn('id', $servicerequest)
 
-    ->with(['serviceRating']) // Assuming a serviceRating relationship exists
+->with(['serviceRating']) // Assuming a serviceRating relationship exists
     ->get()
     ->map(function ($service) {
         $ratings = BookingRating::where('service_id', $service->id)->pluck('rating')->toArray();
@@ -84,6 +84,10 @@ class FrontendController extends Controller
 
         $service->total_reviews = $totalReviews;
         $service->avg_rating = round($avgRating, 1);
+
+        $service->booking_count = Booking::where('service_id', $service->id)
+        ->where('status', 'completed') // Only count completed bookings
+        ->count();
 
         return $service;
     });
