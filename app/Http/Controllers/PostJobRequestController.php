@@ -182,12 +182,12 @@ class PostJobRequestController extends Controller
     public function store(Request $request)
     {
         $data = $request->all();
-        $data['customer_id'] = $request->customer_id ?? auth()->id();
+        $data['customer_id'] = $request->customer_id ?? auth()->user()->id;
     
         // ✅ Handle single image upload
         if ($request->hasFile('image')) {
             $image = $request->file('image'); // Get the file (not an array)
-            
+    
             if (is_array($image)) {
                 $image = $image[0]; // If mistakenly sent as an array, get the first one
             }
@@ -197,11 +197,50 @@ class PostJobRequestController extends Controller
             $data['image'] = $path; // Save file path in the database
         }
     
+        // ✅ Handle multiple image uploads (if needed)
+        if ($request->hasFile('images')) { // Assuming multiple images are sent as 'images' key
+            $imagePaths = [];
+    
+            foreach ($request->file('images') as $img) {
+                $filename = time() . '_' . $img->getClientOriginalName(); // Unique filename
+                $path = $img->storeAs('images', $filename, 'public');
+                $imagePaths[] = $path;
+            }
+    
+            $data['images'] = json_encode($imagePaths, JSON_UNESCAPED_SLASHES); // Store array in DB
+        }
+    
+        // ✅ Handle pre-uploaded image (if sent as a string)
+        if ($request->has('image') && is_string($request->image)) {
+            $data['image'] = $request->image;
+        }
+    
         $result = PostJobRequest::updateOrCreate(['id' => $request->id], $data);
     
-        return redirect()->back()->withSuccess('Job request saved successfully!');
-    }
+        // ✅ Send notification
+        $this->sendNotification([
+            'activity_type' => $request->status == 'assigned' ? 'user_accept_bid' : 'job_requested',
+            'post_job_id' => $result->id,
+            'customer_name' => optional($result->customer)->display_name,
+            'provider_name' => optional($result->provider)->display_name,
+            'latitude' => $data['latitude'] ?? 0.0,
+            'longitude' => $data['longitude'] ?? 0.0,
+        ]);
     
+        // ✅ Handle services
+        $result->postServiceMapping()->delete();
+        if ($request->has('service_id') && is_array($request->service_id)) {
+            $services = array_map(fn($service) => ['post_request_id' => $result->id, 'service_id' => $service], $request->service_id);
+            $result->postServiceMapping()->insert($services);
+        }
+    
+        $message = $result->wasRecentlyCreated ? __('messages.save_form', ['form' => __('messages.postrequest')]) 
+                                               : __('messages.update_form', ['form' => __('messages.postrequest')]);
+    
+        return $request->is('api/*') 
+            ? comman_message_response($message) 
+            : redirect(route('post-job-request.index'))->withSuccess($message);
+    }
     
     
 
