@@ -653,10 +653,10 @@
                                             <div class="star-rating">
                                                 <rating-component :readonly="true" :showrating="false" :ratingvalue="1" />
                                             </div>
-                                            <h6 class="lh-sm mb-0">1</h6>
-                                            <a href="#">(1 {{ __('messages.reviews') }})</a>
+                                            <h6 class="lh-sm mb-0">{{  $data->avg_rating }}</h6>
+                                            <a href="#">({{  $data->total_reviews }} {{ __('messages.reviews') }})</a>
                                         </div>
-                                        <p class="mb-0">{{ $completedBookingCount }} Bookings</p>
+                                        <p class="mb-0">{{ $data->booking_count }} Bookings</p>
                                     </div>
 
 

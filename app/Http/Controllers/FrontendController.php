@@ -109,6 +109,10 @@ class FrontendController extends Controller
             $service->total_reviews = $totalReviews;
             $service->avg_rating = round($avgRating, 1);
 
+            $service->booking_count = Booking::where('service_id', $service->id)
+                                        ->where('status', 'completed') // Only count completed bookings
+                                        ->count();
+
             return $service;
         });
         // Featured Service List
