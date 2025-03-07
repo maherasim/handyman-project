@@ -61,12 +61,13 @@ class PostJobRequest extends Model
         {
             return $this->belongsTo(SubCategory::class,'subcategory_id','id');
         }
-        public function country()
-        {
-            return $this->belongsTo(Country::class);
+        public function country(){
+            return $this->belongsTo(Country::class, 'country_id','id');
         }
-        public function city()
-        {
-            return $this->belongsTo(City::class);
+        public function state(){
+            return $this->belongsTo(State::class, 'state_id','id');
+        }
+        public function city(){
+            return $this->belongsTo(City::class, 'city_id','id');
         }
 }

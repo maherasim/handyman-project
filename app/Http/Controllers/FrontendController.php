@@ -808,7 +808,8 @@ class FrontendController extends Controller
     public function jobDatatable(Request $request) 
     {
         // Initialize the query builder
-        $query = PostJobRequest::query();
+        $query = PostJobRequest::with(['country', 'city']);
+
     
         // Apply filters based on request input
         if ($request->has('category_id') && $request->category_id != 'Filter by Category') {

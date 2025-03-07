@@ -167,13 +167,8 @@
                                  </div>
                                  <!-- Location -->
                                  <h5 class="mt-0 mb-0 text-truncate">
-                                     <span style="font-size: 12px;">
-                                         @if ($jobRequest->city && $jobRequest->country)
-                                             {{ $jobRequest->city->name }} - {{ $jobRequest->country->name }}
-                                         @else
-                                             N/A
-                                         @endif
-                                     </span>
+                                    <span style="font-size: 12px;"> {{ $jobRequest->city ? $jobRequest->city->name : 'City' }}-{{ $jobRequest->country ? $jobRequest->country->name : 'Country' }}</span>
+
                                  </h5>
                                  <!-- Published Info -->
                                  <p class="mb-0" style="font-weight: 60;">Published at:
