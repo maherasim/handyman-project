@@ -45,7 +45,38 @@
                                         </span>
                                         <span class="text-danger">{{ errors.date }}</span>
                                   </div>
-                                
+                                  <div class="col-12">
+                                      <label class="form-label">Date And Time</label>
+                                      <div class="input-group icon-left custom-form-field flex-nowrap">
+                                          <span class="input-group-text flex-shrink-0" id="dateandtime">
+                                              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="17" viewBox="0 0 16 17" fill="none">
+                                                  <path d="M1.32031 6.5531H14.6883" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                                                  <path d="M11.3322 9.4823H11.3392" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                                                  <path d="M8.00408 9.4823H8.01103" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                                                  <path d="M4.66815 9.4823H4.67509" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                                                  <path d="M11.3322 12.3971H11.3392" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                                                  <path d="M8.00408 12.3971H8.01103" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                                                  <path d="M4.66815 12.3971H4.67509" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                                                  <path d="M11.0329 1V3.46809" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                                                  <path d="M4.97435 1V3.46809" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                                                  <path fill-rule="evenodd" clip-rule="evenodd" d="M11.1787 2.18433H4.82822C2.6257 2.18433 1.25 3.41128 1.25 5.6666V12.4538C1.25 14.7446 2.6257 15.9999 4.82822 15.9999H11.1718C13.3812 15.9999 14.75 14.7659 14.75 12.5106V5.6666C14.7569 3.41128 13.3882 2.18433 11.1787 2.18433Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                                              </svg>
+                                          </span>
+                                          <flat-pickr
+                                                v-model="date"
+                                                :config="config"
+                                                class="form-control"
+                                                placeholder="Select date and time"
+                                                name="date" />
+                                      </div>
+      
+                                      <span v-if="errorMessages['date']">
+                                          <ul class="text-danger">
+                                            <li v-for="err in errorMessages['date']" :key="err">{{ err }}</li>
+                                          </ul>
+                                        </span>
+                                        <span class="text-danger">{{ errors.date }}</span>
+                                  </div>
                                   <div class="col-12 mt-5">
                                       <label class="form-label">location</label>
                                       <div class="input-group icon-left custom-form-field">
@@ -75,7 +106,7 @@
                                         <span class="text-danger">{{ errors.address }}</span>
 
                                         <div>
-                                            <a @click="getCurrentLocation" class="btn btn-primary mt-5">Get Current Location</a>
+                                            <a @click="getCurrentLocation" class="btn btn-primary mt-5">Get Current riaz Location</a>
                                         </div>
                                   </div>
                               </div>

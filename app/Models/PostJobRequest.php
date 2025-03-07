@@ -21,6 +21,7 @@ class PostJobRequest extends Model
         'provider_id'  => 'integer',
         'price' => 'double',
         'job_price' => 'double',
+        'image' => 'array',
     ];
     public function postServiceMapping(){
         return $this->hasMany(PostJobServiceMapping::class, 'post_request_id','id');

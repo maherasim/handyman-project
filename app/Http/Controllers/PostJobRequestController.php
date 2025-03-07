@@ -182,57 +182,79 @@ class PostJobRequestController extends Controller
     public function store(Request $request)
     {
         $data = $request->all();
-        $data['customer_id'] =  !empty($request->customer_id) ? $request->customer_id : auth()->user()->id;
-
+        $data['customer_id'] = !empty($request->customer_id) ? $request->customer_id : auth()->user()->id;
+    
+        // ✅ Handle multiple image uploads
+        if ($request->hasFile('image')) {
+            $imageFilenames = []; // Array to store image filenames
+    
+            foreach ($request->file('image') as $image) {
+                $filename = time() . '.' . $image->getClientOriginalExtension(); // Generate unique filename
+                $image->storeAs('images', $filename); // Store image in storage/app/images
+                $imageFilenames[] = $filename; // Store only filename in DB
+            }
+    
+            $data['image'] = json_encode($imageFilenames, JSON_UNESCAPED_SLASHES); // Store array in DB
+        }
+    
+        // ✅ Handle single image (if sent as a string, already uploaded)
+        if ($request->has('image') && is_string($request->image)) {
+            $data['image'] = $request->image;
+        }
+    
         $result = PostJobRequest::updateOrCreate(['id' => $request->id], $data);
+    
+        // Send notification
         $activity_data = [
             'activity_type' => 'job_requested',
             'post_job_id' => $result->id,
             'post_job' => $result,
-            'latitude' =>isset($data['latitude']) ? $data['latitude'] : 0.0,
+            'latitude' => isset($data['latitude']) ? $data['latitude'] : 0.0,
             'longitude' => isset($data['longitude']) ? $data['longitude'] : 0.0,
         ];
         $this->sendNotification($activity_data);
-
-         if($result->postServiceMapping()->count() > 0)
-        {
+    
+        // Handle services
+        if ($result->postServiceMapping()->count() > 0) {
             $result->postServiceMapping()->delete();
         }
-        if ($request->has('service_id')) {
-            if (is_array($request->service_id)) {
-                foreach ($request->service_id as $service) {
-                    $post_services = [
-                        'post_request_id' => $result->id,
-                        'service_id' => $service,
-                    ];
-                    $result->postServiceMapping()->insert($post_services);
-                }
+    
+        if ($request->has('service_id') && is_array($request->service_id)) {
+            foreach ($request->service_id as $service) {
+                $post_services = [
+                    'post_request_id' => $result->id,
+                    'service_id' => $service,
+                ];
+                $result->postServiceMapping()->insert($post_services);
             }
         }
-        if($request->status == 'assigned'){
+    
+        // Handle bid assignment
+        if ($request->status == 'assigned') {
             $activity_data = [
                 'activity_type' => 'user_accept_bid',
                 'post_job_id' => $result->id,
                 'post_job' => $result,
                 'customer_name' => optional($result->customer)->display_name ?? null,
                 'provider_name' => optional($result->provider)->display_name ?? null,
-                'latitude' =>isset($data['latitude']) ? $data['latitude'] : 0.0,
+                'latitude' => isset($data['latitude']) ? $data['latitude'] : 0.0,
                 'longitude' => isset($data['longitude']) ? $data['longitude'] : 0.0,
             ];
             $this->sendNotification($activity_data);
-
         }
-        $message = __('messages.update_form',[ 'form' => __('messages.postrequest') ] );
-		if($result->wasRecentlyCreated){
-			$message = __('messages.save_form',[ 'form' => __('messages.postrequest') ] );
-		}
-
-        if($request->is('api/*')) {
+    
+        $message = __('messages.update_form', ['form' => __('messages.postrequest')]);
+        if ($result->wasRecentlyCreated) {
+            $message = __('messages.save_form', ['form' => __('messages.postrequest')]);
+        }
+    
+        if ($request->is('api/*')) {
             return comman_message_response($message);
-		}
-
-		return redirect(route('post-job-request.index'))->withSuccess($message);
+        }
+    
+        return redirect(route('post-job-request.index'))->withSuccess($message);
     }
+    
 
     /**
      * Display the specified resource.
