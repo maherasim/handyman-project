@@ -157,7 +157,6 @@
          
         
       <div class="d-flex align-items-center gap-1 f-none">
-         <!-- @if($totalRating > 0) -->
          <svg xmlns=" " width="12" height="12" viewBox="0 0 12 12" fill="none"
             class="service-rating">
             <path
@@ -165,12 +164,9 @@
                fill="currentColor" />
          </svg>
          <h6 class="font-size-14">{{ round($totalRating, 1) }}
-            @if($totalReviews>1)
+           
               <a href="{{ route('rating.all', ['service_id' => $data->id]) }}" class="text-body ms-1">({{$totalReviews }} {{__('messages.reviews')}})</a></h6>
-            @else
-              <a href="{{ route('rating.all', ['service_id' => $data->id]) }}" class="text-body ms-1">({{$totalReviews }} {{__('messages.review')}})</a></h6>
-            @endif
-         <!-- @endif -->
+          
 
          <strong class="px-3">{{ $completedBookingCount }} Bookings</strong>
       </div>  
