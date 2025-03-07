@@ -12,8 +12,29 @@
                         {{ optional($jobrequest->city)->name ?? 'N/A' }} - {{ optional($jobrequest->country)->name ?? 'N/A' }}
                     </b></p>
                 </div>
-                <img src="https://noorhantrdg.com/wp-content/uploads/2021/10/mechanic-changing-engine-oil-car-vehicle-1-1.jpg" alt="" class="img-fluid" style="border-radius: 12px;">
-                <img src="https://noorhantrdg.com/wp-content/uploads/2021/10/mechanic-changing-engine-oil-car-vehicle-1-1.jpg" style="width: 100px; border-radius: 10px;" class="mt-3" alt="">
+                @if(!empty($jobRequest->image))
+                <img src="{{ asset('storage/' . $jobRequest->image) }}" 
+                     alt="Job Image" 
+                     class="img-fluid" 
+                     style="border-radius: 12px;">
+                     
+                <img src="{{ asset('storage/' . $jobRequest->image) }}" 
+                     style="width: 100px; border-radius: 10px;" 
+                     class="mt-3" 
+                     alt="Job Image">
+            @else
+                <img src="{{ asset('images/post-job/ac_refresh_and_revive.png') }}" 
+                     alt="Default Image" 
+                     class="img-fluid" 
+                     style="border-radius: 12px;">
+                     
+                <img src="{{ asset('images/post-job/ac_refresh_and_revive.png') }}" 
+                     style="width: 100px; border-radius: 10px;" 
+                     class="mt-3" 
+                     alt="Default Image">
+            @endif
+            
+               
                 <div>
                     <br>
                    

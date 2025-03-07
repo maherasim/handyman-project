@@ -142,10 +142,16 @@
                              style="position: relative; background: #FAF9FF; border-radius: 10px; height: 400px; display: flex; flex-direction: column; ">
                              <!-- Card Image -->
                              <div class="card-imgd" style="position: relative;">
-                                 <img class="card-img-top"
-                                     src="{{ asset('images/post-job/ac_refresh_and_revive.png') }}"
-                                     alt="Card image cap"
+                                @if(!empty($jobRequest->image))
+                                <img src="{{ asset('storage/' . $jobRequest->image) }}" alt="Job Image"
                                      style="border-radius: 10px; width: 100%; height: 200px; object-fit: cover;">
+                            @else
+                                <img class="card-img-top" 
+                                     src="{{ asset('images/post-job/ac_refresh_and_revive.png') }}"
+                                     alt="Default Image"
+                                     style="border-radius: 10px; width: 100%; height: 200px; object-fit: cover;">
+                            @endif
+                            
                                  <!-- Price Overlay -->
                                  <div
                                      style="position: absolute; bottom: -20px; left: 50%; transform: translateX(-50%); width:68%; background-image: url('{{ asset('images/icon/banner2.jpg') }}'); background-size: cover; background-repeat: no-repeat; background-position: center; padding: 10px 20px; color: #fff; font-weight: 600; font-size: 18px; border-radius: 10px; border: 3px solid #E1DCDD;">
