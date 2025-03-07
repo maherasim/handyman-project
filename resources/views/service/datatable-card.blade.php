@@ -142,23 +142,22 @@
 
      
       
-<div class="d-flex align-items-center">
-   <div class="d-flex align-items-center gap-2 flex-wrap">
+<!-- <div class="d-flex align-items-center"> -->
+   <!-- <div class="d-flex align-items-center gap-2 flex-wrap">
        <div class="star-rating">
            <rating-component :readonly="true" :showrating="false" :ratingvalue="1" />
        </div>
-       <h6 class="lh-sm">1</h6>
-       <a href="#">(1 {{ __('messages.reviews') }})</a>
-   </div>
+       <h6 class="lh-sm">{{ round($totalRating, 1) }}</h6>
+       <a href="#">({{ $totalReviews }} {{ __('messages.reviews') }})</a>
+   </div> -->
 
-   <strong class="px-3">{{ $completedBookingCount }} Bookings</strong>
-</div>
+<!-- </div> -->
 
       
          
         
       <div class="d-flex align-items-center gap-1 f-none">
-         @if($totalRating > 0)
+         <!-- @if($totalRating > 0) -->
          <svg xmlns=" " width="12" height="12" viewBox="0 0 12 12" fill="none"
             class="service-rating">
             <path
@@ -171,7 +170,9 @@
             @else
               <a href="{{ route('rating.all', ['service_id' => $data->id]) }}" class="text-body ms-1">({{$totalReviews }} {{__('messages.review')}})</a></h6>
             @endif
-         @endif
+         <!-- @endif -->
+
+         <strong class="px-3">{{ $completedBookingCount }} Bookings</strong>
       </div>  
       <div class="d-flex" style="gap: 14px; justify-content: center;">
          <a href="#"><img

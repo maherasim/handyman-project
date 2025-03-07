@@ -40,11 +40,11 @@
 
 
           <div class="col-sm-2 mt-sm-0 mt-3">
-            <select ref="providerDropdownRef" id="providerDropdown" v-model="selectedProvider"
+            <select ref="cityDropdownRef" id="cityDropdown" v-model="selectedCity"
               class="me-5 form-select select2" :disabled="isEmpty">
               <option value="">{{ $t('Filter by City') }}</option>
-              <option v-for="providers in provider_data" :key="providers.id" :value="providers.id">{{
-                providers.first_name }}</option>
+              <option v-for="city in cities" :key="city.id" :value="city.id">{{
+                city.name }}</option>
             </select>
           </div>
 
@@ -84,13 +84,22 @@ const CURRENCY_SYMBOL = ref(window.defaultCurrencySymbol)
 
 const categoryDropdownRef = ref(null);
 const providerDropdownRef = ref(null);
+const countryDropdownRef = ref(null);
+const cityDropdownRef = ref(null);
 const priceDropdownRef = ref(null);
 const sortOptionRef = ref(null);
 const props = defineProps(['link', 'isEmpty', 'service']);
 
 const isEmpty = props.isEmpty;
 const countries = ref([]);
+const cities = ref([]);
+
 const selectedCountry = ref('');
+watch(() => selectedCountry.value, () => ajaxReload())
+
+const selectedCity = ref('');
+watch(() => selectedCity.value, () => ajaxReload())
+
 const selectedCategory = ref('')
 watch(() => selectedCategory.value, () => ajaxReload())
 
@@ -122,6 +131,8 @@ useDataTable({
     return {
       selectedCategory: selectedCategory.value,
       selectedProvider: selectedProvider.value,
+      selectedCountry: selectedCountry.value,
+      selectedCity: selectedCity.value,
       selectedPriceRange: selectedPriceRange.value,
       selectedSortOption: selectedSortOption.value,
       search: search.value,
@@ -171,6 +182,8 @@ const loadFeaturedCategoryData = () => {
 onMounted(() => {
   $(categoryDropdownRef.value).select2();
   $(providerDropdownRef.value).select2();
+  $(countryDropdownRef.value).select2();
+  $(cityDropdownRef.value).select2();
   $(priceDropdownRef.value).select2();
   $(sortOptionRef.value).select2();
 
@@ -180,6 +193,15 @@ onMounted(() => {
   $(providerDropdownRef.value).on('change', function () {
     selectedProvider.value = $(this).val();
   });
+
+  $(countryDropdownRef.value).on('change', function () {
+    selectedCountry.value = $(this).val();
+    loadCities($(this).val());
+  });
+  $(cityDropdownRef.value).on('change', function () {
+    selectedCity.value = $(this).val();
+  });
+
   $(priceDropdownRef.value).on('change', function () {
     selectedPriceRange.value = $(this).val();
   });
@@ -198,6 +220,8 @@ onMounted(() => {
 const refreshDropdowns = () => {
   $(categoryDropdownRef.value).val('').trigger('change');
   $(providerDropdownRef.value).val('').trigger('change');
+  $(countryDropdownRef.value).val('').trigger('change');
+  $(cityDropdownRef.value).val('').trigger('change');
   $(priceDropdownRef.value).val('').trigger('change');
   $(sortOptionRef.value).val('').trigger('change');
 }
@@ -209,8 +233,16 @@ const loadCountries = async () => {
     console.error('Error loading countries:', error);
   }
 };
+const loadCities = async (country_id) => {
+  try {
+    const response = await fetch('/cities?country_id=' + country_id);
+    cities.value = await response.json();
+  } catch (error) {
+    console.error('Error loading cities:', error);
+  }
+};
 const checkDropdowns = computed(() => {
-  return selectedCategory.value || selectedProvider.value || selectedPriceRange.value || selectedSortOption.value
+  return selectedCategory.value || selectedProvider.value || selectedPriceRange.value || selectedSortOption.value || selectedCountry.value || selectedCity.value
 });
 
 const clearSearch = () => {

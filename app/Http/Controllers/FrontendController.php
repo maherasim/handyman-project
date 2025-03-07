@@ -901,6 +901,13 @@ class FrontendController extends Controller
         if (isset($filter['selectedProvider'])) {
             $query->where('provider_id', $filter['selectedProvider']);
         }
+        
+        if (isset($filter['selectedCountry'])) {
+            $query->where('country_id', $filter['selectedCountry']);
+        }
+        if (isset($filter['selectedCity'])) {
+            $query->where('city_id', $filter['selectedCity']);
+        }
         if (isset($filter['selectedPriceRange'])) {
             $priceRange = explode('-', $filter['selectedPriceRange']);
             if (count($priceRange) === 2) {

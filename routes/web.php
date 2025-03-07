@@ -560,3 +560,4 @@ Route::get('get-subcategories', 'CategoryController@getSubcategories')->name('ge
 
 
 Route::get('/countries', [ProviderController::class, 'getCountries']);
+Route::get('/cities', [ProviderController::class, 'getcitiesBaseOnCountry']);
