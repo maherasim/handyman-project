@@ -38,6 +38,7 @@ class ServiceResource extends JsonResource
             'discount'      => $this->discount,
             'duration'      => $this->duration,
             'status'        => $this->status,
+            'cancellation_policy'        => $this->cancellation_policy,
             'description'   => $this->description,
             'is_featured'   => $this->is_featured,
             'provider_name' => optional($this->providers)->display_name,

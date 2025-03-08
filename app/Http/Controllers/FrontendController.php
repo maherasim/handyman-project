@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use App\Models\Category;
 use App\Models\SubCategory;
 use App\Models\Service;
+use App\Models\ProviderSubscription;
 use App\Models\Country;
 use App\Models\City;
 use App\Models\User;
@@ -444,38 +445,69 @@ class FrontendController extends Controller
         return view('landing-page.blog-detail', compact('blog', 'blog_data'));
     }
 
-    public function providerDetail(Request $request){
+ 
+    
+    public function providerDetail(Request $request) {
         $provider_id = $request->id;
         $userController = app(UserController::class);
         $apiRequest = new Request(['id' => $provider_id]);
         $providerData = $userController->userDetail($apiRequest);
         $providerData = json_decode($providerData->content(), true);
         $why_choose_me = json_decode($providerData['data']['why_choose_me'], true);
-
-        $sitesetup = Setting::where('type','site-setup')->where('key', 'site-setup')->first();
+    
+        $sitesetup = Setting::where('type', 'site-setup')->where('key', 'site-setup')->first();
         $datetime = json_decode($sitesetup->value);
-
-        $completed_services = Booking::where('provider_id', $providerData['data']['id'])->where('status', 'completed')->count();
-
-        $servicerating = Service::where('provider_id', $providerData['data']['id'])->with('serviceRating')->get();
+    
+        $completed_services = Booking::where('provider_id', $providerData['data']['id'])
+            ->where('status', 'completed')
+            ->count();
+    
+        $servicerating = Service::where('provider_id', $providerData['data']['id'])
+            ->with('serviceRating')
+            ->get();
+    
         $allRatings = $servicerating->flatMap(function ($service) {
-            return $service->serviceRating->filter(function ($rating){
-                return in_array($rating->rating, [4,5]);
+            return $service->serviceRating->filter(function ($rating) {
+                return in_array($rating->rating, [4, 5]);
             });
         });
+    
         $satisfy_customers = $allRatings->pluck('customer_id')->unique()->count();
+    
+        if (!empty(auth()->user()) && auth()->user()->hasRole('user')) {
+            $auth_user_id = auth()->user()->id;
+            $favourite = UserFavouriteService::where('user_id', $auth_user_id)->get();
+        } else {
+            $auth_user_id = null;
+            $favourite = null;
+        }
+   // dd($provider_id);
+        // Fetch provider subscription
+        $subscription = ProviderSubscription::where('user_id', (int) $provider_id)->first();
 
-        if(!empty(auth()->user()) && auth()->user()->hasRole('user')){
-            $auth_user_id=auth()->user()->id;
-            $favourite = UserFavouriteService::where('user_id',$auth_user_id)->get();
-         }
-         else{
-            $auth_user_id=null;
-            $favourite=null;
-         }
-
-        return view('landing-page.ProviderDetails', compact('providerData','why_choose_me','datetime','completed_services','satisfy_customers','auth_user_id','favourite'));
+   // dd(  $subscription);
+        // Determine image path based on subscription
+        $imagePath = 'images/icon/freeicon.jpg'; // Default free icon
+        if ($subscription) {
+            if (trim($subscription->plan_type) === 'Silver plan') {
+                $imagePath = 'images/icon/silver.jpg';
+            } elseif ($subscription->plan_type === 'Gold plan') {
+                $imagePath = 'images/icon/gold.jpg';
+            }
+        }
+ // dd( $imagePath);  
+        return view('landing-page.ProviderDetails', compact(
+            'providerData',
+            'why_choose_me',
+            'datetime',
+            'completed_services',
+            'satisfy_customers',
+            'auth_user_id',
+            'favourite',
+            'imagePath'
+        ));
     }
+    
 
     public function handymanDetail(Request $request){
         $handyman_id = $request->id;

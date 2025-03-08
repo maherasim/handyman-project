@@ -248,7 +248,7 @@
                                                 class="btn btn-lg btn-primary continue-button">{{ __('messages.continue') }}({{ getPriceFormat($total) }})</a>
                                         @else
                                             <a href="{{ route('user.login', ['service_id' => $serviceData['service_detail']['id']]) }}"
-                                                class="btn btn-lg btn-primary">{{ __('messages.continue') }}({{ getPriceFormat($total) }})</a>
+                                                class="btn btn-lg btn-primary">{{ __('messages.continue asd') }}({{ getPriceFormat($total) }})</a>
                                         @endif
                                     </div>
                                 </div>
@@ -466,12 +466,10 @@
                         <div class="d-flex align-items-center justify-content-between gap-3 mb-3">
                             <div class="div">
                                 {{-- <h5 class="font-size-14 m-0">{{$serviceData['service_detail']['name']}}</h5> --}}
-                                @if ($serviceData['service_detail']['price'] == 0)
-                                    <h4 class="mt-2 text-primary">Free</h4>
-                                @else
+                                
                                     <h4 class="mt-2 text-primary">
-                                        {{ getPriceFormat($serviceData['service_detail']['price']) }}</h4>
-                                @endif
+                                        {{ getPriceFormat($serviceData['service_detail']['price']) }} / {{ $serviceData['service_detail']['type'] }}</h4>
+                             
                             </div>
                             <div class="flex-shrink-0">
                                 @if (auth()->check() && auth()->user()->hasRole('user'))
