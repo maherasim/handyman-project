@@ -95,7 +95,7 @@ const countries = ref([]);
 const cities = ref([]);
 
 const selectedCountry = ref('');
-watch(() => selectedCountry.value, () => ajaxReload())
+// watch(() => selectedCountry.value, () => ajaxReload())
 
 const selectedCity = ref('');
 watch(() => selectedCity.value, () => ajaxReload())
@@ -242,7 +242,7 @@ const loadCities = async (country_id) => {
   }
 };
 const checkDropdowns = computed(() => {
-  return selectedCategory.value || selectedProvider.value || selectedPriceRange.value || selectedSortOption.value || selectedCountry.value || selectedCity.value
+  return selectedCategory.value || selectedProvider.value || selectedPriceRange.value || selectedSortOption.value || selectedCity.value
 });
 
 const clearSearch = () => {

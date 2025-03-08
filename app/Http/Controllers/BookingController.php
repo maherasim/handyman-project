@@ -470,6 +470,9 @@ class BookingController extends Controller
             $data['tax'] = json_encode($request->tax);
         }
 
+        $data['start_at'] = $request->start_at;
+        $data['end_at'] = $request->end_at;
+
         if ($request->coupon_id != null) {
             $coupons = Coupon::with('serviceAdded')->where('code', $request->coupon_id)
                 ->where('expire_date', '>', date('Y-m-d H:i'))->where('status', 1)

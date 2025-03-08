@@ -161,4 +161,6 @@
   'admin_login' => 'Admin Portal',
   'total_cancellation_fee' => 'Total cancellation fee',
   'based_book_service' => 'Based on your booked service',
+  'start_date_time'=> 'Start Date Time',
+  'end_date_time' => 'End Date Time'
 );

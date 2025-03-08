@@ -195,8 +195,64 @@
       
                                   </div>
                                   
-                                  <div v-else class="col-sm-6">
-                                      <label class="form-label">{{ $t('landingpage.date_time') }}</label>
+                                  <div v-else class="col-sm-12">
+                                   
+  <div class="row">
+    <!-- Start Date & Time -->
+    <div class="col-sm-6">
+      <label class="form-label">{{ $t('landingpage.start_date_time') }}</label>
+      <div class="input-group icon-left custom-form-field flex-nowrap">
+        <span class="input-group-text flex-shrink-0">
+          📅
+        </span>
+        <flat-pickr
+          v-model="startDateTime"
+          :config="config"
+          class="form-control"
+          placeholder="Select start date and time"
+          name="start_at"
+          @change="calculateDuration"
+        />
+      </div>
+      <span v-if="errorMessages['startDateTime']">
+        <ul class="text-danger">
+          <li v-for="err in errorMessages['startDateTime']" :key="err">{{ err }}</li>
+        </ul>
+      </span>
+    </div>
+
+    <!-- End Date & Time -->
+    <div class="col-sm-6">
+      <label class="form-label">{{ $t('landingpage.end_date_time') }}</label>
+      <div class="input-group icon-left custom-form-field flex-nowrap">
+        <span class="input-group-text flex-shrink-0">
+          📅
+        </span>
+        <flat-pickr
+          v-model="endDateTime"
+          :config="config"
+          class="form-control"
+          placeholder="Select end date and time"
+          name="end_at"
+          @change="calculateDuration"
+        />
+      </div>
+      <span v-if="errorMessages['endDateTime']">
+        <ul class="text-danger">
+          <li v-for="err in errorMessages['endDateTime']" :key="err">{{ err }}</li>
+        </ul>
+      </span>
+    </div>
+
+    <!-- Display Total Duration -->
+    <div class="col-sm-12 mt-3">
+      <p class="fw-bold">
+        Total Duration: {{ totalDays }} Days, {{ totalHours }} Hours
+      </p>
+    </div>
+  </div>
+
+                                      <!-- <label class="form-label">{{ $t('landingpage.date_time') }}</label>
                                       <div class="input-group icon-left custom-form-field flex-nowrap">
                                           <span class="input-group-text flex-shrink-0" id="dateandtime">
                                               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="17" viewBox="0 0 16 17" fill="none">
@@ -225,7 +281,7 @@
                                             <li v-for="err in errorMessages['date']" :key="err">{{ err }}</li>
                                           </ul>
                                         </span>
-                                        <span class="text-danger">{{ errors.date }}</span>
+                                        <span class="text-danger">{{ errors.date }}</span> -->
                                   </div>
                                 
       
@@ -448,6 +504,8 @@ const maxDate = computed(() => {
     return props.service.end_at ? new Date(props.service.end_at) : null;
 });
 
+
+
 // Flatpickr configuration
 const config = {
     enableTime: true, // if you want to allow time selection
@@ -476,8 +534,34 @@ const closeModal = () =>{
   is_tax.value = 0;
 }
 
+// Reactive Data
+const startDateTime = ref(null);
+const endDateTime = ref(null);
+const totalDays = ref(0);
+const totalHours = ref(0);
+
+// Function to Calculate Duration
+const calculateDuration = () => {
+  if (startDateTime.value && endDateTime.value) {
+    let start = moment(startDateTime.value);
+    let end = moment(endDateTime.value);
+
+    if (end.isBefore(start)) {
+      totalDays.value = 0;
+      totalHours.value = 0;
+      alert("End date must be after start date");
+    } else {
+      let duration = moment.duration(end.diff(start));
+      totalDays.value = Math.floor(duration.asDays());
+      totalHours.value = Math.floor(duration.asHours()) % 24;
+    }
+  }
+};
 
 onMounted(() => {
+  // startDate.value = new Date();
+  // endDate.value = new Date();
+  calculateDuration();
 
     defaultData()
     handleDateSelect(new Date())
@@ -747,6 +831,8 @@ const defaultData = () => {
   errorMessages.value = {}
   return {
     address: '',
+    start_at: '',
+    end_at: '',
     date: new Date(),
     start_time:''
   }
@@ -755,36 +841,38 @@ const defaultData = () => {
 
 const validationSchema = yup.object({
     address: yup.string().required('Address is Required'),
+    start_at: yup.string().required('Start Date and Time is Required'),
+    start_at: yup.string().required('End Date and Time is Required'),
 
-    date: yup.string().test('date', "Date and Time is Required", function(value) {
-        const { service } = props;
+  //   date: yup.string().test('date', "Date and Time is Required", function(value) {
+  //       const { service } = props;
 
-        // If service is not using slots and the date is empty, throw validation error
-        if (service.is_slot != 1 && !value) {
-            return false;
-        }
+  //       // If service is not using slots and the date is empty, throw validation error
+  //       if (service.is_slot != 1 && !value) {
+  //           return false;
+  //       }
 
-        // If end_at exists, ensure the selected date is before or equal to end_at
-        if (service.end_at) {
-            const selectedDate = new Date(value); // Parse the value into a JavaScript Date object
-            const endDate = new Date(service.end_at);
+  //       // If end_at exists, ensure the selected date is before or equal to end_at
+  //       if (service.end_at) {
+  //           const selectedDate = new Date(value); // Parse the value into a JavaScript Date object
+  //           const endDate = new Date(service.end_at);
 
-            if (selectedDate > endDate) {
-                return this.createError({ message: 'Selected date exceeds the allowed package end date' });
-            }
-        }
+  //           if (selectedDate > endDate) {
+  //               return this.createError({ message: 'Selected date exceeds the allowed package end date' });
+  //           }
+  //       }
 
-        return true;
-    }),
+  //       return true;
+  //   }),
 
-   start_time: yup.string().test('start_time', "Please Select Time Slot", function(value) {
+  //  start_time: yup.string().test('start_time', "Please Select Time Slot", function(value) {
        
-       if(props.service.is_slot == 1 && !value  ) {
+  //      if(props.service.is_slot == 1 && !value  ) {
            
-          return false ;
-         }
-         return true;
-      }),
+  //         return false ;
+  //        }
+  //        return true;
+  //     }),
    
 })
 
@@ -794,6 +882,8 @@ const { handleSubmit, errors, resetForm,setValues } = useForm({
 const { value: address } = useField('address')
 const { value: date } = useField('date')
 const { value: start_time } = useField('start_time')
+const { value: start_at } = useField('start_at')
+const { value: end_at } = useField('end_at')
 const isLoading = ref(false); 
 const getCurrentLocation = async () => {
   isLoading.value = true;
@@ -874,6 +964,8 @@ const formSubmit = handleSubmit(async(values) => {
     values.final_discount_amount = discount.value;
     values.tax =props.taxes;
     values.status = 'pending';
+    values.start_at = startDateTime.value;
+    values.end_at = endDateTime.value
 
     if (props.service.package_type) {
       values.booking_package = {
