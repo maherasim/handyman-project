@@ -622,9 +622,11 @@
 
                         <img src="{{ asset('images/framed_image.png') }}" alt="" class="d-flex m-auto" style="width: 154px;height:100px">
                         <div class="d-flex align-items-center  mt-2 justify-content-evenly">
-                            <img src="{{ asset('images/plans/icon.jpg') }}" alt="icon"
-                                style="width: 15%; height: 70%; margin-right: 10px;">
+                            
                                 
+                                <img src="{{ asset('images/icon/verified.jpg') }}" alt="icon"
+          style="width: 15%; height: 70%; margin-right: 10px;">
+
 
                                 <div class="d-flex align-items-center gap-2 flex-wrap">
                                     <div class="star-rating">
@@ -639,9 +641,9 @@
 
 
                                 
-                                <img
-                                src="{{ asset('images/plans/icon.jpg') }}" alt="icon"
-                                style="width: 15%; height: 8%">
+                                
+                                <img src="{{ asset('images/icon/freeicon.jpg') }}" alt="icon" style="width: 15%; height: 8%;">
+
 
                         </div>
 
