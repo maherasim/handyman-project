@@ -248,7 +248,7 @@
                                                 class="btn btn-lg btn-primary continue-button">{{ __('messages.continue') }}({{ getPriceFormat($total) }})</a>
                                         @else
                                             <a href="{{ route('user.login', ['service_id' => $serviceData['service_detail']['id']]) }}"
-                                                class="btn btn-lg btn-primary">{{ __('messages.continue asd') }}({{ getPriceFormat($total) }})</a>
+                                                class="btn btn-lg btn-primary">{{ __('messages.continue') }}({{ getPriceFormat($total) }})</a>
                                         @endif
                                     </div>
                                 </div>
