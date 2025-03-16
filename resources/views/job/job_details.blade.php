@@ -68,8 +68,9 @@
                     </p>
 
                     <hr>
-                    <button id="fullDescription" class="btn btn-cont text-white col-md-12"
-                        style="background: #5F60BA; padding: 10px;">Continue</button>
+                    <button id="continueBtn" class="btn btn-cont text-white col-md-12"
+                    style="background: #5F60BA; padding: 10px;">Continue</button>
+                
                     <div class="d-flex align-items-center justify-content-center gap-3 mt-3 mb-3">
                         <a href="#">
                             <img src="https://cdn.pixabay.com/photo/2021/06/15/12/51/facebook-6338507_1280.png"
@@ -165,4 +166,17 @@
                 });
             });
         </script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const continueBtn = document.getElementById('continueBtn');
+        
+                continueBtn.addEventListener('click', function () {
+                    window.scrollTo({
+                        top: document.body.scrollHeight,
+                        behavior: 'smooth' // Enables smooth scrolling
+                    });
+                });
+            });
+        </script>
+        
     @endsection
