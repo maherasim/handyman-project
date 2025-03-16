@@ -73,7 +73,9 @@
   <h6 class="text-primary text-capitalize mt-2 line-count-1">{{ $data->designation }}</h6>
   <p class="mt-0 mb-0" style="font-size: 12;  ">
       <div>
-          {{ $data->city->name }} -{{ $data->country->name }}
+        {{ $data->city->name ?? '' }} - {{ $data->country->name ?? '' }}
+
+
       </p>
   
 </div>
