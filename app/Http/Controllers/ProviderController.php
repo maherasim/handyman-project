@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\UserFavouriteService;
 use App\Models\Plans;
+use App\Models\City;
 use App\Models\Country;
 use Stripe;
 use Illuminate\Support\Facades\Log;
@@ -47,6 +48,21 @@ class ProviderController extends Controller
         $list_status = $request->status;
         return view('provider.index', compact('list_status','pageTitle','auth_user','assets','filter'));
     }
+    public function getCitiesBaseOnCountry(Request $request)
+{
+    $country_id = $request->query('country_id');
+
+    if (!$country_id) {
+        return response()->json(['error' => 'Country ID is required'], 400);
+    }
+
+    $cities = City::where('country_id', $country_id)
+                  ->select('id', 'name')
+                  ->get();
+
+    return response()->json($cities);
+}
+
     public function myindex(Request $request)
     {
         $filter = [
