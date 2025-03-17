@@ -620,12 +620,17 @@
     </h3>            
 </div>
 
-                        <img src="{{ asset('images/framed_image.png') }}" alt="" class="d-flex m-auto" style="width: 154px;height:100px">
+                        {{-- <img src="{{ asset('images/frame_img.jpg') }}" alt="" class="d-flex m-auto" style="width: 164px;height:140px"> --}}
+                        <div class="position-relative d-flex m-auto" style="width: 164px; height: 140px;">
+                            <img src="{{ asset('images/frame_img.jpg') }}" alt="Frame" style="width: 100%; height: 100%; position: absolute; z-index: 2;">
+                            <img src="{{ asset($serviceData['provider']['profile_image']) }}" alt="Provider" 
+                                 style="width: 80%; height: 80%; object-fit: cover; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 2;">
+                        </div>
+                        
                         <div class="d-flex align-items-center  mt-2 justify-content-evenly">
-                            
                                 
                                 <img src="{{ asset('images/icon/verified.jpg') }}" alt="icon"
-          style="width: 15%; height: 70%; margin-right: 10px;">
+                                    style="width: 15%; height: 70%; margin-right: 10px;">
 
 
                                 <div class="d-flex align-items-center gap-2 flex-wrap">
