@@ -841,8 +841,7 @@ const defaultData = () => {
 
 const validationSchema = yup.object({
     address: yup.string().required('Address is Required'),
-    start_at: yup.string().required('Start Date and Time is Required'),
-    start_at: yup.string().required('End Date and Time is Required'),
+  
 
   //   date: yup.string().test('date', "Date and Time is Required", function(value) {
   //       const { service } = props;
@@ -881,9 +880,6 @@ const { handleSubmit, errors, resetForm,setValues } = useForm({
 })
 const { value: address } = useField('address')
 const { value: date } = useField('date')
-const { value: start_time } = useField('start_time')
-const { value: start_at } = useField('start_at')
-const { value: end_at } = useField('end_at')
 const isLoading = ref(false); 
 const getCurrentLocation = async () => {
   isLoading.value = true;
