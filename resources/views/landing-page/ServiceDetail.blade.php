@@ -675,8 +675,8 @@
 
                             <li> Availability : {{ $serviceData['provider']['availability'] }} </li>
                             <li>Mobility : {{ $serviceData['provider']['mobility'] }}</li>
-                            <li>Skills : {{ $serviceData['provider']['skills'] }}</li>
-                            <li>Diploma : </li>
+                            <li>Skills : {{ $serviceData['provider']['education'] }}</li>
+                            <li>Diploma : {{ $serviceData['provider']['skills'] }}</li>
                             <li>Skills : {{ $serviceData['provider']['certification'] }}</li>
                             <li>Jobs Completed : {{ $serviceData['provider']['status'] }}</li>
 
