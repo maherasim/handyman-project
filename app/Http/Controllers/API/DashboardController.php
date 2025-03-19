@@ -125,7 +125,17 @@ class DashboardController extends Controller
             $locations = Service::locationService($request->latitude,$request->longitude,$get_distance,$get_unit);
             $service_in_location = ProviderServiceAddressMapping::whereIn('provider_address_id',$locations)->get()->pluck('service_id');
             $featured_service = Service::with('providerServiceAddress')->whereIn('id',$service_in_location)->where('is_featured',1) ->get();
-            $featured_service = ServiceResource::collection($featured_service);
+            $featuredServicePaginated = $featured_service->orderBy('id','desc')->paginate($per_page);
+            $featured_service = ServiceResource::collection($featuredServicePaginated);
+            
+            $featured_service = $featured_service->map(function ($item) {
+                $completedBookingCount = Booking::where('service_id', $item->id)
+                    ->where('status', 'completed')
+                    ->count();
+                $item->completed_booking_count = $completedBookingCount;
+                return $item;
+            });
+            
         }
 
         if($request->has('customer_id') && isset($request->customer_id)){
