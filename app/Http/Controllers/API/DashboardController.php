@@ -74,7 +74,17 @@ class DashboardController extends Controller
                 $a->where('status', 1)->where('is_subscribe',1);
             });
         }
-        $service = ServiceResource::collection($service->orderBy('id','desc')->paginate($per_page));
+        $servicePaginated = $service->orderBy('id','desc')->paginate($per_page);
+        $service = ServiceResource::collection($servicePaginated);
+        
+        $service = $service->map(function ($item) {
+            $completedBookingCount = Booking::where('service_id', $item->id)
+                ->where('status', 'completed')
+                ->count();
+            $item->completed_booking_count = $completedBookingCount;
+            return $item;
+        });
+        
 
         if ($request->has('latitude') && !empty($request->latitude) && $request->has('longitude') && !empty($request->longitude)) {
             $get_distance = getSettingKeyValue('site-setup','radious');
