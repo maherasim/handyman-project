@@ -6,7 +6,7 @@
     @endphp
 
     <div class="section-padding service-detail">
-        <div class="container">
+        <div class="container">          
             <div class="row">
                 <div class="col-lg-8 pe-xxl-5">
                     <h3 class="text-capitalize mb-2">{{ $serviceData['service_detail']['name'] }}</h3>
@@ -37,7 +37,7 @@
                                         <div>
                                             {{ $serviceData['provider']['city']['name'] ?? 'N/A' }} -
                                             {{ $serviceData['provider']['country']['name'] ?? 'N/A' }}
- 
+
                                         </div>
                                     </h6>
                                 </li>
@@ -63,7 +63,7 @@
                             <h5 class="mb-3">{{ __('Minimum Booking') }}</h5>
                             <p class="m-0">
                                 {{ $serviceData['service_detail']['minimum_booking'] }}
-                                
+
                             </p>
                         </div>
                     @endif
@@ -71,10 +71,10 @@
                         <div class="mt-5 pt-lg-5 pt-3">
                             <h5 class="mb-3">{{ __('landingpage.about_service') }}</h5>
                             <p class="m-0">
-                                <div class="m-0">
-                                    {!! $serviceData['service_detail']['description'] !!}
-                                </div>
-                                
+                            <div class="m-0">
+                                {!! $serviceData['service_detail']['description'] !!}
+                            </div>
+
                             </p>
                         </div>
                     @endif
@@ -334,7 +334,7 @@
                         </div>
                     @endif
                     <div class="mt-5 pt-lg-5 pt-3">
-                        <h5 class="mb-3">{{ __('landingpage.about_provider') }}</h5> 
+                        <h5 class="mb-3">{{ __('landingpage.about_provider') }}</h5>
                         <div class="p-5 border rounded-3 about-provider-box">
                             <div
                                 class="mb-4 pb-4 border-bottom d-flex align-items-sm-center aling-items-start flex-sm-row flex-column gap-5">
@@ -452,12 +452,13 @@
                             data-laptop="2" data-tab="2" data-mobile="1" data-mobile-sm="1" data-autoplay="true"
                             data-loop="true" data-navigation="false" data-pagination="false">
 
-                            <remote-service-page link="{{ route('category-detail-service.data', ['id' => $serviceData['service_detail']['category_id'], 'limit' => 3]) }}"></remote-service-page>
+                            <remote-service-page
+                                link="{{ route('category-detail-service.data', ['id' => $serviceData['service_detail']['category_id'], 'limit' => 3]) }}"></remote-service-page>
 
                             <!-- <landing-servicedetailsection-section
-                                :service="{{ json_encode($serviceData['related_service']) }}"
-                                :user_id="{{ $userId }}"
-                                :favourite="{{ json_encode($favouriteServiceData) }}"></landing-servicedetailsection-section> -->
+                                    :service="{{ json_encode($serviceData['related_service']) }}"
+                                    :user_id="{{ $userId }}"
+                                    :favourite="{{ json_encode($favouriteServiceData) }}"></landing-servicedetailsection-section> -->
                         </div>
                     </div>
                 </div>
@@ -466,10 +467,11 @@
                         <div class="d-flex align-items-center justify-content-between gap-3 mb-3">
                             <div class="div">
                                 {{-- <h5 class="font-size-14 m-0">{{$serviceData['service_detail']['name']}}</h5> --}}
-                                
-                                    <h4 class="mt-2 text-primary">
-                                        {{ getPriceFormat($serviceData['service_detail']['price']) }} / {{ $serviceData['service_detail']['type'] }}</h4>
-                             
+
+                                <h4 class="mt-2 text-primary">
+                                    {{ getPriceFormat($serviceData['service_detail']['price']) }} /
+                                    {{ $serviceData['service_detail']['type'] }}</h4>
+
                             </div>
                             <div class="flex-shrink-0">
                                 @if (auth()->check() && auth()->user()->hasRole('user'))
@@ -597,11 +599,11 @@
                             </ul>
                         </div>
                     @endif --}}
-                 
+
 
                     <div class="bg-light   pl-5 pr-5 pb-0 rounded-3 mt-0 pt-0 ">
-                        <div class="service d-flex justify-content-center" 
-     style="position: relative; z-index: 1111; margin: auto; 
+                        <div class="service d-flex justify-content-center"
+                            style="position: relative; z-index: 1111; margin: auto; 
             background-image: url('{{ asset('images/icon/blueicon.jpg') }}'); 
             background-size: cover; 
             width: 60%; 
@@ -613,41 +615,43 @@
             font-weight: 600; 
             font-size: 18px; 
             border: 3px solid #E1DCDD;">
-    <h3 class="fw-200 d-inline-block position-relative"
-        style="color: white; font-size: 12px; font-weight: bold; text-align: center; 
+                            <h3 class="fw-200 d-inline-block position-relative"
+                                style="color: white; font-size: 12px; font-weight: bold; text-align: center; 
                padding: 10px 15px; display: inline-block; width: 90%; margin: auto;">
-        Provider Details
-    </h3>            
-</div>
+                                Provider Details
+                            </h3>
+                        </div>
 
                         {{-- <img src="{{ asset('images/frame_img.jpg') }}" alt="" class="d-flex m-auto" style="width: 164px;height:140px"> --}}
                         <div class="position-relative d-flex m-auto" style="width: 164px; height: 140px;">
-                            <img src="{{ asset('images/frame_img.jpg') }}" alt="Frame" style="width: 100%; height: 100%; position: absolute; z-index: 2;">
-                            <img src="{{ asset($serviceData['provider']['profile_image']) }}" alt="Provider" 
-                                 style="width: 80%; height: 80%; object-fit: cover; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 2;">
+                            <img src="{{ asset('images/frame_img.jpg') }}" alt="Frame"
+                                style="width: 100%; height: 100%; position: absolute; z-index: 2;">
+                            <img src="{{ asset($serviceData['provider']['profile_image']) }}" alt="Provider"
+                                style="width: 80%; height: 80%; object-fit: cover; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 2;">
                         </div>
-                        
+
                         <div class="d-flex align-items-center  mt-2 justify-content-evenly">
-                                
-                                <img src="{{ asset('images/icon/verified.jpg') }}" alt="icon"
-                                    style="width: 15%; height: 70%; margin-right: 10px;">
+
+                            <img src="{{ asset('images/icon/verified.jpg') }}" alt="icon"
+                                style="width: 15%; height: 70%; margin-right: 10px;">
 
 
-                                <div class="d-flex align-items-center gap-2 flex-wrap">
-                                    <div class="star-rating">
-                                        <rating-component :readonly="true" :showrating="false"
-                                            :ratingvalue="{{ $serviceData['provider']['providers_service_rating'] }}" />
-                                    </div>
-                                    <h6 class="lh-sm">
-                                        {{ round($serviceData['provider']['providers_service_rating'], 1) }}</h6><a
-                                        href="{{ route('rating.all', ['provider_id' => $serviceData['provider']['id']]) }}">({{ $serviceData['provider']['total_service_rating'] }}
-                                        {{ __('messages.reviews') }})</a>
+                            <div class="d-flex align-items-center gap-2 flex-wrap">
+                                <div class="star-rating">
+                                    <rating-component :readonly="true" :showrating="false"
+                                        :ratingvalue="{{ $serviceData['provider']['providers_service_rating'] }}" />
                                 </div>
+                                <h6 class="lh-sm">
+                                    {{ round($serviceData['provider']['providers_service_rating'], 1) }}</h6><a
+                                    href="{{ route('rating.all', ['provider_id' => $serviceData['provider']['id']]) }}">({{ $serviceData['provider']['total_service_rating'] }}
+                                    {{ __('messages.reviews') }})</a>
+                            </div>
 
 
-                                
-                                
-                                <img src="{{ asset('images/icon/freeicon.jpg') }}" alt="icon" style="width: 15%; height: 8%;">
+
+
+                            <img src="{{ asset('images/icon/freeicon.jpg') }}" alt="icon"
+                                style="width: 15%; height: 8%;">
 
 
                         </div>
@@ -862,3 +866,10 @@
         });
     </script>
 @endsection
+                                                                                                                                   
+           
+  
+
+
+
+                                                  
