@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Service;
+use App\Models\Booking;
 use App\Models\Coupon;
 use App\Models\BookingRating;
 use App\Models\UserFavouriteService;
@@ -147,8 +148,15 @@ class ServiceController extends Controller
         $service = $service->paginate($per_page);
      
         $items = ServiceResource::collection($service);
-
-
+       
+        $items = $items->map(function ($item) {
+            $completedBookingCount = Booking::where('service_id', $item->id)
+                ->where('status', 'completed')
+                ->count();
+            $item->completed_booking_count = $completedBookingCount;
+            return $item;
+        });
+       
         $userservices  = null;
         if($request->customer_id != null){
             $user_service = Service::where('status',1)->where('added_by',$request->customer_id)->get();
@@ -156,14 +164,15 @@ class ServiceController extends Controller
         }
         $response = [
             'pagination' => [
-                'total_items' => $items->total(),
-                'per_page' => $items->perPage(),
-                'currentPage' => $items->currentPage(),
-                'totalPages' => $items->lastPage(),
-                'from' => $items->firstItem(),
-                'to' => $items->lastItem(),
-                'next_page' => $items->nextPageUrl(),
-                'previous_page' => $items->previousPageUrl(),
+               'total_items' => $service->total(),
+                'per_page' => $service->perPage(),
+                'current_page' => $service->currentPage(),
+                'total_pages' => $service->lastPage(),
+                'from' => $service->firstItem(),
+                'to' => $service->lastItem(),
+                'next_page' => $service->nextPageUrl(),
+                'previous_page' => $service->previousPageUrl(),
+
             ],
             'data' => $items,
             'user_services' => $userservices,

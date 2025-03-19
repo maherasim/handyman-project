@@ -4,6 +4,7 @@ namespace App\Http\Resources\API;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 use App\Models\Setting;
+
 class ServiceResource extends JsonResource
 {
     /**
@@ -16,15 +17,13 @@ class ServiceResource extends JsonResource
     {
         $user_id = auth()->user() ? (request()->customer_id ?? auth()->user()->id) : null;
 
-        $image = getSingleMedia($this,'service_attachment', null);
+        $image = getSingleMedia($this, 'service_attachment', null);
         $file_extention = config('constant.IMAGE_EXTENTIONS');
-        $extention = in_array(strtolower(imageExtention($image)),$file_extention);
+        $extention = in_array(strtolower(imageExtention($image)), $file_extention);
 
-
-        $serviceconfig = Setting::getValueByKey('service-configurations','service-configurations');
+        $serviceconfig = Setting::getValueByKey('service-configurations', 'service-configurations');
         $advancePaymentPercentage = $serviceconfig->advance_paynment_percantage ?? 0;
         $global_advance_payment = $serviceconfig->global_advance_payment ?? 0;
-
 
         return [
             'id'            => $this->id,
@@ -38,28 +37,34 @@ class ServiceResource extends JsonResource
             'discount'      => $this->discount,
             'duration'      => $this->duration,
             'status'        => $this->status,
-            'cancellation_policy'        => $this->cancellation_policy,
+            'cancellation_policy' => $this->cancellation_policy,
             'description'   => $this->description,
             'is_featured'   => $this->is_featured,
             'provider_name' => optional($this->providers)->display_name,
-            'provider_image' => optional($this->providers)->login_type != null ?  optional($this->providers)->social_image : getSingleMedia(optional($this->providers), 'profile_image',null),
+            'provider_image' => optional($this->providers)->login_type != null 
+                ? optional($this->providers)->social_image 
+                : getSingleMedia(optional($this->providers), 'profile_image', null),
             'city_id' => optional($this->providers)->city_id,
             'category_name'  => optional($this->category)->name,
             'subcategory_name'  => optional($this->subcategory)->name,
             'attchments' => getAttachments($this->getMedia('service_attachment')),
-            'attchments_array' => getAttachmentArray($this->getMedia('service_attachment'),null),
-            'total_review'  => $this->serviceRating->count('id'),
-            'total_rating'  => count($this->serviceRating) > 0 ? (float) number_format(max($this->serviceRating->avg('rating'),0), 2) : 0,
-            'is_favourite'  => $this->getUserFavouriteService->where('user_id',$user_id)->first() ? 1 : 0,
+            'attchments_array' => getAttachmentArray($this->getMedia('service_attachment'), null),
+            'total_review'  => count($this->serviceRating),
+            'total_rating'  => count($this->serviceRating) > 0 
+                ? (float) number_format(max($this->serviceRating->avg('rating'), 0), 2) 
+                : 0,
+            'is_favourite'  => $this->getUserFavouriteService->where('user_id', $user_id)->first() ? 1 : 0,
             'service_address_mapping' => $this->providerServiceAddress,
-            'attchment_extension' => $extention, //true:for png false: other
+            'attchment_extension' => $extention, // true: for png, false: other
             'deleted_at'        => $this->deleted_at,
             'is_slot'           => $this->is_slot,
-            'slots'              => getServiceTimeSlot($this->provider_id ),
-            'total_review' => count($this->serviceRating),
-            'visit_type'           => $this->visit_type,
-            'is_enable_advance_payment' => $this->is_enable_advance_payment ? $this->is_enable_advance_payment : $global_advance_payment ,
-            'advance_payment_amount' => $this->is_enable_advance_payment ? ($this->advance_payment_amount === null ? 0 : (double) $this->advance_payment_amount) : (double) $advancePaymentPercentage,
+            'slots'             => getServiceTimeSlot($this->provider_id),
+            'visit_type'        => $this->visit_type,
+            'is_enable_advance_payment' => $this->is_enable_advance_payment ? $this->is_enable_advance_payment : $global_advance_payment,
+            'advance_payment_amount' => $this->is_enable_advance_payment 
+                ? ($this->advance_payment_amount === null ? 0 : (double) $this->advance_payment_amount) 
+                : (double) $advancePaymentPercentage,
+            'completed_booking_count' => $this->completed_booking_count ?? 0, // ✅ Added this line
         ];
     }
 }
