@@ -27,125 +27,133 @@ use App\Models\Tax;
 
 class ServiceController extends Controller
 {
-    public function getServiceList(Request $request)
-    {
-        $service = Service::where('service_type', 'service')
-            ->with(['providers', 'category', 'serviceRating'])
-            ->orderBy('created_at', 'desc');
-    
-        $category = Category::onlyTrashed()->pluck('id');
-        $service = $service->whereNotIn('category_id', $category);
-    
-        if (auth()->user() !== null && auth()->user()->hasRole('admin')) {
+    public function getServiceList(Request $request){
+
+        $service = Service::where('service_type','service')->with(['providers','category','serviceRating'])->orderBy('created_at','desc');
+        $category = Category::onlyTrashed()->get();
+        $category = $category->pluck('id');
+        $service = $service->whereNotIn('category_id',$category);
+        
+        
+        if(auth()->user() !== null && auth()->user()->hasRole('admin')){
             $service = $service->withTrashed();
-        } elseif (auth()->user() !== null && auth()->user()->hasRole('provider')) {
+        }elseif(auth()->user() !== null && auth()->user()->hasRole('provider')){
             $service = $service;
-        } else {
-            $service = $service->where('status', 1);
+        }else{
+            $service =$service->where('status',1);
         }
-    
-        if ($request->has('status')) {
-            $service->where('status', $request->status);
+        if($request->has('status') && isset($request->status)){
+            $service->where('status',$request->status);
         }
-        if ($request->has('provider_id')) {
-            $service->where('provider_id', $request->provider_id);
+        
+        if($request->has('provider_id')){
+            $service->where('provider_id',$request->provider_id);        
         }
-        if ($request->has('category_id') && $request->category_id != 'null') {
-            $service->where('category_id', $request->category_id);
+        
+        if($request->has('category_id') && $request->category_id != 'null'){
+            $service->where('category_id',$request->category_id);
         }
-        if ($request->has('subcategory_id') && $request->subcategory_id != '') {
-            $service->whereIn('subcategory_id', explode(',', $request->subcategory_id));
+        if($request->has('subcategory_id') && $request->subcategory_id != ''){
+            $service->whereIn('subcategory_id',explode(',',$request->subcategory_id));
         }
-        if ($request->has('is_featured')) {
-            $service->where('is_featured', $request->is_featured);
+        if($request->has('is_featured')){
+            $service->where('is_featured',$request->is_featured);
         }
-        if ($request->has('is_discount')) {
-            $service->where('discount', '>', 0)->orderBy('discount', 'desc');
+        if($request->has('is_discount')){
+            $service->where('discount','>',0)->orderBy('discount','desc');
         }
-    
-        if ($request->has('is_rating') && $request->is_rating != '') {
+        if($request->has('is_rating') && $request->is_rating != '') {
             $isRating = (int) $request->is_rating;
-    
-            $service->whereHas('serviceRating', function ($q) use ($isRating) {
+        
+            $service->whereHas('serviceRating', function($q) use ($isRating) {
                 $q->select('service_id', \DB::raw('round(AVG(rating), 1) as total_rating'))
-                    ->groupBy('service_id')
-                    ->havingRaw('total_rating >= ? AND total_rating < ?', [$isRating, $isRating + 1]);
+                  ->groupBy('service_id')
+                  ->havingRaw('total_rating >= ? AND total_rating < ?', [$isRating, $isRating + 1]);
+                return $q;
             });
         }
-    
-        if ($request->has('is_price_min') || $request->has('is_price_max')) {
-            $service->whereBetween('price', [$request->is_price_min, $request->is_price_max]);
+
+
+        if($request->has('is_price_min') && $request->is_price_min != '' || $request->has('is_price_max') && $request->is_price_max != ''){
+            $service->whereBetween('price', [$request->is_price_min, $request->is_price_max]); 
         }
-    
         if ($request->has('city_id')) {
             $service->whereHas('providers', function ($a) use ($request) {
                 $a->where('city_id', $request->city_id);
             });
         }
-    
-        if ($request->has('provider_id') && $request->provider_id != '') {
-            $service->whereHas('providers', function ($a) {
+        
+        if($request->has('provider_id') && $request->provider_id != '' ){
+       
+            $service->whereHas('providers', function ($a) use ($request) {
                 $a->where('status', 1);
             });
-    
-            if (default_earning_type() === 'subscription') {
-                $service->whereHas('providers', function ($a) {
-                    $a->where('status', 1)->where('is_subscribe', 1);
-                });
+
+            if(default_earning_type() === 'subscription'){
+             
+                 $service->whereHas('providers', function ($a) use ($request) {
+                     $a->where('status', 1)->where('is_subscribe',1);
+                 });
+                   
+             }
+
+        }else{
+            if(default_earning_type() === 'subscription'){
+               if(auth()->user() !== null && !auth()->user()->hasRole('admin')){
+                    $service->whereHas('providers', function ($a) use ($request) {
+                        $a->where('status', 1)->where('is_subscribe',1);
+                    });
+               }else{
+                    $service->whereHas('providers', function ($a) use ($request) {
+                        $a->where('status', 1)->where('is_subscribe',1);
+                    });
+               }
+                
             }
-        } else {
-            if (default_earning_type() === 'subscription') {
-                $service->whereHas('providers', function ($a) {
-                    $a->where('status', 1)->where('is_subscribe', 1);
-                });
-            }
         }
-    
-        if ($request->has('latitude') && $request->has('longitude')) {
-            $get_distance = getSettingKeyValue('site-setup', 'radious');
-            $get_unit = getSettingKeyValue('site-setup', 'distance_type');
-    
-            $locations = $service->locationService($request->latitude, $request->longitude, $get_distance, $get_unit);
-            $service_in_location = ProviderServiceAddressMapping::whereIn('provider_address_id', $locations)->pluck('service_id');
-            $service->with('providerServiceAddress')->whereIn('id', $service_in_location);
+        if ($request->has('latitude') && !empty($request->latitude) && $request->has('longitude') && !empty($request->longitude)) {
+            $get_distance = getSettingKeyValue('site-setup','radious');
+            $get_unit = getSettingKeyValue('site-setup','distance_type');
+            
+            $locations = $service->locationService($request->latitude,$request->longitude,$get_distance,$get_unit);
+            $service_in_location = ProviderServiceAddressMapping::whereIn('provider_address_id',$locations)->get()->pluck('service_id');
+            $service->with('providerServiceAddress')->whereIn('id',$service_in_location);
         }
-    
-        if ($request->has('search')) {
-            $service->where('name', 'like', "%{$request->search}%");
+
+        if($request->has('search')){
+            $service->where('name','like',"%{$request->search}%");
         }
-    
+
         $per_page = config('constant.PER_PAGE_LIMIT');
-        if ($request->has('per_page')) {
-            if (is_numeric($request->per_page)) {
+        if( $request->has('per_page') && !empty($request->per_page)){
+            if(is_numeric($request->per_page)){
                 $per_page = $request->per_page;
-            } elseif ($request->per_page === 'all') {
+            }
+            if($request->per_page === 'all' ){
                 $per_page = $service->count();
             }
         }
-    
-        if (auth()->user() !== null && auth()->user()->hasRole('admin')) {
-            $service = $service->orderBy('created_at', 'desc');
-        } else {
-            $service = $service->where('status', 1)->orderBy('created_at', 'desc');
+
+        if(auth()->user() !== null && auth()->user()->hasRole('admin')){
+
+            $service = $service->orderBy('created_at','desc');
+           
+        }else{
+
+            $service = $service->where('status',1)->orderBy('created_at','desc');
+
         }
-    
+
         $service = $service->paginate($per_page);
+     
         $items = ServiceResource::collection($service);
-    
-        // Fetch completed booking count for each service
-        foreach ($items as $item) {
-            $completedBookingCount = Booking::where('service_id', $item->id)
-                ->where('status', 'completed')
-                ->count();
-            $item->completed_booking_count = $completedBookingCount;
-        }
-    
-        $userservices = null;
-        if ($request->customer_id != null) {
-            $user_service = Service::where('status', 1)->where('added_by', $request->customer_id)->get();
+
+
+        $userservices  = null;
+        if($request->customer_id != null){
+            $user_service = Service::where('status',1)->where('added_by',$request->customer_id)->get();
             $userservices = ServiceResource::collection($user_service);
         }
-    
         $response = [
             'pagination' => [
                 'total_items' => $items->total(),
@@ -159,13 +167,13 @@ class ServiceController extends Controller
             ],
             'data' => $items,
             'user_services' => $userservices,
-            'max' => $service->max('price'),
-            'min' => $service->min('price'),
+            'max'=> $service->max('price'),
+            'min'=> $service->min('price'),
         ];
-    
+        
         return comman_custom_response($response);
     }
-    
+
     public function getServiceDetail(Request $request){
         $id = $request->service_id;
        
