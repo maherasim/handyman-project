@@ -58,6 +58,7 @@ class Booking extends Model
         'post_request_id' => 'integer',
         'final_total_service_price'=> 'double',
         'final_total_tax'=> 'double',
+        'date' => 'array',
         'final_sub_total'=> 'double',
         'final_discount_amount'=> 'double',
         'final_coupon_discount_amount'=> 'double',
