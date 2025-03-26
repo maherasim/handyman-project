@@ -6,7 +6,7 @@
       </div>
       <div class="col-lg-8 mt-5 mt-lg-0">
          <h5 class="booking-title text-capitalize line-count-1">
-            <a :href="`${baseUrl}/booking-detail/${BookingId}`">#{{BookingId}} {{ServiceName}}</a>
+            <a :href="`${baseUrl}/booking-detail/${BookingId}`">#{{BookingId}} {{ServiceName}} test</a>
          </h5>
          <div class="d-flex align-items-center gap-1 mt-3">
             <div class="ratting d-flex gap-1 align-items-center">

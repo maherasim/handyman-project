@@ -6,7 +6,7 @@
          const noOfDecimal = 2
          const currencyPosition = DEFAULT_CURRENCY.defaultPosition
          const currencySymbol = DEFAULT_CURRENCY.defaultCurrency.symbol
-        return formatCurrency(amount, noOfDecimal, currencyPosition, currencySymbol)
+        return formatCurrency(amount ?? 0, noOfDecimal, currencyPosition, currencySymbol)
       }
       window.currencyFormat = currencyFormat
       window.defaultCurrencySymbol = @json(Currency::defaultSymbol())

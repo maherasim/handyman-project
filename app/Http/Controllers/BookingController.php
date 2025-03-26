@@ -3,35 +3,36 @@
 namespace App\Http\Controllers;
 
 use App\Exports\BookingExport;
-use Illuminate\Http\Request;
+use App\Http\Requests\BookingUpdateRequest;
+use App\Models\AppSetting;
 use App\Models\Booking;
-use App\Models\Coupon;
-use App\Models\Service;
-use App\Models\Payment;
-use App\Models\User;
+use App\Models\BookingRating;
 use App\Models\BookingStatus;
+use App\Models\Country;
+use App\Models\Coupon;
+use App\Models\Notification;
+use App\Models\Payment;
+use App\Models\PaymentGateway;
 use App\Models\PostJobRequest;
 use App\Models\ProviderAddressMapping;
-use App\Http\Requests\BookingUpdateRequest;
-use App\Models\Notification;
-use Yajra\DataTables\DataTables;
-use PDF;
-use App\Models\AppSetting;
-use Carbon\Carbon;
-use App\Traits\NotificationTrait;
-use App\Traits\EarningTrait;
-
+use App\Models\Service;
 use App\Models\ServiceAddon;
-use App\Models\BookingRating;
+use App\Models\ServiceSlot;
 use App\Models\Setting;
-use App\Models\Country;
+use App\Models\User;
+use App\Traits\EarningTrait;
+use App\Traits\NotificationTrait;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
-use App\Models\PaymentGateway;
+use PDF;
+use Yajra\DataTables\DataTables;
 
 class BookingController extends Controller
 {
     use NotificationTrait;
     use EarningTrait;
+
     /**
      * Display a listing of the resource.
      *
@@ -53,35 +54,35 @@ class BookingController extends Controller
 
         // Calculate total earnings based on role
         $advanceFilter = [];
-        $paymentStatus = ['paid', 'pending','advanced_paid','Advanced Refund'];
-        $paymentType = PaymentGateway::where('status',1)->get()->pluck('title', 'type')->put('wallet', 'Wallet');
+        $paymentStatus = ['paid', 'pending', 'advanced_paid', 'Advanced Refund'];
+        $paymentType = PaymentGateway::where('status', 1)->get()->pluck('title', 'type')->put('wallet', 'Wallet');
         $bookingStatus = BookingStatus::where('status', 1)->orderBy('sequence', 'ASC')->get()->pluck('label', 'value');
         switch ($authRole) {
             case 'admin':
                 $totalEarning = Booking::where('status', '!=', 'cancelled')
-                ->whereHas('handymanAdded', function ($query) {
-                    $query->whereNotNull('provider_id'); // Ensure handyman is not null
-                })
-                ->sum('total_amount');
+                    ->whereHas('handymanAdded', function ($query) {
+                        $query->whereNotNull('provider_id'); // Ensure handyman is not null
+                    })
+                    ->sum('total_amount');
                 break;
             case 'demo_admin':
                 $totalEarning = Booking::where('status', '!=', 'cancelled')
-                                 ->whereHas('handymanAdded', function ($query) {
-                                     $query->whereNotNull('provider_id'); // Ensure handyman is not null
-                                 })
-                                 ->sum('total_amount');
+                    ->whereHas('handymanAdded', function ($query) {
+                        $query->whereNotNull('provider_id'); // Ensure handyman is not null
+                    })
+                    ->sum('total_amount');
                 break;
 
 
             case 'provider':
-                $totalEarning = Booking::where('status','!=' ,'cancelled')->whereHas('handymanAdded', function ($query) use ($auth_user) {
+                $totalEarning = Booking::where('status', '!=', 'cancelled')->whereHas('handymanAdded', function ($query) use ($auth_user) {
                     $query->where('provider_id', $auth_user->id);
                 })->sum('total_amount');
-            break;
+                break;
 
 
             case 'handyman':
-                $totalEarning = Booking::where('status','!=' ,'cancelled')->whereHas('handymanAdded', function ($query) use ($auth_user) {
+                $totalEarning = Booking::where('status', '!=', 'cancelled')->whereHas('handymanAdded', function ($query) use ($auth_user) {
                     $query->where('handyman_id', $auth_user->id);
                 })->sum('total_amount');
                 break;
@@ -108,7 +109,7 @@ class BookingController extends Controller
 
         // Apply role-based filters
         if ($auth_user->hasRole('handyman')) {
-            $query->whereHas('handymanAdded', function($q) use ($auth_user) {
+            $query->whereHas('handymanAdded', function ($q) use ($auth_user) {
                 $q->where('handyman_id', $auth_user->id);
             });
         }
@@ -135,7 +136,7 @@ class BookingController extends Controller
                     $startDate = date('Y-m-d', strtotime($dates[0]));
                     $endDate = date('Y-m-d', strtotime($dates[1]));
                     $query->whereDate('date', '>=', $startDate)
-                          ->whereDate('date', '<=', $endDate);
+                        ->whereDate('date', '<=', $endDate);
                 } elseif (count($dates) === 1) {
                     $date = date('Y-m-d', strtotime($dates[0]));
                     $query->whereDate('date', $date);
@@ -256,11 +257,9 @@ class BookingController extends Controller
             ->editColumn('total_amount', function ($query) {
                 return $query->total_amount ? getPriceFormat($query->total_amount) : '-';
             })
-
             ->addColumn('action', function ($booking) {
                 return view('booking.action', compact('booking'))->render();
             })
-
             ->editColumn('updated_at', function ($query) {
                 $diff = Carbon::now()->diffInHours($query->updated_at);
                 if ($diff < 25) {
@@ -298,7 +297,7 @@ class BookingController extends Controller
         // Apply role-based filters
         switch ($auth_user->roles->pluck('name')->first()) {
             case 'handyman':
-                $query->whereHas('handymanAdded', function($q) use ($auth_user) {
+                $query->whereHas('handymanAdded', function ($q) use ($auth_user) {
                     $q->where('handyman_id', $auth_user->id);
                 });
                 break;
@@ -327,12 +326,12 @@ class BookingController extends Controller
                 $query->whereIn('status', $advanceFilter['booking_status']);
             }
             if (!empty($advanceFilter['payment_status'])) {
-                $query->whereHas('payment', function($q) use ($advanceFilter) {
+                $query->whereHas('payment', function ($q) use ($advanceFilter) {
                     $q->whereIn('payment_status', $advanceFilter['payment_status']);
                 });
             }
             if (!empty($advanceFilter['payment_type'])) {
-                $query->whereHas('payment', function($q) use ($advanceFilter) {
+                $query->whereHas('payment', function ($q) use ($advanceFilter) {
                     $q->whereIn('payment_type', $advanceFilter['payment_type']);
                 });
             }
@@ -340,7 +339,7 @@ class BookingController extends Controller
                 $dates = explode(' to ', $advanceFilter['date_range']);
                 if (count($dates) === 2) {
                     $query->whereDate('date', '>=', $dates[0])
-                          ->whereDate('date', '<=', $dates[1]);
+                        ->whereDate('date', '<=', $dates[1]);
                 } elseif (count($dates) === 1) {
                     $query->whereDate('date', $dates[0]);
                 }
@@ -439,7 +438,7 @@ class BookingController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
@@ -489,6 +488,17 @@ class BookingController extends Controller
         $user = User::where('id', $data['provider_id'])->with('providertype')->first();
 
         $result = Booking::updateOrCreate(['id' => $request->id], $data);
+
+        foreach ($request->schedule_slots as $slot) {
+            ServiceSlot::create([
+                'booking_id' => $result->id,
+                'date' => $slot['date'],
+                'start_time' => $slot['start_time'],
+                'end_time' => $slot['end_time'],
+                'total_days' => $slot['total_days'],
+                'total_hours' => $slot['total_hours'],
+            ]);
+        }
 
         $activity_data = [
             'activity_type' => 'add_booking',
@@ -606,7 +616,7 @@ class BookingController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function show($id)
@@ -653,7 +663,7 @@ class BookingController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function edit($id)
@@ -672,8 +682,8 @@ class BookingController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param \Illuminate\Http\Request $request
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function update(BookingUpdateRequest $request, $id)
@@ -682,7 +692,6 @@ class BookingController extends Controller
             return redirect()->back()->withErrors(trans('messages.demo_permission_denied'));
         }
         $data = $request->all();
-
 
 
         $data['date'] = isset($request->date) ? date('Y-m-d H:i:s', strtotime($request->date)) : date('Y-m-d H:i:s');
@@ -767,7 +776,7 @@ class BookingController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
@@ -875,6 +884,7 @@ class BookingController extends Controller
 
         return comman_custom_response(['message' => $msg, 'status' => true]);
     }
+
     public function bookingDetails(Request $request, $id)
     {
         $auth_user = authSession();
@@ -943,7 +953,7 @@ class BookingController extends Controller
                 })
                 ->editColumn('start_at', function ($row) {
                     if (is_array($row)) {
-                        $row = (object) $row;
+                        $row = (object)$row;
                     }
                     $startAt = isset($row->start_at) ? $row->start_at : null;
                     if ($startAt !== null) {
@@ -958,7 +968,7 @@ class BookingController extends Controller
                 })
                 ->editColumn('end_at', function ($row) {
                     if (is_array($row)) {
-                        $row = (object) $row;
+                        $row = (object)$row;
                     }
                     $endAt = isset($row->end_at) ? $row->end_at : null;
                     if ($endAt !== null) {
@@ -984,6 +994,7 @@ class BookingController extends Controller
         $pageTitle = __('messages.bookings');
         return view('booking.details', compact('pageTitle', 'earningData', 'auth_user', 'providerdata'));
     }
+
     public function bookingstatus(Request $request, $id)
     {
         $tabpage = $request->tabpage;
@@ -1011,6 +1022,7 @@ class BookingController extends Controller
         }
         return response()->json($data);
     }
+
     public function createPDF($id)
     {
         $data = AppSetting::take(1)->first();
@@ -1053,6 +1065,7 @@ class BookingController extends Controller
 
         return redirect()->back()->withSuccess($message);
     }
+
     public function getPaymentMethod(Request $request)
     {
         $data = $request->all();
@@ -1132,8 +1145,7 @@ class BookingController extends Controller
                 $result->payment_status = 'paid';
             }
 
-        }
-        ;
+        };
 
         $result->update();
 
@@ -1160,7 +1172,7 @@ class BookingController extends Controller
     public function getEarningsBreakdown(Request $request)
     {
         $authRole = auth()->user()->roles->pluck('name')->first();
-        $bookings = Booking::query()->where('status','!=','cancelled')->with('commissionsdata', 'payment', 'handymanAdded');
+        $bookings = Booking::query()->where('status', '!=', 'cancelled')->with('commissionsdata', 'payment', 'handymanAdded');
 
         // Apply filters from the request
         if ($request->has('advanceFilter')) {
@@ -1184,7 +1196,7 @@ class BookingController extends Controller
                         $dates = explode(' to ', $advanceFilter['date_range']);
                         if (count($dates) === 2) {
                             $bookings->whereDate('date', '>=', $dates[0])
-                                    ->whereDate('date', '<=', $dates[1]);
+                                ->whereDate('date', '<=', $dates[1]);
                         } elseif (count($dates) === 1) {
                             $bookings->whereDate('date', $dates[0]);
                         }
@@ -1261,14 +1273,14 @@ class BookingController extends Controller
                             break;
                     }
                 }
-                 // Track components
-            $earnings['tax'] += $booking->final_total_tax ?? 0;
-            $earnings['discount'] += $booking->final_discount_amount ?? 0;
+                // Track components
+                $earnings['tax'] += $booking->final_total_tax ?? 0;
+                $earnings['discount'] += $booking->final_discount_amount ?? 0;
 
-            // Update totals - switched rawTotal and actualTotal
-            $earnings['totalAmountWithoutDiscount'] += $actualTotal;
-            $earnings['totalAmountWithDiscount'] += $rawTotal;
-            $earnings['total'] += $rawTotal; // Changed to rawTotal to show amount before discount
+                // Update totals - switched rawTotal and actualTotal
+                $earnings['totalAmountWithoutDiscount'] += $actualTotal;
+                $earnings['totalAmountWithDiscount'] += $rawTotal;
+                $earnings['total'] += $rawTotal; // Changed to rawTotal to show amount before discount
 
             }
             // else {
@@ -1290,7 +1302,6 @@ class BookingController extends Controller
             'userRole' => $authRole,
         ]);
     }
-
 
 
 }

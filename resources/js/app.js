@@ -116,38 +116,38 @@ export const confirmcancleSwal = async ({ title }) => {
   })
 }
 
-function formatCurrency(number, noOfDecimal, currencyPosition, currencySymbol) {
-  let formattedNumber = number.toFixed(noOfDecimal)
+function formatCurrency(number = 0, noOfDecimal, currencyPosition, currencySymbol) {
+    number = Number(number) || 0; // ✅ force type-safe number fallback
 
-  let [integerPart, decimalPart] = formattedNumber.split('.')
+    let formattedNumber = number.toFixed(noOfDecimal);
 
-  integerPart = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+    let [integerPart, decimalPart] = formattedNumber.split('.');
 
-  decimalPart = decimalPart || ''
+    integerPart = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 
-  let currencyString = ''
+    decimalPart = decimalPart || '';
 
-  if (currencyPosition === 'left') {
-    currencyString += currencySymbol
+    let currencyString = '';
 
-    currencyString += integerPart
+    if (currencyPosition === 'left') {
+        currencyString += currencySymbol;
+        currencyString += integerPart;
 
-    if (noOfDecimal > 0) {
-      currencyString += '.' + decimalPart
-    }
-  }
-
-  if (currencyPosition === 'right') {
-    // Add decimal part and decimal separator if applicable
-    if (noOfDecimal > 0) {
-      currencyString += integerPart + '.' + decimalPart
+        if (noOfDecimal > 0) {
+            currencyString += '.' + decimalPart;
+        }
     }
 
-    currencyString += currencySymbol
-  }
+    if (currencyPosition === 'right') {
+        if (noOfDecimal > 0) {
+            currencyString += integerPart + '.' + decimalPart;
+        }
+        currencyString += currencySymbol;
+    }
 
-  return currencyString
+    return currencyString;
 }
+
 
 window.formatCurrency = formatCurrency
 const i18n = createI18n({

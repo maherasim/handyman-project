@@ -210,80 +210,106 @@
 
                         <div v-else class="col-sm-12">
 
-                          <div class="row">
-                            <!-- Start Date & Time -->
-                            <div class="col-sm-6">
-                              <label class="form-label">{{ $t('landingpage.start_date_time') }}</label>
-                              <div class="input-group icon-left custom-form-field flex-nowrap">
-                                <span class="input-group-text flex-shrink-0">
-                                  📅
-                                </span>
-                                <flat-pickr v-model="startDateTime" :config="config" class="form-control"
-                                  placeholder="Select start date and time" name="start_at"
-                                  @change="calculateDuration" />
-                              </div>
-                              <span v-if="errorMessages['startDateTime']">
-                                <ul class="text-danger">
-                                  <li v-for="err in errorMessages['startDateTime']" :key="err">{{ err }}</li>
-                                </ul>
-                              </span>
+                            <div
+                                v-for="(slot, index) in dateSlots"
+                                :key="index"
+                                class="row g-2 align-items-end border-bottom pb-3 mb-3"
+                            >
+                                <!-- Date -->
+                                <div class="col-md-3">
+                                    <label class="form-label">Date</label>
+                                    <flat-pickr
+                                        v-model="slot.date"
+                                        :config="{ dateFormat: 'Y-m-d' }"
+                                        class="form-control"
+                                        placeholder="Select date"
+                                        @change="() => calculateDuration(index)"
+                                    />
+                                </div>
+
+                                <!-- Start Time -->
+                                <div class="col-md-2">
+                                    <label class="form-label">Start Time</label>
+                                    <flat-pickr
+                                        v-model="slot.startTime"
+                                        :config="{ enableTime: true, noCalendar: true, dateFormat: 'H:i' }"
+                                        class="form-control"
+                                        placeholder="Start time"
+                                        @change="() => calculateDuration(index)"
+                                    />
+                                </div>
+
+                                <!-- End Time -->
+                                <div class="col-md-2">
+                                    <label class="form-label">End Time</label>
+                                    <flat-pickr
+                                        v-model="slot.endTime"
+                                        :config="{ enableTime: true, noCalendar: true, dateFormat: 'H:i' }"
+                                        class="form-control"
+                                        placeholder="End time"
+                                        @change="() => calculateDuration(index)"
+                                    />
+                                </div>
+
+                                <!-- Days -->
+                                <div class="col-md-1">
+                                    <label class="form-label">Days</label>
+                                    <input type="text" class="form-control text-center bg-light" :value="slot.totalDays" readonly />
+                                </div>
+
+                                <!-- Hours -->
+                                <div class="col-md-1">
+                                    <label class="form-label">Hours</label>
+                                    <input type="text" class="form-control text-center bg-light" :value="slot.totalHours" readonly />
+                                </div>
+
+                                <!-- Remove Button -->
+                                <div class="col-md-1 text-center">
+                                    <button class="btn btn-outline-danger mt-4" @click="removeSlot(index)" v-if="dateSlots.length > 1">
+                                        🗑️
+                                    </button>
+                                </div>
                             </div>
 
-                            <!-- End Date & Time -->
-                            <div class="col-sm-6">
-                              <label class="form-label">{{ $t('landingpage.end_date_time') }}</label>
-                              <div class="input-group icon-left custom-form-field flex-nowrap">
-                                <span class="input-group-text flex-shrink-0">
-                                  📅
-                                </span>
-                                <flat-pickr v-model="endDateTime" :config="config" class="form-control"
-                                  placeholder="Select end date and time" name="end_at" @change="calculateDuration" />
-                              </div>
-                              <span v-if="errorMessages['endDateTime']">
-                                <ul class="text-danger">
-                                  <li v-for="err in errorMessages['endDateTime']" :key="err">{{ err }}</li>
-                                </ul>
-                              </span>
+                            <!-- Add Button -->
+                            <div class="mb-4">
+                                <button class="btn btn-outline-primary" @click="addMoreDates">
+                                    ➕ Add More Dates
+                                </button>
                             </div>
 
-                            <!-- Display Total Duration -->
-                            <div class="col-sm-12 mt-3">
-                              <p class="fw-bold">
-                                Total Duration: {{ totalDays }} Days, {{ totalHours }} Hours
-                              </p>
-                            </div>
-                          </div>
 
-                          <!-- <label class="form-label">{{ $t('landingpage.date_time') }}</label>
-                                      <div class="input-group icon-left custom-form-field flex-nowrap">
-                                          <span class="input-group-text flex-shrink-0" id="dateandtime">
-                                              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="17" viewBox="0 0 16 17" fill="none">
-                                                  <path d="M1.32031 6.5531H14.6883" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                                                  <path d="M11.3322 9.4823H11.3392" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                                                  <path d="M8.00408 9.4823H8.01103" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                                                  <path d="M4.66815 9.4823H4.67509" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                                                  <path d="M11.3322 12.3971H11.3392" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                                                  <path d="M8.00408 12.3971H8.01103" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                                                  <path d="M4.66815 12.3971H4.67509" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                                                  <path d="M11.0329 1V3.46809" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                                                  <path d="M4.97435 1V3.46809" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                                                  <path fill-rule="evenodd" clip-rule="evenodd" d="M11.1787 2.18433H4.82822C2.6257 2.18433 1.25 3.41128 1.25 5.6666V12.4538C1.25 14.7446 2.6257 15.9999 4.82822 15.9999H11.1718C13.3812 15.9999 14.75 14.7659 14.75 12.5106V5.6666C14.7569 3.41128 13.3882 2.18433 11.1787 2.18433Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                                              </svg>
+
+                            <!-- <label class="form-label">{{ $t('landingpage.date_time') }}</label>
+                                        <div class="input-group icon-left custom-form-field flex-nowrap">
+                                            <span class="input-group-text flex-shrink-0" id="dateandtime">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="17" viewBox="0 0 16 17" fill="none">
+                                                    <path d="M1.32031 6.5531H14.6883" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                                                    <path d="M11.3322 9.4823H11.3392" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                                                    <path d="M8.00408 9.4823H8.01103" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                                                    <path d="M4.66815 9.4823H4.67509" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                                                    <path d="M11.3322 12.3971H11.3392" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                                                    <path d="M8.00408 12.3971H8.01103" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                                                    <path d="M4.66815 12.3971H4.67509" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                                                    <path d="M11.0329 1V3.46809" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                                                    <path d="M4.97435 1V3.46809" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M11.1787 2.18433H4.82822C2.6257 2.18433 1.25 3.41128 1.25 5.6666V12.4538C1.25 14.7446 2.6257 15.9999 4.82822 15.9999H11.1718C13.3812 15.9999 14.75 14.7659 14.75 12.5106V5.6666C14.7569 3.41128 13.3882 2.18433 11.1787 2.18433Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                                                </svg>
+                                            </span>
+                                            <flat-pickr
+                                                  v-model="date"
+                                                  :config="config"
+                                                  class="form-control"
+                                                  placeholder="Select date and time"
+                                                  name="date" />
+                                        </div>
+
+                                        <span v-if="errorMessages['date']">
+                                            <ul class="text-danger">
+                                              <li v-for="err in errorMessages['date']" :key="err">{{ err }}</li>
+                                            </ul>
                                           </span>
-                                          <flat-pickr
-                                                v-model="date"
-                                                :config="config"
-                                                class="form-control"
-                                                placeholder="Select date and time"
-                                                name="date" />
-                                      </div>
-      
-                                      <span v-if="errorMessages['date']">
-                                          <ul class="text-danger">
-                                            <li v-for="err in errorMessages['date']" :key="err">{{ err }}</li>
-                                          </ul>
-                                        </span>
-                                        <span class="text-danger">{{ errors.date }}</span> -->
+                                          <span class="text-danger">{{ errors.date }}</span> -->
                         </div>
 
 
@@ -611,34 +637,88 @@ const closeModal = () => {
   is_tax.value = 0;
 }
 
-// Reactive Data
-const startDateTime = ref(null);
-const endDateTime = ref(null);
-const totalDays = ref(0);
-const totalHours = ref(0);
-
-// Function to Calculate Duration
-const calculateDuration = () => {
-  if (startDateTime.value && endDateTime.value) {
-    let start = moment(startDateTime.value);
-    let end = moment(endDateTime.value);
-
-    if (end.isBefore(start)) {
-      totalDays.value = 0;
-      totalHours.value = 0;
-      alert("End date must be after start date");
-    } else {
-      let duration = moment.duration(end.diff(start));
-      totalDays.value = Math.floor(duration.asDays());
-      totalHours.value = Math.floor(duration.asHours()) % 24;
+const dateSlots = ref([
+    {
+        date: null,
+        startTime: null,
+        endTime: null,
+        totalDays: 0,
+        totalHours: 0
     }
-  }
+]);
+
+const addMoreDates = () => {
+    dateSlots.value.push({
+        date: null,
+        startTime: null,
+        endTime: null,
+        totalDays: 0,
+        totalHours: 0
+    });
 };
+
+const removeSlot = (index) => {
+    dateSlots.value.splice(index, 1);
+};
+
+const calculateDuration = (index) => {
+    const slot = dateSlots.value[index];
+
+    if (slot.date && slot.startTime && slot.endTime) {
+        const start = moment(`${slot.date} ${slot.startTime}`, 'YYYY-MM-DD HH:mm');
+        let end = moment(`${slot.date} ${slot.endTime}`, 'YYYY-MM-DD HH:mm');
+
+        // Handle case where end time is before start time (assume next day)
+        if (end.isBefore(start)) {
+            end.add(1, 'day');
+        }
+
+        const duration = moment.duration(end.diff(start));
+
+        // Convert total minutes to days & hours
+        const totalMinutes = duration.asMinutes();
+        const fullDays = Math.floor(totalMinutes / (24 * 60));
+        const remainingMinutes = totalMinutes - (fullDays * 24 * 60);
+        const remainingHours = Math.floor(remainingMinutes / 60);
+
+        slot.totalDays = fullDays;
+        slot.totalHours = remainingHours;
+    }
+};
+
+
+
+
+// Reactive Data
+// const startDateTime = ref(null);
+// const endDateTime = ref(null);
+// const totalDays = ref(0);
+// const totalHours = ref(0);
+//
+// // Function to Calculate Duration
+// const calculateDuration = () => {
+//   if (startDateTime.value && endDateTime.value) {
+//     let start = moment(startDateTime.value);
+//     let end = moment(endDateTime.value);
+//
+//     if (end.isBefore(start)) {
+//       totalDays.value = 0;
+//       totalHours.value = 0;
+//       alert("End date must be after start date");
+//     } else {
+//       let duration = moment.duration(end.diff(start));
+//       totalDays.value = Math.floor(duration.asDays());
+//       totalHours.value = Math.floor(duration.asHours()) % 24;
+//     }
+//   }
+// };
 
 onMounted(() => {
   // startDate.value = new Date();
   // endDate.value = new Date();
-  calculateDuration();
+  // calculateDuration();
+
+    dateSlots.value.forEach((_, index) => calculateDuration(index));
 
   defaultData()
   handleDateSelect(new Date())
@@ -1037,8 +1117,8 @@ const formSubmit = handleSubmit(async (values) => {
     values.final_discount_amount = discount.value;
     values.tax = props.taxes;
     values.status = 'pending';
-    values.start_at = startDateTime.value;
-    values.end_at = endDateTime.value
+    // values.start_at = startDateTime.value;
+    // values.end_at = endDateTime.value
 
     if (props.service.package_type) {
       values.booking_package = {
@@ -1066,7 +1146,19 @@ const formSubmit = handleSubmit(async (values) => {
       values.coupon_id = ''
     }
 
-    const response = await fetch(STORE_BOOKING_API, {
+      // Convert all dateSlots into schedule_slots
+      values.schedule_slots = dateSlots.value.map(slot => {
+          return {
+              date: moment(slot.date).format('YYYY-MM-DD'),
+              start_time: slot.startTime,
+              end_time: slot.endTime,
+              total_days: slot.totalDays,
+              total_hours: slot.totalHours
+          };
+      });
+
+
+      const response = await fetch(STORE_BOOKING_API, {
       method: 'POST',
       headers: {
 
