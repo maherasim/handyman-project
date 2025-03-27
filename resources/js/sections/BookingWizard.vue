@@ -133,82 +133,82 @@
                     <div class="card-body booking-service-form">
                       <div class="row g-3">
 
-                        <div v-if="service.is_slot == 1" class="col-12">
+<!--                        <div v-if="service.is_slot == 1" class="col-12">-->
 
-                          <div class="mt-1">
+<!--                          <div class="mt-1">-->
 
-                            <div>
+<!--                            <div>-->
 
-                              <div class="px-4 pt-3 pb-4 bg-body">
-                                <div class="select-week-days">
+<!--                              <div class="px-4 pt-3 pb-4 bg-body">-->
+<!--                                <div class="select-week-days">-->
 
-                                  <div class="custom-form-field">
-                                    <label class="form-label">{{ $t('landingpage.date_time') }}</label>
-
-
-                                    <DatePicker v-model="DateFormate" view="weekly" :attributes="todos"
-                                      mode="DateFormate" :min-date="new Date()" @click="handleDateSelect(DateFormate)"
-                                      expanded />
-
-                                    <span v-if="errorMessages['date']">
-                                      <ul class="text-danger">
-                                        <li v-for="err in errorMessages['date']" :key="err">{{ err }}</li>
-                                      </ul>
-                                    </span>
-                                    <span class="text-danger">{{ errors.date }}</span>
-                                  </div>
-
-                                </div>
-                                <div v-if="date == null" class="time-slot mt-3 pt-3 border-top">
-                                  <p class="text-capitalize mb-2 lh-1">{{ $t('landingpage.date_time') }}</p>
-
-                                  <div v-for="(dayInfo, index) in availableserviceslot" :key="index">
-
-                                    <div v-if="dayInfo.day === dayName">
-
-                                      <div v-if="dayInfo.slot != null">
+<!--                                  <div class="custom-form-field">-->
+<!--                                    <label class="form-label">{{ $t('landingpage.date_time') }}</label>-->
 
 
-                                        <ul class="list-inline m-0 d-flex align-items-center flex-wrap gap-3">
+<!--                                    <DatePicker v-model="DateFormate" view="weekly" :attributes="todos"-->
+<!--                                      mode="DateFormate" :min-date="new Date()" @click="handleDateSelect(DateFormate)"-->
+<!--                                      expanded />-->
 
-                                          <li class="time-slot" v-for="timeSlot in dayInfo.slot" :key="timeSlot">
-                                            <!-- <span class="btn btn-sm time-slot-btn font-size-14">{{ timeSlot }}</span> -->
-                                            <input type="radio" :id="timeSlot" v-model="start_time" :value="timeSlot"
-                                              name="start_time" class="btn-check" />
-                                            <label :for="timeSlot" class="btn d-block py-2 px-2 time-slot-btn">
-                                              {{ (timeSlot && timeSlot.match(/^(\d{2}):\d{2}:\d{2}$/)) ? RegExp.$1 +
-                                              ":00" : 'Invalid Time' }}
-                                            </label>
-                                          </li>
-                                        </ul>
+<!--                                    <span v-if="errorMessages['date']">-->
+<!--                                      <ul class="text-danger">-->
+<!--                                        <li v-for="err in errorMessages['date']" :key="err">{{ err }}</li>-->
+<!--                                      </ul>-->
+<!--                                    </span>-->
+<!--                                    <span class="text-danger">{{ errors.date }}</span>-->
+<!--                                  </div>-->
 
-                                      </div>
+<!--                                </div>-->
+<!--                                <div v-if="date == null" class="time-slot mt-3 pt-3 border-top">-->
+<!--                                  <p class="text-capitalize mb-2 lh-1">{{ $t('landingpage.date_time') }}</p>-->
 
-                                      <div v-else>
+<!--                                  <div v-for="(dayInfo, index) in availableserviceslot" :key="index">-->
 
-                                        {{ $t('landingpage.slot_not_available') }}
-                                      </div>
+<!--                                    <div v-if="dayInfo.day === dayName">-->
 
-                                      <span v-if="errorMessages['start_time']">
-                                        <ul class="text-danger">
-                                          <li v-for="err in errorMessages['start_time']" :key="err">{{ err }}</li>
-                                        </ul>
-                                      </span>
-                                      <span class="text-danger">{{ errors.start_time }}</span>
+<!--                                      <div v-if="dayInfo.slot != null">-->
 
-                                    </div>
 
-                                  </div>
+<!--                                        <ul class="list-inline m-0 d-flex align-items-center flex-wrap gap-3">-->
 
-                                </div>
-                              </div>
-                            </div>
+<!--                                          <li class="time-slot" v-for="timeSlot in dayInfo.slot" :key="timeSlot">-->
+<!--                                            &lt;!&ndash; <span class="btn btn-sm time-slot-btn font-size-14">{{ timeSlot }}</span> &ndash;&gt;-->
+<!--                                            <input type="radio" :id="timeSlot" v-model="start_time" :value="timeSlot"-->
+<!--                                              name="start_time" class="btn-check" />-->
+<!--                                            <label :for="timeSlot" class="btn d-block py-2 px-2 time-slot-btn">-->
+<!--                                              {{ (timeSlot && timeSlot.match(/^(\d{2}):\d{2}:\d{2}$/)) ? RegExp.$1 +-->
+<!--                                              ":00" : 'Invalid Time' }}-->
+<!--                                            </label>-->
+<!--                                          </li>-->
+<!--                                        </ul>-->
 
-                          </div>
+<!--                                      </div>-->
 
-                        </div>
+<!--                                      <div v-else>-->
 
-                        <div v-else class="col-sm-12">
+<!--                                        {{ $t('landingpage.slot_not_available') }}-->
+<!--                                      </div>-->
+
+<!--                                      <span v-if="errorMessages['start_time']">-->
+<!--                                        <ul class="text-danger">-->
+<!--                                          <li v-for="err in errorMessages['start_time']" :key="err">{{ err }}</li>-->
+<!--                                        </ul>-->
+<!--                                      </span>-->
+<!--                                      <span class="text-danger">{{ errors.start_time }}</span>-->
+
+<!--                                    </div>-->
+
+<!--                                  </div>-->
+
+<!--                                </div>-->
+<!--                              </div>-->
+<!--                            </div>-->
+
+<!--                          </div>-->
+
+<!--                        </div>-->
+
+                        <div class="col-sm-12">
 
                             <div
                                 v-for="(slot, index) in dateSlots"
