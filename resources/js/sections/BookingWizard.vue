@@ -607,6 +607,13 @@ const maxDate = computed(() => {
   return props.service.end_at ? new Date(props.service.end_at) : null;
 });
 
+let quantity = ref(1)
+const OpenCouponCard = ref(0)
+const SeletedCouponId = ref(0)
+const IsLoading = ref(0)
+const selectedCoupon = ref([]);
+const bookingId = ref(null)
+
 
 
 // Flatpickr configuration
@@ -658,10 +665,21 @@ const addMoreDates = () => {
 };
 
 const removeSlot = (index) => {
+    quantity.value = 0;
     dateSlots.value.splice(index, 1);
+
+    dateSlots.value.map(slotC => {
+        if(props.service.type == 'hourly') {
+            quantity.value += slotC.totalHours;
+        }else{
+            quantity.value += 1;
+        }
+    });
 };
 
 const calculateDuration = (index) => {
+    console.log(props.service)
+    quantity.value = 0;
     const slot = dateSlots.value[index];
 
     if (slot.date && slot.startTime && slot.endTime) {
@@ -683,6 +701,14 @@ const calculateDuration = (index) => {
 
         slot.totalDays = fullDays;
         slot.totalHours = remainingHours;
+
+        dateSlots.value.map(slotC => {
+            if(props.service.type == 'hourly') {
+                quantity.value += slotC.totalHours;
+            }else{
+                quantity.value += 1;
+            }
+        });
     }
 };
 
@@ -815,13 +841,6 @@ const showChildComponent = () => {
   currentComponent.value = Payment;
   isChildComponentVisible.value = true;
 };
-
-const quantity = ref(1)
-const OpenCouponCard = ref(0)
-const SeletedCouponId = ref(0)
-const IsLoading = ref(0)
-const selectedCoupon = ref([]);
-const bookingId = ref(null)
 
 const OpenCouponCardMethod = () => {
   OpenCouponCard.value = 1
