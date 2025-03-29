@@ -713,13 +713,15 @@ const removeSlot = (index) => {
 // };
 
 const calculateDuration = (index) => {
-    quantity.value = 0;
+
     const slot = dateSlots.value[index];
 
     if (!slot.date || !slot.startTime) {
         console.warn("Missing date or start time for slot:", slot);
         return;
     }
+
+    quantity.value = 0;
 
     const start = moment(`${slot.date} ${slot.startTime}`, 'YYYY-MM-DD HH:mm');
     let end;
