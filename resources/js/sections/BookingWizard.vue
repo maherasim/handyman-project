@@ -713,7 +713,6 @@ const removeSlot = (index) => {
 // };
 
 const calculateDuration = (index) => {
-    quantity.value = 0;
     const slot = dateSlots.value[index];
 
     if (!slot.date || !slot.startTime) {
@@ -721,6 +720,7 @@ const calculateDuration = (index) => {
         return;
     }
 
+    quantity.value = 0;
     const start = moment(`${slot.date} ${slot.startTime}`, 'YYYY-MM-DD HH:mm');
     let end;
 
@@ -728,41 +728,47 @@ const calculateDuration = (index) => {
     console.log("Start Time:", start.format('YYYY-MM-DD HH:mm'));
 
     if (props.service.type !== 'hourly') {
-        const durationString = props.service.duration; // e.g., "30 minutes", "4 hours"
-
+        const durationString = props.service.duration; // Could be '04:00', '4 hours', '30 minutes'
         console.log("Duration String:", durationString);
 
         if (durationString && typeof durationString === 'string') {
-            const durationParts = durationString.split(" ");
-            const durationValue = parseInt(durationParts[0]);
-            const durationUnit = durationParts[1] || '';
+            end = moment(start); // clone start
 
-            if (!isNaN(durationValue)) {
-                end = moment(start); // clone start
-
-                if (durationUnit.includes('minute')) {
-                    end.add(durationValue, 'minutes');
-                } else if (durationUnit.includes('hour')) {
-                    end.add(durationValue, 'hours');
-                } else if (durationUnit.includes('day')) {
-                    end.add(durationValue, 'days');
-                } else {
-                    console.warn("Unknown duration unit:", durationUnit);
-                    end = moment(start); // fallback: no addition
-                }
-
-                slot.endTime = end.format('HH:mm');
-                console.log("Calculated End Time (non-hourly):", slot.endTime);
+            // Check if it's in HH:mm format (like 04:00)
+            const timeFormatMatch = durationString.match(/^(\d{1,2}):(\d{2})$/);
+            if (timeFormatMatch) {
+                const hours = parseInt(timeFormatMatch[1], 10);
+                const minutes = parseInt(timeFormatMatch[2], 10);
+                end.add(hours, 'hours').add(minutes, 'minutes');
+                console.log("Parsed HH:mm duration:", hours, "hours,", minutes, "minutes");
             } else {
-                console.warn("Invalid duration value in:", durationString);
-                end = moment(start);
+                // Fallback: Try human-readable string like "4 hours", "30 minutes"
+                const durationParts = durationString.split(" ");
+                const durationValue = parseInt(durationParts[0]);
+                const durationUnit = durationParts[1] || '';
+
+                if (!isNaN(durationValue)) {
+                    if (durationUnit.includes('minute')) {
+                        end.add(durationValue, 'minutes');
+                    } else if (durationUnit.includes('hour')) {
+                        end.add(durationValue, 'hours');
+                    } else if (durationUnit.includes('day')) {
+                        end.add(durationValue, 'days');
+                    } else {
+                        console.warn("Unknown duration unit:", durationUnit);
+                    }
+                } else {
+                    console.warn("Invalid duration value:", durationString);
+                }
             }
+
+            slot.endTime = end.format('HH:mm');
+            console.log("Calculated End Time (non-hourly):", slot.endTime);
         } else {
             console.warn("Duration string is missing or invalid:", durationString);
             end = moment(start);
         }
     } else {
-        // HOURLY type - use manually selected end time
         if (!slot.endTime) {
             console.warn("Missing end time for hourly service:", slot);
             return;
@@ -771,13 +777,13 @@ const calculateDuration = (index) => {
         end = moment(`${slot.date} ${slot.endTime}`, 'YYYY-MM-DD HH:mm');
 
         if (end.isBefore(start)) {
-            end.add(1, 'day'); // assume overnight service
+            end.add(1, 'day');
         }
 
         console.log("Using provided End Time (hourly):", end.format('HH:mm'));
     }
 
-    // Calculate duration
+    // Duration calculation
     const duration = moment.duration(end.diff(start));
     const totalMinutes = duration.asMinutes();
     const fullDays = Math.floor(totalMinutes / (24 * 60));
@@ -789,13 +795,14 @@ const calculateDuration = (index) => {
 
     console.log("Duration Breakdown → Days:", fullDays, "Hours:", remainingHours);
 
-    // Update quantity based on service type
+    // Quantity calculation
     dateSlots.value.map(slotC => {
         quantity.value += props.service.type === 'hourly' ? slotC.totalHours : 1;
     });
 
     console.log("Final Quantity:", quantity.value);
 };
+
 
 
 
