@@ -445,7 +445,7 @@
                         </div>
                     @endif
 
-<h5 class="mb-3 mt-2">Canelation Policy</h5>
+<h5 class="mb-3 mt-2">Cancellation Policy</h5>
 {!! $serviceData['service_detail']['cancellation_policy'] !!}
 
 
