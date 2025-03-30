@@ -1,9 +1,13 @@
 @extends('landing-page.layouts.default')
 
-@section('content')
-    @php
 
-    @endphp
+@section('content')
+ 
+<style>
+    .mt-2 {
+    margin-top: 2.5rem !important;
+}
+</style>
 
     <div class="section-padding service-detail">
         <div class="container">
