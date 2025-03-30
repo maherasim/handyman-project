@@ -53,6 +53,7 @@ class ServiceDetailResource extends JsonResource
             'duration'      => $this->duration,
             'status'        => $this->status,
             'description'   => $this->description,
+            'cancellation_policy'   => $this->cancellation_policy,
             'is_featured'   => $this->is_featured,
             'provider_name' => optional($this->providers)->name,
             'category_name'  => optional($this->category)->name,
