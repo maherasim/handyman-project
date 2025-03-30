@@ -441,8 +441,9 @@
                         </div>
                     @endif
 
-<h2>Canelation Policy</h2>
-{{ $serviceData['service_detail']['cancellation_policy'] }}
+<h6>Canelation Policy</h6>
+{!! $serviceData['service_detail']['cancellation_policy'] !!}
+
 
                     <div class="mt-5 pt-lg-5 pt-3">
                         <div class="d-flex align-items-center justify-content-between gap-3 flex-wrap">
