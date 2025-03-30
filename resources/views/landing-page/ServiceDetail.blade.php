@@ -445,9 +445,9 @@
                         </div>
                     @endif
 
-<h5 class="mb-3 mt-2" style="margin-top: 20px;">Cancellation Policy</h5>
-{!! $serviceData['service_detail']['cancellation_policy'] !!}
-
+                    <h5 class="mb-3" style="margin-top: 20px;">Cancellation Policy</h5>
+                    {!! $serviceData['service_detail']['cancellation_policy'] !!}
+                    
 
                     <div class="mt-5 pt-lg-5 pt-3">
                         <div class="d-flex align-items-center justify-content-between gap-3 flex-wrap">
