@@ -6,7 +6,7 @@
     @endphp
 
     <div class="section-padding service-detail">
-        <div class="container">          
+        <div class="container">
             <div class="row">
                 <div class="col-lg-8 pe-xxl-5">
                     <h3 class="text-capitalize mb-2">{{ $serviceData['service_detail']['name'] }}</h3>
@@ -441,6 +441,9 @@
                         </div>
                     @endif
 
+<h2>Canelation Policy</h2>
+{{ $serviceData['service_detail']['cancellation_policy'] }}
+
                     <div class="mt-5 pt-lg-5 pt-3">
                         <div class="d-flex align-items-center justify-content-between gap-3 flex-wrap">
                             <h5 class="text-capitalize">{{ __('landingpage.related_services') }}</h5>
@@ -456,9 +459,9 @@
                                 link="{{ route('category-detail-service.data', ['id' => $serviceData['service_detail']['category_id'], 'limit' => 3]) }}"></remote-service-page>
 
                             <!-- <landing-servicedetailsection-section
-                                    :service="{{ json_encode($serviceData['related_service']) }}"
-                                    :user_id="{{ $userId }}"
-                                    :favourite="{{ json_encode($favouriteServiceData) }}"></landing-servicedetailsection-section> -->
+                                        :service="{{ json_encode($serviceData['related_service']) }}"
+                                        :user_id="{{ $userId }}"
+                                        :favourite="{{ json_encode($favouriteServiceData) }}"></landing-servicedetailsection-section> -->
                         </div>
                     </div>
                 </div>
@@ -866,10 +869,3 @@
         });
     </script>
 @endsection
-                                                                                                                                   
-           
-  
-
-
-
-                                                  
