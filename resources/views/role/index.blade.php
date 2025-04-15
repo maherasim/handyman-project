@@ -1,10 +1,10 @@
   <div class="d-flex justify-content-between align-items-center p-3 mb-5 flex-wrap gap-3 shadow">
       <h5 class="fw-bold">{{ $pageTitle ?? trans('messages.list') }}</h5>
-      @if ($auth_user->can('role add'))
+      
           <a href="{{ route('permission.add', ['type' => 'role']) }}" class="me-1 btn btn-sm btn-primary loadRemoteModel"><i
                   class="fa fa-plus-circle"></i>
               {{ trans('messages.add_form_title', ['form' => trans('messages.role')]) }}</a>
-      @endif
+     
   </div>
   <div class="card">
       <div class="card-body p-0">
