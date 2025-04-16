@@ -234,20 +234,22 @@
     <div class="footer-bottom py-3 position-relative">
         <div class="container">
             <div class="row align-items-center">
-                <div class="col-md-6 text-md-start text-center">
+                <div class="col-md-3 text-md-start text-center">
                    {{-- <p class="mb-0 text-white">{{ $appsetting->site_copyright }}
                     </p> --}}
                     <p class="mb-0 text-white">{{ $first_part }}
                     <a target="_blank" href="{{ optional($generalsetting)->website }}">{{ $second_part }} </a>
                     </p>
                 </div>
-                <div class="col-md-6 text-md-end text-center">
+                <div class="col-md-9 text-md-end text-center">
                     <span class="d-inline-flex align-items-center gap-3 flex-wrap">
                         <a target="_blank" href="{{ route('user.term_conditions') }}" class="text-body link-primary">{{__('landingpage.terms_conditions')}}</a>
                         <a target="_blank" href="{{ route('user.privacy_policy') }}" class="text-body link-primary">{{__('landingpage.privacy_policy')}}</a>
                         <a target="_blank" href="{{ route('user.help_support') }}" class="text-body link-primary">{{__('landingpage.help_support')}}</a>
                         <a target="_blank" href="{{ route('user.refund_policy') }}" class="text-body link-primary">{{__('landingpage.refund_policy')}}</a>
                         <a target="_blank" href="{{ route('user.data_deletion_request') }}" class="text-body link-primary">{{__('landingpage.data_deletion_request')}}</a>
+                        <a target="_blank" href="{{ route('user.imprint') }}" class="text-body link-primary">{{__('Imprint')}}</a>
+                        <a target="_blank" href="{{ route('user.agb') }}" class="text-body link-primary">{{__('AGB')}}</a>
                     </span>
                 </div>
             </div>

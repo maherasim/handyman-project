@@ -602,6 +602,18 @@ class FrontendController extends Controller
         $data_deletion_request = Setting::where('type', 'data_deletion_request')->where('key', 'data_deletion_request')->first();
         return view('landing-page.dataDeletion', compact('data_deletion_request'));
     }
+    public function Imprint(Request $request)
+    {
+        $imprint = Setting::where('type', 'imprint')->where('key', 'imprint')->first();
+        
+        return view('landing-page.imprint', compact('imprint'));
+    }
+    public function AGB(Request $request)
+    {
+        $imprint = Setting::where('type', 'agb')->where('key', 'agb')->first();
+       
+        return view('landing-page.agb', compact('imprint'));
+    }
 
     public function bookServiceView(Request $request)
     {

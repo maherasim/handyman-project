@@ -48,6 +48,8 @@ Route::middleware([CheckInstallation::class])->group(function () {
     Route::get('/refund-policy', [FrontendController::class, 'refundPolicy'])->name('user.refund_policy');
     Route::get('/help-support', [FrontendController::class, 'helpSupport'])->name('user.help_support');
     Route::get('/data-deletion-request', [FrontendController::class, 'DataDeletion'])->name('user.data_deletion_request');
+    Route::get('/imprint', [FrontendController::class, 'Imprint'])->name('user.imprint');
+    Route::get('/agb', [FrontendController::class, 'agb'])->name('user.agb');
 
     Route::get('/favourite-service', [FrontendController::class, 'favouriteServiceList'])->name('favourite.service');
     Route::get('/service-packages', [FrontendController::class, 'servicePackageList'])->name('service.package');
