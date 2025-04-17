@@ -232,11 +232,17 @@
                                     <label class="form-label">Start Time</label>
                                     <flat-pickr
                                         v-model="slot.startTime"
-                                        :config="{ enableTime: true, noCalendar: true, dateFormat: 'H:i' }"
+                                        :config="{
+    enableTime: true,
+    noCalendar: true,
+    dateFormat: 'H:i',
+    time_24hr: true
+  }"
                                         class="form-control"
                                         placeholder="Start time"
                                         @change="() => calculateDuration(index)"
                                     />
+
                                 </div>
 
                                 <!-- End Time -->
@@ -244,7 +250,7 @@
                                     <label class="form-label">End Time</label>
                                     <flat-pickr
                                         v-model="slot.endTime"
-                                        :config="{ enableTime: true, noCalendar: true, dateFormat: 'H:i' }"
+                                        :config="{ enableTime: true, noCalendar: true, dateFormat: 'H:i', time_24hr: true }"
                                         class="form-control"
                                         placeholder="End time"
                                         @change="() => calculateDuration(index)"
