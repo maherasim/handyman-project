@@ -116,7 +116,7 @@
                                             class="fa fa-plus-circle mt-2"></i>
                                         {{ trans('messages.add_form_title', ['form' => trans('messages.provider_address')]) }}</a>
                                 @else
-                                    <a href="#" id="add_provider_address_link" class=""><i
+                                    <a href="{{ route('provideraddress.create', ['provideraddress' => auth()->id()]) }}" id="add_provider_address_link" class=""><i
                                             class="fa fa-plus-circle mt-2"></i>
                                         {{ trans('messages.add_form_title', ['form' => trans('messages.provider_address')]) }}</a>
                                 @endif
