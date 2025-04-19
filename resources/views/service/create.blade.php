@@ -50,7 +50,8 @@
 
 
                             <div class="col-md-4">
-                                <label for="country_id">{{ __('messages.select_name', ['select' => __('messages.country')]) }}</label>
+                                <label
+                                    for="country_id">{{ __('messages.select_name', ['select' => __('messages.country')]) }}</label>
                                 <br />
                                 <select name="country_id" id="country_id" class="select2js country"
                                     data-placeholder="{{ __('messages.select_name', ['select' => __('messages.country')]) }}"
@@ -60,14 +61,13 @@
                                     </option>
                                 </select>
                             </div>
-                             
+
 
                             <div class="form-group col-md-2">
                                 <label
                                     for="state_id">{{ __('messages.select_name', ['select' => __('messages.state')]) }}
                                     <span class="text-danger">*</span></label>
-                                <select name="state_id" id="state_id" class="select2js form-group category"
-                                    required
+                                <select name="state_id" id="state_id" class="select2js form-group category" required
                                     data-placeholder="{{ __('messages.select_name', ['select' => __('messages.state')]) }}">
                                     <!-- State options will be populated dynamically -->
                                 </select>
@@ -116,7 +116,8 @@
                                             class="fa fa-plus-circle mt-2"></i>
                                         {{ trans('messages.add_form_title', ['form' => trans('messages.provider_address')]) }}</a>
                                 @else
-                                    <a href="{{ route('provideraddress.create', ['provideraddress' => auth()->id()]) }}" id="add_provider_address_link" class=""><i
+                                    <a href="{{ route('provideraddress.create', ['provideraddress' => auth()->id()]) }}"
+                                        id="add_provider_address_link" class=""><i
                                             class="fa fa-plus-circle mt-2"></i>
                                         {{ trans('messages.add_form_title', ['form' => trans('messages.provider_address')]) }}</a>
                                 @endif
@@ -129,13 +130,12 @@
                                         [
                                             'fixed' => __('messages.fixed'),
                                             'hourly' => __('messages.hourly'),
-                                            'Daily' => __('daily'), // Add 'daily' option here
+                                            'Daily' => __('Daily'), // Add 'daily' option here
                                             'free' => __('messages.free'),
                                         ],
                                         $servicedata->type,
                                     )->class('form-control select2js')->required()->id('price_type') }}
                             </div>
-
                             <div class="form-group col-md-4" id="price_div">
                                 {{ html()->label(__('messages.price') . ' <span class="text-danger">*</span>', 'price')->class('form-control-label') }}
                                 {{ html()->text('price', null)->attributes(['min' => 1, 'step' => 'any', 'pattern' => '^\\d+(\\.\\d{1,2})?$'])->placeholder(__('messages.price'))->class('form-control')->required()->id('price') }}
@@ -303,7 +303,7 @@
                             </div>
 @endif -->
                             {{-- @if (!empty($advancedPaymentSetting) && $advancedPaymentSetting == 1) --}}
-                            <div class="form-group col-md-3" >
+                            <div class="form-group col-md-3">
                                 <div class="custom-control custom-switch">
                                     {{ html()->checkbox('is_enable_advance_payment', $servicedata->is_enable_advance_payment)->class('custom-control-input')->id('is_enable_advance_payment') }}
                                     <label class="custom-control-label"
@@ -329,261 +329,284 @@
     @php
         $data = $servicedata->providerServiceAddress->pluck('provider_address_id')->implode(',');
     @endphp
-      @section('bottom_script')
-      <script type="text/javascript">
-          var discountInput = document.getElementById('discount');
-          var discountError = document.getElementById('discount-error');
+    @section('bottom_script')
+        <script type="text/javascript">
+            var discountInput = document.getElementById('discount');
+            var discountError = document.getElementById('discount-error');
 
 
-          document.addEventListener('DOMContentLoaded', function() {
-              var initialProviderId = document.getElementById('provider_id').value;
-              selectprovider({
-                  value: initialProviderId
-              });
-              document.getElementById('add_provider_address_link').addEventListener('click', function(event) {
-                  event.preventDefault();
-                  var providerId = document.getElementById('provider_id').value;
-                  var providerAddressCreateUrl =
-                      "{{ route('provideraddress.create', ['provideraddress' => '']) }}";
-                  providerAddressCreateUrl = providerAddressCreateUrl.replace('provideraddress=',
-                      'provideraddress=' + providerId);
-                  window.location.href = providerAddressCreateUrl;
-              });
+            document.addEventListener('DOMContentLoaded', function() {
+                var initialProviderId = document.getElementById('provider_id').value;
+                selectprovider({
+                    value: initialProviderId
+                });
+                document.getElementById('add_provider_address_link').addEventListener('click', function(event) {
+                    event.preventDefault();
+                    var providerId = document.getElementById('provider_id').value;
+                    var providerAddressCreateUrl =
+                        "{{ route('provideraddress.create', ['provideraddress' => '']) }}";
+                    providerAddressCreateUrl = providerAddressCreateUrl.replace('provideraddress=',
+                        'provideraddress=' + providerId);
+                    window.location.href = providerAddressCreateUrl;
+                });
 
 
 
 
 
-          });
+            });
 
-          function selectprovider(selectElement) {
+            function selectprovider(selectElement) {
 
-              var providerId = selectElement.value;
-              var addProviderAddressLink = document.getElementById('add_provider_address_link');
+                var providerId = selectElement.value;
+                var addProviderAddressLink = document.getElementById('add_provider_address_link');
 
-              if (providerId) {
-                  addProviderAddressLink.classList.remove('d-none');
-              } else {
-                  addProviderAddressLink.classList.add('d-none');
-              }
-          }
+                if (providerId) {
+                    addProviderAddressLink.classList.remove('d-none');
+                } else {
+                    addProviderAddressLink.classList.add('d-none');
+                }
+            }
 
 
-          discountInput.addEventListener('input', function() {
-              var discountValue = parseFloat(discountInput.value);
-              if (isNaN(discountValue) || discountValue < 0 || discountValue > 99) {
-                  discountError.textContent = "{{ __('Discount value should be between 0 to 99') }}";
-              } else {
-                  discountError.textContent = "";
-              }
-          });
+            discountInput.addEventListener('input', function() {
+                var discountValue = parseFloat(discountInput.value);
+                if (isNaN(discountValue) || discountValue < 0 || discountValue > 99) {
+                    discountError.textContent = "{{ __('Discount value should be between 0 to 99') }}";
+                } else {
+                    discountError.textContent = "";
+                }
+            });
 
-          var isEnableAdvancePayment = $("input[name='is_enable_advance_payment']").prop('checked');
+            var isEnableAdvancePayment = $("input[name='is_enable_advance_payment']").prop('checked');
 
-          var priceType = $("#price_type").val();
+            var priceType = $("#price_type").val();
 
-          enableAdvancePayment(priceType);
-          checkEnablePayment(isEnableAdvancePayment);
+            enableAdvancePayment(priceType);
+            checkEnablePayment(isEnableAdvancePayment);
 
-          $("#is_enable_advance_payment").change(function() {
-              isEnableAdvancePayment = $(this).prop('checked');
-              checkEnablePayment(isEnableAdvancePayment);
-              updateAmountVisibility(priceType, isEnableAdvancePayment);
-          });
+            $("#is_enable_advance_payment").change(function() {
+                isEnableAdvancePayment = $(this).prop('checked');
+                checkEnablePayment(isEnableAdvancePayment);
+                updateAmountVisibility(priceType, isEnableAdvancePayment);
+            });
 
-          $("#price_type").change(function() {
-              priceType = $(this).val();
-              enableAdvancePayment(priceType);
-              updateAmountVisibility(priceType, isEnableAdvancePayment);
-          });
+            $("#price_type").change(function() {
+                priceType = $(this).val();
+                enableAdvancePayment(priceType);
+                updateAmountVisibility(priceType, isEnableAdvancePayment);
+            });
 
-          function checkEnablePayment(value) {
-              $("#amount").toggleClass('d-none', !value);
-              $('#advance_payment_amount').prop('required', value);
-          }
+            function checkEnablePayment(value) {
+                $("#amount").toggleClass('d-none', !value);
+                $('#advance_payment_amount').prop('required', value);
+            }
 
-          function enableAdvancePayment(type) {
-              $("#is_enable_advance").toggleClass('d-none', type !== 'fixed');
-          }
+            function enableAdvancePayment(type) {
+                $("#is_enable_advance").toggleClass('d-none', type !== 'fixed');
+            }
 
-          function updateAmountVisibility(type, isEnableAdvancePayment) {
-              if (type === 'fixed' && !$("#is_enable_advance").hasClass('d-none') && isEnableAdvancePayment) {
-                  $("#amount").removeClass('d-none');
-              } else {
-                  $("#amount").addClass('d-none');
-              }
-          }
+            function updateAmountVisibility(type, isEnableAdvancePayment) {
+                if (type === 'fixed' && !$("#is_enable_advance").hasClass('d-none') && isEnableAdvancePayment) {
+                    $("#amount").removeClass('d-none');
+                } else {
+                    $("#amount").addClass('d-none');
+                }
+            }
 
-          (function($) {
-              "use strict";
-              $(document).ready(function() {
-                  var provider_id = "{{ isset($servicedata->provider_id) ? $servicedata->provider_id : '' }}";
-                  var provider_address_id = "{{ isset($data) ? $data : [] }}";
+            (function($) {
+                "use strict";
+                $(document).ready(function() {
+                    var provider_id = "{{ isset($servicedata->provider_id) ? $servicedata->provider_id : '' }}";
+                    var provider_address_id = "{{ isset($data) ? $data : [] }}";
 
-                  var category_id = "{{ isset($servicedata->category_id) ? $servicedata->category_id : '' }}";
-                  var subcategory_id =
-                      "{{ isset($servicedata->subcategory_id) ? $servicedata->subcategory_id : '' }}";
+                    var category_id = "{{ isset($servicedata->category_id) ? $servicedata->category_id : '' }}";
+                    var subcategory_id =
+                        "{{ isset($servicedata->subcategory_id) ? $servicedata->subcategory_id : '' }}";
 
-                  var country_id = "{{ isset($servicedata->country_id) ? $servicedata->country_id : 0 }}";
-                  var city_id = "{{ isset($servicedata->city_id) ? $servicedata->city_id : 0 }}";
-                  var price_type = "{{ isset($servicedata->type) ? $servicedata->type : '' }}";
+                    var country_id = "{{ isset($servicedata->country_id) ? $servicedata->country_id : 0 }}";
+                    var city_id = "{{ isset($servicedata->city_id) ? $servicedata->city_id : 0 }}";
+                    var price_type = "{{ isset($servicedata->type) ? $servicedata->type : '' }}";
 
-                  providerAddress(provider_id, provider_address_id)
-                  getSubCategory(category_id, subcategory_id)
-                  priceformat(price_type)
+                    providerAddress(provider_id, provider_address_id)
+                    getSubCategory(category_id, subcategory_id)
+                    priceformat(price_type)
 
-                  $(document).on('change', '#provider_id', function() {
-                      var provider_id = $(this).val();
-                      $('#provider_address_id').empty();
-                      providerAddress(provider_id, provider_address_id);
-                  })
-                  $(document).on('change', '#category_id', function() {
-                      var category_id = $(this).val();
-                      $('#subcategory_id').empty();
-                      getSubCategory(category_id, subcategory_id);
-                  })
-                  $(document).on('change', '#price_type', function() {
-                      var price_type = $(this).val();
-                      priceformat(price_type);
-                  })
+                    $(document).on('change', '#provider_id', function() {
+                        var provider_id = $(this).val();
+                        $('#provider_address_id').empty();
+                        providerAddress(provider_id, provider_address_id);
+                    })
+                    $(document).on('change', '#category_id', function() {
+                        var category_id = $(this).val();
+                        $('#subcategory_id').empty();
+                        getSubCategory(category_id, subcategory_id);
+                    })
+                    $(document).on('change', '#price_type', function() {
+                        var price_type = $(this).val();
+                        priceformat(price_type);
+                    })
 
-                  $(document).on('change', '#country_id', function() {
-                      var country = $(this).val();
-                      $('#city_id').empty();
-                      cityName(country);
-                  })
+                    $(document).on('change', '#country_id', function() {
+                        var country = $(this).val();
+                        $('#city_id').empty();
+                        cityName(country);
+                    })
 
-                  $(document).on('change', '#city_id', function() {
-                      var city = $(this).val();
-                      console.log('selected city', city);
-                  })
+                    $(document).on('change', '#city_id', function() {
+                        var city = $(this).val();
+                        console.log('selected city', city);
+                    })
 
-                  $('.galary').each(function(index, value) {
-                      let galleryClass = $(value).attr('data-gallery');
-                      $(galleryClass).magnificPopup({
-                          delegate: 'a#attachment_files',
-                          type: 'image',
-                          gallery: {
-                              enabled: true,
-                              navigateByImgClick: true,
-                              preload: [0,
-                                  1
-                              ] // Will preload 0 - before current, and 1 after the current image
-                          },
-                          callbacks: {
-                              elementParse: function(item) {
-                                  if (item.el[0].className.includes('video')) {
-                                      item.type = 'iframe',
-                                          item.iframe = {
-                                              markup: '<div class="mfp-iframe-scaler">' +
-                                                  '<div class="mfp-close"></div>' +
-                                                  '<iframe class="mfp-iframe" frameborder="0" allowfullscreen></iframe>' +
-                                                  '<div class="mfp-title">Some caption</div>' +
-                                                  '</div>'
-                                          }
-                                  } else {
-                                      item.type = 'image',
-                                          item.tLoading = 'Loading image #%curr%...',
-                                          item.mainClass = 'mfp-img-mobile',
-                                          item.image = {
-                                              tError: '<a href="%url%">The image #%curr%</a> could not be loaded.'
-                                          }
-                                  }
-                              }
-                          }
-                      })
-                  })
-              })
+                    $('.galary').each(function(index, value) {
+                        let galleryClass = $(value).attr('data-gallery');
+                        $(galleryClass).magnificPopup({
+                            delegate: 'a#attachment_files',
+                            type: 'image',
+                            gallery: {
+                                enabled: true,
+                                navigateByImgClick: true,
+                                preload: [0,
+                                    1
+                                ] // Will preload 0 - before current, and 1 after the current image
+                            },
+                            callbacks: {
+                                elementParse: function(item) {
+                                    if (item.el[0].className.includes('video')) {
+                                        item.type = 'iframe',
+                                            item.iframe = {
+                                                markup: '<div class="mfp-iframe-scaler">' +
+                                                    '<div class="mfp-close"></div>' +
+                                                    '<iframe class="mfp-iframe" frameborder="0" allowfullscreen></iframe>' +
+                                                    '<div class="mfp-title">Some caption</div>' +
+                                                    '</div>'
+                                            }
+                                    } else {
+                                        item.type = 'image',
+                                            item.tLoading = 'Loading image #%curr%...',
+                                            item.mainClass = 'mfp-img-mobile',
+                                            item.image = {
+                                                tError: '<a href="%url%">The image #%curr%</a> could not be loaded.'
+                                            }
+                                    }
+                                }
+                            }
+                        })
+                    })
+                })
 
-              function providerAddress(provider_id, provider_address_id = "") {
-                  var provider_address_route =
-                      "{{ route('ajax-list', ['type' => 'provider_address', 'provider_id' => '']) }}" + provider_id;
-                  provider_address_route = provider_address_route.replace('amp;', '');
+                function providerAddress(provider_id, provider_address_id = "") {
+                    var provider_address_route =
+                        "{{ route('ajax-list', ['type' => 'provider_address', 'provider_id' => '']) }}" + provider_id;
+                    provider_address_route = provider_address_route.replace('amp;', '');
 
-                  $.ajax({
-                      url: provider_address_route,
-                      success: function(result) {
-                          $('#provider_address_id').select2({
-                              width: '100%',
-                              placeholder: "{{ trans('messages.select_name', ['select' => trans('messages.provider_address')]) }}",
-                              data: result.results
-                          });
-                          if (provider_address_id != "") {
-                              $('#provider_address_id').val(provider_address_id.split(',')).trigger('change');
-                          }
-                      }
-                  });
-              }
+                    $.ajax({
+                        url: provider_address_route,
+                        success: function(result) {
+                            $('#provider_address_id').select2({
+                                width: '100%',
+                                placeholder: "{{ trans('messages.select_name', ['select' => trans('messages.provider_address')]) }}",
+                                data: result.results
+                            });
+                            if (provider_address_id != "") {
+                                $('#provider_address_id').val(provider_address_id.split(',')).trigger('change');
+                            }
+                        }
+                    });
+                }
 
-              function getSubCategory(category_id, subcategory_id = "") {
-                  var get_subcategory_list =
-                      "{{ route('ajax-list', ['type' => 'subcategory_list', 'category_id' => '']) }}" + category_id;
-                  get_subcategory_list = get_subcategory_list.replace('amp;', '');
+                function getSubCategory(category_id, subcategory_id = "") {
+                    var get_subcategory_list =
+                        "{{ route('ajax-list', ['type' => 'subcategory_list', 'category_id' => '']) }}" + category_id;
+                    get_subcategory_list = get_subcategory_list.replace('amp;', '');
 
-                  $.ajax({
-                      url: get_subcategory_list,
-                      success: function(result) {
-                          $('#subcategory_id').select2({
-                              width: '100%',
-                              placeholder: "{{ trans('messages.select_name', ['select' => trans('messages.subcategory')]) }}",
-                              data: result.results
-                          });
-                          if (subcategory_id != "") {
-                              $('#subcategory_id').val(subcategory_id).trigger('change');
-                          }
-                      }
-                  });
-              }
-              var price = "{{ isset($servicedata->price) ? $servicedata->price : '' }}";
-              var discount = "{{ isset($servicedata->discount) ? $servicedata->discount : '' }}";
+                    $.ajax({
+                        url: get_subcategory_list,
+                        success: function(result) {
+                            $('#subcategory_id').select2({
+                                width: '100%',
+                                placeholder: "{{ trans('messages.select_name', ['select' => trans('messages.subcategory')]) }}",
+                                data: result.results
+                            });
+                            if (subcategory_id != "") {
+                                $('#subcategory_id').val(subcategory_id).trigger('change');
+                            }
+                        }
+                    });
+                }
+                var price = "{{ isset($servicedata->price) ? $servicedata->price : '' }}";
+                var discount = "{{ isset($servicedata->discount) ? $servicedata->discount : '' }}";
 
-              function priceformat(value) {
-                  if (value == 'free') {
-                      $('#price').val(0);
-                      $('#price').attr("readonly", true)
+                function priceformat(value) {
+                    if (value == 'free') {
+                        $('#price').val(0);
+                        $('#price').attr("readonly", true)
 
-                      $('#discount').val(0);
-                      $('#discount').attr("readonly", true)
+                        $('#discount').val(0);
+                        $('#discount').attr("readonly", true)
 
-                  } else {
-                      $('#price').val(price);
-                      $('#price').attr("readonly", false)
-                      $('#discount').val(discount);
-                      $('#discount').attr("readonly", false)
-                  }
-              }
+                    } else {
+                        $('#price').val(price);
+                        $('#price').attr("readonly", false)
+                        $('#discount').val(discount);
+                        $('#discount').attr("readonly", false)
+                    }
+                }
 
-              function cityName(country, city = "") {
-                  var city_route = "{{ route('ajax-list', ['type' => 'cityFromCountry', 'country_id' => '']) }}" +
-                      country;
-                  city_route = city_route.replace('amp;', '');
+                function cityName(country, city = "") {
+                    var city_route = "{{ route('ajax-list', ['type' => 'cityFromCountry', 'country_id' => '']) }}" +
+                        country;
+                    city_route = city_route.replace('amp;', '');
 
-                  $('#city_id').select2({
-                      width: '100%',
-                      placeholder: "{{ __('messages.select_name', ['select' => __('messages.city')]) }}",
-                  });
+                    $('#city_id').select2({
+                        width: '100%',
+                        placeholder: "{{ __('messages.select_name', ['select' => __('messages.city')]) }}",
+                    });
 
-                  $.ajax({
-                      url: city_route,
-                      success: function(result) {
-                          // Clear existing options
-                          $('#city_id').empty();
+                    $.ajax({
+                        url: city_route,
+                        success: function(result) {
+                            // Clear existing options
+                            $('#city_id').empty();
 
-                          // Append new options based on the result
-                          result.forEach(function(city) {
-                              var option = new Option(city.name, city.id, false, false);
-                              $('#city_id').append(option);
-                          });
+                            // Append new options based on the result
+                            result.forEach(function(city) {
+                                var option = new Option(city.name, city.id, false, false);
+                                $('#city_id').append(option);
+                            });
 
-                          // If a specific city is selected, set it as the default value
-                          if (city !== null && city !== 0) {
-                              $("#city_id").val(city).trigger('change');
-                          }
-                      }
-                  });
-              }
-          })(jQuery);
-      </script>
+                            // If a specific city is selected, set it as the default value
+                            if (city !== null && city !== 0) {
+                                $("#city_id").val(city).trigger('change');
+                            }
+                        }
+                    });
+                }
+            })(jQuery);
+        </script>
+        <script type="text/javascript">
+    document.addEventListener('DOMContentLoaded', function () {
+        handleDurationField($("#price_type").val());
+
+        $("#price_type").on('change', function () {
+            var selectedType = $(this).val();
+            handleDurationField(selectedType);
+        });
+
+        function handleDurationField(type) {
+            var $duration = $('input[name="duration"]');
+
+            if (type === 'hourly') {
+                $duration.val(1).prop('readonly', false).removeAttr('disabled');
+            } else if (type.toLowerCase() === 'daily') {
+                $duration.val(8).prop('readonly', true); // Prevent editing
+            } else {
+                $duration.prop('readonly', false); // Allow editing for fixed, free
+            }
+        }
+    });
+</script>
+
         <script type="text/javascript">
             (function($) {
                 "use strict";
@@ -592,7 +615,8 @@
                     var state_id = "{{ isset($servicedata->state_id) ? $servicedata->state_id : '' }}";
                     var city_id = "{{ isset($servicedata->city_id) ? $servicedata->city_id : '' }}";
                     var category_id = "{{ isset($servicedata->category_id) ? $servicedata->category_id : '' }}";
-                    var subcategory_id = "{{ isset($servicedata->subcategory_id) ? $servicedata->subcategory_id : '' }}";
+                    var subcategory_id =
+                        "{{ isset($servicedata->subcategory_id) ? $servicedata->subcategory_id : '' }}";
 
                     getStates(country_id, state_id); // Initial load of states based on country
                     getCities(state_id, city_id); // Initial load of cities based on state
@@ -673,59 +697,60 @@
                         });
                     }
                 }
+
                 function setMinDates() {
-               var today = new Date().toISOString().split('T')[0];
-               $('#start_date').attr('min', today);
-               $('#end_date').attr('min', today);
-           }
-       
-           // Function to calculate days between dates
-           function calculateDays() {
-               var startDate = $('#start_date').val();
-               var endDate = $('#end_date').val();
-       
-               if (startDate && endDate) {
-                   if (startDate > endDate) {
-                       $('#start_date_error').css('display', 'block');
-                   } else {
-                       $('#start_date_error').css('display', 'none');
-       
-                       var start = new Date(startDate);
-                       var end = new Date(endDate);
-                       var diffTime = end - start;
-                       var diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
-                       console.log(diffDays * 24);
-                       if (diffDays > 0) {
-                           $('#total_day_div').val(diffDays);
-                           $('#hidden_total_days').val(diffDays);
-                           $('#total_hours_div').val(diffDays * 24).attr('max', diffDays * 24);
-                           $('#hidden_total_hours').val(diffDays * 24).attr('max', diffDays * 24);
-                       } else {
-                           $('#total_day_div').val(0);
-                           $('#hidden_total_days').val(0);
-                           $('#total_hours_div').val(0 * 24).attr('max', 0 * 24);
-                           $('#hidden_total_hours').val(0 * 24).attr('max', 0 * 24);
-                       }
-                   }
-               } else {
-                   $('#hidden_total_days').val(0);
-                   $('#total_day_div').val(0).attr('max', 0); // Added missing period here
-               }
-           }
-       
-           // Set initial min dates
-           setMinDates();
-       
-           // Attach event listeners
-           $('#start_date, #end_date').on('change', function() {
-               calculateDays();
-               var startDate = $('#start_date').val();
-               if (startDate) {
-                   $('#end_date').attr('min', startDate);
-               } else {
-                   setMinDates();
-               }
-           });
+                    var today = new Date().toISOString().split('T')[0];
+                    $('#start_date').attr('min', today);
+                    $('#end_date').attr('min', today);
+                }
+
+                // Function to calculate days between dates
+                function calculateDays() {
+                    var startDate = $('#start_date').val();
+                    var endDate = $('#end_date').val();
+
+                    if (startDate && endDate) {
+                        if (startDate > endDate) {
+                            $('#start_date_error').css('display', 'block');
+                        } else {
+                            $('#start_date_error').css('display', 'none');
+
+                            var start = new Date(startDate);
+                            var end = new Date(endDate);
+                            var diffTime = end - start;
+                            var diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+                            console.log(diffDays * 24);
+                            if (diffDays > 0) {
+                                $('#total_day_div').val(diffDays);
+                                $('#hidden_total_days').val(diffDays);
+                                $('#total_hours_div').val(diffDays * 24).attr('max', diffDays * 24);
+                                $('#hidden_total_hours').val(diffDays * 24).attr('max', diffDays * 24);
+                            } else {
+                                $('#total_day_div').val(0);
+                                $('#hidden_total_days').val(0);
+                                $('#total_hours_div').val(0 * 24).attr('max', 0 * 24);
+                                $('#hidden_total_hours').val(0 * 24).attr('max', 0 * 24);
+                            }
+                        }
+                    } else {
+                        $('#hidden_total_days').val(0);
+                        $('#total_day_div').val(0).attr('max', 0); // Added missing period here
+                    }
+                }
+
+                // Set initial min dates
+                setMinDates();
+
+                // Attach event listeners
+                $('#start_date, #end_date').on('change', function() {
+                    calculateDays();
+                    var startDate = $('#start_date').val();
+                    if (startDate) {
+                        $('#end_date').attr('min', startDate);
+                    } else {
+                        setMinDates();
+                    }
+                });
                 // Function to fetch subcategories based on selected category
                 function getSubCategory(category_id, selectedSubCategory = "") {
                     if (category_id != '') {
@@ -757,21 +782,22 @@
                 }
 
             })(jQuery);
-
         </script>
         <script>
             tinymce.init({
-        selector: '#description', // Target the ID of your textarea
-        plugins: 'lists link image preview', // Add any plugins you want to use
-        toolbar: 'undo redo | bold italic | bullist numlist | link image preview',
-        menubar: false})
+                selector: '#description', // Target the ID of your textarea
+                plugins: 'lists link image preview', // Add any plugins you want to use
+                toolbar: 'undo redo | bold italic | bullist numlist | link image preview',
+                menubar: false
+            })
         </script>
-         <script>
+        <script>
             tinymce.init({
-        selector: '#cancellation_policy', // Target the ID of your textarea
-        plugins: 'lists link image preview', // Add any plugins you want to use
-        toolbar: 'undo redo | bold italic | bullist numlist | link image preview',
-        menubar: false})
+                selector: '#cancellation_policy', // Target the ID of your textarea
+                plugins: 'lists link image preview', // Add any plugins you want to use
+                toolbar: 'undo redo | bold italic | bullist numlist | link image preview',
+                menubar: false
+            })
         </script>
-  @endsection
+    @endsection
 </x-master-layout>
