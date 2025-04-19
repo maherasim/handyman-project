@@ -303,7 +303,7 @@
                             </div>
 @endif -->
                             {{-- @if (!empty($advancedPaymentSetting) && $advancedPaymentSetting == 1) --}}
-                            <div class="form-group col-md-3" id="is_enable_advance">
+                            <div class="form-group col-md-3" >
                                 <div class="custom-control custom-switch">
                                     {{ html()->checkbox('is_enable_advance_payment', $servicedata->is_enable_advance_payment)->class('custom-control-input')->id('is_enable_advance_payment') }}
                                     <label class="custom-control-label"

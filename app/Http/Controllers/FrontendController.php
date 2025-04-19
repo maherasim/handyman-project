@@ -834,29 +834,29 @@ class FrontendController extends Controller
 
         return view('landing-page.RatingAll', compact('id', 'type', 'review_count'));
     }
-
-    public function categoryDatatable(Datatables $datatable, Request $request)
+    public function categoryDatatable(Datatables $datatable, Request $request) 
     {
         $query = Category::query();
-
+    
         $query = $query->where('status', 1);
-
+    
         $filter = $request->filter;
         if (isset($filter['search'])) {
             $query->where('name', 'LIKE', '%' . $filter['search'] . '%');
         }
+    
+        // Apply alphabetical order by name
+        $query = $query->orderByRaw('LOWER(name) asc');
+    
         $datatable = $datatable->eloquent($query)
             ->editColumn('name', function ($data) {
                 return view('category.datatable-card', compact('data'));
-            })
-            ->order(function ($query) {
-                $query->orderBy('id', 'desc');
             });
-
-
+    
         return $datatable->rawColumns(['name'])
             ->toJson();
     }
+    
 
     public function subCategoryDatatable(Datatables $datatable, Request $request)
     {

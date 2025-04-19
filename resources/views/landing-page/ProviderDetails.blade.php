@@ -170,7 +170,7 @@
                                                             {{ implode(', ', $providerData['data']['languages']) }}
                                                         </span>
                                                     @else
-                                                        <span class="text-white">{{ __('messages.language') }}</span>
+                                                        <span class="text-white">{{ __('N/A') }}</span>
                                                     @endif
                                                 </td>
                                             </tr>
