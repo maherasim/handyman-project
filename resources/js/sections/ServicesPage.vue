@@ -14,10 +14,10 @@
 
           </div>
           <div class="col-sm-2">
-            <select ref="categoryDropdownRef" id="categoryDropdown" v-model="selectedCategory"
+            <select ref="subCategoryDropdownRef" id="subCategoryDropdown" v-model="selectedSubCategory"
               class="me-5 form-select select2" :disabled="isEmpty">
               <option value="">{{ $t('Sub Categories') }}</option>
-              <option v-for="category in category_data" :key="category.id" :value="category.id">{{ category.name }}
+              <option v-for="category in sub_category_data" :key="category.id" :value="category.id">{{ category.name }}
               </option>
             </select>
 
@@ -83,6 +83,7 @@ import useDataTable from '../hooks/Datatable'
 const CURRENCY_SYMBOL = ref(window.defaultCurrencySymbol)
 
 const categoryDropdownRef = ref(null);
+const subCategoryDropdownRef = ref(null);
 const providerDropdownRef = ref(null);
 const countryDropdownRef = ref(null);
 const cityDropdownRef = ref(null);
@@ -93,6 +94,7 @@ const props = defineProps(['link', 'isEmpty', 'service']);
 const isEmpty = props.isEmpty;
 const countries = ref([]);
 const cities = ref([]);
+const sub_category_data = ref([]);
 
 const selectedCountry = ref('');
 // watch(() => selectedCountry.value, () => ajaxReload())
@@ -102,6 +104,9 @@ watch(() => selectedCity.value, () => ajaxReload())
 
 const selectedCategory = ref('')
 watch(() => selectedCategory.value, () => ajaxReload())
+
+const selectedSubCategory = ref('')
+watch(() => selectedSubCategory.value, () => ajaxReload())
 
 const selectedProvider = ref('')
 watch(() => selectedProvider.value, () => ajaxReload())
@@ -130,6 +135,7 @@ useDataTable({
   advanceFilter: () => {
     return {
       selectedCategory: selectedCategory.value,
+        selectedSubCategory: selectedSubCategory.value,
       selectedProvider: selectedProvider.value,
       selectedCountry: selectedCountry.value,
       selectedCity: selectedCity.value,
@@ -181,6 +187,7 @@ const loadFeaturedCategoryData = () => {
 
 onMounted(() => {
   $(categoryDropdownRef.value).select2();
+  $(subCategoryDropdownRef.value).select2();
   $(providerDropdownRef.value).select2();
   $(countryDropdownRef.value).select2();
   $(cityDropdownRef.value).select2();
@@ -189,6 +196,13 @@ onMounted(() => {
 
   $(categoryDropdownRef.value).on('change', function () {
     selectedCategory.value = $(this).val();
+      console.log(
+          'wprlo'
+      );
+      loadSubCategories($(this).val());
+  });
+  $(subCategoryDropdownRef.value).on('change', function () {
+    selectedSubCategory.value = $(this).val();
   });
   $(providerDropdownRef.value).on('change', function () {
     selectedProvider.value = $(this).val();
@@ -219,6 +233,7 @@ onMounted(() => {
 
 const refreshDropdowns = () => {
   $(categoryDropdownRef.value).val('').trigger('change');
+  $(subCategoryDropdownRef.value).val('').trigger('change');
   $(providerDropdownRef.value).val('').trigger('change');
   $(countryDropdownRef.value).val('').trigger('change');
   $(cityDropdownRef.value).val('').trigger('change');
@@ -241,8 +256,16 @@ const loadCities = async (country_id) => {
     console.error('Error loading cities:', error);
   }
 };
+const loadSubCategories = async (cat_id) => {
+  try {
+    const response = await fetch('/sub-categories?cat_id=' + cat_id);
+      sub_category_data.value = await response.json();
+  } catch (error) {
+    console.error('Error loading cities:', error);
+  }
+};
 const checkDropdowns = computed(() => {
-  return selectedCategory.value || selectedProvider.value || selectedPriceRange.value || selectedSortOption.value || selectedCity.value
+  return selectedProvider.value || selectedPriceRange.value || selectedSortOption.value || selectedCity.value
 });
 
 const clearSearch = () => {

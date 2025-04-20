@@ -605,13 +605,13 @@ class FrontendController extends Controller
     public function Imprint(Request $request)
     {
         $imprint = Setting::where('type', 'imprint')->where('key', 'imprint')->first();
-        
+
         return view('landing-page.imprint', compact('imprint'));
     }
     public function AGB(Request $request)
     {
         $imprint = Setting::where('type', 'agb')->where('key', 'agb')->first();
-       
+
         return view('landing-page.agb', compact('imprint'));
     }
 
@@ -834,29 +834,29 @@ class FrontendController extends Controller
 
         return view('landing-page.RatingAll', compact('id', 'type', 'review_count'));
     }
-    public function categoryDatatable(Datatables $datatable, Request $request) 
+    public function categoryDatatable(Datatables $datatable, Request $request)
     {
         $query = Category::query();
-    
+
         $query = $query->where('status', 1);
-    
+
         $filter = $request->filter;
         if (isset($filter['search'])) {
             $query->where('name', 'LIKE', '%' . $filter['search'] . '%');
         }
-    
+
         // Apply alphabetical order by name
         $query = $query->orderByRaw('LOWER(name) asc');
-    
+
         $datatable = $datatable->eloquent($query)
             ->editColumn('name', function ($data) {
                 return view('category.datatable-card', compact('data'));
             });
-    
+
         return $datatable->rawColumns(['name'])
             ->toJson();
     }
-    
+
 
     public function subCategoryDatatable(Datatables $datatable, Request $request)
     {
@@ -965,6 +965,9 @@ class FrontendController extends Controller
         }
         if (isset($filter['selectedCategory'])) {
             $query->where('category_id', $filter['selectedCategory']);
+        }
+        if (isset($filter['selectedSubCategory'])) {
+            $query->where('subcategory_id', $filter['selectedSubCategory']);
         }
         if (isset($filter['selectedProvider'])) {
             $query->where('provider_id', $filter['selectedProvider']);

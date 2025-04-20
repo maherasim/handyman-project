@@ -151,7 +151,7 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
     Route::get('/paypal-payment', [PayPalController::class, 'createPayment'])->name('paypal.payment');
     Route::post('/paypal-success', [PayPalController::class, 'success'])->name('paypal.success');
     Route::get('/paypal-cancel', [PayPalController::class, 'cancel'])->name('paypal.cancel');
-    
+
 
 
 
@@ -561,3 +561,4 @@ Route::get('get-subcategories', 'CategoryController@getSubcategories')->name('ge
 
 Route::get('/countries', [ProviderController::class, 'getCountries']);
 Route::get('/cities', [ProviderController::class, 'getcitiesBaseOnCountry']);
+Route::get('/sub-categories', [ProviderController::class, 'getSubCategoryList']);

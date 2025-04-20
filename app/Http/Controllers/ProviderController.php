@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\API\SubCategoryResource;
+use App\Models\SubCategory;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\UserFavouriteService;
@@ -53,20 +55,20 @@ class ProviderController extends Controller
     public function getCitiesBaseOnCountry(Request $request)
     {
         $country_id = $request->query('country_id');
-    
+
         if (!$country_id) {
             return response()->json(['error' => 'Country ID is required'], 400);
         }
-    
+
         $state_ids = State::where('country_id', $country_id)->pluck('id');
-    
+
         if ($state_ids->isEmpty()) {
             return response()->json([]);
         }
         $cities = City::whereIn('state_id', $state_ids)
                       ->select('id', 'name')
                       ->get();
-    
+
         return response()->json($cities);
     }
 
@@ -397,13 +399,13 @@ class ProviderController extends Controller
     {
         // Debugging request data
        // dd($request->all());
-    
+
         // Set Stripe API key
         Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
-    
+
         // Calculate the amount dynamically based on the request
         $amount = $request->plan_amount * 100; // Stripe expects the amount in cents
-    
+
         try {
             // Create the Stripe charge
             $charge = Stripe\Charge::create([
@@ -412,10 +414,10 @@ class ProviderController extends Controller
                 "source" => $request->stripeToken, // Stripe token from the request
                 "description" => "Payment for plan: " . $request->plan_type, // Description with plan type
             ]);
-            
+
             // Find the plan from the database
             $plan = ProviderSubscription::find($request->plan_id);
-            
+
             if ($plan) {
                 // Update plan details based on the request
                 $plan->plan_type = $request->plan_type;
@@ -423,7 +425,7 @@ class ProviderController extends Controller
                 $plan->status = 'active';
                 $plan->start_at = now();
                 $plan->end_at = now()->addMonth(); // Assuming a 1-month subscription
-                
+
                 // Attempt to save the updated plan details
                 if ($plan->save()) {
                     Log::info('Subscription updated successfully for ID: ' . $plan->id);
@@ -433,7 +435,7 @@ class ProviderController extends Controller
                     return redirect()->back()->with('error', 'Failed to update subscription.');
                 }
             }
-    
+
             return redirect()->back()->with('error', 'Subscription not found.');
         } catch (\Exception $e) {
             // If something goes wrong with Stripe
@@ -447,25 +449,25 @@ class ProviderController extends Controller
             'plan_id' => 'required|exists:provider_subscriptions,id',
             'plan_type' => 'required|string',
         ]);
-    
+
         $plan = ProviderSubscription::find($request->plan_id);
-    
+
         if ($plan) {
             $plan->plan_type = $request->plan_type;
             $plan->amount = 0;
             $plan->status = 'active';
             $plan->start_at = now();
             $plan->end_at = now()->addMonth(); // Example: 1-month free plan
-    
+
             if ($plan->save()) {
                 return response()->json(['success' => 'Subscription upgraded to Free Plan successfully.']);
             }
         }
-    
+
         return response()->json(['error' => 'Subscription upgrade failed.'], 500);
     }
-    
-   
+
+
         public function getCountries()
         {
             $countries = Country::select('id', 'name')->get();
@@ -482,7 +484,7 @@ class ProviderController extends Controller
 
 
 
-    
+
 
 
     public function show($id, $withdrawAmount = 0)
@@ -516,7 +518,7 @@ class ProviderController extends Controller
         ->where('user_type', 'provider')
         ->pluck('booking_id');
         $ProviderEarning = 0;
-            
+
             if ($commissionData->isNotEmpty()) {
                 // Fetch all unpaid commissions for the relevant bookings in a single query
                 $ProviderEarning = CommissionEarning::whereIn('booking_id', $commissionData)
@@ -848,7 +850,7 @@ class ProviderController extends Controller
             ];
             $slotsArray[] = $obj;
         }
-        
+
         $pageTitle = __('messages.slot', ['form' => __('messages.slot')]);
         return view('provider.timeslot', compact('auth_user','slotsArray', 'pageTitle', 'activeDay','provider_id','providerdata'));
     }
@@ -897,5 +899,23 @@ class ProviderController extends Controller
 
 
 
+    }
+
+    public function getSubCategoryList(Request $request){
+        $subcategory = SubCategory::where('status',1);
+        if(auth()->user() !== null){
+            if(auth()->user()->hasRole('admin')){
+                $subcategory = new SubCategory();
+                $subcategory = $subcategory->withTrashed();
+            }
+        }
+
+        if($request->has('cat_id')){
+            $subcategory->where('category_id',$request->cat_id);
+        }
+
+        $subcategory = $subcategory->orderBy('name','asc')->get();
+
+        return response()->json($subcategory);
     }
 }
