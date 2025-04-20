@@ -112,8 +112,8 @@ class UserController extends Controller
             if ($user->user_type == 'user' || $user->user_type == 'provider' || $user->user_type == 'handyman') {
                 $id = $user->id;
                 $user->assignRole($input['user_type']);
-                // $verificationLink = route('verify',['id' => $id]);
-                // Mail::to($user->email)->send(new VerificationEmail($verificationLink));
+                $verificationLink = route('verify',['id' => $id]);
+                Mail::to($user->email)->send(new VerificationEmail($verificationLink));
                 $message = 'Email Verification link has been sent to your email. Please Check your inbox';
                 $response = [
                     'message' => $message,
