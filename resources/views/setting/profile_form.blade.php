@@ -91,8 +91,8 @@
                     <div class="form-group col-md-6">
                         {{ html()->label(__('Availability') . ' <span class="text-danger">*</span>')->class('form-control-label')->for('availability') }}
                         {{ html()->select('availability', [
-                            'full_time' => 'Full-time',
-                            'part_time' => 'Part-time'
+                            'Full-time' => 'Full-time',
+                            'Part-time' => 'Part-time'
                         ], $user_data->availability)->class('form-control')->required()->placeholder(__('Select Availability')) }}
                         <small class="help-block with-errors text-danger"></small>
                     </div>
