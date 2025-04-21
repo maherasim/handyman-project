@@ -74,15 +74,23 @@ class ServiceController extends Controller
         $query = Service::query()->myService()->list();
 
         $filter = $request->filter;
+        $authUser = auth()->user();
 
         if (isset($filter)) {
             if (isset($filter['column_status'])) {
                 $query->where('status', $filter['column_status']);
             }
         }
-        if (auth()->user()->hasAnyRole(['admin','provider'])) {
-            $query = $query->where('service_type','service')->withTrashed();
-
+        if ($authUser->user_type === 'admin') {
+            // Admin: fetch all services, including trashed
+            $query = $query->where('service_type', 'service')->withTrashed();
+        } elseif ($authUser->user_type === 'provider') {
+            // Provider: fetch only their own services
+            $query = $query->where('provider_id', $authUser->id)
+                           ->where('service_type', 'service');
+        } else {
+            // Other users: no services
+            $query->whereRaw('1 = 0');
         }
         if ($request->has('postrequestid')) {
             $postRequestId = $request->postrequestid;
