@@ -17,18 +17,44 @@ class ServiceController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function index(Request $request) 
     {
         $servicepackage = $request->packageid;
         $postrequestid = $request->route('postjobid');
         $filter = [
             'status' => $request->status,
         ];
-        $pageTitle = __('messages.all_form_title',['form' => __('messages.services')] );
+    
+        $pageTitle = __('messages.all_form_title', ['form' => __('messages.services')]);
         $auth_user = authSession();
         $assets = ['datatable'];
-        return view('service.index', compact('pageTitle','auth_user','assets','filter','postrequestid','servicepackage'));
+    
+        // Start building query
+        $query = Service::query();
+    
+        // If user is a provider, filter by provider_id
+        if ($auth_user->role_type === 'provider') {
+            $query->where('provider_id', $auth_user->id);
+        }
+    
+        // Apply status filter if present
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+    
+        $services = $query->get(); // or ->paginate(10)
+    
+        return view('service.index', compact(
+            'pageTitle',
+            'auth_user',
+            'assets',
+            'filter',
+            'postrequestid',
+            'servicepackage',
+            'services'
+        ));
     }
+    
 
     public function myindex(Request $request)
     {
