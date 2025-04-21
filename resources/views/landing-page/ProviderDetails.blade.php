@@ -58,7 +58,7 @@
                                             @endforeach
                                         @endif
                                     </span>
-                                    <img src="{{ asset('images/icon/verified.jpg') }}"
+                                    <img src="{{ asset('images/icon/verifiedpng.png') }}"
                                         alt="icon"style="width: 14%; height: 23%; margin-right: 10px;">
                                 </div>
                                 <div class="d-flex align-items-center justify-content-center gap-1 mt-2">

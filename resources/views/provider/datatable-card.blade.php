@@ -8,7 +8,7 @@
   </div>
   <div class="d-flex align-items-center justify-content-around mt-3 gap-2">
       <!-- First icon -->
-      <img src="{{ asset('images/icon/verified.jpg') }}" alt="icon"
+      <img src="{{ asset('images/icon/verifiedpng.png') }}" alt="icon"
           style="width: 14%; height: 23%; margin-right: 10px;">
 
       <!-- Display name with ellipsis for overflow -->
@@ -47,7 +47,7 @@
       @endif
 
       <!-- Second icon -->
-      <img src="{{ asset('images/icon/freeicon.jpg') }}" alt="icon" style="width: 14%; height: 23%;">
+      <img src="{{ asset('images/icon/freepng.png') }}" alt="icon" style="width: 14%; height: 23%;">
   </div>
 
 

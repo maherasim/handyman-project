@@ -135,7 +135,7 @@
    <div class="d-flex align-items-center justify-content-end">
        <img src="{{ asset('images/icon/freeicon.jpg') }}" alt="icon"
            style="width: 20px; height: 20px; margin-right: 10px;">
-       <img src="{{ asset('images/icon/verified.jpg') }}" alt="icon"
+       <img src="{{ asset('images/icon/verifiedpng.png') }}" alt="icon"
            style="width: 20px; height: 20px;">
    </div>
 </div>

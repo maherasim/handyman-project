@@ -643,7 +643,7 @@
 
                         <div class="d-flex align-items-center  mt-2 justify-content-evenly">
 
-                            <img src="{{ asset('images/icon/verified.jpg') }}" alt="icon"
+                            <img src="{{ asset('images/icon/verifiedpng.png') }}" alt="icon"
                                 style="width: 15%; height: 70%; margin-right: 10px;">
 
 

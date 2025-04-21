@@ -490,12 +490,12 @@ class FrontendController extends Controller
 
         // dd(  $subscription);
         // Determine image path based on subscription
-        $imagePath = 'images/icon/freeicon.jpg'; // Default free icon
+        $imagePath = 'images/icon/freepng.png'; // Default free icon
         if ($subscription) {
             if (trim($subscription->plan_type) === 'Silver plan') {
-                $imagePath = 'images/icon/silver.jpg';
+                $imagePath = 'images/icon/silverpng.png';
             } elseif ($subscription->plan_type === 'Gold plan') {
-                $imagePath = 'images/icon/gold.jpg';
+                $imagePath = 'images/icon/goldpng.png';
             }
         }
         // dd( $imagePath);
