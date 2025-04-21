@@ -240,7 +240,7 @@
   }"
                                         class="form-control"
                                         placeholder="Start time"
-                                        @change="() => calculateDuration(index)"
+                                        @input="() => calculateDuration(index)"
                                     />
 
                                 </div>
@@ -735,7 +735,7 @@ const calculateDuration = (index) => {
     console.log("Service Type:", props.service.type);
     console.log("Start Time:", start.format('YYYY-MM-DD HH:mm'));
 
-    if (props.service.type !== 'hourly') {
+    if (props.service.type != 'hourly') {
         const durationString = props.service.duration; // expected format: "HH:mm", e.g., "04:00"
 
         console.log("Duration String:", durationString);
@@ -760,19 +760,29 @@ const calculateDuration = (index) => {
             console.warn("Unsupported duration format:", durationString);
             end = moment(start);
         }
-    } else {
-        if (!slot.endTime) {
-            console.warn("Missing end time for hourly service:", slot);
+    }  else {
+        const durationString = props.service.duration; // expected format: "HH:mm", e.g., "01:00"
+
+        if (durationString && durationString.includes(":")) {
+            const [hoursStr, minutesStr] = durationString.split(":");
+            const hours = parseInt(hoursStr);
+            const minutes = parseInt(minutesStr);
+
+            if (!isNaN(hours) || !isNaN(minutes)) {
+                end = moment(start); // create a fresh copy to avoid mutation
+                if (!isNaN(hours)) end.add(hours, 'hours');
+                if (!isNaN(minutes)) end.add(minutes, 'minutes');
+
+                slot.endTime = end.format('HH:mm');
+                console.log("Calculated End Time (hourly):", slot.endTime);
+            } else {
+                console.warn("Invalid hourly duration format:", durationString);
+                return;
+            }
+        } else {
+            console.warn("Unsupported hourly duration format:", durationString);
             return;
         }
-
-        end = moment(`${slot.date} ${slot.endTime}`, 'YYYY-MM-DD HH:mm');
-
-        if (end.isBefore(start)) {
-            end.add(1, 'day'); // Overnight service
-        }
-
-        console.log("Using provided End Time (hourly):", end.format('HH:mm'));
     }
 
     const duration = moment.duration(end.diff(start));
