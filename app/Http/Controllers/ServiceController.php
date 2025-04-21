@@ -29,20 +29,19 @@ class ServiceController extends Controller
         $auth_user = authSession();
         $assets = ['datatable'];
     
-        // Start building query
-        $query = Service::query();
+        $services = collect(); // default empty collection
     
-        // If user is a provider, filter by provider_id
-        if ($auth_user->role_type === 'provider') {
-            $query->where('provider_id', $auth_user->id);
+        if ($auth_user->role_type == 4) {
+            // Only fetch services for this provider
+            $query = Service::where('provider_id', $auth_user->id);
+    
+            // Optional: status filter
+            if ($request->filled('status')) {
+                $query->where('status', $request->status);
+            }
+    
+            $services = $query->get(); // or paginate()
         }
-    
-        // Apply status filter if present
-        if ($request->filled('status')) {
-            $query->where('status', $request->status);
-        }
-    
-        $services = $query->get(); // or ->paginate(10)
     
         return view('service.index', compact(
             'pageTitle',
