@@ -120,7 +120,7 @@
                                             <tr class=" pe-0">
                                                 <div class="d-flex align-items-center justify-content-center gap-3 mt-3">
                                                     <a href="#">
-                                                        <img src="https://cdn.pixabay.com/photo/2021/06/15/12/51/facebook-6338507_1280.png"
+                                                        <img src="https://static.vecteezy.com/system/resources/previews/016/716/481/original/facebook-icon-free-png.png"
                                                             style="width: 30px; border-radius: 8px;" alt="">
                                                     </a>
                                                     <a href="#">
