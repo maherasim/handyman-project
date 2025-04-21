@@ -14,12 +14,22 @@
             <div class="content flex-grow-1">
               <div class="d-sm-flex align-items-center gap-3 justify-content-between">
                 <h4 class="mb-0">{{ service.name }}</h4>
-                <div class="flex-shrink-0 d-inline-flex align-items-center gap-2 mt-sm-0 mt-2">
-                  <span class="text-primary fw-500 d-inline-block position-relative h5"><span v-if="service.price > 0">{{
-                    formatCurrencyVue(service.price) }}</span><span v-else>Free</span></span>
-                  <span class="font-size-18" v-if="service.duration">/</span>
-                  <span class="h5 text-body" v-if="service.duration">{{ formattedDuration(service.duration) }}</span>
-                </div>
+                <div class="flex-shrink-0 d-inline-flex align-items-center gap-2 mt-sm-0 mt-2"> 
+                    <span class="text-primary fw-500 d-inline-block position-relative h5">
+                      <span v-if="service.price > 0">{{ formatCurrencyVue(service.price) }}</span>
+                      <span v-else>Free</span>
+                    </span>
+
+                    <!-- Show slash if type exists -->
+                    <span class="font-size-18" v-if="service.type">/</span>
+
+                    <!-- Show type with duration in parentheses -->
+                    <span class="h5 text-body" v-if="service.type">
+                      {{ service.type }}
+                      <span v-if="service.duration">{{ formattedDuration(service.duration) }}</span>
+                    </span>
+                  </div>
+
               </div>
               <div class="d-sm-flex gap-2 mt-3">
                 <h6 class="m-0 lh-1">{{ $t('messages.category') }}:</h6>
