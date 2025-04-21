@@ -38,10 +38,13 @@
                             @if (!empty($serviceData['service_detail']['duration']))
                                 <li>
                                     <h6 class="text-body">
+                                        
                                         <div>
-                                            {{ $serviceData['provider']['city']['name'] ?? 'N/A' }} -
-                                            {{ $serviceData['provider']['country']['name'] ?? 'N/A' }}
-
+                                            <div>
+                                                {{ $serviceData['service_detail']['city_name'] ?? 'City' }} -
+                                                {{ $serviceData['service_detail']['country_name'] ?? 'Country' }}
+                                            </div>
+                                            
                                         </div>
                                     </h6>
                                 </li>
@@ -695,7 +698,7 @@
                             <li>Skills : {{ $serviceData['provider']['education'] }}</li>
                             <li>Diploma : {{ $serviceData['provider']['skills'] }}</li>
                             <li>Skills : {{ $serviceData['provider']['certification'] }}</li>
-                            <li>Jobs Completed : {{ $serviceData['provider']['status'] }}</li>
+                            <li>Jobs Completed :    {{ $completed_services }}</li>
 
 
                             </a>

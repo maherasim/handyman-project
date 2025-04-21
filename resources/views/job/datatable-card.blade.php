@@ -193,7 +193,7 @@
                                  </h6>
                                  <div class="d-flex align-items-center gap-2">
                                      <a href="#"><img
-                                             src="https://cdn.pixabay.com/photo/2021/06/15/12/51/facebook-6338507_1280.png"
+                                             src="https://static.vecteezy.com/system/resources/previews/016/716/481/original/facebook-icon-free-png.png"
                                              alt="Facebook"
                                              style="width: 20px; height: 20px; border-radius: 8px;"></a>
                                      <a href="#"><img

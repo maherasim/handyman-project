@@ -17,18 +17,43 @@ class ServiceController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function index(Request $request) 
     {
         $servicepackage = $request->packageid;
         $postrequestid = $request->route('postjobid');
         $filter = [
             'status' => $request->status,
         ];
-        $pageTitle = __('messages.all_form_title',['form' => __('messages.services')] );
+    
+        $pageTitle = __('messages.all_form_title', ['form' => __('messages.services')]);
         $auth_user = authSession();
         $assets = ['datatable'];
-        return view('service.index', compact('pageTitle','auth_user','assets','filter','postrequestid','servicepackage'));
+    
+        $services = collect(); // default empty collection
+    
+        if ($auth_user->role_type == 4) {
+            // Only fetch services for this provider
+            $query = Service::where('provider_id', $auth_user->id);
+    
+            // Optional: status filter
+            if ($request->filled('status')) {
+                $query->where('status', $request->status);
+            }
+    
+            $services = $query->get(); // or paginate()
+        }
+    
+        return view('service.index', compact(
+            'pageTitle',
+            'auth_user',
+            'assets',
+            'filter',
+            'postrequestid',
+            'servicepackage',
+            'services'
+        ));
     }
+    
 
     public function myindex(Request $request)
     {
@@ -49,15 +74,23 @@ class ServiceController extends Controller
         $query = Service::query()->myService()->list();
 
         $filter = $request->filter;
+        $authUser = auth()->user();
 
         if (isset($filter)) {
             if (isset($filter['column_status'])) {
                 $query->where('status', $filter['column_status']);
             }
         }
-        if (auth()->user()->hasAnyRole(['admin','provider'])) {
-            $query = $query->where('service_type','service')->withTrashed();
-
+        if ($authUser->user_type === 'admin') {
+            // Admin: fetch all services, including trashed
+            $query = $query->where('service_type', 'service')->withTrashed();
+        } elseif ($authUser->user_type === 'provider') {
+            // Provider: fetch only their own services
+            $query = $query->where('provider_id', $authUser->id)
+                           ->where('service_type', 'service');
+        } else {
+            // Other users: no services
+            $query->whereRaw('1 = 0');
         }
         if ($request->has('postrequestid')) {
             $postRequestId = $request->postrequestid;
