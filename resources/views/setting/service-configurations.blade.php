@@ -83,7 +83,7 @@
                 ->class('form-control')
                 ->id('advance_paynment_percantage')
                 ->value(!empty($serviceconfig->advance_paynment_percantage) ? $serviceconfig->advance_paynment_percantage : '')
-                ->attribute('min', 1)
+                
                 ->attribute('max', 99)
                 ->attribute('step', '0.1')
                 ->placeholder(__('messages.advance_paynment_percantage'))
@@ -113,7 +113,7 @@
                 ->class('form-control')
                 ->id('cancellation_charge_amount')
                 ->value(!empty($serviceconfig->cancellation_charge_amount) ? $serviceconfig->cancellation_charge_amount : '')
-                ->attribute('min', 1)
+               
                 ->attribute('max', 99)
                 ->attribute('step', '0.1')
                 ->placeholder(__('messages.cancellation_charge_amount'))
