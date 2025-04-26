@@ -80,15 +80,14 @@
         <div class="form-group col-sm-6 mb-0" id="key">
             {{ html()->label(trans('messages.advance_paynment_percantage') . '(%) <span class="text-danger">*</span>', 'advance_paynment_percantage')->class('form-control-label') }}
             {{ html()->number('advance_paynment_percantage')
-    ->class('form-control')
-    ->id('advance_paynment_percantage')
-    ->value(!is_null($serviceconfig->advance_paynment_percantage) ? $serviceconfig->advance_paynment_percantage : '')
-    ->attribute('min', 0)  <!-- changed from 1 to 0 -->
-    ->attribute('max', 99)
-    ->attribute('step', '0.1')
-    ->placeholder(__('messages.advance_paynment_percantage'))
-}}
-
+                ->class('form-control')
+                ->id('advance_paynment_percantage')
+                ->value(!empty($serviceconfig->advance_paynment_percantage) ? $serviceconfig->advance_paynment_percantage : '')
+                ->attribute('min', 1)
+                ->attribute('max', 99)
+                ->attribute('step', '0.1')
+                ->placeholder(__('messages.advance_paynment_percantage'))
+            }}
             <small class="help-block with-errors text-danger"></small>
         </div>
     </div>
@@ -111,15 +110,14 @@
         <div class="form-group col-sm-6 mb-0" >
             {{ html()->label(trans('messages.cancellation_charge_amount') . ' (%) <span class="text-danger">*</span>' , 'cancellation_charge_amount')->class('form-control-label') }}
             {{ html()->number('cancellation_charge_amount')
-    ->class('form-control')
-    ->id('cancellation_charge_amount')
-    ->value(!is_null($serviceconfig->cancellation_charge_amount) ? $serviceconfig->cancellation_charge_amount : '')
-    ->attribute('min', 0)  <!-- changed from 1 to 0 -->
-    ->attribute('max', 99)
-    ->attribute('step', '0.1')
-    ->placeholder(__('messages.cancellation_charge_amount'))
-}}
-
+                ->class('form-control')
+                ->id('cancellation_charge_amount')
+                ->value(!empty($serviceconfig->cancellation_charge_amount) ? $serviceconfig->cancellation_charge_amount : '')
+                ->attribute('min', 1)
+                ->attribute('max', 99)
+                ->attribute('step', '0.1')
+                ->placeholder(__('messages.cancellation_charge_amount'))
+            }}
             <small class="help-block with-errors text-danger"></small>
         </div>
 
