@@ -36,7 +36,8 @@ class UserFavouriteResource extends JsonResource {
             ? ( float ) number_format( max( $this->service->serviceRating->avg( 'rating' ), 0 ), 2 )
             : 0,
 
-            'category_name' => optional( $this->service->category )->name,
+            'category_name' => optional(optional($this->service)->category)->name,
+
             'category_id'   => $this->service->category_id,
             'provider_image'=> optional( $this->service->providers )->login_type != null ? optional( $this->service->providers )->social_image : getSingleMedia( optional( $this->service->providers ), 'profile_image', null ),
             'provider_name' => optional( $this->service->providers )->display_name,
