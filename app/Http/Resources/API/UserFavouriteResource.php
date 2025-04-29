@@ -32,7 +32,10 @@ class UserFavouriteResource extends JsonResource {
             ? $this->service->getUserFavouriteService->where( 'user_id', $user_id )->first() ? 1 : 0
             : 0,
 
-            'total_rating'  => count( $this->service->serviceRating ) > 0 ? ( float ) number_format( max( $this->service->serviceRating->avg( 'rating' ), 0 ), 2 ) : 0,
+           'total_rating' => optional($this->service->serviceRating)->count() > 0
+    ? (float) number_format(max($this->service->serviceRating->avg('rating'), 0), 2)
+    : 0,
+
             'category_name' => optional( $this->service->category )->name,
             'category_id'   => $this->service->category_id,
             'provider_image'=> optional( $this->service->providers )->login_type != null ? optional( $this->service->providers )->social_image : getSingleMedia( optional( $this->service->providers ), 'profile_image', null ),
