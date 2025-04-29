@@ -38,7 +38,8 @@ class UserFavouriteResource extends JsonResource {
 
             'category_name' => optional(optional($this->service)->category)->name,
 
-            'category_id'   => $this->service->category_id,
+           'category_id'   => optional($this->service)->category_id,
+
             'provider_image'=> optional( $this->service->providers )->login_type != null ? optional( $this->service->providers )->social_image : getSingleMedia( optional( $this->service->providers ), 'profile_image', null ),
             'provider_name' => optional( $this->service->providers )->display_name,
             'provider_id' => optional( $this->service->providers )->id
