@@ -124,7 +124,7 @@ class HomeController extends Controller
             $user = User::with('commission_earning')->where('id', $user->id)->where('user_type', 'provider')->first();
             $commissions = $user->commission_earning()
             ->whereHas('getbooking', function ($query) {
-                $query->where('status', 'completed');
+//                $query->where('status', 'completed');
             })
             ->where('commission_status', 'unpaid')
             ->pluck('booking_id'); // Get all booking IDs
@@ -138,7 +138,6 @@ class HomeController extends Controller
                     ->where('commission_status', 'unpaid')
                     ->sum('commission_amount'); // Directly sum the commission_amount
             }
-
 
             $data['remaining_payout']  = $ProviderEarning;
             $data['total_earning']  = ProviderPayout::where('provider_id',$user->id)->sum('amount') ?? 0;
@@ -434,7 +433,7 @@ $data['datetime'] = $sitesetup ? json_decode($sitesetup->value) : null;
 
                 $items = $items->get();
                 break;
-            
+
             case 'provider-user-handyman':
                 $items = \App\Models\User::select('id', 'display_name as text')
                     ->whereIn('user_type', ['provider','user','handyman'])
@@ -519,12 +518,12 @@ $data['datetime'] = $sitesetup ? json_decode($sitesetup->value) : null;
                 if (!empty($value)) {
                     $items->where('name', 'LIKE', '%' . $value . '%');
                 }
-                
+
                 // Filter by provider_id if it's provided in the request
                 if ($request->filled('provider_id')) {
                     $items->where('provider_id', $request->provider_id);
                 }
-                
+
                 // Filter by handyman_id if it's provided in the request
                 if ($request->filled('handyman_id')) {
                     $providerId = \App\Models\User::where('id', $request->handyman_id)
@@ -952,7 +951,7 @@ $data['datetime'] = $sitesetup ? json_decode($sitesetup->value) : null;
                 $serviceData = Service::find($id);
                 $attachments = $serviceData->getMedia('service_attachment');
                 break;
-            
+
             case 'helpdesk':
                 $helpdesk = HelpDesk::find($id);
                 $attachments = $helpdesk->getMedia('helpdesk_attachment');

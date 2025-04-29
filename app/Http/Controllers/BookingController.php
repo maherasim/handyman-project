@@ -449,7 +449,6 @@ class BookingController extends Controller
         $data = $request->all();
 
         $data['tax'] = null;
-
         if ($request->id == null) {
             $data['status'] = !empty($data['status']) ? $data['status'] : 'pending';
         }

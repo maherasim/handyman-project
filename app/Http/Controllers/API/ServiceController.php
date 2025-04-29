@@ -34,8 +34,8 @@ class ServiceController extends Controller
         $category = Category::onlyTrashed()->get();
         $category = $category->pluck('id');
         $service = $service->whereNotIn('category_id',$category);
-        
-        
+
+
         if(auth()->user() !== null && auth()->user()->hasRole('admin')){
             $service = $service->withTrashed();
         }elseif(auth()->user() !== null && auth()->user()->hasRole('provider')){
@@ -46,11 +46,11 @@ class ServiceController extends Controller
         if($request->has('status') && isset($request->status)){
             $service->where('status',$request->status);
         }
-        
+
         if($request->has('provider_id')){
-            $service->where('provider_id',$request->provider_id);        
+            $service->where('provider_id',$request->provider_id);
         }
-        
+
         if($request->has('category_id') && $request->category_id != 'null'){
             $service->where('category_id',$request->category_id);
         }
@@ -65,7 +65,7 @@ class ServiceController extends Controller
         }
         if($request->has('is_rating') && $request->is_rating != '') {
             $isRating = (int) $request->is_rating;
-        
+
             $service->whereHas('serviceRating', function($q) use ($isRating) {
                 $q->select('service_id', \DB::raw('round(AVG(rating), 1) as total_rating'))
                   ->groupBy('service_id')
@@ -76,26 +76,26 @@ class ServiceController extends Controller
 
 
         if($request->has('is_price_min') && $request->is_price_min != '' || $request->has('is_price_max') && $request->is_price_max != ''){
-            $service->whereBetween('price', [$request->is_price_min, $request->is_price_max]); 
+            $service->whereBetween('price', [$request->is_price_min, $request->is_price_max]);
         }
         if ($request->has('city_id')) {
             $service->whereHas('providers', function ($a) use ($request) {
                 $a->where('city_id', $request->city_id);
             });
         }
-        
+
         if($request->has('provider_id') && $request->provider_id != '' ){
-       
+
             $service->whereHas('providers', function ($a) use ($request) {
                 $a->where('status', 1);
             });
 
             if(default_earning_type() === 'subscription'){
-             
+
                  $service->whereHas('providers', function ($a) use ($request) {
                      $a->where('status', 1)->where('is_subscribe',1);
                  });
-                   
+
              }
 
         }else{
@@ -109,13 +109,13 @@ class ServiceController extends Controller
                         $a->where('status', 1)->where('is_subscribe',1);
                     });
                }
-                
+
             }
         }
         if ($request->has('latitude') && !empty($request->latitude) && $request->has('longitude') && !empty($request->longitude)) {
             $get_distance = getSettingKeyValue('site-setup','radious');
             $get_unit = getSettingKeyValue('site-setup','distance_type');
-            
+
             $locations = $service->locationService($request->latitude,$request->longitude,$get_distance,$get_unit);
             $service_in_location = ProviderServiceAddressMapping::whereIn('provider_address_id',$locations)->get()->pluck('service_id');
             $service->with('providerServiceAddress')->whereIn('id',$service_in_location);
@@ -138,7 +138,7 @@ class ServiceController extends Controller
         if(auth()->user() !== null && auth()->user()->hasRole('admin')){
 
             $service = $service->orderBy('created_at','desc');
-           
+
         }else{
 
             $service = $service->where('status',1)->orderBy('created_at','desc');
@@ -146,9 +146,9 @@ class ServiceController extends Controller
         }
 
         $service = $service->paginate($per_page);
-     
+
         $items = ServiceResource::collection($service);
-       
+
         $items = $items->map(function ($item) {
             $completedBookingCount = Booking::where('service_id', $item->id)
                 ->where('status', 'completed')
@@ -156,7 +156,7 @@ class ServiceController extends Controller
             $item->completed_booking_count = $completedBookingCount;
             return $item;
         });
-       
+
         $userservices  = null;
         if($request->customer_id != null){
             $user_service = Service::where('status',1)->where('added_by',$request->customer_id)->get();
@@ -179,13 +179,13 @@ class ServiceController extends Controller
             'max'=> $service->max('price'),
             'min'=> $service->min('price'),
         ];
-        
+
         return comman_custom_response($response);
     }
 
     public function getServiceDetail(Request $request){
         $id = $request->service_id;
-       
+
         if(auth()->user() !== null){
             if(auth()->user()->hasRole('admin')){
                 $service = Service::where('service_type','service')->withTrashed()->with('providers','category','serviceRating','serviceAddon')->findorfail($id);
@@ -196,17 +196,17 @@ class ServiceController extends Controller
         }else{
             $service = Service::where('service_type','service')->where('status',1)->with('providers','category','serviceRating','serviceAddon')->find($id);
         }
-       
+
         if(empty($service)){
             $message = __('messages.record_not_found');
-            return comman_message_response($message,406);   
+            return comman_message_response($message,406);
         }
 
 
         $service_detail = new ServiceDetailResource($service);
         $related = $service->where('service_type','service')->where('category_id',$service->category_id);
          if(default_earning_type() === 'subscription'){
-    
+
             $related->whereHas('providers', function ($a) use ($request) {
                 $a->where('status', 1)->where('is_subscribe',1);
             });
@@ -219,7 +219,7 @@ class ServiceController extends Controller
         $related_service = ServiceResource::collection($related);
 
         $rating_data = BookingRatingResource::collection($service_detail->serviceRating->take(5));
-                
+
         $customer_reviews = [];
         if($request->customer_id != null){
             $customer_review = BookingRating::where('customer_id',$request->customer_id)->where('service_id',$id)->get();
@@ -228,7 +228,7 @@ class ServiceController extends Controller
                 $customer_reviews = BookingRatingResource::collection($customer_review);
             }
         }
-        
+
         $coupon = Coupon::with('serviceAdded')
                 ->where('expire_date','>',date('Y-m-d H:i'))
                 ->where('status',1)
@@ -288,7 +288,7 @@ class ServiceController extends Controller
             ],
             'data' => $items,
         ];
-        
+
         return comman_custom_response($response);
     }
     public function saveFavouriteService(Request $request)
@@ -307,9 +307,9 @@ class ServiceController extends Controller
 
     public function deleteFavouriteService(Request $request)
     {
-        
+
         $service_rating = UserFavouriteService::where('user_id',$request->user_id)->where('service_id',$request->service_id)->delete();
-        
+
         $message = __('messages.delete_form',[ 'form' => __('messages.wishlist') ] );
 
         return comman_message_response($message);
@@ -332,7 +332,7 @@ class ServiceController extends Controller
             }
         }
 
-        $favourite = $favourite->orderBy('created_at','desc')->paginate($per_page);
+        $favourite = $favourite->orderBy('created_at','desc')->paginate($per_page > 0 ? $per_page : 10);
 
         $items = UserFavouriteResource::collection($favourite);
 
@@ -349,7 +349,7 @@ class ServiceController extends Controller
             ],
             'data' => $items,
         ];
-    
+
         return comman_custom_response($response);
     }
     public function getTopRatedService(){
@@ -359,7 +359,7 @@ class ServiceController extends Controller
         $response = [
             'data' => $items,
         ];
-        
+
         return comman_custom_response($response);
     }
     public function serviceReviewsList(Request $request){
