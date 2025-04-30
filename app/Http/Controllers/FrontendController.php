@@ -1111,15 +1111,14 @@ class FrontendController extends Controller
             });
         }
         if (isset($filter['booking_date_range'])) {
-
             $startDate = explode(' to ', $filter['booking_date_range'])[0];
 
-            $startDate = \Carbon\Carbon::createFromFormat('m/d/Y', $startDate)->format('Y-m-d');
+            $startDate = \Carbon\Carbon::createFromFormat('d/m/Y', $startDate)->format('Y-m-d');
             $startDate = \Carbon\Carbon::parse($startDate);
             $startDate = $startDate->format('Y-m-d');
 
             $endDate = explode(' to ', $filter['booking_date_range'])[1];
-            $endDate = \Carbon\Carbon::createFromFormat('m/d/Y', $endDate)->format('Y-m-d');
+            $endDate = \Carbon\Carbon::createFromFormat('d/m/Y', $endDate)->format('Y-m-d');
             $endDate = \Carbon\Carbon::parse($endDate);
             $endDate = $endDate->format('Y-m-d');
 
