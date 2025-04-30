@@ -855,6 +855,7 @@ class BookingController extends Controller
             'activity_type' => $activity_type,
             'booking_id' => $bookingdata->id,
             'booking' => $bookingdata,
+           'activity_message' => 'Booking has been assigned to a handyman.'
         ];
         $this->sendNotification($activity_data);
 
