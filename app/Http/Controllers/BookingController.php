@@ -458,8 +458,10 @@ class BookingController extends Controller
             $time = date('H:i:s', strtotime($data['booking_slot']));
             $data['date'] = $date . ' ' . $time;
         } else {
-            $data['date'] = isset($request->date) ? date('Y-m-d H:i:s', strtotime($request->date)) : date('Y-m-d H:i:s');
+//            $data['date'] = isset($request->date) ? date('Y-m-d H:i:s', strtotime($request->date)) : date('Y-m-d H:i:s');
+            $data['date'] = Carbon::now();
         }
+
         $service_data = Service::find($data['service_id']);
 
         $data['provider_id'] = !empty($data['provider_id']) ? $data['provider_id'] : $service_data->provider_id;
