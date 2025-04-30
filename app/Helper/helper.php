@@ -180,7 +180,8 @@ function storeMediaFile($model,$file,$name){
 
 function getAttachments($attchments){
     $files = [];
-    if (count($attchments) > 0) {
+
+    if (is_countable($attchments) && count($attchments) > 0) {
         foreach ($attchments as $attchment) {
             if (getFileExistsCheck($attchment)) {
                 array_push($files, $attchment->getFullUrl());
@@ -190,6 +191,7 @@ function getAttachments($attchments){
 
     return $files;
 }
+
 
 function getAttachmentArray($attchments){
     $files = [];
