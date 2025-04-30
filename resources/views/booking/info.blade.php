@@ -133,7 +133,7 @@
                             </div>
                             <div class="d-flex flex-wrap flex-xxl-nowrap gap-3">
                                 <div class="w3-third">
-                                    {{-- @if ($bookingdata->handymanAdded->count() == 0 && $bookingdata->status !== 'cancelled') --}}
+                                    @if ($bookingdata->handymanAdded->count() == 0 && $bookingdata->status !== 'cancelled')
                                         @hasanyrole('admin|demo_admin|provider')
                                             <button class="float-end btn btn-primary" id="assign-provider"
                                                 data-id="{{ $bookingdata->id }}"
@@ -142,7 +142,7 @@
                                                 {{ __('messages.assign_provider') }}
                                             </button>
                                         @endhasanyrole
-                                    {{-- @endif --}}
+                                    @endif
                                 </div>
                                 <div class="w3-third">
                                     @if ($bookingdata->handymanAdded->count() == 0 && $bookingdata->status !== 'cancelled')
