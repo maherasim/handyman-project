@@ -237,8 +237,7 @@ class BookingController extends Controller
                     ->orderBy('providers.display_name', $order);
             })
             ->editColumn('status', function ($query) {
-                return $query->status;
-
+                return bookingstatus(BookingStatus::bookingStatus($query->status));
             })
             ->editColumn('payment_id', function ($query) {
                 $payment = $query->payment()->orderBy('id', 'desc')->first();
