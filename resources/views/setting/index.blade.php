@@ -12,7 +12,7 @@
                 </div>
             </div>
         </div>
-        
+
         <div class="row">
             <div class="col-lg-3">
                 <div class="card">
@@ -53,7 +53,7 @@
                                             <li class="nav-item">
                                                 <a href="javascript:void(0)" data-href="{{ route('layout_page') }}?page=notification-setting" data-target=".paste_here" class="nav-link {{$page=='notification-setting'?'active':''}}"  data-toggle="tabajax" rel="tooltip"> {{ __('messages.notification_configurations') }}</a>
                                             </li>
-                                           
+
                                             <li class="nav-item">
                                                 <a href="javascript:void(0)" data-href="{{ route('layout_page') }}?page=social-media" data-target=".paste_here" class="nav-link {{$page=='social-media'?'active':''}}"  data-toggle="tabajax" rel="tooltip"> {{ __('messages.social_media') }}</a>
                                             </li>
@@ -78,13 +78,13 @@
                                             <li class="nav-item">
                                                 <a href="javascript:void(0)" data-href="{{ route('layout_page') }}?page=mail-setting" data-target=".paste_here" class="nav-link {{$page=='mail-setting'?'active':''}}"  data-toggle="tabajax" rel="tooltip"> {{ __('messages.mail_settings') }}</a>
                                             </li>
-                                            
+
                                             <!-- <li class="nav-item">
                                                 <a href="javascript:void(0)" data-href="{{ route('layout_page') }}?page=push-notification-setting" data-target=".paste_here" class="nav-link {{$page=='push-notification-setting'?'active':''}}"  data-toggle="tabajax" rel="tooltip"> {{ __('messages.pushnotification_settings') }}</a>
                                             </li> -->
                                             <li class="nav-item">
                                                 <a href="javascript:void(0)" data-href="{{ route('layout_page') }}?page=earning-setting" data-target=".paste_here" class="nav-link {{$page=='earning-setting'?'active':''}}"  data-toggle="tabajax" rel="tooltip"> {{ __('messages.earning_setting') }}</a>
-                                            </li>                                         
+                                            </li>
                                         @endhasanyrole
                                     @endif
                                 </ul>
@@ -113,25 +113,52 @@
 
     @section('bottom_script')
         <script>
-            // (function($) {
-            //     "use strict";
-                $(document).ready(function(event)
-                {
-                    var $this = $('.nav-item').find('a.active');
-                    loadurl = '{{route('layout_page')}}?page={{$page}}';
+            $(document).ready(function () {
+                // ✅ Auto-load active tab content on page load
+                var $activeTab = $('[data-toggle="tabajax"].active');
+                if ($activeTab.length) {
+                    $activeTab.trigger('click');
+                }
+            });
 
-                    targ = $this.attr('data-target');
+            $(document).on('click', '[data-toggle="tabajax"]', function (e) {
+                e.preventDefault();
 
-                    id = this.id || '';
+                var $this = $(this);
+                var loadurl = $this.attr('data-href');
+                var targ = $this.attr('data-target');
 
-                    $.post(loadurl,{ '_token': $('meta[name=csrf-token]').attr('content') } ,function(data) {
-                        $(targ).html(data);
-                    });
+                // ✅ Prevent multiple AJAX calls for same tab
+                if ($this.hasClass('loaded')) {
+                    // $this.tab('show');
+                    return;
+                }
 
-                    $this.tab('show');
-                    return false;
+                $.post(loadurl, {
+                    _token: $('meta[name="csrf-token"]').attr('content')
+                }, function (data) {
+                    // ✅ Insert content into target
+                    $(targ).html(data);
+
+                    // ✅ Mark as loaded to avoid duplicate requests
+                    $this.addClass('loaded');
+
+                    // ✅ Activate tab
+                    $('.nav-link[data-toggle="tabajax"]').removeClass('active');
+                    $this.addClass('active');
+                    $this.addClass('show');
+
+                    // ✅ Initialize calendar if available
+                    if (typeof window.initializeCalendar === 'function') {
+                        setTimeout(function () {
+                            console.log('yeh wokring')
+                            window.initializeCalendar();
+                        },2000)
+                    }
                 });
-            // });
+            });
         </script>
+
+
     @endsection
 </x-master-layout>

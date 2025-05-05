@@ -1122,8 +1122,10 @@ class FrontendController extends Controller
             $endDate = \Carbon\Carbon::parse($endDate);
             $endDate = $endDate->format('Y-m-d');
 
-            $query->whereDate('date', '>=', $startDate);
-            $query->whereDate('date', '<=', $endDate);
+            $query->whereHas('slots', function ($q) use ($startDate, $endDate) {
+                $q->whereDate('date', '>=', $startDate)
+                    ->whereDate('date', '<=', $endDate);
+            });
         }
 
         if (isset($filter['status'])) {

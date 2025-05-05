@@ -210,7 +210,7 @@ class BookingController extends Controller
 
         $id = $request->booking_id;
 
-        $booking_data = Booking::with('customer','handymanAdded','provider','service','bookingRating','bookingPostJob','bookingAddonService','bookingPackage','payment')->where('id',$id)->first();
+        $booking_data = Booking::with('customer','handymanAdded','provider','service','bookingRating','bookingPostJob','bookingAddonService','bookingPackage','payment', 'slots')->where('id',$id)->first();
 
         if($booking_data == null){
             $message = __('messages.booking_not_found');

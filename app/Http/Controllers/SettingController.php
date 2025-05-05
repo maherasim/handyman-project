@@ -64,7 +64,7 @@ class SettingController extends Controller
             $activeSlots = [];
 
             foreach ($days as $value) {
-                $slot = ProviderSlotMapping::where('provider_id', $provider_id)
+               $slot = ProviderSlotMapping::where('provider_id', $provider_id)
                     ->where('days', $value)
                     ->orderBy('start_at', 'DESC')
                     ->selectRaw("SUBSTRING(start_at, 1, 5) as start_at")
@@ -78,6 +78,8 @@ class SettingController extends Controller
                 $slotsArray[] = $obj;
                 $activeSlots[$value] = $slot;
             }
+
+//            return $activeSlots;
             $pageTitle = __('messages.slot', ['form' => __('messages.slot')]);
         }
         if (count($envSettting) > 0) {
@@ -783,15 +785,15 @@ class SettingController extends Controller
 
         // Get or create theme setup setting
         $setting = Setting::firstOrNew(['type' => 'theme-setup']);
-        
+
         // Get existing values or initialize empty array
         $values = $setting->value ? json_decode($setting->value, true) : [];
-        
+
         // Update primary color if provided
         if ($request->has('primary_color')) {
             $values['primary_color'] = $request->primary_color;
         }
-        
+
         // Save settings
         $setting->type = 'theme-setup';
         $setting->key = 'theme-setup';
