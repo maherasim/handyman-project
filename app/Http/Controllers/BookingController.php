@@ -495,7 +495,7 @@ class BookingController extends Controller
                 'booking_id' => $result->id,
                 'date' => $slot['date'],
                 'start_time' => $slot['start_time'],
-                'end_time' => $slot['end_time'],
+                'end_time' => $slot['end_time'] ?? null,
                 'total_days' => $slot['total_days'],
                 'total_hours' => $slot['total_hours'],
             ]);
