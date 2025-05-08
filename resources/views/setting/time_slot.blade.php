@@ -25,7 +25,6 @@
     </div>
 </div>
 
-{{--<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>--}}
 <script>
     window.initializeCalendar = function () {
         const calendarEl = document.getElementById('calendar');
@@ -33,7 +32,7 @@
 
         const selectedSlots = [];
 
-        const previouslySavedSlots = @json($activeSlots); // from controller: ['monday' => ['09:00'], ...]
+        const previouslySavedSlots = @json($activeSlots); // e.g. { mon: ['09:00', '10:00'], ... }
         const dayMap = {
             sun: 0,
             mon: 1,
@@ -81,18 +80,15 @@
             select: function (info) {
                 const dayIndex = info.start.getDay();
                 const dayName = Object.keys(dayMap).find(key => dayMap[key] === dayIndex);
+
+                if (!dayName) return; // Avoid adding undefined day
+
                 const hour = String(info.start.getHours()).padStart(2, '0') + ':00';
 
                 const exists = selectedSlots.find(slot => slot.day === dayName && slot.time === hour);
 
                 if (exists) {
                     selectedSlots.splice(selectedSlots.indexOf(exists), 1);
-                    selectedSlots.push({
-                        title: 'Selected',
-                        backgroundColor: '#198754',
-                        borderColor: '#198754',
-                        classNames: ['user-slot']
-                    });
                     calendar.getEvents().forEach(ev => {
                         if (
                             ev.classNames.includes('preselected-slot') === false &&
@@ -121,20 +117,11 @@
         $('#provider-form').on('submit', function (e) {
             e.preventDefault();
 
-            const dayMap = {
-                sunday: 'sun',
-                monday: 'mon',
-                tuesday: 'tue',
-                wednesday: 'wed',
-                thursday: 'thu',
-                friday: 'fri',
-                saturday: 'sat'
-            };
-
             const formattedSlots = [];
             const groupedSlots = {};
 
             selectedSlots.forEach(slot => {
+                if (!slot.day) return; // safeguard
                 const shortDay = slot.day.toLowerCase();
                 if (!groupedSlots[shortDay]) {
                     groupedSlots[shortDay] = [];
