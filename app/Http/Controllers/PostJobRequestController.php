@@ -218,14 +218,14 @@ class PostJobRequestController extends Controller
         $result = PostJobRequest::updateOrCreate(['id' => $request->id], $data);
     
         // ✅ Send notification
-        $this->sendNotification([
-            'activity_type' => $request->status == 'assigned' ? 'user_accept_bid' : 'job_requested',
-            'post_job_id' => $result->id,
-            'customer_name' => optional($result->customer)->display_name,
-            'provider_name' => optional($result->provider)->display_name,
-            'latitude' => $data['latitude'] ?? 0.0,
-            'longitude' => $data['longitude'] ?? 0.0,
-        ]);
+        // $this->sendNotification([
+        //     'activity_type' => $request->status == 'assigned' ? 'user_accept_bid' : 'job_requested',
+        //     'post_job_id' => $result->id,
+        //     'customer_name' => optional($result->customer)->display_name,
+        //     'provider_name' => optional($result->provider)->display_name,
+        //     'latitude' => $data['latitude'] ?? 0.0,
+        //     'longitude' => $data['longitude'] ?? 0.0,
+        // ]);
     
         // ✅ Handle services
         $result->postServiceMapping()->delete();
