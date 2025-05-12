@@ -69,66 +69,69 @@ class PostJobRequestController extends Controller
     }
 
 
-    public function index_data(DataTables $datatable,Request $request)
-    {
-        $query = PostJobRequest::query();
-        $filter = $request->filter;
-        $query->whereDoesntHave('postBidList', function($postBidList){
-            $postBidList->where('provider_id', auth()->user()->id);
-        });
+public function index_data(DataTables $datatable, Request $request)
+{
+    $query = PostJobRequest::query();
 
-        if (isset($filter)) {
-            if (isset($filter['column_status'])) {
-                $query->where('status', $filter['column_status']);
-            }
-        }
-
-        if (auth()->user()->hasAnyRole(['admin'])) {
-            $query->newQuery();
-        }
-
-        return $datatable->eloquent($query)
-            ->addColumn('check', function ($row) {
-                return '<input type="checkbox" class="form-check-input select-table-row"  id="datatable-row-'.$row->id.'"  name="datatable_ids[]" value="'.$row->id.'" onclick="dataTableRowCheck('.$row->id.')">';
-            })
-            ->editColumn('title', function($query) {
-                return $query->title; // Return plain text instead of a clickable link
-            })
-            
-            ->editColumn('provider_id' , function ($query){
-                return view('postrequest.provider', compact('query'));
-            })
-            ->editColumn('customer_id' , function ($query){
-                return view('postrequest.customer', compact('query'));
-            })
-            ->filterColumn('customer_id',function($query,$keyword){
-                $query->whereHas('customer',function ($q) use($keyword){
-                    $q->where('display_name','like','%'.$keyword.'%');
-                });
-            })
-            ->orderColumn('customer_id', function ($query, $order) {
-                $query->select('post_job_requests.*')
-                      ->join('users as customers', 'customers.id', '=', 'post_job_requests.customer_id')
-                      ->orderBy('customers.display_name', $order);   
-            })
-            ->editColumn('price' , function ($query){
-                return getPriceFormat($query->price);
-            })
-            ->editColumn('status' , function ($query){
-               $status = $query->status;
-                if($status == 'requested'){
-                    $status = '<span class="badge text-primary bg-primary-subtle">'.__('messages.requested').'</span>';
-                }
-                return  $status;
-            })
-
-            ->addColumn('action', function($post_job){
-                return view('postrequest.action',compact('post_job'))->render();
-            })
-            ->addIndexColumn()
-            ->rawColumns(['title','action','status','check'])
-            ->toJson();
+    // If the user is not an admin, restrict to only their job requests
+    if (!auth()->user()->hasAnyRole(['admin'])) {
+        $query->where('customer_id', auth()->id());
     }
+
+    $filter = $request->filter;
+
+    // Exclude entries where the provider has already bid
+    $query->whereDoesntHave('postBidList', function($postBidList){
+        $postBidList->where('provider_id', auth()->id());
+    });
+
+    if (isset($filter)) {
+        if (isset($filter['column_status'])) {
+            $query->where('status', $filter['column_status']);
+        }
+    }
+
+    return $datatable->eloquent($query)
+        ->addColumn('check', function ($row) {
+            return '<input type="checkbox" class="form-check-input select-table-row"  id="datatable-row-'.$row->id.'"  name="datatable_ids[]" value="'.$row->id.'" onclick="dataTableRowCheck('.$row->id.')">';
+        })
+        ->editColumn('title', function($query) {
+            return $query->title;
+        })
+        ->editColumn('provider_id', function ($query){
+            return view('postrequest.provider', compact('query'));
+        })
+        ->editColumn('customer_id', function ($query){
+            return view('postrequest.customer', compact('query'));
+        })
+        ->filterColumn('customer_id', function($query, $keyword){
+            $query->whereHas('customer', function ($q) use($keyword){
+                $q->where('display_name', 'like', '%'.$keyword.'%');
+            });
+        })
+        ->orderColumn('customer_id', function ($query, $order) {
+            $query->select('post_job_requests.*')
+                ->join('users as customers', 'customers.id', '=', 'post_job_requests.customer_id')
+                ->orderBy('customers.display_name', $order);
+        })
+        ->editColumn('price', function ($query){
+            return getPriceFormat($query->price);
+        })
+        ->editColumn('status', function ($query){
+            $status = $query->status;
+            if ($status == 'requested') {
+                $status = '<span class="badge text-primary bg-primary-subtle">'.__('messages.requested').'</span>';
+            }
+            return $status;
+        })
+        ->addColumn('action', function($post_job){
+            return view('postrequest.action', compact('post_job'))->render();
+        })
+        ->addIndexColumn()
+        ->rawColumns(['title', 'action', 'status', 'check'])
+        ->toJson();
+}
+
 
     /* bulck action method */
     public function bulk_action(Request $request)
