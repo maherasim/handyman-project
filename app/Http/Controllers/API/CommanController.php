@@ -292,32 +292,43 @@ class CommanController extends Controller
 
         return comman_custom_response($items);
     }
-    public function downloadInvoice(Request $request){
-        $email = $request->email;
-        $booking_id = $request->booking_id;
+public function downloadInvoice(Request $request){
+    $email = $request->email;
+    $booking_id = $request->booking_id;
 
-        $bookingdata = Booking::with('handymanAdded', 'payment', 'bookingExtraCharge','bookingPackage')->where('id',$booking_id)->first();
+    $bookingdata = Booking::with('handymanAdded', 'payment', 'bookingExtraCharge','bookingPackage')
+                    ->where('id', $booking_id)
+                    ->first();
 
-        $emailData['email'] = $request->email;
-        $emailData['title'] = env('APP_NAME');
-        $emailData['body'] = __('messages.invoice_mail_body',['booking_id'=> $booking_id]);
-        $data =AppSetting::first();
-        $pdf = PDF::loadView('booking.invoice',['bookingdata'=>$bookingdata ,'data'=> $data]);
-        try {
-            \Mail::send('booking.invoice_email', $emailData, function($message)use($data, $pdf,$emailData,$booking_id) {
-                $message->to($emailData['email'])
-                        ->subject($emailData['title'])
-                        ->attachData($pdf->output(), 'invoice_'.$booking_id.'.pdf');
-            });
+    $payment = Payment::where('booking_id', $booking_id)->orderBy('id', 'desc')->first() ?? null;
 
-            $messagedata = __('messages.send_invoice');
-            return comman_message_response($messagedata);
-        } catch (\Throwable $th) {
-            $messagedata = __('messages.something_wrong');
-            return comman_message_response($messagedata);
-        }
+    $emailData['email'] = $email;
+    $emailData['title'] = env('APP_NAME');
+    $emailData['body'] = __('messages.invoice_mail_body', ['booking_id' => $booking_id]);
 
+    $data = AppSetting::first();
+
+    $pdf = PDF::loadView('booking.invoice', [
+        'bookingdata' => $bookingdata,
+        'data' => $data,
+        'payment' => $payment
+    ]);
+
+    try {
+        \Mail::send('booking.invoice_email', $emailData, function($message) use ($data, $pdf, $emailData, $booking_id) {
+            $message->to($emailData['email'])
+                    ->subject($emailData['title'])
+                    ->attachData($pdf->output(), 'invoice_' . $booking_id . '.pdf');
+        });
+
+        $messagedata = __('messages.send_invoice');
+        return comman_message_response($messagedata);
+    } catch (\Throwable $th) {
+        $messagedata = __('messages.something_wrong');
+        return comman_message_response($messagedata);
     }
+}
+
     public function getBankList(Request $request){
         $user_id = $request->user_id;
         $banks = Bank::where('provider_id',$user_id)->where('status',1);
