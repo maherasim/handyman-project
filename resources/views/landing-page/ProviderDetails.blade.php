@@ -58,8 +58,13 @@
                                             @endforeach
                                         @endif
                                     </span>
-                                    <img src="{{ asset('images/icon/verifiedpng.png') }}"
-                                        alt="icon"style="width: 14%; height: 23%; margin-right: 10px;">
+                                    @if ($isVerified)
+                                        <img src="{{ asset('images/icon/verifiedpng.png') }}" alt="verified icon"
+                                            style="width: 14%; height: 23%; margin-right: 10px;">
+                                    @else
+                                        <img src="{{ asset('images/icon/notverifiedpng.png') }}" alt="not verified icon"
+                                            style="width: 14%; height: 23%; margin-right: 10px;">
+                                    @endif
                                 </div>
                                 <div class="d-flex align-items-center justify-content-center gap-1 mt-2">
                                     <div>
@@ -255,8 +260,8 @@
                             link="{{ route('category-detail-service.data', ['provider_id' => $providerData['data']['id'], 'limit' => 3]) }}"></remote-service-page>
 
                         <!-- <service-list-section :user_id="{{ json_encode($auth_user_id) }}"
-                                    :service="{{ json_encode($providerData['service']) }}" :is_provider_detail={{ true }}
-                                    :max_records="6" :favourite="{{ json_encode($favourite) }}"></service-list-section> -->
+                                        :service="{{ json_encode($providerData['service']) }}" :is_provider_detail={{ true }}
+                                        :max_records="6" :favourite="{{ json_encode($favourite) }}"></service-list-section> -->
                     @endif
 
                     <div class="row align-items-center mb-5 mt-5">
@@ -331,52 +336,55 @@
     </div>
     <div class="modal fade" id="chooseme" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-           <div class="modal-content overflow-visible">
-              <span class="text-primary custom-btn-close" data-bs-dismiss="modal" aria-label="Close">
-                 <svg xmlns="http://www.w3.org/2000/svg" width="40" height="41" viewBox="0 0 40 41" fill="none">
-                    <rect x="12" y="11.8381" width="17" height="17" fill="white"></rect>
-                    <path fill-rule="evenodd" clip-rule="evenodd"
-                       d="M12.783 4.17017H27.233C32.883 4.17017 36.6663 8.13683 36.6663 14.0368V27.6552C36.6663 33.5385 32.883 37.5035 27.233 37.5035H12.783C7.13301 37.5035 3.33301 33.5385 3.33301 27.6552V14.0368C3.33301 8.13683 7.13301 4.17017 12.783 4.17017ZM25.0163 25.8368C25.583 25.2718 25.583 24.3552 25.0163 23.7885L22.0497 20.8218L25.0163 17.8535C25.583 17.2885 25.583 16.3552 25.0163 15.7885C24.4497 15.2202 23.533 15.2202 22.9497 15.7885L19.9997 18.7535L17.033 15.7885C16.4497 15.2202 15.533 15.2202 14.9663 15.7885C14.3997 16.3552 14.3997 17.2885 14.9663 17.8535L17.933 20.8218L14.9663 23.7718C14.3997 24.3552 14.3997 25.2718 14.9663 25.8368C15.2497 26.1202 15.633 26.2718 15.9997 26.2718C16.383 26.2718 16.7497 26.1202 17.033 25.8368L19.9997 22.8885L22.9663 25.8368C23.2497 26.1385 23.6163 26.2718 23.983 26.2718C24.3663 26.2718 24.733 26.1202 25.0163 25.8368Z"
-                       fill="currentColor">
-                    </path>
-                 </svg>
-              </span>
-              @if(isset($why_choose_me))
-              @if(isset($why_choose_me['about_description']))
-              <div class="modal-body">
-                 <h6 class="text-capitalize mb-2">{{__('landingpage.why_choose_me_title')}}</h6>
-                 <p class="m-0">
-                    {{$why_choose_me['about_description']}}
-                 </p>
-     
-                 @endif
-                 @if(isset($why_choose_me['reason']))
-                 <h6 class="mt-3">{{__('landingpage.reason')}}</h6>
-                 <ul class="list-inline mt-2 mb-0 p-0">
-                    @foreach($why_choose_me['reason'] as $reason)
-                    <li>
-                       <div class="d-flex gap-2">
-                          <span class="text-primary">
-                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
-                                <g>
-                                   <path d="M5.5 8.5L7 10L10.5 6.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
-                                      stroke-linejoin="round"></path>
-                                   <path
-                                      d="M8 14C11.3137 14 14 11.3137 14 8C14 4.68629 11.3137 2 8 2C4.68629 2 2 4.68629 2 8C2 11.3137 4.68629 14 8 14Z"
-                                      stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                                </g>
-                             </svg>
-                          </span>
-                          <span>{{ $reason }}</span>
-                       </div>
-                    </li>
-                    @endforeach
-                 </ul>
-                 @endif
-              </div>
-              @endif
-           </div>
+            <div class="modal-content overflow-visible">
+                <span class="text-primary custom-btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="40" height="41" viewBox="0 0 40 41"
+                        fill="none">
+                        <rect x="12" y="11.8381" width="17" height="17" fill="white"></rect>
+                        <path fill-rule="evenodd" clip-rule="evenodd"
+                            d="M12.783 4.17017H27.233C32.883 4.17017 36.6663 8.13683 36.6663 14.0368V27.6552C36.6663 33.5385 32.883 37.5035 27.233 37.5035H12.783C7.13301 37.5035 3.33301 33.5385 3.33301 27.6552V14.0368C3.33301 8.13683 7.13301 4.17017 12.783 4.17017ZM25.0163 25.8368C25.583 25.2718 25.583 24.3552 25.0163 23.7885L22.0497 20.8218L25.0163 17.8535C25.583 17.2885 25.583 16.3552 25.0163 15.7885C24.4497 15.2202 23.533 15.2202 22.9497 15.7885L19.9997 18.7535L17.033 15.7885C16.4497 15.2202 15.533 15.2202 14.9663 15.7885C14.3997 16.3552 14.3997 17.2885 14.9663 17.8535L17.933 20.8218L14.9663 23.7718C14.3997 24.3552 14.3997 25.2718 14.9663 25.8368C15.2497 26.1202 15.633 26.2718 15.9997 26.2718C16.383 26.2718 16.7497 26.1202 17.033 25.8368L19.9997 22.8885L22.9663 25.8368C23.2497 26.1385 23.6163 26.2718 23.983 26.2718C24.3663 26.2718 24.733 26.1202 25.0163 25.8368Z"
+                            fill="currentColor">
+                        </path>
+                    </svg>
+                </span>
+                @if (isset($why_choose_me))
+                    @if (isset($why_choose_me['about_description']))
+                        <div class="modal-body">
+                            <h6 class="text-capitalize mb-2">{{ __('landingpage.why_choose_me_title') }}</h6>
+                            <p class="m-0">
+                                {{ $why_choose_me['about_description'] }}
+                            </p>
+                    @endif
+                    @if (isset($why_choose_me['reason']))
+                        <h6 class="mt-3">{{ __('landingpage.reason') }}</h6>
+                        <ul class="list-inline mt-2 mb-0 p-0">
+                            @foreach ($why_choose_me['reason'] as $reason)
+                                <li>
+                                    <div class="d-flex gap-2">
+                                        <span class="text-primary">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                viewBox="0 0 16 16" fill="none">
+                                                <g>
+                                                    <path d="M5.5 8.5L7 10L10.5 6.5" stroke="currentColor"
+                                                        stroke-width="1.5" stroke-linecap="round"
+                                                        stroke-linejoin="round"></path>
+                                                    <path
+                                                        d="M8 14C11.3137 14 14 11.3137 14 8C14 4.68629 11.3137 2 8 2C4.68629 2 2 4.68629 2 8C2 11.3137 4.68629 14 8 14Z"
+                                                        stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                                                        stroke-linejoin="round"></path>
+                                                </g>
+                                            </svg>
+                                        </span>
+                                        <span>{{ $reason }}</span>
+                                    </div>
+                                </li>
+                            @endforeach
+                        </ul>
+                    @endif
+            </div>
+            @endif
         </div>
-     </div>
+    </div>
+    </div>
     </div>
 @endsection
