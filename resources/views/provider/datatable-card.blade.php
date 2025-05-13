@@ -1,7 +1,3 @@
-   @php
-          $providerDocuments = $data->providerDocument ?? null;
-          $verifiedDisplayed = false;
-      @endphp
 <div class="iq-team text-center mb-5">
   <div class="iq-provider-img position-relative">
       <a href="{{ route('provider.detail', $data->id) }}"
@@ -11,20 +7,19 @@
 
   </div>
   <div class="d-flex align-items-center justify-content-around mt-3 gap-2">
+     @php
+          $providerDocuments = $data->providerDocument ?? [];
+          $isVerified = collect($providerDocuments)->contains('is_verified', true);
+      @endphp
+
       <!-- First icon -->
-        @if ($providerDocuments)
-          @foreach ($providerDocuments as $document)
-              @if ($document->is_verified && !$verifiedDisplayed)
-                  @php
-                      $verifiedDisplayed = true;
-                  @endphp
-                  <!-- Verified Icon -->
-                     <img src="{{ asset('images/icon/verifiedpng.png') }}" alt="icon"
-          style="width: 14%; height: 23%; margin-right: 10px;">
-              @endif
-          @endforeach
+        @if ($isVerified)
+          <img src="{{ asset('images/icon/verifiedpng.png') }}" alt="verified icon"
+               style="width: 14%; height: 23%; margin-right: 10px;">
+      @else
+          <img src="{{ asset('images/icon/notverifiedpng.png') }}" alt="not verified icon"
+               style="width: 14%; height: 23%; margin-right: 10px;">
       @endif
-     
 
       <!-- Display name with ellipsis for overflow -->
       <a href="{{ route('provider.detail', $data->id) }}"
@@ -36,7 +31,10 @@
      
 
       <!-- Verified icon (if applicable) -->
-   
+      @php
+          $providerDocuments = $data->providerDocument ?? null;
+          $verifiedDisplayed = false;
+      @endphp
 
       @if ($providerDocuments)
           @foreach ($providerDocuments as $document)
