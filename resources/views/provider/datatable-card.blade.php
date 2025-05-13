@@ -14,6 +14,8 @@
             <img src="{{ asset('images/icon/verifiedpng.png') }}" alt="icon"
           style="width: 14%; height: 23%; margin-right: 10px;">
         @endif
+         <img src="{{ asset('images/icon/notverifiedpng.png') }}" alt="icon"
+          style="width: 14%; height: 23%; margin-right: 10px;">
     @endforeach
 @endif
 
