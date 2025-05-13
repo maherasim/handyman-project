@@ -577,28 +577,28 @@
                 }
             })(jQuery);
         </script>
-        <script type="text/javascript">
-            document.addEventListener('DOMContentLoaded', function() {
-                handleDurationField($("#price_type").val());
+       <script type="text/javascript">
+    document.addEventListener('DOMContentLoaded', function() {
+        handleDurationField($("#price_type").val());
 
-                $("#price_type").on('change', function() {
-                    var selectedType = $(this).val();
-                    handleDurationField(selectedType);
-                });
+        $("#price_type").on('change', function() {
+            handleDurationField($(this).val());
+        });
 
-                function handleDurationField(type) {
-                    var $duration = $('input[name="duration"]');
+        function handleDurationField(type) {
+            var $duration = $('#duration');
 
-                    if (type === 'hourly') {
-                        $duration.val(1).prop('readonly', false).removeAttr('disabled');
-                    } else if (type.toLowerCase() === 'daily') {
-                        $duration.val(8).prop('readonly', true); // Prevent editing
-                    } else {
-                        $duration.prop('readonly', false); // Allow editing for fixed, free
-                    }
-                }
-            });
-        </script>
+            if (type === 'hourly') {
+                $duration.val(1).prop('readonly', true).prop('disabled', true);
+            } else if (type.toLowerCase() === 'daily') {
+                $duration.val(8).prop('readonly', true).prop('disabled', true);
+            } else {
+                $duration.prop('readonly', false).prop('disabled', false);
+            }
+        }
+    });
+</script>
+
 
         <script type="text/javascript">
             (function($) {
