@@ -1074,11 +1074,12 @@ class FrontendController extends Controller
         return $datatable->rawColumns(['name'])
             ->toJson();
     }
-
 public function providerDatatable(Datatables $datatable, Request $request)
 {
-    $query = User::query();
-    $query = $query->where('user_type', 'provider')->where('status', 1);
+    $query = User::query()
+        ->where('user_type', 'provider')
+        ->where('status', 1)
+        ->with('providerSubscription'); // Make sure relation is eager loaded
 
     $filter = $request->filter;
     if (isset($filter['search'])) {
@@ -1090,18 +1091,19 @@ public function providerDatatable(Datatables $datatable, Request $request)
 
     $datatable = $datatable->eloquent($query)
         ->editColumn('name', function ($data) {
-            // Calculate service rating
+            // Service rating
             $providers_service_rating = 0;
-            if (isset($data->getServiceRating) && count($data->getServiceRating) > 0) {
+            if (!empty($data->getServiceRating) && count($data->getServiceRating) > 0) {
                 $providers_service_rating = (float) number_format(max($data->getServiceRating->avg('rating'), 0), 2);
             }
 
-            // Default icon path
+            // Default to free plan icon
             $plan_icon = asset('images/icon/freepng.png');
 
-            // Determine plan icon if providerSubscription exists
             if ($data->providerSubscription) {
-                switch (strtolower($data->providerSubscription->plan_type)) {
+                dd('aya lari ne mery sary waa;a');
+                $plan_type = strtolower($data->providerSubscription->plan_type);
+                switch ($plan_type) {
                     case 'silver plan':
                         $plan_icon = asset('images/icon/silverpng.png');
                         break;
@@ -1115,15 +1117,17 @@ public function providerDatatable(Datatables $datatable, Request $request)
                 }
             }
 
+            // Pass $plan_icon to the blade view
             return view('provider.datatable-card', compact('data', 'providers_service_rating', 'plan_icon'));
         })
         ->order(function ($query) {
             $query->orderBy('id', 'desc');
         });
 
-    return $datatable->rawColumns(['name'])
-        ->toJson();
+    return $datatable->rawColumns(['name'])->toJson();
 }
+
+
 
     public function bookingDatatable(Datatables $datatable, Request $request)
     {

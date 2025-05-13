@@ -141,6 +141,10 @@ class User extends Authenticatable implements HasMedia
     public function state(){
         return $this->belongsTo(State::class, 'state_id','id');
     }
+public function providerSubscription()
+{
+    return $this->hasOne(ProviderSubscription::class, 'user_id');
+}
 
     public function providertype(){
         return $this->belongsTo(ProviderType::class, 'providertype_id','id');
