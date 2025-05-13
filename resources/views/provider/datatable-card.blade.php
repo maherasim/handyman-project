@@ -1,3 +1,7 @@
+  @php
+          $providerDocuments = $data->providerDocument ?? null;
+          $verifiedDisplayed = false;
+      @endphp
 <div class="iq-team text-center mb-5">
   <div class="iq-provider-img position-relative">
       <a href="{{ route('provider.detail', $data->id) }}"
@@ -31,10 +35,7 @@
      
 
       <!-- Verified icon (if applicable) -->
-      @php
-          $providerDocuments = $data->providerDocument ?? null;
-          $verifiedDisplayed = false;
-      @endphp
+    
 
       @if ($providerDocuments)
           @foreach ($providerDocuments as $document)
