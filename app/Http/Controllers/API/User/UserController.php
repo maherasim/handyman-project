@@ -51,6 +51,7 @@ class UserController extends Controller
 
 public function register(UserRequest $request)
 {
+    dd('$request->all()');
     $sitesetup = Setting::where('type', 'site-setup')->where('key', 'site-setup')->first();
     $admin = json_decode($sitesetup->value);
     date_default_timezone_set($admin->time_zone ?? 'UTC');
