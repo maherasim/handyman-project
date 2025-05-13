@@ -21,4 +21,21 @@ class ProviderSubscription extends Model
     public function payment(){
         return $this->belongsTo(SubscriptionTransaction::class, 'subscription_plan_id','id');
     }
+    public function getPlanIconAttribute()
+{
+    switch (strtolower($this->plan_type)) {
+        case 'free plan':
+            return asset('images/icon/freepng.png');
+        case 'Silver plan':
+            return asset('images/icon/silverpng.png');
+        case 'Gold plan':
+            return asset('images/icon/goldpng.png');
+        default:
+            return asset('images/icons/default.png');
+    }
+}
+public function providerSubscription()
+{
+    return $this->hasOne(ProviderSubscription::class);
+}
 }

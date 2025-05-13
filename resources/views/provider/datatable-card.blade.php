@@ -47,7 +47,7 @@
       @endif
 
       <!-- Second icon -->
-      <img src="{{ asset('images/icon/freepng.png') }}" alt="icon" style="width: 14%; height: 23%;">
+      <img src="{{ $plan_icon }}" alt="icon" style="width: 14%; height: 23%;">
   </div>
 
 

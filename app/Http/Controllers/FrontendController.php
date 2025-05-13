@@ -1075,30 +1075,55 @@ class FrontendController extends Controller
             ->toJson();
     }
 
-    public function providerDatatable(Datatables $datatable, Request $request)
-    {
-        $query = User::query();
-        $query = $query->where('user_type', 'provider')->where('status', 1);
-        $filter = $request->filter;
-        if (isset($filter['search'])) {
-            $query->where('first_name', 'LIKE', '%' . $filter['search'] . '%')->orWhere('last_name', 'LIKE', '%' . $filter['search'] . '%');
-        }
+public function providerDatatable(Datatables $datatable, Request $request)
+{
+    $query = User::query();
+    $query = $query->where('user_type', 'provider')->where('status', 1);
 
-        $datatable = $datatable->eloquent($query)
-            ->editColumn('name', function ($data) {
-                $providers_service_rating = (float)0;
-                $providers_service_rating = (isset($data->getServiceRating) && count($data->getServiceRating) > 0) ?
-                    (float)number_format(max($data->getServiceRating->avg('rating'), 0), 2) : 0;
-
-                return view('provider.datatable-card', compact('data', 'providers_service_rating'));
-            })
-            ->order(function ($query) {
-                $query->orderBy('id', 'desc');
-            });
-
-        return $datatable->rawColumns(['name'])
-            ->toJson();
+    $filter = $request->filter;
+    if (isset($filter['search'])) {
+        $query->where(function ($q) use ($filter) {
+            $q->where('first_name', 'LIKE', '%' . $filter['search'] . '%')
+              ->orWhere('last_name', 'LIKE', '%' . $filter['search'] . '%');
+        });
     }
+
+    $datatable = $datatable->eloquent($query)
+        ->editColumn('name', function ($data) {
+            // Calculate service rating
+            $providers_service_rating = 0;
+            if (isset($data->getServiceRating) && count($data->getServiceRating) > 0) {
+                $providers_service_rating = (float) number_format(max($data->getServiceRating->avg('rating'), 0), 2);
+            }
+
+            // Default icon path
+            $plan_icon = asset('images/icon/freepng.png');
+
+            // Determine plan icon if providerSubscription exists
+            if ($data->providerSubscription) {
+                switch (strtolower($data->providerSubscription->plan_type)) {
+                    case 'silver plan':
+                        $plan_icon = asset('images/icon/silverpng.png');
+                        break;
+                    case 'gold plan':
+                        $plan_icon = asset('images/icon/goldpng.png');
+                        break;
+                    case 'free plan':
+                    default:
+                        $plan_icon = asset('images/icon/freepng.png');
+                        break;
+                }
+            }
+
+            return view('provider.datatable-card', compact('data', 'providers_service_rating', 'plan_icon'));
+        })
+        ->order(function ($query) {
+            $query->orderBy('id', 'desc');
+        });
+
+    return $datatable->rawColumns(['name'])
+        ->toJson();
+}
 
     public function bookingDatatable(Datatables $datatable, Request $request)
     {
