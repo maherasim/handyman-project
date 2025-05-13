@@ -117,8 +117,8 @@ if ($userType === 'provider') {
             'service'          => ['is_checked' => null, 'limit' => null],
         ]),
         'duration'        => null,
-        'description'     => 'Silver plan',
-        'plan_type'       => 'Silver plan',
+        'description'     => 'Free plan',
+        'plan_type'       => 'Free plan',
     ]);
 }
 
