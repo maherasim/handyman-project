@@ -1101,7 +1101,7 @@ public function providerDatatable(Datatables $datatable, Request $request)
             $plan_icon = asset('images/icon/freepng.png');
 
             if ($data->providerSubscription) {
-                dd('aya lari ne mery sary waa;a');
+               
                 $plan_type = strtolower($data->providerSubscription->plan_type);
                 switch ($plan_type) {
                     case 'silver plan':
