@@ -108,7 +108,7 @@ if ($userType === 'provider') {
         'type'            => $planType,
         'start_at'        => $startDate,
         'end_at'          => $endDate,
-        'amount'          => 10,
+        'amount'          => 0,
         'status'          => 'active',
         'payment_id'      => '1',
         'plan_limitation' => json_encode([
