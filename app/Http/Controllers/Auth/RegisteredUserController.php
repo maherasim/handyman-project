@@ -118,7 +118,7 @@ if ($userType === 'provider') {
         ]),
         'duration'        => null,
         'description'     => 'Silver plan',
-        'plan_type'       => null,
+        'plan_type'       => 'Silver plan',
     ]);
 }
 
