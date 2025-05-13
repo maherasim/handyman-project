@@ -11,9 +11,17 @@
           $providerDocuments = $data->providerDocument ?? [];
           $isVerified = collect($providerDocuments)->contains('is_verified', true);
       @endphp
+@php
+        // Fetching provider documents
+        $providerDocuments = $data->providerDocument ?? [];
 
+        // Check if all documents are verified
+        $allVerified = collect($providerDocuments)->every(function ($document) {
+            return isset($document['is_verified']) && $document['is_verified'];
+        });
+    @endphp
       <!-- First icon -->
-        @if ($isVerified)
+        @if ($allVerified)
           <img src="{{ asset('images/icon/verifiedpng.png') }}" alt="verified icon"
                style="width: 14%; height: 23%; margin-right: 10px;">
       @else
