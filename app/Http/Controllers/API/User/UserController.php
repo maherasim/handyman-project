@@ -49,76 +49,113 @@ class UserController extends Controller
     }
 
 
-    public function register(UserRequest $request)
-    {
-        $sitesetup = Setting::where('type','site-setup')->where('key', 'site-setup')->first();
-        $admin = json_decode($sitesetup->value);
-        date_default_timezone_set($admin->time_zone ?? 'UTC');
-        $input = $request->all();
+public function register(UserRequest $request)
+{
+    $sitesetup = Setting::where('type', 'site-setup')->where('key', 'site-setup')->first();
+    $admin = json_decode($sitesetup->value);
+    date_default_timezone_set($admin->time_zone ?? 'UTC');
+    $input = $request->all();
 
-        $email = $input['email'];
-        $username = $input['username'];
-        $password = $input['password'];
-        $input['display_name'] = $input['first_name']." ".$input['last_name'];
-        $input['user_type'] = isset($input['user_type']) ? $input['user_type'] : 'user';
-        $input['password'] = Hash::make($password);
-        $input['contact_number'] = $input['contact_number'] ?? null;
-        if ($request->provider_id !== null && $request->id == null && default_earning_type() === 'subscription') {
-            if(!empty($input['provider_id'] && $input['user_type'] === 'handyman')){
-                $exceed =  get_provider_plan_limit($input['provider_id'], 'handyman');
-                if (!empty($exceed)) {
-                    if ($exceed == 1) {
-                        $message = __('messages.limit_exceed', ['name' => __('messages.handyman')]);
-                    } else {
-                        $message = __('messages.not_in_plan', ['name' => __('messages.handyman')]);
-                    }
-                    if ($request->is('api/*')) {
-                        return comman_message_response($message);
-                    } else {
-                        return  redirect()->back()->withErrors($message);
-                    }
+    $email = $input['email'];
+    $username = $input['username'];
+    $password = $input['password'];
+    $input['display_name'] = $input['first_name'] . " " . $input['last_name'];
+    $input['user_type'] = $input['user_type'] ?? 'user';
+    $input['password'] = Hash::make($password);
+    $input['contact_number'] = $input['contact_number'] ?? null;
+
+    if ($request->provider_id !== null && $request->id == null && default_earning_type() === 'subscription') {
+        if (!empty($input['provider_id'] && $input['user_type'] === 'handyman')) {
+            $exceed = get_provider_plan_limit($input['provider_id'], 'handyman');
+            if (!empty($exceed)) {
+                $message = $exceed == 1
+                    ? __('messages.limit_exceed', ['name' => __('messages.handyman')])
+                    : __('messages.not_in_plan', ['name' => __('messages.handyman')]);
+
+                if ($request->is('api/*')) {
+                    return comman_message_response($message);
+                } else {
+                    return redirect()->back()->withErrors($message);
                 }
             }
+        }
+    }
 
-        }
-        if( in_array($input['user_type'],['handyman', 'provider']))
-        {
-            $input['status'] = isset($input['status']) ? $input['status']: 0;
-        }
-        $user = User::withTrashed()
+    if (in_array($input['user_type'], ['handyman', 'provider'])) {
+        $input['status'] = $input['status'] ?? 0;
+    }
+
+    $user = User::withTrashed()
         ->where(function ($query) use ($email, $username) {
             $query->where('email', $email)->orWhere('username', $username);
         })
         ->first();
 
-        if($user){
-            if($user->deleted_at == null){
-
-                $message = trans('messages.login_form');
-                $response = [
-                    'message' => $message,
-                ];
-                return comman_custom_response($response);
-            }
-            $message = trans('messages.deactivate');
-            $response = [
-                'message' => $message,
-                'Isdeactivate' => 1,
-            ];
-            return comman_custom_response($response);
+    if ($user) {
+        if ($user->deleted_at === null) {
+            return comman_custom_response([
+                'message' => trans('messages.login_form'),
+            ]);
         }
-        else{
+
+        return comman_custom_response([
+            'message' => trans('messages.deactivate'),
+            'Isdeactivate' => 1,
+        ]);
+    } else {
+        DB::beginTransaction();
+        try {
             $user = User::create($input);
-            if ($user->user_type == 'user' || $user->user_type == 'provider' || $user->user_type == 'handyman') {
+
+            // Assign role and send email
+            if (in_array($user->user_type, ['user', 'provider', 'handyman'])) {
                 $id = $user->id;
                 $user->assignRole($input['user_type']);
-                $verificationLink = route('verify',['id' => $id]);
+                $verificationLink = route('verify', ['id' => $id]);
                 Mail::to($user->email)->send(new VerificationEmail($verificationLink));
+
+                // Insert default subscription if provider
+                if ($user->user_type === 'provider') {
+                    $startAt = now();
+                    $endAt = $startAt->copy()->addWeek(); // since it's weekly
+
+                    DB::table('provider_subscriptions')->insert([
+                        'plan_id' => 1,
+                        'user_id' => $user->id,
+                        'title' => 'Free plan',
+                        'identifier' => 'free',
+                        'type' => 'weekly',
+                        'start_at' => $startAt,
+                        'end_at' => $endAt,
+                        'amount' => 10,
+                        'status' => 'active',
+                        'payment_id' => '1',
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                        'plan_limitation' => json_encode([
+                            'featured_service' => ['is_checked' => null, 'limit' => null],
+                            'handyman' => ['is_checked' => null, 'limit' => null],
+                            'service' => ['is_checked' => null, 'limit' => null],
+                        ]),
+                        'duration' => null,
+                        'description' => null,
+                        'plan_type' => 'Silver plan',
+                    ]);
+                }
+
+                $wallet = [
+                    'title' => $user->display_name,
+                    'user_id' => $user->id,
+                    'amount' => 0,
+                ];
+                Wallet::create($wallet);
+
                 $message = 'Email Verification link has been sent to your email. Please Check your inbox';
                 $response = [
                     'message' => $message,
-                    'data' => $user
+                    'data' => $user,
                 ];
+
                 $activity_data = [
                     'activity_type' => 'register',
                     'user_id' => $user->id,
@@ -127,55 +164,45 @@ class UserController extends Controller
                     'user_name' => $user->display_name,
                 ];
                 $this->sendNotification($activity_data);
+
+                DB::commit();
                 return comman_custom_response($response);
             }
+
             $user->assignRole($input['user_type']);
-
-
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['error' => 'Registration failed.'], 500);
         }
-
-        if($user->user_type == 'provider' || $user->user_type == 'handyman' || $user->user_type == 'user'){
-            $wallet = array(
-                'title' => $user->display_name,
-                'user_id' => $user->id,
-                'amount' => 0
-            );
-            $result = Wallet::create($wallet);
-        }
-        if(!empty($input['loginfrom']) && $input['loginfrom'] === 'vue-app'){
-            if($user->user_type != 'user'){
-                $message = trans('messages.save_form',['form' => $input['user_type'] ]);
-                $response = [
-                    'message' => $message,
-                    'data' => $user
-                ];
-
-
-                return comman_custom_response($response);
-            }
-        }
-        $input['api_token'] = $user->createToken('auth_token')->plainTextToken;
-
-        unset($input['password']);
-        $message = trans('messages.save_form',['form' => $input['user_type'] ]);
-
-        $user->api_token = $user->createToken('auth_token')->plainTextToken;
-        $response = [
-            'message' => $message,
-            'data' => $user
-        ];
-
-        $activity_data = [
-            'activity_type' => 'register',
-            'user_id' => $user->id,
-            'user_type' => $user->user_type,
-            'user_email' => $user->email,
-            'user_name' => $user->display_name,
-        ];
-        $this->sendNotification($activity_data);
-
-        return comman_custom_response($response);
     }
+
+    if (!empty($input['loginfrom']) && $input['loginfrom'] === 'vue-app') {
+        if ($user->user_type !== 'user') {
+            return comman_custom_response([
+                'message' => trans('messages.save_form', ['form' => $input['user_type']]),
+                'data' => $user,
+            ]);
+        }
+    }
+
+    $user->api_token = $user->createToken('auth_token')->plainTextToken;
+    $response = [
+        'message' => trans('messages.save_form', ['form' => $input['user_type']]),
+        'data' => $user,
+    ];
+
+    $activity_data = [
+        'activity_type' => 'register',
+        'user_id' => $user->id,
+        'user_type' => $user->user_type,
+        'user_email' => $user->email,
+        'user_name' => $user->display_name,
+    ];
+    $this->sendNotification($activity_data);
+
+    return comman_custom_response($response);
+}
 
     public function login(Request $request)
     {
