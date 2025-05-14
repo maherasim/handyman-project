@@ -576,6 +576,9 @@
                                 </tr>
                             </thead>
                             <tbody>
+                                  @php
+                                        $addonTotalPrice =0;
+                                    @endphp
                                 @foreach ($bookingdata->bookingAddonService as $addonservice)
                                     @php
                                         $addonTotalPrice += $addonservice->price;
