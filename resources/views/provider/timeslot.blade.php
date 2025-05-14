@@ -85,8 +85,8 @@
                                     title: "{{ ucfirst($slotDay['day']) }} Slot",
                                     startRecur: "{{ now()->startOfWeek()->format('Y-m-d') }}",
                                     daysOfWeek: [{{ ['sun'=>0,'mon'=>1,'tue'=>2,'wed'=>3,'thu'=>4,'fri'=>5,'sat'=>6][strtolower($slotDay['day'])] }}],
-                                    startTime: "{{ sprintf('%02d:00', $slot) }}",
-                                    endTime: "{{ sprintf('%02d:00', $slot+1) }}",
+                                    startTime: "{{ sprintf('%02d:00', (int)$slot) }}",
+                                    endTime: "{{ sprintf('%02d:00', (int)($slot+1)) }}",
                                     rendering: 'background',
                                     backgroundColor: 'rgb(19, 193, 240)',
                                     textColor: '#fff'
