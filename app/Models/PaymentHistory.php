@@ -53,4 +53,7 @@ class PaymentHistory extends Model
 
         return $query;
     }
+        public function providers(){
+        return $this->belongsTo(User::class, 'user_id','id');
+    }
 }

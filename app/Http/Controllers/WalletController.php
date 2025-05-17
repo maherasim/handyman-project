@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Wallet;
 use App\Models\WalletHistory;
+use App\Models\PaymentHistory;
 use Yajra\DataTables\DataTables;
 use App\Traits\NotificationTrait;
 use App\Models\Setting;
@@ -202,23 +203,41 @@ class WalletController extends Controller
         return view('wallet.view', compact('pageTitle','auth_user','assets','id'));
     }
 
-    public function wallethistory_index_data(DataTables $datatable,$id){
-        $query = WalletHistory::where('user_id',$id)->orderBy('id','desc')->newQuery();
+public function wallethistory_index_data(DataTables $datatable, $id)
+{
+    $user = auth()->user();
+    $query = null;
 
-        if (auth()->user()->hasAnyRole(['admin'])) {
-            $query->newquery();
-        }
+    if ($user->user_type === 'user') {
+        $query = WalletHistory::where('user_id', $id)->orderBy('id', 'desc');
 
-        return $datatable ->eloquent($query)
-        ->editColumn('user_id' , function ($history){
-            return ($history->user_id != null && isset($history->providers)) ? $history->providers->display_name : '-';
-        })
-        ->editColumn('activity_type' , function ($history){
-            return $history->activity_type ? str_replace("_"," ",ucfirst($history->activity_type)) : '-';
-        })
-        ->addIndexColumn()
-        ->toJson();
+        return $datatable->eloquent($query)
+            ->editColumn('user_id', function ($history) {
+                return ($history->user_id != null && isset($history->providers)) ? $history->providers->display_name : '-';
+            })
+            ->editColumn('activity_type', function ($history) {
+                return $history->activity_type ? str_replace("_", " ", ucfirst($history->activity_type)) : '-';
+            })
+            ->addIndexColumn()
+            ->toJson();
+
+    } elseif ($user->user_type === 'provider') {
+        $query = PaymentHistory::where('receiver_id', $id)->orderBy('id', 'desc');
+
+        return $datatable->eloquent($query)
+            ->editColumn('receiver_id', function ($history) {
+                return ($history->receiver_id != null && isset($history->receiver)) ? $history->receiver->display_name : '-';
+            })
+            ->editColumn('payment_type', function ($history) {
+                return $history->payment_type ? str_replace("_", " ", ucfirst($history->payment_type)) : '-';
+            })
+            ->addIndexColumn()
+            ->toJson();
     }
+
+    abort(403, 'Unauthorized access');
+}
+
 
     /**
      * Show the form for editing the specified resource.
