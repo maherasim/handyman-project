@@ -203,33 +203,45 @@ class WalletController extends Controller
         return view('wallet.view', compact('pageTitle','auth_user','assets','id'));
     }
 
-public function wallethistory_index_data(DataTables $datatable, $id)
+public function wallethistory_index_data(DataTables $datatable, $id) 
 {
     $user = auth()->user();
     $query = null;
 
     if ($user->user_type === 'user') {
-        $query = WalletHistory::where('user_id', $id)->orderBy('id', 'desc');
+        $query = PaymentHistory::where('receiver_id', $id)
+            ->where('payment_type', 'wallet')
+            ->orderBy('id', 'desc');
 
         return $datatable->eloquent($query)
-            ->editColumn('user_id', function ($history) {
-                return ($history->user_id != null && isset($history->providers)) ? $history->providers->display_name : '-';
+            ->editColumn('receiver_id', function ($history) {
+                return ($history->receiver_id != null && isset($history->receiver)) 
+                    ? $history->receiver->display_name 
+                    : '-';
             })
-            ->editColumn('activity_type', function ($history) {
-                return $history->activity_type ? str_replace("_", " ", ucfirst($history->activity_type)) : '-';
+            ->editColumn('payment_type', function ($history) {
+                return $history->payment_type 
+                    ? str_replace("_", " ", ucfirst($history->payment_type)) 
+                    : '-';
             })
             ->addIndexColumn()
             ->toJson();
 
     } elseif ($user->user_type === 'provider') {
-        $query = PaymentHistory::where('receiver_id', $id)->orderBy('id', 'desc');
+        $query = PaymentHistory::where('receiver_id', $id)
+            ->where('payment_type', 'wallet')
+            ->orderBy('id', 'desc');
 
         return $datatable->eloquent($query)
             ->editColumn('receiver_id', function ($history) {
-                return ($history->receiver_id != null && isset($history->receiver)) ? $history->receiver->display_name : '-';
+                return ($history->receiver_id != null && isset($history->receiver)) 
+                    ? $history->receiver->display_name 
+                    : '-';
             })
             ->editColumn('payment_type', function ($history) {
-                return $history->payment_type ? str_replace("_", " ", ucfirst($history->payment_type)) : '-';
+                return $history->payment_type 
+                    ? str_replace("_", " ", ucfirst($history->payment_type)) 
+                    : '-';
             })
             ->addIndexColumn()
             ->toJson();
@@ -237,6 +249,7 @@ public function wallethistory_index_data(DataTables $datatable, $id)
 
     abort(403, 'Unauthorized access');
 }
+
 
 
     /**

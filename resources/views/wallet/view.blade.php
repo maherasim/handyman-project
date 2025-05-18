@@ -82,12 +82,8 @@
                     data: 'total_amount',
                     name: 'total_amount',
                     title: "{{ __('messages.total_amount') }}"
-                },
-                {
-                    data: 'status',
-                    name: 'status',
-                    title: "{{ __('messages.status') }}"
                 }
+                
             ];
         @endif
 

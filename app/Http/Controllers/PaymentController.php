@@ -39,6 +39,7 @@ class PaymentController extends Controller
     }
 
      public function paymenthistory_index_data(DataTables $datatable,$id){
+        
         $query = PaymentHistory::where('payment_id',$id);
 
         if (auth()->user()->hasAnyRole(['admin'])) {
@@ -46,24 +47,7 @@ class PaymentController extends Controller
         }
 
         return $datatable  ->eloquent($query)
-        // ->editColumn('booking_id', function($payment) {
-        //     return ($payment->booking_id != null && isset($payment->booking->service)) ? $payment->booking->service->name :'-';
-        // })
-        // ->filterColumn('booking_id',function($query,$keyword){
-        //     $query->whereHas('booking.service',function ($q) use($keyword){
-        //         $q->where('name','like','%'.$keyword.'%');
-        //     });
-        // })
-        // ->editColumn('customer_id', function($payment) {
-        //     return ($payment->booking != null && isset($payment->booking->customer)) ? $payment->booking->customer->display_name : '-';
-        // })
-        // ->filterColumn('customer_id', function ($query, $keyword) {
-        //     $query->whereHas('booking', function ($q) use ($keyword) {
-        //         $q->whereHas('customer', function ($c) use ($keyword) {
-        //             $c->where('display_name', 'like', '%' . $keyword . '%');
-        //         });
-        //     });
-        // })
+         
         
         ->editColumn('sender_id', function($payment) {
             return ($payment->sender != null && isset($payment->sender)) ? $payment->sender->display_name : '-';
