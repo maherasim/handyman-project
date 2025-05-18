@@ -222,7 +222,7 @@ public function wallethistory_index_data(DataTables $datatable, $id)
             ->toJson();
 
     } elseif ($user->user_type === 'provider') {
-        $query = PaymentHistory::where('receiver_id', $id)->orderBy('id', 'desc');
+        $query = PaymentHistory::where('receiver_id', $id)->where('type','wallet')->orderBy('id', 'desc');
 
         return $datatable->eloquent($query)
             ->editColumn('receiver_id', function ($history) {
