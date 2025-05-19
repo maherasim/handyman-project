@@ -21,4 +21,8 @@ class Tax extends Model
     {
         return $query->orderBy('updated_at', 'desc');
     }
+    public function country()
+{
+    return $this->belongsTo(Country::class);
+}
 }

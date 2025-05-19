@@ -364,127 +364,138 @@ class ServiceController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(ServiceRequest $request)
-    {
-        if(demoUserPermission()){
-            return  redirect()->back()->withErrors(trans('messages.demo_permission_denied'));
-        }
+public function store(ServiceRequest $request)
+{
+    if (demoUserPermission()) {
+        return redirect()->back()->withErrors(trans('messages.demo_permission_denied'));
+    }
 
-        $services = $request->all();
+    $services = $request->all();
 
-        $services['service_type'] = !empty($request->service_type) ? $request->service_type : 'service';
-        $services['provider_id'] = !empty($request->provider_id) ? $request->provider_id : auth()->user()->id;
-        if(auth()->user()->hasRole('user')){
-            $services['service_type'] = 'user_post_service';
-        }
+    $services['service_type'] = !empty($request->service_type) ? $request->service_type : 'service';
+    $services['provider_id'] = !empty($request->provider_id) ? $request->provider_id : auth()->user()->id;
 
-        if($request->id == null && default_earning_type() === 'subscription'){
-           $exceed =  get_provider_plan_limit($services['provider_id'],'service');
-           if(!empty($exceed)){
-            if($exceed == 1){
-                $message = __('messages.limit_exceed',['name'=>__('messages.service')]);
-            }else{
-                 $message = __('messages.not_in_plan',['name'=>__('messages.service')]);
+    if (auth()->user()->hasRole('user')) {
+        $services['service_type'] = 'user_post_service';
+    }
+
+    if ($request->id == null && default_earning_type() === 'subscription') {
+        $exceed = get_provider_plan_limit($services['provider_id'], 'service');
+        if (!empty($exceed)) {
+            $message = $exceed == 1
+                ? __('messages.limit_exceed', ['name' => __('messages.service')])
+                : __('messages.not_in_plan', ['name' => __('messages.service')]);
+
+            if ($request->is('api/*')) {
+                return comman_message_response($message);
+            } else {
+                return redirect()->back()->withErrors($message);
             }
-             if($request->is('api/*')){
-                 return comman_message_response($message);
-             }else{
-                 return  redirect()->back()->withErrors($message);
-             }
-           }
         }
+    }
 
-        if($request->id == null){
-            $services['added_by'] =  !empty($request->added_by) ? $request->added_by :auth()->user()->id;
+    if ($request->id == null) {
+        $services['added_by'] = !empty($request->added_by) ? $request->added_by : auth()->user()->id;
+    }
+
+    $services['provider_id'] = !empty($services['provider_id']) ? $services['provider_id'] : auth()->user()->id;
+
+    if (!empty($services['is_featured']) && $services['is_featured'] == 1) {
+        $exceed = get_provider_plan_limit($services['provider_id'], 'featured_service');
+        if (!empty($exceed)) {
+            $message = $exceed == 1
+                ? __('messages.limit_exceed', ['name' => __('messages.featured_service')])
+                : __('messages.not_in_plan', ['name' => __('messages.featured_service')]);
+
+            if ($request->is('api/*')) {
+                return comman_message_response($message);
+            } else {
+                return redirect()->back()->withErrors($message);
+            }
         }
+    }
 
-        $services['provider_id'] = !empty( $services['provider_id'] ) ?  $services['provider_id']     : auth()->user()->id;
-        if(!empty($services['is_featured']) && $services['is_featured'] == 1){
-            $exceed =  get_provider_plan_limit($services['provider_id'],'featured_service');
-            if(!empty($exceed)){
-                if($exceed == 1){
-                    $message = __('messages.limit_exceed',['name'=>__('messages.featured_service')]);
-                }else{
-                        $message = __('messages.not_in_plan',['name'=>__('messages.featured_service')]);
+    if (!$request->is('api/*')) {
+        $services['is_featured'] = 0;
+        $services['is_slot'] = 0;
+        $services['is_enable_advance_payment'] = 0;
+
+        if ($request->has('is_featured')) {
+            $services['is_featured'] = 1;
+        }
+        if ($request->has('is_enable_advance_payment')) {
+            $services['is_enable_advance_payment'] = 1;
+        }
+        if ($request->has('is_slot')) {
+            $services['is_slot'] = 1;
+        }
+    }
+
+    if (!empty($request->advance_payment_amount)) {
+        $services['advance_payment_amount'] = $request->advance_payment_amount;
+    }
+
+    // ✅ Set default duration based on type
+    if (!empty($services['type'])) {
+        if ($services['type'] === 'daily') {
+            $services['duration'] = '08:00';
+        } elseif ($services['type'] === 'hourly') {
+            $services['duration'] = '01:00';
+        }
+    }
+
+    $result = Service::updateOrCreate(['id' => $request->id], $services);
+
+    if ($result->providerServiceAddress()->count() > 0) {
+        $result->providerServiceAddress()->delete();
+    }
+
+    if ($request->provider_address_id != null) {
+        foreach ($request->provider_address_id as $address) {
+            $provider_service_address = [
+                'service_id' => $result->id,
+                'provider_address_id' => $address,
+            ];
+            $result->providerServiceAddress()->insert($provider_service_address);
+        }
+    }
+
+    if ($request->is('api/*')) {
+        if ($request->has('attachment_count')) {
+            for ($i = 0; $i < $request->attachment_count; $i++) {
+                $attachment = "service_attachment_" . $i;
+                if ($request->$attachment != null) {
+                    $file[] = $request->$attachment;
                 }
-                if($request->is('api/*')){
-                    return comman_message_response($message);
-                }else{
-                    return  redirect()->back()->withErrors($message);
-                }
             }
+            storeMediaFile($result, $file, 'service_attachment');
         }
-
-        if(!$request->is('api/*')) {
-            $services['is_featured'] = 0;
-            $services['is_slot'] = 0;
-            $services['is_enable_advance_payment'] = 0;
-
-            if($request->has('is_featured')){
-                $services['is_featured'] = 1;
-            }
-            if($request->has('is_enable_advance_payment')){
-                $services['is_enable_advance_payment'] = 1;
-            }
-            if($request->has('is_slot')){
-                $services['is_slot'] = 1;
-            }
-
-        }
-        if(!empty($request->advance_payment_amount)){
-            $services['advance_payment_amount'] = $request->advance_payment_amount;
-        }
-        $result = Service::updateOrCreate(['id' => $request->id], $services);
-
-        if($result->providerServiceAddress()->count() > 0)
-        {
-            $result->providerServiceAddress()->delete();
-        }
-
-        if($request->provider_address_id != null) {
-            foreach($request->provider_address_id as $address) {
-                $provider_service_address = [
-                    'service_id'   => $result->id,
-                    'provider_address_id'   => $address,
-                ];
-                $result->providerServiceAddress()->insert($provider_service_address);
-            }
-        }
-
-        if($request->is('api/*')){
-			if($request->has('attachment_count')) {
-				for($i = 0 ; $i < $request->attachment_count ; $i++){
-					$attachment = "service_attachment_".$i;
-					if($request->$attachment != null){
-						$file[] = $request->$attachment;
-					}
-				}
-				storeMediaFile($result,$file, 'service_attachment');
-			}
-
-		}else{
-            if ($request->hasFile('service_attachment')) {
-                storeMediaFile($result, $request->file('service_attachment'), 'service_attachment');
-            } elseif (!getMediaFileExit($result, 'service_attachment')) {
-                return redirect()->route('service.create', ['id' => $result->id])
+    } else {
+        if ($request->hasFile('service_attachment')) {
+            storeMediaFile($result, $request->file('service_attachment'), 'service_attachment');
+        } elseif (!getMediaFileExit($result, 'service_attachment')) {
+            return redirect()->route('service.create', ['id' => $result->id])
                 ->withErrors(['service_attachment' => 'The attachments field is required.'])
                 ->withInput();
-            }	
-		}
-        $message = __('messages.update_form',[ 'form' => __('messages.service') ] );
-		if($result->wasRecentlyCreated){
-			$message = __('messages.save_form',[ 'form' => __('messages.service') ] );
-		}
-
-        if($request->is('api/*')) {
-            $response = [
-                'message'=>$message,
-                'service_id' => $result->id
-            ];
-            return comman_custom_response($response);
-		}
-		return redirect(route('service.index'))->withSuccess($message);
+        }
     }
+
+    $message = __('messages.update_form', ['form' => __('messages.service')]);
+    if ($result->wasRecentlyCreated) {
+        $message = __('messages.save_form', ['form' => __('messages.service')]);
+    }
+
+    if ($request->is('api/*')) {
+        $response = [
+            'message' => $message,
+            'service_id' => $result->id
+        ];
+        return comman_custom_response($response);
+    }
+
+    return redirect(route('service.index'))->withSuccess($message);
+}
+
 
     /**
      * Display the specified resource.
