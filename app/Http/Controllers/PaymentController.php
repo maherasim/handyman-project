@@ -195,10 +195,13 @@ class PaymentController extends Controller
             ->addColumn('check', function ($row) {
                 return '<input type="checkbox" class="form-check-input select-table-row"  id="datatable-row-'.$row->id.'"  name="datatable_ids[]" value="'.$row->id.'" onclick="dataTableRowCheck('.$row->id.')">';
             })
-        ->editColumn('id', function($query) {
+         ->editColumn('id', function($query) {
+    $booking = optional($query->booking);
+    return $booking->id
+        ? "<a class='btn-link btn-link-hover' href=" . route('booking.show', $booking->id) . ">#" . $booking->id . "</a>"
+        : '-';
+})
 
-            return "<a class='btn-link btn-link-hover' href=" .route('booking.show', $query->booking->id).">#".$query->booking->id."</a>"; 
-        })
         ->orderColumn('id', function($query, $order) {
             $query->orderBy('payments.booking_id', $order);  
         })
