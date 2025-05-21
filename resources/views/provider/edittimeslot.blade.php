@@ -1,13 +1,20 @@
 <x-master-layout>
     <div class="container-fluid">
         @include('partials._provider')
+@php
+    $activeSlots = [
+    'mon' => ['09:00', '10:00'],
+    'wed' => ['14:00'],
+    // etc.
+];
+@endphp
         <div class="row">
             <div class="col-lg-12">
                 <div class="card card-block card-stretch">
                     <div class="card-body p-0">
                         <div class="d-flex justify-content-between align-items-center p-3 flex-wrap gap-3">
                             <h5 class="font-weight-bold">{{ $providerdata->first_name . ' ' . $providerdata->last_name }} {{ $pageTitle }}</h5>
-                            <a href="{{ route('provider.time-slot', ['id' => $provider_id]) }}" class="float-right btn btn-sm btn-primary">
+                            <a href="{{ route('provider.time-slot', ['id' => $provider_id]) }}" class="btn btn-sm btn-primary">
                                 <i class="fa fa-angle-double-left"></i> {{ __('messages.back') }}
                             </a>
                         </div>
@@ -18,61 +25,12 @@
             <div class="col-lg-12">
                 <div class="card">
                     <div class="card-body">
-                        {{ html()->form('POST', route('providerslot.store'))->id('provider-form')->attribute('data-toggle', 'validator')->open() }}
-
-                        <div class="row">
-                            <div class="col-md-12">
-                                <input type="hidden" name="id" id="provider-id" value="{{ $provider_id }}">
-
-                                <div class="form-group has-feedback">
-                                    <label class="form-control-label col-md-12">
-                                        {!! __('messages.day') !!} <span class="text-danger">*</span>
-                                    </label>
-                                    <div class="col-md-12">
-                                        <ul class="nav nav-tabs nav-fill gap-3 tabslink" id="tab-text" role="tablist">
-                                            @foreach ($slotsArray['days'] as $day)
-                                                @if (isset($day))
-                                                    <li class="nav-item m-0">
-                                                        <a href="#{{ $day }}" name="days" class="nav-link day-link" data-day="{{ $day }}" data-bs-toggle="tab" rel="tooltip">{{ ucfirst($day) }}</a>
-                                                    </li>
-                                                @endif
-                                            @endforeach
-                                        </ul>
-                                    </div>
-                                </div>
-
-                                <div class="form-group has-feedback">
-                                    <div class="col-md-12">
-                                        <label class="form-control-label col-md-12">
-                                            {!! __('messages.time') !!} <span class="text-danger">*</span>
-                                        </label>
-                                        <div class="tab-content" id="pills-tabContent-1">
-                                            @foreach ($slotsArray['days'] as $day)
-                                                @if (isset($day))
-                                                    <div class="tab-pane p-1 day-slot @if(strtolower($day) === strtolower($activeDay)) active @endif" id="{{ $day }}">
-                                                        <ul class="nav nav-tabs nav-fill tabslink gap-3 provider-slot">
-                                                            @for ($hour = 0; $hour < 24; $hour++)
-                                                                @php
-                                                                    $slotTime = sprintf('%02d:00', $hour);
-                                                                    $isActive = in_array($slotTime, $activeSlots[$day] ?? []);
-                                                                @endphp
-                                                                <li class="nav-item m-0">
-                                                                    <a href="javascript:void(0)" name="start_at" class="nav-link time-link @if ($isActive) active @endif slot-link" data-day="{{ $day }}" data-slot="{{ $slotTime }}" data-bs-toggle="tab" rel="tooltip">{{ $slotTime }}</a>
-                                                                </li>
-                                                            @endfor
-                                                        </ul>
-                                                    </div>
-                                                @endif
-                                            @endforeach
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {{ html()->submit(__('messages.submit'))->class('btn btn-md btn-primary') }}
-                            </div>
-                        </div>
-
-                        {{ html()->form()->close() }}
+                        <form id="provider-form">
+                            @csrf
+                            <input type="hidden" name="id" id="provider-id" value="{{ $provider_id }}">
+                            <div id="calendar"></div>
+                            <button type="submit" class="btn btn-primary mt-3">{{ __('messages.submit') }}</button>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -80,88 +38,145 @@
     </div>
 </x-master-layout>
 
+<!-- FullCalendar JS/CSS dependencies (include only once in your layout) -->
+<link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/main.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/main.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/locales-all.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
+<!-- Inject slot data safely -->
 <script>
-    $(document).ready(function () {
-        setActiveDay('mon');
-        var urlParams = new URLSearchParams(window.location.search);
-        var provider_id = urlParams.get('id');
+    const previouslySavedSlots = {!! json_encode($activeSlots ?? []) !!};
+</script>
 
-        $('.day-link').on('click', function (e) {
-            e.preventDefault();
-            var selectedDay = $(this).data('day');
-            setActiveDay(selectedDay);
-            showActiveDaySlots();
-        });
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        window.initializeCalendar = function () {
+            const calendarEl = document.getElementById('calendar');
+            if (!calendarEl) return;
 
-        function setActiveDay(day) {
-            $('.day-slot').removeClass('active');
-            $('.day-link').removeClass('active');
-            $('.day-link[data-day="' + day + '"]').addClass('active');
-            $('.day-slot#' + day).addClass('active');
-            activeDay = day;
-        }
+            const selectedSlots = [];
 
-        function showActiveDaySlots() {
-            $('.day-slot').hide();
-            $('.day-slot.active').show();
-        }
+            const dayMap = {
+                sun: 0,
+                mon: 1,
+                tue: 2,
+                wed: 3,
+                thu: 4,
+                fri: 5,
+                sat: 6
+            };
 
-        $('.time-link').on('click', function (e) {
-            e.preventDefault();
-            $(this).toggleClass('active');
-        });
+            const events = [];
 
-        function showMessage(message) {
-            Snackbar.show({
-                text: message,
-                pos: 'bottom-center'
-            });
-        }
-
-        $('#provider-form').on('submit', function (e) {
-            e.preventDefault();
-            var selectedSlots = [];
-            var selectedSlotsByDay = {};
-
-            $('.slot-link.active').each(function () {
-                var day = $(this).data('day');
-                var slot = $(this).data('slot');
-
-                if (!(day in selectedSlotsByDay)) {
-                    selectedSlotsByDay[day] = [];
-                }
-
-                selectedSlotsByDay[day].push(slot);
-            });
-
-            for (var day in selectedSlotsByDay) {
-                selectedSlots.push({
-                    day: day,
-                    time: selectedSlotsByDay[day]
+            if (previouslySavedSlots && typeof previouslySavedSlots === 'object') {
+                Object.entries(previouslySavedSlots).forEach(([day, times]) => {
+                    times.forEach(time => {
+                        const [hour, minute] = time.split(':');
+                        events.push({
+                            title: 'Available',
+                            daysOfWeek: [dayMap[day.toLowerCase()]],
+                            startTime: `${hour}:${minute}`,
+                            endTime: `${String(parseInt(hour) + 1).padStart(2, '0')}:${minute}`,
+                            rendering: 'background',
+                            backgroundColor: '#198754',
+                            borderColor: '#198754',
+                            classNames: ['preselected-slot']
+                        });
+                        selectedSlots.push({ day, time });
+                    });
                 });
             }
 
-            var csrfToken = $('meta[name="csrf-token"]').attr('content');
-            $.ajaxSetup({
-                headers: {
-                    'X-CSRF-TOKEN': csrfToken
+            const calendar = new FullCalendar.Calendar(calendarEl, {
+                plugins: ['timeGrid', 'interaction'],
+                initialView: 'timeGridWeek',
+                themeSystem: 'bootstrap',
+                headerToolbar: {
+                    left: '',
+                    center: 'title',
+                    right: ''
+                },
+                allDaySlot: false,
+                slotDuration: '01:00:00',
+                selectable: true,
+                height: 600,
+                events: events,
+                select: function (info) {
+                    const dayIndex = info.start.getDay();
+                    const dayName = Object.keys(dayMap).find(key => dayMap[key] === dayIndex);
+
+                    if (!dayName) return;
+
+                    const hour = String(info.start.getHours()).padStart(2, '0') + ':00';
+                    const exists = selectedSlots.find(slot => slot.day === dayName && slot.time === hour);
+
+                    if (exists) {
+                        const index = selectedSlots.indexOf(exists);
+                        if (index > -1) selectedSlots.splice(index, 1);
+
+                        calendar.getEvents().forEach(ev => {
+                            if (
+                                !ev.classNames.includes('preselected-slot') &&
+                                ev.start.getDay() === dayIndex &&
+                                ev.start.getHours() === info.start.getHours()
+                            ) {
+                                ev.remove();
+                            }
+                        });
+                    } else {
+                        selectedSlots.push({ day: dayName, time: hour });
+
+                        calendar.addEvent({
+                            title: 'Selected',
+                            start: info.start,
+                            end: info.end,
+                            backgroundColor: '#198754',
+                            borderColor: '#198754',
+                            classNames: ['user-slot']
+                        });
+                    }
                 }
             });
 
-            $.ajax({
-                type: 'POST',
-                url: '{{ route("providerslot.store") }}',
-                data: { provider_id: provider_id, slots: selectedSlots },
-                success: function (response) {
-                    console.log(response);
-                    showMessage(response.message);
-                },
-                error: function (error) {
-                    console.error(error);
+            calendar.render();
+
+            $('#provider-form').on('submit', function (e) {
+                e.preventDefault();
+
+                const formattedSlots = [];
+                const groupedSlots = {};
+
+                selectedSlots.forEach(slot => {
+                    if (!slot.day) return;
+                    const day = slot.day.toLowerCase();
+                    if (!groupedSlots[day]) groupedSlots[day] = [];
+                    groupedSlots[day].push(slot.time);
+                });
+
+                for (const day in groupedSlots) {
+                    formattedSlots.push({ day, time: groupedSlots[day] });
                 }
+
+                $.ajax({
+                    type: 'POST',
+                    url: '{{ route("providerslot.store") }}',
+                    data: {
+                        _token: '{{ csrf_token() }}',
+                        provider_id: $('#provider-id').val(),
+                        slots: formattedSlots
+                    },
+                    success: function (res) {
+                        alert(res.message || 'Availability updated.');
+                    },
+                    error: function (err) {
+                        alert('Error updating availability');
+                        console.error(err);
+                    }
+                });
             });
-        });
+        };
+
+        window.initializeCalendar();
     });
 </script>
