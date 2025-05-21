@@ -311,76 +311,87 @@ class ProviderController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(UserRequest $request)
-    {
-        $loginuser = \Auth::user();
-        if(demoUserPermission()){
-            return  redirect()->back()->withErrors(trans('messages.demo_permission_denied'));
-        }
-        $data = $request->all();
-        $id = $data['id'];
-        $data['user_type'] = $data['user_type'] ?? 'provider';
-        $data['is_featured'] = 0;
+public function store(UserRequest $request)
+{
+    $loginuser = \Auth::user();
 
-        if($request->has('is_featured')){
-			$data['is_featured'] = 1;
-		}
+    if(demoUserPermission()){
+        return redirect()->back()->withErrors(trans('messages.demo_permission_denied'));
+    }
 
-        $data['display_name'] = $data['first_name']." ".$data['last_name'];
+    $data = $request->all();
+    $id = $data['id'];
+    $data['user_type'] = $data['user_type'] ?? 'provider';
+    $data['is_featured'] = 0;
 
-        if($id == null){
-            $data['password'] = bcrypt($data['password']);
-            $user = User::create($data);
-            $wallet = array(
-                'title' => $user->display_name,
-                'user_id' => $user->id,
-                'amount' => 0
-            );
-            $result = Wallet::create($wallet);
-        }else{
-            $user = User::findOrFail($id);
+    if($request->has('is_featured')){
+        $data['is_featured'] = 1;
+    }
 
-            $user->fill($data)->update();
-        }
-        if($data['status'] == 1 && auth()->user()->hasAnyRole(['admin'])){
-            try {
-                \Mail::send('verification.verification_email',
-                array(), function($message) use ($user)
+    $data['display_name'] = $data['first_name']." ".$data['last_name'];
+
+    // Add these two lines to store tax_id and tax_country_id
+    $data['tax_id'] = $request->tax_id;
+    $data['tax_country_id'] = is_array($request->tax_id) ? $request->tax_id[0] : $request->tax_id;
+
+    if($id == null){
+        $data['password'] = bcrypt($data['password']);
+        $user = User::create($data);
+
+        $wallet = [
+            'title' => $user->display_name,
+            'user_id' => $user->id,
+            'amount' => 0
+        ];
+        Wallet::create($wallet);
+    } else {
+        $user = User::findOrFail($id);
+        $user->fill($data)->update();
+    }
+
+    if($data['status'] == 1 && auth()->user()->hasAnyRole(['admin'])){
+        try {
+            \Mail::send('verification.verification_email',
+                [], function($message) use ($user)
                 {
                     $message->from(env('MAIL_FROM_ADDRESS'));
                     $message->to($user->email);
-                });
-            } catch (\Throwable $th) {
-
-            }
-
+                }
+            );
+        } catch (\Throwable $th) {
+            // Handle exception or ignore
         }
-        $user->assignRole($data['user_type']);
-        storeMediaFile($user,$request->profile_image, 'profile_image');
-        $message = __('messages.update_form',[ 'form' => __('messages.provider') ] );
-		if($user->wasRecentlyCreated){
-			$message = __('messages.save_form',[ 'form' => __('messages.provider') ] );
-		}
-        if($user->providerTaxMapping()->count() > 0)
-        {
-            $user->providerTaxMapping()->delete();
-        }
-        if($request->tax_id != null) {
-            foreach($request->tax_id as $tax) {
-                $provider_tax = [
-                    'provider_id'   => $user->id,
-                    'tax_id'   => $tax,
-                ];
-                $user->providerTaxMapping()->insert($provider_tax);
-            }
-        }
-
-        if($request->is('api/*')) {
-            return comman_message_response($message);
-		}
-
-		return redirect(route('provider.index'))->withSuccess($message);
     }
+
+    $user->assignRole($data['user_type']);
+    storeMediaFile($user, $request->profile_image, 'profile_image');
+
+    $message = __('messages.update_form',[ 'form' => __('messages.provider') ]);
+    if($user->wasRecentlyCreated){
+        $message = __('messages.save_form',[ 'form' => __('messages.provider') ]);
+    }
+
+    if($user->providerTaxMapping()->count() > 0){
+        $user->providerTaxMapping()->delete();
+    }
+
+    if($request->tax_id != null){
+        foreach($request->tax_id as $tax){
+            $provider_tax = [
+                'provider_id' => $user->id,
+                'tax_id' => $tax,
+            ];
+            $user->providerTaxMapping()->insert($provider_tax);
+        }
+    }
+
+    if($request->is('api/*')){
+        return comman_message_response($message);
+    }
+
+    return redirect(route('provider.index'))->withSuccess($message);
+}
+
 
     /**
      * Display the specified resource.
