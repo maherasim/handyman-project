@@ -283,38 +283,45 @@ public function wallethistory_index_data(DataTables $datatable, $id)
         return comman_custom_response(['message'=> $msg, 'status' => true]);
     }
 
-    public function getWalletPaymentMethod(Request $request)
-    {
-        $data = $request->all();
-        $data['datetime'] = now();
-        $data['payment_status'] = 'failed';
-        $payment_data = Payment::where('booking_id', $data['booking_id'])->first();
+public function getWalletPaymentMethod(Request $request)
+{
+    $data = $request->all();
+    $data['datetime'] = now();
+    $data['payment_status'] = 'failed';
 
-        if (!empty($payment_data)) {
-            $payment_data->update($data);
-        } else {
-            $payment_data = Payment::create($data);
-        }
+    $payment_data = Payment::where('booking_id', $data['booking_id'])->first();
 
-        $sitesetup = Setting::where('type','site-setup')->where('key', 'site-setup')->first();
-        $sitesetupdata = $sitesetup ? json_decode($sitesetup->value, true) : null;
-        $country_id = $sitesetupdata['default_currency'] ?? null;
-        $country = Country::find($country_id);
-
-        $data['currency_code'] = $country ? $country->currency_code : "USD";
-
-        switch ($data['payment_type']) {
-            case 'stripe':
-                $data['payment_geteway_data'] = getPaymentMethodkey($data['payment_type']);
-                break;
-
-            default:
-
-                break;
-        }
-
-        return comman_custom_response($data);
+    if (!empty($payment_data)) {
+        $payment_data->update($data);
+    } else {
+        $payment_data = Payment::create($data);
     }
+
+    $sitesetup = Setting::where('type','site-setup')->where('key', 'site-setup')->first();
+    $sitesetupdata = $sitesetup ? json_decode($sitesetup->value, true) : null;
+    $country_id = $sitesetupdata['default_currency'] ?? null;
+    $country = Country::find($country_id);
+
+    $data['currency_code'] = $country ? $country->currency_code : "USD";
+
+    switch ($data['payment_type']) {
+        case 'stripe':
+            $data['payment_geteway_data'] = getPaymentMethodkey($data['payment_type']);
+            break;
+
+        case 'paypal':
+            // Add PayPal gateway info, e.g. client ID, secret or config
+            $data['payment_geteway_data'] = getPaymentMethodkey($data['payment_type']); // You should implement this for PayPal
+            break;
+
+        default:
+            // other types like wallet, bank transfer etc.
+            break;
+    }
+
+    return comman_custom_response($data);
+}
+
     public function createWalletStripePayment(Request $request)
     {
 
