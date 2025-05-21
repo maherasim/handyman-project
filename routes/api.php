@@ -4,6 +4,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers;
 use App\Http\Controllers\API;
+use App\Http\Controllers\PayPalController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -21,6 +23,9 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 */
 require __DIR__.'/admin-api.php';
+
+
+    Route::post('/api/paypal/create-payment', [PayPalController::class, 'createPayment'])->name('paypal.payment');
 
 Route::get('category-list',[API\CategoryController::class,'getCategoryList']);
 Route::get('subcategory-list',[API\SubCategoryController::class,'getSubCategoryList']);
