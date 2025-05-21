@@ -26,36 +26,36 @@ class PayPalController extends Controller
         $this->apiContext->setConfig(['mode' => env('PAYPAL_MODE')]);
     }
 
-    public function createPayment(Request $request)
-    {
-        $payer = new Payer();
-        $payer->setPaymentMethod('paypal');
+public function createPayment(Request $request)
+{
+    $payer = new Payer();
+    $payer->setPaymentMethod('paypal');
 
-        $amount = new Amount();
-        $amount->setTotal($request->plan_amount);
-        $amount->setCurrency('USD');
+    $amount = new Amount();
+    $amount->setTotal($request->total_amount);
+    $amount->setCurrency('USD');
 
-        $transaction = new Transaction();
-        $transaction->setAmount($amount)
-                    ->setDescription("Payment for " . $request->plan_type);
+    $transaction = new Transaction();
+    $transaction->setAmount($amount)
+                ->setDescription("Payment for Booking #" . $request->booking_id);
 
-        $redirectUrls = new RedirectUrls();
-        $redirectUrls->setReturnUrl(route('paypal.success'))
-                     ->setCancelUrl(route('paypal.cancel'));
+    $redirectUrls = new RedirectUrls();
+    $redirectUrls->setReturnUrl(route('paypal.success'))
+                 ->setCancelUrl(route('paypal.cancel'));
 
-        $payment = new Payment();
-        $payment->setIntent('sale')
-                ->setPayer($payer)
-                ->setRedirectUrls($redirectUrls)
-                ->setTransactions([$transaction]);
+    $payment = new Payment();
+    $payment->setIntent('sale')
+            ->setPayer($payer)
+            ->setRedirectUrls($redirectUrls)
+            ->setTransactions([$transaction]);
 
-        try {
-            $payment->create($this->apiContext);
-            return redirect()->away($payment->getApprovalLink());
-        } catch (\Exception $ex) {
-            return redirect()->back()->with('error', 'Something went wrong with PayPal.');
-        }
+    try {
+        $payment->create($this->apiContext);
+        return redirect()->away($payment->getApprovalLink());
+    } catch (\Exception $ex) {
+        return redirect()->back()->with('error', 'Something went wrong with PayPal: ' . $ex->getMessage());
     }
+}
 
     public function success(Request $request)
     {

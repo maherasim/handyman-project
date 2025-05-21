@@ -18,6 +18,7 @@
         "league/flysystem-aws-s3-v3": "^3.27",
         "maatwebsite/excel": "^3.1",
         "orangehill/iseed": "^3.0",
+        "paypal/rest-api-sdk-php": "*",
         "spatie/laravel-html": "^3.7",
         "spatie/laravel-medialibrary": "^11.4",
         "spatie/laravel-permission": "^6.1",
