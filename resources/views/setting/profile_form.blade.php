@@ -35,145 +35,146 @@
                         {{ html()->text('last_name', $user_data->last_name)->placeholder(__('messages.last_name'))->class('form-control')->required() }}
                         <small class="help-block with-errors text-danger"></small>
                     </div>
-                   <div class="form-group col-md-6">
-    {{ html()->label(__('messages.select_name', ['select' => __('Language')]), 'languages')->class('form-control-label') }} <br />
-    {{ html()->select(
-        'languages[]',
-        [
-            'afrikaans' => 'Afrikaans',
-            'albanian' => 'Albanian',
-            'amharic' => 'Amharic',
-            'arabic' => 'Arabic',
-            'armenian' => 'Armenian',
-            'assamese' => 'Assamese',
-            'azerbaijani' => 'Azerbaijani (Azeri)',
-            'bassa' => 'Bassa',
-            'belarusian' => 'Belarusian',
-            'bengali' => 'Bengali',
-            'bosnian' => 'Bosnian',
-            'braille' => 'Braille',
-            'bulgarian' => 'Bulgarian',
-            'burmese' => 'Burmese',
-            'cambodian' => 'Cambodian',
-            'cape_verde_creole' => 'Cape Verde Creole',
-            'cebuano' => 'Cebuano',
-            'central_kurdish' => 'Central Kurdish',
-            'cherokee' => 'Cherokee',
-            'chinese' => 'Chinese',
-            'chuukese' => 'Chuukese',
-            'croatian' => 'Croatian',
-            'czech' => 'Czech',
-            'danish' => 'Danish',
-            'dari' => 'Dari',
-            'dutch' => 'Dutch',
-            'english' => 'English',
-            'estonian' => 'Estonian',
-            'farsi' => 'Farsi (Persian)',
-            'finnish' => 'Finnish',
-            'flemmish' => 'Flemmish',
-            'french' => 'French',
-            'fulani' => 'Fulani',
-            'galician' => 'Galician',
-            'georgian' => 'Georgian',
-            'german' => 'German',
-            'greek' => 'Greek',
-            'gujarati' => 'Gujarati',
-            'haitian_creole' => 'Haitian Creole',
-            'hakha_chin' => 'Hakha Chin',
-            'hakka' => 'Hakka (Chinese)',
-            'hausa' => 'Hausa',
-            'hebrew' => 'Hebrew',
-            'hindi' => 'Hindi',
-            'hmong' => 'Hmong',
-            'hungarian' => 'Hungarian',
-            'icelandic' => 'Icelandic',
-            'igbo' => 'Igbo/Ibo',
-            'ilocano' => 'Ilocano',
-            'ilonggo' => 'Ilonggo (Hiligaynon)',
-            'indonesian' => 'Indonesian',
-            'irish' => 'Irish',
-            'isixhosa' => 'isiXhosa',
-            'isizulu' => 'isiZulu',
-            'italian' => 'Italian',
-            'japanese' => 'Japanese',
-            'javanese' => 'Javanese',
-            'kannada' => 'Kannada',
-            'karen' => 'Karen',
-            'kazakh' => 'Kazakh',
-            'khmer' => 'Khmer',
-            'kiche' => "K'iche'",
-            'kinyarwanda' => 'Kinyarwanda',
-            'kirundi' => 'Kirundi',
-            'kiswahili' => 'KiSwahili',
-            'konkani' => 'Konkani',
-            'korean' => 'Korean',
-            'kurdish' => 'Kurdish',
-            'kyrgyz' => 'Kyrgyz/Kirgiz',
-            'lao' => 'Lao (Laotian)',
-            'latvian' => 'Latvian',
-            'lithuanian' => 'Lithuanian',
-            'luxembourgish' => 'Luxembourgish',
-            'macedonian' => 'Macedonian',
-            'malay' => 'Malay',
-            'malayalam' => 'Malayalam',
-            'maltese' => 'Maltese',
-            'mandinka' => 'Mandinka',
-            'maori' => 'Maori',
-            'marathi' => 'Marathi',
-            'marshallese' => 'Marshallese',
-            'mien' => 'Mien',
-            'mongolian' => 'Mongolian',
-            'montenegrin' => 'Montenegrin',
-            'navajo' => 'Navajo',
-            'nepali' => 'Nepali',
-            'norwegian' => 'Norwegian',
-            'odia' => 'Odia',
-            'oromo' => 'Oromo',
-            'pashto' => 'Pashto',
-            'persian' => 'Persian',
-            'polish' => 'Polish',
-            'portuguese' => 'Portuguese',
-            'punjabi' => 'Punjabi',
-            'quechua' => 'Quechua',
-            'rohingya' => 'Rohingya',
-            'romanian' => 'Romanian',
-            'russian' => 'Russian',
-            'scottish_gaelic' => 'Scottish Gaelic',
-            'serbian' => 'Serbian',
-            'sesotho_sa_leboa' => 'Sesotho sa Leboa',
-            'setswana' => 'Setswana',
-            'sindhi' => 'Sindhi',
-            'sinhala' => 'Sinhala',
-            'slovak' => 'Slovak',
-            'slovenian' => 'Slovenian',
-            'somali' => 'Somali',
-            'spanish' => 'Spanish',
-            'swahili' => 'Swahili',
-            'swedish' => 'Swedish',
-            'tagalog' => 'Tagalog',
-            'tajik' => 'Tajik',
-            'tamil' => 'Tamil',
-            'tatar' => 'Tatar',
-            'telugu' => 'Telugu',
-            'thai' => 'Thai',
-            'tibetan' => 'Tibetan',
-            'tigrinya' => 'Tigrinya',
-            'turkish' => 'Turkish',
-            'turkmen' => 'Turkmen',
-            'ukrainian' => 'Ukrainian',
-            'urdu' => 'Urdu',
-            'uzbek' => 'Uzbek',
-            'valencian' => 'Valencian',
-            'vietnamese' => 'Vietnamese',
-            'welsh' => 'Welsh',
-            'wolof' => 'Wolof',
-            'yoruba' => 'Yoruba'
-        ],
-        old('languages', $user_data->languages ?? [])
-    )->class('form-group select2js')->multiple()->attribute('data-placeholder', __('select_name', ['select' => __('messages.language')])) }}
-</div>
+                    <div class="form-group col-md-6">
+                        {{ html()->label(__('messages.select_name', ['select' => __('Language')]), 'languages')->class('form-control-label') }}
+                        <br />
+                        {{ html()->select(
+                                'languages[]',
+                                [
+                                    'afrikaans' => 'Afrikaans',
+                                    'albanian' => 'Albanian',
+                                    'amharic' => 'Amharic',
+                                    'arabic' => 'Arabic',
+                                    'armenian' => 'Armenian',
+                                    'assamese' => 'Assamese',
+                                    'azerbaijani' => 'Azerbaijani (Azeri)',
+                                    'bassa' => 'Bassa',
+                                    'belarusian' => 'Belarusian',
+                                    'bengali' => 'Bengali',
+                                    'bosnian' => 'Bosnian',
+                                    'braille' => 'Braille',
+                                    'bulgarian' => 'Bulgarian',
+                                    'burmese' => 'Burmese',
+                                    'cambodian' => 'Cambodian',
+                                    'cape_verde_creole' => 'Cape Verde Creole',
+                                    'cebuano' => 'Cebuano',
+                                    'central_kurdish' => 'Central Kurdish',
+                                    'cherokee' => 'Cherokee',
+                                    'chinese' => 'Chinese',
+                                    'chuukese' => 'Chuukese',
+                                    'croatian' => 'Croatian',
+                                    'czech' => 'Czech',
+                                    'danish' => 'Danish',
+                                    'dari' => 'Dari',
+                                    'dutch' => 'Dutch',
+                                    'english' => 'English',
+                                    'estonian' => 'Estonian',
+                                    'farsi' => 'Farsi (Persian)',
+                                    'finnish' => 'Finnish',
+                                    'flemmish' => 'Flemmish',
+                                    'french' => 'French',
+                                    'fulani' => 'Fulani',
+                                    'galician' => 'Galician',
+                                    'georgian' => 'Georgian',
+                                    'german' => 'German',
+                                    'greek' => 'Greek',
+                                    'gujarati' => 'Gujarati',
+                                    'haitian_creole' => 'Haitian Creole',
+                                    'hakha_chin' => 'Hakha Chin',
+                                    'hakka' => 'Hakka (Chinese)',
+                                    'hausa' => 'Hausa',
+                                    'hebrew' => 'Hebrew',
+                                    'hindi' => 'Hindi',
+                                    'hmong' => 'Hmong',
+                                    'hungarian' => 'Hungarian',
+                                    'icelandic' => 'Icelandic',
+                                    'igbo' => 'Igbo/Ibo',
+                                    'ilocano' => 'Ilocano',
+                                    'ilonggo' => 'Ilonggo (Hiligaynon)',
+                                    'indonesian' => 'Indonesian',
+                                    'irish' => 'Irish',
+                                    'isixhosa' => 'isiXhosa',
+                                    'isizulu' => 'isiZulu',
+                                    'italian' => 'Italian',
+                                    'japanese' => 'Japanese',
+                                    'javanese' => 'Javanese',
+                                    'kannada' => 'Kannada',
+                                    'karen' => 'Karen',
+                                    'kazakh' => 'Kazakh',
+                                    'khmer' => 'Khmer',
+                                    'kiche' => "K'iche'",
+                                    'kinyarwanda' => 'Kinyarwanda',
+                                    'kirundi' => 'Kirundi',
+                                    'kiswahili' => 'KiSwahili',
+                                    'konkani' => 'Konkani',
+                                    'korean' => 'Korean',
+                                    'kurdish' => 'Kurdish',
+                                    'kyrgyz' => 'Kyrgyz/Kirgiz',
+                                    'lao' => 'Lao (Laotian)',
+                                    'latvian' => 'Latvian',
+                                    'lithuanian' => 'Lithuanian',
+                                    'luxembourgish' => 'Luxembourgish',
+                                    'macedonian' => 'Macedonian',
+                                    'malay' => 'Malay',
+                                    'malayalam' => 'Malayalam',
+                                    'maltese' => 'Maltese',
+                                    'mandinka' => 'Mandinka',
+                                    'maori' => 'Maori',
+                                    'marathi' => 'Marathi',
+                                    'marshallese' => 'Marshallese',
+                                    'mien' => 'Mien',
+                                    'mongolian' => 'Mongolian',
+                                    'montenegrin' => 'Montenegrin',
+                                    'navajo' => 'Navajo',
+                                    'nepali' => 'Nepali',
+                                    'norwegian' => 'Norwegian',
+                                    'odia' => 'Odia',
+                                    'oromo' => 'Oromo',
+                                    'pashto' => 'Pashto',
+                                    'persian' => 'Persian',
+                                    'polish' => 'Polish',
+                                    'portuguese' => 'Portuguese',
+                                    'punjabi' => 'Punjabi',
+                                    'quechua' => 'Quechua',
+                                    'rohingya' => 'Rohingya',
+                                    'romanian' => 'Romanian',
+                                    'russian' => 'Russian',
+                                    'scottish_gaelic' => 'Scottish Gaelic',
+                                    'serbian' => 'Serbian',
+                                    'sesotho_sa_leboa' => 'Sesotho sa Leboa',
+                                    'setswana' => 'Setswana',
+                                    'sindhi' => 'Sindhi',
+                                    'sinhala' => 'Sinhala',
+                                    'slovak' => 'Slovak',
+                                    'slovenian' => 'Slovenian',
+                                    'somali' => 'Somali',
+                                    'spanish' => 'Spanish',
+                                    'swahili' => 'Swahili',
+                                    'swedish' => 'Swedish',
+                                    'tagalog' => 'Tagalog',
+                                    'tajik' => 'Tajik',
+                                    'tamil' => 'Tamil',
+                                    'tatar' => 'Tatar',
+                                    'telugu' => 'Telugu',
+                                    'thai' => 'Thai',
+                                    'tibetan' => 'Tibetan',
+                                    'tigrinya' => 'Tigrinya',
+                                    'turkish' => 'Turkish',
+                                    'turkmen' => 'Turkmen',
+                                    'ukrainian' => 'Ukrainian',
+                                    'urdu' => 'Urdu',
+                                    'uzbek' => 'Uzbek',
+                                    'valencian' => 'Valencian',
+                                    'vietnamese' => 'Vietnamese',
+                                    'welsh' => 'Welsh',
+                                    'wolof' => 'Wolof',
+                                    'yoruba' => 'Yoruba',
+                                ],
+                                old('languages', $user_data->languages ?? []),
+                            )->class('form-group select2js')->multiple()->attribute('data-placeholder', __('select_name', ['select' => __('messages.language')])) }}
+                    </div>
 
-                    
+
                     <div class="form-group col-md-6">
                         {{ html()->label(__('messages.username') . ' <span class="text-danger">*</span>')->class('form-control-label')->for('username') }}
                         {{ html()->text('username', $user_data->username)->placeholder(__('messages.username'))->class('form-control')->required() }}
@@ -190,7 +191,7 @@
                         {{ html()->text('vat_number', $user_data->vat_number)->placeholder(__('Vat Number'))->class('form-control')->required() }}
                         <small class="help-block with-errors text-danger"></small>
                     </div>
-                    
+
 
                     <div class="form-group col-md-6">
                         {{ html()->label(__('skills') . ' <span class="text-danger">*</span>')->class('form-control-label')->for('skills') }}
@@ -212,13 +213,17 @@
 
                     <div class="form-group col-md-6">
                         {{ html()->label(__('Availability') . ' <span class="text-danger">*</span>')->class('form-control-label')->for('availability') }}
-                        {{ html()->select('availability', [
-                            'Full-time' => 'Full-time',
-                            'Part-time' => 'Part-time'
-                        ], $user_data->availability)->class('form-control')->required()->placeholder(__('Select Availability')) }}
+                        {{ html()->select(
+                                'availability',
+                                [
+                                    'Full-time' => 'Full-time',
+                                    'Part-time' => 'Part-time',
+                                ],
+                                $user_data->availability,
+                            )->class('form-control')->required()->placeholder(__('Select Availability')) }}
                         <small class="help-block with-errors text-danger"></small>
                     </div>
-                    
+
                     <div class="form-group col-md-6">
                         {{ html()->label(__('Mobility') . ' <span class="text-danger">*</span>')->class('form-control-label')->for('mobility') }}
                         {{ html()->text('mobility', $user_data->mobility)->placeholder(__('Mobility'))->class('form-control')->required() }}
@@ -266,6 +271,15 @@
                                 [optional($user_data->city)->id => optional($user_data->city)->name],
                                 optional($user_data->city)->id,
                             )->class('form-group select2js city_id')->attribute('data-placeholder', __('messages.select_name', ['select' => __('messages.city')])) }}
+                    </div>
+                    <div class="form-group col-md-6">
+                        {{ html()->label(__('messages.select_name', ['select' => __('Country tax')]), 'tax_country_id')->class('form-control-label') }}
+                        <br />
+                        {{ html()->select(
+                                'tax_country_id',
+                                [optional($user_data->country)->id => optional($user_data->country)->name],
+                                optional($user_data->country)->id,
+                            )->class('form-group select2js tax_country')->attribute('data-placeholder', __('messages.select_name', ['select' => __('messages.tax_country')]))->attribute('data-ajax--url', route('ajax-list', ['type' => 'country'])) }}
                     </div>
 
                     <div class="form-group col-md-6">
@@ -352,7 +366,7 @@
                             {{ html()->label(__('messages.description'))->class('form-control-label')->for('about_description') }}
                             {{ html()->textarea('about_description', $user_data->about_description)->class('form-control textarea')->rows(2)->placeholder(__('messages.description')) }}
                         </div>
-                        
+
 
 
                         @if ($user_data->reason != null)
@@ -412,80 +426,87 @@
         </div>
     </div>
 </div>
-
 <script>
-    // (function($) {
-    // 	"use strict";
     $(document).ready(function() {
         $('.select2js').select2({
             width: '100%',
-            // dropdownParent: $(this).parent()
         });
+
         var country_id = "{{ isset($user_data->country_id) ? $user_data->country_id : 0 }}";
         var state_id = "{{ isset($user_data->state_id) ? $user_data->state_id : 0 }}";
         var city_id = "{{ isset($user_data->city_id) ? $user_data->city_id : 0 }}";
 
         stateName(country_id, state_id);
+
+        // When country changes
         $(document).on('change', '#country_id', function() {
             var country = $(this).val();
             $('#state_id').empty();
             $('#city_id').empty();
             stateName(country);
-        })
+
+            // === Sync country selection to #tax_country_id (AJAX Select2 compatible)
+            var selectedText = $("#country_id option:selected").text();
+
+            // Remove if already exists to prevent duplicates
+            $('#tax_country_id').find('option[value="' + country + '"]').remove();
+
+            // Add and select new option
+            var newOption = new Option(selectedText, country, true, true);
+            $('#tax_country_id').append(newOption).trigger('change');
+        });
+
+        // When state changes
         $(document).on('change', '#state_id', function() {
             var state = $(this).val();
             $('#city_id').empty();
             cityName(state, city_id);
-        })
+        });
 
-        $(document).ready(function() {
-            // Add Section
-            $("#add-section").click(function() {
-                var newSection = $(".form-section:first").clone();
-                newSection.find('input').val(''); // Clear input values
-                $(".form-section:last").after(newSection);
-                updateRemoveButtonVisibility();
-            });
-
-            // Remove Section
-            $(document).on('click', '.remove-section', function() {
-                if ($(".form-section").length > 1) {
-                    $(this).closest('.form-section').remove();
-                    updateRemoveButtonVisibility();
-                }
-            });
-
-            // Remove Section
-            $(document).on('click', '.remove-section1', function() {
-
-                $(this).closest('.form-section1').remove();
-
-            });
-
-            // Function to update Remove button visibility
-            function updateRemoveButtonVisibility() {
-                if ($(".form-section").length > 1) {
-                    $('.remove-section').show();
-                } else {
-                    $('.remove-section').hide();
-                }
-            }
-
-            // Initially hide Remove button if there's only one section
+        // Add/Remove Section
+        $("#add-section").click(function() {
+            var newSection = $(".form-section:first").clone();
+            newSection.find('input').val('');
+            $(".form-section:last").after(newSection);
             updateRemoveButtonVisibility();
         });
 
+        $(document).on('click', '.remove-section', function() {
+            if ($(".form-section").length > 1) {
+                $(this).closest('.form-section').remove();
+                updateRemoveButtonVisibility();
+            }
+        });
+
+        $(document).on('click', '.remove-section1', function() {
+            $(this).closest('.form-section1').remove();
+        });
+
+        function updateRemoveButtonVisibility() {
+            if ($(".form-section").length > 1) {
+                $('.remove-section').show();
+            } else {
+                $('.remove-section').hide();
+            }
+        }
+
+        updateRemoveButtonVisibility();
+
+        // Contact number validation
         $(document).on('keyup', '.contact_number', function() {
             var contactNumberInput = document.getElementById('contact_number');
             var inputValue = contactNumberInput.value;
             inputValue = inputValue.replace(/[^0-9+\- ]/g, '');
+
             if (inputValue.length > 15) {
                 inputValue = inputValue.substring(0, 15);
                 $('#contact_number_err').text('Contact number should not exceed 15 characters');
             } else {
                 $('#contact_number_err').text('');
             }
+
             contactNumberInput.value = inputValue;
+
             if (inputValue.match(/^[0-9+\- ]+$/)) {
                 $('#contact_number_err').text('');
             } else {
@@ -493,8 +514,7 @@
             }
         });
 
-
-
+        // State AJAX function
         function stateName(country, state = "") {
             var state_route = "{{ route('ajax-list', ['type' => 'state', 'country_id' => '']) }}" + country;
             state_route = state_route.replace('amp;', '');
@@ -514,6 +534,7 @@
             });
         }
 
+        // City AJAX function
         function cityName(state, city = "") {
             var city_route = "{{ route('ajax-list', ['type' => 'city', 'state_id' => '']) }}" + state;
             city_route = city_route.replace('amp;', '');
@@ -532,14 +553,15 @@
                 }
             });
         }
+
+        // Profile image preview
         $(document).on('change', '#profile_image', function() {
             readURL(this);
-        })
+        });
 
         function readURL(input) {
             if (input.files && input.files[0]) {
                 var reader = new FileReader();
-
                 var res = isImage(input.files[0].name);
 
                 if (res == false) {
@@ -562,20 +584,12 @@
             }
         }
 
-
-        $(document).ready(function() {
-
-            var currentImage = "{{ getSingleMedia($user_data, 'profile_image', null) }}";
-
-
-            if (currentImage !== "") {
-
-                var fileName = currentImage.split('/').pop();
-
-                $('#imagelabel').text(fileName);
-            }
-        });
-
+        // Show image file name if already uploaded
+        var currentImage = "{{ getSingleMedia($user_data, 'profile_image', null) }}";
+        if (currentImage !== "") {
+            var fileName = currentImage.split('/').pop();
+            $('#imagelabel').text(fileName);
+        }
 
         function getExtension(filename) {
             var parts = filename.split('.');
@@ -593,6 +607,5 @@
             }
             return false;
         }
-    })
-    // })(jQuery);
+    });
 </script>

@@ -310,6 +310,7 @@ class SettingController extends Controller
 
     public function updateProfile(UserRequest $request)
     {
+        //dd($request->all());
         if (demoUserPermission()) {
             return  redirect()->back()->withErrors(trans('messages.demo_permission_denied'));
         }

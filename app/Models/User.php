@@ -23,7 +23,7 @@ class User extends Authenticatable implements HasMedia
         'username', 'first_name', 'last_name', 'email',
         'password', 'user_type', 'address', 'contact_number', 'email_verified_at', 'remember_token',
         'handymantype_id',
-        'player_id','country_id', 'state_id',  'city_id' ,  'provider_id' , 'status',
+        'player_id','country_id', 'state_id',  'city_id' ,  'provider_id' , 'status','tax_country_id',
         'display_name', 'providertype_id' , 'is_featured' , 'time_zone' ,'last_notification_seen' ,'company_name','vat_number',
         'login_type','service_address_id' , 'uid','is_subscribe','about_me','mobility','certification','about_me','availability',
         'social_image','is_available','designation','last_online_time','education',
