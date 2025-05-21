@@ -32,30 +32,32 @@ public function createPayment(Request $request)
     $payer->setPaymentMethod('paypal');
 
     $amount = new Amount();
-    $amount->setTotal($request->total_amount);
     $amount->setCurrency('USD');
+    $amount->setTotal(number_format((float) $request->total_amount, 2, '.', ''));
 
     $transaction = new Transaction();
-    $transaction->setAmount($amount)
-                ->setDescription("Payment for Booking #" . $request->booking_id);
+    $transaction->setAmount($amount);
+    $transaction->setDescription("Payment for Booking #" . $request->booking_id);
 
     $redirectUrls = new RedirectUrls();
     $redirectUrls->setReturnUrl(route('paypal.success'))
                  ->setCancelUrl(route('paypal.cancel'));
 
     $payment = new Payment();
-    $payment->setIntent('sale')
-            ->setPayer($payer)
-            ->setRedirectUrls($redirectUrls)
-            ->setTransactions([$transaction]);
+    $payment->setIntent('sale');
+    $payment->setPayer($payer);
+    $payment->setRedirectUrls($redirectUrls);
+    $payment->setTransactions([$transaction]); // Make sure this is an array of Transaction objects
 
     try {
         $payment->create($this->apiContext);
         return redirect()->away($payment->getApprovalLink());
     } catch (\Exception $ex) {
+        \Log::error('PayPal Error: ' . $ex->getMessage());
         return redirect()->back()->with('error', 'Something went wrong with PayPal: ' . $ex->getMessage());
     }
 }
+
 
     public function success(Request $request)
     {
