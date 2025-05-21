@@ -817,43 +817,63 @@ class ProviderController extends Controller
 }
 
 
-    public function getProviderTimeSlot(Request $request){
-        $auth_user = authSession();
-        $id = $request->id;
-        if ($id != auth()->user()->id && !auth()->user()->hasRole(['admin', 'demo_admin'])) {
-            return redirect(route('home'))->withErrors(trans('messages.demo_permission_denied'));
-        }
-        $providerdata = User::with('providerslotsmapping')->where('user_type','provider')->where('id',$id)->first();
-        date_default_timezone_set($admin->time_zone ?? 'UTC');
+public function getProviderTimeSlot(Request $request)
+{
+    $auth_user = authSession();
+    $id = $request->id;
 
-        $current_time = \Carbon\Carbon::now();
-        $time = $current_time->toTimeString();
+    if ($id != auth()->user()->id && !auth()->user()->hasRole(['admin', 'demo_admin'])) {
+        return redirect(route('home'))->withErrors(trans('messages.demo_permission_denied'));
+    }
 
-        $current_day = strtolower(date('D'));
+    $providerdata = User::with('providerslotsmapping')
+        ->where('user_type', 'provider')
+        ->where('id', $id)
+        ->first();
 
-        $provider_id = $request->id ?? auth()->user()->id;
+    // Set timezone (ensure $admin is defined or passed in if necessary)
+    $admin = User::where('user_type', 'admin')->first(); // fallback if not available in your context
+    date_default_timezone_set($admin->time_zone ?? 'UTC');
 
-        $days = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
+    $current_time = \Carbon\Carbon::now();
+    $time = $current_time->toTimeString();
+    $current_day = strtolower(date('D'));
+    $provider_id = $request->id ?? auth()->user()->id;
 
-        $slotsArray = ['days' => $days];
-        $activeDay ='mon';
-        foreach ($days as $value) {
-            $slot = ProviderSlotMapping::where('provider_id', $provider_id)
+    $days = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
+
+    $slotsArray = ['days' => $days];
+    $activeDay = 'mon';
+    $activeSlots = [];
+
+    foreach ($days as $value) {
+        $slot = ProviderSlotMapping::where('provider_id', $provider_id)
             ->where('days', $value)
             ->orderBy('start_at', 'asc')
             ->pluck('start_at')
             ->toArray();
 
-            $obj = [
-                "day" => $value,
-                "slot" => $slot,
-            ];
-            $slotsArray[] = $obj;
-        }
-
-        $pageTitle = __('messages.slot', ['form' => __('messages.slot')]);
-        return view('provider.timeslot', compact('auth_user','slotsArray', 'pageTitle', 'activeDay','provider_id','providerdata'));
+        $obj = [
+            "day" => $value,
+            "slot" => $slot,
+        ];
+        $slotsArray[] = $obj;
+        $activeSlots[$value] = $slot;
     }
+
+    $pageTitle = __('messages.slot', ['form' => __('messages.slot')]);
+
+    return view('provider.timeslot', compact(
+        'auth_user',
+        'slotsArray',
+        'pageTitle',
+        'activeDay',
+        'provider_id',
+        'providerdata',
+        'activeSlots' // ✅ added to the compact
+    ));
+}
+
 
     public function editProviderTimeSlot(Request $request){
         $auth_user = authSession();
