@@ -279,8 +279,10 @@
                                 'tax_country_id',
                                 [optional($user_data->country)->id => optional($user_data->country)->name],
                                 optional($user_data->country)->id,
-                            )->class('form-group select2js tax_country')->attribute('data-placeholder', __('messages.select_name', ['select' => __('messages.tax_country')]))->attribute('data-ajax--url', route('ajax-list', ['type' => 'country'])) }}
+                            )->class('form-group select2js tax_country')->attribute('data-placeholder', __('messages.select_name', ['select' => __('messages.tax_country')]))->attribute('data-ajax--url', route('ajax-list', ['type' => 'country']))->attribute('disabled', true) }}
                     </div>
+                    <input type="hidden" name="tax_country_id" value="{{ optional($user_data->country)->id }}">
+
 
                     <div class="form-group col-md-6">
                         {{ html()->label(__('messages.email') . ' <span class="text-danger">*</span>', 'email')->class('form-control-label') }}
@@ -426,8 +428,8 @@
         </div>
     </div>
 </div>
-<script>
-    $(document).ready(function() {
+ <script>
+    $(document).ready(function () {
         $('.select2js').select2({
             width: '100%',
         });
@@ -439,46 +441,46 @@
         stateName(country_id, state_id);
 
         // When country changes
-        $(document).on('change', '#country_id', function() {
+        $(document).on('change', '#country_id', function () {
             var country = $(this).val();
+            var selectedText = $("#country_id option:selected").text();
+
             $('#state_id').empty();
             $('#city_id').empty();
             stateName(country);
 
-            // === Sync country selection to #tax_country_id (AJAX Select2 compatible)
-            var selectedText = $("#country_id option:selected").text();
-
-            // Remove if already exists to prevent duplicates
-            $('#tax_country_id').find('option[value="' + country + '"]').remove();
-
-            // Add and select new option
+            // === Sync tax_country_id (disabled select)
+            $('#tax_country_id').empty(); // Clear to avoid duplicates
             var newOption = new Option(selectedText, country, true, true);
             $('#tax_country_id').append(newOption).trigger('change');
+
+            // === Update hidden input for submission
+            $('input[name="tax_country_id"]').val(country);
         });
 
         // When state changes
-        $(document).on('change', '#state_id', function() {
+        $(document).on('change', '#state_id', function () {
             var state = $(this).val();
             $('#city_id').empty();
             cityName(state, city_id);
         });
 
         // Add/Remove Section
-        $("#add-section").click(function() {
+        $("#add-section").click(function () {
             var newSection = $(".form-section:first").clone();
             newSection.find('input').val('');
             $(".form-section:last").after(newSection);
             updateRemoveButtonVisibility();
         });
 
-        $(document).on('click', '.remove-section', function() {
+        $(document).on('click', '.remove-section', function () {
             if ($(".form-section").length > 1) {
                 $(this).closest('.form-section').remove();
                 updateRemoveButtonVisibility();
             }
         });
 
-        $(document).on('click', '.remove-section1', function() {
+        $(document).on('click', '.remove-section1', function () {
             $(this).closest('.form-section1').remove();
         });
 
@@ -493,7 +495,7 @@
         updateRemoveButtonVisibility();
 
         // Contact number validation
-        $(document).on('keyup', '.contact_number', function() {
+        $(document).on('keyup', '.contact_number', function () {
             var contactNumberInput = document.getElementById('contact_number');
             var inputValue = contactNumberInput.value;
             inputValue = inputValue.replace(/[^0-9+\- ]/g, '');
@@ -521,7 +523,7 @@
 
             $.ajax({
                 url: state_route,
-                success: function(result) {
+                success: function (result) {
                     $('#state_id').select2({
                         width: '100%',
                         placeholder: "{{ trans('messages.select_name', ['select' => trans('messages.state')]) }}",
@@ -541,7 +543,7 @@
 
             $.ajax({
                 url: city_route,
-                success: function(result) {
+                success: function (result) {
                     $('#city_id').select2({
                         width: '100%',
                         placeholder: "{{ trans('messages.select_name', ['select' => trans('messages.city')]) }}",
@@ -555,7 +557,7 @@
         }
 
         // Profile image preview
-        $(document).on('change', '#profile_image', function() {
+        $(document).on('change', '#profile_image', function () {
             readURL(this);
         });
 
@@ -575,7 +577,7 @@
                     return false;
                 }
 
-                reader.onload = function(e) {
+                reader.onload = function (e) {
                     $('.profile_image_preview').attr('src', e.target.result);
                     $("#imagelabel").text((input.files[0].name));
                 }
@@ -606,6 +608,15 @@
                     return true;
             }
             return false;
+        }
+
+        // === Initialize tax_country_id with user's current value ===
+        let initialTaxCountryId = "{{ optional($user_data->country)->id }}";
+        let initialTaxCountryName = "{{ optional($user_data->country)->name }}";
+        if (initialTaxCountryId && initialTaxCountryName) {
+            let initialOption = new Option(initialTaxCountryName, initialTaxCountryId, true, true);
+            $('#tax_country_id').append(initialOption).trigger('change');
+            $('input[name="tax_country_id"]').val(initialTaxCountryId);
         }
     });
 </script>
