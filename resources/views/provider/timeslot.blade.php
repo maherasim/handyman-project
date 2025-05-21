@@ -3,102 +3,115 @@
         @include('partials._provider')
 
         <div class="row">
-            <!-- Left Sidebar -->
-            <div class="col-md-4">
-                <div class="card">
-                    <div class="card-body text-center">
-                        <h4 class="mb-2">{{ __('messages.update') }} {{ $pageTitle }}</h4>
-                        <p class="mb-0 fw-bold">
-                            {{ $providerdata->first_name . ' ' . $providerdata->last_name }}
-                        </p>
-                        <a class="btn btn-sm btn-outline-primary mt-3" href="{{ route('provider.edit-time-slot', ['id' => $provider_id]) }}">
-                            {{ __('messages.slot') }}
-                        </a>
+            <div class="col-lg-12">
+                <div class="card card-block card-stretch">
+                    <div class="card-body p-0">
+                        <div class="d-flex justify-content-between align-items-center p-3 flex-wrap gap-3">
+                            <h5 class="font-weight-bold">{{ $providerdata->first_name . ' ' . $providerdata->last_name }} {{ $pageTitle }}</h5>
+                            <a href="{{ route('provider.index') }}" class="float-right btn btn-sm btn-primary">
+                                <i class="fa fa-angle-double-left"></i> {{ __('messages.back') }}
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Calendar Section -->
-            <div class="col-md-8">
+            <div class="col-lg-12">
                 <div class="card">
                     <div class="card-body">
-                        {{ html()->form('POST', '#')->attribute('data-toggle', 'validator')->id('provider')->open() }}
-                            {{ html()->hidden('id', $provider_id) }}
+                        {{ html()->form('POST')->id('provider')->attribute('data-toggle', 'validator')->open() }}
 
-                            <!-- Calendar -->
-                            <div id="calendar"></div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    {{ html()->hidden('id', $provider_id) }}
 
-                            <!-- Time Slot Display -->
-                            <div class="form-group has-feedback mt-4">
-                                <label class="form-label">{{ __('messages.time') }} <span class="text-danger">*</span></label>
-                                <div class="tab-content">
-                                    @foreach ($slotsArray as $slotDay)
-                                        @if (isset($slotDay['day']) && isset($slotDay['slot']))
-                                            <div class="tab-pane p-1 day-slot @if (strtolower($slotDay['day']) === strtolower($activeDay)) active @endif" id="{{ $slotDay['day'] }}">
-                                                @if ($slotDay['slot'])
-                                                    <div class="d-flex flex-wrap gap-2">
-                                                        @foreach ($slotDay['slot'] as $slot)
-                                                            <span class="badge bg-primary p-2">{{ sprintf('%02d:00', $slot) }}</span>
-                                                        @endforeach
-                                                    </div>
-                                                @else
-                                                    <div>
-                                                        <span>No time slots selected for {{ $slotDay['day'] }}.</span>
-                                                    </div>
-                                                @endif
+                                    <div class="form-group has-feedback">
+                                        <a class="mr-2 float-right btn btn-sm btn-primary" href="{{ route('provider.edit-time-slot', ['id' => $provider_id]) }}" title="{{ __('messages.slot') }}">{{ __('messages.update') }}</a>
+
+                                        <label class="form-control-label col-md-12">
+                                            {!! __('messages.day') !!} <span class="text-danger">*</span>
+                                        </label>
+
+                                        <div class="col-md-12">
+                                            <ul class="nav nav-tabs nav-fill gap-3 tabslink" id="tab-text" role="tablist">
+                                                @foreach ($slotsArray as $slotDay)
+                                                    @if (isset($slotDay['day']))
+                                                        <li class="nav-item m-0">
+                                                            <a href="#" class="nav-link day-link" data-day="{{ $slotDay['day'] }}" data-bs-toggle="tab" rel="tooltip">
+                                                                {{ ucfirst($slotDay['day']) }}
+                                                            </a>
+                                                        </li>
+                                                    @endif
+                                                @endforeach
+                                            </ul>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group has-feedback">
+                                        <div class="col-md-12">
+                                            <label class="form-control-label col-md-12">
+                                                {!! __('messages.time') !!} <span class="text-danger">*</span>
+                                            </label>
+
+                                            <div class="tab-content" id="pills-tabContent-1">
+                                                @foreach ($slotsArray as $slotDay)
+                                                    @if (isset($slotDay['day']) && isset($slotDay['slot']))
+                                                        <div class="tab-pane p-1 day-slot @if (strtolower($slotDay['day']) === strtolower($activeDay)) active @endif" id="{{ $slotDay['day'] }}">
+                                                            @if ($slotDay['slot'])
+                                                                <ul class="nav nav-tabs nav-fill tabslink gap-3 provider-slot">
+                                                                    @foreach ($slotDay['slot'] as $slot)
+                                                                        @php $slot = sprintf('%02d:00', $slot); @endphp
+                                                                        <li class="nav-item m-0">
+                                                                            <a href="javascript:void(0)" class="nav-link" data-bs-toggle="tab" rel="tooltip">{{ $slot }}</a>
+                                                                        </li>
+                                                                    @endforeach
+                                                                </ul>
+                                                            @else
+                                                                <div>
+                                                                    <span>No time slots selected for {{ $slotDay['day'] }} day.</span>
+                                                                </div>
+                                                            @endif
+                                                        </div>
+                                                    @endif
+                                                @endforeach
                                             </div>
-                                        @endif
-                                    @endforeach
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
-                            <div class="mt-4">
-                                <button type="submit" class="btn btn-primary">{{ __('messages.submit') }}</button>
-                            </div>
                         {{ html()->form()->close() }}
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
-    @section('bottom_script')
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            var calendarEl = document.getElementById('calendar');
-            var calendar = new FullCalendar.Calendar(calendarEl, {
-                plugins: ['dayGrid', 'timeGrid', 'list', 'interaction', 'bootstrap'],
-                themeSystem: 'bootstrap',
-                header: {
-                    left: 'prev,next today',
-                    center: 'title',
-                    right: 'timeGridWeek,timeGridDay'
-                },
-                height: 600,
-                selectable: true,
-                editable: false,
-                events: [
-                    @foreach ($slotsArray as $slotDay)
-                        @if (isset($slotDay['slot']))
-                            @foreach ($slotDay['slot'] as $slot)
-                                {
-                                    title: "{{ ucfirst($slotDay['day']) }} Slot",
-                                    startRecur: "{{ now()->startOfWeek()->format('Y-m-d') }}",
-                                    daysOfWeek: [{{ ['sun'=>0,'mon'=>1,'tue'=>2,'wed'=>3,'thu'=>4,'fri'=>5,'sat'=>6][strtolower($slotDay['day'])] }}],
-                                    startTime: "{{ sprintf('%02d:00', (int)$slot) }}",
-                                    endTime: "{{ sprintf('%02d:00', (int)($slot+1)) }}",
-                                    rendering: 'background',
-                                    backgroundColor: 'rgb(19, 193, 240)',
-                                    textColor: '#fff'
-                                },
-                            @endforeach
-                        @endif
-                    @endforeach
-                ]
-            });
-
-            calendar.render();
-        });
-    </script>
-    @endsection
 </x-master-layout>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        setActiveDay('mon');
+
+        $('.day-link').on('click', function (e) {
+            e.preventDefault();
+            var selectedDay = $(this).data('day');
+            setActiveDay(selectedDay);
+            showActiveDaySlots();
+        });
+
+        function setActiveDay(day) {
+            $('.day-slot').removeClass('active');
+            $('.day-link').removeClass('active');
+            $('.day-link[data-day="' + day + '"]').addClass('active');
+            $('.day-slot#' + day).addClass('active');
+            activeDay = day;
+        }
+
+        function showActiveDaySlots() {
+            $('.day-slot').hide();
+            $('.day-slot.active').show();
+        }
+    });
+</script>
