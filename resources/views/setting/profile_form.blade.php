@@ -279,8 +279,9 @@
                                 'tax_country_id',
                                 [optional($user_data->country)->id => optional($user_data->country)->name],
                                 optional($user_data->country)->id,
-                            )->class('form-group select2js tax_country')->attribute('data-placeholder', __('messages.select_name', ['select' => __('messages.tax_country')]))->attribute('data-ajax--url', route('ajax-list', ['type' => 'country'])) }}
+                            )->class('form-group select2js tax_country')->attribute('data-placeholder', __('messages.select_name', ['select' => __('messages.tax_country')]))->attribute('data-ajax--url', route('ajax-list', ['type' => 'country']))->attribute('disabled', true) }}
                     </div>
+                    <input type="hidden" name="tax_country_id" value="{{ optional($user_data->country)->id }}">
 
                     <div class="form-group col-md-6">
                         {{ html()->label(__('messages.email') . ' <span class="text-danger">*</span>', 'email')->class('form-control-label') }}
