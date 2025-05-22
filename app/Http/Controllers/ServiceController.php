@@ -437,7 +437,7 @@ public function store(ServiceRequest $request)
 
     // ✅ Set default duration based on type
     if (!empty($services['type'])) {
-        if ($services['type'] === 'daily') {
+        if ($services['type'] === 'Daily') {
             $services['duration'] = '08:00';
         } elseif ($services['type'] === 'hourly') {
             $services['duration'] = '01:00';
