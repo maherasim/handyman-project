@@ -496,8 +496,9 @@
 
                         <!-- Tax -->
                         <tr>
-                          <td class="ps-0"><span class="text-capitalize">{{ $t('Tax') }} ({{ taxRate
-                              }}%)</span></td>
+                          <td class="ps-0">
+                           <span class="text-capitalize">{{ $t('Tax') }} ({{ taxRatesDisplay }})</span>
+                            </td>
                           <td class="pe-0">
                             <span class="d-block text-danger text-end">
                               <i v-if="taxAmount > 0" class="fa fa-info-circle text-body cursor-pointer"
@@ -1071,7 +1072,15 @@ const advance_payment_amount = computed(() => {
   return parseFloat(roundedValue);
 
 });
-
+const taxRatesDisplay = computed(() => {
+  if (!props.taxes || props.taxes.length === 0) return '0%';
+  
+  const percentageTaxes = props.taxes
+    .filter(tax => tax.type === 'percent')
+    .map(tax => `${tax.title} (${tax.value}%)`);
+    
+  return percentageTaxes.join(' + ') || '0%';
+});
 
 
 
