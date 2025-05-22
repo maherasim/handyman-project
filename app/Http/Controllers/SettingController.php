@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\AppSetting;
 use App\Models\Setting;
+use Illuminate\Support\Facades\DB;
 use App\Models\User;
 use App\Models\Service;
 use Hash;
@@ -310,7 +311,7 @@ class SettingController extends Controller
 
     public function updateProfile(UserRequest $request)
     {
-        //dd($request->all());
+       
         if (demoUserPermission()) {
             return  redirect()->back()->withErrors(trans('messages.demo_permission_denied'));
         }
@@ -333,7 +334,10 @@ class SettingController extends Controller
 
         $user->fill($data)->update();
         storeMediaFile($user, $request->profile_image, 'profile_image');
-
+      DB::table('provider_taxes')->updateOrInsert(
+    ['provider_id' => auth()->id()],
+    ['tax_id' => $request->tax_country_id]
+);
         return redirect()->route('setting.index', ['page' => 'profile_form'])->withSuccess(__('messages.profile') . ' ' . __('messages.updated'));
     }
 
