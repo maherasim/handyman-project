@@ -321,32 +321,10 @@ const showBankInfoModal = () => {
     const modalEl = document.getElementById('bankTransferModal')
     if (modalEl) {
       const modal = new bootstrap.Modal(modalEl)
-      bankModalShown.value = true
       modal.show()
-
-      // Only attach once
-      modalEl.addEventListener('hidden.bs.modal', () => {
-        if (bankModalShown.value) {
-          // Optional: confirm or show SweetAlert here
-          Swal.fire({
-            title: 'Proceed?',
-            text: 'Have you noted the bank transfer details and want to proceed?',
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonText: 'Yes, proceed',
-          }).then((result) => {
-            if (result.isConfirmed) {
-              document.querySelector('form').dispatchEvent(new Event('submit', { cancelable: true }))
-            }
-          })
-
-          bankModalShown.value = false
-        }
-      }, { once: true }) // ensure it doesn't bind multiple times
     }
   }
 }
-
 
 const formatCurrencyVue = (value) => {
   return window.currencyFormat !== undefined ? window.currencyFormat(value) : value
