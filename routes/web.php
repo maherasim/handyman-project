@@ -149,7 +149,7 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
 
 
     Route::post('/api/paypal/create-payment', [PayPalController::class, 'createPayment'])->name('paypal.payment');
-    Route::post('/paypal-success', [PayPalController::class, 'success'])->name('paypal.success');
+    Route::get('/paypal-success/{booking_id}', [PayPalController::class, 'success'])->name('paypal.success');
     Route::get('/paypal-cancel', [PayPalController::class, 'cancel'])->name('paypal.cancel');
 
 

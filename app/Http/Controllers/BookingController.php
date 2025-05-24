@@ -858,7 +858,7 @@ class BookingController extends Controller
             'activity_type' => $activity_type,
             'booking_id' => $bookingdata->id,
             'booking' => $bookingdata,
-           'activity_message' => 'Booking has been assigned to a handyman.'
+            'activity_message' => 'Booking has been assigned to a handyman.'
         ];
         $this->sendNotification($activity_data);
 
@@ -1095,6 +1095,9 @@ class BookingController extends Controller
 
         switch ($data['payment_type']) {
             case 'stripe':
+                $data['payment_geteway_data'] = getPaymentMethodkey($data['payment_type']);
+                break;
+            case 'paypal':
                 $data['payment_geteway_data'] = getPaymentMethodkey($data['payment_type']);
                 break;
 

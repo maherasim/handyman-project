@@ -219,7 +219,26 @@ const formSubmit = handleSubmit(async (values) => {
     })
   } else if (values.payment_type === 'paypal') {
     IsLoading.value = 1
-    redirectToPayPal(values)
+      const response = await fetch(GET_PAYMENT_METHOD, {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+              'X-CSRF-TOKEN': csrfToken,
+          },
+          body: JSON.stringify(values),
+      })
+      if (response.ok) {
+          const responseData = await response.json()
+          if (responseData.payment_geteway_data != null) {
+              redirectToPayPal(values)
+          } else {
+              Swal.fire({ title: 'Error', text: 'Check Your Paypal key Integration!', icon: 'error', iconColor: '#5F60B9' })
+              IsLoading.value = 0
+          }
+      } else {
+          Swal.fire({ title: 'Error', text: 'Something Went Wrong!', icon: 'error', iconColor: '#5F60B9' })
+          IsLoading.value = 0
+      }
   } else if (values.payment_type === 'stripe') {
     IsLoading.value = 1
     const response = await fetch(GET_PAYMENT_METHOD, {
