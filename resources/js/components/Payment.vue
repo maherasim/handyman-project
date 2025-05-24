@@ -75,7 +75,7 @@
                 <h6 class="text-primary mb-2"><i class="bi bi-info-circle-fill me-2"></i>Instructions</h6>
                 <p class="mb-2">Mention your Booking ID <code>#{{ booking_id }}</code> in the transfer reference.</p>
                 <p class="mb-0">
-                  <strong>Send payment proof to:</strong>
+                  <strong>Send Proof of Payment (screenshot or pdf Document) to:</strong>
                   <a href="mailto:billing@frobster.com">billing@frobster.com</a>
                 </p>
               </div>
@@ -213,7 +213,7 @@ const formSubmit = handleSubmit(async (values) => {
   } else if (values.payment_type === 'bank_transfer') {
     Swal.fire({
       title: 'Bank Transfer Selected',
-      text: 'Please complete your payment via bank transfer and email proof to billing@frobster.com',
+      text: 'Please complete your payment via bank transfer and  Email Proof of Payment to billing@frobster.com',
       icon: 'info',
       iconColor: '#5F60B9',
     })
