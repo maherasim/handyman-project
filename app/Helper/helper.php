@@ -1975,20 +1975,12 @@ function  getPaymentMethodkey($type){
         case 'paypal':
 
             $pyament_gateway_data = $pyament_gateway->where('type',$type)->first();
-
             if($pyament_gateway_data){
-
                 if($pyament_gateway_data->is_test ==1){
-
                     $payment_geteway_value=json_decode($pyament_gateway_data->value,true);
-
-
                 }else{
-
                     $payment_geteway_value=json_decode($pyament_gateway_data->live_value,true);
-
                 }
-
             }
 
             break;

@@ -32,6 +32,7 @@ export const DELETE_FAVOURITE_API = `${BASE_URL}/delete-favourite`
 export const STORE_POST_JOB_API = `${BASE_URL}/save-post-job`;
 export const SERVICE_DELETE_API = `${BASE_URL}/service-delete`;
 export const WALLET_PAYMENT_API = `${BASE_URL}/save-payment`;
+export const BANK_TRANSFER_PAYMENT_API = `${BASE_URL}/save-bank-transfer-payment`;
 export const GET_WALLET_PAYMENT_METHOD = `${BASE_URL}/get-wallet-payment-method`;
 export const GET_WALLET_STRIPE_PAYMENT_URL = `${BASE_URL}/create-wallet-stripe-payment`;
 export const PAYMENT_GATEWAY_LIST = `${BASE_URL}/payment-gateway-list`;
