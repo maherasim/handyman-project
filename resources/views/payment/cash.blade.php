@@ -25,7 +25,7 @@
                         <form action="{{ route('payment.bulk-action') }}" id="quick-action-form"
                             class="form-disabled d-flex gap-3 align-items-center">
                             @csrf
-                            @if (auth()->user()->hasAnyRole(['admin']))
+                            {{-- @if (auth()->user()->hasAnyRole(['admin'])) --}}
                                 <select name="action_type" class="form-control select2" id="quick-action-type"
                                     style="width:100%" disabled>
                                     <option value="">{{ __('messages.no_action') }}</option>
@@ -47,7 +47,7 @@
                                     title="{{ __('cash payment list', ['form' => __('cash payment list')]) }}"
                                     data-message='{{ __('Do you want to perform this action?') }}'
                                     disabled>{{ __('messages.apply') }}</button>
-                            @endif
+                            {{-- @endif --}}
                     </div>
 
                     </form>
