@@ -1006,7 +1006,7 @@ class BookingController extends Controller
         $auth_user = authSession();
         $user_id = $auth_user->id;
         $user_data = User::find($user_id);
-        $bookingdata = Booking::with('handymanAdded', 'payment', 'bookingExtraCharge', 'bookingAddonService')->myBooking()->find($id);
+        $bookingdata = Booking::with('handymanAdded', 'payment', 'bookingExtraCharge', 'bookingAddonService', 'slots')->myBooking()->find($id);
         $payment = Payment::where('booking_id', $id)->orderBy('id', 'desc')->first() ?? null;
         $serviceconfig = Setting::getValueByKey('service-configurations', 'service-configurations');
         $advancePaymentPercentage = isset($serviceconfig->advance_paynment_percantage) ? $serviceconfig->advance_paynment_percantage : 0;
