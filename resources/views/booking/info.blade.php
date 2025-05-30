@@ -185,16 +185,16 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-4">
+                            {{-- <div class="col-md-4">
                                 <div class="card h-100">
                                     <div class="card-body">
-                                        <p class="opacity-75 fz-12">{{ __('messages.booking_date') }}</p>
+                                        <p class="opacity-75 fz-12">{{ __('Advance Payment') }}</p>
                                         <p class="mb-0" id="service_schedule__span">
                                             {{ date("$datetime->date_format $datetime->time_format", strtotime($bookingdata->date)) ?? '-' }}
                                         </p>
                                     </div>
                                 </div>
-                            </div>
+                            </div> --}}
                             <div class="col-md-4">
                                 <div class="card h-100">
                                     <div class="card-body">
@@ -222,10 +222,20 @@
                                     </div>
                                 </div>
                             </div>
+                             <div class="col-md-4">
+                                <div class="card h-100">
+                                    <div class="card-body">
+                                        <p class="opacity-75 fz-12">{{ __('Advance Payment') }}</p>
+                                        <p class="mb-0" id="service_schedule__span">
+                                             {{ getPriceFormat($bookingdata->advance_paid_amount) }}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
                             <div class="col-md-4">
                                 <div class="card h-100">
                                     <div class="card-body">
-                                        <p class="opacity-75 fz-12">{{ __('messages.booking_date') }}</p>
+                                        <p class="opacity-75 fz-12">{{ __('Booking Slots') }}</p>
                                         @foreach($bookingdata->slots as $slot)
                                             <p class="mb-0 text-primary">{{ date("$datetime->date_format", strtotime($slot->date )) ?? '-' }}
                                                 / {{ $slot->start_time }} -> {{ $slot->end_time }}</p>
