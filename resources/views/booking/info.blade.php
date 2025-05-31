@@ -196,6 +196,18 @@ $providerTaxCountryId = $bookingdata->provider->tax_country_id ?? null;
                                 </div>
                             </div>
                             <div class="col-md-4">
+    <div class="card h-100">
+        <div class="card-body">
+            <p class="opacity-75 fz-12">{{ __('Location') }}</p>
+            <p class="mb-0 text-primary">
+                {{ optional($bookingdata->service->city)->name ?? '-' }},
+                {{ optional($bookingdata->service->country)->name ?? '-' }}
+            </p>
+        </div>
+    </div>
+</div>
+
+                            <div class="col-md-4">
                                 <div class="card h-100">
                                     <div class="card-body">
                                         <p class="opacity-75 fz-12">{{ __('messages.total_amount') }}</p>
