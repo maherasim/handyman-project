@@ -214,16 +214,19 @@
                                 </div>
                             </div>
                              @if (isset($payment) && $payment->payment_type === 'bank_transfer' && $payment->status == 1)
-                                    <div class="col-md-4">
-                                        <div class="card h-100">
-                                            <div class="card-body">
-                                                <p class="opacity-75 fz-12">{{ __('Advance Payment') }}</p>
-                                                <p class="mb-0" id="service_schedule__span">
-                                                    {{ getPriceFormat($bookingdata->advance_paid_amount) }}
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </div>
+                                     <div class="col-md-4">
+    <div class="card h-100 border-0 shadow" style="background: linear-gradient(135deg, #f7c59f, #ff9a9e); color: #fff;">
+        <div class="card-body">
+            <p class="mb-1 fw-bold text-uppercase" style="opacity: 0.9;">
+                {{ __('Advance Payment') }}
+            </p>
+            <p class="mb-0 fs-5 fw-bold" id="service_schedule__span">
+                {{ getPriceFormat($bookingdata->advance_paid_amount) }}
+            </p>
+        </div>
+    </div>
+</div>
+
                                 @endif
 
                             <div class="col-md-4">
