@@ -196,16 +196,16 @@ $providerTaxCountryId = $bookingdata->provider->tax_country_id ?? null;
                                 </div>
                             </div>
                             <div class="col-md-4">
-    <div class="card h-100">
-        <div class="card-body">
-            <p class="opacity-75 fz-12">{{ __('Location') }}</p>
-            <p class="mb-0 text-primary">
-                {{ optional($bookingdata->service->city)->name ?? '-' }},
-                {{ optional($bookingdata->service->country)->name ?? '-' }}
-            </p>
-        </div>
-    </div>
-</div>
+                                <div class="card h-100">
+                                    <div class="card-body">
+                                        <p class="opacity-75 fz-12">{{ __('Location') }}</p>
+                                        <p class="mb-0 text-primary">
+                                            {{ optional($bookingdata->service->city)->name ?? '-' }},
+                                            {{ optional($bookingdata->service->country)->name ?? '-' }}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
 
                             <div class="col-md-4">
                                 <div class="card h-100">
@@ -258,6 +258,12 @@ $providerTaxCountryId = $bookingdata->provider->tax_country_id ?? null;
                                 <div class="card h-100">
                                     <div class="card-body">
                                         <p class="opacity-75 fz-12">{{ __('messages.payment_status') }}</p>
+                                       @if (isset($payment) && $payment->payment_type === 'bank_transfer' && $payment->status == 0)
+                                        <p class="mb-0 text-warning">
+                                                {{ __('messages.pending') }}
+                                            </p>
+                                       @endif
+                                           
                                         @if (isset($payment) && $payment->payment_status)
                                             @php
                                                 $statusClass = match ($payment->payment_status) {
