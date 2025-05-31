@@ -216,8 +216,8 @@ $providerTaxCountryId = $bookingdata->provider->tax_country_id ?? null;
                             </div>
                             @if (isset($payment) && $payment->payment_type === 'bank_transfer' && $payment->status == 1)
                                 <div class="col-md-4">
-                                    <div class="card h-65 border-0 shadow"
-                                        style="background: linear-gradient(135deg, #f7c59f, #ff9a9e); color: #fff;">
+                                    <div class="card h-100 border-0 shadow"
+                                        style="background: linear-gradient(135deg, #38b000, #70e000); color: #fff;">
                                         <div class="card-body">
                                             <p class="mb-1 fw-bold text-uppercase" style="opacity: 0.9;">
                                                 {{ __('Advance Payment') }}
