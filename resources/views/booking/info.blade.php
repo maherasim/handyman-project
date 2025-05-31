@@ -415,7 +415,7 @@
             </div>
         </div>
 @php
-    $showAdvance = isset($payment) && $payment->payment_type === 'bank transfer' && $payment->status == 1;
+    $showAdvance = isset($payment) && $payment->payment_type === 'bank_transfer' && $payment->status == 1;
 @endphp
 
         <!-- billing section -->
@@ -531,23 +531,23 @@
 
                             <!-- Advance Payment -->
                              <!-- Advance Payment and Remaining Amount -->
-@if ($showAdvance)
-    <!-- Advance Payment -->
-    <tr>
-        <td>{{ __('Advance Payment') }}</td>
-        <td class="bk-value">
-            {{ getPriceFormat($bookingdata->advance_paid_amount) }}
-        </td>
-    </tr>
+                                            @if ($showAdvance)
+                                                <!-- Advance Payment -->
+                                                <tr>
+                                                    <td>{{ __('Advance Payment') }}</td>
+                                                    <td class="bk-value">
+                                                        {{ getPriceFormat($bookingdata->advance_paid_amount) }}
+                                                    </td>
+                                                </tr>
 
-    <!-- Remaining Amount (Grand Total - Advance Payment) -->
-    <tr class="grand-total">
-        <td>{{ __('Remaining Amount') }}</td>
-        <td class="bk-value">
-            {{ getPriceFormat($grandTotal - $bookingdata->advance_paid_amount) }}
-        </td>
-    </tr>
-@endif
+                                                <!-- Remaining Amount (Grand Total - Advance Payment) -->
+                                                <tr class="grand-total">
+                                                    <td>{{ __('Remaining Amount') }}</td>
+                                                    <td class="bk-value">
+                                                        {{ getPriceFormat($grandTotal - $bookingdata->advance_paid_amount) }}
+                                                    </td>
+                                                </tr>
+                                            @endif
 
                             </tbody>
                         </table>
