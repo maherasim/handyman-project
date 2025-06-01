@@ -772,27 +772,32 @@ const calculateDuration = (index) => {
             end = moment(start);
         }
     } else {
-        const durationString = props.service.duration; // expected format: "HH:mm", e.g., "01:00"
+        if (slot.endTime) {
+            end = moment(`${slot.date} ${slot.endTime}`, 'YYYY-MM-DD HH:mm');
+            console.log("Using user-selected End Time (hourly):", end.format('HH:mm'));
+        }else {
+            const durationString = props.service.duration; // expected format: "HH:mm", e.g., "01:00"
 
-        if (durationString && durationString.includes(":")) {
-            const [hoursStr, minutesStr] = durationString.split(":");
-            const hours = parseInt(hoursStr);
-            const minutes = parseInt(minutesStr);
+            if (durationString && durationString.includes(":")) {
+                const [hoursStr, minutesStr] = durationString.split(":");
+                const hours = parseInt(hoursStr);
+                const minutes = parseInt(minutesStr);
 
-            if (!isNaN(hours) || !isNaN(minutes)) {
-                end = moment(start); // create a fresh copy to avoid mutation
-                if (!isNaN(hours)) end.add(hours, 'hours');
-                if (!isNaN(minutes)) end.add(minutes, 'minutes');
+                if (!isNaN(hours) || !isNaN(minutes)) {
+                    end = moment(start); // create a fresh copy to avoid mutation
+                    if (!isNaN(hours)) end.add(hours, 'hours');
+                    if (!isNaN(minutes)) end.add(minutes, 'minutes');
 
-                slot.endTime = end.format('HH:mm');
-                console.log("Calculated End Time (hourly):", slot.endTime);
+                    slot.endTime = end.format('HH:mm');
+                    console.log("Calculated End Time (hourly):", slot.endTime);
+                } else {
+                    console.warn("Invalid hourly duration format:", durationString);
+                    return;
+                }
             } else {
-                console.warn("Invalid hourly duration format:", durationString);
+                console.warn("Unsupported hourly duration format:", durationString);
                 return;
             }
-        } else {
-            console.warn("Unsupported hourly duration format:", durationString);
-            return;
         }
     }
     const duration = moment.duration(end.diff(start));
@@ -1074,11 +1079,11 @@ const advance_payment_amount = computed(() => {
 });
 const taxRatesDisplay = computed(() => {
   if (!props.taxes || props.taxes.length === 0) return '0%';
-  
+
   const percentageTaxes = props.taxes
     .filter(tax => tax.type === 'percent')
     .map(tax => `${tax.title} (${tax.value}%)`);
-    
+
   return percentageTaxes.join(' + ') || '0%';
 });
 
