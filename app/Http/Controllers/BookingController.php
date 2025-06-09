@@ -490,7 +490,7 @@ class BookingController extends Controller
         }
 
         $user = User::where('id', $data['provider_id'])->with('providertype')->first();
-
+ $message="something";
         $result = Booking::updateOrCreate(['id' => $request->id], $data);
 
         foreach ($request->schedule_slots as $slot) {
@@ -866,7 +866,6 @@ class BookingController extends Controller
         if ($request->is('api/*')) {
             return comman_message_response($message);
         }
-$message = 'Something went wrong while processing the booking.';
 
         return response()->json(['status' => true, 'event' => 'callback', 'message' => $message]);
     }
