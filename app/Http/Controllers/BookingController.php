@@ -866,6 +866,7 @@ class BookingController extends Controller
         if ($request->is('api/*')) {
             return comman_message_response($message);
         }
+$message = 'Something went wrong while processing the booking.';
 
         return response()->json(['status' => true, 'event' => 'callback', 'message' => $message]);
     }
