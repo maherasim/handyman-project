@@ -263,7 +263,7 @@
                                         :config="{ enableTime: true, noCalendar: true, dateFormat: 'H:i', time_24hr: true }"
                                         class="form-control"
                                         placeholder="End time"
-                                        @change="() => calculateDuration(index)"
+                                        @input="$nextTick(() => calculateDuration(index))"
                                     />
                                 </div>
 
@@ -730,7 +730,6 @@ const removeSlot = (index) => {
 // };
 
 const calculateDuration = (index) => {
-
     const slot = dateSlots.value[index];
 
     if (!slot.date || !slot.startTime) {
@@ -746,8 +745,8 @@ const calculateDuration = (index) => {
     console.log("Service Type:", props.service.type);
     console.log("Start Time:", start.format('YYYY-MM-DD HH:mm'));
 
-    if (props.service.type !='hourly') {
-        const durationString = props.service.duration; // expected format: "HH:mm", e.g., "04:00"
+    if (props.service.type !== 'hourly') {
+        const durationString = props.service.duration; // expected format: "HH:mm"
 
         console.log("Duration String:", durationString);
 
@@ -771,12 +770,36 @@ const calculateDuration = (index) => {
             console.warn("Unsupported duration format:", durationString);
             end = moment(start);
         }
+
+        const duration = moment.duration(end.diff(start));
+        const totalMinutes = duration.asMinutes();
+        const fullDays = Math.floor(totalMinutes / (24 * 60));
+        const remainingMinutes = totalMinutes - (fullDays * 24 * 60);
+        const remainingHours = Math.floor(remainingMinutes / 60);
+
+        slot.totalDays = fullDays;
+        slot.totalHours = remainingHours;
+
     } else {
+        // For hourly service
         if (slot.endTime) {
-            end = moment(`${slot.date} ${slot.endTime}`, 'YYYY-MM-DD HH:mm');
+            let endTimeFormatted;
+
+            // Handle case: flatpickr might emit a Date object OR a time string
+            if (slot.endTime instanceof Date) {
+                endTimeFormatted = moment(slot.endTime).format('HH:mm');
+            } else {
+                endTimeFormatted = slot.endTime;
+            }
+
+            end = moment(`${slot.date} ${endTimeFormatted}`, 'YYYY-MM-DD HH:mm');
+            console.log('slot end time: ' + slot.endTime)
+            console.log('endTimeFormatted: ' + endTimeFormatted)
+
             console.log("Using user-selected End Time (hourly):", end.format('HH:mm'));
-        }else {
-            const durationString = props.service.duration; // expected format: "HH:mm", e.g., "01:00"
+        }
+        else {
+            const durationString = props.service.duration;
 
             if (durationString && durationString.includes(":")) {
                 const [hoursStr, minutesStr] = durationString.split(":");
@@ -784,7 +807,7 @@ const calculateDuration = (index) => {
                 const minutes = parseInt(minutesStr);
 
                 if (!isNaN(hours) || !isNaN(minutes)) {
-                    end = moment(start); // create a fresh copy to avoid mutation
+                    end = moment(start);
                     if (!isNaN(hours)) end.add(hours, 'hours');
                     if (!isNaN(minutes)) end.add(minutes, 'minutes');
 
@@ -799,28 +822,27 @@ const calculateDuration = (index) => {
                 return;
             }
         }
+
+        // ✅ Always calculate hours when start and end exist
+        if (start && end) {
+            const duration = moment.duration(end.diff(start));
+            const totalMinutes = duration.asMinutes();
+            const totalHours = totalMinutes / 60;
+
+            slot.totalDays = 0;
+            slot.totalHours = totalHours;
+        }
     }
-    const duration = moment.duration(end.diff(start));
-    const totalMinutes = duration.asMinutes();
-    const fullDays = Math.floor(totalMinutes / (24 * 60));
-    const remainingMinutes = totalMinutes - (fullDays * 24 * 60);
-    const remainingHours = Math.floor(remainingMinutes / 60);
 
-    slot.totalDays = fullDays;
-    slot.totalHours = remainingHours;
+    console.log("Duration Breakdown → Days:", slot.totalDays, "Hours:", slot.totalHours);
 
-    console.log("Duration Breakdown → Days:", fullDays, "Hours:", remainingHours);
-
+    // ✅ Accumulate total quantity
     dateSlots.value.map(slotC => {
         quantity.value += props.service.type === 'hourly' ? slotC.totalHours : 1;
     });
 
     console.log("Final Quantity:", quantity.value);
 };
-
-
-
-
 
 
 
