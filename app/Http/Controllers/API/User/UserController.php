@@ -51,7 +51,6 @@ class UserController extends Controller
 
 public function register(UserRequest $request)
 {
-    //dd($request->all());
     $sitesetup = Setting::where('type', 'site-setup')->where('key', 'site-setup')->first();
     $admin = json_decode($sitesetup->value);
     date_default_timezone_set($admin->time_zone ?? 'UTC');
@@ -82,7 +81,7 @@ public function register(UserRequest $request)
         }
     }
 
-    if (in_array($input['user_type'], ['handyman', 'provider','user'])) {
+    if (in_array($input['user_type'], ['handyman', 'provider', 'user'])) {
         $input['status'] = $input['status'] ?? 0;
     }
 
@@ -108,11 +107,11 @@ public function register(UserRequest $request)
     $user = User::create($input);
     $user->assignRole($input['user_type']);
 
-    // Send verification email
+    // Send verification email to all users (providers and users)
     $verificationLink = route('verify', ['id' => $user->id]);
     Mail::to($user->email)->send(new VerificationEmail($verificationLink));
 
-    // Create wallet
+    // Create wallet for all user types (provider, handyman, and user)
     if (in_array($user->user_type, ['provider', 'handyman', 'user'])) {
         Wallet::create([
             'title' => $user->display_name,
@@ -140,12 +139,13 @@ public function register(UserRequest $request)
         'user_name' => $user->display_name,
     ]);
 
-    // Return response WITHOUT login token
+    // Return response without login token
     return comman_custom_response([
         'message' => 'Email verification link has been sent to your email. Please verify before logging in.',
         'data' => $user
     ]);
 }
+
 
 
     public function login(Request $request)
