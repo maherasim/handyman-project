@@ -376,9 +376,9 @@ class BookingController extends Controller
             }
         }
         if($data['status'] === 'pending_approval'){
-             echo $bookingdata->getSubTotalValue();
-        echo  $bookingdata->getServiceAddonValue();
-        return 'working';
+            //  echo $bookingdata->getSubTotalValue();
+            // echo  $bookingdata->getServiceAddonValue();
+            // return 'working';
 
             $duration_diff = $bookingdata->duration_diff;
             $new_diff = $data['duration_diff'];

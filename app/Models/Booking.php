@@ -104,7 +104,7 @@ class Booking extends Model
 
     public function slots()
     {
-        return $this->hasMany(ServiceSlot::class, 'booking_id');
+        return $this->hasMany(ServiceSlot::class);
     }
 
 
