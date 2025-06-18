@@ -315,6 +315,9 @@ class BookingController extends Controller
         $data['cancellation_charge_amount'] = isset($request->cancellation_charge_amount) ? $request->cancellation_charge_amount : 0;
 
         $bookingdata = Booking::find($id);
+        echo $bookingdata->getSubTotalValue();
+        echo ' -> ' + $bookingdata->getServiceAddonValue();
+        return 'working';
 
         dd($bookingdata->getSubTotalValue(), $bookingdata->getServiceAddonValue());
         $paymentdata = Payment::where('booking_id',$id)->first();
