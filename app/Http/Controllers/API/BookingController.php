@@ -315,6 +315,8 @@ class BookingController extends Controller
         $data['cancellation_charge_amount'] = isset($request->cancellation_charge_amount) ? $request->cancellation_charge_amount : 0;
 
         $bookingdata = Booking::find($id);
+
+        dd($bookingdata->getSubTotalValue(), $bookingdata->getServiceAddonValue());
         $paymentdata = Payment::where('booking_id',$id)->first();
         $user_wallet = Wallet::where('user_id', $bookingdata->customer_id)->first();
         $wallet_amount = $user_wallet->amount;
@@ -387,7 +389,7 @@ class BookingController extends Controller
             $tax = round($bookingdata->getTaxesValue(),$digitafter_decimal_point);
             $data['final_total_tax'] = $tax;
                 // without include extrachage tax caculation
-            $totalamount =   $subtotal + $tax;;
+            $totalamount =   $subtotal + $tax;
             $data['total_amount'] =round($totalamount,$digitafter_decimal_point);
 
         }
