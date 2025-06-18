@@ -315,11 +315,8 @@ class BookingController extends Controller
         $data['cancellation_charge_amount'] = isset($request->cancellation_charge_amount) ? $request->cancellation_charge_amount : 0;
 
         $bookingdata = Booking::find($id);
-        echo $bookingdata->getSubTotalValue();
-        echo ' -> ' + $bookingdata->getServiceAddonValue();
-        return 'working';
-
-        dd($bookingdata->getSubTotalValue(), $bookingdata->getServiceAddonValue());
+       
+       
         $paymentdata = Payment::where('booking_id',$id)->first();
         $user_wallet = Wallet::where('user_id', $bookingdata->customer_id)->first();
         $wallet_amount = $user_wallet->amount;
@@ -379,6 +376,10 @@ class BookingController extends Controller
             }
         }
         if($data['status'] === 'pending_approval'){
+             echo $bookingdata->getSubTotalValue();
+        echo  $bookingdata->getServiceAddonValue();
+        return 'working';
+
             $duration_diff = $bookingdata->duration_diff;
             $new_diff = $data['duration_diff'];
 
