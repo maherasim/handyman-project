@@ -366,6 +366,7 @@ class ServiceController extends Controller
      */
 public function store(ServiceRequest $request)
 {
+    
     if (demoUserPermission()) {
         return redirect()->back()->withErrors(trans('messages.demo_permission_denied'));
     }
