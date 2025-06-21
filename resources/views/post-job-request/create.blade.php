@@ -159,7 +159,7 @@
                                     <input type="number" name="total_hours" id="total_hours_div"
                                         class="form-control" min="1" step="any"
                                         placeholder="{{ __('total_hours') }}" required
-                                        value="{{ old('total_hours', $postJob->total_hours) }}">
+                                        value="{{ old('total_hours', $postJob->total_hours) }}" disabled>
                                     <small class="help-block with-errors text-danger"></small>
                                 </div>
                             </div>
