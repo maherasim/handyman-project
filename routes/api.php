@@ -209,4 +209,22 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::Post('helpdesk-closed/{id}', [ App\Http\Controllers\HelpDeskController::class, 'closed' ] );
     Route::get('helpdesk-detail', [ API\HelpDeskController::class, 'getHelpDeskDetail' ] );
     Route::post('helpdesk-activity-save/{id}', [App\Http\Controllers\HelpDeskController::class, 'activity']);
+
+
+    Route::get('/countries', function () {
+    $countries = \App\Models\Country::all();
+    return CountryResource::collection($countries);
+});
+
+Route::get('/countries/{id}/states', function ($id) {
+    return response()->json([
+        'states' => CountryResource::states($id)
+    ]);
+});
+
+Route::get('/states/{id}/cities', function ($id) {
+    return response()->json([
+        'cities' => CountryResource::cities($id)
+    ]);
+});
 });
