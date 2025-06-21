@@ -62,6 +62,8 @@
                                 </select>
                             </div>
  <div class=" col-md-2">
+     <label
+                                    for="country_id">{{ __('messages.select_name', ['select' => __('Tax Country')]) }}</label>
  {{ html()->select('tax_country_id_display', 
         optional($servicedata->tax_country)
             ? [optional($servicedata->tax_country)->id => optional($servicedata->tax_country)->name] 
