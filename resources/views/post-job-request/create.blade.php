@@ -342,39 +342,40 @@
            }
        
            // Function to calculate days between dates
-           function calculateDays() {
-               var startDate = $('#start_date').val();
-               var endDate = $('#end_date').val();
-       
-               if (startDate && endDate) {
-                   if (startDate > endDate) {
-                       $('#start_date_error').css('display', 'block');
-                   } else {
-                       $('#start_date_error').css('display', 'none');
-       
-                       var start = new Date(startDate);
-                       var end = new Date(endDate);
-                       var diffTime = end - start;
-                       var diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
-                       console.log(diffDays * 24);
-                       if (diffDays > 0) {
-                           $('#total_day_div').val(diffDays);
-                           $('#hidden_total_days').val(diffDays);
-                           $('#total_hours_div').val(diffDays * 24).attr('max', diffDays * 24);
-                           $('#hidden_total_hours').val(diffDays * 24).attr('max', diffDays * 24);
-                       } else {
-                           $('#total_day_div').val(0);
-                           $('#hidden_total_days').val(0);
-                           $('#total_hours_div').val(0 * 24).attr('max', 0 * 24);
-                           $('#hidden_total_hours').val(0 * 24).attr('max', 0 * 24);
-                       }
-                   }
-               } else {
-                   $('#hidden_total_days').val(0);
-                   $('#total_day_div').val(0).attr('max', 0); // Added missing period here
-               }
-           }
-       
+         // Function to calculate days between dates
+function calculateDays() {
+    var startDate = $('#start_date').val();
+    var endDate = $('#end_date').val();
+
+    if (startDate && endDate) {
+        if (startDate > endDate) {
+            $('#start_date_error').css('display', 'block');
+        } else {
+            $('#start_date_error').css('display', 'none');
+
+            var start = new Date(startDate);
+            var end = new Date(endDate);
+            var diffTime = end - start;
+            var diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1; // Days difference
+
+            if (diffDays > 0) {
+                $('#total_day_div').val(diffDays);
+                $('#hidden_total_days').val(diffDays);
+                $('#total_hours_div').val(diffDays * 8).attr('max', diffDays * 8); // Adjusted to 8 hours per day
+                $('#hidden_total_hours').val(diffDays * 8).attr('max', diffDays * 8); // Adjusted to 8 hours per day
+            } else {
+                $('#total_day_div').val(0);
+                $('#hidden_total_days').val(0);
+                $('#total_hours_div').val(0).attr('max', 0);
+                $('#hidden_total_hours').val(0).attr('max', 0);
+            }
+        }
+    } else {
+        $('#hidden_total_days').val(0);
+        $('#total_day_div').val(0).attr('max', 0);
+    }
+}
+
            // Set initial min dates
            setMinDates();
        
