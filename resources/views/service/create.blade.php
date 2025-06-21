@@ -61,21 +61,21 @@
                                     </option>
                                 </select>
                             </div>
- <div class=" col-md-2">
-     <label
-                                    for="country_id">{{ __('messages.select_name', ['select' => __('Tax Country')]) }}</label>
- {{ html()->select('tax_country_id_display', 
-        optional($servicedata->tax_country)
-            ? [optional($servicedata->tax_country)->id => optional($servicedata->tax_country)->name] 
-            : []
-    )
-    ->class('form-group select2js tax_country')
-    ->attribute('data-placeholder', __('messages.select_name', ['select' => __('messages.tax_country')]))
-    ->attribute('data-ajax--url', route('ajax-list', ['type' => 'country']))
-    ->attribute('disabled', true)
-    ->id('tax_country_id_display')
-}}
- </div>
+            <div class=" col-md-2">
+                <label
+                                                for="country_id">{{ __('messages.select_name', ['select' => __('Tax Country')]) }}</label>
+            {{ html()->select('tax_country_id_display', 
+                    optional($servicedata->tax_country)
+                        ? [optional($servicedata->tax_country)->id => optional($servicedata->tax_country)->name] 
+                        : []
+                )
+                ->class('form-group select2js tax_country')
+                ->attribute('data-placeholder', __('messages.select_name', ['select' => __('messages.tax_country')]))
+                ->attribute('data-ajax--url', route('ajax-list', ['type' => 'country']))
+                ->attribute('disabled', true)
+                ->id('tax_country_id_display')
+            }}
+            </div>
 
                             <div class="form-group col-md-2">
                                 <label

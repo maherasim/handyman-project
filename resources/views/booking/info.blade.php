@@ -84,18 +84,21 @@
 
         <!-- Taxes -->
         @php
-            // Get provider's tax_country_id
-$providerTaxCountryId = $bookingdata->provider->tax_country_id ?? null;
+    // Get the tax_country_id from the service
+    $serviceTaxId = $bookingdata->service->tax_country_id ?? null;
 
-// Fetch tax rate from taxes table based on provider's tax_country_id
-            $taxRate = 0; // Default to 0 if not found
-            if ($providerTaxCountryId) {
-                $tax = App\Models\Tax::where('id', $providerTaxCountryId)->first();
-                $taxRate = $tax->value ?? 0;
-            }
+    // Initialize tax rate
+    $taxRate = 0;
 
-            $taxAmount = ($totalWithExtras * $taxRate) / 100;
-        @endphp
+    // Look up tax rate from the taxes table using the service's tax_country_id
+    if ($serviceTaxId) {
+        $tax = \App\Models\Tax::find($serviceTaxId);
+        $taxRate = $tax->value ?? 0;
+    }
+//dd($taxRate);
+    // Calculate tax amount
+    $taxAmount = ($totalWithExtras * $taxRate) / 100;
+@endphp
         <tr>
             <td>{{ __('Tax') }} ({{ $taxRate }}%)</td>
             <td class="bk-value text-danger">{{ getPriceFormat($taxAmount) }}</td>
@@ -527,19 +530,22 @@ $providerTaxCountryId = $bookingdata->provider->tax_country_id ?? null;
 
                                 <!-- Taxes -->
                                 @php
-                                    // Get provider's tax_country_id
-$providerTaxCountryId = $bookingdata->provider->tax_country_id ?? null;
+    // Get the tax_country_id from the service
+                        $serviceTaxId = $bookingdata->service->tax_country_id ?? null;
 
-// Fetch tax rate from taxes table based on provider's tax_country_id
-                                    $taxRate = 0; // Default to 0 if not found
-                                    if ($providerTaxCountryId) {
-                                        $tax = App\Models\Tax::where('id', $providerTaxCountryId)->first();
-                                        $taxRate = $tax->value ?? 0;
-                                    }
+                        // Initialize tax rate
+                        $taxRate = 0;
 
-                                    $taxAmount = ($totalWithExtras * $taxRate) / 100;
-                                @endphp
-                                <tr>
+                        // Look up tax rate from the taxes table using the service's tax_country_id
+                        if ($serviceTaxId) {
+                            $tax = \App\Models\Tax::find($serviceTaxId);
+                            $taxRate = $tax->value ?? 0;
+                        }
+                    //dd($taxRate);
+                        // Calculate tax amount
+                        $taxAmount = ($totalWithExtras * $taxRate) / 100;
+                    @endphp
+                                                    <tr>
                                     <td>{{ __('Tax') }} ({{ $taxRate }}%)</td>
                                     <td class="bk-value text-danger">{{ getPriceFormat($taxAmount) }}</td>
                                 </tr>
