@@ -154,11 +154,11 @@
                                     value="{{ old('total_hours', $postJob->total_hours) }}">
 
                                 <div class="form-group col-md-2">
-                                    <label for="total_hours_div">{{ __('messages.total_hours') }} <span
+                                    <label for="total_hours_div">{{ __('Total Hours') }} <span
                                             class="text-danger">*</span></label>
                                     <input type="number" name="total_hours" id="total_hours_div"
                                         class="form-control" min="1" step="any"
-                                        placeholder="{{ __('messages.total_hours') }}" required
+                                        placeholder="{{ __('total_hours') }}" required
                                         value="{{ old('total_hours', $postJob->total_hours) }}">
                                     <small class="help-block with-errors text-danger"></small>
                                 </div>
