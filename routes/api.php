@@ -211,6 +211,8 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('helpdesk-activity-save/{id}', [App\Http\Controllers\HelpDeskController::class, 'activity']);
 
 
+
+});
     Route::get('/countries', function () {
     $countries = \App\Models\Country::all();
     return CountryResource::collection($countries);
@@ -226,5 +228,4 @@ Route::get('/states/{id}/cities', function ($id) {
     return response()->json([
         'cities' => CountryResource::cities($id)
     ]);
-});
 });
