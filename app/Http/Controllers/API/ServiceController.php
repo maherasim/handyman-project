@@ -237,7 +237,19 @@ class ServiceController extends Controller
                 })->get();
         $coupon_data = CouponResource::collection($coupon);
         $tax = ProviderTaxMapping::with('taxes')->where('provider_id',$service->provider_id)->get();
-        $taxes = ProviderTaxResource::collection($tax);
+      $matchedTax = Tax::where('id', $service->tax_country_id)->where('status', 1)->first();
+
+$taxes = [];
+
+if ($matchedTax) {
+    $taxes[] = [
+        'id'    => $matchedTax->id,
+        'title' => $matchedTax->title,
+        'type'  => $matchedTax->type,
+        'value' => $matchedTax->value,
+    ];
+}
+
         // $tax = Tax::where('status',1)->get();
         // $taxes = TaxResource::collection($tax);
         $servicefaq =  ServiceFaq::where('service_id',$id)->get();
