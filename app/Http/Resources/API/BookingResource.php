@@ -59,13 +59,16 @@ class BookingResource extends JsonResource
             'service_attchments'    => getAttachments(optional($this->service)->getMedia('service_attachment'),null),
             'duration_diff'         => $this->duration_diff,
             'booking_address_id'    => $this->booking_address_id,
-           'duration_diff_hour' => optional($this->service)->type === 'hourly' ? convertToHoursMins($this->duration_diff) : null,
-
+            'duration_diff_hour'    => ($this->service->type === 'hourly') ? convertToHoursMins($this->duration_diff) : null,
             'taxes'                 => $this->getTaxData($this->tax),
             'quantity'              => $this->quantity,
             'coupon_data'           => isset($this->couponAdded) ? $this->couponAdded : null,
             'total_amount'          => $this->total_amount,
-            'total_rating'          => (float) number_format(max(optional($this->service)->serviceRating->avg('rating'),0), 2),
+           $ratingAvg = 0;
+            if (!empty($this->service) && !empty($this->service->serviceRating)) {
+                $ratingAvg = $this->service->serviceRating->avg('rating');
+            }
+                   'total_rating' => (float) number_format(max($ratingAvg, 0), 2),
             'amount'                => $this->amount,
             'extra_charges'         => BookingChargesResource::collection($this->bookingExtraCharge),
             'extra_charges_value'   => $extraValue,
