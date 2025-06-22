@@ -14,6 +14,7 @@ use App\Models\BookingHandymanMapping;
 use App\Models\BookingRating;
 use App\Models\Category;
 use App\Models\City;
+use App\Models\Tax;
 use App\Models\Country;
 use App\Models\Coupon;
 use App\Models\FrontendSetting;
@@ -645,22 +646,21 @@ class FrontendController extends Controller
 
         $user_id = Auth::id();
 
-        $taxes_data = ProviderTaxMapping::where('provider_id', $service->provider_id)
-            ->with(['taxes' => function ($query) {
-                $query->where('status', 1);
-            }])
-            ->orderBy('created_at', 'desc')->get();
+      $matchedTax = Tax::where('status', 1)
+    ->where('id', $service->tax_country_id)
+    ->first();
 
-        $transformedData = $taxes_data->map(function ($tax) {
-            return [
-                'id' => $tax->id,
-                'provider_id' => $tax->provider_id,
-                'title' => optional($tax->taxes)->title,
-                'type' => optional($tax->taxes)->type,
-                'value' => optional($tax->taxes)->value,
-            ];
-        });
 
+      $taxes = [];
+
+if ($matchedTax) {
+    $taxes[] = [
+        'id' => $matchedTax->id,
+        'title' => $matchedTax->title,
+        'type' => $matchedTax->type,
+        'value' => $matchedTax->value,
+    ];
+}
         $availableserviceslot = null;
 
         if ($service->is_slot == 1) {
@@ -669,7 +669,7 @@ class FrontendController extends Controller
 
         }
 
-        $taxes = $transformedData;
+      //  $taxes = $transformedData;
 
         if ($request->package_id) {
             $service = ServicePackage::where('id', $request->package_id)->first();
