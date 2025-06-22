@@ -59,7 +59,8 @@ class BookingResource extends JsonResource
             'service_attchments'    => getAttachments(optional($this->service)->getMedia('service_attachment'),null),
             'duration_diff'         => $this->duration_diff,
             'booking_address_id'    => $this->booking_address_id,
-            'duration_diff_hour'    => ($this->service->type === 'hourly') ? convertToHoursMins($this->duration_diff) : null,
+           'duration_diff_hour' => optional($this->service)->type === 'hourly' ? convertToHoursMins($this->duration_diff) : null,
+
             'taxes'                 => $this->getTaxData($this->tax),
             'quantity'              => $this->quantity,
             'coupon_data'           => isset($this->couponAdded) ? $this->couponAdded : null,
