@@ -147,6 +147,7 @@
                                 @php
     $canAssign = $bookingdata->handymanAdded->count() == 0 && $bookingdata->status !== 'cancelled';
 @endphp
+{{ dd($bookingdata->handymanAdded) }}
 
 @if ($canAssign)
     @hasanyrole('admin|demo_admin|provider')
