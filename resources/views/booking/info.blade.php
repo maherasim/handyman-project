@@ -144,12 +144,7 @@
                                     {{ '#' . $bookingdata->id ?? '-' }}</h3>
                             </div>
                             <div class="d-flex flex-wrap flex-xxl-nowrap gap-3">
-                                @php
-    $canAssign = $bookingdata->handymanAdded->count() == 0 && $bookingdata->status !== 'cancelled';
-@endphp
-{{ dd($bookingdata->handymanAdded) }}
-
-@if ($canAssign)
+                                @if ($bookingdata->status === 'pending')
     @hasanyrole('admin|demo_admin|provider')
         <div class="w3-third">
             <button class="float-end btn btn-primary" id="assign-provider"
@@ -169,7 +164,6 @@
         </div>
     @endhasanyrole
 @endif
-
 
                                 @if ($bookingdata->payment_id !== null)
                                     <a href="{{ route('invoice_pdf', $bookingdata->id) }}" class="btn btn-primary"
