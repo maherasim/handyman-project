@@ -35,13 +35,13 @@ class PaymentController extends Controller
         $result = Payment::create($data);
         $booking = Booking::find($request->booking_id);
         if(!empty($result) && $result->payment_status == 'advanced_paid'){
-            $booking->advance_paid_amount  = $request->advance_payment_amount;
+            $booking->advance_paid_amount  = $request->advance_paid_amount;
             $booking->status  = 'pending';
 
             $booking->update();
 
             // ✅ Manually split advance payment commission here
-            $advance_paid_amount = $request->advance_payment_amount;
+            $advance_paid_amount = $request->advance_paid_amount;
 
             // Example: get commission percentage from settings
             $admin_commission_percentage = Setting::getValueByKey('admin_commission_percentage', 'site-setup')->value ?? 10;

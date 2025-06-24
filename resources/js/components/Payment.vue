@@ -169,6 +169,8 @@ const formSubmit = handleSubmit(async (values) => {
   values.payment_type = values.payment_method
   values.wallet_amount = props.wallet_amount
   values.total_amount = props.advance_payment_amount ?? props.total_amount
+  values.advance_paid_amount = props.advance_payment_amount ?? null
+
   values.type = props.advance_payment_amount != null ? 'advance_payment' : 'full_payment'
   values.total_amount = Number(values.total_amount).toFixed(2)
 

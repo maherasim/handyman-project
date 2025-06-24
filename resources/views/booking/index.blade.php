@@ -373,7 +373,8 @@
                             name: 'provider_id',
                             title: "{{ __('messages.provider') }}"
                         },
-                    @endif {
+                    @endif 
+                    {
                         data: 'status',
                         name: 'status',
                         title: "{{ __('messages.status') }}"

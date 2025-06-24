@@ -239,9 +239,13 @@ class BookingController extends Controller
                     ->join('users as providers', 'providers.id', '=', 'bookings.provider_id')
                     ->orderBy('providers.display_name', $order);
             })
+            // ->editColumn('status', function ($query) {
+            //     return bookingstatus(BookingStatus::bookingStatus($query->status));
+            // })
             ->editColumn('status', function ($query) {
-                return bookingstatus(BookingStatus::bookingStatus($query->status));
+                return $query->status;
             })
+
             ->editColumn('payment_id', function ($query) {
                 $payment = $query->payment()->orderBy('id', 'desc')->first();
                 $payment_status = $payment ? $payment->payment_status : null;
@@ -649,7 +653,7 @@ class BookingController extends Controller
 
 
         $bookingdata = Booking::with('bookingExtraCharge', 'payment', 'service')->myBooking()->find($id);
-
+ 
 
         $tabpage = 'info';
         if (empty($bookingdata)) {
