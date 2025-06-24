@@ -144,28 +144,31 @@
                                     {{ '#' . $bookingdata->id ?? '-' }}</h3>
                             </div>
                             <div class="d-flex flex-wrap flex-xxl-nowrap gap-3">
-                                <div class="w3-third">
-                                    @if ($bookingdata->handymanAdded->count() == 0 && $bookingdata->status !== 'cancelled')
-                                        @hasanyrole('admin|demo_admin|provider')
-                                            <button class="float-end btn btn-primary" id="assign-provider"
-                                                data-id="{{ $bookingdata->id }}"
-                                                data-handyman-id="{{ $bookingdata->provider_id }}">
-                                                <i class="lab la-telegram-plane"></i>
-                                                {{ __('messages.assign_provider') }}
-                                            </button>
-                                        @endhasanyrole
-                                    @endif
-                                </div>
-                                <div class="w3-third">
-                                    @if ($bookingdata->handymanAdded->count() == 0 && $bookingdata->status !== 'cancelled')
-                                        @hasanyrole('admin|demo_admin|provider')
-                                            <a href="{{ route('booking.assign_form', ['id' => $bookingdata->id]) }}"
-                                                class=" float-end btn btn-primary loadRemoteModel"><i
-                                                    class="lab la-telegram-plane"></i>
-                                                {{ __('messages.assign_handyman') }}</a>
-                                        @endhasanyrole
-                                    @endif
-                                </div>
+                                @php
+    $canAssign = $bookingdata->handymanAdded->count() == 0 && $bookingdata->status !== 'cancelled';
+@endphp
+
+@if ($canAssign)
+    @hasanyrole('admin|demo_admin|provider')
+        <div class="w3-third">
+            <button class="float-end btn btn-primary" id="assign-provider"
+                data-id="{{ $bookingdata->id }}"
+                data-handyman-id="{{ $bookingdata->provider_id }}">
+                <i class="lab la-telegram-plane"></i>
+                {{ __('messages.assign_provider') }}
+            </button>
+        </div>
+
+        <div class="w3-third">
+            <a href="{{ route('booking.assign_form', ['id' => $bookingdata->id]) }}"
+                class="float-end btn btn-primary loadRemoteModel">
+                <i class="lab la-telegram-plane"></i>
+                {{ __('messages.assign_handyman') }}
+            </a>
+        </div>
+    @endhasanyrole
+@endif
+
 
                                 @if ($bookingdata->payment_id !== null)
                                     <a href="{{ route('invoice_pdf', $bookingdata->id) }}" class="btn btn-primary"
@@ -189,12 +192,13 @@
                                 </div>
                             </div>
 
-                            <div class="col-md-4">
+                           
+                             <div class="col-md-4">
                                 <div class="card h-100">
                                     <div class="card-body">
                                         <p class="opacity-75 fz-12">{{ __('messages.booking_status') }}</p>
                                         <p class="mb-0 text-primary" id="booking_status__span">
-                                            {{ App\Models\BookingStatus::bookingStatus($bookingdata->status) }}</p>
+                                           {{($bookingdata->status) }}</p>
                                     </div>
                                 </div>
                             </div>
@@ -229,21 +233,25 @@
                                     </div>
                                 </div>
                             </div>
-                            @if (isset($payment) && $payment->payment_type === 'bank_transfer' && $payment->status == 1)
-                                <div class="col-md-4">
-                                    <div class="card h-65 border-0 shadow"
-                                        style="background: linear-gradient(135deg, #f7c59f, #ff9a9e); color: #fff;">
-                                        <div class="card-body">
-                                            <p class="mb-1 fw-bold text-uppercase" style="opacity: 0.9;">
-                                                {{ __('Advance Payment') }}
-                                            </p>
-                                            <p class="mb-0 fs-5 fw-bold" id="service_schedule__span">
-                                                {{ getPriceFormat($bookingdata->advance_paid_amount) }}
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-                            @endif
+                             @if (
+    (isset($payment) && $payment->payment_type === 'bank_transfer' && $payment->status == 1) ||
+    (isset($payment) && $payment->payment_type !== 'bank_transfer')
+)
+    <div class="col-md-4">
+        <div class="card h-65 border-0 shadow"
+            style="background: linear-gradient(135deg, #f7c59f, #ff9a9e); color: #fff;">
+            <div class="card-body">
+                <p class="mb-1 fw-bold text-uppercase" style="opacity: 0.9;">
+                    {{ __('Advance Payment') }}
+                </p>
+                <p class="mb-0 fs-5 fw-bold" id="service_schedule__span">
+                    {{ getPriceFormat($bookingdata->advance_paid_amount) }}
+                </p>
+            </div>
+        </div>
+    </div>
+@endif
+
 
                             <div class="col-md-4">
                                 <div class="card h-100">
@@ -441,9 +449,17 @@
 
             </div>
         </div>
-        @php
-            $showAdvance = isset($payment) && $payment->payment_type === 'bank_transfer' && $payment->status == 1;
-        @endphp
+      @php
+    $showAdvance = false;
+
+    if (isset($payment)) {
+        if ($payment->payment_type === 'bank_transfer' && $payment->status == 1) {
+            $showAdvance = true;
+        } elseif ($payment->payment_type !== 'bank_transfer') {
+            $showAdvance = true;
+        }
+    }
+@endphp
 
         <!-- billing section -->
         <div class="col-md-4">
@@ -562,22 +578,22 @@
                                 <!-- Advance Payment -->
                                 <!-- Advance Payment and Remaining Amount -->
                                 @if ($showAdvance)
-                                    <!-- Advance Payment -->
-                                    <tr>
-                                        <td>{{ __('Advance Payment') }}</td>
-                                        <td class="bk-value">
-                                            {{ getPriceFormat($bookingdata->advance_paid_amount) }}
-                                        </td>
-                                    </tr>
+    <!-- Advance Payment -->
+    <tr>
+        <td>{{ __('Advance Payment') }}</td>
+        <td class="bk-value">
+            {{ getPriceFormat($bookingdata->advance_paid_amount) }}
+        </td>
+    </tr>
 
-                                    <!-- Remaining Amount (Grand Total - Advance Payment) -->
-                                    <tr class="grand-total">
-                                        <td>{{ __('Remaining Amount') }}</td>
-                                        <td class="bk-value">
-                                            {{ getPriceFormat($grandTotal - $bookingdata->advance_paid_amount) }}
-                                        </td>
-                                    </tr>
-                                @endif
+    <!-- Remaining Amount (Grand Total - Advance Payment) -->
+    <tr class="grand-total">
+        <td>{{ __('Remaining Amount') }}</td>
+        <td class="bk-value">
+            {{ getPriceFormat($grandTotal - $bookingdata->advance_paid_amount) }}
+        </td>
+    </tr>
+@endif
 
                             </tbody>
                         </table>
