@@ -543,7 +543,7 @@
                                 @php
     // Get the tax_country_id from the service
                         $serviceTaxId = $bookingdata->service->tax_country_id ?? null;
-dd(  $serviceTaxId);
+ 
                         // Initialize tax rate
                         $taxRate = 0;
 
