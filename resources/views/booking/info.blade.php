@@ -84,21 +84,21 @@
 
         <!-- Taxes -->
         @php
-    // Get the tax_country_id from the service
-    $serviceTaxId = $bookingdata->service->tax_country_id ?? null;
+            // Get the tax_country_id from the service
+            $serviceTaxId = $bookingdata->service->tax_country_id ?? null;
 
-    // Initialize tax rate
-    $taxRate = 0;
+            // Initialize tax rate
+            $taxRate = 0;
 
-    // Look up tax rate from the taxes table using the service's tax_country_id
-    if ($serviceTaxId) {
-        $tax = \App\Models\Tax::find($serviceTaxId);
-        $taxRate = $tax->value ?? 0;
-    }
-//dd($taxRate);
-    // Calculate tax amount
-    $taxAmount = ($totalWithExtras * $taxRate) / 100;
-@endphp
+            // Look up tax rate from the taxes table using the service's tax_country_id
+            if ($serviceTaxId) {
+                $tax = \App\Models\Tax::find($serviceTaxId);
+                $taxRate = $tax->value ?? 0;
+            }
+            //dd($taxRate);
+            // Calculate tax amount
+            $taxAmount = ($totalWithExtras * $taxRate) / 100;
+        @endphp
         <tr>
             <td>{{ __('Tax') }} ({{ $taxRate }}%)</td>
             <td class="bk-value text-danger">{{ getPriceFormat($taxAmount) }}</td>
@@ -145,25 +145,25 @@
                             </div>
                             <div class="d-flex flex-wrap flex-xxl-nowrap gap-3">
                                 @if ($bookingdata->status === 'pending')
-    @hasanyrole('admin|demo_admin|provider')
-        <div class="w3-third">
-            <button class="float-end btn btn-primary" id="assign-provider"
-                data-id="{{ $bookingdata->id }}"
-                data-handyman-id="{{ $bookingdata->provider_id }}">
-                <i class="lab la-telegram-plane"></i>
-                {{ __('messages.assign_provider') }}
-            </button>
-        </div>
+                                    @hasanyrole('admin|demo_admin|provider')
+                                        <div class="w3-third">
+                                            <button class="float-end btn btn-primary" id="assign-provider"
+                                                data-id="{{ $bookingdata->id }}"
+                                                data-handyman-id="{{ $bookingdata->provider_id }}">
+                                                <i class="lab la-telegram-plane"></i>
+                                                {{ __('messages.assign_provider') }}
+                                            </button>
+                                        </div>
 
-        <div class="w3-third">
-            <a href="{{ route('booking.assign_form', ['id' => $bookingdata->id]) }}"
-                class="float-end btn btn-primary loadRemoteModel">
-                <i class="lab la-telegram-plane"></i>
-                {{ __('messages.assign_handyman') }}
-            </a>
-        </div>
-    @endhasanyrole
-@endif
+                                        <div class="w3-third">
+                                            <a href="{{ route('booking.assign_form', ['id' => $bookingdata->id]) }}"
+                                                class="float-end btn btn-primary loadRemoteModel">
+                                                <i class="lab la-telegram-plane"></i>
+                                                {{ __('messages.assign_handyman') }}
+                                            </a>
+                                        </div>
+                                    @endhasanyrole
+                                @endif
 
                                 @if ($bookingdata->payment_id !== null)
                                     <a href="{{ route('invoice_pdf', $bookingdata->id) }}" class="btn btn-primary"
@@ -187,13 +187,13 @@
                                 </div>
                             </div>
 
-                           
-                             <div class="col-md-4">
+
+                            <div class="col-md-4">
                                 <div class="card h-100">
                                     <div class="card-body">
                                         <p class="opacity-75 fz-12">{{ __('messages.booking_status') }}</p>
                                         <p class="mb-0 text-primary" id="booking_status__span">
-                                           {{($bookingdata->status) }}</p>
+                                            {{ $bookingdata->status }}</p>
                                     </div>
                                 </div>
                             </div>
@@ -228,24 +228,23 @@
                                     </div>
                                 </div>
                             </div>
-                             @if (
-    (isset($payment) && $payment->payment_type === 'bank_transfer' && $payment->status == 1) ||
-    (isset($payment) && $payment->payment_type !== 'bank_transfer')
-)
-    <div class="col-md-4">
-        <div class="card h-65 border-0 shadow"
-            style="background: linear-gradient(135deg, #f7c59f, #ff9a9e); color: #fff;">
-            <div class="card-body">
-                <p class="mb-1 fw-bold text-uppercase" style="opacity: 0.9;">
-                    {{ __('Advance Payment') }}
-                </p>
-                <p class="mb-0 fs-5 fw-bold" id="service_schedule__span">
-                    {{ getPriceFormat($bookingdata->advance_paid_amount) }}
-                </p>
-            </div>
-        </div>
-    </div>
-@endif
+                            @if (
+                                (isset($payment) && $payment->payment_type === 'bank_transfer' && $payment->status == 1) ||
+                                    (isset($payment) && $payment->payment_type !== 'bank_transfer'))
+                                <div class="col-md-4">
+                                    <div class="card h-65 border-0 shadow"
+                                        style="background: linear-gradient(135deg, #f7c59f, #ff9a9e); color: #fff;">
+                                        <div class="card-body">
+                                            <p class="mb-1 fw-bold text-uppercase" style="opacity: 0.9;">
+                                                {{ __('Advance Payment') }}
+                                            </p>
+                                            <p class="mb-0 fs-5 fw-bold" id="service_schedule__span">
+                                                {{ getPriceFormat($bookingdata->advance_paid_amount) }}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
 
 
                             <div class="col-md-4">
@@ -260,34 +259,34 @@
                                     </div>
                                 </div>
                             </div>
-                           <div class="col-md-4">
-    <div class="card h-100">
-        <div class="card-body">
-            <p class="opacity-75 fz-12">{{ __('messages.payment_status') }}</p>
+                            <div class="col-md-4">
+                                <div class="card h-100">
+                                    <div class="card-body">
+                                        <p class="opacity-75 fz-12">{{ __('messages.payment_status') }}</p>
 
-            @if (isset($payment) && $payment->payment_type === 'bank_transfer' && $payment->status == 0)
-                <p class="mb-0 text-warning">
-                    {{ __('messages.pending') }}
-                </p>
-            @elseif (isset($payment) && $payment->payment_status)
-                @php
-                    $statusClass = match ($payment->payment_status) {
-                        'paid', 'advanced_paid' => 'text-success',
-                        'Advanced Refund' => 'text-warning',
-                        default => 'text-danger',
-                    };
-                @endphp
-                <p class="mb-0 {{ $statusClass }}">
-                    {{ str_replace('_', ' ', ucfirst($payment->payment_status)) }}
-                </p>
-            @else
-                <p class="mb-0 text-danger">
-                    {{ __('messages.pending') }}
-                </p>
-            @endif
-        </div>
-    </div>
-</div>
+                                        @if (isset($payment) && $payment->payment_type === 'bank_transfer' && $payment->status == 0)
+                                            <p class="mb-0 text-warning">
+                                                {{ __('messages.pending') }}
+                                            </p>
+                                        @elseif (isset($payment) && $payment->payment_status)
+                                            @php
+                                                $statusClass = match ($payment->payment_status) {
+                                                    'paid', 'advanced_paid' => 'text-success',
+                                                    'Advanced Refund' => 'text-warning',
+                                                    default => 'text-danger',
+                                                };
+                                            @endphp
+                                            <p class="mb-0 {{ $statusClass }}">
+                                                {{ str_replace('_', ' ', ucfirst($payment->payment_status)) }}
+                                            </p>
+                                        @else
+                                            <p class="mb-0 text-danger">
+                                                {{ __('messages.pending') }}
+                                            </p>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
 
 
                             <!-- Add Cancellation Reason Card -->
@@ -444,17 +443,17 @@
 
             </div>
         </div>
-      @php
-    $showAdvance = false;
+        @php
+            $showAdvance = false;
 
-    if (isset($payment)) {
-        if ($payment->payment_type === 'bank_transfer' && $payment->status == 1) {
-            $showAdvance = true;
-        } elseif ($payment->payment_type !== 'bank_transfer') {
-            $showAdvance = true;
-        }
-    }
-@endphp
+            if (isset($payment)) {
+                if ($payment->payment_type === 'bank_transfer' && $payment->status == 1) {
+                    $showAdvance = true;
+                } elseif ($payment->payment_type !== 'bank_transfer') {
+                    $showAdvance = true;
+                }
+            }
+        @endphp
 
         <!-- billing section -->
         <div class="col-md-4">
@@ -541,22 +540,22 @@
 
                                 <!-- Taxes -->
                                 @php
-    // Get the tax_country_id from the service
-                        $serviceTaxId = $bookingdata->service->tax_country_id ?? null;
- 
-                        // Initialize tax rate
-                        $taxRate = 0;
 
-                        // Look up tax rate from the taxes table using the service's tax_country_id
-                        if ($serviceTaxId) {
-                            $tax = \App\Models\Tax::find($serviceTaxId);
-                            $taxRate = $tax->value ?? 0;
-                        }
-                    //dd($taxRate);
-                        // Calculate tax amount
-                        $taxAmount = ($totalWithExtras * $taxRate) / 100;
-                    @endphp
-                                                    <tr>
+                                    $serviceTaxId = $bookingdata->service->tax_country_id ?? null;
+
+                                    // Initialize tax rate
+                                    $taxRate = 0;
+
+                                    // Look up tax rate from the taxes table using the service's tax_country_id
+                                    if ($serviceTaxId) {
+                                        $tax = \App\Models\Tax::find($serviceTaxId);
+                                        $taxRate = $tax->value ?? 0;
+                                    }
+                                    //dd($taxRate);
+                                    // Calculate tax amount
+                                    $taxAmount = ($totalWithExtras * $taxRate) / 100;
+                                @endphp
+                                <tr>
                                     <td>{{ __('Tax') }} ({{ $taxRate }}%)</td>
                                     <td class="bk-value text-danger">{{ getPriceFormat($taxAmount) }}</td>
                                 </tr>
@@ -573,22 +572,22 @@
                                 <!-- Advance Payment -->
                                 <!-- Advance Payment and Remaining Amount -->
                                 @if ($showAdvance)
-    <!-- Advance Payment -->
-    <tr>
-        <td>{{ __('Advance Payment') }}</td>
-        <td class="bk-value">
-            {{ getPriceFormat($bookingdata->advance_paid_amount) }}
-        </td>
-    </tr>
+                                    <!-- Advance Payment -->
+                                    <tr>
+                                        <td>{{ __('Advance Payment') }}</td>
+                                        <td class="bk-value">
+                                            {{ getPriceFormat($bookingdata->advance_paid_amount) }}
+                                        </td>
+                                    </tr>
 
-    <!-- Remaining Amount (Grand Total - Advance Payment) -->
-    <tr class="grand-total">
-        <td>{{ __('Remaining Amount') }}</td>
-        <td class="bk-value">
-            {{ getPriceFormat($grandTotal - $bookingdata->advance_paid_amount) }}
-        </td>
-    </tr>
-@endif
+                                    <!-- Remaining Amount (Grand Total - Advance Payment) -->
+                                    <tr class="grand-total">
+                                        <td>{{ __('Remaining Amount') }}</td>
+                                        <td class="bk-value">
+                                            {{ getPriceFormat($grandTotal - $bookingdata->advance_paid_amount) }}
+                                        </td>
+                                    </tr>
+                                @endif
 
                             </tbody>
                         </table>
