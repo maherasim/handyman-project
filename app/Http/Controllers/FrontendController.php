@@ -616,63 +616,70 @@ class FrontendController extends Controller
         return view('landing-page.agb', compact('imprint'));
     }
 
-     public function bookServiceView(Request $request){
+    public function bookServiceView(Request $request)
+    {
 
-        $service_id=$request->id;
-        $service = Service::where('id',$service_id)->with('providers','category','serviceRating','serviceAddon')->first();
+        $service_id = $request->id;
+        $service = Service::where('id', $service_id)->with('providers', 'category', 'serviceRating', 'serviceAddon')->first();
 
-        $service->service_image = getSingleMedia($service,'service_attachment', null);
+        $service->service_image = getSingleMedia($service, 'service_attachment', null);
         $service->category_name = optional($service->category)->name;
         $service->subcategory_name = optional($service->subcategory)->name;
         $service->provider_name = optional($service->providers)->display_name;
-        $service->provider_image = getSingleMedia($service->providers,'profile_image', null);
+        $service->provider_image = getSingleMedia($service->providers, 'profile_image', null);
         $total_reviews = optional($service->serviceRating)->count();
         $total_rating = optional($service->serviceRating)->sum('rating');
         $service->total_reviews = $total_reviews;
-        $service->total_rating = $total_reviews > 0 ? number_format($total_rating/$total_reviews, 2) : 0;
+        $service->total_rating = $total_reviews > 0 ? number_format($total_rating / $total_reviews, 2) : 0;
+        $serviceconfig = Setting::getValueByKey('service-configurations', 'service-configurations');
+        $global_advance_payment = isset($serviceconfig->global_advance_payment) ? $serviceconfig->global_advance_payment : 0;
+        $globalAdvancePaymentPercentage = $global_advance_payment == 1 ? $serviceconfig->advance_paynment_percantage : 0;
+        $service->advance_payment_amount = $service->is_enable_advance_payment == 1 ? ($service->advance_payment_amount === null ? 0 : (double)$service->advance_payment_amount) : (double)$globalAdvancePaymentPercentage;
+        $service->is_enable_advance_payment = $service->is_enable_advance_payment == 1 ? $service->is_enable_advance_payment : $global_advance_payment;
 
-        $coupons = Coupon::where('expire_date','>',date('Y-m-d H:i'))
-        ->where('status',1)
-        ->whereHas('serviceAdded',function($coupons) use($service_id){
-            $coupons->where('service_id', $service_id );
-        })->get();
 
-        $user_id=Auth::id();
+        $coupons = Coupon::where('expire_date', '>', date('Y-m-d H:i'))
+            ->where('status', 1)
+            ->whereHas('serviceAdded', function ($coupons) use ($service_id) {
+                $coupons->where('service_id', $service_id);
+            })->get();
 
-        $taxes_data = ProviderTaxMapping::where('provider_id', $service->provider_id)
-        ->with(['taxes' => function ($query) {
-            $query->where('status', 1);
-        }])
-        ->orderBy('created_at', 'desc')->get();
+        $user_id = Auth::id();
 
-        $transformedData = $taxes_data->map(function ($tax) {
-            return [
-                'id' => $tax->id,
-                'provider_id' => $tax->provider_id,
-                'title' => optional($tax->taxes)->title,
-                'type' => optional($tax->taxes)->type,
-                'value' => optional($tax->taxes)->value,
-            ];
-        });
+      $matchedTax = Tax::where('status', 1)
+    ->where('id', $service->tax_country_id)
+    ->first();
 
-        $availableserviceslot=null;
 
-        if($service->is_slot==1 ){
+      $taxes = [];
 
-            $availableserviceslot=getServiceTimeSlot($service->provider_id);
+if ($matchedTax) {
+    $taxes[] = [
+        'id' => $matchedTax->id,
+        'title' => $matchedTax->title,
+        'type' => $matchedTax->type,
+        'value' => $matchedTax->value,
+    ];
+}
+        $availableserviceslot = null;
+
+        if ($service->is_slot == 1) {
+
+            $availableserviceslot = getServiceTimeSlot($service->provider_id);
 
         }
 
-        $taxes =$transformedData;
+      //  $taxes = $transformedData;
 
-        if($request->package_id){
+        if ($request->package_id) {
             $service = ServicePackage::where('id', $request->package_id)->first();
             $service->package_image = $service->getFirstMedia('package_attachment')->getUrl();
             $service->service_id = $service_id;
+            $service->total_price = $service->getTotalPrice();
         }
 
         $serviceaddon = null;
-        if($request->addons){
+        if ($request->addons) {
             $addon_id = explode(',', $request->addons);
             $serviceaddons = ServiceAddon::whereIn('id', $addon_id)->get();
             $serviceaddon = $serviceaddons->map(function ($addon) {
@@ -684,17 +691,16 @@ class FrontendController extends Controller
                 ];
             });
         }
-        $sitesetup = Setting::where('type','site-setup')->where('key', 'site-setup')->first();
+        $sitesetup = Setting::where('type', 'site-setup')->where('key', 'site-setup')->first();
         $sitesetupdata = json_decode($sitesetup->value);
         $googlemapkey = $sitesetupdata->google_map_keys;
         $user = auth()->user();
-        $wallet = $user->wallet;
-        $wallet_amount = $wallet->amount ?? 0;
-        return view('landing-page.BookService',compact('service','coupons','taxes','user_id','availableserviceslot','serviceaddon','googlemapkey','wallet_amount'));
-    }
-   
+        $wallet = $user ? $user->wallet : null;
+        $wallet_amount = $wallet ? $wallet->amount : 0;
 
-   
+        return view('landing-page.BookService', compact('service', 'coupons', 'taxes', 'user_id', 'availableserviceslot', 'serviceaddon', 'googlemapkey', 'wallet_amount'));
+    }
+
     public function showdetails($id)
     {
         // Use 'with' to eager-load the relationships, including 'postBidList'
@@ -1068,19 +1074,7 @@ class FrontendController extends Controller
         return $datatable->rawColumns(['name'])
             ->toJson();
     }
-
-
-
-
-
-
-
-
-
-
-
-
-    public function providerDatatable(Datatables $datatable, Request $request)
+public function providerDatatable(Datatables $datatable, Request $request)
 {
     $query = User::query()
         ->where('user_type', 'provider')
