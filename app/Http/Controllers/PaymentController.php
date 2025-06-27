@@ -87,7 +87,7 @@ class PaymentController extends Controller
     public function cash_index_data(DataTables $datatable,Request $request)
     {
         $query = Payment::query()->myPayment();
-       dd($query );
+       
         $filter = $request->filter;
 
         if (isset($filter)) {
@@ -96,7 +96,9 @@ class PaymentController extends Controller
             }
         }
         if (auth()->user()->hasAnyRole(['admin'])) {
+dd('admin');
             $query= $query->where('payment_type','Bank_transfer')->where('status','0')->newQuery();
+            dd(  $query);
         }
 
         return $datatable->eloquent($query)
