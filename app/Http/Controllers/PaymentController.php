@@ -98,7 +98,7 @@ class PaymentController extends Controller
             }
         }
         if (auth()->user()->hasAnyRole(['admin'])) {
-            $query= $query->where('payment_type','Bank_transfer')->where('status','0')->newQuery();
+            $query= $query->where('payment_type','bank_transfer')->where('status','0')->newQuery();
         }
 
         return $datatable->eloquent($query)
