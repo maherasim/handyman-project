@@ -35,59 +35,147 @@ class WalletController extends Controller
     }
 
 
-    public function index_data(DataTables $datatable, Request $request)
+    // public function index_data(DataTables $datatable, Request $request)
+    // {
+    //     // Get the current logged-in user
+    //     $user = auth()->user();
+    
+    //     // Start the Wallet query
+    //     $query = Wallet::query();
+    
+    //     // If the user is not an admin, filter the query to show only their wallet
+    //     if (!$user->hasAnyRole(['admin'])) {
+    //         $query->where('user_id', $user->id);
+    //     }
+    
+    //     // Apply filters from the request
+    //     $filter = $request->filter;
+    //     if (isset($filter)) {
+    //         if (isset($filter['column_status'])) {
+    //             $query->where('status', $filter['column_status']);
+    //         }
+    //     }
+    
+    //     // Order by the most recent update
+    //     $query->orderBy('updated_at', 'desc');
+    
+    //     return $datatable->eloquent($query)
+    //         ->addColumn('check', function ($row) {
+    //             return '<input type="checkbox" class="form-check-input select-table-row" id="datatable-row-' . $row->id . '" name="datatable_ids[]" value="' . $row->id . '" onclick="dataTableRowCheck(' . $row->id . ')">';
+    //         })
+    //         ->editColumn('title', function ($query) {
+    //             return '<a class="btn-link btn-link-hover" href=' . route('wallet.show', $query->user_id) . '>' . $query->title . '</a>';
+    //         })
+    //         ->editColumn('user_id', function ($query) {
+    //             return view('wallet.user', compact('query'));
+    //         })
+    //         ->editColumn('amount', function ($query) {
+    //             return getPriceFormat($query->amount);
+    //         })
+    //         ->editColumn('status', function ($query) {
+    //             return '<div class="custom-control custom-switch custom-switch-text custom-switch-color custom-control-inline">
+    //                 <div class="custom-switch-inner">
+    //                     <input type="checkbox" class="custom-control-input change_status" data-type="wallet_status" ' . ($query->status ? "checked" : "") . ' value="' . $query->id . '" id="' . $query->id . '" data-id="' . $query->id . '">
+    //                     <label class="custom-control-label" for="' . $query->id . '" data-on-label="" data-off-label=""></label>
+    //                 </div>
+    //             </div>';
+    //         })
+    //         ->addColumn('action', function ($wallet) {
+    //             return view('wallet.action', compact('wallet'))->render();
+    //         })
+    //         ->addIndexColumn()
+    //         ->rawColumns(['title', 'action', 'status', 'check'])
+    //         ->toJson();
+    // }
+        public function index_data(DataTables $datatable,Request $request)
     {
-        // Get the current logged-in user
-        $user = auth()->user();
-    
-        // Start the Wallet query
-        $query = Wallet::query();
-    
-        // If the user is not an admin, filter the query to show only their wallet
-        if (!$user->hasAnyRole(['admin'])) {
-            $query->where('user_id', $user->id);
-        }
-    
-        // Apply filters from the request
+        $query = Payment::query()->myPayment();
+       // dd($query );
         $filter = $request->filter;
+
         if (isset($filter)) {
             if (isset($filter['column_status'])) {
-                $query->where('status', $filter['column_status']);
+                $query->where('payment_status', $filter['column_status']);
             }
         }
-    
-        // Order by the most recent update
-        $query->orderBy('updated_at', 'desc');
-    
+        if (auth()->user()->hasAnyRole(['admin'])) {
+            $query= $query->where('payment_type','Bank_transfer')->where('status','0')->newQuery();
+        }
+
         return $datatable->eloquent($query)
             ->addColumn('check', function ($row) {
-                return '<input type="checkbox" class="form-check-input select-table-row" id="datatable-row-' . $row->id . '" name="datatable_ids[]" value="' . $row->id . '" onclick="dataTableRowCheck(' . $row->id . ')">';
+                return '<input type="checkbox" class="form-check-input select-table-row"  id="datatable-row-'.$row->id.'"  name="datatable_ids[]" value="'.$row->id.'" onclick="dataTableRowCheck('.$row->id.')">';
             })
-            ->editColumn('title', function ($query) {
-                return '<a class="btn-link btn-link-hover" href=' . route('wallet.show', $query->user_id) . '>' . $query->title . '</a>';
+            ->editColumn('id', function($payment) {
+                if(isset($payment->booking) && $payment->booking !== null){
+                    return '<a class="btn-link btn-link-hover" href='.route('booking.show', $payment->booking->id).'> #'.$payment->booking->id.'</a>';
+                }
             })
-            ->editColumn('user_id', function ($query) {
-                return view('wallet.user', compact('query'));
+            ->editColumn('booking_id', function($payment) {
+                if(!empty($payment->booking->bookingPackage)){
+                    $service_name = optional(optional($payment->booking)->bookingPackage)->name." (".__('messages.service_package').")";
+                }
+                else{
+                    $service_name = optional(optional($payment->booking)->service)->name." (".__('messages.service').")";
+                }
+     
+                return ($payment->customer_id != null &&isset($payment->booking->service)) ? $service_name :'-';
             })
-            ->editColumn('amount', function ($query) {
-                return getPriceFormat($query->amount);
+            ->filterColumn('booking_id',function($query,$keyword){
+                $query->whereHas('booking.service',function ($q) use($keyword){
+                    $q->where('name','like','%'.$keyword.'%');
+                });
             })
-            ->editColumn('status', function ($query) {
-                return '<div class="custom-control custom-switch custom-switch-text custom-switch-color custom-control-inline">
-                    <div class="custom-switch-inner">
-                        <input type="checkbox" class="custom-control-input change_status" data-type="wallet_status" ' . ($query->status ? "checked" : "") . ' value="' . $query->id . '" id="' . $query->id . '" data-id="' . $query->id . '">
-                        <label class="custom-control-label" for="' . $query->id . '" data-on-label="" data-off-label=""></label>
-                    </div>
-                </div>';
+            ->orderColumn('booking_id', function ($query, $order) {
+                $query->join('bookings', 'bookings.id', '=', 'payments.booking_id')  
+                      ->join('services', 'services.id', '=', 'bookings.service_id')  
+                      ->orderBy('services.name', $order);  
             })
-            ->addColumn('action', function ($wallet) {
-                return view('wallet.action', compact('wallet'))->render();
+            ->editColumn('customer_id', function ($payment) {
+                return view('payment.user', compact('payment'));
             })
-            ->addIndexColumn()
-            ->rawColumns(['title', 'action', 'status', 'check'])
+            ->filterColumn('customer_id',function($query,$keyword){
+                $query->whereHas('customer',function ($q) use($keyword){
+                    $q->where('display_name','like','%'.$keyword.'%');
+                });
+            })
+            ->editColumn('datetime' , function ($query){
+                $sitesetup = Setting::where('type','site-setup')->where('key', 'site-setup')->first();
+                $datetime = json_decode($sitesetup->value);
+                $date = date("$datetime->date_format $datetime->time_format", strtotime($query->datetime));
+                return $date;
+            })
+            ->editColumn('total_amount', function($payment) {
+                return getPriceFormat($payment->total_amount);
+            })
+            ->editColumn('history', function($payment) {
+                $action = '<a class="btn-link btn-link-hover" href="'.route('cash.index', $payment->id).'">'.__('messages.view').'</a>';
+                return $action;
+            })
+            ->editColumn('status', function($query) {
+                $payment = $query->payment_status;
+                if($payment !== null){
+                    $payment_status = '<span class="text-center bg badge-primary">'.str_replace('_'," ",ucfirst($payment)).'</span>';
+                }else{
+                    $payment_status = '<span class="text-center d-block">-</span>';
+                }
+                return $payment_status;
+            })
+
+            ->editColumn('action', function($payment) {
+                $action=null;
+               if(auth()->user()->hasRole(['admin']) || auth()->user()->hasRole(['demo_admin']) ){
+                // $action = set_admin_approved_cash($payment->id). ' ' .view('payment.cashaction',compact('payment'))->render();
+                $action = view('payment.cashaction',compact('payment'))->render();
+               }
+              
+                return $action;
+
+            })
+            ->addIndexColumn()->rawColumns(['check','history','action','id','status'])
             ->toJson();
     }
-    
+
     /* bulck action method */
     public function bulk_action(Request $request)
     {
