@@ -422,8 +422,6 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
     Route::resource('wallet', WalletController::class);
     Route::get('wallet-index-data', [WalletController::class, 'index_data'])->name('wallet.index_data');
     Route::post('wallet-bulk-action', [WalletController::class, 'bulk_action'])->name('wallet.bulk-action');
-     Route::get('wallet/history/{id?}', [WalletController::class, 'cashIndex'])->name('wallet.index');
-
     Route::post('wallet/{id}', [WalletController::class, 'destroy'])->name('wallet.destroy');
     Route::get('wallet-history-index-data/{id}', [WalletController::class, 'wallethistory_index_data'])->name('wallethistory.index_data');
 

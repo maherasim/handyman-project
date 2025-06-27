@@ -177,9 +177,10 @@ class PaymentController extends Controller
 
     public function index_data(DataTables $datatable,Request $request)
     {
-      $query = Payment::query()->myPayment(); 
-      $query->whereNotIn('payment_type', ['wallet', 'Bank_transfer']);
-
+        $query = Payment::query()->myPayment(); 
+        // if (!$request->order) { 
+        //     $query->orderBy('created_at', 'DESC');
+        // } 
         $filter = $request->filter;
 
         if (isset($filter)) {
