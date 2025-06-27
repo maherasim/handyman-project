@@ -420,7 +420,7 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
     // Route::post('enable-user-wallet', [SettingController::class, 'enableUserWallet'])->name('enableUserWallet');
 
     Route::resource('wallet', WalletController::class);
-    Route::get('wallet-index-data', [WalletController::class, 'index_data'])->name('wallet.index_data');
+    Route::get('wallet-index-data', [WalletController::class, 'cash_index_data'])->name('wallet.index_data');
     Route::post('wallet-bulk-action', [WalletController::class, 'bulk_action'])->name('wallet.bulk-action');
     Route::post('wallet/{id}', [WalletController::class, 'destroy'])->name('wallet.destroy');
     Route::get('wallet-history-index-data/{id}', [WalletController::class, 'wallethistory_index_data'])->name('wallethistory.index_data');
