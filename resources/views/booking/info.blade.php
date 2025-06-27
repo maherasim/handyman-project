@@ -214,7 +214,7 @@
                                     <div class="card-body">
                                         <p class="opacity-75 fz-12">{{ __('messages.total_amount') }}</p>
                                         <p class="mb-0 text-primary">
-                                            {{ $grandTotal ? getPriceFormat($grandTotal) : 0 }}
+                                                   {{ getPriceFormat($bookingdata->total_amount ?? 0) }}
                                         </p>
                                     </div>
                                 </div>
