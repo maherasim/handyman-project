@@ -95,7 +95,7 @@ class PaymentController extends Controller
             }
         }
         if (auth()->user()->hasAnyRole(['admin'])) {
-            $query= $query->orderBy('id','desc')->where('payment_type','bank_transfer')->newQuery();
+            $query= $query->orderBy('id','desc')->where('payment_type','bank_transfer')->where('status','0')->newQuery();
         }
 
         return $datatable->eloquent($query)
