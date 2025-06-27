@@ -96,7 +96,7 @@ class PaymentController extends Controller
             }
         }
         if (auth()->user()->hasAnyRole(['admin'])) {
-dd('admin');
+ 
             $query= $query->where('payment_type','Bank_transfer')->where('status','0')->newQuery();
             dd(  $query);
         }
