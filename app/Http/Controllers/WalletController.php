@@ -149,7 +149,7 @@ class WalletController extends Controller
                 return getPriceFormat($payment->total_amount);
             })
             ->editColumn('history', function($payment) {
-                $action = '<a class="btn-link btn-link-hover" href="'.route('wallet.index', $payment->id).'">'.__('messages.view').'</a>';
+                $action = '<a class="btn-link btn-link-hover" href="'.route('cash.index', $payment->id).'">'.__('messages.view').'</a>';
                 return $action;
             })
             ->editColumn('status', function($query) {
