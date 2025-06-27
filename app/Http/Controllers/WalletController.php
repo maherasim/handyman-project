@@ -35,58 +35,58 @@ class WalletController extends Controller
     }
 
 
-    // public function index_data(DataTables $datatable, Request $request)
-    // {
-    //     // Get the current logged-in user
-    //     $user = auth()->user();
+    public function index_data(DataTables $datatable, Request $request)
+    {
+        // Get the current logged-in user
+        $user = auth()->user();
     
-    //     // Start the Wallet query
-    //     $query = Wallet::query();
+        // Start the Wallet query
+        $query = Wallet::query();
     
-    //     // If the user is not an admin, filter the query to show only their wallet
-    //     if (!$user->hasAnyRole(['admin'])) {
-    //         $query->where('user_id', $user->id);
-    //     }
+        // If the user is not an admin, filter the query to show only their wallet
+        if (!$user->hasAnyRole(['admin'])) {
+            $query->where('user_id', $user->id);
+        }
     
-    //     // Apply filters from the request
-    //     $filter = $request->filter;
-    //     if (isset($filter)) {
-    //         if (isset($filter['column_status'])) {
-    //             $query->where('status', $filter['column_status']);
-    //         }
-    //     }
+        // Apply filters from the request
+        $filter = $request->filter;
+        if (isset($filter)) {
+            if (isset($filter['column_status'])) {
+                $query->where('status', $filter['column_status']);
+            }
+        }
     
-    //     // Order by the most recent update
-    //     $query->orderBy('updated_at', 'desc');
+        // Order by the most recent update
+        $query->orderBy('updated_at', 'desc');
     
-    //     return $datatable->eloquent($query)
-    //         ->addColumn('check', function ($row) {
-    //             return '<input type="checkbox" class="form-check-input select-table-row" id="datatable-row-' . $row->id . '" name="datatable_ids[]" value="' . $row->id . '" onclick="dataTableRowCheck(' . $row->id . ')">';
-    //         })
-    //         ->editColumn('title', function ($query) {
-    //             return '<a class="btn-link btn-link-hover" href=' . route('wallet.show', $query->user_id) . '>' . $query->title . '</a>';
-    //         })
-    //         ->editColumn('user_id', function ($query) {
-    //             return view('wallet.user', compact('query'));
-    //         })
-    //         ->editColumn('amount', function ($query) {
-    //             return getPriceFormat($query->amount);
-    //         })
-    //         ->editColumn('status', function ($query) {
-    //             return '<div class="custom-control custom-switch custom-switch-text custom-switch-color custom-control-inline">
-    //                 <div class="custom-switch-inner">
-    //                     <input type="checkbox" class="custom-control-input change_status" data-type="wallet_status" ' . ($query->status ? "checked" : "") . ' value="' . $query->id . '" id="' . $query->id . '" data-id="' . $query->id . '">
-    //                     <label class="custom-control-label" for="' . $query->id . '" data-on-label="" data-off-label=""></label>
-    //                 </div>
-    //             </div>';
-    //         })
-    //         ->addColumn('action', function ($wallet) {
-    //             return view('wallet.action', compact('wallet'))->render();
-    //         })
-    //         ->addIndexColumn()
-    //         ->rawColumns(['title', 'action', 'status', 'check'])
-    //         ->toJson();
-    // }
+        return $datatable->eloquent($query)
+            ->addColumn('check', function ($row) {
+                return '<input type="checkbox" class="form-check-input select-table-row" id="datatable-row-' . $row->id . '" name="datatable_ids[]" value="' . $row->id . '" onclick="dataTableRowCheck(' . $row->id . ')">';
+            })
+            ->editColumn('title', function ($query) {
+                return '<a class="btn-link btn-link-hover" href=' . route('wallet.show', $query->user_id) . '>' . $query->title . '</a>';
+            })
+            ->editColumn('user_id', function ($query) {
+                return view('wallet.user', compact('query'));
+            })
+            ->editColumn('amount', function ($query) {
+                return getPriceFormat($query->amount);
+            })
+            ->editColumn('status', function ($query) {
+                return '<div class="custom-control custom-switch custom-switch-text custom-switch-color custom-control-inline">
+                    <div class="custom-switch-inner">
+                        <input type="checkbox" class="custom-control-input change_status" data-type="wallet_status" ' . ($query->status ? "checked" : "") . ' value="' . $query->id . '" id="' . $query->id . '" data-id="' . $query->id . '">
+                        <label class="custom-control-label" for="' . $query->id . '" data-on-label="" data-off-label=""></label>
+                    </div>
+                </div>';
+            })
+            ->addColumn('action', function ($wallet) {
+                return view('wallet.action', compact('wallet'))->render();
+            })
+            ->addIndexColumn()
+            ->rawColumns(['title', 'action', 'status', 'check'])
+            ->toJson();
+    }
         public function index_data(DataTables $datatable,Request $request)
     {
         $query = Payment::query()->myPayment();
@@ -149,7 +149,7 @@ class WalletController extends Controller
                 return getPriceFormat($payment->total_amount);
             })
             ->editColumn('history', function($payment) {
-                $action = '<a class="btn-link btn-link-hover" href="'.route('cash.index', $payment->id).'">'.__('messages.view').'</a>';
+                $action = '<a class="btn-link btn-link-hover" href="'.route('wallet.index', $payment->id).'">'.__('messages.view').'</a>';
                 return $action;
             })
             ->editColumn('status', function($query) {
