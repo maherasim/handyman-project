@@ -88,6 +88,96 @@ class WalletController extends Controller
             ->toJson();
     }
     
+    
+    public function cash_index_data(DataTables $datatable,Request $request)
+    {
+        $query = Payment::query()->myPayment();
+       // dd($query );
+        $filter = $request->filter;
+
+        if (isset($filter)) {
+            if (isset($filter['column_status'])) {
+                $query->where('payment_status', $filter['column_status']);
+            }
+        }
+        if (auth()->user()->hasAnyRole(['admin'])) {
+            $query= $query->where('payment_type','Bank_transfer')->where('status','0')->newQuery();
+        }
+
+        return $datatable->eloquent($query)
+            ->addColumn('check', function ($row) {
+                return '<input type="checkbox" class="form-check-input select-table-row"  id="datatable-row-'.$row->id.'"  name="datatable_ids[]" value="'.$row->id.'" onclick="dataTableRowCheck('.$row->id.')">';
+            })
+            ->editColumn('id', function($payment) {
+                if(isset($payment->booking) && $payment->booking !== null){
+                    return '<a class="btn-link btn-link-hover" href='.route('booking.show', $payment->booking->id).'> #'.$payment->booking->id.'</a>';
+                }
+            })
+            ->editColumn('booking_id', function($payment) {
+                if(!empty($payment->booking->bookingPackage)){
+                    $service_name = optional(optional($payment->booking)->bookingPackage)->name." (".__('messages.service_package').")";
+                }
+                else{
+                    $service_name = optional(optional($payment->booking)->service)->name." (".__('messages.service').")";
+                }
+     
+                return ($payment->customer_id != null &&isset($payment->booking->service)) ? $service_name :'-';
+            })
+            ->filterColumn('booking_id',function($query,$keyword){
+                $query->whereHas('booking.service',function ($q) use($keyword){
+                    $q->where('name','like','%'.$keyword.'%');
+                });
+            })
+            ->orderColumn('booking_id', function ($query, $order) {
+                $query->join('bookings', 'bookings.id', '=', 'payments.booking_id')  
+                      ->join('services', 'services.id', '=', 'bookings.service_id')  
+                      ->orderBy('services.name', $order);  
+            })
+            ->editColumn('customer_id', function ($payment) {
+                return view('payment.user', compact('payment'));
+            })
+            ->filterColumn('customer_id',function($query,$keyword){
+                $query->whereHas('customer',function ($q) use($keyword){
+                    $q->where('display_name','like','%'.$keyword.'%');
+                });
+            })
+            ->editColumn('datetime' , function ($query){
+                $sitesetup = Setting::where('type','site-setup')->where('key', 'site-setup')->first();
+                $datetime = json_decode($sitesetup->value);
+                $date = date("$datetime->date_format $datetime->time_format", strtotime($query->datetime));
+                return $date;
+            })
+            ->editColumn('total_amount', function($payment) {
+                return getPriceFormat($payment->total_amount);
+            })
+            ->editColumn('history', function($payment) {
+                $action = '<a class="btn-link btn-link-hover" href="'.route('cash.index', $payment->id).'">'.__('messages.view').'</a>';
+                return $action;
+            })
+            ->editColumn('status', function($query) {
+                $payment = $query->payment_status;
+                if($payment !== null){
+                    $payment_status = '<span class="text-center bg badge-primary">'.str_replace('_'," ",ucfirst($payment)).'</span>';
+                }else{
+                    $payment_status = '<span class="text-center d-block">-</span>';
+                }
+                return $payment_status;
+            })
+
+            ->editColumn('action', function($payment) {
+                $action=null;
+               if(auth()->user()->hasRole(['admin']) || auth()->user()->hasRole(['demo_admin']) ){
+                // $action = set_admin_approved_cash($payment->id). ' ' .view('payment.cashaction',compact('payment'))->render();
+                $action = view('payment.cashaction',compact('payment'))->render();
+               }
+              
+                return $action;
+
+            })
+            ->addIndexColumn()->rawColumns(['check','history','action','id','status'])
+            ->toJson();
+    }
+
     /* bulck action method */
     public function bulk_action(Request $request)
     {
