@@ -87,7 +87,7 @@ class PaymentController extends Controller
     public function cash_index_data(DataTables $datatable,Request $request)
     {
         $query = Payment::query()->myPayment();
-       // dd($query );
+       dd($query );
         $filter = $request->filter;
 
         if (isset($filter)) {
