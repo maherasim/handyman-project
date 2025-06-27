@@ -87,7 +87,6 @@ class PaymentController extends Controller
     public function cash_index_data(DataTables $datatable,Request $request)
     {
         $query = Payment::query()->myPayment();
-       
         $filter = $request->filter;
 
         if (isset($filter)) {
@@ -96,9 +95,7 @@ class PaymentController extends Controller
             }
         }
         if (auth()->user()->hasAnyRole(['admin'])) {
- 
-            $query= $query->where('payment_type','bank_transfer')->where('status','0')->newQuery();
-           
+            $query= $query->orderBy('id','desc')->where('payment_type','cash')->newQuery();
         }
 
         return $datatable->eloquent($query)
@@ -111,24 +108,16 @@ class PaymentController extends Controller
                 }
             })
             ->editColumn('booking_id', function($payment) {
-                if(!empty($payment->booking->bookingPackage)){
-                    $service_name = optional(optional($payment->booking)->bookingPackage)->name." (".__('messages.service_package').")";
+                if($payment->customer_id != null && isset($payment->booking->service)){
+                    return $payment->booking->service->name;
+                }else{
+                    return '-';
                 }
-                else{
-                    $service_name = optional(optional($payment->booking)->service)->name." (".__('messages.service').")";
-                }
-     
-                return ($payment->customer_id != null &&isset($payment->booking->service)) ? $service_name :'-';
             })
             ->filterColumn('booking_id',function($query,$keyword){
                 $query->whereHas('booking.service',function ($q) use($keyword){
                     $q->where('name','like','%'.$keyword.'%');
                 });
-            })
-            ->orderColumn('booking_id', function ($query, $order) {
-                $query->join('bookings', 'bookings.id', '=', 'payments.booking_id')  
-                      ->join('services', 'services.id', '=', 'bookings.service_id')  
-                      ->orderBy('services.name', $order);  
             })
             ->editColumn('customer_id', function ($payment) {
                 return view('payment.user', compact('payment'));
@@ -141,20 +130,20 @@ class PaymentController extends Controller
             ->editColumn('datetime' , function ($query){
                 $sitesetup = Setting::where('type','site-setup')->where('key', 'site-setup')->first();
                 $datetime = json_decode($sitesetup->value);
-                $date = date("$datetime->date_format $datetime->time_format", strtotime($query->datetime));
+                $date = date("$datetime->date_format / $datetime->time_format", strtotime($query->datetime));
                 return $date;
             })
             ->editColumn('total_amount', function($payment) {
                 return getPriceFormat($payment->total_amount);
             })
             ->editColumn('history', function($payment) {
-                $action = '<a class="btn-link btn-link-hover" href="'.route('cash.index', $payment->id).'">'.__('messages.view').'</a>';
+                $action = '<a class="btn-link btn-link-hover"   href='.route('cash.index',$payment->id).'>View</a>';
                 return $action;
             })
             ->editColumn('status', function($query) {
                 $payment = $query->payment_status;
                 if($payment !== null){
-                    $payment_status = '<span class="text-center bg badge-primary">'.str_replace('_'," ",ucfirst($payment)).'</span>';
+                    $payment_status = '<span class="text-center badge badge-primary1">'.str_replace('_'," ",ucfirst($payment)).'</span>';
                 }else{
                     $payment_status = '<span class="text-center d-block">-</span>';
                 }
@@ -164,8 +153,7 @@ class PaymentController extends Controller
             ->editColumn('action', function($payment) {
                 $action=null;
                if(auth()->user()->hasRole(['admin']) || auth()->user()->hasRole(['demo_admin']) ){
-                // $action = set_admin_approved_cash($payment->id). ' ' .view('payment.cashaction',compact('payment'))->render();
-                $action = view('payment.cashaction',compact('payment'))->render();
+                $action = set_admin_approved_cash($payment->id). ' ' .view('payment.cashaction',compact('payment'))->render();
                }
               
                 return $action;
