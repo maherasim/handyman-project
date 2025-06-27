@@ -86,7 +86,8 @@ class PaymentController extends Controller
 
     public function cash_index_data(DataTables $datatable,Request $request)
     {
-        $query = Payment::query()->myPayment();
+      $query = Payment::query()->myPayment()->where('payment_type', 'bank_transfer');
+
         $filter = $request->filter;
 
         if (isset($filter)) {
