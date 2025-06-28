@@ -421,7 +421,7 @@ $timezone = getTimeZone();
                                                 </li> --}}
                                                 <li class="d-flex align-items-center">
                                                     <i class="ri-map-pin-line me-2"></i>
-                                                    <span class="text-wrap">{{ optional($booking->handyman)->address ?? '-' }}</span>
+                                                    <span class="text-wrap">{{ strip_tags(optional($booking->handyman)->address) ?? '-' }}</span>
                                                 </li>
                                             </ul>
                                     @endforeach
