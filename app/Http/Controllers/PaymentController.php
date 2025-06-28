@@ -92,14 +92,14 @@ public function cash_index_data(DataTables $datatable, Request $request)
 
     $filter = $request->filter;
 
-    // Apply status filter from frontend
+    // Apply payment_status filter from frontend
     if (isset($filter) && isset($filter['column_status'])) {
         $query->where('payment_status', $filter['column_status']);
     }
 
-    // Additional filtering for admin only (without breaking query chain)
-    if (auth()->user()->hasAnyRole(['admin'])) {
-        $query->where('status', '0')->orderByDesc('id');
+    // Admin should see all bank_transfer records (no status=0 limit unless explicitly filtered)
+    if (auth()->user()->hasAnyRole(['admin', 'demo_admin'])) {
+        $query->orderByDesc('id');
     }
 
     return $datatable->eloquent($query)
@@ -154,6 +154,7 @@ public function cash_index_data(DataTables $datatable, Request $request)
         ->rawColumns(['check', 'history', 'action', 'id', 'status'])
         ->toJson();
 }
+
 
 
 
