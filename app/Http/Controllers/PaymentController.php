@@ -88,18 +88,18 @@ public function cash_index_data(DataTables $datatable, Request $request)
 {
     $query = Payment::query()
         ->myPayment()
-        ->where('payment_type', 'bank_transfer')->where('status','0');
+        ->where('payment_type', 'bank_transfer');
+
+    // Only for admin, add status = 0
+    if (auth()->user()->hasAnyRole(['admin', 'demo_admin'])) {
+        $query->where('status', '0')->orderByDesc('id');
+    }
 
     $filter = $request->filter;
 
     // Apply payment_status filter from frontend
-    if (isset($filter) && isset($filter['column_status'])) {
+    if (!empty($filter['column_status'])) {
         $query->where('payment_status', $filter['column_status']);
-    }
-
-    // Admin should see all bank_transfer records (no status=0 limit unless explicitly filtered)
-    if (auth()->user()->hasAnyRole(['admin', 'demo_admin'])) {
-        $query->orderByDesc('id');
     }
 
     return $datatable->eloquent($query)
