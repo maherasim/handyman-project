@@ -160,7 +160,14 @@ public function cash_index_data(DataTables $datatable, Request $request)
 
     public function index_data(DataTables $datatable,Request $request)
     {
-        $query = Payment::query()->myPayment(); 
+      $query = Payment::query()->myPayment()
+    ->where(function ($q) {
+        $q->where('payment_type', '!=', 'bank_transfer')
+          ->orWhere(function ($sub) {
+              $sub->where('payment_type', 'bank_transfer')->where('status', 1);
+          });
+    });
+ 
         // if (!$request->order) { 
         //     $query->orderBy('created_at', 'DESC');
         // } 
@@ -249,6 +256,27 @@ public function cash_index_data(DataTables $datatable, Request $request)
         ->rawColumns(['action','check','payment_status','id'])
             ->toJson();
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     /* bulck action method */
     public function bulk_action(Request $request)
