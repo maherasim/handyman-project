@@ -432,7 +432,7 @@
                                         <li class="d-flex align-items-center">
                                             <i class="ri-map-pin-line me-2"></i>
                                             <span
-                                                class="text-wrap">{{ optional($booking->handyman)->address ?? '-' }}</span>
+                                                class="text-wrap">{{ strip_tags(optional($bookingdata->handyman)->address) ?? '-' }}</span>
                                         </li>
                                     </ul>
                                 </div>
