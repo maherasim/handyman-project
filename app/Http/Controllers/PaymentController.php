@@ -90,70 +90,71 @@ public function cash_index_data(DataTables $datatable, Request $request)
         ->myPayment()
         ->where('payment_type', 'bank_transfer');
 
-    // Apply status filter
-    if ($request->filled('filter.column_status')) {
-        $query->where('payment_status', $request->filter['column_status']);
+    $filter = $request->filter;
+
+    // Apply status filter from frontend
+    if (isset($filter) && isset($filter['column_status'])) {
+        $query->where('payment_status', $filter['column_status']);
     }
 
-    // Apply admin-specific filter
+    // Additional filtering for admin only (without breaking query chain)
     if (auth()->user()->hasAnyRole(['admin'])) {
         $query->where('status', '0')->orderByDesc('id');
     }
 
     return $datatable->eloquent($query)
         ->addColumn('check', function ($row) {
-            return '<input type="checkbox" class="form-check-input select-table-row" id="datatable-row-' . $row->id . '" name="datatable_ids[]" value="' . $row->id . '" onclick="dataTableRowCheck(' . $row->id . ')">';
+            return '<input type="checkbox" class="form-check-input select-table-row" id="datatable-row-'.$row->id.'" name="datatable_ids[]" value="'.$row->id.'" onclick="dataTableRowCheck('.$row->id.')">';
         })
-        ->editColumn('id', function ($payment) {
-            if (isset($payment->booking) && $payment->booking !== null) {
-                return '<a class="btn-link btn-link-hover" href="' . route('booking.show', $payment->booking->id) . '"> #' . $payment->booking->id . '</a>';
+        ->editColumn('id', function($payment) {
+            if ($payment->booking) {
+                return '<a class="btn-link btn-link-hover" href="'.route('booking.show', $payment->booking->id).'"> #'.$payment->booking->id.'</a>';
             }
+            return '-';
         })
-        ->editColumn('booking_id', function ($payment) {
-            return $payment->customer_id !== null && isset($payment->booking->service)
-                ? $payment->booking->service->name
-                : '-';
+        ->editColumn('booking_id', function($payment) {
+            return $payment->booking->service->name ?? '-';
         })
-        ->filterColumn('booking_id', function ($query, $keyword) {
+        ->filterColumn('booking_id', function($query, $keyword) {
             $query->whereHas('booking.service', function ($q) use ($keyword) {
-                $q->where('name', 'like', '%' . $keyword . '%');
+                $q->where('name', 'like', '%'.$keyword.'%');
             });
         })
         ->editColumn('customer_id', function ($payment) {
             return view('payment.user', compact('payment'));
         })
-        ->filterColumn('customer_id', function ($query, $keyword) {
+        ->filterColumn('customer_id', function($query, $keyword) {
             $query->whereHas('customer', function ($q) use ($keyword) {
-                $q->where('display_name', 'like', '%' . $keyword . '%');
+                $q->where('display_name', 'like', '%'.$keyword.'%');
             });
         })
-        ->editColumn('datetime', function ($payment) {
+        ->editColumn('datetime', function ($query) {
             $sitesetup = Setting::where('type', 'site-setup')->where('key', 'site-setup')->first();
             $datetime = json_decode($sitesetup->value);
-            return date("$datetime->date_format / $datetime->time_format", strtotime($payment->datetime));
+            return date("$datetime->date_format / $datetime->time_format", strtotime($query->datetime));
         })
-        ->editColumn('total_amount', function ($payment) {
+        ->editColumn('total_amount', function($payment) {
             return getPriceFormat($payment->total_amount);
         })
-        ->editColumn('history', function ($payment) {
-            return '<a class="btn-link btn-link-hover" href="' . route('cash.index', $payment->id) . '">View</a>';
+        ->editColumn('history', function($payment) {
+            return '<a class="btn-link btn-link-hover" href="'.route('cash.index', $payment->id).'">View</a>';
         })
-        ->editColumn('status', function ($payment) {
-            return $payment->payment_status !== null
-                ? '<span class="text-center badge badge-primary1">' . str_replace('_', ' ', ucfirst($payment->payment_status)) . '</span>'
+        ->editColumn('status', function($query) {
+            return $query->payment_status
+                ? '<span class="text-center badge badge-primary1">'.str_replace('_', ' ', ucfirst($query->payment_status)).'</span>'
                 : '<span class="text-center d-block">-</span>';
         })
-        ->editColumn('action', function ($payment) {
-            $action = null;
-            if (auth()->user()->hasAnyRole(['admin', 'demo_admin'])) {
-                $action = set_admin_approved_cash($payment->id) . ' ' . view('payment.cashaction', compact('payment'))->render();
+        ->editColumn('action', function($payment) {
+            if (auth()->user()->hasRole(['admin', 'demo_admin'])) {
+                return set_admin_approved_cash($payment->id) . ' ' . view('payment.cashaction', compact('payment'))->render();
             }
-            return $action;
+            return '';
         })
         ->addIndexColumn()
         ->rawColumns(['check', 'history', 'action', 'id', 'status'])
         ->toJson();
 }
+
 
 
     public function index_data(DataTables $datatable,Request $request)
