@@ -74,9 +74,10 @@ public function index_data(DataTables $datatable, Request $request)
     $query = PostJobRequest::query();
 
     // If the user is not an admin, restrict to only their job requests
-    if (!auth()->user()->hasAnyRole(['admin'])) {
-        $query->where('customer_id', auth()->id());
-    }
+  if (!auth()->user()->hasAnyRole(['admin']) && auth()->user()->user_type !== 'provider') {
+    $query->where('customer_id', auth()->id());
+}
+
 
     $filter = $request->filter;
 
