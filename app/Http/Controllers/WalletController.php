@@ -98,7 +98,8 @@ class WalletController extends Controller
     
     public function cash_index_data(DataTables $datatable,Request $request)
     {
-        $query = Payment::query()->myPayment();
+         $query = Payment::query()->myPayment()->where('payment_type', 'wallet');
+       
        // dd($query );
         $filter = $request->filter;
 
@@ -108,7 +109,7 @@ class WalletController extends Controller
             }
         }
         if (auth()->user()->hasAnyRole(['admin'])) {
-            $query= $query->where('payment_type','bank_transfer')->where('status','0')->newQuery();
+            $query= $query->where('payment_type','wallet')->where('status','0')->newQuery();
         }
 
         return $datatable->eloquent($query)
