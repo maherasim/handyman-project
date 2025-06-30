@@ -218,17 +218,8 @@ class Booking extends Model
 
     public function getHourlyPrice():float
     {
-        $totalOneHourSeconds = 3600;
-        $totalMinutes = 0;
+            return $this->amount * (!empty($this->quantity) ? $this->quantity : 1);
 
-        $perMinuteCharge = $this->amount / 60;
-
-        if ($this->duration_diff <= $totalOneHourSeconds) {
-          $totalMinutes = $totalOneHourSeconds / 60;
-        } else {
-          $totalMinutes = $this->duration_diff / 60;
-        }
-        return $totalMinutes * $perMinuteCharge;
     }
     public function getServiceTotalPrice(): float
     {
