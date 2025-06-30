@@ -161,7 +161,7 @@ class PaymentController extends Controller
     //     }
     //     return comman_message_response($message,$status_code);
     // }
-public function savePayment(Request $request)
+ public function savePayment(Request $request)
 {
     $data = $request->all();
     $data['datetime'] = isset($request->datetime) ? date('Y-m-d H:i:s', strtotime($request->datetime)) : date('Y-m-d H:i:s');
@@ -303,7 +303,6 @@ public function savePayment(Request $request)
 
     return comman_message_response(__('messages.payment_completed'), 200);
 }
-
     public function saveBankTransferPayment(Request $request)
     {
         $data = $request->all();
