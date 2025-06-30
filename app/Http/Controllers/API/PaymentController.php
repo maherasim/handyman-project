@@ -176,24 +176,20 @@ class PaymentController extends Controller
     $isAdvance = $result->payment_status == 'advanced_paid';
     $isRemaining = $result->payment_status == 'paid';
 
+    $admin_commission_percentage = Setting::getValueByKey('admin_commission_percentage', 'site-setup')->value ?? 10;
+    $admin_user_id = User::where('user_type', 'admin')->value('id');
+
     if ($isAdvance) {
-        $booking->advance_paid_amount = $request->advance_paid_amount;
+        $advance_paid_amount = $request->advance_paid_amount;
+        $booking->advance_paid_amount = $advance_paid_amount;
         $booking->status = 'pending';
         $booking->update();
 
-        $advance_paid_amount = $request->advance_paid_amount;
-        $admin_commission_percentage = Setting::getValueByKey('admin_commission_percentage', 'site-setup')->value ?? 10;
         $admin_commission_amount = ($advance_paid_amount * $admin_commission_percentage) / 100;
         $provider_earning = $advance_paid_amount - $admin_commission_amount;
 
-        $provider_wallet = Wallet::firstOrCreate(['user_id' => $booking->provider_id]);
-        $provider_wallet->amount += $provider_earning;
-        $provider_wallet->update();
-
-        $admin_user_id = User::where('user_type', 'admin')->value('id');
-        $admin_wallet = Wallet::firstOrCreate(['user_id' => $admin_user_id]);
-        $admin_wallet->amount += $admin_commission_amount;
-        $admin_wallet->update();
+        Wallet::firstOrCreate(['user_id' => $booking->provider_id])->increment('amount', $provider_earning);
+        Wallet::firstOrCreate(['user_id' => $admin_user_id])->increment('amount', $admin_commission_amount);
 
         CommissionEarning::create([
             'booking_id' => $booking->id,
@@ -216,7 +212,7 @@ class PaymentController extends Controller
             'amount' => $provider_earning,
             'payment_method' => 'wallet',
             'paid_date' => Carbon::now(),
-            'status' => 'pending',
+            'status' => 'paid',
             'booking_id' => $booking->id,
             'payment_gateway' => 'wallet',
         ]);
@@ -226,18 +222,36 @@ class PaymentController extends Controller
         $booking->status = 'completed';
         $booking->update();
 
-        // ✅ Update commission to paid when full payment is done
-        CommissionEarning::where('booking_id', $booking->id)
-            ->where('user_type', 'provider')
-            ->update(['commission_status' => 'paid']);
+        $advance_paid = $booking->advance_paid_amount ?? 0;
+        $total_amount = $booking->total_amount;
+        $remaining_amount = $total_amount - $advance_paid;
 
-        CommissionEarning::where('booking_id', $booking->id)
-            ->where('user_type', 'admin')
-            ->update(['commission_status' => 'paid']);
+        if ($remaining_amount > 0) {
+            $admin_commission_amount = ($remaining_amount * $admin_commission_percentage) / 100;
+            $provider_earning = $remaining_amount - $admin_commission_amount;
+
+            Wallet::firstOrCreate(['user_id' => $booking->provider_id])->increment('amount', $provider_earning);
+            Wallet::firstOrCreate(['user_id' => $admin_user_id])->increment('amount', $admin_commission_amount);
+
+            ProviderPayout::create([
+                'provider_id' => $booking->provider_id,
+                'amount' => $provider_earning,
+                'payment_method' => 'wallet',
+                'paid_date' => Carbon::now(),
+                'status' => 'paid',
+                'booking_id' => $booking->id,
+                'payment_gateway' => 'wallet',
+            ]);
+        }
+
+        // Mark all commissions as paid
+        CommissionEarning::where('booking_id', $booking->id)->update(['commission_status' => 'paid']);
     }
 
+    // Save payment history for handyman if provider is first handyman
     $firstHandymanId = optional($booking->handymanAdded->first())->handyman_id;
     $assignedUserData = User::find($firstHandymanId);
+
     if ($firstHandymanId && $assignedUserData->user_type == 'provider') {
         $payment_history = [
             'payment_id' => $result->id,
@@ -262,40 +276,37 @@ class PaymentController extends Controller
         $res->update();
     }
 
+    // Assign payment ID to booking
     $booking->payment_id = $result->id;
     $booking->update();
 
-    $service_id = Booking::where('id', $request->booking_id)->value('service_id');
-    $service = Service::find($service_id);
-
-    // ✅ Deduct wallet if used
+    // Deduct from customer wallet if used
     if ($request->payment_type == 'wallet') {
         $wallet = Wallet::where('user_id', $booking->customer_id)->first();
         if ($wallet && $wallet->amount >= $request->total_amount) {
             $wallet->amount -= $request->total_amount;
-            $wallet->update();
-            $activity_data = [
+            $wallet->save();
+            $service = Service::find($booking->service_id);
+            $this->sendNotification([
                 'activity_type' => 'paid_with_wallet',
                 'wallet' => $wallet,
                 'booking_id' => $request->booking_id,
                 'booking_amount' => $request->total_amount,
                 'service_name' => $service->name ?? '',
-            ];
-            $this->sendNotification($activity_data);
+            ]);
         } else {
             return comman_message_response(__('messages.wallent_balance_error'), 400);
         }
     }
 
-    // 🔔 Send payment status notification
-    $activity_data = [
+    // Send payment status notification
+    $this->sendNotification([
         'activity_type' => 'payment_message_status',
         'payment_status' => $data['payment_status'],
         'booking_id' => $booking->id,
         'booking' => $booking,
         'booking_amount' => $request->total_amount,
-    ];
-    $this->sendNotification($activity_data);
+    ]);
 
     if ($result->payment_status == 'failed') {
         return comman_message_response(__('messages.payment_failed'), 400);
@@ -303,6 +314,7 @@ class PaymentController extends Controller
 
     return comman_message_response(__('messages.payment_completed'), 200);
 }
+
     public function saveBankTransferPayment(Request $request)
     {
         $data = $request->all();
