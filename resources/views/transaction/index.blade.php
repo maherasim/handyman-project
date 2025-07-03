@@ -19,26 +19,21 @@
     </div>
     <div class="card">
         <div class="card-body">
-            <div class="row justify-content-between ">
-              
-                <div class="col-md-6 col-lg-4 col-xl-3">
-                    <div class="d-flex align-items-center gap-3 justify-content-end">
-                        <div class="d-flex justify-content-end gap-3">
-                            
-                            <div class="input-group input-group-search ms-2">
-                                <span class="input-group-text" id="addon-wrapping"><i class="fas fa-search"></i></span>
-                                <input type="text" class="form-control dt-search" placeholder="Search..."
-                                    aria-label="Search" aria-describedby="addon-wrapping"
-                                    aria-controls="dataTableBuilder">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="table-responsive">
-                    <table id="datatable" class="table table-striped border">
-                    </table>
-                </div>
-            </div>
+             <div class="row justify-content-end mb-3">
+    <div class="col-md-4 col-lg-3 ms-auto">
+        <div class="input-group input-group-search">
+            <span class="input-group-text" id="addon-wrapping"><i class="fas fa-search"></i></span>
+            <input type="text" class="form-control dt-search" placeholder="Search..."
+                aria-label="Search" aria-describedby="addon-wrapping" aria-controls="dataTableBuilder">
+        </div>
+    </div>
+</div>
+
+<div class="table-responsive">
+    <table id="datatable" class="table table-striped border">
+    </table>
+</div>
+
         </div>
     </div>
     <script>
