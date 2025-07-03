@@ -10,7 +10,7 @@
                 <div class="card card-block card-stretch">
                     <div class="card-body p-0">
                         <div class="d-flex justify-content-between align-items-center p-3">
-                            <h5 class="fw-bold">{{ $pageTitle ?? trans('messages.list') }}</h5>
+                            <h5 class="fw-bold">Transaction Request</h5>
                         </div>
                     </div>
                 </div>
@@ -20,59 +20,11 @@
     <div class="card">
         <div class="card-body">
             <div class="row justify-content-between gy-3">
-                <div class="col-md-6 col-lg-4 col-xl-3">
-                    <div class="col-md-12">
-                        <form action="{{ route('payment.bulk-action') }}" id="quick-action-form"
-                            class="form-disabled d-flex gap-3 align-items-center">
-                            @csrf
-                            @if (auth()->user()->hasAnyRole(['admin']))
-                                <select name="action_type" class="form-control select2" id="quick-action-type"
-                                    style="width:100%" disabled>
-                                    <option value="">{{ __('messages.no_action') }}</option>
-                                    <option value="change-status">{{ __('messages.status') }}</option>
-                                    <option value="delete">{{ __('messages.delete') }}</option>
-                                </select>
-                                <div class="select-status d-none quick-action-field" id="change-status-action"
-                                    style="width:100%">
-                                    <select name="status" class="form-control select2" id="status"
-                                        style="width:auto">
-                                        <option value="1" class="m-2">{{ __('messages.approvecash') }}</option>
-                                    </select>
-                                </div>
-
-                                <button id="quick-action-apply" class="btn btn-primary" data-ajax="true"
-                                    data--submit="{{ route('payment.bulk-action') }}" data-datatable="reload"
-                                    data-confirmation='true'
-                                    data-title="{{ __('cash payment list', ['form' => __('cash payment list')]) }}"
-                                    title="{{ __('cash payment list', ['form' => __('cash payment list')]) }}"
-                                    data-message='{{ __('Do you want to perform this action?') }}'
-                                    disabled>{{ __('messages.apply') }}</button>
-                            @endif
-                    </div>
-
-                    </form>
-                </div>
+              
                 <div class="col-md-6 col-lg-4 col-xl-3">
                     <div class="d-flex align-items-center gap-3 justify-content-end">
                         <div class="d-flex justify-content-end gap-3">
-                            <div class="datatable-filter ml-auto">
-                                <select name="column_status" id="column_status" class="select2 form-control"
-                                    data-filter="select" style="width: 100%">
-                                    <option value="">{{ __('messages.all') }}</option>
-                                    <option value="advanced_paid">{{ __('messages.advanced_paid') }}</option>
-                                    <option value="paid">{{ __('messages.paid') }}</option>
-                                    <option value="pending_by_admin">{{ __('messages.pending_by_admin') }}</option>
-                                    <option value="approved_by_admin">{{ __('messages.approved_by_admin') }}</option>
-                                    <option value="approved_by_provider">{{ __('messages.approved_by_provider') }}
-                                    </option>
-                                    <option value="pending_by_provider">{{ __('messages.pending_by_provider') }}
-                                    </option>
-                                    <option value="send_to_provider">{{ __('messages.send_to_provider') }}</option>
-                                    <option value="approved_by_handyman">{{ __('messages.approved_by_handyman') }}
-                                    </option>
-
-                                </select>
-                            </div>
+                            
                             <div class="input-group input-group-search ms-2">
                                 <span class="input-group-text" id="addon-wrapping"><i class="fas fa-search"></i></span>
                                 <input type="text" class="form-control dt-search" placeholder="Search..."
