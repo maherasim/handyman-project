@@ -73,9 +73,13 @@ public function indexData(Request $request)
         ->addColumn('user_id', fn ($row) => optional($row->user)->username ?? 'N/A')
         ->addColumn('transaction_type', fn ($row) => ucfirst($row->transaction_type))
         ->addColumn('amount', fn ($row) => number_format($row->amount, 2))
-        ->addColumn('status', fn ($row) => ucfirst($row->status))
-       ->addColumn('action', function ($row) {
-    return '<button class="btn btn-sm btn-success confirm-btn" data-id="' . $row->id . '">Confirm Request</button>';
+       ->addColumn('status', function ($row) {
+    $badgeClass = $row->status === 'pending' ? 'bg-warning text-dark' : 'bg-success';
+    return '<span class="badge ' . $badgeClass . '">' . ucfirst($row->status) . '</span>';
+})
+     ->addColumn('action', function ($row) {
+    $disabled = $row->status === 'completed' ? 'disabled' : '';
+    return '<button class="btn btn-sm btn-success confirm-btn" data-id="' . $row->id . '" ' . $disabled . '>Confirm Request</button>';
 })
 
         ->rawColumns(['check', 'action']) // <== Important: let HTML render
