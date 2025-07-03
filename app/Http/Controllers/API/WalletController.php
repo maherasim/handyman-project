@@ -185,142 +185,68 @@ class WalletController extends Controller
         return comman_message_response($message);
     }
 
-    public function withdrawMoney(Request $request){
-
-        
+public function withdrawMoney(Request $request)
+{
+    try {
         $data = $request->except('_token');
 
-        $payout_status='';
-        $status = '';
-
-        $payment_gateway= $data['payment_gateway'];
-
-        $user_id=$data['user_id'];
+        $user_id = $data['user_id'];
         $wallet = Wallet::where('user_id', $user_id)->first();
 
         if (!$wallet) {
-            return comman_message_response('Wallet not found for user.');
-        } 
-        if ($wallet->amount < $request->amount) {
-            return comman_message_response('Insufficient balance to withdraw.');
+            return comman_message_response('Wallet not found for user.', 404);
         }
 
-        if($data['payment_method'] === 'bank'){
+        if ($wallet->amount < $data['amount']) {
+            return comman_message_response('Insufficient balance to withdraw.', 400);
+        }
 
-            switch($payment_gateway){
+        // Validate required fields
+        if (!isset($data['bank']) || !isset($data['amount']) || !isset($data['payment_method'])) {
+            return comman_message_response('Missing required fields.', 422);
+        }
 
-                case 'razorpayx':
-                    $razorPayX = PaymentGateway::where('type','razorPayX')->where('status',1)->first();
-                    if($razorPayX == null){
-                        return comman_message_response(__('messages.transfer_admin_contact') ,406);
+        if ($data['payment_method'] === 'bank') {
+            // ✅ Manual bank withdrawal flow
+            $data['bank_id'] = $data['bank']; // assuming this is bank.id from your banks table
+            $data['payment_type'] = 'manual'; // You can name it 'bank_transfer' or 'manual'
+            $data['datetime'] = Carbon::now();
+            $data['status'] = 'pending'; // Admin will process this manually
 
-                    }
-                    $response=providerpayout_rezopayX($data);
+            $withdraw = WithdrawMoney::create($data);
 
-                    if($response==''){
-                        $data['bank_id'] = $data['bank'];
-                        $data['payment_type'] = $payment_gateway;
-                        $data['datetime'] = Carbon::now();
-                        $data['status'] = 'failed';
-                        $result = WithdrawMoney::create($data);
-                        return comman_message_response(trans('messages.rezorpayx_details'));
+            // Deduct wallet balance
+            $wallet->amount -= $data['amount'];
+            $wallet->save();
 
-                    }
+            // Log activity (optional)
+            $activity_data = [
+                'id' => $withdraw->id,
+                'type' => 'wallet',
+                'wallet' => $wallet,
+                'activity_type' => 'withdraw_money',
+                'user_id' => $user_id,
+                'amount' => $data['amount'],
+            ];
+            $this->sendNotification($activity_data);
 
-                    $payout_details = json_decode($response,True);
-                    $payout = $payout_details;
+            // Response
+            $message = __('messages.withdrawal_requested', ['amount' => $data['amount']]);
+            return comman_message_response($message, 200);
+        }
 
-                    if (isset($payout_details['status']) && $payout_details['status'] == 'processing') {
-                        $data['status'] = 'paid';
-                    }
-                    
-                    if($error=$payout['error']['description']  ==''){
+        return comman_message_response('Invalid payment method.', 400);
+    } catch (\Exception $e) {
+        \Log::error('WithdrawMoney Error: ' . $e->getMessage(), [
+            'request' => $request->all(),
+            'trace' => $e->getTraceAsString(),
+        ]);
 
-                        $payout_id=$payout['id'] ;
-                        $data['paid_date']=Carbon::now();
-
-                    }
-                    else {
-                        $razorpay_message=$payout['error']['description'];
-                        if($payout['error']['code'] == 'BAD_REQUEST_ERROR'){
-                            return comman_message_response(trans('messages.razorpay_message',['razorpay_message' => $razorpay_message]) ,406);
-                        }
-                        $data['bank_id'] = $data['bank'];
-                        $data['payment_type'] = $payment_gateway;
-                        $data['datetime'] = Carbon::now();
-                        $data['status'] = 'failed';
-                        $result = WithdrawMoney::create($data);
-
-                        return comman_message_response(trans('messages.razorpay_message',['razorpay_message' => $razorpay_message]));
-
-                    }
-               break;
-
-               case 'stripe':
-
-                    $response=providerpayout_stripe($data);
-
-                    if($response==''){
-
-                        return comman_message_response(trans('messages.stripe_details'));
-
-                    }
-                    else{
-
-                        $status = $response->status;
-
-                        if($status==400){
-
-                            $error_message = $response->code;
-
-                            $data['bank_id'] = $data['bank'];
-                            $data['payment_type'] = $payment_gateway;
-                            $data['datetime'] = Carbon::now();
-                            $data['status'] = 'failed';
-                            $result = WithdrawMoney::create($data);
-
-                            return comman_message_response(trans('messages.stripe_message',['stripe_message' => $error_message]));
-
-                        }
-                        else{
-                            $payout_id=$response['id'];
-
-                            $status='';
-
-                            if($payout_id!=''){
-
-                                $status="paid";
-                            }
-
-                            $data['bank_id']=$data['bank'];
-                            $data['status']=$status;
-                            $data['paid_date']=Carbon::now();
-
-                        }
-                    }
-                break;
-
-            }
-         }
-        $data['bank_id'] = $data['bank'];
-        $data['payment_type'] = $payment_gateway;
-        $data['datetime'] = Carbon::now();
-        $result = WithdrawMoney::create($data);
-        $wallet->amount -= $data['amount'];
-        $wallet->save();
-        $activity_data = [
-            'id' => $result->id,
-            'type' => 'wallet',
-             'wallet' => $wallet,
-            'activity_type' => 'withdraw_money',
-            'user_id' => $data['user_id'],
-            'amount' => $data['amount'],
-        ];
-        $this->sendNotification($activity_data);
-
-        if ( request()->is('api*')){
-            $message = __('messages.money_transfer');
-            return comman_message_response($message);
-          }
+        return comman_message_response('Something went wrong. Please contact support.', 500);
     }
+}
+
+
+
+
 }
