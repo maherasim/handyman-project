@@ -60,7 +60,7 @@ class TransactionRequestController extends Controller
     }
 
  
-public function indexData(Request $request)
+ public function indexData(Request $request)
 {
     $query = TransactionRequest::with('user');
 
@@ -69,22 +69,33 @@ public function indexData(Request $request)
     }
 
     return DataTables::of($query)
-        ->addColumn('check', fn($row) => '<input type="checkbox" class="table-checkbox" name="ids[]" value="' . $row->id . '">')
-        ->addColumn('user_id', fn ($row) => optional($row->user)->username ?? 'N/A')
-        ->addColumn('transaction_type', fn ($row) => ucfirst($row->transaction_type))
-        ->addColumn('amount', fn ($row) => number_format($row->amount, 2))
-       ->addColumn('status', function ($row) {
-    $badgeClass = $row->status === 'pending' ? 'bg-warning text-dark' : 'bg-success';
-    return '<span class="badge ' . $badgeClass . '">' . ucfirst($row->status) . '</span>';
-})
-     ->addColumn('action', function ($row) {
-    $disabled = $row->status === 'completed' ? 'disabled' : '';
-    return '<button class="btn btn-sm btn-success confirm-btn" data-id="' . $row->id . '" ' . $disabled . '>Confirm Request</button>';
-})
-
-        ->rawColumns(['check', 'action']) // <== Important: let HTML render
+        ->addColumn('check', function ($row) {
+            return '<input type="checkbox" class="table-checkbox" name="ids[]" value="' . $row->id . '">';
+        })
+        ->addColumn('user_id', function ($row) {
+            return optional($row->user)->username ?? 'N/A';
+        })
+        ->addColumn('transaction_type', function ($row) {
+            return ucfirst($row->transaction_type);
+        })
+        ->addColumn('amount', function ($row) {
+            return number_format($row->amount, 2);
+        })
+        ->addColumn('status', function ($row) {
+            $badgeClass = $row->status === 'pending' ? 'bg-warning text-dark' : 'bg-success';
+            return '<span class="badge ' . $badgeClass . '">' . ucfirst($row->status) . '</span>';
+        })
+        ->addColumn('action', function ($row) {
+            $disabled = $row->status === 'completed' ? 'disabled' : '';
+            return '<button class="btn btn-sm btn-success confirm-btn" data-id="' . $row->id . '" ' . $disabled . '>Confirm Request</button>';
+        })
+        ->rawColumns(['check', 'status', 'action']) // ✅ Allow HTML rendering
         ->make(true);
 }
+
+
+
+
 public function confirmSingle($id)
 {
     $transaction = TransactionRequest::findOrFail($id);
