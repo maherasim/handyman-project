@@ -6,7 +6,6 @@ use App\Http\Controllers;
 use App\Http\Resources\CountryResource;
 use App\Http\Controllers\API;
 use App\Http\Controllers\PayPalController;
-use App\Http\Controllers\ApI\TransactionRequestController;
 
 
 /*
@@ -232,4 +231,5 @@ Route::get('/states/{id}/cities', function ($id) {
         'cities' => CountryResource::cities($id)
     ]);
 });
-Route::post('/transaction-requests', [TransactionRequestController::class, 'store']);
+ 
+Route::post('transaction-requests', [ API\TransactionRequestController::class, "store"]);
