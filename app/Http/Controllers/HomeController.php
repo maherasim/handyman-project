@@ -942,50 +942,67 @@ $data['datetime'] = $sitesetup ? json_decode($sitesetup->value) : null;
         return response()->json(['status' => 'true', 'results' => $items]);
     }
 
-    public function checkImage(Request $request, $id)
-    {
+ public function checkImage(Request $request, $id)
+{
+    $type = $request->query('type');
+    $attachments = null;
 
-        $type = $request->query('type');
-        switch ($type) {
-            case 'service':
-                $serviceData = Service::find($id);
+    switch ($type) {
+        case 'service':
+            $serviceData = Service::find($id);
+            if ($serviceData) {
                 $attachments = $serviceData->getMedia('service_attachment');
-                break;
+            }
+            break;
 
-            case 'helpdesk':
-                $helpdesk = HelpDesk::find($id);
+        case 'helpdesk':
+            $helpdesk = HelpDesk::find($id);
+            if ($helpdesk) {
                 $attachments = $helpdesk->getMedia('helpdesk_attachment');
-                break;
+            }
+            break;
 
-            case 'helpdesk_activity':
-                $helpdesk = HelpDesk::find($id);
+        case 'helpdesk_activity':
+            $helpdesk = HelpDesk::find($id);
+            if ($helpdesk) {
                 $attachments = $helpdesk->getMedia('helpdesk_activity_attachment');
-                break;
+            }
+            break;
 
-            case 'category':
-                $CategoryData = Category::find($id);
+        case 'category':
+            $CategoryData = Category::find($id);
+            if ($CategoryData) {
                 $attachments = $CategoryData->getMedia('category_image');
-                break;
+            }
+            break;
 
-            case 'slider':
-                $SliderData = Slider::find($id);
+        case 'slider':
+            $SliderData = Slider::find($id);
+            if ($SliderData) {
                 $attachments = $SliderData->getMedia('slider_image');
-                break;
+            }
+            break;
 
-            case 'subcategory':
-                $SubCategoryData = SubCategory::find($id);
+        case 'subcategory':
+            $SubCategoryData = SubCategory::find($id);
+            if ($SubCategoryData) {
                 $attachments = $SubCategoryData->getMedia('subcategory_image');
-                break;
+            }
+            break;
 
-            case 'serviceaddon':
-                $SubCategoryData = ServiceAddon::find($id);
+        case 'serviceaddon':
+            $SubCategoryData = ServiceAddon::find($id);
+            if ($SubCategoryData) {
                 $attachments = $SubCategoryData->getMedia('serviceaddon_image');
-                break;
+            }
+            break;
 
-            default:
-                $attachments = null;
-                break;
-        }
-        return response()->json(['results' => $attachments]);
+        default:
+            $attachments = null;
+            break;
     }
+
+    return response()->json(['results' => $attachments]);
+}
+
 }
