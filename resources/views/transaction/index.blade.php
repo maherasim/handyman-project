@@ -101,7 +101,7 @@
                 dom: '<"row align-items-center"><"table-responsive my-3 mt-3 mb-2 pb-1" rt><"row align-items-center data_table_widgets" <"col-md-6" <"d-flex align-items-center flex-wrap gap-3" l i>><"col-md-6" p>><"clear">',
                 ajax: {
                     "type": "GET",
-                    "url": '{{ route('cash.index_data') }}',
+                    "url": '{{ route('transaction-request.index_data') }}',
                     "data": function(d) {
                         d.search = {
                             value: $('.dt-search').val()
@@ -127,13 +127,13 @@
                         title: "ID"
                     },
                     {
-                        data: 'customer_id',
-                        name: 'customer_id',
+                        data: 'user_id',
+                        name: 'user_id',
                         title: "User"
                     },
                     {
-                        data: 'total_amount',
-                        name: 'total_amount',
+                        data: 'amount',
+                        name: 'amount',
                         title: "Amount"
                     },
                     {
@@ -146,11 +146,7 @@
                         name: 'status',
                         title: "Status"
                     },
-                    {
-                        data: 'datetime',
-                        name: 'datetime',
-                        title: "Created At"
-                    },
+                   
                     @if (auth()->user()->hasAnyRole(['admin']))
                         {
                             data: 'action',
@@ -161,7 +157,6 @@
                         }
                     @endif
                 ],
-
                 order: [
                     @if (auth()->user()->hasAnyRole(['admin']))
                         [5, 'desc']

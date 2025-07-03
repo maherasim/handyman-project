@@ -70,9 +70,9 @@ public function indexData(Request $request)
     }
 
     return DataTables::of($query)
-        ->addColumn('customer_id', fn ($row) => optional($row->user)->name ?? 'N/A')
-        ->addColumn('datetime', fn ($row) => $row->created_at->format('Y-m-d H:i'))
-        ->addColumn('total_amount', fn ($row) => number_format($row->amount, 2))
+        ->addColumn('user_id', fn ($row) => optional($row->user)->name ?? 'N/A')
+        ->addColumn('transaction_type',fn ($row) => ucfirst($row->status))
+        ->addColumn('amount', fn ($row) => number_format($row->amount, 2))
         ->addColumn('status', fn ($row) => ucfirst($row->status))
         ->addColumn('action', function ($row) {
             return view('partials.actions', ['row' => $row])->render();
