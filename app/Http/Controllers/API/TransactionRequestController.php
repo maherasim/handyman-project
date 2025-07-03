@@ -34,7 +34,7 @@ class TransactionRequestController extends Controller
         ];
         $pageTitle = __('messages.Transaction Request' );
         $assets = ['datatable'];
-        return view('payment.cash', compact('pageTitle','assets','filter'));
+        return view('transaction.index', compact('pageTitle','assets','filter'));
     }
     public function bulk_action(Request $request)
     {
