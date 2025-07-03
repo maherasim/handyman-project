@@ -85,8 +85,8 @@
                         title: "{{ __('messages.id') }}"
                     },
                     {
-                        data: 'name',
-                        name: 'name',
+                        data: 'user_id',
+                        name: 'user.name',
                         title: "Name"
                     },
                     {
