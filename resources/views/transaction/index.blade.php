@@ -145,5 +145,26 @@
 
         
     </script>
+    <script>
+    $(document).on('click', '.confirm-btn', function () {
+        var id = $(this).data('id');
+
+        $.ajax({
+            url: '/transaction-request/' + id + '/confirm',
+            method: 'POST',
+            data: {
+                _token: '{{ csrf_token() }}'
+            },
+            success: function (response) {
+                alert(response.message);
+                renderedDataTable.ajax.reload(null, false);
+            },
+            error: function (xhr) {
+                alert('Error confirming request');
+            }
+        });
+    });
+</script>
+
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 </x-master-layout>
