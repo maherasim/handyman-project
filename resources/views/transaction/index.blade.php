@@ -86,7 +86,7 @@
                     },
                     {
                         data: 'user_id',
-                        name: 'user.name',
+                        name: 'user.username',
                         title: "Name"
                     },
                     {

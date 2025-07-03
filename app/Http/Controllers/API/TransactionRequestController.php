@@ -70,7 +70,7 @@ public function indexData(Request $request)
 
     return DataTables::of($query)
         ->addColumn('check', fn($row) => '<input type="checkbox" class="table-checkbox" name="ids[]" value="' . $row->id . '">')
-        ->addColumn('user_id', fn ($row) => optional($row->user)->name ?? 'N/A')
+        ->addColumn('user_id', fn ($row) => optional($row->user)->username ?? 'N/A')
         ->addColumn('transaction_type', fn ($row) => ucfirst($row->transaction_type))
         ->addColumn('amount', fn ($row) => number_format($row->amount, 2))
         ->addColumn('status', fn ($row) => ucfirst($row->status))
