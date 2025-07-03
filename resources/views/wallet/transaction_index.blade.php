@@ -109,30 +109,30 @@
                         name: 'status',
                         title: "{{ __('messages.status') }}"
                     },
-                    // @if (auth()->user()->hasRole('admin') || auth()->user()->hasRole('demo_admin'))
-                    // {
-                    //     data: 'user_id',
-                    //     name: 'user_id',
-                    //     title: "{{ __('messages.name') }}"
-                    // },
-                    // @endif
-                    // @if (auth()->user()->hasRole('admin') || auth()->user()->hasRole('demo_admin'))
-                    // {
-                    //     data: 'user_type',
-                    //     name: 'user_type',
-                    //     title: "{{ __('messages.user_type') }}",
-                    //     orderable: false,
-                    // },
-                    // @endif
-                    // @if (auth()->user()->hasRole('admin') || auth()->user()->hasRole('demo_admin'))
-                    // {
-                    //     data: 'action',
-                    //     name: 'action',
-                    //     orderable: false,
-                    //     searchable: false,
-                    //     title: "{{ __('messages.action') }}"
-                    // }
-                    // @endif
+                    @if (auth()->user()->hasRole('admin') || auth()->user()->hasRole('demo_admin'))
+                    {
+                        data: 'user_id',
+                        name: 'user_id',
+                        title: "{{ __('messages.name') }}"
+                    },
+                    @endif
+                    @if (auth()->user()->hasRole('admin') || auth()->user()->hasRole('demo_admin'))
+                    {
+                        data: 'user_type',
+                        name: 'user_type',
+                        title: "{{ __('messages.user_type') }}",
+                        orderable: false,
+                    },
+                    @endif
+                    @if (auth()->user()->hasRole('admin') || auth()->user()->hasRole('demo_admin'))
+                    {
+                        data: 'action',
+                        name: 'action',
+                        orderable: false,
+                        searchable: false,
+                        title: "{{ __('messages.action') }}"
+                    }
+                    @endif
 
                 ],
                 order: [
