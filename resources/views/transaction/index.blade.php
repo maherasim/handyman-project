@@ -165,11 +165,7 @@
                         searchable: false,
                     },
 
-                    {
-                        data: 'total_amount',
-                        name: 'total_amount',
-                        title: "{{ __('messages.price') }}"
-                    },
+                   
                     @if (auth()->user()->hasAnyRole(['admin']))
                         {
                             data: 'action',
