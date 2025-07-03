@@ -69,6 +69,7 @@ public function indexData(Request $request)
     }
 
     return DataTables::of($query)
+        ->addColumn('check', fn($row) => '<input type="checkbox" class="table-checkbox" name="ids[]" value="' . $row->id . '">')
         ->addColumn('user_id', fn ($row) => optional($row->user)->name ?? 'N/A')
         ->addColumn('transaction_type', fn ($row) => ucfirst($row->transaction_type))
         ->addColumn('amount', fn ($row) => number_format($row->amount, 2))
@@ -77,7 +78,7 @@ public function indexData(Request $request)
             return '<a href="/transaction-request/' . $row->id . '/edit" class="btn btn-sm btn-primary">Edit</a>
                     <a href="javascript:void(0)" data-id="' . $row->id . '" class="btn btn-sm btn-danger delete-transaction">Delete</a>';
         })
-        ->rawColumns(['action'])
+        ->rawColumns(['check', 'action']) // <== Important: let HTML render
         ->make(true);
 }
 

@@ -112,7 +112,20 @@
                     },
                 },
                 columns: [
-                    
+                    @if (auth()->user()->hasAnyRole(['admin']))
+                        {
+                            name: 'check',
+                            data: 'check',
+                            title: '<input type="checkbox" class="form-check-input" name="select_all_table" id="select-all-table" onclick="selectAllTable(this)">',
+                            exportable: false,
+                            orderable: false,
+                            searchable: false,
+                        },
+                    @endif {
+                        data: 'id',
+                        name: 'id',
+                        title: "ID"
+                    },
                     {
                         data: 'user_id',
                         name: 'user_id',
