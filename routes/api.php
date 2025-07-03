@@ -6,6 +6,8 @@ use App\Http\Controllers;
 use App\Http\Resources\CountryResource;
 use App\Http\Controllers\API;
 use App\Http\Controllers\PayPalController;
+use App\Http\Controllers\Api\TransactionRequestController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -201,7 +203,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 
     Route::post('update-location',[API\BookingController::class, 'updateLocation']);
     Route::get('get-location',[API\BookingController::class, 'getLocation']);
-    Route::post('withdraw-money',[API\WalletController::class, 'withdrawMoney']);
+    Route::post('withdraw-money',[API\WalletController::class, 'withdarawMoney']);
 
 
     Route::Post('switch-language', [API\User\UserController::class,'SwitchLang']);
@@ -230,3 +232,4 @@ Route::get('/states/{id}/cities', function ($id) {
         'cities' => CountryResource::cities($id)
     ]);
 });
+Route::post('/transaction-requests', [TransactionRequestController::class, 'store']);
