@@ -5,6 +5,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\API\TransactionRequestController;
+
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\ProviderTypeController;
 use App\Http\Controllers\ProviderController;
@@ -564,6 +566,6 @@ Route::get('get-subcategories', 'CategoryController@getSubcategories')->name('ge
 Route::get('/countries', [ProviderController::class, 'getCountries']);
 Route::get('/cities', [ProviderController::class, 'getcitiesBaseOnCountry']);
 Route::get('/sub-categories', [ProviderController::class, 'getSubCategoryList']);
-Route::get('transaction-request', [API\TransactionRequestController::class, 'index'])->name('transaction-request.index');
-Route::post('transaction-request-action', [API\TransactionRequestController::class, 'bulk_action'])->name('transaction-request.bulk-action');
-Route::get('transaction-requests/data', [API\TransactionRequestController::class, 'indexData'])->name('transaction-request.index_data');
+Route::get('transaction-request', [TransactionRequestController::class, 'index'])->name('transaction-request.index');
+Route::post('transaction-request-action', [TransactionRequestController::class, 'bulk_action'])->name('transaction-request.bulk-action');
+Route::get('transaction-requests/data', [TransactionRequestController::class, 'indexData'])->name('transaction-request.index_data');
