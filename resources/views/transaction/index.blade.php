@@ -19,7 +19,7 @@
     </div>
     <div class="card">
         <div class="card-body">
-            <div class="row justify-content-between gy-3">
+            <div class="row justify-content-between ">
               
                 <div class="col-md-6 col-lg-4 col-xl-3">
                     <div class="d-flex align-items-center gap-3 justify-content-end">
