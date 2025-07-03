@@ -429,7 +429,7 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
 
     Route::get('withdrawal-request', [WalletController::class, 'wallet_transaction_index'])->name('wallet_transaction');
     Route::get('withdrawal-request-index-data', [WalletController::class, 'wallet_transaction_index_data'])->name('wallet_transaction.index_data');
-    Route::get('withdrawal-request-payout/{id}', [WalletController::class, 'wallet_transaction_payout'])->name('wallet.wallet_transaction_payout');
+    Route::get('withdrawal-request-payout/{id}', [WalletController::class, 'wallet_transacwation_payout'])->name('wallet.wallet_transaction_payout');
 
 
     Route::group(['middleware' => ['permission:subcategory list']], function () {
