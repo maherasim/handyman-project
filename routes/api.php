@@ -6,7 +6,7 @@ use App\Http\Controllers;
 use App\Http\Resources\CountryResource;
 use App\Http\Controllers\API;
 use App\Http\Controllers\PayPalController;
-use App\Http\Controllers\Api\TransactionRequestController;
+use App\Http\Controllers\ApI\TransactionRequestController;
 
 
 /*
