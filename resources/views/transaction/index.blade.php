@@ -19,7 +19,7 @@
     </div>
     <div class="card">
         <div class="card-body">
-            <div class="row justify-content-between ">
+            <div class="row justify-content-between gy-3">
               
                 <div class="col-md-6 col-lg-4 col-xl-3">
                     <div class="d-flex align-items-center gap-3 justify-content-end">
@@ -39,21 +39,6 @@
                     </table>
                 </div>
             </div>
-            <div class="row">
-    <div class="col-12">
-        <div class="d-flex justify-content-end">
-            <div class="input-group input-group-search" style="max-width: 300px;">
-                <span class="input-group-text" id="addon-wrapping">
-                    <i class="fas fa-search"></i>
-                </span>
-                <input type="text" class="form-control dt-search" placeholder="Search..."
-                    aria-label="Search" aria-describedby="addon-wrapping"
-                    aria-controls="dataTableBuilder">
-            </div>
-        </div>
-    </div>
-</div>
-
         </div>
     </div>
     <script>
