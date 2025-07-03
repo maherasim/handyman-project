@@ -85,8 +85,8 @@
                         title: "{{ __('messages.id') }}"
                     },
                     {
-                        data: 'user_id',
-                        name: 'user_id',
+                        data: 'name',
+                        name: 'name',
                         title: "Name"
                     },
                     {
@@ -98,7 +98,7 @@
                     {
                         data: 'transaction_type',
                         name: 'transaction_type',
-                        title: "{{ __('messages.transaction_type') }}",
+                        title: "Transaction Type",
                         orderable: false,
                         searchable: false
                     },
