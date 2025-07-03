@@ -565,10 +565,22 @@ class FrontendController extends Controller
             $userId = 0;
         }
 
-        $completed_services = Booking::where('provider_id', $serviceData['provider']['id'])->where('status', 'completed')->count();
+        if (isset($serviceData['provider']) && isset($serviceData['provider']['id'])) {
+    $completed_services = Booking::where('provider_id', $serviceData['provider']['id'])
+        ->where('status', 'completed')
+        ->count();
 
-        $knownLanguageArray = json_decode($serviceData['provider']['known_languages'], true);
-        $subtotal = $serviceData['service_detail']['discount'] != 0 ? ($serviceData['service_detail']['price']) - ($serviceData['service_detail']['price'] * $serviceData['service_detail']['discount'] / 100) : $subtotal = $serviceData['service_detail']['price'];
+    $knownLanguageArray = json_decode($serviceData['provider']['known_languages'] ?? '[]', true);
+} else {
+    $completed_services = 0;
+    $knownLanguageArray = [];
+}
+
+$price = $serviceData['service_detail']['price'] ?? 0;
+$discount = $serviceData['service_detail']['discount'] ?? 0;
+$subtotal = $discount != 0 ? ($price - ($price * $discount / 100)) : $price;
+
+       
         $total_ratings = BookingRating::where('service_id', $serviceData['service_detail']['id'])->get();
         return view('landing-page.ServiceDetail', compact('serviceData', 'favouriteService', 'date_time', 'completed_services', 'knownLanguageArray', 'subtotal', 'total_ratings', 'favouriteServiceData', 'userId'));
     }
