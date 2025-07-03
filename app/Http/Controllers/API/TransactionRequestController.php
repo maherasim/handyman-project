@@ -74,12 +74,20 @@ public function indexData(Request $request)
         ->addColumn('transaction_type', fn ($row) => ucfirst($row->transaction_type))
         ->addColumn('amount', fn ($row) => number_format($row->amount, 2))
         ->addColumn('status', fn ($row) => ucfirst($row->status))
-        ->addColumn('action', function ($row) {
-            return '<a href="/transaction-request/' . $row->id . '/edit" class="btn btn-sm btn-primary">Edit</a>
-                    <a href="javascript:void(0)" data-id="' . $row->id . '" class="btn btn-sm btn-danger delete-transaction">Delete</a>';
-        })
+       ->addColumn('action', function ($row) {
+    return '<button class="btn btn-sm btn-success confirm-btn" data-id="' . $row->id . '">Confirm Request</button>';
+})
+
         ->rawColumns(['check', 'action']) // <== Important: let HTML render
         ->make(true);
+}
+public function confirmSingle($id)
+{
+    $transaction = TransactionRequest::findOrFail($id);
+    $transaction->status = 'completed';
+    $transaction->save();
+
+    return response()->json(['message' => 'Request confirmed successfully.']);
 }
 
 

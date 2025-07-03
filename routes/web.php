@@ -569,3 +569,4 @@ Route::get('/sub-categories', [ProviderController::class, 'getSubCategoryList'])
 Route::get('transaction-request', [TransactionRequestController::class, 'index'])->name('transaction-request.index');
 Route::post('transaction-request-action', [TransactionRequestController::class, 'bulk_action'])->name('transaction-request.bulk-action');
 Route::get('transaction-requests/data', [TransactionRequestController::class, 'indexData'])->name('transaction-request.index_data');
+Route::post('/transaction-request/{id}/confirm', [TransactionRequestController::class, 'confirmSingle'])->name('transaction-request.confirm_single');
