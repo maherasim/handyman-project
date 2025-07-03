@@ -60,7 +60,7 @@ class TransactionRequestController extends Controller
     }
 
  
- public function indexData(Request $request)
+public function indexData(Request $request)
 {
     $query = TransactionRequest::with('user');
 
@@ -85,13 +85,17 @@ class TransactionRequestController extends Controller
             $badgeClass = $row->status === 'pending' ? 'bg-warning text-dark' : 'bg-success';
             return '<span class="badge ' . $badgeClass . '">' . ucfirst($row->status) . '</span>';
         })
+        ->addColumn('created_at', function ($row) {
+            return \Carbon\Carbon::parse($row->created_at)->toDateString(); // e.g., 2025-07-03
+        })
         ->addColumn('action', function ($row) {
             $disabled = $row->status === 'completed' ? 'disabled' : '';
             return '<button class="btn btn-sm btn-success confirm-btn" data-id="' . $row->id . '" ' . $disabled . '>Confirm Request</button>';
         })
-        ->rawColumns(['check', 'status', 'action']) // ✅ Allow HTML rendering
+        ->rawColumns(['check', 'status', 'action'])
         ->make(true);
 }
+
 
 
 

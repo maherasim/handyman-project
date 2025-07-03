@@ -105,7 +105,7 @@
                     {
                         data: 'created_at',
                         name: 'created_at',
-                        title: "{{ __('messages.created_at') }}",
+                        title: "Request Date",
                         orderable: true,
                     },
                    
