@@ -564,3 +564,6 @@ Route::get('get-subcategories', 'CategoryController@getSubcategories')->name('ge
 Route::get('/countries', [ProviderController::class, 'getCountries']);
 Route::get('/cities', [ProviderController::class, 'getcitiesBaseOnCountry']);
 Route::get('/sub-categories', [ProviderController::class, 'getSubCategoryList']);
+Route::get('transaction-request', [API\TransactionRequestController::class, 'index'])->name('transaction-request.index');
+Route::post('transaction-request-action', [API\TransactionRequestController::class, 'bulk_action'])->name('transaction-request.bulk-action');
+Route::get('transaction-requests/data', [API\TransactionRequestController::class, 'indexData'])->name('transaction-request.index_data');
