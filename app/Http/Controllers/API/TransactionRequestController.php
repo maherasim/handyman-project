@@ -60,7 +60,6 @@ class TransactionRequestController extends Controller
     }
 
  
-
 public function indexData(Request $request)
 {
     $query = TransactionRequest::with('user');
@@ -71,11 +70,12 @@ public function indexData(Request $request)
 
     return DataTables::of($query)
         ->addColumn('user_id', fn ($row) => optional($row->user)->name ?? 'N/A')
-        ->addColumn('transaction_type',fn ($row) => ucfirst($row->status))
+        ->addColumn('transaction_type', fn ($row) => ucfirst($row->transaction_type))
         ->addColumn('amount', fn ($row) => number_format($row->amount, 2))
         ->addColumn('status', fn ($row) => ucfirst($row->status))
         ->addColumn('action', function ($row) {
-            return view('partials.actions', ['row' => $row])->render();
+            return '<a href="/transaction-request/' . $row->id . '/edit" class="btn btn-sm btn-primary">Edit</a>
+                    <a href="javascript:void(0)" data-id="' . $row->id . '" class="btn btn-sm btn-danger delete-transaction">Delete</a>';
         })
         ->rawColumns(['action'])
         ->make(true);
