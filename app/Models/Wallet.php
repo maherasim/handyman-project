@@ -24,4 +24,8 @@ class Wallet extends Model
     {
         return $query->orderBy('updated_at', 'desc');
     }
+     public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

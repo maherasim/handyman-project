@@ -110,7 +110,7 @@ public function indexData(Request $request)
 
 public function walletindexData(Request $request)
 {
-    $query = Wallet::query();
+    $query = Wallet::with('user');
 
     if ($request->has('filter.column_status') && $request->filter['column_status']) {
         $query->where('status', $request->filter['column_status']);
@@ -121,21 +121,24 @@ public function walletindexData(Request $request)
             return '<input type="checkbox" class="table-checkbox" name="ids[]" value="' . $row->id . '">';
         })
         ->addColumn('user_id', function ($row) {
-            return $row->user_id ?? 'N/A';
+            return optional($row->user)->username ?? 'N/A';
         })
+        
         ->addColumn('amount', function ($row) {
             return number_format($row->amount, 2);
         })
-        ->addColumn('status', function ($row) {
-            if ($row->status == '0') {
-                return '<span class="badge bg-warning text-dark">Inactive</span>';
-            }
-            return '<span class="badge bg-success">Active</span>';
-        })
+                ->addColumn('status', function ($row) {
+                if ($row->status == '0') {
+                    return '<span class="badge bg-warning text-dark">Inactive</span>';
+                }
+                return '<span class="badge bg-success">Active</span>';
+            })
+
         ->addColumn('created_at', function ($row) {
-            return \Carbon\Carbon::parse($row->created_at)->toDateString();
+            return \Carbon\Carbon::parse($row->created_at)->toDateString(); // e.g., 2025-07-03
         })
-        ->rawColumns(['check', 'status'])
+      
+        ->rawColumns(['check', 'status', 'action'])
         ->make(true);
 }
 
