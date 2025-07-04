@@ -89,14 +89,14 @@
                     {
                         data: 'title',
                         name: 'title',
-                        title: "Name",
+                        title: "Title",
                         orderable: false,
                         searchable: false
                     },
                     {
                         data: 'user_id',
                         name: 'user_id',
-                        title: "User ID"
+                        title: "User Name"
                     },
                     {
                         data: 'amount',
