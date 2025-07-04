@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
 
 use App\Models\TransactionRequest;
+use App\Models\Wallet;
 
 
 class TransactionRequestController extends Controller
@@ -36,6 +37,17 @@ class TransactionRequestController extends Controller
         $assets = ['datatable'];
         return view('transaction.index', compact('pageTitle','assets','filter'));
     }
+   public function walletindex(Request $request){
+        $filter = [
+            'payment_status' => $request->payment_status,
+        ];
+        $pageTitle = __('messages.Wallet Balance' );
+        $assets = ['datatable'];
+        return view('transaction.wallet_balance', compact('pageTitle','assets','filter'));
+    }
+
+
+
     public function bulk_action(Request $request)
     {
         $ids = explode(',', $request->rowIds);
@@ -96,6 +108,36 @@ public function indexData(Request $request)
         ->make(true);
 }
 
+public function walletindexData(Request $request)
+{
+    $query = Wallet::query();
+
+    if ($request->has('filter.column_status') && $request->filter['column_status']) {
+        $query->where('status', $request->filter['column_status']);
+    }
+
+    return DataTables::of($query)
+        ->addColumn('check', function ($row) {
+            return '<input type="checkbox" class="table-checkbox" name="ids[]" value="' . $row->id . '">';
+        })
+        ->addColumn('user_id', function ($row) {
+            return $row->user_id ?? 'N/A';
+        })
+        ->addColumn('amount', function ($row) {
+            return number_format($row->amount, 2);
+        })
+        ->addColumn('status', function ($row) {
+            if ($row->status == '0') {
+                return '<span class="badge bg-warning text-dark">Inactive</span>';
+            }
+            return '<span class="badge bg-success">Active</span>';
+        })
+        ->addColumn('created_at', function ($row) {
+            return \Carbon\Carbon::parse($row->created_at)->toDateString();
+        })
+        ->rawColumns(['check', 'status'])
+        ->make(true);
+}
 
 
 

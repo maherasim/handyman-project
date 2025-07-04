@@ -570,3 +570,7 @@ Route::get('transaction-request', [TransactionRequestController::class, 'index']
 Route::post('transaction-request-action', [TransactionRequestController::class, 'bulk_action'])->name('transaction-request.bulk-action');
 Route::get('transaction-requests/data', [TransactionRequestController::class, 'indexData'])->name('transaction-request.index_data');
 Route::post('/transaction-request/{id}/confirm', [TransactionRequestController::class, 'confirmSingle'])->name('transaction-request.confirm_single');
+
+
+Route::get('wallet_balance', [TransactionRequestController::class, 'walletindex'])->name('wallet_balance.index');
+Route::get('wallet_balance/data', [TransactionRequestController::class, 'walletindexData'])->name('wallet_balance.index_data');

@@ -241,49 +241,55 @@ class WalletController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
-    {
-        if(demoUserPermission()){
-            return  redirect()->back()->withErrors(trans('messages.demo_permission_denied'));
-        }
-        $data = $request->all();
-        $data['user_id'] = !empty($request->user_id) ? $request->user_id : auth()->user()->id;
-        $wallet = Wallet::where('user_id',$data['user_id'])->first();
-        if($wallet && !$data['id']){
-            $message = __('messages.already_wallet');
-            return redirect()->back()->withError($message);
-        }
-        if($wallet !== null){
-            $data['amount'] = $wallet->amount + $request->amount;
-        }
-        $result = Wallet::updateOrCreate(['id' => $data['id'] ],$data);
+public function store(Request $request)
+{
+    try {
+        // Validate input
+        $validated = $request->validate([
+            'user_id' => 'required|exists:users,id',
+            'amount' => 'required|numeric|min:0',
+            'status' => 'required|in:0,1',
+            'activity_message' => 'nullable|string|max:255',
+        ]);
 
+        // Check if wallet already exists for the user
+        $wallet = Wallet::where('user_id', $validated['user_id'])->first();
 
-        $message = trans('messages.update_form',['form' => trans('messages.wallet')]);
-        if($result->wasRecentlyCreated){
-            $activity_data = [
-                'activity_type' => 'add_wallet',
-                'wallet' => $result,
-            ];
-            $this->sendNotification($activity_data);
-
-            $message = trans('messages.save_form',['form' => trans('messages.wallet')]);
-        }else{
-            if($wallet->amount  != $data['amount']){
-                $activity_data = [
-                    'activity_type' => 'update_wallet',
-                    'wallet' => $result,
-                    'added_amount' =>$request->amount
-                ];
-                $this->sendNotification($activity_data);
-
-            }
+        if ($wallet) {
+            // Update existing wallet amount
+            $wallet->amount += $validated['amount'];
+            $wallet->status = $validated['status'];
+            $wallet->save();
+        } else {
+            // Create new wallet
+            $wallet = Wallet::create([
+                'user_id' => $validated['user_id'],
+                'amount' => $validated['amount'],
+                'status' => $validated['status'],
+            ]);
         }
-        if($request->is('api/*')) {
-            return comman_message_response($message);
-		}
-        return redirect(route('wallet.index'))->withSuccess($message);
+
+        // Optional log activity
+        if (!empty($validated['activity_message'])) {
+            \Log::info('Wallet Stored', [
+                'wallet_id' => $wallet->id,
+                'user_id' => $wallet->user_id,
+                'activity_message' => $validated['activity_message'],
+            ]);
+        }
+
+        return redirect()->route('wallet_balance.index')->with('success', 'Wallet saved successfully.');
+
+    } catch (\Exception $e) {
+        \Log::error('Wallet Store Error: ' . $e->getMessage(), [
+            'request' => $request->all()
+        ]);
+
+        return redirect()->back()->with('error', 'Failed to save wallet. ' . $e->getMessage());
     }
+}
+
+
 
     /**
      * Display the specified resource.
