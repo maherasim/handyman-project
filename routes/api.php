@@ -233,3 +233,4 @@ Route::get('/states/{id}/cities', function ($id) {
 });
  
 Route::post('transaction-requests', [ API\TransactionRequestController::class, "store"]);
+Route::get('/transaction-requests/{user_id}', [TransactionRequestController::class, 'getByUser']);
