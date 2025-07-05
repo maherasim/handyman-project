@@ -185,7 +185,7 @@ class WalletController extends Controller
         return comman_message_response($message);
     }
 
-public function withdrawMoney(Request $request)
+public function withdarawMoney(Request $request)
 {
     try {
         $data = $request->except('_token');
