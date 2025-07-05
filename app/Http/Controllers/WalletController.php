@@ -254,10 +254,10 @@ public function store(Request $request)
 
         // Check if wallet already exists for the user
         $wallet = Wallet::where('user_id', $validated['user_id'])->first();
+        $wallet->new_amount = $validated['amount'];
 
         if ($wallet) {
-            $wallet->new_amount = $validated->amount;
-
+            // Update existing wallet amount
             $wallet->amount += $validated['amount'];
             $wallet->status = $validated['status'];
             $wallet->save();
