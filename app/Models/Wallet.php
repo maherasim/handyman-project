@@ -10,7 +10,7 @@ class Wallet extends Model
     use HasFactory;
     protected $table = 'wallets';
     protected $fillable = [
-        'user_id', 'title', 'amount','status'
+        'user_id', 'title', 'amount','status','new_amount',
     ];
     protected $casts = [
         'user_id'  =>'integer',
