@@ -256,7 +256,7 @@ public function store(Request $request)
         $wallet = Wallet::where('user_id', $validated['user_id'])->first();
 
         if ($wallet) {
-            $wallet->new_amount = $wallet->amount;
+            $wallet->new_amount = $validated->amount;
 
             $wallet->amount += $validated['amount'];
             $wallet->status = $validated['status'];
