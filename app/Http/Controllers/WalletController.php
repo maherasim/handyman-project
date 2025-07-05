@@ -589,25 +589,17 @@ public function getWalletPaymentMethod(Request $request)
             ->toJson();
     }
 
-    public function wallet_transaction_payout($id){
-        $withdraw_money = WithdrawMoney::where('id', $id)->first();
+   public function wallet_transaction_payout($id)
+{
+    $withdraw_money = WithdrawMoney::where('id', $id)->first();
 
-        $wallet = Wallet::where('user_id', $withdraw_money->user_id)->first();
-
-        $wallet->amount -= $withdraw_money->amount;
-        $wallet->save();
-
-        $new_withdraw_money = new WithdrawMoney();
-        $new_withdraw_money->user_id = $withdraw_money->user_id;
-        $new_withdraw_money->bank_id = $withdraw_money->bank_id;
-        $new_withdraw_money->amount = $withdraw_money->amount;
-        $new_withdraw_money->datetime = Carbon::now();
-        $new_withdraw_money->payment_type = 'manual';
-        $new_withdraw_money->withdraw_money_id = $withdraw_money->id;
-        $new_withdraw_money->status = 'paid';
-        $new_withdraw_money->save();
-
-        $message= __('messages.transaction_complete_success');
-        return redirect(route('wallet_transaction'))->withSuccess($message);
+    if ($withdraw_money) {
+        $withdraw_money->status = 'paid';
+        $withdraw_money->save();
     }
+
+    $message = __('messages.transaction_complete_success');
+    return redirect(route('wallet_transaction'))->withSuccess($message);
+}
+
 }
