@@ -160,13 +160,8 @@ public function cash_index_data(DataTables $datatable, Request $request)
 
     public function index_data(DataTables $datatable,Request $request)
     {
-      $query = Payment::query()->myPayment()
-    ->where(function ($q) {
-        $q->where('payment_type', '!=', 'bank_transfer')
-          ->orWhere(function ($sub) {
-              $sub->where('payment_type', 'bank_transfer')->where('status', 1);
-          });
-    });
+     $query = Payment::query()->myPayment();
+
  
         // if (!$request->order) { 
         //     $query->orderBy('created_at', 'DESC');
