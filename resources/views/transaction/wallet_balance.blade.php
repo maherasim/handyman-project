@@ -107,7 +107,7 @@
                       {
                         data: 'new_amount',
                         name: 'new_amount',
-                        title: "New Amount",
+                        title: "Top-up Amount",
                         orderable: false,
                     },
                     
