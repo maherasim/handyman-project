@@ -6,128 +6,128 @@
 <table class="table-sm title-color align-right w-100" style="display: none;">
 
     <tbody>
-        <!-- Unit Price -->
+    <!-- Unit Price -->
+    <tr>
+        <td>{{ __('Price (Unit Price)') }}</td>
+        <td class="bk-value">
+            {{ getPriceFormat($bookingdata->amount) }}
+        </td>
+    </tr>
+
+    <!-- Quantity -->
+    <tr>
+        <td>{{ __('Quantity (Nbr of Packages, Hours, Days)') }}</td>
+        <td class="bk-value">
+            {{ $bookingdata->quantity }}
+        </td>
+    </tr>
+
+    <!-- Total Amount (Price x Quantity) -->
+    <tr>
+        <td>{{ __('Total Amount') }}</td>
+        <td class="bk-value">
+            {{ getPriceFormat($bookingdata->amount * $bookingdata->quantity) }}
+        </td>
+    </tr>
+
+    <!-- Discount -->
+    @if ($bookingdata->discount > 0)
         <tr>
-            <td>{{ __('Price (Unit Price)') }}</td>
-            <td class="bk-value">
-                {{ getPriceFormat($bookingdata->amount) }}
+            <td>{{ __('Discount') }} ({{ $bookingdata->discount }}% off)</td>
+            <td class="bk-value text-success">
+                -{{ getPriceFormat($bookingdata->final_discount_amount) }}
             </td>
         </tr>
+    @endif
 
-        <!-- Quantity -->
+    <!-- Coupon -->
+    @if ($bookingdata->couponAdded)
         <tr>
-            <td>{{ __('Quantity (Nbr of Packages, Hours, Days)') }}</td>
-            <td class="bk-value">
-                {{ $bookingdata->quantity }}
+            <td>{{ __('Coupon') }} ({{ $bookingdata->couponAdded->code }})</td>
+            <td class="bk-value text-success">
+                -{{ getPriceFormat($bookingdata->final_coupon_discount_amount) }}
             </td>
         </tr>
+    @endif
 
-        <!-- Total Amount (Price x Quantity) -->
-        <tr>
-            <td>{{ __('Total Amount') }}</td>
-            <td class="bk-value">
-                {{ getPriceFormat($bookingdata->amount * $bookingdata->quantity) }}
-            </td>
-        </tr>
+    <!-- Sub Total -->
+    @php
+        $subTotal = $bookingdata->amount * $bookingdata->quantity;
+        if ($bookingdata->discount > 0) {
+            $subTotal -= $bookingdata->final_discount_amount;
+        }
+        if ($bookingdata->couponAdded) {
+            $subTotal -= $bookingdata->final_coupon_discount_amount;
+        }
+    @endphp
+    <tr class="grand-sub-total">
+        <td>{{ __('Sub Total') }}</td>
+        <td class="bk-value">{{ getPriceFormat($subTotal) }}</td>
+    </tr>
 
-        <!-- Discount -->
-        @if ($bookingdata->discount > 0)
-            <tr>
-                <td>{{ __('Discount') }} ({{ $bookingdata->discount }}% off)</td>
-                <td class="bk-value text-success">
-                    -{{ getPriceFormat($bookingdata->final_discount_amount) }}
-                </td>
-            </tr>
-        @endif
+    <!-- Extra Charges -->
+    <tr>
+        <td>{{ __('Extra Charges') }}</td>
+        <td class="bk-value">
+            {{ getPriceFormat($bookingdata->extra_charges) }}
+        </td>
+    </tr>
 
-        <!-- Coupon -->
-        @if ($bookingdata->couponAdded)
-            <tr>
-                <td>{{ __('Coupon') }} ({{ $bookingdata->couponAdded->code }})</td>
-                <td class="bk-value text-success">
-                    -{{ getPriceFormat($bookingdata->final_coupon_discount_amount) }}
-                </td>
-            </tr>
-        @endif
+    <!-- Total (Sub Total + Extra Charges) -->
+    @php
+        $totalWithExtras = $subTotal + $bookingdata->extra_charges;
+    @endphp
+    <tr>
+        <td>{{ __('Total') }}</td>
+        <td class="bk-value">{{ getPriceFormat($totalWithExtras) }}</td>
+    </tr>
 
-        <!-- Sub Total -->
-        @php
-            $subTotal = $bookingdata->amount * $bookingdata->quantity;
-            if ($bookingdata->discount > 0) {
-                $subTotal -= $bookingdata->final_discount_amount;
-            }
-            if ($bookingdata->couponAdded) {
-                $subTotal -= $bookingdata->final_coupon_discount_amount;
-            }
-        @endphp
-        <tr class="grand-sub-total">
-            <td>{{ __('Sub Total') }}</td>
-            <td class="bk-value">{{ getPriceFormat($subTotal) }}</td>
-        </tr>
+    <!-- Taxes -->
+    @php
+        // Get the tax_country_id from the service
+        $serviceTaxId = $bookingdata->service->tax_country_id ?? null;
 
-        <!-- Extra Charges -->
-        <tr>
-            <td>{{ __('Extra Charges') }}</td>
-            <td class="bk-value">
-                {{ getPriceFormat($bookingdata->extra_charges) }}
-            </td>
-        </tr>
+        // Initialize tax rate
+        $taxRate = 0;
 
-        <!-- Total (Sub Total + Extra Charges) -->
-        @php
-            $totalWithExtras = $subTotal + $bookingdata->extra_charges;
-        @endphp
-        <tr>
-            <td>{{ __('Total') }}</td>
-            <td class="bk-value">{{ getPriceFormat($totalWithExtras) }}</td>
-        </tr>
+        // Look up tax rate from the taxes table using the service's tax_country_id
+        if ($serviceTaxId) {
+            $tax = \App\Models\Tax::find($serviceTaxId);
+            $taxRate = $tax->value ?? 0;
+        }
+        //dd($taxRate);
+        // Calculate tax amount
+        $taxAmount = ($totalWithExtras * $taxRate) / 100;
+    @endphp
+    <tr>
+        <td>{{ __('Tax') }} ({{ $taxRate }}%)</td>
+        <td class="bk-value text-danger">{{ getPriceFormat($taxAmount) }}</td>
+    </tr>
 
-        <!-- Taxes -->
-        @php
-            // Get the tax_country_id from the service
-            $serviceTaxId = $bookingdata->service->tax_country_id ?? null;
+    <!-- Grand Total (Total + Taxes) -->
+    @php
+        $grandTotal = $totalWithExtras + $taxAmount;
+    @endphp
+    <tr>
+        <td>{{ __('Grand Total') }}</td>
+        <td class="bk-value">{{ getPriceFormat($grandTotal) }}</td>
+    </tr>
 
-            // Initialize tax rate
-            $taxRate = 0;
+    <!-- Advance Payment -->
+    <tr>
+        <td>{{ __('Advance Payment') }}</td>
+        <td class="bk-value">
+            {{ getPriceFormat($bookingdata->advance_paid_amount) }}
+        </td>
+    </tr>
 
-            // Look up tax rate from the taxes table using the service's tax_country_id
-            if ($serviceTaxId) {
-                $tax = \App\Models\Tax::find($serviceTaxId);
-                $taxRate = $tax->value ?? 0;
-            }
-            //dd($taxRate);
-            // Calculate tax amount
-            $taxAmount = ($totalWithExtras * $taxRate) / 100;
-        @endphp
-        <tr>
-            <td>{{ __('Tax') }} ({{ $taxRate }}%)</td>
-            <td class="bk-value text-danger">{{ getPriceFormat($taxAmount) }}</td>
-        </tr>
-
-        <!-- Grand Total (Total + Taxes) -->
-        @php
-            $grandTotal = $totalWithExtras + $taxAmount;
-        @endphp
-        <tr>
-            <td>{{ __('Grand Total') }}</td>
-            <td class="bk-value">{{ getPriceFormat($grandTotal) }}</td>
-        </tr>
-
-        <!-- Advance Payment -->
-        <tr>
-            <td>{{ __('Advance Payment') }}</td>
-            <td class="bk-value">
-                {{ getPriceFormat($bookingdata->advance_paid_amount) }}
-            </td>
-        </tr>
-
-        <!-- Remaining Amount (Grand Total - Advance Payment) -->
-        <tr class="grand-total">
-            <td>{{ __('Remaining Amount') }}</td>
-            <td class="bk-value">
-                {{ getPriceFormat($grandTotal - $bookingdata->advance_paid_amount) }}
-            </td>
-        </tr>
+    <!-- Remaining Amount (Grand Total - Advance Payment) -->
+    <tr class="grand-total">
+        <td>{{ __('Remaining Amount') }}</td>
+        <td class="bk-value">
+            {{ getPriceFormat($grandTotal - $bookingdata->advance_paid_amount) }}
+        </td>
+    </tr>
     </tbody>
 </table>
 <div class="container-fluid">
@@ -144,30 +144,196 @@
                                     {{ '#' . $bookingdata->id ?? '-' }}</h3>
                             </div>
                             <div class="d-flex flex-wrap flex-xxl-nowrap gap-3">
+
                                 @if ($bookingdata->status === 'pending')
                                     @hasanyrole('admin|demo_admin|provider')
-                                        <div class="w3-third">
-                                            <button class="float-end btn btn-primary" id="assign-provider"
+                                    <div class="w3-third">
+                                        <button class="float-end btn btn-primary" id="assign-provider"
                                                 data-id="{{ $bookingdata->id }}"
                                                 data-handyman-id="{{ $bookingdata->provider_id }}">
-                                                <i class="lab la-telegram-plane"></i>
-                                                {{ __('messages.assign_provider') }}
-                                            </button>
-                                        </div>
+                                            <i class="lab la-telegram-plane"></i>
+                                            {{ __('messages.assign_provider') }}
+                                        </button>
+                                    </div>
 
-                                        <div class="w3-third">
-                                            <a href="{{ route('booking.assign_form', ['id' => $bookingdata->id]) }}"
-                                                class="float-end btn btn-primary loadRemoteModel">
-                                                <i class="lab la-telegram-plane"></i>
-                                                {{ __('messages.assign_handyman') }}
-                                            </a>
-                                        </div>
+                                    <div class="w3-third">
+                                        <a href="{{ route('booking.assign_form', ['id' => $bookingdata->id]) }}"
+                                           class="float-end btn btn-primary loadRemoteModel">
+                                            <i class="lab la-telegram-plane"></i>
+                                            {{ __('messages.assign_handyman') }}
+                                        </a>
+                                    </div>
+                                    @endhasanyrole
+                                @endif
+
+                                @if ($bookingdata->status === 'accept')
+                                    @hasanyrole('provider')
+                                    <div class="w3-third">
+                                        <button class="float-end btn btn-primary update-booking" id="start-booking"
+                                                data-id="{{ $bookingdata->id }}"
+                                                data-handyman-id="{{ $bookingdata->provider_id }}" data-status="ongoing"
+                                                data-confirm-message="You want to start this booking?">
+                                            <i class="lab la-telegram-plane"></i>
+                                            {{ __('messages.start_drive') }}
+                                        </button>
+                                    </div>
+
+                                    <div class="w3-third">
+                                        <button class="float-end btn btn-danger update-booking" id="reject-booking"
+                                                data-id="{{ $bookingdata->id }}"
+                                                data-handyman-id="{{ $bookingdata->provider_id }}"
+                                                data-status="rejected"
+                                                data-confirm-message="You want to reject this booking?">
+                                            <i class="lab la-telegram-plane"></i>
+                                            {{ __('messages.decline') }}
+                                        </button>
+                                    </div>
+                                    @endhasanyrole
+
+                                    @hasanyrole('user')
+                                    <div class="w3-third">
+                                        <button class="float-end btn btn-primary update-booking" id="cancel-booking"
+                                                data-id="{{ $bookingdata->id }}"
+                                                data-handyman-id="{{ $bookingdata->provider_id }}"
+                                                data-status="cancelled"
+                                                data-confirm-message="You want to cancelled this booking?">
+                                            <i class="lab la-telegram-plane"></i>
+                                            {{ __('messages.cancel') }}
+                                        </button>
+                                    </div>
+                                    @endhasanyrole
+                                @endif
+
+                                @if ($bookingdata->status === 'ongoing')
+                                    @hasanyrole('provider')
+                                    <div class="w3-third d-flex align-items-end">
+                                        <p><span class="text-info font-size-14"
+                                                 style="font-weight: 700">Waiting for response</span>
+                                        </p>
+                                    </div>
+                                    @endhasanyrole
+
+                                    @hasanyrole('user')
+                                    <div class="w3-third">
+                                        <button class="float-end btn btn-primary update-booking"
+                                                data-id="{{ $bookingdata->id }}"
+                                                data-handyman-id="{{ $bookingdata->provider_id }}"
+                                                data-status="inprogress"
+                                                data-confirm-message="You want to start this booking?">
+                                            <i class="lab la-telegram-plane"></i>
+                                            {{ __('messages.start') }}
+                                        </button>
+                                    </div>
+                                    @endhasanyrole
+                                @endif
+
+                                @if ($bookingdata->status === 'inprogress')
+                                    @hasanyrole('user')
+                                    <div class="w3-third">
+                                        <button class="float-end btn btn-info hold-booking"
+                                                data-id="{{ $bookingdata->id }}"
+                                                data-handyman-id="{{ $bookingdata->provider_id }}"
+                                                data-status="hold"
+                                                data-confirm-message="You want to start this booking?">
+                                            <i class="lab la-telegram-plane"></i>
+                                            {{ __('messages.hold') }}
+                                        </button>
+                                    </div>
+                                    <div class="w3-third">
+                                        <button class="float-end btn btn-primary update-booking"
+                                                data-id="{{ $bookingdata->id }}"
+                                                data-handyman-id="{{ $bookingdata->provider_id }}"
+                                                data-status="pending_approval"
+                                                data-confirm-message="You want to end this booking?">
+                                            <i class="lab la-telegram-plane"></i>
+                                            {{ __('messages.done') }}
+                                        </button>
+                                    </div>
+                                    @endhasanyrole
+                                @endif
+
+                                @if ($bookingdata->status === 'hold')
+                                    @hasanyrole('provider')
+                                    <div class="w3-third d-flex align-items-end">
+                                        <p><span class="text-danger font-size-14"
+                                                 style="font-weight: 700">Hold Reason :</span> {{ $bookingdata->reason }}
+                                        </p>
+                                    </div>
+                                    @endhasanyrole
+
+                                    @hasanyrole('user')
+                                    <div class="w3-third">
+                                        <button class="float-end btn btn-primary update-booking"
+                                                data-id="{{ $bookingdata->id }}"
+                                                data-handyman-id="{{ $bookingdata->provider_id }}"
+                                                data-status="inprogress"
+                                                data-confirm-message="Are you sure you want to resume this booking?">
+                                            <i class="lab la-telegram-plane"></i>
+                                            {{ __('messages.resume') }}
+                                        </button>
+                                    </div>
+
+                                    <div class="w3-third">
+                                        <button class="float-end btn btn-danger update-booking" id="cancel-booking"
+                                                data-id="{{ $bookingdata->id }}"
+                                                data-handyman-id="{{ $bookingdata->provider_id }}"
+                                                data-status="cancelled"
+                                                data-confirm-message="Are you sure you want to cancelled this booking?">
+                                            <i class="lab la-telegram-plane"></i>
+                                            {{ __('messages.cancel') }}
+                                        </button>
+                                    </div>
+
+                                    @endhasanyrole
+                                @endif
+
+                                @if ($bookingdata->status === 'pending_approval')
+                                    @hasanyrole('provider')
+                                    <div class="w3-third">
+                                        <button class="float-end btn btn-primary update-booking"
+                                                data-id="{{ $bookingdata->id }}"
+                                                data-handyman-id="{{ $bookingdata->provider_id }}"
+                                                data-status="completed"
+                                                data-confirm-message="Are you sure you want to complete this booking?">
+                                            <i class="lab la-telegram-plane"></i>
+                                            {{ __('messages.completed') }}
+                                        </button>
+                                    </div>
+
+                                    <button class="float-end btn btn-info" id="complete-booking"
+                                            data-id="{{ $bookingdata->id }}"
+                                            data-handyman-id="{{ $bookingdata->provider_id }}"
+                                            data-status="cancelled"
+                                            data-confirm-message="Are you sure you want to cancel this booking?">
+                                        <i class="lab la-telegram-plane"></i>
+                                        {{ __('messages.add_extra_charges') }}
+                                    </button>
+                                    @endhasanyrole
+
+                                    @hasanyrole('user')
+                                    <div class="w3-third d-flex align-items-end">
+                                        <p><span class="text-info font-size-14"
+                                                 style="font-weight: 700">Waiting for response</span>
+                                        </p>
+                                    </div>
+                                    @endhasanyrole
+                                @endif
+
+                                @if ($bookingdata->status === 'completed' && empty($customer_review))
+                                    @hasanyrole('user')
+                                    <div class="w3-third d-flex align-items-end">
+                                        <button class="float-end btn btn-warning" id="rate-now-btn"
+                                                data-id="{{ $bookingdata->id }}">
+                                            <i class="las la-star"></i> <!-- Changed to a star icon (Line Awesome) -->
+                                            {{ __('messages.rate_now') }}
+                                        </button>
+                                    </div>
                                     @endhasanyrole
                                 @endif
 
                                 @if ($bookingdata->payment_id !== null)
                                     <a href="{{ route('invoice_pdf', $bookingdata->id) }}" class="btn btn-primary"
-                                        target="_blank">
+                                       target="_blank">
                                         <i class="ri-file-text-line"></i>
                                         {{ __('messages.invoice') }}
                                     </a>
@@ -214,7 +380,7 @@
                                     <div class="card-body">
                                         <p class="opacity-75 fz-12">{{ __('messages.total_amount') }}</p>
                                         <p class="mb-0 text-primary">
-                                                   {{ getPriceFormat($bookingdata->total_amount ?? 0) }}
+                                            {{ getPriceFormat($bookingdata->total_amount ?? 0) }}
                                         </p>
                                     </div>
                                 </div>
@@ -233,7 +399,7 @@
                                     (isset($payment) && $payment->payment_type !== 'bank_transfer'))
                                 <div class="col-md-4">
                                     <div class="card h-65 border-0 shadow"
-                                        style="background: linear-gradient(135deg, #f7c59f, #ff9a9e); color: #fff;">
+                                         style="background: linear-gradient(135deg, #f7c59f, #ff9a9e); color: #fff;">
                                         <div class="card-body">
                                             <p class="mb-1 fw-bold text-uppercase" style="opacity: 0.9;">
                                                 {{ __('Advance Payment') }}
@@ -316,12 +482,12 @@
                                 <div class="flex-shrink-0">
 
                                     <img src="{{ getSingleMedia($bookingdata->customer, 'profile_image', null) }}"
-                                        alt="Customer Profile" class="rounded-circle"
-                                        style="width: 60px; height: 60px; object-fit: cover;">
+                                         alt="Customer Profile" class="rounded-circle"
+                                         style="width: 60px; height: 60px; object-fit: cover;">
                                     @if (optional($bookingdata->customer)->profile_image)
                                         <img src="{{ asset('public/images/default.png') }}" alt="Default Profile"
-                                            class="rounded-circle"
-                                            style="width: 60px; height: 60px; object-fit: cover;">
+                                             class="rounded-circle"
+                                             style="width: 60px; height: 60px; object-fit: cover;">
                                     @endif
                                 </div>
                                 <div class="flex-grow-1">
@@ -338,7 +504,7 @@
                                     </span>
                                 </li>
 
-                                <!-- <li class="d-flex align-items-center mb-2">
+                            <!-- <li class="d-flex align-items-center mb-2">
                                         <i class="ri-mail-line me-2"></i>
                                         <a href="mailto:{{ optional($bookingdata->customer)->email }}" class="text-body">
                                             {{ optional($bookingdata->customer)->email ?? '-' }}
@@ -361,12 +527,12 @@
                                 <div class="flex-shrink-0">
 
                                     <img src="{{ getSingleMedia($bookingdata->provider, 'profile_image', null) }}"
-                                        alt="Provider Profile" class="rounded-circle"
-                                        style="width: 60px; height: 60px; object-fit: cover;">
+                                         alt="Provider Profile" class="rounded-circle"
+                                         style="width: 60px; height: 60px; object-fit: cover;">
                                     @if (optional($bookingdata->provider)->profile_image)
                                         <img src="{{ asset('images/default-user.png') }}" alt="Default Profile"
-                                            class="rounded-circle"
-                                            style="width: 60px; height: 60px; object-fit: cover;">
+                                             class="rounded-circle"
+                                             style="width: 60px; height: 60px; object-fit: cover;">
                                     @endif
                                 </div>
                                 <div class="flex-grow-1">
@@ -382,7 +548,7 @@
                                         {{ optional($bookingdata->provider)->created_at ? optional($bookingdata->provider)->created_at->format('Y-m-d') : '-' }}
                                     </span>
                                 </li>
-                                <!-- <li class="d-flex align-items-center mb-2">
+                            <!-- <li class="d-flex align-items-center mb-2">
                                             <i class="ri-mail-line me-2"></i>
                                             <a href="mailto:{{ optional($bookingdata->provider)->email }}" class="text-body">
                                                 {{ optional($bookingdata->provider)->email ?? '-' }}
@@ -407,12 +573,12 @@
                                         <div class="flex-shrink-0">
 
                                             <img src="{{ getSingleMedia($booking->handyman, 'profile_image', null) }}"
-                                                alt="Handyman Profile" class="rounded-circle"
-                                                style="width: 60px; height: 60px; object-fit: cover;">
+                                                 alt="Handyman Profile" class="rounded-circle"
+                                                 style="width: 60px; height: 60px; object-fit: cover;">
                                             @if (optional($booking->handyman)->profile_image)
                                                 <img src="{{ asset('images/default-user.png') }}"
-                                                    alt="Default Profile" class="rounded-circle"
-                                                    style="width: 60px; height: 60px; object-fit: cover;">
+                                                     alt="Default Profile" class="rounded-circle"
+                                                     style="width: 60px; height: 60px; object-fit: cover;">
                                             @endif
                                         </div>
                                         <div class="flex-grow-1">
@@ -443,167 +609,167 @@
 
             </div>
         </div>
-        @php
-            $showAdvance = false;
+    @php
+        $showAdvance = false;
 
-            if (isset($payment)) {
-                if ($payment->payment_type === 'bank_transfer' && $payment->status == 1) {
-                    $showAdvance = true;
-                } elseif ($payment->payment_type !== 'bank_transfer') {
-                    $showAdvance = true;
-                }
+        if (isset($payment)) {
+            if ($payment->payment_type === 'bank_transfer' && $payment->status == 1) {
+                $showAdvance = true;
+            } elseif ($payment->payment_type !== 'bank_transfer') {
+                $showAdvance = true;
             }
-        @endphp
+        }
+    @endphp
 
+    <!-- billing section -->
         <!-- billing section -->
-      <!-- billing section -->
-<div class="col-md-4">
-    <div class="card">
-        <div class="card-body">
-            <div class="table-responsive">
-                <table class="table text-nowrap align-middle mb-0">
-                    <tbody>
-                        <!-- Unit Price -->
-                        <tr>
-                            <td>{{ __('Price (Unit Price)') }}</td>
-                            <td class="bk-value">
-                                {{ getPriceFormat($bookingdata->amount) }}
-                            </td>
-                        </tr>
-
-                        <!-- Quantity -->
-                        <tr>
-                            <td>{{ __('Quantity (Nbr of Packages, Hours, Days)') }}</td>
-                            <td class="bk-value">
-                                {{ $bookingdata->quantity }}
-                            </td>
-                        </tr>
-
-                        <!-- Total Amount (Price x Quantity) -->
-                        <tr>
-                            <td>{{ __('Total Amount') }}</td>
-                            <td class="bk-value">
-                                {{ getPriceFormat($bookingdata->amount * $bookingdata->quantity) }}
-                            </td>
-                        </tr>
-
-                        <!-- Discount -->
-                        @if ($bookingdata->discount > 0)
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table text-nowrap align-middle mb-0">
+                            <tbody>
+                            <!-- Unit Price -->
                             <tr>
-                                <td>{{ __('Discount') }} ({{ $bookingdata->discount }}% off)</td>
-                                <td class="bk-value text-success">
-                                    -{{ getPriceFormat($bookingdata->final_discount_amount) }}
-                                </td>
-                            </tr>
-                        @endif
-
-                        <!-- Coupon -->
-                        @if ($bookingdata->couponAdded)
-                            <tr>
-                                <td>{{ __('Coupon') }} ({{ $bookingdata->couponAdded->code }})</td>
-                                <td class="bk-value text-success">
-                                    -{{ getPriceFormat($bookingdata->final_coupon_discount_amount) }}
-                                </td>
-                            </tr>
-                        @endif
-
-                        <!-- Subtotal after discounts -->
-                        @php
-                            $baseTotal = $bookingdata->amount * $bookingdata->quantity;
-                            $subTotal = $baseTotal;
-
-                            if ($bookingdata->discount > 0) {
-                                $subTotal -= $bookingdata->final_discount_amount;
-                            }
-
-                            if ($bookingdata->couponAdded) {
-                                $subTotal -= $bookingdata->final_coupon_discount_amount;
-                            }
-                        @endphp
-                        <tr class="grand-sub-total">
-                            <td>{{ __('Sub Total (After Discount)') }}</td>
-                            <td class="bk-value">{{ getPriceFormat($subTotal) }}</td>
-                        </tr>
-
-                        <!-- Addon Services -->
-                        @php
-                            $addonTotal = $bookingdata->bookingAddonService->sum('price');
-                        @endphp
-                        @if ($addonTotal > 0)
-                            <tr>
-                                <td>{{ __('Service Addons') }}</td>
-                                <td class="bk-value">{{ getPriceFormat($addonTotal) }}</td>
-                            </tr>
-                        @endif
-
-                        <!-- Extra Charges -->
-                        @php
-                            $extraChargeTotal = $bookingdata->bookingExtraCharge->sum(function ($item) {
-                                return $item->price * $item->qty;
-                            });
-                        @endphp
-                        @if ($extraChargeTotal > 0)
-                            <tr>
-                                <td>{{ __('Extra Charges') }}</td>
-                                <td class="bk-value">{{ getPriceFormat($extraChargeTotal) }}</td>
-                            </tr>
-                        @endif
-
-                        <!-- Total after Addons and Extra Charges -->
-                        @php
-                            $totalBeforeTax = $subTotal + $addonTotal + $extraChargeTotal;
-                        @endphp
-                        <tr>
-                            <td>{{ __('Total') }}</td>
-                            <td class="bk-value">{{ getPriceFormat($totalBeforeTax) }}</td>
-                        </tr>
-
-                        <!-- Taxes -->
-                        @php
-                            $serviceTaxId = $bookingdata->service->tax_country_id ?? null;
-                            $taxRate = 0;
-                            if ($serviceTaxId) {
-                                $tax = \App\Models\Tax::find($serviceTaxId);
-                                $taxRate = $tax->value ?? 0;
-                            }
-                            $taxAmount = ($totalBeforeTax * $taxRate) / 100;
-                        @endphp
-                        <tr>
-                            <td>{{ __('Tax') }} ({{ $taxRate }}%)</td>
-                            <td class="bk-value text-danger">{{ getPriceFormat($taxAmount) }}</td>
-                        </tr>
-
-                        <!-- Grand Total -->
-                        @php
-                            $grandTotal = $totalBeforeTax + $taxAmount;
-                        @endphp
-                        <tr>
-                            <td>{{ __('Grand Total') }}</td>
-                            <td class="bk-value">{{ getPriceFormat($grandTotal) }}</td>
-                        </tr>
-
-                        <!-- Advance and Remaining -->
-                        @if ($showAdvance)
-                            <tr>
-                                <td>{{ __('Advance Payment') }}</td>
+                                <td>{{ __('Price (Unit Price)') }}</td>
                                 <td class="bk-value">
-                                    {{ getPriceFormat($bookingdata->advance_paid_amount) }}
+                                    {{ getPriceFormat($bookingdata->amount) }}
                                 </td>
                             </tr>
-                            <tr class="grand-total">
-                                <td>{{ __('Remaining Amount') }}</td>
-                                <td class="bk-value">
-                                    {{ getPriceFormat($grandTotal - $bookingdata->advance_paid_amount) }}
-                                </td>
-                            </tr>
-                        @endif
 
-                    </tbody>
-                </table>
+                            <!-- Quantity -->
+                            <tr>
+                                <td>{{ __('Quantity (Nbr of Packages, Hours, Days)') }}</td>
+                                <td class="bk-value">
+                                    {{ $bookingdata->quantity }}
+                                </td>
+                            </tr>
+
+                            <!-- Total Amount (Price x Quantity) -->
+                            <tr>
+                                <td>{{ __('Total Amount') }}</td>
+                                <td class="bk-value">
+                                    {{ getPriceFormat($bookingdata->amount * $bookingdata->quantity) }}
+                                </td>
+                            </tr>
+
+                            <!-- Discount -->
+                            @if ($bookingdata->discount > 0)
+                                <tr>
+                                    <td>{{ __('Discount') }} ({{ $bookingdata->discount }}% off)</td>
+                                    <td class="bk-value text-success">
+                                        -{{ getPriceFormat($bookingdata->final_discount_amount) }}
+                                    </td>
+                                </tr>
+                            @endif
+
+                            <!-- Coupon -->
+                            @if ($bookingdata->couponAdded)
+                                <tr>
+                                    <td>{{ __('Coupon') }} ({{ $bookingdata->couponAdded->code }})</td>
+                                    <td class="bk-value text-success">
+                                        -{{ getPriceFormat($bookingdata->final_coupon_discount_amount) }}
+                                    </td>
+                                </tr>
+                            @endif
+
+                            <!-- Subtotal after discounts -->
+                            @php
+                                $baseTotal = $bookingdata->amount * $bookingdata->quantity;
+                                $subTotal = $baseTotal;
+
+                                if ($bookingdata->discount > 0) {
+                                    $subTotal -= $bookingdata->final_discount_amount;
+                                }
+
+                                if ($bookingdata->couponAdded) {
+                                    $subTotal -= $bookingdata->final_coupon_discount_amount;
+                                }
+                            @endphp
+                            <tr class="grand-sub-total">
+                                <td>{{ __('Sub Total (After Discount)') }}</td>
+                                <td class="bk-value">{{ getPriceFormat($subTotal) }}</td>
+                            </tr>
+
+                            <!-- Addon Services -->
+                            @php
+                                $addonTotal = $bookingdata->bookingAddonService->sum('price');
+                            @endphp
+                            @if ($addonTotal > 0)
+                                <tr>
+                                    <td>{{ __('Service Addons') }}</td>
+                                    <td class="bk-value">{{ getPriceFormat($addonTotal) }}</td>
+                                </tr>
+                            @endif
+
+                            <!-- Extra Charges -->
+                            @php
+                                $extraChargeTotal = $bookingdata->bookingExtraCharge->sum(function ($item) {
+                                    return $item->price * $item->qty;
+                                });
+                            @endphp
+                            @if ($extraChargeTotal > 0)
+                                <tr>
+                                    <td>{{ __('Extra Charges') }}</td>
+                                    <td class="bk-value">{{ getPriceFormat($extraChargeTotal) }}</td>
+                                </tr>
+                            @endif
+
+                            <!-- Total after Addons and Extra Charges -->
+                            @php
+                                $totalBeforeTax = $subTotal + $addonTotal + $extraChargeTotal;
+                            @endphp
+                            <tr>
+                                <td>{{ __('Total') }}</td>
+                                <td class="bk-value">{{ getPriceFormat($totalBeforeTax) }}</td>
+                            </tr>
+
+                            <!-- Taxes -->
+                            @php
+                                $serviceTaxId = $bookingdata->service->tax_country_id ?? null;
+                                $taxRate = 0;
+                                if ($serviceTaxId) {
+                                    $tax = \App\Models\Tax::find($serviceTaxId);
+                                    $taxRate = $tax->value ?? 0;
+                                }
+                                $taxAmount = ($totalBeforeTax * $taxRate) / 100;
+                            @endphp
+                            <tr>
+                                <td>{{ __('Tax') }} ({{ $taxRate }}%)</td>
+                                <td class="bk-value text-danger">{{ getPriceFormat($taxAmount) }}</td>
+                            </tr>
+
+                            <!-- Grand Total -->
+                            @php
+                                $grandTotal = $totalBeforeTax + $taxAmount;
+                            @endphp
+                            <tr>
+                                <td>{{ __('Grand Total') }}</td>
+                                <td class="bk-value">{{ getPriceFormat($grandTotal) }}</td>
+                            </tr>
+
+                            <!-- Advance and Remaining -->
+                            @if ($showAdvance)
+                                <tr>
+                                    <td>{{ __('Advance Payment') }}</td>
+                                    <td class="bk-value">
+                                        {{ getPriceFormat($bookingdata->advance_paid_amount) }}
+                                    </td>
+                                </tr>
+                                <tr class="grand-total">
+                                    <td>{{ __('Remaining Amount') }}</td>
+                                    <td class="bk-value">
+                                        {{ getPriceFormat($grandTotal - $bookingdata->advance_paid_amount) }}
+                                    </td>
+                                </tr>
+                            @endif
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
-</div>
 
     </div>
 
@@ -616,22 +782,22 @@
                         <h4 class="mb-3">{{ __('messages.extra_charge') }}</h4>
                         <table class="table table-bordered">
                             <thead>
-                                <tr>
-                                    <th>{{ __('messages.title') }}</th>
-                                    <th>{{ __('messages.price') }}</th>
-                                    <th>{{ __('messages.quantity') }}</th>
-                                    <th class="text-end">{{ __('messages.total_amount') }}</th>
-                                </tr>
+                            <tr>
+                                <th>{{ __('messages.title') }}</th>
+                                <th>{{ __('messages.price') }}</th>
+                                <th>{{ __('messages.quantity') }}</th>
+                                <th class="text-end">{{ __('messages.total_amount') }}</th>
+                            </tr>
                             </thead>
                             <tbody>
-                                @foreach ($bookingdata->bookingExtraCharge as $charge)
-                                    <tr>
-                                        <td>{{ $charge->title }}</td>
-                                        <td>{{ getPriceFormat($charge->price) }}</td>
-                                        <td>{{ $charge->qty }}</td>
-                                        <td class="text-end">{{ getPriceFormat($charge->price * $charge->qty) }}</td>
-                                    </tr>
-                                @endforeach
+                            @foreach ($bookingdata->bookingExtraCharge as $charge)
+                                <tr>
+                                    <td>{{ $charge->title }}</td>
+                                    <td>{{ getPriceFormat($charge->price) }}</td>
+                                    <td>{{ $charge->qty }}</td>
+                                    <td class="text-end">{{ getPriceFormat($charge->price * $charge->qty) }}</td>
+                                </tr>
+                            @endforeach
                             </tbody>
                         </table>
                     </div>
@@ -641,7 +807,81 @@
         </div>
     @endif
 
-    <!-- Addon  Charges table -->
+    @if (count($bookingdata->bookingRating) > 0)
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="table-responsive mb-4">
+                        <h4 class="mb-3">{{ __('messages.Reviews') }}</h4>
+                        <table class="table table-bordered">
+                            <thead>
+                            <tr>
+                                <th>{{ __('messages.name') }}</th>
+                                <th>{{ __('messages.rating') }}</th>
+                                <th>{{ __('messages.review') }}</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            @foreach ($bookingdata->bookingRating as $review)
+                                <tr>
+                                    <td>{{ $review->customer->first_name ?? '' }} {{ $review->customer->last_name ?? '' }}</td>
+                                    <td>{{ $review->rating }}</td>
+                                    <td>{{ $review->review }}</td>
+                                </tr>
+                            @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    @endif
+
+    @if(!empty($customer_review))
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="table-responsive mb-4">
+                        <h4 class="mb-3">{{ __('messages.my_review') }}</h4>
+                        <table class="table table-bordered align-middle">
+                            <thead>
+                            <tr>
+                                <th>{{ __('messages.name') }}</th>
+                                <th>{{ __('messages.rating') }}</th>
+                                <th>{{ __('messages.review') }}</th>
+                                <th class="text-center">{{ __('messages.actions') }}</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>{{ $customer_review->customer->first_name ?? '' }} {{ $customer_review->customer->last_name ?? '' }}</td>
+                                <td>{{ $customer_review->rating }}</td>
+                                <td>{{ $customer_review->review }}</td>
+                                <td class="text-center">
+                                    <button class="btn btn-sm btn-warning edit-review"
+                                            data-id="{{ $customer_review->id }}"
+                                            data-rating="{{ $customer_review->rating }}"
+                                            data-review="{{ $customer_review->review }}">
+                                        <i class="las la-pen"></i> {{ __('messages.edit') }}
+                                    </button>
+                                    <button class="btn btn-sm btn-danger delete-review"
+                                            data-id="{{ $customer_review->id }}">
+                                        <i class="las la-trash"></i> {{ __('messages.delete') }}
+                                    </button>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    @endif
+
+
+<!-- Addon  Charges table -->
     @if ($bookingdata->bookingAddonService->count() > 0)
         <div class="col-md-12">
             <div class="card">
@@ -650,31 +890,31 @@
                         <h4 class="mb-3">{{ __('messages.service_addon') }}</h4>
                         <table class="table table-bordered">
                             <thead>
-                                <tr>
-                                    <th class="ps-lg-3">{{ __('messages.title') }}</th>
-                                    <th>{{ __('messages.price') }}</th>
-                                    <th class="text-end">{{ __('messages.total_amount') }}</th>
-                                </tr>
+                            <tr>
+                                <th class="ps-lg-3">{{ __('messages.title') }}</th>
+                                <th>{{ __('messages.price') }}</th>
+                                <th class="text-end">{{ __('messages.total_amount') }}</th>
+                            </tr>
                             </thead>
                             <tbody>
+                            @php
+                                $addonTotalPrice = 0;
+                            @endphp
+                            @foreach ($bookingdata->bookingAddonService as $addonservice)
                                 @php
-                                    $addonTotalPrice = 0;
+                                    $addonTotalPrice += $addonservice->price;
                                 @endphp
-                                @foreach ($bookingdata->bookingAddonService as $addonservice)
-                                    @php
-                                        $addonTotalPrice += $addonservice->price;
-                                    @endphp
-                                    <tr>
-                                        <td class="text-wrap ps-lg-3">
-                                            <div class="d-flex flex-column">
-                                                <a href=""
-                                                    class="booking-service-link fw-bold">{{ $addonservice->name }}</a>
-                                            </div>
-                                        </td>
-                                        <td>{{ getPriceFormat($addonservice->price) }}</td>
-                                        <td class="text-end">{{ getPriceFormat($addonservice->price) }}</td>
-                                    </tr>
-                                @endforeach
+                                <tr>
+                                    <td class="text-wrap ps-lg-3">
+                                        <div class="d-flex flex-column">
+                                            <a href=""
+                                               class="booking-service-link fw-bold">{{ $addonservice->name }}</a>
+                                        </div>
+                                    </td>
+                                    <td>{{ getPriceFormat($addonservice->price) }}</td>
+                                    <td class="text-end">{{ getPriceFormat($addonservice->price) }}</td>
+                                </tr>
+                            @endforeach
                             </tbody>
                         </table>
                     </div>
@@ -689,7 +929,8 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
 <script>
-    $(document).on('change', '.bookingstatus', function() {
+    var baseUrl = "{{ env('APP_URL') }}";
+    $(document).on('change', '.bookingstatus', function () {
         var status = $(this).val();
         var id = $(this).attr('data-id');
 
@@ -701,13 +942,13 @@
                 'status': status,
                 'bookingId': id
             },
-            success: function(data) {
+            success: function (data) {
                 // Handle success response
             }
         });
     });
 
-    $(document).on('change', '.paymentStatus', function() {
+    $(document).on('change', '.paymentStatus', function () {
         var status = $(this).val();
         var id = $(this).attr('data-id');
 
@@ -719,14 +960,14 @@
                 'status': status,
                 'bookingId': id
             },
-            success: function(data) {
+            success: function (data) {
                 // Handle success response
             }
         });
     });
 
-    $(document).ready(function() {
-        $('#assign-provider').on('click', function() {
+    $(document).ready(function () {
+        $('#assign-provider').on('click', function () {
             var bookingId = $(this).data('id');
             var handymanIds = [];
             handymanIds.push($(this).data('handyman-id'));
@@ -751,11 +992,11 @@
                             'handyman_id[]': handymanIds,
                             _token: '{{ csrf_token() }}'
                         },
-                        success: function(response) {
+                        success: function (response) {
                             Swal.fire("Success!", response.message, "success");
                             window.location.reload();
                         },
-                        error: function(xhr) {
+                        error: function (xhr) {
                             Swal.fire("Error!", xhr.responseText, "error");
                         }
                     });
@@ -764,5 +1005,299 @@
                 }
             });
         });
+
+        $('.update-booking').on('click', function () {
+            const bookingId = $(this).data('id');
+            const isAdvancePaid = $(this).data('advance') === 1; // Pass as 1/0 from backend
+            const status = $(this).data('status');
+            const confirm_message = $(this).data('confirm-message');
+
+            Swal.fire({
+                title: 'Are you sure?',
+                text: confirm_message,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes!',
+                cancelButtonText: 'No, cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    updateBookingStatus(bookingId, status, isAdvancePaid);
+                }
+            });
+        });
+
+
+        function updateBookingStatus(bookingId, newStatus, isAdvancePaid, reason = '', charges = null) {
+            const requestPayload = {
+                id: bookingId,
+                start_at: '', // You can format it if needed
+                end_at: '',
+                duration_diff: 0,
+                reason: reason,
+                status: newStatus,
+                payment_status: isAdvancePaid ? 'ADVANCE_PAID' : '',
+                extra_charges: charges
+            };
+
+            let api_url = baseUrl + '/api/booking-update';
+            $.ajax({
+                url: api_url,
+                type: 'POST',
+                data: requestPayload,
+                success: function (response) {
+                    Swal.fire("Success!", response.message, "success");
+                    window.location.reload();
+                },
+                error: function (xhr) {
+                    console.log(xhr)
+                    Swal.fire("Error!", xhr.responseText, "error");
+                }
+            });
+        }
+
+
+        $(document).on('click', '.hold-booking', function () {
+            const bookingId = $(this).data('id');
+            const newStatus = $(this).data('status');
+
+            $('#bookingId').val(bookingId);
+            $('#newStatus').val(newStatus);
+            $('#reasonInput').val('');
+            $('#reasonModal').modal('show');
+        });
+
+        $('#reasonForm').on('submit', function (e) {
+            e.preventDefault();
+
+            const bookingId = $('#bookingId').val();
+            const newStatus = $('#newStatus').val();
+            const reason = $('#reasonInput').val();
+
+            Swal.fire({
+                title: 'Are you sure?',
+                text: 'Are you sure you want to hold this booknig?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes!',
+                cancelButtonText: 'No, cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    updateBookingStatus(bookingId, newStatus, 1, reason);
+
+                    $('#reasonModal').modal('hide');
+                }
+            });
+
+        });
+
+
+        // Handle modal open
+        $('#complete-booking').on('click', function () {
+            $('#extraChargesWrapper').html(''); // Reset previous entries
+            addChargeRow(); // Add first row by default
+
+            const bookingId = $(this).data('id');
+            const newStatus = $(this).data('status');
+
+            $('#extraChargesModal').find('#bookingId').val(bookingId);
+            $('#extraChargesModal').modal('show');
+        });
+
+        // Add new charge row
+        $('#addChargeRow').on('click', function () {
+            addChargeRow();
+        });
+
+        // Submit charges
+        $('#extraChargesForm').on('submit', function (e) {
+            e.preventDefault();
+            const charges = [];
+
+            $('.charge-row').each(function () {
+                const title = $(this).find('.charge-detail').val();
+                const price = parseFloat($(this).find('.charge-amount').val()) || 0;
+                const qty = parseInt($(this).find('.charge-quantity').val()) || 0;
+                const total_amount = price * qty;
+
+                if (title && price > 0 && qty > 0) {
+                    charges.push({title, price, qty, total_amount});
+                }
+            });
+
+            let bookingId = $('#extraChargesModal').find('#bookingId').val();
+
+            Swal.fire({
+                title: 'Are you sure?',
+                text: 'Are you sure you want to perform this action?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes!',
+                cancelButtonText: 'No, cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    updateBookingStatus(bookingId, 'completed', 1, '', charges);
+
+                    $('#extraChargesModal').modal('hide');
+                }
+            });
+        });
+
+        // Function to add a new charge row
+        function addChargeRow() {
+            const row = `
+          <div class="charge-row border p-3 mb-3 rounded bg-light">
+            <div class="row g-3 align-items-end">
+              <div class="col-md-5">
+                <label class="form-label">Extra Charge Detail</label>
+                <input type="text" class="form-control charge-detail" placeholder="e.g. Travel cost">
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">Amount</label>
+                <input type="number" class="form-control charge-amount" placeholder="e.g. 100">
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">Quantity</label>
+                <div class="input-group">
+                  <button class="btn btn-outline-secondary btn-sm decrease-qty" type="button">-</button>
+                  <input type="number" class="form-control text-center charge-quantity" value="1" min="1">
+                  <button class="btn btn-outline-secondary btn-sm increase-qty" type="button">+</button>
+                </div>
+              </div>
+              <div class="col-md-1 text-end">
+                <button class="btn btn-danger btn-sm remove-charge-row" type="button">&times;</button>
+              </div>
+            </div>
+          </div>
+        `;
+
+            $('#extraChargesWrapper').append(row);
+        }
+
+        // Handle quantity buttons
+        $(document).on('click', '.increase-qty', function () {
+            const input = $(this).closest('.input-group').find('.charge-quantity');
+            input.val(parseInt(input.val()) + 1);
+        });
+
+        $(document).on('click', '.decrease-qty', function () {
+            const input = $(this).closest('.input-group').find('.charge-quantity');
+            let qty = parseInt(input.val());
+            if (qty > 1) input.val(qty - 1);
+        });
+
+        // Remove a row
+        $(document).on('click', '.remove-charge-row', function () {
+            $(this).closest('.charge-row').remove();
+        });
     });
+
+
+    let selectedRating = 0;
+    let editingReviewId = null;
+
+    $(document).on('click', '#rate-now-btn', function () {
+        const bookingId = $(this).data('id');
+        $('#ratingBookingId').val(bookingId);
+        $('#reviewText').val('');
+        selectedRating = 0;
+        $('.star').removeClass('selected');
+        $('#ratingModal').modal('show');
+    });
+
+    // Handle star selection
+    $(document).on('click', '.star', function () {
+        selectedRating = $(this).data('value');
+        $('.star').removeClass('selected');
+        $(this).prevAll().addBack().addClass('selected');
+    });
+
+    // Submit review
+    $('#ratingForm').on('submit', function (e) {
+        e.preventDefault();
+
+        const bookingId = $('#ratingBookingId').val();
+        const review = $('#reviewText').val().trim();
+
+        if (selectedRating === 0) {
+            return Swal.fire('Error', 'Please select a star rating.', 'warning');
+        }
+
+        const payload = {
+            booking_id: "{{ $bookingdata->id }}",
+            service_id: "{{ $bookingdata->service_id }}",
+            {{--            handyman_id: "{{ $bookingdata->provider_id }}",--}}
+            customer_id: "{{ $bookingdata->customer_id }}",
+            rating: selectedRating,
+            review: review
+        };
+
+        if (editingReviewId) {
+            payload.id = editingReviewId;
+        }
+
+        $.ajax({
+            url: baseUrl + '/api/save-booking-rating',
+            type: 'POST',
+            data: payload,
+            success: function (response) {
+                Swal.fire('Thank you!', 'Your rating has been submitted.', 'success');
+                $('#ratingModal').modal('hide');
+                window.location.reload();
+            },
+            error: function (xhr) {
+                console.error(xhr);
+                Swal.fire('Error', 'Failed to submit rating.', 'error');
+            }
+        });
+    });
+
+
+    // Handle Edit Button
+    $(document).on('click', '.edit-review', function () {
+        const reviewId = $(this).data('id');
+        const rating = $(this).data('rating');
+        const reviewText = $(this).data('review');
+
+        selectedRating = rating;
+        editingReviewId = reviewId;
+
+        $('#reviewText').val(reviewText);
+        $('.star').removeClass('selected').each(function () {
+            if ($(this).data('value') <= rating) {
+                $(this).addClass('selected');
+            }
+        });
+
+        $('#ratingModal').modal('show');
+    });
+
+    $(document).on('click', '.delete-review', function () {
+        const reviewId = $(this).data('id');
+
+        Swal.fire({
+            title: 'Are you sure?',
+            text: 'You will not be able to recover this review!',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: baseUrl + '/api/delete-booking-rating',
+                    type: 'POST',
+                    data: { id: reviewId },
+                    success: function (res) {
+                        Swal.fire('Deleted!', 'Your review has been removed.', 'success');
+                        window.location.reload();
+                    },
+                    error: function (xhr) {
+                        console.error(xhr);
+                        Swal.fire('Error!', 'Failed to delete the review.', 'error');
+                    }
+                });
+            }
+        });
+    });
+
+
 </script>

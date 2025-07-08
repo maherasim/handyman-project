@@ -653,7 +653,7 @@ class BookingController extends Controller
 
 
         $bookingdata = Booking::with('bookingExtraCharge', 'payment', 'service')->myBooking()->find($id);
- 
+
 
         $tabpage = 'info';
         if (empty($bookingdata)) {
@@ -1010,7 +1010,8 @@ class BookingController extends Controller
         $auth_user = authSession();
         $user_id = $auth_user->id;
         $user_data = User::find($user_id);
-        $bookingdata = Booking::with('handymanAdded', 'payment', 'bookingExtraCharge', 'bookingAddonService', 'slots',  'service.city','service.country')->myBooking()->find($id);
+        $bookingdata = Booking::with('handymanAdded', 'payment', 'bookingExtraCharge', 'bookingAddonService', 'slots',  'service.city','service.country', 'bookingRating')->myBooking()->find($id);
+        $customer_review = BookingRating::with('customer')->where('customer_id',$user_id)->where('service_id',$bookingdata->service_id)->where('booking_id',$id)->first();
         $payment = Payment::where('booking_id', $id)->orderBy('id', 'desc')->first() ?? null;
         $serviceconfig = Setting::getValueByKey('service-configurations', 'service-configurations');
         $advancePaymentPercentage = isset($serviceconfig->advance_paynment_percantage) ? $serviceconfig->advance_paynment_percantage : 0;
@@ -1020,7 +1021,7 @@ class BookingController extends Controller
 
         switch ($tabpage) {
             case 'info':
-                $data = view('booking.' . $tabpage, compact('user_data', 'tabpage', 'auth_user', 'bookingdata', 'payment'))->render();
+                $data = view('booking.' . $tabpage, compact('user_data', 'tabpage', 'auth_user', 'bookingdata', 'payment', 'customer_review'))->render();
                 break;
             case 'status':
                 $data = view('booking.' . $tabpage, compact('user_data', 'tabpage', 'auth_user', 'bookingdata', 'payment'))->render();
