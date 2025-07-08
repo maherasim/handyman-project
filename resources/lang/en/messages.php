@@ -204,6 +204,7 @@
     'monthly_revenue' => 'Monthly Revenue',
     'pending_trans' => 'Pending Transactions',
     'token_generated' => 'Token Generated',
+    'my_review' => "My Review",
     'service_detail' => 'Service Detail',
     'change_password' => 'Change Password',
     'service_advanced_payment' => 'Service Advanced Payment',
@@ -542,7 +543,7 @@
     'Invoice_No' => 'Invoice No',
     'unpaid' => 'unpaid',
     'ongoing' => 'ongoing',
-    'completed' => 'completed',
+    'completed' => 'Completed',
     'canceled' => 'canceled',
     'nodata' => 'No data available',
     'invoice' => 'Invoice',
@@ -880,6 +881,13 @@
     'original_price' => 'Original Price',
     'tax_not_included' => 'Tax not included',
     'assign_provider' => 'Assign Provider',
+    'start_drive' => 'Start Drive',
+    'start' => 'Start',
+    'hold' => 'Hold',
+    'done' => 'Done',
+    'resume' => 'Resume',
+    'add_extra_charges' => 'Add Extra Charges',
+    'decline' => 'Decline',
     'assign_handyman' => 'Assign Handyman',
     'view_handyman_payout' => 'View Handyman Payout',
     'view_provider_payout' => 'View Provider Payout',
@@ -959,5 +967,5 @@
     'view_breakdown' => 'view breakdown',
     'payment_breakdown' => 'Payment Breakdown',
     'role_earned' => 'Role Earned',
-    
+
 );
