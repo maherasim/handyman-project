@@ -44,4 +44,32 @@ class PostJobBidController extends Controller
 
         return comman_custom_response($response);
     }
+public function apiIndex(Request $request)
+{
+    $query = PostJobRequest::query();
+
+    // Role-based visibility
+    if (!auth()->user()->hasAnyRole(['admin']) && auth()->user()->user_type !== 'provider') {
+        $query->where('customer_id', auth()->id());
+    }
+
+    // Optional filtering (status, category, etc.)
+    if ($request->filled('status')) {
+        $query->where('status', $request->status);
+    }
+
+    if ($request->filled('category_id')) {
+        $query->where('category_id', $request->category_id);
+    }
+
+    // Eager-load related models
+    $query->with(['customer', 'category']);
+
+    // Return paginated response
+    return response()->json([
+        'success' => true,
+        'data' => $query->paginate(10),
+    ]);
+}
+
 }

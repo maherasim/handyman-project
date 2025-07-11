@@ -315,6 +315,53 @@ class PaymentController extends Controller
     return comman_message_response(__('messages.payment_completed'), 200);
 }
 
+public function getpaymentall(Request $request)
+{
+    $query = Payment::query()
+        ->with(['booking.service', 'booking.bookingPackage'])
+        ->myPayment()
+        ->where(function ($q) {
+            $q->where('payment_type', '!=', 'bank_transfer')
+              ->orWhere(function ($sub) {
+                  $sub->where('payment_type', 'bank_transfer')
+                      ->where('status', 1);
+              });
+        });
+
+    // Apply filter if exists
+    if ($request->filled('filter.column_status')) {
+        $query->where('payment_status', $request->filter['column_status']);
+    }
+
+    // Optional: Reset query builder for admin (only needed if replacing the previous query logic)
+    if (auth()->user()->hasAnyRole(['admin'])) {
+        $query = $query->newQuery();
+    }
+
+    $payments = $query->paginate(10);
+
+    // Add computed service_name field to each item
+    $payments->getCollection()->transform(function ($payment) {
+        $booking = $payment->booking;
+
+        $payment->service_name = match (true) {
+            $booking && $booking->bookingPackage => optional($booking->bookingPackage)->name . ' (' . __('messages.service_package') . ')',
+            $booking && $booking->service => optional($booking->service)->name . ' (' . __('messages.service') . ')',
+            default => '-',
+        };
+
+        return $payment;
+    });
+
+    return response()->json([
+        'status' => true,
+        'data' => $payments
+    ]);
+}
+
+
+
+
     public function saveBankTransferPayment(Request $request)
     {
         $data = $request->all();
