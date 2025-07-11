@@ -507,27 +507,33 @@ $extraValue = 0;
 
                         <hr class="my-4">
 
-                        <div class="pdf-border-box bg-grey mb-3">
-                            <div class="row mb-3">
-                                <div class="col-sm-6">
-                                    <div class="text-muted">
-                                        <p class="font-size-16 mb-3">{{ __('messages.Billed_To') }}:</p>
-                                        <p class="text-primary mb-3">
-                                            {{ optional($bookingdata->customer)->display_name ?? '-' }}</p>
-                                        <p class="mb-0">{{ optional($bookingdata->customer)->contact_number ?? '-' }}
-                                        </p>
-                                        <p class="mb-1">{{ optional($bookingdata->customer)->email ?? '-' }}</p>
-                                    </div>
-                                </div>
+                       <div class="row mb-4">
+    <div class="col-sm-6">
+        <h5 class="text-muted mb-2">{{ __('BILL FROM:') }}</h5>
+        <p class="mb-0">{{ $generaldata->site_author ?? 'Company Name' }}</p>
+        <p class="mb-0">{{ $generaldata->company_address ?? 'Your Address Here' }}</p>
+        <p class="mb-0">{{ $generaldata->company_city ?? '' }}, {{ $generaldata->company_country ?? '' }}</p>
+    </div>
+    <div class="col-sm-6 text-end">
+        <h5 class="text-muted mb-2">{{ __('BILL TO:') }}</h5>
+        <p class="mb-0">{{ optional($bookingdata->customer)->display_name ?? '-' }}</p>
+        <p class="mb-0">{{ optional($bookingdata->customer)->email ?? '-' }}</p>
+        <p class="mb-0">{{ optional($bookingdata->customer)->contact_number ?? '-' }}</p>
+    </div>
+</div>
 
-                                <div class="col-sm-6 invoice">
-                                    <div class="text-muted text-sm-end">
-                                        <p class="font-size-15 mb-3">{{ __('messages.Invoice_No') }}:</p>
-                                        <p>{{ '#' . $bookingdata->id ?? '-' }}</p>
-                                    </div>
-                                </div>
-                            </div><br>
-                        </div>
+<div class="row mb-4">
+    <div class="col-sm-4">
+        <strong>{{ __('Invoice No:') }}</strong> #{{ $bookingdata->id }}
+    </div>
+    <div class="col-sm-4">
+        <strong>{{ __('Currency:') }}</strong> {{ $bookingdata->currency ?? 'EUR' }}
+    </div>
+    <div class="col-sm-4 text-end">
+        <strong>{{ __('Date Issued:') }}</strong> {{ $bookingdata->created_at->format('d M Y') }}
+    </div>
+</div>
+
 
                         <div class="table-1 mt-20">
                             <div class="table-1 mt-4">
