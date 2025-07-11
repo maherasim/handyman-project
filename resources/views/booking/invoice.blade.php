@@ -1,9 +1,8 @@
-
 <!DOCTYPE html>
 <html>
 
 <head>
-    <title>{{env('APP_NAME')}}</title>
+    <title>{{ env('APP_NAME') }}</title>
 </head>
 <style type="text/css">
     :root {
@@ -50,7 +49,7 @@
         --bs-black-rgb: 0, 0, 0;
         --bs-body-color-rgb: 33, 37, 41;
         --bs-body-bg-rgb: 255, 255, 255;
-        --bs-font-sans-serif: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", "Liberation Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji","DejaVu Sans";
+        --bs-font-sans-serif: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", "Liberation Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji", "DejaVu Sans";
         --bs-font-monospace: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
         --bs-gradient: linear-gradient(180deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0));
         --bs-body-font-family: var(--bs-font-sans-serif);
@@ -168,7 +167,7 @@
 
     .bg-success {
         --bs-bg-opacity: 1;
-        background-color: #0a5231!important;
+        background-color: #0a5231 !important;
     }
 
     .ms-2 {
@@ -202,21 +201,39 @@
         --bs-text-opacity: 1;
         color: #6c757d !important;
     }
-    .h2, h2 {
-    font-size: 2rem;
-}
-.h4, h4 {
-    font-size: 1.5rem;
-}
-.h1, .h2, .h3, .h4, .h5, .h6, h1, h2, h3, h4, h5, h6 {
-    margin-top: 0;
-    margin-bottom: 0.5rem;
-    font-weight: 500;
-    line-height: 1.2;
-}
-.h5, h5 {
-    font-size: 1.25rem;
-}
+
+    .h2,
+    h2 {
+        font-size: 2rem;
+    }
+
+    .h4,
+    h4 {
+        font-size: 1.5rem;
+    }
+
+    .h1,
+    .h2,
+    .h3,
+    .h4,
+    .h5,
+    .h6,
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        margin-top: 0;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+        line-height: 1.2;
+    }
+
+    .h5,
+    h5 {
+        font-size: 1.25rem;
+    }
 
     .mb-1 {
         margin-bottom: 0.25rem !important;
@@ -344,10 +361,12 @@
     .border {
         border: 1px solid black;
     }
+
     .table-responsive {
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
     }
+
     table tr,
     th,
     td {
@@ -369,6 +388,7 @@
         width: 100%;
         border-collapse: collapse;
     }
+
     .mt-20 {
         margin-top: 20px;
     }
@@ -424,33 +444,46 @@
     .right {
         float: right !important;
     }
-    .invoice{
+
+    .invoice {
         margin-top: -150px !important;
         float: right !important;
     }
+
     .invoice table .no {
-            color: #fff;
-            font-size: 1.6em;
-            background: rgb(65, 83, 179)
-        }
+        color: #fff;
+        font-size: 1.6em;
+        background: rgb(65, 83, 179)
+    }
 
     .text-right {
         text-align: right;
     }
-
 </style>
 <?php
-    use App\Models\Setting;
-    $settings = Setting::whereIn('type', ['site-setup', 'general-setting'])
-        ->whereIn('key', ['site-setup', 'general-setting'])
-        ->get()
-        ->keyBy('key');
+use App\Models\Setting;
+$settings = Setting::whereIn('type', ['site-setup', 'general-setting'])
+    ->whereIn('key', ['site-setup', 'general-setting'])
+    ->get()
+    ->keyBy('key');
 
-    $app = isset($settings['site-setup']) ? json_decode($settings['site-setup']->value) : null;
-    $generaldata = isset($settings['general-setting']) ? json_decode($settings['general-setting']->value) : null;
+$app = isset($settings['site-setup']) ? json_decode($settings['site-setup']->value) : null;
+$generaldata = isset($settings['general-setting']) ? json_decode($settings['general-setting']->value) : null;
 
-    $extraValue = 0;
+$extraValue = 0;
 ?>
+@php
+    $showAdvance = false;
+
+    if (isset($payment)) {
+        if ($payment->payment_type === 'bank_transfer' && $payment->status == 1) {
+            $showAdvance = true;
+        } elseif ($payment->payment_type !== 'bank_transfer') {
+            $showAdvance = true;
+        }
+    }
+@endphp
+
 <body>
     <div class="container">
         <div class="row">
@@ -458,219 +491,198 @@
                 <div class="card">
                     <div class="card-body">
                         <div class="invoice-title">
-
                             <div class="mb-4">
-                                <h2 class="mb-1 text-muted">{{ $generaldata->site_name}}</h2>
+                                <h2 class="mb-1 text-muted">{{ $generaldata->site_name }}</h2>
                             </div>
                             <div class="text-muted">
-                                <p class="mb-1"><i class="uil uil-envelope-alt me-1"></i>{{ $generaldata->inquriy_email}}</p>
-                                <p><i class="uil uil-phone me-1"></i>{{ $generaldata->helpline_number}}</p>
+                                <p class="mb-1"><i
+                                        class="uil uil-envelope-alt me-1"></i>{{ $generaldata->inquriy_email }}</p>
+                                <p><i class="uil uil-phone me-1"></i>{{ $generaldata->helpline_number }}</p>
                             </div>
                         </div>
 
                         <hr class="my-4">
-                        <div class="pdf-border-box bg-grey  mb-3">
-                        <div class="row mb-3">
-                            <div class="col-sm-6">
-                                <div class="text-muted">
-                                    <p class="font-size-16 mb-3">{{__('messages.Billed_To')}}:</p>
-                                    <p class="text-primary mb-3">{{optional($bookingdata->customer)->display_name ?? '-'}}</p>
-                                    <p class="mb-0">{{ optional($bookingdata->customer)->contact_number ?? '-' }}</p>
-                                    <p class="mb-1">{{optional($bookingdata->customer)->email ?? '-' }}</p>
-                                </div>
-                            </div>
-                            <!-- end col -->
-                            <div class="col-sm-6 invoice">
-                                <div class="text-muted text-sm-end">
-                                    <div>
-                                        <p class="font-size-15 mb-3">{{__('messages.Invoice_No')}}:</p>
-                                        <p>{{ '#' . $bookingdata->id ?? '-'}}</p>
 
+                        <div class="pdf-border-box bg-grey mb-3">
+                            <div class="row mb-3">
+                                <div class="col-sm-6">
+                                    <div class="text-muted">
+                                        <p class="font-size-16 mb-3">{{ __('messages.Billed_To') }}:</p>
+                                        <p class="text-primary mb-3">
+                                            {{ optional($bookingdata->customer)->display_name ?? '-' }}</p>
+                                        <p class="mb-0">{{ optional($bookingdata->customer)->contact_number ?? '-' }}
+                                        </p>
+                                        <p class="mb-1">{{ optional($bookingdata->customer)->email ?? '-' }}</p>
                                     </div>
+                                </div>
 
+                                <div class="col-sm-6 invoice">
+                                    <div class="text-muted text-sm-end">
+                                        <p class="font-size-15 mb-3">{{ __('messages.Invoice_No') }}:</p>
+                                        <p>{{ '#' . $bookingdata->id ?? '-' }}</p>
+                                    </div>
+                                </div>
+                            </div><br>
+                        </div>
 
+                        <div class="table-1 mt-20">
+                            <div class="table-1 mt-4">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered text-nowrap align-middle mb-0">
+                                        <tbody>
+                                            <!-- Unit Price -->
+                                            <tr>
+                                                <th>{{ __('Price (Unit Price)') }}</th>
+                                                <td class="bk-value text-right">
+                                                    {{ getPriceFormat($bookingdata->amount) }}
+                                                </td>
+                                            </tr>
+
+                                            <!-- Quantity -->
+                                            <tr>
+                                                <th>{{ __('Quantity (Nbr of Packages, Hours, Days)') }}</th>
+                                                <td class="bk-value text-right">
+                                                    {{ $bookingdata->quantity }}
+                                                </td>
+                                            </tr>
+
+                                            <!-- Total Amount -->
+                                            <tr>
+                                                <th>{{ __('Total Amount') }}</th>
+                                                <td class="bk-value text-right">
+                                                    {{ getPriceFormat($bookingdata->amount * $bookingdata->quantity) }}
+                                                </td>
+                                            </tr>
+
+                                            <!-- Discount -->
+                                            @if ($bookingdata->discount > 0)
+                                                <tr>
+                                                    <th>{{ __('Discount') }} ({{ $bookingdata->discount }}%)</th>
+                                                    <td class="bk-value text-right text-success">
+                                                        -{{ getPriceFormat($bookingdata->final_discount_amount) }}
+                                                    </td>
+                                                </tr>
+                                            @endif
+
+                                            <!-- Coupon -->
+                                            @if ($bookingdata->couponAdded)
+                                                <tr>
+                                                    <th>{{ __('Coupon') }} ({{ $bookingdata->couponAdded->code }})
+                                                    </th>
+                                                    <td class="bk-value text-right text-success">
+                                                        -{{ getPriceFormat($bookingdata->final_coupon_discount_amount) }}
+                                                    </td>
+                                                </tr>
+                                            @endif
+
+                                            <!-- Sub Total -->
+                                            @php
+                                                $baseTotal = $bookingdata->amount * $bookingdata->quantity;
+                                                $subTotal = $baseTotal;
+
+                                                if ($bookingdata->discount > 0) {
+                                                    $subTotal -= $bookingdata->final_discount_amount;
+                                                }
+
+                                                if ($bookingdata->couponAdded) {
+                                                    $subTotal -= $bookingdata->final_coupon_discount_amount;
+                                                }
+                                            @endphp
+                                            <tr>
+                                                <th>{{ __('Sub Total (After Discount)') }}</th>
+                                                <td class="bk-value text-right">{{ getPriceFormat($subTotal) }}</td>
+                                            </tr>
+
+                                            <!-- Service Addons -->
+                                            @php
+                                                $addonTotal = $bookingdata->bookingAddonService->sum('price');
+                                            @endphp
+                                            @if ($addonTotal > 0)
+                                                <tr>
+                                                    <th>{{ __('Service Addons') }}</th>
+                                                    <td class="bk-value text-right">{{ getPriceFormat($addonTotal) }}
+                                                    </td>
+                                                </tr>
+                                            @endif
+
+                                            <!-- Extra Charges -->
+                                            @php
+                                                $extraChargeTotal = $bookingdata->bookingExtraCharge->sum(
+                                                    fn($item) => $item->price * $item->qty,
+                                                );
+                                            @endphp
+                                            @if ($extraChargeTotal > 0)
+                                                <tr>
+                                                    <th>{{ __('Extra Charges') }}</th>
+                                                    <td class="bk-value text-right">
+                                                        {{ getPriceFormat($extraChargeTotal) }}</td>
+                                                </tr>
+                                            @endif
+
+                                            <!-- Total before tax -->
+                                            @php
+                                                $totalBeforeTax = $subTotal + $addonTotal + $extraChargeTotal;
+                                            @endphp
+                                            <tr>
+                                                <th>{{ __('Total') }}</th>
+                                                <td class="bk-value text-right">{{ getPriceFormat($totalBeforeTax) }}
+                                                </td>
+                                            </tr>
+
+                                            <!-- Tax -->
+                                            @php
+                                                $serviceTaxId = $bookingdata->service->tax_country_id ?? null;
+                                                $taxRate = 0;
+                                                if ($serviceTaxId) {
+                                                    $tax = \App\Models\Tax::find($serviceTaxId);
+                                                    $taxRate = $tax->value ?? 0;
+                                                }
+                                                $taxAmount = ($totalBeforeTax * $taxRate) / 100;
+                                            @endphp
+                                            <tr>
+                                                <th>{{ __('Tax') }} ({{ $taxRate }}%)</th>
+                                                <td class="bk-value text-right text-danger">
+                                                    {{ getPriceFormat($taxAmount) }}</td>
+                                            </tr>
+
+                                            <!-- Grand Total -->
+                                            @php
+                                                $grandTotal = $totalBeforeTax + $taxAmount;
+                                            @endphp
+                                            <tr class="table-active">
+                                                <th><strong>{{ __('Grand Total') }}</strong></th>
+                                                <td class="bk-value text-right">
+                                                    <strong>{{ getPriceFormat($grandTotal) }}</strong></td>
+                                            </tr>
+
+                                            <!-- Advance and Remaining -->
+                                            @if ($showAdvance)
+                                                <tr>
+                                                    <th>{{ __('Advance Payment') }}</th>
+                                                    <td class="bk-value text-right">
+                                                        {{ getPriceFormat($bookingdata->advance_paid_amount) }}
+                                                    </td>
+                                                </tr>
+                                                <tr class="table-active">
+                                                    <th><strong>{{ __('Remaining Amount') }}</strong></th>
+                                                    <td class="bk-value text-right">
+                                                        <strong>{{ getPriceFormat($grandTotal - $bookingdata->advance_paid_amount) }}</strong>
+                                                    </td>
+                                                </tr>
+                                            @endif
+                                        </tbody>
+                                    </table>
                                 </div>
                             </div>
-                        </div><br>
-                    </div>
-                    <div class="table-1 mt-20">
-                    <div class="table-responsive mt-20">
-                        <table class="table mt-20">
-                            <tbody>
-                                <tr>
-                                    <th>{{__('messages.SKU')}}</th>
-                                    <th>{{__('messages.servicename')}}</th>
-                                    <th>{{__('messages.Price')}}</th>
-                                    @if($bookingdata->service->type  == 'hourly')
-                                    <th>{{__('messages.hour')}}</th>
-                                    @else
-                                    <th>{{__('messages.Qty')}}</th>
-                                    @endif
-                                    <th>{{__('messages.Subtotal')}}</th>
-                                </tr>
-                                <tr>
-                                    <td >1</td>
-                                    <td>
-                                        {{optional($bookingdata->service)->name ?? '-'}}
-                                    </td>
-                                    <td>{{ isset($bookingdata->amount) ? getPriceFormat($bookingdata->amount) : 0 }}</td>
-                                    @if(optional($bookingdata->service)->type  == 'hourly')
-                                        @php
-                                            $duration_minutes = $bookingdata->duration_diff / 60; // Calculate duration in minutes
-                                            $duration_hours = $duration_minutes > 60 ? $duration_minutes / 60 : 1; // Convert to hours if duration exceeds 60 minutes
-                                            // Format duration into hours:minutes format
-                                            $formatted_duration = gmdate('H:i', round($duration_hours * 3600));
-                                        @endphp
-                                        <td>{{!empty($formatted_duration) ? $formatted_duration     : 0}} hr</td>
-                                    @else
-                                        <td>{{!empty($bookingdata->quantity) ? $bookingdata->quantity : 0}}</td>
-                                    @endif
-                                    @php
-                                        if($bookingdata->type == 'service'){
-                                            if($bookingdata->service->type === 'fixed'){
-                                                $sub_total = ($bookingdata->amount) * ($bookingdata->quantity);
-                                            }else{
-                                                $sub_total = $bookingdata->final_total_service_price;
-                                            }
-                                        }else{
-                                            $sub_total = $bookingdata->amount;
-                                        }
 
-                                     @endphp
-                                   <td class="text-right">{{!empty($sub_total) ? getPriceFormat($sub_total) : 0}}</td>
-                                </tr>
-                                @php 
-                                    $addonTotalPrice = $bookingdata->bookingAddonService->count() > 0 ? $bookingdata->bookingAddonService->sum('price') : 0;
-                                @endphp
-                                @if($addonTotalPrice > 0)
-                                    <tr>
-                                        <td colspan="3"></td>
-                                        <td >{{__('messages.add_ons')}}</span></td>
-                                        <td class="text-right" style="width: 20%;">{{ getPriceFormat($addonTotalPrice) }}</td>
-                                    </tr>
-                                @endif
-                                @if ($bookingdata->bookingPackage == null)
-                                <tr>
-                                    <td colspan="3"></td>
-                                    <td >{{__('messages.discount') }}   ({{ !empty($bookingdata->discount) ? $bookingdata->discount : 0}}%)</span> </td>
-                                    <td class="text-right" style="width: 20%;">{{getPriceFormat(!empty($bookingdata->discount) ? $sub_total * $bookingdata->discount / 100 : 0)}}</td>
-                                </tr>
-                                @endif
-                                @php
-                                    $extraValue = 0;                   
-                                @endphp
-                                @foreach($bookingdata->bookingExtraCharge as $chrage)
-                                    @php
-                                        $extraValue += $chrage->price * $chrage->qty;
-                                    @endphp
-                                @endforeach
-                                @if ($bookingdata->couponAdded != null)
-                                <tr>
-                                    <td colspan="3"></td>
-                                    
-                                    <td >{{__('messages.Coupon_Discount')}} ( {{ optional($bookingdata->couponAdded)->code ?? ' -' }} 
-                                        @if(optional($bookingdata->couponAdded)->discount_type == 'fixed')
-                                            ({{ getPriceFormat(optional($bookingdata->couponAdded)->discount) }})
-                                        @else
-                                            ({{ optional($bookingdata->couponAdded)->discount }}%)
-                                        @endif
-                                    )</span> </td>
-                                    <td class="text-right" style="width: 20%;">{{ getPriceFormat($bookingdata->final_coupon_discount_amount) ?? 0}}</td>
-                                </tr>
-                                @endif
-                               
+                        </div>
 
-                                <tr>
-                                    <td colspan="3"></td>
-                                    <td >{{__('messages.extra_charge')}}</span></td>
-                                    <td class="text-right" style="width: 20%;">{{!empty($extraValue) ? getPriceFormat($extraValue) : 0}}</td>
-                                </tr>
-                                <tr>
-                                    <td colspan="3"></td>
-                                    <td >{{__('messages.Sub_Total')}}</span> </td>
-                                    <td class="text-right" class="text-right" style="width: 20%;">{{!empty($bookingdata->final_sub_total) ? getPriceFormat($bookingdata->final_sub_total) : 0}}</td>
-                                </tr>
-                                <tr>
-                                    <td colspan="3"></td>
-                                    <td>{{__('messages.Tax')}}
-                                        @if($bookingdata->tax != "")
-                                            @foreach(json_decode($bookingdata->tax) as $key => $value)
-                                                @if($value->type === 'percent')
-                                                    <span>({{ $value->title }} {{ $value->value }}%)</span>
-                                                @else
-                                                    <span>({{ $value->title }} {{ getPriceFormat($value->value) }})</span>
-                                                @endif
-                                            @endforeach
-                                        @endif
-                                    </td>
-                                    
-                                    <td class="text-right" style="width: 20%;">{{!empty($bookingdata->final_total_tax) ? getPriceFormat($bookingdata->final_total_tax) : 0}}</td>
-                                </tr>
-                                <tr>
-                                    <td colspan="3"></td>
-                                    <td style="width: 20%; font-weight: bold;">{{__('messages.Total_Payable')}}</span></td>
-                                    <td class="text-right" style="width: 20%;font-weight: bold;">{{!empty($bookingdata->total_amount) ? getPriceFormat($bookingdata->total_amount) : 0}}</td>
-                                </tr>
-
-                                @if($bookingdata->service->is_enable_advance_payment == 1)
-                            <tr>
-                                <td colspan="3"></td>
-                                <td style="width: 20%; font-weight: bold;">{{ __('messages.advance_payment_amount') }} ({{ $bookingdata->service->advance_payment_amount }}%)</td>
-                                <td class="text-right" style="width: 20%;font-weight: bold;">{{ getPriceFormat($bookingdata->advance_paid_amount) }}</td>
-                            </tr>
-                            @if($bookingdata->status !== "cancelled")
-                            <tr>
-                               
-                                <td colspan="3"></td>
-                                <td style="width: 20%; font-weight: bold;">
-                                    {{ __('messages.remaining_amount') }}
-                                    @if($payment == null || $payment->payment_status != 'paid')
-                                        <span class="badge bg-warning">{{ __('messages.pending') }}</span>
-                                    @endif
-                                </td>
-
-                                <td class="text-right" style="width: 20%; font-weight: bold;">
-                                    @if($payment != null && $payment->payment_status == 'paid') 
-                                        {{ __('messages.paid') }}
-                                    @else
-                                        {{ getPriceFormat($bookingdata->total_amount - $bookingdata->advance_paid_amount) }}
-                                    @endif
-                                </td>
-                            
-                            </tr>
-                            @else
-                                <tr>
-                                    <td colspan="3"></td>
-                                    <td style="width: 20%; font-weight: bold;">{{ __('messages.cancellation_charge') }} ({{ $bookingdata->cancellation_charge }}%)</td>
-                                    <td class="text-right" style="width: 20%;font-weight: bold;">{{getPriceFormat($bookingdata->cancellation_charge_amount )?? 0}}</td>
-                                </tr>
-                                @if($bookingdata->advance_paid_amount > 0)
-                                    @php 
-                                        $refundamount = $bookingdata->advance_paid_amount - $bookingdata->cancellation_charge_amount
-                                    @endphp
-                                    @if($refundamount > 0)
-                                    <tr>
-                                        <td colspan="3"></td>
-                                        <td style="width: 20%; font-weight: bold;">{{ __('messages.refund_amount') }}</td>
-                                    
-                                        <td class="text-right" style="width: 20%;font-weight: bold;">{{getPriceFormat($refundamount) ?? 0}} </td>
-                                    
-                                    </tr>
-                                    @endif
-                                @endif
-                            @endif
-                        @endif
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-                        <footer>{{$app->site_copyright}}</footer>
+                        <footer>{{ $app->site_copyright }}</footer>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
 </body>
+
 </html>
