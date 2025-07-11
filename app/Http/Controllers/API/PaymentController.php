@@ -315,7 +315,7 @@ class PaymentController extends Controller
     return comman_message_response(__('messages.payment_completed'), 200);
 }
 
-public function index(Request $request)
+public function getpaymentall(Request $request)
 {
     $query = Payment::query()
         ->with(['booking.service', 'booking.bookingPackage', 'customer']) // Eager load customer
