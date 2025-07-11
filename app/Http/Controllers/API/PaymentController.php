@@ -315,10 +315,10 @@ class PaymentController extends Controller
     return comman_message_response(__('messages.payment_completed'), 200);
 }
 
-public function getpaymentall(Request $request)
+public function index(Request $request)
 {
     $query = Payment::query()
-        ->with(['booking.service', 'booking.bookingPackage'])
+        ->with(['booking.service', 'booking.bookingPackage', 'customer']) // Eager load customer
         ->myPayment()
         ->where(function ($q) {
             $q->where('payment_type', '!=', 'bank_transfer')
@@ -328,27 +328,37 @@ public function getpaymentall(Request $request)
               });
         });
 
-    // Apply filter if exists
-    if ($request->filled('filter.column_status')) {
-        $query->where('payment_status', $request->filter['column_status']);
+    // Apply filters
+    $filter = $request->filter;
+    if (isset($filter['column_status'])) {
+        $query->where('payment_status', $filter['column_status']);
     }
 
-    // Optional: Reset query builder for admin (only needed if replacing the previous query logic)
+    // Admin check (not strictly needed here)
     if (auth()->user()->hasAnyRole(['admin'])) {
-        $query = $query->newQuery();
+        $query->newQuery(); // optional
     }
 
+    // Get paginated results
     $payments = $query->paginate(10);
 
-    // Add computed service_name field to each item
+    // Transform each payment entry
     $payments->getCollection()->transform(function ($payment) {
         $booking = $payment->booking;
 
-        $payment->service_name = match (true) {
-            $booking && $booking->bookingPackage => optional($booking->bookingPackage)->name . ' (' . __('messages.service_package') . ')',
-            $booking && $booking->service => optional($booking->service)->name . ' (' . __('messages.service') . ')',
-            default => '-',
-        };
+        // Replace booking_id with service or service package name
+        if ($booking) {
+            if (!empty($booking->bookingPackage)) {
+                $payment->booking_id = optional($booking->bookingPackage)->name . " (" . __('messages.service_package') . ")";
+            } else {
+                $payment->booking_id = optional($booking->service)->name . " (" . __('messages.service') . ")";
+            }
+        } else {
+            $payment->booking_id = '-';
+        }
+
+        // Replace customer_id with customer name
+        $payment->customer_id = optional($payment->customer)->name ?? '-';
 
         return $payment;
     });
