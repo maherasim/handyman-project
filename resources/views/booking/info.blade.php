@@ -171,9 +171,10 @@
                                     <div class="w3-third">
                                         <button class="float-end btn btn-primary update-booking" id="start-booking"
                                                 data-id="{{ $bookingdata->id }}"
-                                                data-handyman-id="{{ $bookingdata->provider_id }}" data-status="ongoing"
+                                                data-handyman-id="{{ $bookingdata->provider_id }}"
+                                                data-status="on_going"
                                                 data-confirm-message="You want to start this booking?">
-                                            <i class="lab la-telegram-plane"></i>
+                                            <i class="las la-play-circle"></i>
                                             {{ __('messages.start_drive') }}
                                         </button>
                                     </div>
@@ -184,7 +185,7 @@
                                                 data-handyman-id="{{ $bookingdata->provider_id }}"
                                                 data-status="rejected"
                                                 data-confirm-message="You want to reject this booking?">
-                                            <i class="lab la-telegram-plane"></i>
+                                            <i class="las la-times-circle"></i>
                                             {{ __('messages.decline') }}
                                         </button>
                                     </div>
@@ -197,14 +198,14 @@
                                                 data-handyman-id="{{ $bookingdata->provider_id }}"
                                                 data-status="cancelled"
                                                 data-confirm-message="You want to cancelled this booking?">
-                                            <i class="lab la-telegram-plane"></i>
+                                            <i class="las la-ban"></i>
                                             {{ __('messages.cancel') }}
                                         </button>
                                     </div>
                                     @endhasanyrole
                                 @endif
 
-                                @if ($bookingdata->status === 'ongoing')
+                                @if ($bookingdata->status === 'on_going')
                                     @hasanyrole('provider')
                                     <div class="w3-third d-flex align-items-end">
                                         <p><span class="text-info font-size-14"
@@ -218,24 +219,24 @@
                                         <button class="float-end btn btn-primary update-booking"
                                                 data-id="{{ $bookingdata->id }}"
                                                 data-handyman-id="{{ $bookingdata->provider_id }}"
-                                                data-status="inprogress"
+                                                data-status="in_progress"
                                                 data-confirm-message="You want to start this booking?">
-                                            <i class="lab la-telegram-plane"></i>
+                                            <i class="las la-play-circle"></i>
                                             {{ __('messages.start') }}
                                         </button>
                                     </div>
                                     @endhasanyrole
                                 @endif
 
-                                @if ($bookingdata->status === 'inprogress')
+                                @if ($bookingdata->status === 'in_progress')
                                     @hasanyrole('user')
                                     <div class="w3-third">
-                                        <button class="float-end btn btn-info hold-booking"
+                                        <button class="float-end btn btn-warning hold-booking"
                                                 data-id="{{ $bookingdata->id }}"
                                                 data-handyman-id="{{ $bookingdata->provider_id }}"
                                                 data-status="hold"
                                                 data-confirm-message="You want to start this booking?">
-                                            <i class="lab la-telegram-plane"></i>
+                                            <i class="las la-pause-circle"></i>
                                             {{ __('messages.hold') }}
                                         </button>
                                     </div>
@@ -245,7 +246,7 @@
                                                 data-handyman-id="{{ $bookingdata->provider_id }}"
                                                 data-status="pending_approval"
                                                 data-confirm-message="You want to end this booking?">
-                                            <i class="lab la-telegram-plane"></i>
+                                            <i class="las la-check-circle"></i>
                                             {{ __('messages.done') }}
                                         </button>
                                     </div>
@@ -268,7 +269,7 @@
                                                 data-handyman-id="{{ $bookingdata->provider_id }}"
                                                 data-status="inprogress"
                                                 data-confirm-message="Are you sure you want to resume this booking?">
-                                            <i class="lab la-telegram-plane"></i>
+                                            <i class="las la-play"></i>
                                             {{ __('messages.resume') }}
                                         </button>
                                     </div>
@@ -279,7 +280,7 @@
                                                 data-handyman-id="{{ $bookingdata->provider_id }}"
                                                 data-status="cancelled"
                                                 data-confirm-message="Are you sure you want to cancelled this booking?">
-                                            <i class="lab la-telegram-plane"></i>
+                                            <i class="las la-times-circle"></i>
                                             {{ __('messages.cancel') }}
                                         </button>
                                     </div>
@@ -290,22 +291,22 @@
                                 @if ($bookingdata->status === 'pending_approval')
                                     @hasanyrole('provider')
                                     <div class="w3-third">
-                                        <button class="float-end btn btn-primary update-booking"
+                                        <button class="float-end btn btn-success update-booking"
                                                 data-id="{{ $bookingdata->id }}"
                                                 data-handyman-id="{{ $bookingdata->provider_id }}"
                                                 data-status="completed"
                                                 data-confirm-message="Are you sure you want to complete this booking?">
-                                            <i class="lab la-telegram-plane"></i>
+                                            <i class="las la-check-circle"></i>
                                             {{ __('messages.completed') }}
                                         </button>
                                     </div>
 
-                                    <button class="float-end btn btn-info" id="complete-booking"
+                                    <button class="float-end btn btn-success" id="complete-booking"
                                             data-id="{{ $bookingdata->id }}"
                                             data-handyman-id="{{ $bookingdata->provider_id }}"
                                             data-status="cancelled"
                                             data-confirm-message="Are you sure you want to cancel this booking?">
-                                        <i class="lab la-telegram-plane"></i>
+                                        <i class="las la-file-invoice-dollar"></i>
                                         {{ __('messages.add_extra_charges') }}
                                     </button>
                                     @endhasanyrole
@@ -328,6 +329,19 @@
                                             {{ __('messages.rate_now') }}
                                         </button>
                                     </div>
+
+                                    @if($payment->payment_status != 'paid')
+                                        <div class="w3-third d-flex align-items-end">
+                                            <a class="float-end btn btn-warning"
+                                               href="{{ route('book.service', ['id' => $bookingdata->service_id, 'booking_id'=> $bookingdata->id, 'payment_type' => 'full_payment']) }}"
+                                               target="_blank"
+                                               data-id="{{ $bookingdata->id }}">
+                                                <i class="las la-credit-card"></i>
+                                                <!-- Changed to a star icon (Line Awesome) -->
+                                                {{ __('Pay now') }}
+                                            </a>
+                                        </div>
+                                    @endif
                                     @endhasanyrole
                                 @endif
 
@@ -1285,7 +1299,7 @@
                 $.ajax({
                     url: baseUrl + '/api/delete-booking-rating',
                     type: 'POST',
-                    data: { id: reviewId },
+                    data: {id: reviewId},
                     success: function (res) {
                         Swal.fire('Deleted!', 'Your review has been removed.', 'success');
                         window.location.reload();

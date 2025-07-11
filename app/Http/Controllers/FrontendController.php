@@ -580,7 +580,7 @@ $price = $serviceData['service_detail']['price'] ?? 0;
 $discount = $serviceData['service_detail']['discount'] ?? 0;
 $subtotal = $discount != 0 ? ($price - ($price * $discount / 100)) : $price;
 
-       
+
         $total_ratings = BookingRating::where('service_id', $serviceData['service_detail']['id'])->get();
         return view('landing-page.ServiceDetail', compact('serviceData', 'favouriteService', 'date_time', 'completed_services', 'knownLanguageArray', 'subtotal', 'total_ratings', 'favouriteServiceData', 'userId'));
     }
@@ -710,7 +710,11 @@ if ($matchedTax) {
         $wallet = $user ? $user->wallet : null;
         $wallet_amount = $wallet ? $wallet->amount : 0;
 
-        return view('landing-page.BookService', compact('service', 'coupons', 'taxes', 'user_id', 'availableserviceslot', 'serviceaddon', 'googlemapkey', 'wallet_amount'));
+        $payment_type = $request->payment_type == 'full_payment' ? 'paid' : 'advanced_paid';
+        $booking_id = $request->booking_id ?? null;
+        $total_booking_amount = Booking::with('bookingExtraCharge')->find($booking_id)->total_amount ?? 0;
+
+        return view('landing-page.BookService', compact('service', 'coupons', 'taxes', 'user_id', 'availableserviceslot', 'serviceaddon', 'googlemapkey', 'wallet_amount', 'payment_type', 'booking_id', 'total_booking_amount'));
     }
 
     public function showdetails($id)
@@ -1113,7 +1117,7 @@ public function providerDatatable(Datatables $datatable, Request $request)
             $plan_icon = asset('images/icon/freepng.png');
 
             if ($data->providerSubscription) {
-               
+
                 $plan_type = strtolower($data->providerSubscription->plan_type);
                 switch ($plan_type) {
                     case 'silver plan':

@@ -105,7 +105,7 @@ import Swal from 'sweetalert2'
 import { confirmcancleSwal, confirmcancleWallet } from '../data/utilities'
 import Wallet from '../components/Wallet.vue'
 
-const props = defineProps(['booking_id', 'customer_id', 'discount', 'total_amount', 'advance_payment_amount', 'wallet_amount'])
+const props = defineProps(['booking_id', 'customer_id', 'discount', 'total_amount', 'advance_payment_amount', 'wallet_amount', 'payment_type'])
 
 const remainingAmount = computed(() => {
   return props.advance_payment_amount != null ? props.advance_payment_amount : props.total_amount
@@ -168,10 +168,10 @@ const formSubmit = handleSubmit(async (values) => {
   values.discount = props.discount
   values.payment_type = values.payment_method
   values.wallet_amount = props.wallet_amount
-  values.total_amount = props.advance_payment_amount ?? props.total_amount
-  values.advance_paid_amount = props.advance_payment_amount ?? null
+  values.total_amount = props.payment_type == 'paid' ? props.total_amount : props.advance_payment_amount
+  values.advance_paid_amount = props.payment_type == 'paid' ? null : props.advance_payment_amount
 
-  values.type = props.advance_payment_amount != null ? 'advance_payment' : 'full_payment'
+  values.type = props.payment_type == 'paid' ? 'full_payment' : 'advance_payment'
   values.total_amount = Number(values.total_amount).toFixed(2)
 
   const csrfToken = document.querySelector('meta[name="csrf-token"]').content
