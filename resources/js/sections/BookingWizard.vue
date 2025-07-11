@@ -574,7 +574,7 @@
           </template>
           <component :is="currentComponent" :service="service" :booking_id="bookingId" :customer_id="user_id"
             :discount="discount" :total_amount="totalAmount" :advance_payment_amount="advance_payment_amount"
-            :wallet_amount="wallet_amount" v-if="isChildComponentVisible" />
+            :wallet_amount="wallet_amount" v-if="isChildComponentVisible" :payment_type="payment_type" />
         </div>
       </form>
     </div>
@@ -618,7 +618,7 @@ import { Calendar, DatePicker } from 'v-calendar';
 import 'v-calendar/style.css';
 import moment from 'moment'
 const baseUrl = document.querySelector('meta[name="baseUrl"]').getAttribute('content');
-const props = defineProps(['service', 'coupons', 'taxes', 'user_id', 'availableserviceslot', 'serviceaddon', 'googlemapkey', 'wallet_amount']);
+const props = defineProps(['service', 'coupons', 'taxes', 'user_id', 'availableserviceslot', 'serviceaddon', 'googlemapkey', 'wallet_amount', 'payment_type', 'booking_id', 'total_booking_amount']);
 const googlemapkey = props.googlemapkey;
 const maxDate = computed(() => {
   return props.service.end_at ? new Date(props.service.end_at) : null;
@@ -883,6 +883,12 @@ onMounted(() => {
   if (props.serviceaddon) {
     calculateAddonAmount()
   }
+
+    if (props.payment_type == 'paid') {
+        bookingId.value = props.booking_id
+        console.log(bookingId.value)
+        showChildComponent()
+    }
 })
 const padZero = (num) => num.toString().padStart(2, '0');
 
@@ -1088,9 +1094,18 @@ const coupondiscount = computed(() => {
 
 const totalAmount = computed(() => {
 
-  return taxAmount.value + subtotal.value;
+    if (props.payment_type == 'paid') {
+       return props.total_booking_amount;
+    }else{
+        return taxAmount.value + subtotal.value;
+    }
 
 });
+// const payment_type = computed(() => {
+//
+//   return payment_type;
+//
+// });
 
 const advance_payment_amount = computed(() => {
 
@@ -1319,7 +1334,6 @@ const formSubmit = handleSubmit(async (values) => {
       const response = await fetch(STORE_BOOKING_API, {
       method: 'POST',
       headers: {
-
         'Content-Type': 'application/json',
         'Accept': 'application/json',
         'X-CSRF-TOKEN': csrfToken,

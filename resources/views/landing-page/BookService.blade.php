@@ -1,18 +1,20 @@
 @extends('landing-page.layouts.default')
 
 @section('content')
-
 <div class="section-padding">
     <div class="container">
-    <booking-wizard  
-    :service='@json($service)' 
-    :coupons='@json($coupons)' 
-    :taxes='@json($taxes)' 
-    :user_id="{{ $user_id }}" 
-    :availableserviceslot='@json($availableserviceslot)' 
-    :serviceaddon='@json(isset($serviceaddon) ? $serviceaddon : null)'  
-    :googlemapkey="'{{ $googlemapkey }}'" 
+    <booking-wizard
+    :service='@json($service)'
+    :coupons='@json($coupons)'
+    :taxes='@json($taxes)'
+    :user_id="{{ $user_id }}"
+    :availableserviceslot='@json($availableserviceslot)'
+    :serviceaddon='@json(isset($serviceaddon) ? $serviceaddon : null)'
+    :googlemapkey="'{{ $googlemapkey }}'"
     :wallet_amount="{{ $wallet_amount }}"
+    :payment_type='@json($payment_type)'
+    :booking_id="{{ $booking_id }}"
+    :total_booking_amount="{{ $total_booking_amount }}"
 ></booking-wizard>
 
     </div>
