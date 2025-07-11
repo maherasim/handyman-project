@@ -490,16 +490,26 @@ $extraValue = 0;
             <div class="col-lg-12">
                 <div class="card">
                     <div class="card-body">
-                        <div class="invoice-title">
-                            <div class="mb-4">
-                             <img src="https://frobster.com/storage/510/logo11.png" class="img-fluid rounded-normal darkmode-logo site_logo_preview" alt="logo">
-                            </div>
-                            <div class="text-muted">
-                                <p class="mb-1"><i
-                                        class="uil uil-envelope-alt me-1"></i>{{ $generaldata->inquriy_email }}</p>
-                                <p><i class="uil uil-phone me-1"></i>{{ $generaldata->helpline_number }}</p>
-                            </div>
-                        </div>
+                        <div class="invoice-title d-flex align-items-start justify-content-between">
+    <!-- Left: Logo -->
+    <div class="me-3">
+        <img src="https://frobster.com/storage/510/logo11.png"
+             class="img-fluid rounded-normal darkmode-logo site_logo_preview"
+             alt="logo"
+             style="height: 60px; width: auto;">
+    </div>
+
+    <!-- Right: Contact Info -->
+    <div class="text-muted text-end">
+        <p class="mb-1">
+            <i class="uil uil-envelope-alt me-1"></i>{{ $generaldata->inquriy_email }}
+        </p>
+        <p>
+            <i class="uil uil-phone me-1"></i>{{ $generaldata->helpline_number }}
+        </p>
+    </div>
+</div>
+
 
                         <hr class="my-4">
 

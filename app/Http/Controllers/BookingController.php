@@ -1044,6 +1044,7 @@ class BookingController extends Controller
         $bookingdata->service->is_enable_advance_payment = $bookingdata->service->type == 'fixed' ? ($bookingdata->service->is_enable_advance_payment == 1 ? $bookingdata->service->is_enable_advance_payment : $global_advance_payment) : 0;
         $bookingdata->service->advance_payment_amount = $bookingdata->service->type == 'fixed' ? ($bookingdata->service->advance_payment_amount > 0 ? $bookingdata->service->advance_payment_amount : $advancePaymentPercentage) : 0;
         $pdf = Pdf::loadView('booking.invoice', ['bookingdata' => $bookingdata, 'data' => $data, 'payment' => $payment]);
+        dd($pdf);
         return $pdf->download('invoice_' . $bookingdata->id . '.pdf');
     }
 
