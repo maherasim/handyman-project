@@ -492,7 +492,7 @@ $extraValue = 0;
                     <div class="card-body">
                         <div class="invoice-title">
                             <div class="mb-4">
-                                <h2 class="mb-1 text-muted">{{ $generaldata->site_name }}</h2>
+                             <img src="https://frobster.com/storage/510/logo11.png" class="img-fluid rounded-normal darkmode-logo site_logo_preview" alt="logo">
                             </div>
                             <div class="text-muted">
                                 <p class="mb-1"><i
