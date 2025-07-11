@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\PostJobRequest;
 use App\Models\PostJobBid;
 use App\Http\Resources\API\PostJobBiderResource;
 
