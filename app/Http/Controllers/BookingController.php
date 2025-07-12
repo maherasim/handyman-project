@@ -1205,7 +1205,7 @@ class BookingController extends Controller
                 'user_type' => 'provider',
                 'employee_id' => $booking->provider_id,
                 'commission_amount' => $booking->total_amount - $provider_earning,
-                'commission_status' => 'paid',
+                'commission_status' => 'unpaid',
             ]);
 
             ProviderPayout::create([
@@ -1213,66 +1213,43 @@ class BookingController extends Controller
                 'amount' => $provider_earning, // Only provider's share of advance payment
                 'payment_method' => 'stripe', // Payment done into wallet
                 'paid_date' => Carbon::now(), // Current timestamp
-                'status' => 'pending', // Payout not sent yet (only earned)
+                'status' => 'paid', // Payout not sent yet (only earned)
                 'booking_id' => $booking->id, // Optional, if your table has booking_id field
                 'payment_gateway' => 'stripe', // Optional, if your table has this
             ]);
         }
 
-        if (!empty($result) && $result->payment_status == 'paid') {
+        if(!empty($result) && $result->payment_status == 'paid'){
             $booking->status = 'completed';
+            $booking->update();
 
-            // ✅ Manually split advance payment commission here
-            $total_amount = $booking->total_amount - $booking->advance_paid_amount;
-
-            // Example: get commission percentage from settings
             $admin_commission_percentage = Setting::getValueByKey('admin_commission_percentage', 'site-setup')->value ?? 10;
-
-            // Calculate
-            $admin_commission_amount = ($total_amount * $admin_commission_percentage) / 100;
-            $provider_earning = $total_amount - $admin_commission_amount;
-
-            // Add provider earning to wallet
-            $provider_wallet = Wallet::where('user_id', $booking->provider_id)->first();
-            if ($provider_wallet) {
-                $provider_wallet->amount += $provider_earning;
-                $provider_wallet->update();
-            }
-
-            // Add admin commission to admin wallet
             $admin_user_id = User::where('user_type', 'admin')->value('id');
-            $admin_wallet = Wallet::where('user_id', $admin_user_id)->first();
-            if ($admin_wallet) {
-                $admin_wallet->amount += $admin_commission_amount;
-                $admin_wallet->update();
+
+            $advance_paid = $booking->advance_paid_amount ?? 0;
+            $total_amount = $booking->total_amount;
+            $remaining_amount = $total_amount - $advance_paid;
+
+            if ($remaining_amount > 0) {
+                $admin_commission_amount = ($remaining_amount * $admin_commission_percentage) / 100;
+                $provider_earning = $remaining_amount - $admin_commission_amount;
+
+                Wallet::firstOrCreate(['user_id' => $booking->provider_id])->increment('amount', $provider_earning);
+                Wallet::firstOrCreate(['user_id' => $admin_user_id])->increment('amount', $admin_commission_amount);
+
+                ProviderPayout::create([
+                    'provider_id' => $booking->provider_id,
+                    'amount' => $provider_earning,
+                    'payment_method' => 'stripe',
+                    'paid_date' => Carbon::now(),
+                    'status' => 'paid',
+                    'booking_id' => $booking->id,
+                    'payment_gateway' => 'stripe',
+                ]);
             }
 
-            // Optionally record it inside CommissionEarning table (separate record if you want)
-            CommissionEarning::create([
-                'booking_id' => $booking->id,
-                'user_type' => 'admin',
-                'employee_id' => $admin_user_id,
-                'commission_amount' => $admin_commission_amount,
-                'commission_status' => 'paid', // or 'paid' if you want
-            ]);
-
-            CommissionEarning::create([
-                'booking_id' => $booking->id,
-                'user_type' => 'provider',
-                'employee_id' => $booking->provider_id,
-                'commission_amount' => $booking->total_amount - $provider_earning,
-                'commission_status' => 'paid',
-            ]);
-
-            ProviderPayout::create([
-                'provider_id' => $booking->provider_id,
-                'amount' => $provider_earning, // Only provider's share of advance payment
-                'payment_method' => 'stripe', // Payment done into wallet
-                'paid_date' => Carbon::now(), // Current timestamp
-                'status' => 'pending', // Payout not sent yet (only earned)
-                'booking_id' => $booking->id, // Optional, if your table has booking_id field
-                'payment_gateway' => 'stripe', // Optional, if your table has this
-            ]);
+            // Mark all commissions as paid
+            CommissionEarning::where('booking_id', $booking->id)->update(['commission_status' => 'paid']);
         }
 
         $booking->payment_id = $result->id;
