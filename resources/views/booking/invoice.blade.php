@@ -530,34 +530,9 @@ $extraValue = 0;
                                 </div>
                             </div>
                             <div class="col-md-6 col-sm-6 text-end" style="position: right;">
-                                <img src="https://frobster.com/storage/510/logo11.png" alt="logo"
+                                <img src="" alt="logo"
                                     style="height: 60px; width: auto;" class="img-fluid">
                             </div>
-                        </div>
-
-                        <hr>
-
-                        <div class="row mb-4">
-                            <div class="col-sm-6">
-                                <h5 class="text-muted mb-2">{{ __('BILL FROM:') }}</h5>
-                                <p class="mb-0">{{ optional($bookingdata->provider)->display_name ?? '-' }}</p>
-                                <p class="mb-0">{{ optional($bookingdata->provider)->address ?? '-' }}</p>
-
-                            </div>
-                            <div class="col-sm-6 text-end">
-                                <h5 class="text-muted mb-2">{{ __('BILL TO:') }}</h5>
-                                <p class="mb-0">{{ optional($bookingdata->customer)->display_name ?? '-' }}</p>
-                                <p class="mb-0">{{ optional($bookingdata->customer)->address ?? '-' }}</p>
-                                <p class="mb-0">{{ optional($bookingdata->customer)->contact_number ?? '-' }}</p>
-                            </div>
-                            <div class="col-sm-6 text-end">
-                                <h5 class="text-muted mb-2">{{ __('FOR') }}</h5>
-                                <p class="mb-0">{{ optional($bookingdata->service)->name ?? '-' }}</p>
-
-                            </div>
-                        </div>
-
-                        <div class="row mb-4">
                             <div class="col-sm-4">
                                 <strong>{{ __('Invoice No:') }}</strong> #{{ $bookingdata->id }}
                             </div>
@@ -569,6 +544,30 @@ $extraValue = 0;
                                 {{ $bookingdata->created_at->format('d M Y') }}
                             </div>
                         </div>
+
+                        <hr>
+
+                        <div class="row mb-4">
+                            <div class="col-sm-6">
+                                <h5 class=" mb-2"> <strong>{{ __('BILL FROM:') }}</strong></h5>
+                                <p class="mb-0">{{ optional($bookingdata->provider)->display_name ?? '-' }}</p>
+                                <p class="mb-0">{{ optional($bookingdata->provider)->address ?? '-' }}</p>
+
+                            </div>
+                            <div class="col-sm-6 text-end">
+                                <h5 class="mb-2"> <strong> {{ __('BILL TO:') }}</strong></h5>
+                                <p class="mb-0">{{ optional($bookingdata->customer)->display_name ?? '-' }}</p>
+                                <p class="mb-0">{{ optional($bookingdata->customer)->address ?? '-' }}</p>
+                                <p class="mb-0">{{ optional($bookingdata->customer)->contact_number ?? '-' }}</p>
+                            </div>
+                            <div class="col-sm-6 text-end">
+                                <h5 class="text-muted mb-2">  <strong>{{ __('FOR') }}</strong> </h5>
+                                <p class="mb-0">{{ optional($bookingdata->service)->name ?? '-' }}</p>
+
+                            </div>
+                        </div>
+
+                       
 
                         <div class="table-responsive bk-summary-table">
                             <table class="table table-sm title-color align-right w-100 table-bordered">
