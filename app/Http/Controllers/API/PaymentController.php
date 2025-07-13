@@ -242,6 +242,22 @@ class PaymentController extends Controller
                 'booking_id' => $booking->id,
                 'payment_gateway' => 'wallet',
             ]);
+            CommissionEarning::create([
+                'booking_id' => $booking->id,
+                'user_type' => 'admin',
+                'employee_id' => $admin_user_id,
+                'commission_amount' => $admin_commission_amount,
+                'commission_status' => 'paid', // Already paid in remaining
+            ]);
+
+            CommissionEarning::create([
+                'booking_id' => $booking->id,
+                'user_type' => 'provider',
+                'employee_id' => $booking->provider_id,
+                'commission_amount' => $provider_earning,
+                'commission_status' => 'paid',
+            ]);
+
         }
 
         // Mark all commissions as paid
