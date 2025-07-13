@@ -489,9 +489,10 @@ class BookingController extends Controller
 
 
         $bookingdata->update($data);
-        if($bookingdata && $bookingdata->status === 'completed'){
-            $this->addBookingCommission($bookingdata);
-        }
+        // if($bookingdata && $bookingdata->status === 'completed'){
+        //     $this->addBookingCommission($bookingdata);
+        // }
+        $this->addBookingCommission($bookingdata);
 
         if($old_status != $data['status'] ){
             $bookingdata->old_status = $old_status;
