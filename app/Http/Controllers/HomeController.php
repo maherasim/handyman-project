@@ -159,7 +159,7 @@ $unpaidBookings = Booking::whereIn('id', $commissions)->get();
 // dd($unpaidBookings);
 foreach ($unpaidBookings as $booking) {
     $grandTotal = $booking->total_amount;
-    dd($grandTotal);
+ //   dd($grandTotal);
     $advance = $booking->advance_paid_amount ?? 0;
 
     $remaining = $grandTotal - $advance;
