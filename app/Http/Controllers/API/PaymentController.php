@@ -438,33 +438,27 @@ public function getpaymentall(Request $request)
 
         }
 
-      $assignedHandyman = optional($booking->handymanAdded->first())->handyman_id;
-
-if ($assignedHandyman) {
-    $payment_history = [
-        'payment_id' => $result->id,
-        'booking_id' => $result->booking_id,
-        'parent_id' => $result->booking_id,
-        'action' => config('constant.PAYMENT_HISTORY_ACTION.CUSTOMER_SEND_PROVIDER'),
-        'status' => config('constant.PAYMENT_HISTORY_STATUS.PENDING_PROVIDER'),
-        'sender_id' => $request->customer_id,
-        'receiver_id' => $assignedHandyman,
-        'datetime' => $request->datetime,
-        'total_amount' => $request->total_amount,
-        'txn_id' => $request->txn_id,
-        'type' => $request->payment_type,
-        'text' => __('messages.payment_transfer', [
-            'from' => get_user_name($request->customer_id),
-            'to' => get_user_name($assignedHandyman),
-            'amount' => getPriceFormat((float)$request->total_amount),
-        ]),
-    ];
-
-    $res = PaymentHistory::create($payment_history);
-    $res->parent_id = $res->id;
-    $res->update();
-}
-
+        $firstHandymanId = optional($booking->handymanAdded->first())->handyman_id;
+        $assignedUserData = User::find($firstHandymanId);
+        if($firstHandymanId != null && $assignedUserData->user_type == 'provider'){
+            $payment_history = [
+                'payment_id' => $result->id,
+                'booking_id' => $result->booking_id,
+                'parent_id' => $result->booking_id,
+                'action' => config('constant.PAYMENT_HISTORY_ACTION.CUSTOMER_SEND_PROVIDER'),
+                'status' => config('constant.PAYMENT_HISTORY_STATUS.PENDING_PROVIDER'),
+                'sender_id' => $request->customer_id,
+                'receiver_id' => $firstHandymanId,
+                'datetime' => $request->datetime,
+                'total_amount' => $request->total_amount,
+                'txn_id' => $request->txn_id,
+                'type' => $request->payment_type,
+                'text'     =>    __('messages.payment_transfer',['from' => get_user_name( $request->customer_id),'to' => get_user_name($firstHandymanId),'amount' => getPriceFormat((float)$request->total_amount) ]),
+            ];
+            $res =  PaymentHistory::create($payment_history);
+            $res->parent_id = $res->id;
+            $res->update();
+        }
         $service_id = Booking::where('id',$request->booking_id)->pluck('service_id');
         $service = Service::where('id',$service_id)->first();
         $booking->payment_id = $result->id;
