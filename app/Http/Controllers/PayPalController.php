@@ -203,13 +203,13 @@ class PayPalController extends Controller
                             'commission_status' => 'paid', // Already paid in remaining
                         ]);
 
-                    CommissionEarning::create([
-                        'booking_id' => $booking->id,
-                        'user_type' => 'provider',
-                        'employee_id' => $booking->provider_id,
-                        'commission_amount' => $provider_earning,
-                        'commission_status' => 'paid',
-                    ]);
+                                CommissionEarning::create([
+                                    'booking_id' => $booking->id,
+                                    'user_type' => 'provider',
+                                    'employee_id' => $booking->provider_id,
+                                    'commission_amount' => $provider_earning,
+                                    'commission_status' => 'paid',
+                                ]);
                             }
 
                     // Mark all commissions as paid
