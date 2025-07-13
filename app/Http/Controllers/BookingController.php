@@ -812,62 +812,66 @@ class BookingController extends Controller
         return view('booking.assigned_form', compact('bookingdata', 'pageTitle'));
     }
 
-    public function bookingAssigned(Request $request)
-    {
-        $bookingdata =  Booking::find($request->id);
+public function bookingAssigned(Request $request)
+{
+    $bookingdata = Booking::find($request->id);
 
-        $assigned_handyman_ids = [];
-        if($bookingdata->handymanAdded()->count() > 0){
-            $assigned_handyman_ids = $bookingdata->handymanAdded()->pluck('handyman_id')->toArray();
-            $bookingdata->handymanAdded()->delete();
-            $message = __('messages.transfer_to_handyman');
-            $activity_type = 'transfer_booking';
-        } else {
-            $message = __('messages.assigned_to_handyman');
-            $activity_type = 'assigned_booking';
-        }
-        $remove_notification_id = [];
-        if($request->handyman_id != null) {
-
-            foreach($request->handyman_id as $handyman) {
-
-                $user=User::where('id',$handyman)->with('handymantype')->first();
-
-                $assign_to_handyman = [
-                    'booking_id'   => $bookingdata->id,
-                    'handyman_id'  => $handyman,
-                ];
-
-                $remove_notification_id = removeArrayValue($assigned_handyman_ids,$handyman);
-                $bookingdata->handymanAdded()->insert($assign_to_handyman);
-            }
-        }
-
-        if(!empty($remove_notification_id)){
-            $search = "id".'":'.$bookingdata->id;
-
-            Notification::whereIn('notifiable_id',$remove_notification_id)
-                ->whereJsonContains('data->id',$bookingdata->id)
-                ->delete();
-        }
-
-        $bookingdata->status = 'accept';
-        $bookingdata->save();
-
-        $activity_data = [
-            'activity_type' => $activity_type,
-            'booking_id' => $bookingdata->id,
-            'booking' => $bookingdata,
-        ];
-        $this->sendNotification($activity_data);
-
-        $message = __('messages.save_form',[ 'form' => __('messages.booking') ] );
-        if($request->is('api/*')) {
-            return comman_message_response($message);
-		}
-
-        return response()->json(['status' => true,'event' => 'callback' , 'message' => $message]);
+    $assigned_handyman_ids = [];
+    if ($bookingdata->handymanAdded()->count() > 0) {
+        $assigned_handyman_ids = $bookingdata->handymanAdded()->pluck('handyman_id')->toArray();
+        $bookingdata->handymanAdded()->delete();
+        $message = __('messages.transfer_to_handyman');
+        $activity_type = 'transfer_booking';
+    } else {
+        $message = __('messages.assigned_to_handyman');
+        $activity_type = 'assigned_booking';
     }
+
+    $remove_notification_id = [];
+
+    if ($request->handyman_id != null) {
+        foreach ($request->handyman_id as $handyman) {
+            $user = User::where('id', $handyman)->with('handymantype')->first();
+
+            $assign_to_handyman = [
+                'booking_id'  => $bookingdata->id,
+                'handyman_id' => $handyman,
+            ];
+
+            $remove_notification_id = removeArrayValue($assigned_handyman_ids, $handyman);
+            $bookingdata->handymanAdded()->insert($assign_to_handyman);
+        }
+    }
+
+    if (!empty($remove_notification_id)) {
+        $search = "id" . '":' . $bookingdata->id;
+
+        Notification::whereIn('notifiable_id', $remove_notification_id)
+            ->whereJsonContains('data->id', $bookingdata->id)
+            ->delete();
+    }
+
+    $bookingdata->status = 'accept';
+    $bookingdata->save();
+
+    $activity_data = [
+        'activity_type'    => $activity_type,
+        'booking_id'       => $bookingdata->id,
+        'booking'          => $bookingdata,
+        'activity_message' => $message, // ✅ FIX: Add this to avoid "Undefined array key"
+    ];
+
+    $this->sendNotification($activity_data);
+
+    $message = __('messages.save_form', ['form' => __('messages.booking')]);
+
+    if ($request->is('api/*')) {
+        return comman_message_response($message);
+    }
+
+    return response()->json(['status' => true, 'event' => 'callback', 'message' => $message]);
+}
+
 
 
     public function action(Request $request)
