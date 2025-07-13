@@ -99,7 +99,9 @@ class HomeController extends Controller
     ];
 
     $data['CommissionEarning'] = CommissionEarning::whereIn('commission_status', ['paid', 'unpaid'])->sum('commission_amount');
+    //dd($data['CommissionEarning']);
     $data['cancellationcharge'] = Booking::where('status', 'cancelled')->sum('cancellation_charge_amount');
+    
     $data['total_revenue'] = $data['CommissionEarning'] + $data['cancellationcharge'];
 
     if ($user->hasAnyRole(['admin', 'demo_admin'])) {

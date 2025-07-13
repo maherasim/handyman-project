@@ -203,7 +203,7 @@ class PaymentController extends Controller
             'booking_id' => $booking->id,
             'user_type' => 'provider',
             'employee_id' => $booking->provider_id,
-            'commission_amount' => $booking->total_amount - $provider_earning,
+          'commission_amount' => $provider_earning, 
             'commission_status' => 'unpaid',
         ]);
 
