@@ -8,6 +8,7 @@ use App\Models\AppSetting;
 use App\Models\Booking;
 use App\Models\BookingRating;
 use App\Models\BookingStatus;
+use App\Models\PaymentHistory;
 use App\Models\CommissionEarning;
 use App\Models\Country;
 use App\Models\Coupon;
@@ -1136,70 +1137,101 @@ public function bookingAssigned(Request $request)
 
     }
 
-    public function saveStripePayment(Request $request, $id)
-    {
+public function saveStripePayment(Request $request, $id)
+{
+    $type = $request->type;
+    $result = Payment::where('booking_id', $id)->first();
 
-        $type = $request->type;
+    $stripe_session_id = $result->other_transaction_detail;
+    $payment_type = $result->payment_type;
 
-        $result = Payment::where('booking_id', $id)->first();
+    $session_object = getstripePaymnetId($stripe_session_id, $payment_type);
 
-        $stripe_session_id = $result->other_transaction_detail;
-        $payment_type = $result->payment_type;
+    if ($session_object['payment_intent'] !== '' && $session_object['payment_status'] == 'paid') {
+        $result->txn_id = $session_object['payment_intent'];
 
-        $session_object = getstripePaymnetId($stripe_session_id, $payment_type);
+        if ($type == 'advance_payment') {
+            $result->payment_status = 'advanced_paid';
+        } else {
+            $result->payment_status = 'paid';
+        }
+    }
 
-        if ($session_object['payment_intent'] !== '' && $session_object['payment_status'] == 'paid') {
+    $result->update();
 
-            $result->txn_id = $session_object['payment_intent'];
+    $booking = Booking::find($id);
+    $admin_user_id = User::where('user_type', 'admin')->value('id');
+    $admin_commission_percentage = Setting::getValueByKey('admin_commission_percentage', 'site-setup')->value ?? 10;
 
-            if ($type == 'advance_payment') {
+    if (!empty($result) && $result->payment_status == 'advanced_paid') {
+        $booking->advance_paid_amount = $result->total_amount;
+        $booking->status = 'pending';
 
-                $result->payment_status = 'advanced_paid';
-            } else {
-                $result->payment_status = 'paid';
-            }
+        $advance_paid_amount = $result->total_amount;
+        $admin_commission_amount = ($advance_paid_amount * $admin_commission_percentage) / 100;
+        $provider_earning = $advance_paid_amount - $admin_commission_amount;
 
-        };
+        Wallet::firstOrCreate(['user_id' => $booking->provider_id])->increment('amount', $provider_earning);
+        Wallet::firstOrCreate(['user_id' => $admin_user_id])->increment('amount', $admin_commission_amount);
 
-        $result->update();
+        CommissionEarning::create([
+            'booking_id' => $booking->id,
+            'user_type' => 'admin',
+            'employee_id' => $admin_user_id,
+            'commission_amount' => $admin_commission_amount,
+            'commission_status' => 'paid',
+        ]);
 
-        $booking = Booking::find($id);
-        if (!empty($result) && $result->payment_status == 'advanced_paid') {
-            $booking->advance_paid_amount = $result->total_amount;
-            $booking->status = 'pending';
+        CommissionEarning::create([
+            'booking_id' => $booking->id,
+            'user_type' => 'provider',
+            'employee_id' => $booking->provider_id,
+            'commission_amount' => $provider_earning,
+            'commission_status' => 'unpaid',
+        ]);
 
-            // ✅ Manually split advance payment commission here
-            $advance_paid_amount = $result->total_amount;
+        ProviderPayout::create([
+            'provider_id' => $booking->provider_id,
+            'amount' => $provider_earning,
+            'payment_method' => 'stripe',
+            'paid_date' => Carbon::now(),
+            'status' => 'paid',
+            'booking_id' => $booking->id,
+            'payment_gateway' => 'stripe',
+        ]);
+    }
 
-            // Example: get commission percentage from settings
-            $admin_commission_percentage = Setting::getValueByKey('admin_commission_percentage', 'site-setup')->value ?? 10;
+    if (!empty($result) && $result->payment_status == 'paid') {
+        $booking->status = 'completed';
+        $booking->update();
 
-            // Calculate
-            $admin_commission_amount = ($advance_paid_amount * $admin_commission_percentage) / 100;
-            $provider_earning = $advance_paid_amount - $admin_commission_amount;
+        $advance_paid = $booking->advance_paid_amount ?? 0;
+        $total_amount = $booking->total_amount;
+        $remaining_amount = $total_amount - $advance_paid;
 
-            // Add provider earning to wallet
-            $provider_wallet = Wallet::where('user_id', $booking->provider_id)->first();
-            if ($provider_wallet) {
-                $provider_wallet->amount += $provider_earning;
-                $provider_wallet->update();
-            }
+        if ($remaining_amount > 0) {
+            $admin_commission_amount = ($remaining_amount * $admin_commission_percentage) / 100;
+            $provider_earning = $remaining_amount - $admin_commission_amount;
 
-            // Add admin commission to admin wallet
-            $admin_user_id = User::where('user_type', 'admin')->value('id');
-            $admin_wallet = Wallet::where('user_id', $admin_user_id)->first();
-            if ($admin_wallet) {
-                $admin_wallet->amount += $admin_commission_amount;
-                $admin_wallet->update();
-            }
+            Wallet::firstOrCreate(['user_id' => $booking->provider_id])->increment('amount', $provider_earning);
+            Wallet::firstOrCreate(['user_id' => $admin_user_id])->increment('amount', $admin_commission_amount);
 
-            // Optionally record it inside CommissionEarning table (separate record if you want)
+            ProviderPayout::create([
+                'provider_id' => $booking->provider_id,
+                'amount' => $provider_earning,
+                'payment_method' => 'stripe',
+                'paid_date' => Carbon::now(),
+                'status' => 'paid',
+                'booking_id' => $booking->id,
+                'payment_gateway' => 'stripe',
+            ]);
+
             CommissionEarning::create([
                 'booking_id' => $booking->id,
                 'user_type' => 'admin',
                 'employee_id' => $admin_user_id,
                 'commission_amount' => $admin_commission_amount,
-                'commission_status' => 'paid', // or 'paid' if you want
+                'commission_status' => 'paid',
             ]);
 
             CommissionEarning::create([
@@ -1207,82 +1239,55 @@ public function bookingAssigned(Request $request)
                 'user_type' => 'provider',
                 'employee_id' => $booking->provider_id,
                 'commission_amount' => $provider_earning,
-                'commission_status' => 'unpaid',
-            ]);
-
-            ProviderPayout::create([
-                'provider_id' => $booking->provider_id,
-                'amount' => $provider_earning, // Only provider's share of advance payment
-                'payment_method' => 'stripe', // Payment done into wallet
-                'paid_date' => Carbon::now(), // Current timestamp
-                'status' => 'paid', // Payout not sent yet (only earned)
-                'booking_id' => $booking->id, // Optional, if your table has booking_id field
-                'payment_gateway' => 'stripe', // Optional, if your table has this
+                'commission_status' => 'paid',
             ]);
         }
 
-        if(!empty($result) && $result->payment_status == 'paid'){
-            $booking->status = 'completed';
-            $booking->update();
-
-            $admin_commission_percentage = Setting::getValueByKey('admin_commission_percentage', 'site-setup')->value ?? 10;
-            $admin_user_id = User::where('user_type', 'admin')->value('id');
-
-            $advance_paid = $booking->advance_paid_amount ?? 0;
-            $total_amount = $booking->total_amount;
-            $remaining_amount = $total_amount - $advance_paid;
-
-            if ($remaining_amount > 0) {
-                $admin_commission_amount = ($remaining_amount * $admin_commission_percentage) / 100;
-                $provider_earning = $remaining_amount - $admin_commission_amount;
-
-                Wallet::firstOrCreate(['user_id' => $booking->provider_id])->increment('amount', $provider_earning);
-                Wallet::firstOrCreate(['user_id' => $admin_user_id])->increment('amount', $admin_commission_amount);
-
-                ProviderPayout::create([
-                    'provider_id' => $booking->provider_id,
-                    'amount' => $provider_earning,
-                    'payment_method' => 'stripe',
-                    'paid_date' => Carbon::now(),
-                    'status' => 'paid',
-                    'booking_id' => $booking->id,
-                    'payment_gateway' => 'stripe',
-                ]);
-                 CommissionEarning::create([
-                            'booking_id' => $booking->id,
-                            'user_type' => 'admin',
-                            'employee_id' => $admin_user_id,
-                            'commission_amount' => $admin_commission_amount,
-                            'commission_status' => 'paid', // Already paid in remaining
-                 ]);
-
-                 CommissionEarning::create([
-                                    'booking_id' => $booking->id,
-                                    'user_type' => 'provider',
-                                    'employee_id' => $booking->provider_id,
-                                    'commission_amount' => $provider_earning,
-                                    'commission_status' => 'paid',
-                 ]);
-            }
-
-            // Mark all commissions as paid
-            CommissionEarning::where('booking_id', $booking->id)->update(['commission_status' => 'paid']);
-        }
-
-        $booking->payment_id = $result->id;
-        $booking->update();
-
-        $activity_data = [
-            'activity_type' => 'payment_message_status',
-            'payment_status' => str_replace("_", " ", ucfirst($result->payment_status)),
-            'booking_id' => $booking->id,
-            'booking' => $booking,
-        ];
-        $this->sendNotification($activity_data);
-
-        return redirect('/booking-list');
-
+        CommissionEarning::where('booking_id', $booking->id)->update(['commission_status' => 'paid']);
     }
+
+    // ✅ Always create a new PaymentHistory entry
+    $firstHandymanId = optional($booking->handymanAdded->first())->handyman_id;
+    $assignedUserData = User::find($firstHandymanId);
+
+    if ($firstHandymanId && $assignedUserData->user_type == 'provider') {
+        $payment_history = [
+            'payment_id' => $result->id,
+            'booking_id' => $result->booking_id,
+            'parent_id' => $result->booking_id, // temporary, will update below
+            'action' => config('constant.PAYMENT_HISTORY_ACTION.CUSTOMER_SEND_PROVIDER'),
+            'status' => config('constant.PAYMENT_HISTORY_STATUS.PENDING_PROVIDER'),
+            'sender_id' => $booking->customer_id,
+            'receiver_id' => $firstHandymanId,
+            'datetime' => now(),
+            'total_amount' => $result->total_amount,
+            'txn_id' => $result->txn_id,
+            'type' => $result->payment_type,
+            'text' => __('messages.payment_transfer', [
+                'from' => get_user_name($booking->customer_id),
+                'to' => get_user_name($firstHandymanId),
+                'amount' => getPriceFormat((float)$result->total_amount),
+            ]),
+        ];
+
+        $res = PaymentHistory::create($payment_history);
+        $res->parent_id = $res->id;
+        $res->save();
+    }
+
+    $booking->payment_id = $result->id;
+    $booking->update();
+
+    $this->sendNotification([
+        'activity_type' => 'payment_message_status',
+        'payment_status' => str_replace("_", " ", ucfirst($result->payment_status)),
+        'booking_id' => $booking->id,
+        'booking' => $booking,
+    ]);
+
+    return redirect('/booking-list');
+}
+
 
     public function getEarningsBreakdown(Request $request)
     {

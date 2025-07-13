@@ -161,7 +161,7 @@ class PaymentController extends Controller
     //     }
     //     return comman_message_response($message,$status_code);
     // }
- public function savePayment(Request $request)
+public function savePayment(Request $request)
 {
     $data = $request->all();
     $data['datetime'] = isset($request->datetime) ? date('Y-m-d H:i:s', strtotime($request->datetime)) : date('Y-m-d H:i:s');
@@ -203,7 +203,7 @@ class PaymentController extends Controller
             'booking_id' => $booking->id,
             'user_type' => 'provider',
             'employee_id' => $booking->provider_id,
-           'commission_amount' => $provider_earning, 
+            'commission_amount' => $provider_earning,
             'commission_status' => 'unpaid',
         ]);
 
@@ -242,12 +242,13 @@ class PaymentController extends Controller
                 'booking_id' => $booking->id,
                 'payment_gateway' => 'wallet',
             ]);
+
             CommissionEarning::create([
                 'booking_id' => $booking->id,
                 'user_type' => 'admin',
                 'employee_id' => $admin_user_id,
                 'commission_amount' => $admin_commission_amount,
-                'commission_status' => 'paid', // Already paid in remaining
+                'commission_status' => 'paid',
             ]);
 
             CommissionEarning::create([
@@ -257,14 +258,13 @@ class PaymentController extends Controller
                 'commission_amount' => $provider_earning,
                 'commission_status' => 'paid',
             ]);
-
         }
 
         // Mark all commissions as paid
         CommissionEarning::where('booking_id', $booking->id)->update(['commission_status' => 'paid']);
     }
 
-    // Save payment history for handyman if provider is first handyman
+    // Always create new PaymentHistory entry
     $firstHandymanId = optional($booking->handymanAdded->first())->handyman_id;
     $assignedUserData = User::find($firstHandymanId);
 
@@ -272,7 +272,7 @@ class PaymentController extends Controller
         $payment_history = [
             'payment_id' => $result->id,
             'booking_id' => $result->booking_id,
-            'parent_id' => $result->booking_id,
+            'parent_id' => $result->booking_id, // placeholder, will set after creation
             'action' => config('constant.PAYMENT_HISTORY_ACTION.CUSTOMER_SEND_PROVIDER'),
             'status' => config('constant.PAYMENT_HISTORY_STATUS.PENDING_PROVIDER'),
             'sender_id' => $request->customer_id,
@@ -287,9 +287,10 @@ class PaymentController extends Controller
                 'amount' => getPriceFormat((float)$request->total_amount),
             ]),
         ];
+
         $res = PaymentHistory::create($payment_history);
         $res->parent_id = $res->id;
-        $res->update();
+        $res->save();
     }
 
     // Assign payment ID to booking
@@ -302,6 +303,7 @@ class PaymentController extends Controller
         if ($wallet && $wallet->amount >= $request->total_amount) {
             $wallet->amount -= $request->total_amount;
             $wallet->save();
+
             $service = Service::find($booking->service_id);
             $this->sendNotification([
                 'activity_type' => 'paid_with_wallet',
@@ -330,6 +332,7 @@ class PaymentController extends Controller
 
     return comman_message_response(__('messages.payment_completed'), 200);
 }
+
 
 public function getpaymentall(Request $request)
 {
