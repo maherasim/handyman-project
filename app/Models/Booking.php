@@ -138,6 +138,11 @@ class Booking extends Model
     public function addressAdded(){
         return $this->belongsTo(BookingAddressMapping::class,'id','booking_id');
     }
+    public function service_slots()
+{
+    return $this->hasMany(ServiceSlot::class, 'booking_id');
+}
+
     public function bookingTaxMapping(){
         return $this->hasMany(BookingTaxMapping::class,'id','booking_id');
     }

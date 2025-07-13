@@ -46,7 +46,14 @@ class HomeController extends Controller
         if (request()->ajax()) {
             $start = (!empty($_GET["start"])) ? date('Y-m-d', strtotime($_GET["start"])) : ('');
             $end = (!empty($_GET["end"])) ? date('Y-m-d', strtotime($_GET["end"])) : ('');
-            $data =  Booking::myBooking()->where('status', 'pending')->whereDate('date', '>=', $start)->whereDate('date',   '<=', $end)->with('service')->get();
+            $data = Booking::myBooking()->where('status', 'pending')->whereDate('date', '>=', $start)->whereDate('date', '<=', $end)->with('service')->get();
+            $data = Booking::myBooking()->where('status', 'pending')->whereHas('service_slots', function ($query) use ($start, $end) { $query->whereDate('date', '>=', $start)
+              ->whereDate('date', '<=', $end);
+                })->with(['service', 'service_slots' => function ($q) use ($start, $end) {
+                    $q->whereDate('date', '>=', $start)
+                    ->whereDate('date', '<=', $end);
+                }]) ->get();
+
             return response()->json($data);
         }
 
@@ -146,8 +153,8 @@ class HomeController extends Controller
             $data['total_earning']  = HandymanPayout::where('handyman_id',$user->id)->sum('amount') ?? 0;
         }
 
-$sitesetup = Setting::where('type','site-setup')->where('key', 'site-setup')->first();
-$data['datetime'] = $sitesetup ? json_decode($sitesetup->value) : null;
+        $sitesetup = Setting::where('type','site-setup')->where('key', 'site-setup')->first();
+        $data['datetime'] = $sitesetup ? json_decode($sitesetup->value) : null;
 
         if (auth()->user()->hasAnyRole(['admin', 'demo_admin'])) {
             return $this->adminDashboard($data);
