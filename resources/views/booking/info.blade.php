@@ -441,30 +441,36 @@
                             </div>
                             <div class="col-md-4">
                                 <div class="card h-100">
-                                    <div class="card-body">
-                                        <p class="opacity-75 fz-12">{{ __('messages.payment_status') }}</p>
+                                    @php
+    $isPaid = isset($payment) && $payment->payment_status === 'paid';
+    $cardStyle = $isPaid ? 'background: linear-gradient(to right, #28a745, #218838); color: white;' : '';
+@endphp
 
-                                        @if (isset($payment) && $payment->payment_type === 'bank_transfer' && $payment->status == 0)
-                                            <p class="mb-0 text-warning">
-                                                {{ __('messages.pending') }}
-                                            </p>
-                                        @elseif (isset($payment) && $payment->payment_status)
-                                            @php
-                                                $statusClass = match ($payment->payment_status) {
-                                                    'paid', 'advanced_paid' => 'text-success',
-                                                    'Advanced Refund' => 'text-warning',
-                                                    default => 'text-danger',
-                                                };
-                                            @endphp
-                                            <p class="mb-0 {{ $statusClass }}">
-                                                {{ str_replace('_', ' ', ucfirst($payment->payment_status)) }}
-                                            </p>
-                                        @else
-                                            <p class="mb-0 text-danger">
-                                                {{ __('messages.pending') }}
-                                            </p>
-                                        @endif
-                                    </div>
+<div class="card-body" style="{{ $cardStyle }}">
+    <p class="opacity-75 fz-12">{{ __('messages.payment_status') }}</p>
+
+    @if (isset($payment) && $payment->payment_type === 'bank_transfer' && $payment->status == 0)
+        <p class="mb-0 text-warning">
+            {{ __('messages.pending') }}
+        </p>
+    @elseif (isset($payment) && $payment->payment_status)
+        @php
+            $statusClass = match ($payment->payment_status) {
+                'paid', 'advanced_paid' => 'text-white',
+                'Advanced Refund' => 'text-warning',
+                default => 'text-danger',
+            };
+        @endphp
+        <p class="mb-0 {{ $statusClass }}">
+            {{ str_replace('_', ' ', ucfirst($payment->payment_status)) }}
+        </p>
+    @else
+        <p class="mb-0 text-danger">
+            {{ __('messages.pending') }}
+        </p>
+    @endif
+</div>
+
                                 </div>
                             </div>
 
