@@ -160,14 +160,18 @@ $unpaidBookings = Booking::whereIn('id', $commissions)->get();
 foreach ($unpaidBookings as $booking) {
     $grandTotal = $booking->total_amount;
     $advance = $booking->advance_paid_amount ?? 0;
-    $adminCommission = $booking->commissionsdata->where('user_type', 'admin')->sum('commission_amount');
-//dd(  $adminCommission);
-    $remaining = $grandTotal - $advance;
-    dd(  $remaining);
-    $providerPayout = $remaining - $adminCommission;
 
-    $providerRemainingPayout += max($providerPayout, 0); // ensure no negatives
+    $remaining = $grandTotal - $advance;
+
+    // Apply 10% commission ONLY on the remaining
+    $adminCommissionOnRemaining = $remaining * 0.10;
+
+    // Provider gets what's left after admin commission on remaining
+    $providerPayout = $remaining - $adminCommissionOnRemaining;
+
+    $providerRemainingPayout += max($providerPayout, 0); // prevent negative payout
 }
+
 
 $data['remaining_payout'] = round($providerRemainingPayout, $digitafter_decimal_point);
 
