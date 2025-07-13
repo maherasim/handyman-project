@@ -143,7 +143,7 @@ class HomeController extends Controller
         $commissions = $user->commission_earning()
             ->where('commission_status', 'unpaid')
             ->pluck('booking_id');
-dd(  $commissions);
+// dd(  $commissions);
         $ProviderEarning = $commissions->isNotEmpty()
             ? CommissionEarning::whereIn('booking_id', $commissions)
                 ->whereIn('user_type', ['provider', 'handyman'])
@@ -156,12 +156,12 @@ dd(  $commissions);
 $providerRemainingPayout = 0;
 
 $unpaidBookings = Booking::whereIn('id', $commissions)->get();
-dd($unpaidBookings);
+// dd($unpaidBookings);
 foreach ($unpaidBookings as $booking) {
-    $grandTotal = $booking->final_total_amount;
-    $advance = $booking->advance_payment ?? 0;
+    $grandTotal = $booking->total_amount;
+    $advance = $booking->advance_paid_amount ?? 0;
     $adminCommission = $booking->commissionsdata->where('user_type', 'admin')->sum('commission_amount');
-
+dd(  $adminCommission);
     $remaining = $grandTotal - $advance;
     $providerPayout = $remaining - $adminCommission;
 
