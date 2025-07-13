@@ -435,12 +435,14 @@
                                     @php
                                         $isPaid = isset($payment) && $payment->payment_status === 'paid';
                                         $cardStyle = $isPaid
-                                            ? 'background: linear-gradient(135deg, #28a745, #218838); color: #fff;'
+                                            ? 'background: linear-gradient(135deg, #43e97b, #38f9d7); color: #fff; border-radius: 10px; padding: 12px;'
                                             : '';
                                     @endphp
 
                                     <div class="card-body" style="{{ $cardStyle }}">
-                                        <p class="opacity-75 fz-12">{{ __('messages.payment_status') }}</p>
+                                        <p class="opacity-75 fz-12 {{ $isPaid ? 'text-white-50' : '' }}">
+                                            {{ __('messages.payment_status') }}
+                                        </p>
 
                                         @if (isset($payment) && $payment->payment_type === 'bank_transfer' && $payment->status == 0)
                                             <p class="mb-0 text-warning">
@@ -449,7 +451,7 @@
                                         @elseif (isset($payment) && $payment->payment_status)
                                             @php
                                                 $statusClass = match ($payment->payment_status) {
-                                                    'paid', 'advanced_paid' => 'text-white',
+                                                    'paid', 'advanced_paid' => 'text-white fw-bold',
                                                     'Advanced Refund' => 'text-warning',
                                                     default => 'text-danger',
                                                 };
