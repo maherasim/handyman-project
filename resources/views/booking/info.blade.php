@@ -167,7 +167,7 @@
                                 @endif
 
                                 @if ($bookingdata->status === 'accept')
-                                    @hasanyrole('provider')
+                                    @hasanyrole(['provider', 'handyman'])
                                         <div class="w3-third">
                                             <button class="float-end btn btn-primary update-booking" id="start-booking"
                                                 data-id="{{ $bookingdata->id }}"
@@ -203,7 +203,7 @@
                                 @endif
 
                                 @if ($bookingdata->status === 'on_going')
-                                    @hasanyrole('provider')
+                                  @hasanyrole(['provider', 'handyman'])
                                         <div class="w3-third d-flex align-items-end">
                                             <p><span class="text-info font-size-14" style="font-weight: 700">Waiting for
                                                     response</span>
@@ -250,7 +250,7 @@
                                 @endif
 
                                 @if ($bookingdata->status === 'hold')
-                                    @hasanyrole('provider')
+                                 @hasanyrole(['provider', 'handyman'])
                                         <div class="w3-third d-flex align-items-end">
                                             <p><span class="text-danger font-size-14" style="font-weight: 700">Hold Reason
                                                     :</span> {{ $bookingdata->reason }}
@@ -282,7 +282,7 @@
                                 @endif
 
                                 @if ($bookingdata->status === 'pending_approval')
-                                    @hasanyrole('provider')
+                                 @hasanyrole(['provider', 'handyman'])
                                         <div class="w3-third">
                                             <button class="float-end btn btn-success update-booking"
                                                 data-id="{{ $bookingdata->id }}"
