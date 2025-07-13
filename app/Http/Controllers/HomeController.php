@@ -151,7 +151,24 @@ class HomeController extends Controller
                 ->sum('commission_amount')
             : 0;
 
-        $data['remaining_payout'] = $ProviderEarning;
+        // $data['remaining_payout'] = $ProviderEarning;
+        $providerRemainingPayout = 0;
+
+       $unpaidBookings = Booking::whereIn('id', $commissions)->get();
+
+        foreach ($unpaidBookings as $booking) {
+            $grandTotal = $booking->final_total_amount;
+            $advance = $booking->advance_paid_amount ?? 0;
+            $adminCommission = $booking->commissionsdata->where('user_type', 'admin')->sum('commission_amount');
+
+            $remaining = $grandTotal - $advance;
+            $providerPayout = $remaining - $adminCommission;
+
+            $providerRemainingPayout += max($providerPayout, 0); // ensure no negatives
+        }
+
+       $data['remaining_payout'] = round($providerRemainingPayout, $digitafter_decimal_point);
+
         $data['total_earning'] = ProviderPayout::where('provider_id', $user->id)->sum('amount') ?? 0;
 
     } elseif ($user->hasRole('handyman')) {
