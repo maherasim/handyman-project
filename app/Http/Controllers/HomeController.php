@@ -152,7 +152,6 @@ class HomeController extends Controller
             : 0;
 
         $data['remaining_payout'] = $ProviderEarning;
-        dd(  $data['remaining_payout']);
         $data['total_earning'] = ProviderPayout::where('provider_id', $user->id)->sum('amount') ?? 0;
 
     } elseif ($user->hasRole('handyman')) {
