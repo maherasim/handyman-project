@@ -161,8 +161,9 @@ foreach ($unpaidBookings as $booking) {
     $grandTotal = $booking->total_amount;
     $advance = $booking->advance_paid_amount ?? 0;
     $adminCommission = $booking->commissionsdata->where('user_type', 'admin')->sum('commission_amount');
-dd(  $adminCommission);
+//dd(  $adminCommission);
     $remaining = $grandTotal - $advance;
+    dd(  $remaining);
     $providerPayout = $remaining - $adminCommission;
 
     $providerRemainingPayout += max($providerPayout, 0); // ensure no negatives
