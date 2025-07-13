@@ -440,9 +440,9 @@
                                     @endphp
 
                                     <div class="card-body" style="{{ $cardStyle }}">
-                                        <p class="opacity-75 fz-12 {{ $isPaid ? 'text-white-50' : '' }}">
-                                            {{ __('messages.payment_status') }}
-                                        </p>
+                                       <p class="fz-12 {{ $isPaid ? 'text-white' : 'opacity-75' }}">
+                                                {{ __('messages.payment_status') }}
+                                            </p>
 
                                         @if (isset($payment) && $payment->payment_type === 'bank_transfer' && $payment->status == 0)
                                             <p class="mb-0 text-warning">
