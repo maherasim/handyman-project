@@ -41,20 +41,134 @@ class HomeController extends Controller
      */
  public function index(Request $request)
 {
-    $start = $request->start ?? null;
-    $end = $request->end ?? null;
+    $user = auth()->user();
 
-    // Fetch events with their service and service_slots
-    $bookings = Booking::with(['service', 'service_slots'])
-        ->whereHas('service_slots', function($query) use ($start, $end) {
-            if ($start && $end) {
-                $query->whereBetween('date', [$start, $end]);
+    // Handle AJAX request for FullCalendar
+    if ($request->ajax()) {
+        $start = $request->get("start") ? date('Y-m-d', strtotime($request->get("start"))) : '';
+        $end   = $request->get("end") ? date('Y-m-d', strtotime($request->get("end"))) : '';
+
+        // Get relevant bookings with slots in date range
+        $bookings = Booking::myBooking()
+            ->where('status', 'pending')
+            ->whereHas('service_slots', function ($query) use ($start, $end) {
+                $query->whereDate('date', '>=', $start)
+                      ->whereDate('date', '<=', $end);
+            })
+            ->with(['service', 'service_slots' => function ($q) use ($start, $end) {
+                $q->whereDate('date', '>=', $start)
+                  ->whereDate('date', '<=', $end);
+            }])
+            ->get();
+
+        // Format as FullCalendar event objects
+        $events = [];
+
+        foreach ($bookings as $booking) {
+            foreach ($booking->service_slots as $slot) {
+                $events[] = [
+                    'id'     => $booking->id,
+                    'title'  => $booking->service->name ?? 'Booking',
+                    'start'  => $slot->date,
+                    'allDay' => true,
+                ];
             }
-        })
-        ->get();
+        }
 
-    // 👇 Dump the data to check what exists
-    dd($bookings);
+        return response()->json($events);
+    }
+
+    // Regular dashboard data loading
+    $data['dashboard'] = [
+        'count_total_booking'               => Booking::myBooking()->count(),
+        'count_total_service'               => Service::myService()->count(),
+        'count_total_provider'              => User::where('user_type','provider')->count(),
+        'new_customer'                      => User::myUsers('get_customer')->orderBy('id', 'DESC')->take(5)->get(),
+        'new_provider'                      => User::myUsers('get_provider')->with('getServiceRating')->orderBy('id', 'DESC')->take(5)->get(),
+        'upcomming_booking'                 => Booking::myBooking()->with('customer')->orderBy('id', 'DESC')->take(5)->get(),
+        'top_services_list'                 => Booking::myBooking()->showServiceCount()->take(5)->get(),
+        'count_handyman_pending_booking'    => Booking::myBooking()->where('status', 'pending')->count(),
+        'count_handyman_complete_booking'   => Booking::myBooking()->where('status', 'completed')->count(),
+        'count_handyman_cancelled_booking'  => Booking::myBooking()->where('status', 'cancelled')->count(),
+        'top_handyman'                      => User::myUsers()->orderBy('id', 'DESC')->take(5)->get(),
+    ];
+
+    $data['category_chart'] = [
+        'chartdata'     => Booking::myBooking()->showServiceCount()->take(4)->get()->pluck('count_pid'),
+        'chartlabel'    => Booking::myBooking()->showServiceCount()->take(4)->get()->pluck('service.category.name')
+    ];
+
+    $data['CommissionEarning'] = CommissionEarning::whereIn('commission_status', ['paid', 'unpaid'])->sum('commission_amount');
+    $data['cancellationcharge'] = Booking::where('status', 'cancelled')->sum('cancellation_charge_amount');
+    $data['total_revenue'] = $data['CommissionEarning'] + $data['cancellationcharge'];
+
+    if ($user->hasAnyRole(['admin', 'demo_admin'])) {
+        $data['revenueData'] = adminEarning();
+    }
+
+    $setting = Setting::getValueByKey('site-setup','site-setup');
+    $digitafter_decimal_point = $setting ? $setting->digitafter_decimal_point : "2";
+
+    if ($user->hasRole('provider')) {
+        $revenuedata = ProviderPayout::selectRaw('sum(amount) as total , DATE_FORMAT(updated_at , "%m") as month')
+            ->where('provider_id', $user->id)
+            ->whereYear('updated_at', date('Y'))
+            ->groupBy('month')
+            ->get()->toArray();
+
+        $data['revenueData'] = [];
+        for ($i = 1; $i <= 12; $i++) {
+            $revenue = collect($revenuedata)->firstWhere('month', str_pad($i, 2, '0', STR_PAD_LEFT));
+            $data['revenueData'][] = $revenue ? round($revenue['total'], $digitafter_decimal_point) : 0;
+        }
+
+        $data['currency_data'] = currency_data();
+    }
+
+    $data['total_tax'] = Booking::with('commissionsdata')
+        ->whereHas('commissionsdata', function($query){
+            $query->whereIn('commission_status', ['unpaid','paid'])->groupBy('booking_id');
+        })
+        ->sum('final_total_tax') ?? 0;
+
+    $data['total_earning'] = CommissionEarning::whereIn('user_type',['admin', 'demo_admin'])
+        ->whereIn('commission_status', ['unpaid','paid'])
+        ->sum('commission_amount') ?? 0;
+
+    if ($user->hasRole('provider')) {
+        $user = User::with('commission_earning')->where('id', $user->id)->where('user_type', 'provider')->first();
+
+        $commissions = $user->commission_earning()
+            ->where('commission_status', 'unpaid')
+            ->pluck('booking_id');
+
+        $ProviderEarning = $commissions->isNotEmpty()
+            ? CommissionEarning::whereIn('booking_id', $commissions)
+                ->whereIn('user_type', ['provider', 'handyman'])
+                ->where('commission_status', 'unpaid')
+                ->sum('commission_amount')
+            : 0;
+
+        $data['remaining_payout'] = $ProviderEarning;
+        $data['total_earning'] = ProviderPayout::where('provider_id', $user->id)->sum('amount') ?? 0;
+
+    } elseif ($user->hasRole('handyman')) {
+        $data['remaining_payout'] = CommissionEarning::where('employee_id', $user->id)->where('commission_status', 'unpaid')->sum('commission_amount') ?? 0;
+        $data['total_earning'] = HandymanPayout::where('handyman_id', $user->id)->sum('amount') ?? 0;
+    }
+
+    $sitesetup = Setting::where('type','site-setup')->where('key', 'site-setup')->first();
+    $data['datetime'] = $sitesetup ? json_decode($sitesetup->value) : null;
+
+    if (auth()->user()->hasAnyRole(['admin', 'demo_admin'])) {
+        return $this->adminDashboard($data);
+    } elseif (auth()->user()->hasRole('provider')) {
+        return $this->providerDashboard($data);
+    } elseif (auth()->user()->hasRole('handyman')) {
+        return $this->handymanDashboard($data);
+    } else {
+        return $this->userDashboard($data);
+    }
 }
 
 

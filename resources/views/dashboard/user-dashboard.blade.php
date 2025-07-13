@@ -11,10 +11,10 @@
         </div>
         <!-- Page end  -->
     </div>
-    @section('bottom_script')
+   @section('bottom_script')
 <script>
 if (jQuery('#calendar').length) {
-  document.addEventListener('DOMContentLoaded', function () {
+  document.addEventListener('DOMContentLoaded', function() {
     var calendarEl = document.getElementById('calendar');
     var calendar = new FullCalendar.Calendar(calendarEl, {
       plugins: ['dayGrid', 'timeGrid', 'list', 'interaction', 'bootstrap'],
@@ -24,8 +24,7 @@ if (jQuery('#calendar').length) {
       header: {
         left: 'prev,next today',
         center: 'title',
-        right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek',
-        clear: ''
+        right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
       },
       height: 600,
       selectable: true,
@@ -36,55 +35,48 @@ if (jQuery('#calendar').length) {
       droppable: false,
 
       eventSources: [{
-        events: function (info, successCallback, failureCallback) {
+        events: function(info, successCallback, failureCallback) {
           $.ajax({
-            url: "{{ route('home') }}",
-            dataType: 'JSON',
+            url: "{{ route('home') }}", // or your correct route
+            dataType: 'json',
             data: {
               start: info.startStr,
               end: info.endStr,
               _token: "{{ csrf_token() }}"
             },
-            success: function (response) {
-              const events = [];
-
-              response.forEach(eventData => {
-                if (eventData.service_slots && eventData.service_slots.length > 0) {
-                  eventData.service_slots.forEach(slot => {
-                    events.push({
-                      id: eventData.id,
-                      title: eventData.service?.name || 'No Service Name',
-                      start: slot.date,
-                      allDay: true,
-                    });
-                  });
-                }
-              });
-
-              successCallback(events);
+            success: function(response) {
+              successCallback(response); // response must be an array of {title, start, id}
             },
-            error: function (data) {
-              failureCallback(data);
+            error: function(xhr) {
+              console.error("Error loading events:", xhr);
+              failureCallback(xhr);
             }
           });
         },
         color: "rgb(19, 193, 240)",
-        textColor: "#fff",
+        textColor: "#fff"
       }],
 
-      eventClick: function (info) {
-        var id = info.event.id;
-        var url = "{{ URL::to('booking') }}/" + id;
-        window.location.replace(url);
+      eventRender: function(info) {
+        if (info.event.allDay === 'true') {
+          info.event.allDay = true;
+        } else {
+          info.event.allDay = false;
+        }
       },
 
+      eventClick: function(info) {
+        var id = info.event.id;
+        var url = "{{ url('booking') }}/" + id;
+        window.location.href = url;
+      }
     });
+
     calendar.render();
   });
 }
 </script>
- 
+@endsection
 
-    @endsection
 </x-master-layout>
 
