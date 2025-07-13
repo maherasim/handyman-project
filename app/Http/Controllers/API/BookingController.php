@@ -475,7 +475,7 @@ class BookingController extends Controller
                         'title'      => $extra['title'],
                         'price'      => $extra['price'],
                         'qty'        => $extra['qty'],
-                    ]);
+                    ]); 
                 }
 
             }
