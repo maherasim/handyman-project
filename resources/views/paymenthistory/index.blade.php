@@ -84,11 +84,11 @@ window.renderedDataTable = $('#datatable').DataTable({
                 name: 'receiver_id',
                 title: "{{ __('messages.receiver') }}"
             },
-            {
-                data: 'created_at ',
-                name: 'created_at ',
-                title: "{{ __('messages.datetime') }}"
-            },
+            // {
+            //     data: 'datetime',
+            //     name: 'datetime',
+            //     title: "{{ __('messages.datetime') }}"
+            // },
            
             {
                 data: 'text',
