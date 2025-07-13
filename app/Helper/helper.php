@@ -2001,6 +2001,12 @@ function getstripepayments($data){
     $booking=App\Models\Booking::where('id',$data['booking_id'])->with('service')->first();
 
     try {
+        if ($data['type'] == 'full_payment'){
+            $total_amount = $booking->total_amount - $booking->advance_paid_amount;
+        }else{
+            $total_amount = $data['total_amount'];
+        }
+
         $stripe = new \Stripe\StripeClient($stripe_secret);
         $checkout_session = $stripe->checkout->sessions->create([
 
@@ -2014,7 +2020,7 @@ function getstripepayments($data){
                         'product_data' => [
                             'name' => $booking->service->name,
                         ],
-                        'unit_amount' => $data['total_amount'] * 100,
+                        'unit_amount' => $total_amount * 100,
                     ],
                     'quantity' => 1,
                 ],

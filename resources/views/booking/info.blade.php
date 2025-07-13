@@ -373,7 +373,7 @@
                                     <div class="card-body">
                                         <p class="opacity-75 fz-12">{{ __('messages.booking_status') }}</p>
                                         <p class="mb-0 text-primary" id="booking_status__span">
-                                            {{ $bookingdata->status }}</p>
+                                            {{ str_replace('_', ' ', ucfirst($bookingdata->status)) }}</p>
                                     </div>
                                 </div>
                             </div>
