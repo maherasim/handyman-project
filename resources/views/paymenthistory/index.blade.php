@@ -5,7 +5,7 @@
                 <div class="card card-block card-stretch">
                     <div class="card-body p-0">
                         <div class="d-flex justify-content-between align-items-center p-3">
-                            <h5 class="fw-bold">{{ $pageTitle ?? trans('messages.list') }}</h5>
+                            <h5 class="fw-bold">Wallet History</h5>
                         </div>
                     </div>
                 </div>
