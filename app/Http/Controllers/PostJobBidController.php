@@ -43,6 +43,46 @@ class PostJobBidController extends Controller
         return view('postrequest.view', compact('pageTitle', 'auth_user', 'asset', 'postJobBids'));
     }
 
+public function apiIndex(Request $request)
+{
+    $query = PostJobRequest::query();
+
+    // Role-based visibility
+    if (!auth()->user()->hasAnyRole(['admin']) && auth()->user()->user_type !== 'provider') {
+        $query->where('customer_id', auth()->id());
+    }
+
+    // If provider, exclude jobs they’ve already bid on
+    if (auth()->user()->user_type === 'provider') {
+        $query->whereDoesntHave('postBidList', function ($q) {
+            $q->where('provider_id', auth()->id());
+        });
+    }
+
+    // Optional filtering (status, category, etc.)
+    if ($request->filled('status')) {
+        $query->where('status', $request->status);
+    }
+
+    if ($request->filled('category_id')) {
+        $query->where('category_id', $request->category_id);
+    }
+
+    // Eager-load related models
+    $query->with(['customer', 'category']);
+
+    return response()->json([
+        'success' => true,
+        'data' => $query->paginate(10),
+    ]);
+}
+
+
+
+
+
+    
+
     public function bidshow()
 {
     $auth_user = authSession();

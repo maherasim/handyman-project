@@ -28,6 +28,22 @@ class TransactionRequestController extends Controller
             'data' => $transaction,
         ], 201);
     }
+     public function getByUser($user_id)
+    {
+        $transactions = TransactionRequest::where('user_id', $user_id)->get();
+
+        if ($transactions->isEmpty()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No transactions found for this user.',
+            ], 404);
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => $transactions,
+        ]);
+    }
 
    public function index(Request $request){
         $filter = [

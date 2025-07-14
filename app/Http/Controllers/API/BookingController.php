@@ -470,7 +470,14 @@ class BookingController extends Controller
                     'qty'   => $extra['qty'],
                     'booking_id'   =>$bookingdata->id,
                 ];
-                $bookingdata->bookingExtraCharge()->insert($extra_charge);
+                foreach ($request->extra_charges as $extra) {
+                    $bookingdata->bookingExtraCharge()->create([
+                        'title'      => $extra['title'],
+                        'price'      => $extra['price'],
+                        'qty'        => $extra['qty'],
+                    ]); 
+                }
+
             }
             $subtotal = $bookingdata->getSubTotalValue() + $bookingdata->getServiceAddonValue() + $bookingdata->getExtraChargeValue();
 
@@ -489,9 +496,10 @@ class BookingController extends Controller
 
 
         $bookingdata->update($data);
-        if($bookingdata && $bookingdata->status === 'completed'){
-            $this->addBookingCommission($bookingdata);
-        }
+        // if($bookingdata && $bookingdata->status === 'completed'){
+        //     $this->addBookingCommission($bookingdata);
+        // }
+        //$this->addBookingCommission($bookingdata);
 
         if($old_status != $data['status'] ){
             $bookingdata->old_status = $old_status;

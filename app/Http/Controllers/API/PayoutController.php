@@ -56,46 +56,46 @@ class PayoutController extends Controller
         
         return comman_custom_response($response);
     }
-    public function handymanPayoutList(Request $request){
-        $handyman_id  = !empty($request->handyman_id) ? $request->handyman_id : auth()->user()->id;
+ public function handymanPayoutList(Request $request)
+{
+    $handyman_id  = $request->handyman_id ?? auth()->user()->id;
 
-        $payout = HandymanPayout::where('handyman_id',$handyman_id);
-        if(auth()->user() !== null){
-            if(auth()->user()->hasRole('admin')){
-                $payout = new HandymanPayout();
-                if( $request->has('user_id') && !empty($request->user_id)){
-                    $payout = $payout->where('handyman_id',$request->user_id);
+    $payout = HandymanPayout::where('handyman_id', $handyman_id);
 
-                }
-            }
+    if (auth()->user() !== null && auth()->user()->hasRole('admin')) {
+        $payout = HandymanPayout::query(); // ✅ use query builder
+        if ($request->has('user_id') && !empty($request->user_id)) {
+            $payout->where('handyman_id', $request->user_id);
         }
-        $per_page = config('constant.PER_PAGE_LIMIT');
-        if( $request->has('per_page') && !empty($request->per_page)){
-            if(is_numeric($request->per_page)){
-                $per_page = $request->per_page;
-            }
-            if($request->per_page === 'all' ){
-                $per_page = $payout->count();
-            }
-        }
-
-        $payout = $payout->orderBy('id','desc')->paginate($per_page);
-        $items = PayoutResource::collection($payout);
-
-        $response = [
-            'pagination' => [
-                'total_items' => $items->total(),
-                'per_page' => $items->perPage(),
-                'currentPage' => $items->currentPage(),
-                'totalPages' => $items->lastPage(),
-                'from' => $items->firstItem(),
-                'to' => $items->lastItem(),
-                'next_page' => $items->nextPageUrl(),
-                'previous_page' => $items->previousPageUrl(),
-            ],
-            'data' => $items,
-        ];
-        
-        return comman_custom_response($response);
     }
+
+    $per_page = config('constant.PER_PAGE_LIMIT');
+    if ($request->has('per_page') && !empty($request->per_page)) {
+        if (is_numeric($request->per_page)) {
+            $per_page = $request->per_page;
+        } elseif ($request->per_page === 'all') {
+            $per_page = $payout->count(); // ✅ safe now
+        }
+    }
+
+    $payout = $payout->orderBy('id', 'desc')->paginate($per_page);
+    $items = PayoutResource::collection($payout);
+
+    $response = [
+        'pagination' => [
+            'total_items' => $payout->total(),
+            'per_page' => $payout->perPage(),
+            'currentPage' => $payout->currentPage(),
+            'totalPages' => $payout->lastPage(),
+            'from' => $payout->firstItem(),
+            'to' => $payout->lastItem(),
+            'next_page' => $payout->nextPageUrl(),
+            'previous_page' => $payout->previousPageUrl(),
+        ],
+        'data' => $items,
+    ];
+
+    return comman_custom_response($response);
+}
+
 }

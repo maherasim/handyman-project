@@ -38,42 +38,45 @@ class PaymentController extends Controller
         return view('paymenthistory.index', compact('pageTitle','assets','auth_user','id'));
     }
 
-     public function paymenthistory_index_data(DataTables $datatable,$id){
-        
-        $query = PaymentHistory::where('payment_id',$id);
+public function paymenthistory_index_data(DataTables $datatable, $id)
+{
+    $query = PaymentHistory::where('payment_id', $id);
 
-        if (auth()->user()->hasAnyRole(['admin'])) {
-            $query->newquery();
-        }
+    if (auth()->user()->hasAnyRole(['admin'])) {
+        $query->newQuery();
+    }
 
-        return $datatable ->eloquent($query)
-         
-        
-        ->editColumn('sender_id', function($payment) {
+    return $datatable->eloquent($query)
+        ->editColumn('sender_id', function ($payment) {
             return ($payment->sender != null && isset($payment->sender)) ? $payment->sender->display_name : '-';
         })
         ->filterColumn('sender_id', function ($query, $keyword) {
             $query->whereHas('sender', function ($q) use ($keyword) {
-                    $q->where('display_name', 'like', '%' . $keyword . '%');
+                $q->where('display_name', 'like', '%' . $keyword . '%');
             });
         })
-        ->editColumn('receiver_id', function($payment) {
+        ->editColumn('receiver_id', function ($payment) {
             return ($payment->receiver != null && isset($payment->receiver)) ? $payment->receiver->display_name : '-';
         })
         ->filterColumn('receiver_id', function ($query, $keyword) {
             $query->whereHas('receiver', function ($q) use ($keyword) {
-                    $q->where('display_name', 'like', '%' . $keyword . '%');
+                $q->where('display_name', 'like', '%' . $keyword . '%');
             });
         })
-        ->editColumn('datetime' , function ($query){
+        ->editColumn('datetime', function ($query) {
             $sitesetup = Setting::where('type','site-setup')->where('key', 'site-setup')->first();
             $datetime = json_decode($sitesetup->value);
-            $date = date("$datetime->date_format $datetime->time_format", strtotime($query->datetime));
-            return $date;
+            return date("$datetime->date_format $datetime->time_format", strtotime($query->datetime));
+        })
+        ->addColumn('created_at', function ($payment) {
+            $sitesetup = Setting::where('type','site-setup')->where('key', 'site-setup')->first();
+            $datetime = json_decode($sitesetup->value);
+            return date("$datetime->date_format $datetime->time_format", strtotime($payment->created_at));
         })
         ->addIndexColumn()
         ->toJson();
-     }
+}
+
 
     public function cashDatatable(Request $request){
         $filter = [

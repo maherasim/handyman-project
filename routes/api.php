@@ -90,6 +90,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('delete-booking-rating', [ API\BookingController::class, 'deleteBookingRating' ] );
     Route::get('get-user-ratings', [ API\BookingController::class, 'getUserRatings' ] );
     //Route::get('earning-breakdown', [ API\BookingController::class, 'getEarningsBreakdown' ] );
+    Route::get('handyman-earning-list',[ App\Http\Controllers\EarningController::class, 'handymanEarningData' ]);
 
 
     Route::post('save-favourite',[ API\ServiceController::class, 'saveFavouriteService' ]);
@@ -107,6 +108,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('remove-file', [ App\Http\Controllers\HomeController::class, 'removeFile' ] );
     Route::get('logout',[ API\User\UserController::class, 'logout' ]);
     Route::post('save-payment',[API\PaymentController::class, 'savePayment']);
+    Route::get('payment-list-all',[API\PaymentController::class, 'getpaymentall']);
     Route::post('save-bank-transfer-payment',[API\PaymentController::class, 'saveBankTransferPayment']);
 
     Route::get('payment-list',[API\PaymentController::class, 'paymentList']);
@@ -166,6 +168,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 
 
     Route::get('get-post-job-bid-data',[  App\Http\Controllers\PostJobBidController::class, 'PostJobBidData' ]);
+    Route::get('/job-requests/provider', [API\PostJobBidController::class, 'apiIndex']);
 
 
 
@@ -233,3 +236,4 @@ Route::get('/states/{id}/cities', function ($id) {
 });
  
 Route::post('transaction-requests', [ API\TransactionRequestController::class, "store"]);
+Route::get('/transaction-requests/{user_id}', [ API\TransactionRequestController::class, 'getByUser']);

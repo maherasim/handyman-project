@@ -6,7 +6,7 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-lg-12">
-    @if(auth()->user()->hasAnyRole(['admin']))
+      @if(auth()->user()->hasAnyRole(['admin']))
         <div class="card card-block card-stretch">
             <div class="card-body p-0">
                 <div class="d-flex justify-content-between align-items-center p-3 flex-wrap gap-3">

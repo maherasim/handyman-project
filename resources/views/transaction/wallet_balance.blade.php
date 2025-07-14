@@ -104,6 +104,12 @@
                         title: "Amount",
                         orderable: false,
                     },
+                      {
+                        data: 'new_amount',
+                        name: 'new_amount',
+                        title: "Top-up Amount",
+                        orderable: false,
+                    },
                     
                     {
                         data: 'created_at',
