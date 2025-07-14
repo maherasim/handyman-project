@@ -278,7 +278,10 @@ public function savePayment(Request $request)
             'sender_id' => $request->customer_id,
             'receiver_id' => $firstHandymanId,
             'datetime' => $request->datetime,
-            'total_amount' => $request->total_amount,
+           'total_amount' => ($result->payment_status == 'paid')
+    ? ($booking->total_amount - ($booking->advance_paid_amount ?? 0))
+    : $request->total_amount,
+
             'txn_id' => $request->txn_id,
             'type' => $request->payment_type,
             'text' => __('messages.payment_transfer', [
@@ -518,7 +521,10 @@ public function getpaymentall(Request $request)
                 'sender_id' => $request->customer_id,
                 'receiver_id' => $firstHandymanId,
                 'datetime' => $request->datetime,
-                'total_amount' => $request->total_amount,
+               'total_amount' => ($result->payment_status == 'paid')
+    ? ($booking->total_amount - ($booking->advance_paid_amount ?? 0))
+    : $request->total_amount,
+
                 'txn_id' => $request->txn_id,
                 'type' => $request->payment_type,
                 'text'     =>    __('messages.payment_transfer',['from' => get_user_name( $request->customer_id),'to' => get_user_name($firstHandymanId),'amount' => getPriceFormat((float)$request->total_amount) ]),
