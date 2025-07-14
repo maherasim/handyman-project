@@ -552,6 +552,7 @@ $extraValue = 0;
                                 <h5 class=" mb-2"> <strong>{{ __('BILL FROM:') }}</strong></h5>
                                 <p class="mb-0">{{ optional($bookingdata->provider)->display_name ?? '-' }}</p>
                                 <p class="mb-0">{{ optional($bookingdata->provider)->address ?? '-' }}</p>
+                                <p class="mb-0">{{ optional($bookingdata->provider)->contact_number ?? '-' }}</p>
 
                             </div>
                             <div class="col-sm-6 text-end">
