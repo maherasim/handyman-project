@@ -1263,14 +1263,19 @@ public function saveStripePayment(Request $request, $id)
             'sender_id' => $booking->customer_id,
             'receiver_id' => $firstHandymanId,
             'datetime' => now(),
-            'total_amount' => $result->total_amount,
+            'total_amount' => $request->total_amount,
             'txn_id' => $result->txn_id,
             'type' => $result->payment_type,
             'text' => __('messages.payment_transfer', [
-                'from' => get_user_name($booking->customer_id),
-                'to' => get_user_name($firstHandymanId),
-                'amount' => getPriceFormat((float)$result->total_amount),
-            ]),
+            'from' => get_user_name($request->customer_id),
+            'to' => get_user_name($firstHandymanId),
+            'amount' => getPriceFormat(
+                ($result->payment_status == 'paid')
+                    ? ($booking->total_amount - ($booking->advance_paid_amount ?? 0))
+                    : (float)$request->total_amount
+            ),
+        ]),
+
         ];
 
         $res = PaymentHistory::create($payment_history);
