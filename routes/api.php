@@ -90,6 +90,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('delete-booking-rating', [ API\BookingController::class, 'deleteBookingRating' ] );
     Route::get('get-user-ratings', [ API\BookingController::class, 'getUserRatings' ] );
     //Route::get('earning-breakdown', [ API\BookingController::class, 'getEarningsBreakdown' ] );
+    Route::get('handyman-earning-list',[ App\Http\Controllers\EarningController::class, 'handymanEarningData' ]);
 
 
     Route::post('save-favourite',[ API\ServiceController::class, 'saveFavouriteService' ]);
