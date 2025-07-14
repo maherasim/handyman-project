@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Exports\BookingExport;
 use App\Http\Requests\BookingUpdateRequest;
+use App\Http\Resources\API\ServiceProofResource;
 use App\Models\AppSetting;
 use App\Models\Booking;
 use App\Models\BookingRating;
@@ -20,6 +21,7 @@ use App\Models\ProviderAddressMapping;
 use App\Models\ProviderPayout;
 use App\Models\Service;
 use App\Models\ServiceAddon;
+use App\Models\ServiceProof;
 use App\Models\ServiceSlot;
 use App\Models\Setting;
 use App\Models\User;
@@ -1012,6 +1014,7 @@ public function bookingAssigned(Request $request)
         $user_id = $auth_user->id;
         $user_data = User::find($user_id);
         $bookingdata = Booking::with('handymanAdded', 'payment', 'bookingExtraCharge', 'bookingAddonService', 'slots',  'service.city','service.country', 'bookingRating')->myBooking()->find($id);
+        $serviceProof = ServiceProof::where('booking_id',$id)->get();
         $customer_review = BookingRating::with('customer')->where('customer_id',$user_id)->where('service_id',$bookingdata->service_id)->where('booking_id',$id)->first();
         $payment = Payment::where('booking_id', $id)->orderBy('id', 'desc')->first() ?? null;
         $serviceconfig = Setting::getValueByKey('service-configurations', 'service-configurations');
@@ -1022,7 +1025,7 @@ public function bookingAssigned(Request $request)
 
         switch ($tabpage) {
             case 'info':
-                $data = view('booking.' . $tabpage, compact('user_data', 'tabpage', 'auth_user', 'bookingdata', 'payment', 'customer_review'))->render();
+                $data = view('booking.' . $tabpage, compact('user_data', 'tabpage', 'auth_user', 'bookingdata', 'payment', 'customer_review', 'serviceProof'))->render();
                 break;
             case 'status':
                 $data = view('booking.' . $tabpage, compact('user_data', 'tabpage', 'auth_user', 'bookingdata', 'payment'))->render();

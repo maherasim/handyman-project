@@ -141,6 +141,43 @@
     </div>
 
 
+        <div class="modal fade" id="serviceProofModal" tabindex="-1" aria-labelledby="serviceProofLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-centered">
+                <form id="serviceProofForm" enctype="multipart/form-data">
+                    <div class="modal-content border-0 rounded-4">
+                        <div class="modal-header bg-primary text-white rounded-top-4">
+                            <h5 class="modal-title" id="serviceProofLabel">
+                                <i class="las la-clipboard-list me-2"></i> {{ __('messages.submit_service_proof') }}
+                            </h5>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body p-4">
+                            <input type="hidden" name="booking_id" id="booking_id">
+                            <input type="hidden" name="service_id" id="service_id">
+                            <input type="hidden" name="user_id" id="user_id">
+
+                            <div class="mb-3">
+                                <label for="title" class="form-label">Title</label>
+                                <input type="text" name="title" class="form-control" id="title" placeholder="e.g. Completed Electrical Repair" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="description" class="form-label">Description</label>
+                                <textarea name="description" class="form-control" id="description" rows="3" placeholder="Describe what was done..." required></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label for="attachments" class="form-label">Attachments (up to 5 files)</label>
+                                <input type="file" name="attachments[]" id="attachments" class="form-control" multiple accept="image/*,application/pdf">
+                            </div>
+                        </div>
+                        <div class="modal-footer border-top-0 px-4 pb-4">
+                            <button type="submit" class="btn btn-success w-100">
+                                <i class="las la-paper-plane me-1"></i> Submit Proof
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
 
 </div>
     @section('bottom_script')

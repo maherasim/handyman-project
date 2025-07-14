@@ -967,5 +967,7 @@
     'view_breakdown' => 'view breakdown',
     'payment_breakdown' => 'Payment Breakdown',
     'role_earned' => 'Role Earned',
+    'submit_service_proof' => 'Submit Service Proof',
+    'service_proof' => 'Service Proof',
 
 );

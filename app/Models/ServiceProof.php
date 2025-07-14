@@ -9,11 +9,14 @@ use Spatie\MediaLibrary\InteractsWithMedia;
 class ServiceProof extends Model implements  HasMedia
 {
     use InteractsWithMedia,HasFactory;
-    
+
     protected $table = 'service_proofs';
     protected $fillable = [
         'title', 'description', 'service_id','booking_id' ,'user_id'
     ];
+
+    protected $appends = ['proof_attachments'];
+
 
     protected $casts = [
         'service_id'    => 'integer',
@@ -31,4 +34,10 @@ class ServiceProof extends Model implements  HasMedia
     public function booking(){
         return $this->belongsTo(Booking::class,'booking_id', 'id')->withTrashed();
     }
+
+    public function getProofAttachmentsAttribute()
+    {
+        return getAttachments($this->getMedia('booking_attachment'));
+    }
+
 }
