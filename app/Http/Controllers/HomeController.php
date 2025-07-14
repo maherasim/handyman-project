@@ -106,7 +106,7 @@ class HomeController extends Controller
 
     if ($user->hasAnyRole(['admin', 'demo_admin'])) {
         $data['revenueData'] = adminEarning();
-    }
+    }p
 
     $setting = Setting::getValueByKey('site-setup','site-setup');
     $digitafter_decimal_point = $setting ? $setting->digitafter_decimal_point : "2";

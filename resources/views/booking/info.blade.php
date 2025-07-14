@@ -292,7 +292,7 @@
                                         <button class="float-end btn btn-primary update-booking"
                                                 data-id="{{ $bookingdata->id }}"
                                                 data-handyman-id="{{ $bookingdata->provider_id }}"
-                                                data-status="inprogress"
+                                                data-status="in_progress"
                                                 data-confirm-message="Are you sure you want to resume this booking?">
                                             <i class="las la-play"></i>
                                             {{ __('messages.resume') }}
