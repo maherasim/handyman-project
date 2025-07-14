@@ -533,7 +533,7 @@ public function getpaymentall(Request $request)
         $booking->update();
 
         if($booking->status == 'completed' && $result->payment_status=='paid'){
-            CommissionEarning::where('booking_id',$booking->id)->update(['commission_status'=>'unpaid']);
+            CommissionEarning::where('booking_id',$booking->id)->update(['commission_status'=>'paid']);
         }
         $status_code = 200;
 
