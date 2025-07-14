@@ -143,7 +143,7 @@ class HomeController extends Controller
         $commissions = $user->commission_earning()
             ->where('commission_status', 'unpaid')
             ->pluck('booking_id');
- dd(  $commissions);
+ //dd(  $commissions);
         $ProviderEarning = $commissions->isNotEmpty()
             ? CommissionEarning::whereIn('booking_id', $commissions)
                 ->whereIn('user_type', ['provider', 'handyman'])
