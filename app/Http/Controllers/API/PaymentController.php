@@ -499,7 +499,7 @@ public function getpaymentall(Request $request)
                     'user_type' => 'provider',
                     'employee_id' => $booking->provider_id,
                     'commission_amount' => $provider_earning,
-                    'commission_status' => 'unpaid',
+                    'commission_status' => 'paid',
                 ]);
             }
 
