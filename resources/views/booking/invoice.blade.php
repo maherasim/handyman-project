@@ -530,7 +530,7 @@ $extraValue = 0;
                                 </div>
                             </div>
                             <div class="col-md-6 col-sm-6 text-end" style="position: right;">
-                                <img src="" alt="logo"
+                                <img src="{{ asset('assets/frobster logo.png') }}" alt="logo"
                                     style="height: 60px; width: auto;" class="img-fluid">
                             </div>
                             <div class="col-sm-4">
