@@ -266,6 +266,7 @@ public function getpaymentall(Request $request)
     {
         $data = $request->all();
         $data['datetime'] = isset($request->datetime) ? date('Y-m-d H:i:s',strtotime($request->datetime)) : date('Y-m-d H:i:s');
+        $data['status'] = 0;
         $result = Payment::create($data);
         $booking = Booking::find($request->booking_id);
         if(!empty($result) && $result->payment_status == 'advanced_paid'){
