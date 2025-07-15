@@ -10,7 +10,7 @@ class Payment extends Model
 {
     use HasFactory,SoftDeletes;
     protected $table = 'payments';
-    protected $fillable = [ 'customer_id', 'booking_id', 'datetime', 'discount', 'total_amount', 'payment_type', 'txn_id', 'payment_status', 'other_transaction_detail' ];
+    protected $fillable = [ 'customer_id', 'booking_id', 'datetime', 'discount', 'total_amount', 'payment_type', 'txn_id', 'payment_status', 'other_transaction_detail','status' ];
 
     protected $casts = [
         'booking_id'    => 'integer',

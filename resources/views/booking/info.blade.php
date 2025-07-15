@@ -957,8 +957,6 @@
                             <tr>
                                 <th>{{ __('messages.title') }}</th>
                                 <th>{{ __('messages.description') }}</th>
-                                <th>{{ __('messages.service') }}</th>
-                                <th>{{ __('messages.handyman') }}</th>
                                 <th>{{ __('messages.attachments') }}</th>
                             </tr>
                             </thead>
@@ -967,11 +965,9 @@
                                 <tr>
                                     <td>{{ $proof->title }}</td>
                                     <td>{{ $proof->description }}</td>
-                                    <td>{{ $proof->service_name }}</td>
-                                    <td>{{ $proof->handyman_name }}</td>
                                     <td>
-                                        @if (!empty($proof->attachments))
-                                            @foreach ($proof->attachments as $url)
+                                        @if (!empty($proof->proof_attachments))
+                                            @foreach ($proof->proof_attachments as $url)
                                                 <a href="{{ $url }}" target="_blank">
                                                     <img src="{{ $url }}" alt="Proof Image" style="height: 50px; width: 50px; object-fit: cover; margin-right: 5px;">
                                                 </a>
