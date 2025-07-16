@@ -47,33 +47,43 @@ public function store(Request $request)
     $request->validate([
         'slots' => 'nullable|array',
         'slots.*.day' => 'nullable|string|in:sun,mon,tue,wed,thu,fri,sat',
-        'slots.*.time' => 'nullable|array|min:1',
-        'slots.*.time.*' => 'nullable|date_format:H:i',
+        'slots.*.time' => 'nullable|array',
+        'slots.*.time.*' => 'nullable|regex:/^([01]\d|2[0-3]):([0-5]\d):([0-5]\d)$/', // Matches H:i:s (00:00:00 to 23:59:59)
     ]);
 
     $provider_id = $request->provider_id ?? auth()->user()->id;
 
-    // Remove old slots
+    // Delete existing slots
     ProviderSlotMapping::where('provider_id', $provider_id)->delete();
 
     $isCreated = false;
 
     foreach ($request->slots as $slot) {
         $day = $slot['day'];
-        $times = $slot['time'];
+        $times = $slot['time'] ?? [];
 
         foreach ($times as $time) {
-            $start = \Carbon\Carbon::createFromFormat('H:i', $time);
-            $end = $start->copy()->addMinutes(60); // You can change to 30 if needed
+            // Handle '24:00:00' gracefully
+            if ($time === '24:00:00') {
+                continue; // or convert to '00:00:00' if you want to store as next day
+            }
 
-            ProviderSlotMapping::create([
-                'provider_id' => $provider_id,
-                'days' => $day,
-                'start_at' => $start->format('H:i'),
-                'end_at' => $end->format('H:i'),
-            ]);
+            try {
+                $start = \Carbon\Carbon::createFromFormat('H:i:s', $time);
+                $end = $start->copy()->addMinutes(60); // or 30 if desired
 
-            $isCreated = true;
+                ProviderSlotMapping::create([
+                    'provider_id' => $provider_id,
+                    'days' => $day,
+                    'start_at' => $start->format('H:i'),
+                    'end_at' => $end->format('H:i'),
+                ]);
+
+                $isCreated = true;
+            } catch (\Exception $e) {
+                // Optionally log $e->getMessage()
+                continue;
+            }
         }
     }
 
