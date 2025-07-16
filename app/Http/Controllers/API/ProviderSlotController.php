@@ -45,10 +45,10 @@ public function getProviderSlot(Request $request)
 public function store(Request $request)
 {
     $request->validate([
-        'slots' => 'required|array',
+        'slots' => 'nullable|array',
         'slots.*.day' => 'nullable|string|in:sun,mon,tue,wed,thu,fri,sat',
-        'slots.*.time' => 'required|array|min:1',
-        'slots.*.time.*' => 'required|date_format:H:i',
+        'slots.*.time' => 'nullable|array|min:1',
+        'slots.*.time.*' => 'nullable|date_format:H:i',
     ]);
 
     $provider_id = $request->provider_id ?? auth()->user()->id;
