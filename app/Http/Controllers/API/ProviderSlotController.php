@@ -9,24 +9,22 @@ use App\Models\ProviderSlotMapping;
 
 class ProviderSlotController extends Controller
 {
-  public function getProviderSlot(Request $request)
+public function getProviderSlot(Request $request)
 {
     $provider_id = $request->provider_id ?? auth()->user()->id;
 
-    // Get admin timezone
-   // $admin = Admin::first(); // Add this if missing
-    date_default_timezone_set($admin->time_zone ?? 'UTC');
+    // Set timezone directly (adjust this to your desired timezone)
+    date_default_timezone_set('Asia/Dubai'); // Or any other like 'UTC', 'America/New_York', etc.
 
     $days = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
     $startDate = \Carbon\Carbon::now();
-    $endDate = \Carbon\Carbon::now()->addDays(30); // for next 30 days
+    $endDate = \Carbon\Carbon::now()->addDays(30); // next 30 days
 
     $calendarSlots = [];
 
     for ($date = $startDate->copy(); $date <= $endDate; $date->addDay()) {
         $dayCode = strtolower($date->format('D')); // e.g., mon, tue
 
-        // Fetch slots for this day name (e.g., all 'mon' slots)
         $slots = ProviderSlotMapping::where('provider_id', $provider_id)
             ->where('days', $dayCode)
             ->orderBy('start_at', 'asc')
@@ -45,6 +43,7 @@ class ProviderSlotController extends Controller
 
     return comman_custom_response($calendarSlots);
 }
+
 public function store(Request $request)
 {
     $request->validate([
