@@ -1433,5 +1433,3 @@ public function saveStripePayment(Request $request, $id)
 
 
 }
-
-
