@@ -46,7 +46,7 @@ public function store(Request $request)
 {
     $request->validate([
         'slots' => 'required|array',
-        'slots.*.day' => 'required|string|in:sun,mon,tue,wed,thu,fri,sat',
+        'slots.*.day' => 'nullable|string|in:sun,mon,tue,wed,thu,fri,sat',
         'slots.*.time' => 'required|array|min:1',
         'slots.*.time.*' => 'required|date_format:H:i',
     ]);
