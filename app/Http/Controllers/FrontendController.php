@@ -710,7 +710,7 @@ if ($matchedTax) {
         $wallet = $user ? $user->wallet : null;
         $wallet_amount = $wallet ? $wallet->amount : 0;
 
-        $payment_type = $request->payment_type == 'full_payment' ? 'paid' : 'advanced_paid';
+        $payment_type = $request->payment_type == 'full_payment' ? 'paid' : $request->payment_type;
         $booking_id = $request->booking_id ?? null;
         $total_booking_amount = Booking::with('bookingExtraCharge')->find($booking_id)->total_amount ?? 0;
 

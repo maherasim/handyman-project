@@ -1014,6 +1014,7 @@ public function bookingAssigned(Request $request)
         $user_id = $auth_user->id;
         $user_data = User::find($user_id);
         $bookingdata = Booking::with('handymanAdded', 'payment', 'bookingExtraCharge', 'bookingAddonService', 'slots',  'service.city','service.country', 'bookingRating')->myBooking()->find($id);
+        $is_enable_advance_payment = $bookingdata->service->is_enable_advance_payment;
         $serviceProof = ServiceProof::where('booking_id',$id)->get();
         $customer_review = BookingRating::with('customer')->where('customer_id',$user_id)->where('service_id',$bookingdata->service_id)->where('booking_id',$id)->first();
         $payment = Payment::where('booking_id', $id)->orderBy('id', 'desc')->first() ?? null;
@@ -1025,7 +1026,7 @@ public function bookingAssigned(Request $request)
 
         switch ($tabpage) {
             case 'info':
-                $data = view('booking.' . $tabpage, compact('user_data', 'tabpage', 'auth_user', 'bookingdata', 'payment', 'customer_review', 'serviceProof'))->render();
+                $data = view('booking.' . $tabpage, compact('user_data', 'tabpage', 'auth_user', 'bookingdata', 'payment', 'customer_review', 'serviceProof', 'is_enable_advance_payment'))->render();
                 break;
             case 'status':
                 $data = view('booking.' . $tabpage, compact('user_data', 'tabpage', 'auth_user', 'bookingdata', 'payment'))->render();
@@ -1407,6 +1408,7 @@ public function saveStripePayment(Request $request, $id)
 
             }
             // else {
+            //     // If no handyman, provider gets the full amount after discount and tax
             //     // If no handyman, provider gets the full amount after discount and tax
             //     $earnings['provider'] += ($actualTotal - ($booking->final_total_tax ?? 0));
             // }
