@@ -47,8 +47,7 @@ public function store(Request $request)
     $request->validate([
         'slots' => 'nullable|array',
         'slots.*.day' => 'nullable|string|in:sun,mon,tue,wed,thu,fri,sat',
-        'slots.*.time' => 'nullable|array',
-        'slots.*.time.*' => 'nullable|regex:/^([01]\d|2[0-3]):([0-5]\d):([0-5]\d)$/', // Matches H:i:s (00:00:00 to 23:59:59)
+   
     ]);
 
     $provider_id = $request->provider_id ?? auth()->user()->id;
