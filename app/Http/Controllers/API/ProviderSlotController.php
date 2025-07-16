@@ -13,17 +13,17 @@ public function getProviderSlot(Request $request)
 {
     $provider_id = $request->provider_id ?? auth()->user()->id;
 
-    // Set timezone directly (adjust this to your desired timezone)
-    date_default_timezone_set('Asia/Dubai'); // Or any other like 'UTC', 'America/New_York', etc.
+    // Set timezone
+    date_default_timezone_set('Asia/Dubai');
 
-    $days = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
     $startDate = \Carbon\Carbon::now();
-    $endDate = \Carbon\Carbon::now()->addDays(30); // next 30 days
+    $endDate = \Carbon\Carbon::now()->addDays(30); // Next 30 days
 
     $calendarSlots = [];
 
     for ($date = $startDate->copy(); $date <= $endDate; $date->addDay()) {
-        $dayCode = strtolower($date->format('D')); // e.g., mon, tue
+        $dayCode = strtolower($date->format('D')); // mon, tue, etc.
+        $formattedDate = $date->format('Y-m-d');
 
         $slots = ProviderSlotMapping::where('provider_id', $provider_id)
             ->where('days', $dayCode)
@@ -31,18 +31,16 @@ public function getProviderSlot(Request $request)
             ->pluck('start_at')
             ->toArray();
 
-        foreach ($slots as $time) {
-            $datetime = \Carbon\Carbon::parse($date->format('Y-m-d') . ' ' . $time);
-            $calendarSlots[] = [
-                'date' => $datetime->toDateTimeString(),
-                'day' => $dayCode,
-                'time' => $time,
-            ];
-        }
+        $calendarSlots[] = [
+            'date' => $formattedDate,
+            'day' => $dayCode,
+            'slots' => $slots,
+        ];
     }
 
     return comman_custom_response($calendarSlots);
 }
+
 
 public function store(Request $request)
 {
