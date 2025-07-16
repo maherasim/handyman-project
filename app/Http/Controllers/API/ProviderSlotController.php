@@ -4,8 +4,8 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-
 use App\Models\ProviderSlotMapping;
+ 
 
 class ProviderSlotController extends Controller
 {
@@ -14,7 +14,7 @@ class ProviderSlotController extends Controller
     $provider_id = $request->provider_id ?? auth()->user()->id;
 
     // Get admin timezone
-    $admin = Admin::first(); // Add this if missing
+   // $admin = Admin::first(); // Add this if missing
     date_default_timezone_set($admin->time_zone ?? 'UTC');
 
     $days = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
