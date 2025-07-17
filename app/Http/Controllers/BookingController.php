@@ -1169,7 +1169,7 @@ public function saveStripePayment(Request $request, $id)
 
     if (!empty($result) && $result->payment_status == 'advanced_paid') {
         $booking->advance_paid_amount = $result->total_amount;
-        $booking->status = 'pending';
+//        $booking->status = 'pending';
 
         $advance_paid_amount = $result->total_amount;
         $admin_commission_amount = ($advance_paid_amount * $admin_commission_percentage) / 100;

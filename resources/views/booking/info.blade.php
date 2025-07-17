@@ -210,7 +210,7 @@
                                         @endhasanyrole
                                     @else
                                         @hasanyrole('admin|demo_admin|provider')
-                                        @if(isset($bookingdata->payment) && strtolower($bookingdata->payment->payment_status) == 'advanced_paid' && $is_enable_advance_payment == 0)
+                                        @if($is_enable_advance_payment == 0 || (isset($bookingdata->payment) && strtolower($bookingdata->payment->payment_status) == 'advanced_paid'))
                                             <div class="w3-third">
                                                 <button class="float-end btn btn-primary" id="assign-provider"
                                                         data-id="{{ $bookingdata->id }}"
@@ -236,9 +236,8 @@
                                         @endif
                                         @endhasanyrole
 
-
                                         @hasanyrole('user')
-                                        @if($is_enable_advance_payment == 1)
+                                        @if(!isset($bookingdata->payment) && $is_enable_advance_payment == 1)
                                             <div class="w3-third">
                                                 <a class="float-end btn btn-primary"
                                                    href="{{ route('book.service', ['id' => $bookingdata->service_id, 'booking_id' => $bookingdata->id, 'payment_type' => 'advance_paid']) }}"
@@ -250,7 +249,6 @@
                                         @endif
                                         @endhasanyrole
                                     @endif
-
                                 @endif
 
                                 @if ($bookingdata->status === 'on_going')

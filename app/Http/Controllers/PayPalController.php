@@ -143,7 +143,7 @@ public function success(Request $request)
 
             if ($result->payment_status == 'advanced_paid') {
                 $booking->advance_paid_amount = $result->total_amount;
-                $booking->status = 'pending';
+//                $booking->status = 'pending';
 
                 $advance_paid_amount = $result->total_amount;
                 $admin_commission_percentage = Setting::getValueByKey('admin_commission_percentage', 'site-setup')->value ?? 10;
@@ -253,7 +253,7 @@ public function success(Request $request)
 
 
 
- 
+
 
 
     public function cancel()
