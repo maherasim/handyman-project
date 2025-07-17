@@ -236,19 +236,19 @@
                                         @endif
                                         @endhasanyrole
 
+<pre>{{ dd(auth()->user()->user_type) }}</pre>
 
-                                        @hasanyrole('user')
-                                        @if($is_enable_advance_payment == 1)
-                                            <div class="w3-third">
-                                                <a class="float-end btn btn-primary"
-                                                   href="{{ route('book.service', ['id' => $bookingdata->service_id, 'booking_id' => $bookingdata->id, 'payment_type' => 'advance_paid']) }}"
-                                                   target="_blank" data-id="{{ $bookingdata->id }}">
-                                                    <i class="las la-credit-card"></i>
-                                                    {{ __('messages.advance_pay') }}
-                                                </a>
-                                            </div>
-                                        @endif
-                                        @endhasanyrole
+                                        @if(auth()->user()->user_type == 'user' && $bookingdata->status == 'accept')
+                                        <div class="w3-third">
+                                            <a class="float-end btn btn-primary"
+                                            href="{{ route('book.service', ['id' => $bookingdata->service_id, 'booking_id' => $bookingdata->id, 'payment_type' => 'advance_paid']) }}"
+                                            target="_blank" data-id="{{ $bookingdata->id }}">
+                                                <i class="las la-credit-card"></i>
+                                                {{ __('messages.advance_pay') }}
+                                            </a>
+                                        </div>
+                                    @endif
+
                                     @endif
 
                                 @endif
