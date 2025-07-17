@@ -239,14 +239,17 @@
  
 
                                         @if(auth()->user()->user_type == 'user' && $bookingdata->status == 'accept')
-                                        <div class="w3-third">
-                                            <a class="float-end btn btn-primary"
-                                            href="{{ route('book.service', ['id' => $bookingdata->service_id, 'booking_id' => $bookingdata->id, 'payment_type' => 'advance_paid']) }}"
-                                            target="_blank" data-id="{{ $bookingdata->id }}">
-                                                <i class="las la-credit-card"></i>
-                                                {{ __('messages.advance_pay') }}
-                                            </a>
-                                        </div>
+                                        <!-- DEBUG: Check conditions -->
+                        <div style="display: none;">
+                            User Type: {{ auth()->user()->user_type }}<br>
+                            Booking Status: {{ $bookingdata->status }}<br>
+                            Is User: {{ auth()->user()->user_type == 'user' ? 'Yes' : 'No' }}<br>
+                            Is Status Accept: {{ $bookingdata->status == 'accept' ? 'Yes' : 'No' }}<br>
+                        </div>
+
+                        @if(auth()->user()->user_type == 'user' && $bookingdata->status == 'accept')
+                            [... your button code ...]
+@endif
                                     @endif
 
                                     @endif
