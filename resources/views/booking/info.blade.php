@@ -204,7 +204,7 @@
                                                     data-status="cancelled"
                                                     data-confirm-message="You want to cancelled this booking?">
                                                 <i class="las la-ban"></i>
-                                                {{ __('messages.cancel asim') }}
+                                                {{ __('messages.cancel vehniwal') }}
                                             </button>
                                         </div>
                                         @endhasanyrole
@@ -329,7 +329,7 @@
                                                 data-status="cancelled"
                                                 data-confirm-message="Are you sure you want to cancelled this booking?">
                                             <i class="las la-times-circle"></i>
-                                            {{ __('messages.cancel' 'asim') }}
+                                            {{ __('messages.cancelasim') }}
                                         </button>
                                     </div>
                                     @endhasanyrole
