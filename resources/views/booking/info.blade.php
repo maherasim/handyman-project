@@ -164,7 +164,7 @@
                                                 data-status="cancelled"
                                                 data-confirm-message="You want to cancelled this booking?">
                                             <i class="las la-ban"></i>
-                                            {{ __('messages.cancel') }}
+                                            {{ __('messages.cancel riaz') }}
                                         </button>
                                     </div>
                                     @endhasanyrole
@@ -204,7 +204,7 @@
                                                     data-status="cancelled"
                                                     data-confirm-message="You want to cancelled this booking?">
                                                 <i class="las la-ban"></i>
-                                                {{ __('messages.cancel') }}
+                                                {{ __('messages.cancel asim') }}
                                             </button>
                                         </div>
                                         @endhasanyrole
@@ -236,21 +236,19 @@
                                         @endif
                                         @endhasanyrole
 
- 
- 
-                                        <!-- DEBUG: Check conditions -->
-                        <div style="display: none;">
-                            User Type: {{ auth()->user()->user_type }}<br>
-                            Booking Status: {{ $bookingdata->status }}<br>
-                            Is User: {{ auth()->user()->user_type == 'user' ? 'Yes' : 'No' }}<br>
-                            Is Status Accept: {{ $bookingdata->status == 'accept' ? 'Yes' : 'No' }}<br>
-                        </div>
 
-                        @if(auth()->user()->user_type == 'user' && $bookingdata->status == 'accept')
-                            [... your button code ...]
- 
-                                    @endif
-
+                                        @hasanyrole('user')
+                                        @if($is_enable_advance_payment == 1)
+                                            <div class="w3-third">
+                                                <a class="float-end btn btn-primary"
+                                                   href="{{ route('book.service', ['id' => $bookingdata->service_id, 'booking_id' => $bookingdata->id, 'payment_type' => 'advance_paid']) }}"
+                                                   target="_blank" data-id="{{ $bookingdata->id }}">
+                                                    <i class="las la-credit-card"></i>
+                                                    {{ __('messages.advance_pay') }}
+                                                </a>
+                                            </div>
+                                        @endif
+                                        @endhasanyrole
                                     @endif
 
                                 @endif
@@ -331,7 +329,7 @@
                                                 data-status="cancelled"
                                                 data-confirm-message="Are you sure you want to cancelled this booking?">
                                             <i class="las la-times-circle"></i>
-                                            {{ __('messages.cancel') }}
+                                            {{ __('messages.cancel' 'asim') }}
                                         </button>
                                     </div>
                                     @endhasanyrole
