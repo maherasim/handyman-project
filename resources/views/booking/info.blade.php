@@ -208,18 +208,19 @@
                                             </button>
                                         </div>
                                         @endhasanyrole
-                                         @hasanyrole('user')
+                                      @hasanyrole('user')
                                         <div class="w3-third">
-                                            <button class="float-end btn btn-primary update-booking" id="cancel-booking"
-                                                    data-id="{{ $bookingdata->id }}"
-                                                    data-handyman-id="{{ $bookingdata->provider_id }}"
-                                                    data-status="cancelled"
-                                                    data-confirm-message="You want to cancelled this booking?">
-                                                <i class="las la-ban"></i>
-                                                {{ __('messages.cancel asim riaz') }}
-                                            </button>
-                                        </div>
+                                        <a class="float-end btn btn-primary"
+                                        href="{{ route('book.service', ['id' => $bookingdata->service_id, 'booking_id' => $bookingdata->id, 'payment_type' => 'advance_paid']) }}"
+                                        target="_blank" data-id="{{ $bookingdata->id }}">
+                                            <i class="las la-credit-card"></i>
+                                            {{ __('messages.advance_pay') }}
+                                        </a>
+                                    </div>
                                         @endhasanyrole
+
+
+                                        
                                     @else
                                         @hasanyrole('admin|demo_admin|provider')
                                         @if(isset($bookingdata->payment) && strtolower($bookingdata->payment->payment_status) == 'advanced_paid' && $is_enable_advance_payment == 0)
