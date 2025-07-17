@@ -210,25 +210,45 @@
                                         @endhasanyrole
                                     @else
                                         @hasanyrole('admin|demo_admin|provider')
-                                        <div class="w3-third">
-                                            <button class="float-end btn btn-primary" id="assign-provider"
-                                                    data-id="{{ $bookingdata->id }}"
-                                                    data-handyman-id="{{ $bookingdata->provider_id }}">
-                                                <i class="lab la-telegram-plane"></i>
-                                                {{ __('messages.assign_provider') }}
-                                            </button>
-                                        </div>
+                                        @if($is_enable_advance_payment == 0 || (isset($bookingdata->payment) && strtolower($bookingdata->payment->payment_status) == 'advanced_paid'))
+                                            <div class="w3-third">
+                                                <button class="float-end btn btn-primary" id="assign-provider"
+                                                        data-id="{{ $bookingdata->id }}"
+                                                        data-handyman-id="{{ $bookingdata->provider_id }}">
+                                                    <i class="lab la-telegram-plane"></i>
+                                                    {{ __('messages.assign_provider') }}
+                                                </button>
+                                            </div>
 
-                                        <div class="w3-third">
-                                            <a href="{{ route('booking.assign_form', ['id' => $bookingdata->id]) }}"
-                                               class="float-end btn btn-primary loadRemoteModel">
-                                                <i class="lab la-telegram-plane"></i>
-                                                {{ __('messages.assign_handyman') }}
-                                            </a>
-                                        </div>
+                                            <div class="w3-third">
+                                                <a href="{{ route('booking.assign_form', ['id' => $bookingdata->id]) }}"
+                                                   class="float-end btn btn-primary loadRemoteModel">
+                                                    <i class="lab la-telegram-plane"></i>
+                                                    {{ __('messages.assign_handyman') }}
+                                                </a>
+                                            </div>
+                                        @else
+                                            <div class="w3-third d-flex align-items-end">
+                                                <p><span class="text-info font-size-14" style="font-weight: 700">Waiting for
+                                                    client advance pay</span>
+                                                </p>
+                                            </div>
+                                        @endif
+                                        @endhasanyrole
+
+                                        @hasanyrole('user')
+                                        @if(!isset($bookingdata->payment) && $is_enable_advance_payment == 1)
+                                            <div class="w3-third">
+                                                <a class="float-end btn btn-primary"
+                                                   href="{{ route('book.service', ['id' => $bookingdata->service_id, 'booking_id' => $bookingdata->id, 'payment_type' => 'advance_paid']) }}"
+                                                   target="_blank" data-id="{{ $bookingdata->id }}">
+                                                    <i class="las la-credit-card"></i>
+                                                    {{ __('messages.advance_pay') }}
+                                                </a>
+                                            </div>
+                                        @endif
                                         @endhasanyrole
                                     @endif
-
                                 @endif
 
                                 @if ($bookingdata->status === 'on_going')
@@ -259,7 +279,8 @@
                                     <div class="w3-third">
                                         <button class="float-end btn btn-warning hold-booking"
                                                 data-id="{{ $bookingdata->id }}"
-                                                data-handyman-id="{{ $bookingdata->provider_id }}" data-status="hold"
+                                                data-handyman-id="{{ $bookingdata->provider_id }}"
+                                                data-status="hold"
                                                 data-confirm-message="You want to start this booking?">
                                             <i class="las la-pause-circle"></i>
                                             {{ __('messages.hold') }}
@@ -327,7 +348,8 @@
 
                                     <button class="float-end btn btn-success" id="complete-booking"
                                             data-id="{{ $bookingdata->id }}"
-                                            data-handyman-id="{{ $bookingdata->provider_id }}" data-status="cancelled"
+                                            data-handyman-id="{{ $bookingdata->provider_id }}"
+                                            data-status="cancelled"
                                             data-confirm-message="Are you sure you want to cancel this booking?">
                                         <i class="las la-file-invoice-dollar"></i>
                                         {{ __('messages.add_extra_charges') }}
@@ -348,7 +370,8 @@
                                     <div class="w3-third d-flex align-items-end">
                                         <button class="float-end btn btn-warning" id="rate-now-btn"
                                                 data-id="{{ $bookingdata->id }}">
-                                            <i class="las la-star"></i> <!-- Changed to a star icon (Line Awesome) -->
+                                            <i class="las la-star"></i>
+                                            <!-- Changed to a star icon (Line Awesome) -->
                                             {{ __('messages.rate_now') }}
                                         </button>
                                     </div>
@@ -366,20 +389,20 @@
                                     @endhasanyrole
                                 @endif
 
-                                    @if ($bookingdata->status === 'completed' && $payment->payment_status == 'paid')
-                                        @hasanyrole('provider')
-                                        <div class="w3-third d-flex align-items-end">
-                                            <button class="float-end btn btn-primary" id="service-proof-btn"
-                                                    data-id="{{ $bookingdata->id }}"
-                                                    data-service-id="{{ $bookingdata->service_id }}"
-                                                    data-user-id="{{ $bookingdata->customer_id }}">
-                                                <i class="las la-clipboard-list"></i>
-                                                {{ __('messages.service_proof') }}
-                                            </button>
-                                        </div>
-                                        @endhasanyrole
+                                @if ($bookingdata->status === 'completed' && $payment->payment_status == 'paid')
+                                    @hasanyrole('provider')
+                                    <div class="w3-third d-flex align-items-end">
+                                        <button class="float-end btn btn-primary" id="service-proof-btn"
+                                                data-id="{{ $bookingdata->id }}"
+                                                data-service-id="{{ $bookingdata->service_id }}"
+                                                data-user-id="{{ $bookingdata->customer_id }}">
+                                            <i class="las la-clipboard-list"></i>
+                                            {{ __('messages.service_proof') }}
+                                        </button>
+                                    </div>
+                                    @endhasanyrole
 
-                                    @endif
+                                @endif
 
                                 @if ($bookingdata->payment_id !== null)
                                     <a href="{{ route('invoice_pdf', $bookingdata->id) }}" class="btn btn-primary"
@@ -388,7 +411,6 @@
                                         {{ __('messages.invoice') }}
                                     </a>
                                 @endif
-
 
 
                             </div>
@@ -969,7 +991,8 @@
                                         @if (!empty($proof->proof_attachments))
                                             @foreach ($proof->proof_attachments as $url)
                                                 <a href="{{ $url }}" target="_blank">
-                                                    <img src="{{ $url }}" alt="Proof Image" style="height: 50px; width: 50px; object-fit: cover; margin-right: 5px;">
+                                                    <img src="{{ $url }}" alt="Proof Image"
+                                                         style="height: 50px; width: 50px; object-fit: cover; margin-right: 5px;">
                                                 </a>
                                             @endforeach
                                         @else

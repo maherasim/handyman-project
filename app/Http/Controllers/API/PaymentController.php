@@ -50,7 +50,7 @@ public function savePayment(Request $request)
     if ($isAdvance) {
         $advance_paid_amount = $request->advance_paid_amount;
         $booking->advance_paid_amount = $advance_paid_amount;
-        $booking->status = 'pending';
+//        $booking->status = 'pending';
         $booking->update();
 
         $admin_commission_amount = ($advance_paid_amount * $admin_commission_percentage) / 100;
@@ -271,7 +271,7 @@ public function getpaymentall(Request $request)
         $booking = Booking::find($request->booking_id);
         if(!empty($result) && $result->payment_status == 'advanced_paid'){
             $booking->advance_paid_amount  = $request->total_amount;
-            $booking->status  = 'pending';
+//            $booking->status  = 'pending';
 
             $booking->update();
 

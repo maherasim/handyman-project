@@ -969,5 +969,6 @@
     'role_earned' => 'Role Earned',
     'submit_service_proof' => 'Submit Service Proof',
     'service_proof' => 'Service Proof',
+    'advance_pay' => 'Advance Pay',
 
 );

@@ -555,10 +555,10 @@
                       <a :href="`${baseUrl}/service-detail/${service.id}`" class="btn btn-outline-primary">{{
                         $t('landingpage.cancel') }}</a>
 
-                      <button type="submit" v-if="service.is_enable_advance_payment == 1" class="btn btn-primary"> <span
-                          v-if="IsLoading == 1" class="spinner-border spinner-border-sm" role="status"
-                          aria-hidden="true"></span><span v-else>{{ $t('landingpage.pay_advance') }}</span></button>
-                      <button type="submit" v-else class="btn btn-primary"> <span v-if="IsLoading == 1"
+<!--                      <button type="submit" v-if="service.is_enable_advance_payment == 1" class="btn btn-primary"> <span-->
+<!--                          v-if="IsLoading == 1" class="spinner-border spinner-border-sm" role="status"-->
+<!--                          aria-hidden="true"></span><span v-else>{{ $t('landingpage.pay_advance') }}</span></button>-->
+                      <button type="submit" class="btn btn-primary"> <span v-if="IsLoading == 1"
                           class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span><span
                           v-else>{{ $t('messages.book_now') }}</span></button>
                     </div>
@@ -884,7 +884,7 @@ onMounted(() => {
     calculateAddonAmount()
   }
 
-    if (props.payment_type == 'paid') {
+    if (props.payment_type == 'paid' || props.payment_type == 'advance_paid') {
         bookingId.value = props.booking_id
         console.log(bookingId.value)
         showChildComponent()
@@ -1346,13 +1346,13 @@ const formSubmit = handleSubmit(async (values) => {
 
       const responseData = await response.json();
 
-      if (props.service.is_enable_advance_payment == 1) {
-
-        bookingId.value = responseData.booking_id
-
-        showChildComponent()
-
-      } else {
+      // if (props.service.is_enable_advance_payment == 1) {
+      //
+      //   bookingId.value = responseData.booking_id
+      //
+      //   showChildComponent()
+      //
+      // } else {
 
         IsLoading.value = 0
         Swal.fire({
@@ -1369,7 +1369,7 @@ const formSubmit = handleSubmit(async (values) => {
 
         })
 
-      }
+      // }
 
     } else {
 

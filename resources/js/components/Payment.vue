@@ -23,7 +23,12 @@
               <label class="form-check-label h6 fw-normal text-capitalize" for="bank_transfer">{{ $t('Bank Transfer') || 'Bank Transfer' }}</label>
             </div>
           </div>
-          <p>{{ $t('messages.wallet_balance') }}: {{ formatCurrencyVue(wallet_amount) }}</p>
+            <p>
+                {{ props.payment_type === 'paid' ? $t('messages.total_amount') : $t('messages.advance_pay') }}:
+                {{ formatCurrencyVue(paymentDisplayAmount) }}
+            </p>
+
+            <p>{{ $t('messages.wallet_balance') }}: {{ formatCurrencyVue(wallet_amount) }}</p>
           <div class="mt-3">
             <div class="d-inline-flex align-items-center flex-wrap gap-3">
               <button class="btn btn-primary" type="submit">
@@ -110,6 +115,11 @@ const props = defineProps(['booking_id', 'customer_id', 'discount', 'total_amoun
 const remainingAmount = computed(() => {
   return props.advance_payment_amount != null ? props.advance_payment_amount : props.total_amount
 })
+
+const paymentDisplayAmount = computed(() => {
+    return props.payment_type === 'paid' ? props.total_amount : props.advance_payment_amount
+})
+
 
 const paymentGatewayList = ref([])
 
