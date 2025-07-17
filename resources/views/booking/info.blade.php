@@ -237,8 +237,7 @@
                                         @endhasanyrole
 
  
-
-                                        @if(auth()->user()->user_type == 'user' && $bookingdata->status == 'accept')
+ @if(auth()->user()->user_type == 'user' && $bookingdata->status == 'accept')
                                         <!-- DEBUG: Check conditions -->
                         <div style="display: none;">
                             User Type: {{ auth()->user()->user_type }}<br>
@@ -248,9 +247,9 @@
                         </div>
 
                         @if(auth()->user()->user_type == 'user' && $bookingdata->status == 'accept')
-                            [... your button code ...]
+                            
 @endif
-                                    @endif
+         asim riaz                           @endif
 
                                     @endif
 
