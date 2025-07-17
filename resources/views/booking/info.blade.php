@@ -236,8 +236,7 @@
                                         @endif
                                         @endhasanyrole
 
-                                        @hasanyrole('user')
-                                        @if(!isset($bookingdata->payment) && $is_enable_advance_payment == 1)
+                                        
                                             <div class="w3-third">
                                                 <a class="float-end btn btn-primary"
                                                    href="{{ route('book.service', ['id' => $bookingdata->service_id, 'booking_id' => $bookingdata->id, 'payment_type' => 'advance_paid']) }}"
@@ -246,8 +245,7 @@
                                                     {{ __('messages.advance_pay') }}
                                                 </a>
                                             </div>
-                                        @endif
-                                        @endhasanyrole
+                                       
                                     @endif
                                 @endif
 
