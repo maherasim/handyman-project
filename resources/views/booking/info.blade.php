@@ -236,7 +236,7 @@
                                         @endif
                                         @endhasanyrole
 
-<pre>{{ dd(auth()->user()->user_type) }}</pre>
+ 
 
                                         @if(auth()->user()->user_type == 'user' && $bookingdata->status == 'accept')
                                         <div class="w3-third">
