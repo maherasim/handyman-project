@@ -175,7 +175,7 @@
             @else
                 {{-- PAYMENT DONE --}}
                 @hasanyrole('admin|demo_admin|provider')
-                    @if($bookingdata->handymanAdded->count() == 0)
+                    @if($bookingdata->handymanAdded->count() != 0)
 
                         <button class="btn btn-primary" id="assign-provider"
                                 data-id="{{ $bookingdata->id }}"
