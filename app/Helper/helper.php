@@ -1008,7 +1008,7 @@ function imageExtention($media){
     $extention = null;
     if($media != null){
         $path_info = pathinfo($media);
-        $extention = $path_info['extension'];
+        $extention = $path_info['extension'] ?? null; // Use null coalescing operator
     }
     return $extention;
 }
