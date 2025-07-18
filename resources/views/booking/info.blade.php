@@ -169,7 +169,32 @@
                                     </div>
                                     @endhasanyrole
                                 @endif
+                                            @hasanyrole('admin|demo_admin|provider')
+                                        @if($is_enable_advance_payment == 0 || (isset($bookingdata->payment) && strtolower($bookingdata->payment->payment_status) == 'advanced_paid'))
+                                            <div class="w3-third">
+                                                <button class="float-end btn btn-primary" id="assign-provider"
+                                                        data-id="{{ $bookingdata->id }}"
+                                                        data-handyman-id="{{ $bookingdata->provider_id }}">
+                                                    <i class="lab la-telegram-plane"></i>
+                                                    {{ __('messages.assign_provider') }}
+                                                </button>
+                                            </div>
 
+                                            <div class="w3-third">
+                                                <a href="{{ route('booking.assign_form', ['id' => $bookingdata->id]) }}"
+                                                   class="float-end btn btn-primary loadRemoteModel">
+                                                    <i class="lab la-telegram-plane"></i>
+                                                    {{ __('messages.assign_handyman') }}
+                                                </a>
+                                            </div>
+                                        @else
+                                            <div class="w3-third d-flex align-items-end">
+                                                <p><span class="text-info font-size-14" style="font-weight: 700">Waiting for
+                                                    client advance pay</span>
+                                                </p>
+                                            </div>
+                                        @endif
+                                        @endhasanyrole
                                 @if ($bookingdata->status === 'accept')
                                     @if($bookingdata->handymanAdded->isNotEmpty())
                                         @hasanyrole(['provider', 'handyman'])
@@ -222,34 +247,9 @@
                                         @endif
                                         @endhasanyrole
                                     @else
-                                        @hasanyrole('admin|demo_admin|provider')
-                                        @if($is_enable_advance_payment == 0 || (isset($bookingdata->payment) && strtolower($bookingdata->payment->payment_status) == 'advanced_paid'))
-                                            <div class="w3-third">
-                                                <button class="float-end btn btn-primary" id="assign-provider"
-                                                        data-id="{{ $bookingdata->id }}"
-                                                        data-handyman-id="{{ $bookingdata->provider_id }}">
-                                                    <i class="lab la-telegram-plane"></i>
-                                                    {{ __('messages.assign_provider') }}
-                                                </button>
-                                            </div>
+                                       'n/a'
 
-                                            <div class="w3-third">
-                                                <a href="{{ route('booking.assign_form', ['id' => $bookingdata->id]) }}"
-                                                   class="float-end btn btn-primary loadRemoteModel">
-                                                    <i class="lab la-telegram-plane"></i>
-                                                    {{ __('messages.assign_handyman') }}
-                                                </a>
-                                            </div>
-                                        @else
-                                            <div class="w3-third d-flex align-items-end">
-                                                <p><span class="text-info font-size-14" style="font-weight: 700">Waiting for
-                                                    client advance pay</span>
-                                                </p>
-                                            </div>
-                                        @endif
-                                        @endhasanyrole
-
-                                        @hasanyrole('user')
+                                        {{-- @hasanyrole('user')
                                         @if(!isset($bookingdata->payment) && $is_enable_advance_payment == 1)
                                             <div class="w3-third">
                                                 <a class="float-end btn btn-primary"
@@ -260,7 +260,7 @@
                                                 </a>
                                             </div>
                                         @endif
-                                        @endhasanyrole
+                                        @endhasanyrole --}}
                                     @endif
                                 @endif
 
