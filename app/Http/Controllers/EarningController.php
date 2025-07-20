@@ -240,7 +240,7 @@ if ($request->is('api/*')) {
     }
 
     return comman_custom_response($earningData);
-}
+}}
 
 
 
