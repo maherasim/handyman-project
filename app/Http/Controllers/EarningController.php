@@ -124,7 +124,7 @@ class EarningController extends Controller
               $totalEarning = $row->commission_earning()->where('commission_status', 'paid')->where('user_type', 'provider')->sum('commission_amount');
 
                 
-                $row['totalServiceAmount'] = $totalServiceAmount;
+                 
 
                return getPriceFormat($totalEarning);
 
