@@ -121,7 +121,7 @@ class EarningController extends Controller
                 ->whereIn('commission_status', ['unpaid','paid'])
                 ->where('user_type', 'provider');
             
-              $totalEarning = $row->commission_earning()->where('commission_status', 'paid')->where('user_type', ['provider','admin','handyman'])->sum('commission_amount');
+              $totalEarning = $row->commission_earning()->where('commission_status', 'paid')->whereIn('user_type', ['provider','admin','handyman'])->sum('commission_amount');
                 
                  
 
