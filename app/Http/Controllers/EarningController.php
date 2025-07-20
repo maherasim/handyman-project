@@ -415,8 +415,11 @@ public function handymanEarningData(Request $request)
 
             $totalBookings = $commissionData->unique('booking_id')->count();
 
-            $totalEarning = Booking::whereIn('id', $bookingIds)->sum('final_sub_total');
-
+           // $totalEarning = Booking::whereIn('id', $bookingIds)->sum('final_sub_total');
+           $totalEarning = CommissionEarning::whereIn('booking_id', $bookingIds)
+            ->where('commission_status', 'paid')
+            ->whereIn('user_type', ['provider', 'admin', 'handyman'])
+            ->sum('commission_amount');
             $adminEarning = CommissionEarning::whereIn('booking_id', $bookingIds)
                 ->where('user_type', 'admin')
                 ->whereIn('commission_status', ['paid', 'unpaid'])
