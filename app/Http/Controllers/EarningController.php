@@ -18,35 +18,37 @@ class EarningController extends Controller
         $pageTitle =  __('messages.earnings');
         return view('earning.index',compact('pageTitle'));
     }
-    public function setEarningData(Request $request){
-        $query = User::select('users.*')
-                ->with('commission_earning')
-                ->whereHas('commission_earning', function ($q) {
-                    $q->whereIn('commission_status', ['paid', 'unpaid'])
-                    ->where('user_type', 'provider');
-                })->orderBy('updated_at', 'desc');
+public function setEarningData(Request $request)
+{
+    $query = User::select('users.*')
+        ->with('commission_earning')
+        ->whereHas('commission_earning', function ($q) {
+            $q->whereIn('commission_status', ['paid', 'unpaid'])
+              ->where('user_type', 'provider');
+        })->orderBy('updated_at', 'desc');
 
-        $providers = $query->get();
+    $providers = $query->get();
 
-        if($request->ajax()) {
-            return Datatables::of($query)
+    if ($request->ajax()) {
+        return Datatables::of($query)
             ->addIndexColumn()
 
-            ->addColumn('provider_name', function($row){
+            ->addColumn('provider_name', function ($row) {
                 $user_id = $row->id;
                 $user_name = $row->display_name;
-                $user_image = getSingleMedia(optional($row),'profile_image', null);
+                $user_image = getSingleMedia(optional($row), 'profile_image', null);
                 $email = $row->email;
-                return view('earning.user', compact('row','user_id','user_name','email','user_image'));
-            })
-            ->orderColumn('provider_name', function ($query, $order) {
-                $query->join('commission_earnings', 'commission_earnings.employee_id', '=', 'users.id')
-                      ->whereIn('commission_earnings.commission_status', ['unpaid','paid'])  
-                      ->groupBy('users.id') // Group by user ID to avoid duplicates
-                      ->orderBy('users.display_name', $order); 
+                return view('earning.user', compact('row', 'user_id', 'user_name', 'email', 'user_image'));
             })
 
-            ->addColumn('action', function($row) {
+            ->orderColumn('provider_name', function ($query, $order) {
+                $query->join('commission_earnings', 'commission_earnings.employee_id', '=', 'users.id')
+                    ->whereIn('commission_earnings.commission_status', ['unpaid', 'paid'])
+                    ->groupBy('users.id')
+                    ->orderBy('users.display_name', $order);
+            })
+
+            ->addColumn('action', function ($row) {
                 $btn = '-';
                 $provider_id = $row->id;
 
@@ -55,246 +57,201 @@ class EarningController extends Controller
                         $query->where('status', 'completed');
                     })
                     ->where('commission_status', 'unpaid')
-                    ->whereIn('user_type', ['provider','admin','handyman']);
-                    
+                    ->where('user_type', 'provider');
 
-                
-                // $totalBookings = $commissionData->distinct('booking_id')->count();
-                
-                
                 $row['commission'] = $commissionData->get();
-                // $row['total_bookings'] = $totalBookings;
                 $ProviderEarning = 0;
-                if($row['commission']->count() > 0){
-                    foreach ($row['commission'] as $commission) {
-                        if ($commission != null) {
-                            // Fetch commission data for related bookings including handyman
-                            $commission_data = CommissionEarning::where('booking_id', $commission->booking_id)
-                                ->whereIn('user_type', ['provider', 'handyman'])
-                                ->where('commission_status', 'unpaid')
-                                ->get();
-         
-                            if ($commission_data) {
-                                foreach ($commission_data as $data) {
-                                    if (isset($data->commission_amount)) {
-                                        $ProviderEarning += $data->commission_amount;
-                                    }
-                                }
-                            }
+
+                foreach ($row['commission'] as $commission) {
+                    if ($commission) {
+                        $commission_data = CommissionEarning::where('booking_id', $commission->booking_id)
+                            ->whereIn('user_type', ['provider', 'handyman'])
+                            ->where('commission_status', 'unpaid')
+                            ->get();
+
+                        foreach ($commission_data as $data) {
+                            $ProviderEarning += $data->commission_amount ?? 0;
                         }
                     }
                 }
-                
+
                 $row['total_pay'] = $ProviderEarning;
-                
-                if($commissionData->count() > 0){
-                    $btn = "<a href=". route('providerpayout.create',$provider_id) ."><i class='fas fa-money-bill-alt earning-icon'></i></a>";
+
+                if ($commissionData->count() > 0) {
+                    $btn = "<a href=" . route('providerpayout.create', $provider_id) . "><i class='fas fa-money-bill-alt earning-icon'></i></a>";
                 }
 
                 return $btn;
-
             })
-        
+
             ->editColumn('total_bookings', function ($row) {
                 $commissionData = $row->commission_earning()
                     ->whereHas('getbooking', function ($query) {
                         $query->where('status', 'completed');
                     })
-                    ->whereIn('commission_status', ['unpaid','paid'])
-                   ->whereIn('user_type', ['provider','admin','handyman']);
-                
+                    ->whereIn('commission_status', ['unpaid', 'paid'])
+                    ->where('user_type', 'provider');
+
                 $totalBookings = $commissionData->distinct('booking_id')->count();
                 $row['total_bookings'] = $totalBookings;
-                if($row->total_bookings > 0){
-                    return "<b><a href='" . route('booking.index', ['provider_id' => $row->id]) . "' data-assign-module='".$row->id."'  class='text-primary text-nowrap px-1' data-bs-toggle='tooltip' title='View Provider Bookings'>".$row->total_bookings."</a> </b>";
-                }else{
 
-                    return "<b><span  data-assign-module='".$row->id."'  class='text-primary text-nowrap px-1' data-bs-toggle='tooltip' title='View Provider Bookings'>0</span>";
-                }
-
+                return $totalBookings > 0
+                    ? "<b><a href='" . route('booking.index', ['provider_id' => $row->id]) . "' class='text-primary text-nowrap px-1' data-bs-toggle='tooltip' title='View Provider Bookings'>{$totalBookings}</a></b>"
+                    : "<b><span class='text-primary text-nowrap px-1' data-bs-toggle='tooltip' title='View Provider Bookings'>0</span>";
             })
+
             ->editColumn('total_earning', function ($row) {
-                $commissionData = $row->commission_earning()
-                ->whereHas('getbooking', function ($query) {
-                    $query->where('status', 'completed');
-                })
-                ->whereIn('commission_status', ['unpaid','paid'])
-                ->whereIn('user_type', ['provider','admin','handyman']);
-            
-              $totalEarning = $row->commission_earning()->where('commission_status', 'paid')->whereIn('user_type', ['provider','admin','handyman'])->sum('commission_amount');
-                
-                 
+                $bookingIds = \App\Models\CommissionEarning::where('employee_id', $row->id)
+                    ->where('user_type', 'provider')
+                    ->where('commission_status', 'paid')
+                    ->pluck('booking_id');
 
-               return getPriceFormat($totalEarning);
+                $totalEarning = \App\Models\CommissionEarning::whereIn('booking_id', $bookingIds)
+                    ->where('commission_status', 'paid')
+                    ->whereIn('user_type', ['provider', 'admin', 'handyman'])
+                    ->sum('commission_amount');
 
+                return getPriceFormat($totalEarning);
             })
+
             ->editColumn('admin_earning', function ($row) {
                 $commissionData = $row->commission_earning()
-                ->whereHas('getbooking', function ($query) {
-                    $query->where('status', 'completed');
-                })
-                ->whereIn('commission_status', ['unpaid','paid'])
-                ->where('user_type', 'provider');
-            
+                    ->whereHas('getbooking', function ($query) {
+                        $query->where('status', 'completed');
+                    })
+                    ->where('user_type', 'provider');
+
                 $commissions = $commissionData->get();
                 $totalAdminEarning = 0;
-                foreach($commissions as $commission){
-                    if($commission != null){
-                        $commission_data = CommissionEarning::where('booking_id', $commission->booking_id)->where('user_type', 'admin')->whereIn('commission_status', ['unpaid','paid'])->first();
-                        if($commission_data != null){
-                            $totalAdminEarning += $commission_data->commission_amount;
-                        }
-                        
+
+                foreach ($commissions as $commission) {
+                    if ($commission) {
+                        $commission_data = CommissionEarning::where('booking_id', $commission->booking_id)
+                            ->where('user_type', 'admin')
+                            ->whereIn('commission_status', ['unpaid', 'paid'])
+                            ->first();
+
+                        $totalAdminEarning += $commission_data->commission_amount ?? 0;
                     }
                 }
 
-                return $totalAdminEarning ? getPriceFormat($totalAdminEarning) : getPriceFormat(0);
+                return getPriceFormat($totalAdminEarning);
             })
+
             ->editColumn('provider_earning', function ($row) {
-                return $row->total_pay ? getPriceFormat($row->total_pay) : getPriceFormat(0);
+                return getPriceFormat($row->total_pay ?? 0);
             })
-            ->editColumn('handyman_total_earning', function($row){
-                
+
+            ->editColumn('handyman_total_earning', function ($row) {
                 $handyman_total_earning = 0;
+
                 $commissions = $row->commission_earning()
-                ->whereHas('getbooking', function ($query) {
-                    $query->where('status', 'completed');
-                })
-                ->whereIn('commission_status', ['paid'])
-                ->where('user_type', 'provider')->get();
-                foreach($commissions as $commission){
-                    if($commission != null){
-                    $commission_data = CommissionEarning::where('booking_id', $commission->booking_id)->where('user_type', 'handyman')->where('commission_status', 'paid')->first();
-                    if($commission_data){
-                        $handyman_total_earning += $commission_data->commission_amount;
-                    }
-                    }
+                    ->whereHas('getbooking', function ($query) {
+                        $query->where('status', 'completed');
+                    })
+                    ->where('commission_status', 'paid')
+                    ->where('user_type', 'provider')
+                    ->get();
+
+                foreach ($commissions as $commission) {
+                    $commission_data = CommissionEarning::where('booking_id', $commission->booking_id)
+                        ->where('user_type', 'handyman')
+                        ->where('commission_status', 'paid')
+                        ->first();
+
+                    $handyman_total_earning += $commission_data->commission_amount ?? 0;
                 }
-                
-                return $handyman_total_earning ? getPriceFormat( $handyman_total_earning) : getPriceFormat(0);
+
+                return getPriceFormat($handyman_total_earning);
             })
 
-            ->editColumn('provider_paid_earning', function($row){
-                $commissionData = ProviderPayout::where('provider_id',$row->id)
-                ->sum('amount');
-                $provider_paid_earning = $commissionData ?? 0;
-                // return getPriceFormat( $provider_paid_earning);
-                return "<b><a href='" . route('providerpayout.show',$row->id) . "' data-assign-module='".$row->id."'  class='text-primary text-nowrap px-1' data-bs-toggle='tooltip' title='".__('messages.view_provider_payout')."'>".getPriceFormat( $provider_paid_earning)."</a> </b>";
+            ->editColumn('provider_paid_earning', function ($row) {
+                $paid = ProviderPayout::where('provider_id', $row->id)->sum('amount');
+                return "<b><a href='" . route('providerpayout.show', $row->id) . "' class='text-primary text-nowrap px-1' data-bs-toggle='tooltip' title='" . __('messages.view_provider_payout') . "'>" . getPriceFormat($paid) . "</a></b>";
             })
 
-            
-
-            ->rawColumns(['provider_name','action','total_bookings','commission','total_earning','provider_total_earning','provider_paid_earning','handyman_total_earning'])
+            ->rawColumns([
+                'provider_name',
+                'action',
+                'total_bookings',
+                'commission',
+                'total_earning',
+                'provider_total_earning',
+                'provider_paid_earning',
+                'handyman_total_earning'
+            ])
             ->make(true);
-        }
-        if($request->is('api/*')) {
-
-            $earningData = [];
-            foreach($providers as $provider){
-                $commissionData = $provider->commission_earning()
-                    ->whereHas('getbooking', function ($query) {
-                        $query->where('status', 'completed');
-                    })
-                    ->whereIn('commission_status', ['unpaid','paid'])
-                    ->where('user_type', 'provider');
-                    
-                //$providerEarning = $commissionData->sum('commission_amount');
-                $totalBookings = $commissionData->distinct('booking_id')->count();
-                $commissions = $commissionData->get();
-
-                $totalEarning = 0;
-                $adminEarning = 0;
-                $totalTax = 0;
-                foreach($commissions as $commission){
-                    if ($commission != null) {
-                        $bookingData = Booking::where('id', $commission->booking_id)->first();
-                        $totalTax += $bookingData->final_total_tax;
-
-                        // $totalEarning += $bookingData->total_amount;
-                        if($bookingData != null){
-                            $totalEarning += $bookingData->final_sub_total;
-                        }
-
-                        $commission_data = CommissionEarning::where('booking_id', $commission->booking_id)->where('user_type', 'admin')->whereIn('commission_status', ['unpaid','paid'])->first();
-                        $adminEarning += $commission_data->commission_amount;
-                        
-                                
-                       
-                    
-                    }
-                }
-                $providerCommissionData = $provider->commission_earning()
-                    ->whereHas('getbooking', function ($query) {
-                        $query->where('status', 'completed');
-                    })
-                    ->where('commission_status', 'unpaid')
-                    ->where('user_type', 'provider')->get();
-                    $providerDueAmount = 0;
-                if($providerCommissionData->count() > 0){
-                    foreach ($providerCommissionData as $commission) {
-                        if ($commission != null) {
-                            // Fetch commission data for related bookings including handyman
-                            $provider_commission_data = CommissionEarning::where('booking_id', $commission->booking_id)
-                            ->whereIn('user_type', ['provider', 'handyman'])
-                            ->where('commission_status', 'unpaid')
-                            ->get();
-                           
-                                    if ($provider_commission_data) {
-                                        foreach ($provider_commission_data as $data) {
-                                            if (isset($data->commission_amount)) {
-                                                $providerDueAmount += $data->commission_amount;
-                                            }
-                                        }
-                                    }
-                        }
-                    }
-                }
-                
-                $handymancommissionData = $provider->commission_earning()
-                    ->whereHas('getbooking', function ($query) {
-                        $query->where('status', 'completed');
-                    })
-                    ->whereIn('commission_status', ['paid'])
-                    ->where('user_type', 'provider')->get();
-                $handyman_total_earning = 0;
-                if($handymancommissionData){
-                    foreach($handymancommissionData as $commission){
-                        if($commission != null){
-                        $commission_data = CommissionEarning::where('booking_id', $commission->booking_id)->where('user_type', 'handyman')->where('commission_status', 'paid')->first();
-                        if($commission_data){
-                            $handyman_total_earning += $commission_data->commission_amount;
-                        }
-                        }
-                    }
-                }
-                   
-                $provider_paid_earning = ProviderPayout::where('provider_id',$provider->id)->sum('amount');
-                $provider_paid_earning = $provider_paid_earning ?? 0;
-                $totalEarning = $totalEarning ? $totalEarning : 0;
-
-                $adminEarning = $adminEarning ? $adminEarning : 0;
-
-                $earningData[] = [
-                    'provider_id' => $provider->id,
-                    'provider_name' => $provider->display_name,
-                    'provider_image' => getSingleMedia(optional($provider),'profile_image', null),
-                    'email' => $provider->email,
-                    'commission' => optional($provider->providertype)->commission,
-                    'commission_type' => optional($provider->providertype)->type,
-                    'total_bookings' => $totalBookings,
-                    'total_earning' =>$totalEarning, 
-                    'taxes' => $totalTax, 
-                    'taxes_formate' =>  getPriceFormat($totalTax, 2),
-                    'admin_earning' => $adminEarning,
-                    'provider_paid_earning' => $provider_paid_earning,
-                    'provider_paid_earning_formate' => $provider_paid_earning,
-                    'provider_due_amount' => $providerDueAmount,
-                    'handyman_total_amount' => $handyman_total_earning,
-                ];
-            }
-            return comman_custom_response($earningData);
-		}
     }
+
+    // API request handling
+    if ($request->is('api/*')) {
+    $earningData = [];
+
+    foreach ($providers as $provider) {
+        // Step 1: Get all booking_ids for this provider (only completed bookings)
+        $bookingIds = CommissionEarning::where('employee_id', $provider->id)
+            ->where('user_type', 'provider')
+            ->whereHas('getbooking', function ($query) {
+                $query->where('status', 'completed');
+            })
+            ->pluck('booking_id');
+
+        // Step 2: Sum all paid commissions across user types for these bookings
+        $totalEarning = CommissionEarning::whereIn('booking_id', $bookingIds)
+            ->where('commission_status', 'paid')
+            ->whereIn('user_type', ['provider', 'admin', 'handyman'])
+            ->sum('commission_amount');
+
+        // Step 3: Admin earning only
+        $adminEarning = CommissionEarning::whereIn('booking_id', $bookingIds)
+            ->where('user_type', 'admin')
+            ->whereIn('commission_status', ['paid', 'unpaid'])
+            ->sum('commission_amount');
+
+        // Step 4: Provider unpaid commissions (due amount)
+        $providerDueAmount = CommissionEarning::whereIn('booking_id', $bookingIds)
+            ->where('commission_status', 'unpaid')
+            ->whereIn('user_type', ['provider', 'handyman'])
+            ->sum('commission_amount');
+
+        // Step 5: Handyman total earnings (paid only)
+        $handyman_total_earning = CommissionEarning::whereIn('booking_id', $bookingIds)
+            ->where('user_type', 'handyman')
+            ->where('commission_status', 'paid')
+            ->sum('commission_amount');
+
+        // Step 6: Count total bookings
+        $totalBookings = $bookingIds->unique()->count();
+
+        // Step 7: Paid earnings (payouts)
+        $provider_paid_earning = ProviderPayout::where('provider_id', $provider->id)->sum('amount');
+
+        // Step 8: Total tax
+        $totalTax = Booking::whereIn('id', $bookingIds)->sum('final_total_tax');
+
+        $earningData[] = [
+            'provider_id' => $provider->id,
+            'provider_name' => $provider->display_name,
+            'provider_image' => getSingleMedia(optional($provider), 'profile_image', null),
+            'email' => $provider->email,
+            'commission' => optional($provider->providertype)->commission,
+            'commission_type' => optional($provider->providertype)->type,
+            'total_bookings' => $totalBookings,
+            'total_earning' => $totalEarning,
+            'taxes' => $totalTax,
+            'taxes_formate' => getPriceFormat($totalTax, 2),
+            'admin_earning' => $adminEarning,
+            'provider_paid_earning' => $provider_paid_earning,
+            'provider_paid_earning_formate' => getPriceFormat($provider_paid_earning),
+            'provider_due_amount' => $providerDueAmount,
+            'handyman_total_amount' => $handyman_total_earning,
+        ];
+    }
+
+    return comman_custom_response($earningData);
+}
+
+}
 
 
 
