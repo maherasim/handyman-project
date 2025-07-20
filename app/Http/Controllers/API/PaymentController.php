@@ -7,6 +7,7 @@ use App\Models\ProviderPayout;
 use App\Traits\EarningTrait;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use App\Models\BookingHandymanMapping;
 use App\Models\Payment;
 use App\Models\Booking;
 use App\Models\Wallet;
