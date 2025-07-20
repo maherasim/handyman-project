@@ -94,27 +94,14 @@ class EarningController extends Controller
                 return $btn;
 
             })
-            // ->editColumn('commission', function ($row) {
-
-            //     foreach($row['commission'] as $commission){
-            //         $commissions = json_decode($commission->commissions);
-                    
-            //         $commission = $commissions ? getPriceFormat($commissions->commission) : 0;
-            //         if($commissions != null && $commissions->type == "percent"){
-            //             $commission = $commissions->commission.''.'%';
-            //         }
-            //         return $commission ?? 0;
-            //     }
-            //     // return "<b><span  data-assign-module='".$row->id."' data-assign-commission-type='provider_commission' data-assign-target='#view_commission_list' data-assign-event='assign_commssions' class='btn text-primary p-0 fs-5' data-bs-toggle='tooltip' title='View'> <i class='ph ph-eye align-middle'></i></span>";
-                 
-            //  })
+        
             ->editColumn('total_bookings', function ($row) {
                 $commissionData = $row->commission_earning()
                     ->whereHas('getbooking', function ($query) {
                         $query->where('status', 'completed');
                     })
-                    ->whereIn('commission_status', ['unpaid','paid'])
-                    ->where('user_type', 'provider');
+                    ->whereIn('commission_status', ['unpaid','paid']);
+                  
                 
                 $totalBookings = $commissionData->distinct('booking_id')->count();
                 $row['total_bookings'] = $totalBookings;
