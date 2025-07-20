@@ -55,7 +55,7 @@ class EarningController extends Controller
                         $query->where('status', 'completed');
                     })
                     ->where('commission_status', 'unpaid')
-                    ->where('user_type', 'provider');
+                    ->whereIn('user_type', ['provider','admin','handyman']);
                     
 
                 
@@ -101,7 +101,7 @@ class EarningController extends Controller
                         $query->where('status', 'completed');
                     })
                     ->whereIn('commission_status', ['unpaid','paid'])
-                    ->where('user_type', 'provider');
+                   ->whereIn('user_type', ['provider','admin','handyman']);
                 
                 $totalBookings = $commissionData->distinct('booking_id')->count();
                 $row['total_bookings'] = $totalBookings;
