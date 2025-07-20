@@ -118,8 +118,8 @@ class EarningController extends Controller
                 ->whereHas('getbooking', function ($query) {
                     $query->where('status', 'completed');
                 })
-                ->whereIn('commission_status', ['unpaid','paid']);
-                // ->where('user_type', 'provider');
+                ->whereIn('commission_status', ['unpaid','paid'])
+                ->where('user_type', 'provider');
             
                 $commissions = $commissionData->get();
                 $totalServiceAmount = 0;
@@ -127,7 +127,7 @@ class EarningController extends Controller
                     if($commission != null){
                         $bookingData = Booking::where('id', $commission->booking_id)->first();
                         if($bookingData != null){
-                            $totalServiceAmount += $bookingData->final_sub_total;
+                            $totalServiceAmount += $bookingData->total_amount;
                         }
                         
                     }
@@ -220,7 +220,7 @@ class EarningController extends Controller
 
                         // $totalEarning += $bookingData->total_amount;
                         if($bookingData != null){
-                            $totalEarning += $bookingData->final_sub_total;
+                            $totalEarning += $bookingData->total_amount;
                         }
 
                         $commission_data = CommissionEarning::where('booking_id', $commission->booking_id)->where('user_type', 'admin')->whereIn('commission_status', ['unpaid','paid'])->first();
@@ -411,7 +411,7 @@ class EarningController extends Controller
                 foreach($commissions as $commission){
                     $bookingData = Booking::where('id', $commission->booking_id)->first();
 
-                    $totalServiceAmount += $bookingData->final_sub_total;
+                    $totalServiceAmount += $bookingData->total_amount;
                 }
                 $row['totalServiceAmount'] = $totalServiceAmount;
 
@@ -508,7 +508,7 @@ class EarningController extends Controller
 
                         // $totalEarning += $bookingData->total_amount;
                         if($bookingData != null){
-                            $totalEarning += $bookingData->final_sub_total;
+                            $totalEarning += $bookingData->total_amount;
                         }
 
                         $commission_data = CommissionEarning::where('booking_id', $commission->booking_id)->where('user_type', 'admin')->whereIn('commission_status', ['unpaid','paid'])->first();
