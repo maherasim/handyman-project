@@ -101,12 +101,12 @@ public function setEarningData(Request $request)
             })
 
             ->editColumn('total_earning', function ($row) {
-                $bookingIds = \App\Models\CommissionEarning::where('employee_id', $row->id)
+                $bookingIds = CommissionEarning::where('employee_id', $row->id)
                     ->where('user_type', 'provider')
                     ->where('commission_status', 'paid')
                     ->pluck('booking_id');
 
-                $totalEarning = \App\Models\CommissionEarning::whereIn('booking_id', $bookingIds)
+                $totalEarning = CommissionEarning::whereIn('booking_id', $bookingIds)
                     ->where('commission_status', 'paid')
                     ->whereIn('user_type', ['provider', 'admin', 'handyman'])
                     ->sum('commission_amount');
@@ -115,25 +115,17 @@ public function setEarningData(Request $request)
             })
 
             ->editColumn('admin_earning', function ($row) {
-                $commissionData = $row->commission_earning()
+                $bookingIds = CommissionEarning::where('employee_id', $row->id)
+                    ->where('user_type', 'provider')
                     ->whereHas('getbooking', function ($query) {
                         $query->where('status', 'completed');
                     })
-                    ->where('user_type', 'provider');
+                    ->pluck('booking_id');
 
-                $commissions = $commissionData->get();
-                $totalAdminEarning = 0;
-
-                foreach ($commissions as $commission) {
-                    if ($commission) {
-                        $commission_data = CommissionEarning::where('booking_id', $commission->booking_id)
-                            ->where('user_type', 'admin')
-                            ->whereIn('commission_status', ['unpaid', 'paid'])
-                            ->first();
-
-                        $totalAdminEarning += $commission_data->commission_amount ?? 0;
-                    }
-                }
+                $totalAdminEarning = CommissionEarning::whereIn('booking_id', $bookingIds)
+                    ->where('user_type', 'admin')
+                    ->whereIn('commission_status', ['paid', 'unpaid'])
+                    ->sum('commission_amount');
 
                 return getPriceFormat($totalAdminEarning);
             })
@@ -183,8 +175,7 @@ public function setEarningData(Request $request)
             ->make(true);
     }
 
-    // API request handling
-    if ($request->is('api/*')) {
+if ($request->is('api/*')) {
     $earningData = [];
 
     foreach ($providers as $provider) {
@@ -251,7 +242,6 @@ public function setEarningData(Request $request)
     return comman_custom_response($earningData);
 }
 
-}
 
 
 
