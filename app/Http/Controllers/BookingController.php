@@ -8,7 +8,7 @@ use App\Http\Resources\API\ServiceProofResource;
 use App\Models\AppSetting;
 use App\Models\Booking;
 use App\Models\BookingHandymanMapping;
-use App\Models\HandymanPayou;
+use App\Models\HandymanPayout;
 use App\Models\BookingRating;
 use App\Models\BookingStatus;
 use App\Models\PaymentHistory;
