@@ -188,7 +188,7 @@ public function setEarningData(Request $request)
     $earningData = [];
 
     foreach ($providers as $provider) {
-        // Step 1: Get all booking_ids for this provider (only completed bookings)
+        // Step 1: Get all booking_ids for this provider with completed status
         $bookingIds = CommissionEarning::where('employee_id', $provider->id)
             ->where('user_type', 'provider')
             ->whereHas('getbooking', function ($query) {
@@ -196,37 +196,37 @@ public function setEarningData(Request $request)
             })
             ->pluck('booking_id');
 
-        // Step 2: Sum all paid commissions across user types for these bookings
+        // Step 2: Total earning (sum of all commissions from provider, admin, handyman)
         $totalEarning = CommissionEarning::whereIn('booking_id', $bookingIds)
             ->where('commission_status', 'paid')
             ->whereIn('user_type', ['provider', 'admin', 'handyman'])
             ->sum('commission_amount');
 
-        // Step 3: Admin earning only
+        // ✅ Step 3: Admin earning (only user_type = 'admin')
         $adminEarning = CommissionEarning::whereIn('booking_id', $bookingIds)
             ->where('user_type', 'admin')
             ->whereIn('commission_status', ['paid', 'unpaid'])
             ->sum('commission_amount');
 
-        // Step 4: Provider unpaid commissions (due amount)
+        // Step 4: Provider due amount (unpaid commissions for provider & handyman)
         $providerDueAmount = CommissionEarning::whereIn('booking_id', $bookingIds)
             ->where('commission_status', 'unpaid')
             ->whereIn('user_type', ['provider', 'handyman'])
             ->sum('commission_amount');
 
-        // Step 5: Handyman total earnings (paid only)
+        // Step 5: Handyman paid earnings
         $handyman_total_earning = CommissionEarning::whereIn('booking_id', $bookingIds)
             ->where('user_type', 'handyman')
             ->where('commission_status', 'paid')
             ->sum('commission_amount');
 
-        // Step 6: Count total bookings
+        // Step 6: Total bookings count
         $totalBookings = $bookingIds->unique()->count();
 
-        // Step 7: Paid earnings (payouts)
+        // Step 7: Provider paid earning (payouts)
         $provider_paid_earning = ProviderPayout::where('provider_id', $provider->id)->sum('amount');
 
-        // Step 8: Total tax
+        // Step 8: Total taxes
         $totalTax = Booking::whereIn('id', $bookingIds)->sum('final_total_tax');
 
         $earningData[] = [
