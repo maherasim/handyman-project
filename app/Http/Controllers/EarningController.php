@@ -134,28 +134,22 @@ public function setEarningData(Request $request)
                 return getPriceFormat($row->total_pay ?? 0);
             })
 
-            ->editColumn('handyman_total_earning', function ($row) {
-                $handyman_total_earning = 0;
-
-                $commissions = $row->commission_earning()
+         ->editColumn('handyman_total_earning', function ($row) {
+                $bookingIds = CommissionEarning::where('employee_id', $row->id)
+                    ->where('user_type', 'provider')
                     ->whereHas('getbooking', function ($query) {
                         $query->where('status', 'completed');
                     })
-                    ->where('commission_status', 'paid')
-                    ->where('user_type', 'provider')
-                    ->get();
+                    ->pluck('booking_id');
 
-                foreach ($commissions as $commission) {
-                    $commission_data = CommissionEarning::where('booking_id', $commission->booking_id)
-                        ->where('user_type', 'handyman')
-                        ->where('commission_status', 'paid')
-                        ->first();
+                $handymanEarning = CommissionEarning::whereIn('booking_id', $bookingIds)
+                    ->where('user_type', 'handyman')
+                    ->whereIn('commission_status', ['paid', 'unpaid'])
+                    ->sum('commission_amount');
 
-                    $handyman_total_earning += $commission_data->commission_amount ?? 0;
-                }
-
-                return getPriceFormat($handyman_total_earning);
+                return getPriceFormat($handymanEarning);
             })
+
 
             ->editColumn('provider_paid_earning', function ($row) {
                 $paid = ProviderPayout::where('provider_id', $row->id)->sum('amount');
