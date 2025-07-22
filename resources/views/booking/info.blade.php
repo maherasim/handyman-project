@@ -199,7 +199,7 @@
                             {{ __('messages.start_drive') }}
                         </button>
                     </div>
-                    <div class="w3-third">
+                    {{-- <div class="w3-third">
                         <button class="float-end btn btn-danger update-booking" id="reject-booking"
                                 data-id="{{ $bookingdata->id }}"
                                 data-handyman-id="{{ $bookingdata->provider_id }}"
@@ -208,7 +208,7 @@
                             <i class="las la-times-circle"></i>
                             {{ __('messages.decline') }}
                         </button>
-                    </div>
+                    </div> --}}
                 @endhasanyrole
 
                 @hasanyrole('user')
