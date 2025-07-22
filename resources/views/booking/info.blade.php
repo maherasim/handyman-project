@@ -196,7 +196,7 @@
                                 data-status="on_going"
                                 data-confirm-message="You want to start this booking?">
                             <i class="las la-play-circle"></i>
-                            {{ __('messages.start_drive') }}
+                            {{ __('Start Work') }}
                         </button>
                     </div>
                     {{-- <div class="w3-third">
