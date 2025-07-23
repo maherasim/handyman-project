@@ -60,9 +60,9 @@ class HomeController extends Controller
                   ->whereDate('date', '<=', $end);
             }])
             ->get();
-    $statusColors = [
+      $statusColors = [
         'pending'         => '#ffc107', // Yellow
-        'accept'        => '#17a2b8', // Blue
+        'accept'         => '#17a2b8', // Blue
         'completed'       => '#28a745', // Green
         'pending_approve' => '#fd7e14', // Orange
         'cancelled'       => '#dc3545', // Red
