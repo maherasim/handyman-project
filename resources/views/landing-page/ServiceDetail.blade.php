@@ -111,9 +111,7 @@
                                     </div>
                                     <div class="form-check">
                                         <input class="form-check-input service-addon-checkbox" type="checkbox"
-                                            value="" id="serviceaddon" data-addon-id="{{ $serviceaddon['id'] }}"
-                                            style="width: 20px; height: 20px; background-color: white; border: 2px solid #000;">
-
+                                            value="" id="serviceaddon" data-addon-id="{{ $serviceaddon['id'] }}">
                                     </div>
                                 </div>
                             @endforeach
