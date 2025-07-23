@@ -62,8 +62,9 @@ class HomeController extends Controller
             ->get();
     $statusColors = [
         'pending'         => '#ffc107', // Yellow
-        'accepted'        => '#17a2b8', // Blue
-        'completed'       => '#28a745', // Green
+         'completed'       => '#28a745', // Green
+        'accept'        => '#17a2b8', // Blue
+       
         'pending_approve' => '#fd7e14', // Orange
         'cancelled'       => '#dc3545', // Red
     ];
