@@ -10,18 +10,19 @@
             </div>
         </div>
         <!-- Page end  -->
-    </div>
-   @section('bottom_script')
+    </div> 
+    @section('bottom_script')
 <script>
 if (jQuery('#calendar').length) {
-  document.addEventListener('DOMContentLoaded', function() {
+  document.addEventListener('DOMContentLoaded', function () {
     var calendarEl = document.getElementById('calendar');
+
     var calendar = new FullCalendar.Calendar(calendarEl, {
       plugins: ['dayGrid', 'timeGrid', 'list', 'interaction', 'bootstrap'],
-      defaultView: 'dayGridMonth',
+      initialView: 'dayGridMonth',
       displayEventTime: true,
       themeSystem: 'bootstrap',
-      header: {
+      headerToolbar: {
         left: 'prev,next today',
         center: 'title',
         right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
@@ -35,37 +36,27 @@ if (jQuery('#calendar').length) {
       droppable: false,
 
       eventSources: [{
-        events: function(info, successCallback, failureCallback) {
+        events: function (info, successCallback, failureCallback) {
           $.ajax({
-            url: "{{ route('home') }}", // or your correct route
+            url: "{{ route('home') }}",
             dataType: 'json',
             data: {
               start: info.startStr,
               end: info.endStr,
               _token: "{{ csrf_token() }}"
             },
-            success: function(response) {
-              successCallback(response); // response must be an array of {title, start, id}
+            success: function (response) {
+              successCallback(response); // response is an array of event objects with color
             },
-            error: function(xhr) {
+            error: function (xhr) {
               console.error("Error loading events:", xhr);
               failureCallback(xhr);
             }
           });
-        },
-        color: "rgb(19, 193, 240)",
-        textColor: "#fff"
+        }
       }],
 
-      eventRender: function(info) {
-        if (info.event.allDay === 'true') {
-          info.event.allDay = true;
-        } else {
-          info.event.allDay = false;
-        }
-      },
-
-      eventClick: function(info) {
+      eventClick: function (info) {
         var id = info.event.id;
         var url = "{{ url('booking') }}/" + id;
         window.location.href = url;
@@ -76,6 +67,8 @@ if (jQuery('#calendar').length) {
   });
 }
 </script>
+ 
+
 @endsection
 
 </x-master-layout>

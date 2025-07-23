@@ -50,7 +50,7 @@ class HomeController extends Controller
 
         // Get relevant bookings with slots in date range
         $bookings = Booking::myBooking()
-            
+            // ->where('status', 'pending')  status
             ->whereHas('service_slots', function ($query) use ($start, $end) {
                 $query->whereDate('date', '>=', $start)
                       ->whereDate('date', '<=', $end);
@@ -60,7 +60,13 @@ class HomeController extends Controller
                   ->whereDate('date', '<=', $end);
             }])
             ->get();
-
+    $statusColors = [
+        'pending'         => '#ffc107', // Yellow
+        'accepted'        => '#17a2b8', // Blue
+        'completed'       => '#28a745', // Green
+        'pending_approve' => '#fd7e14', // Orange
+        'cancelled'       => '#dc3545', // Red
+    ];
         // Format as FullCalendar event objects
         $events = [];
 
@@ -71,6 +77,7 @@ class HomeController extends Controller
                     'title'  => $booking->service->name ?? 'Booking',
                     'start'  => $slot->date,
                     'allDay' => true,
+                    'color'  => $color,
                 ];
             }
         }
