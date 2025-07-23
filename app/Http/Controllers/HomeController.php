@@ -50,7 +50,7 @@ class HomeController extends Controller
 
         // Get relevant bookings with slots in date range
         $bookings = Booking::myBooking()
-            ->where('status', 'pending')
+            
             ->whereHas('service_slots', function ($query) use ($start, $end) {
                 $query->whereDate('date', '>=', $start)
                       ->whereDate('date', '<=', $end);

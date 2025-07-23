@@ -554,7 +554,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div>        
 
             <!-- Order information section  -->
             <div class="row">
@@ -602,7 +602,7 @@
                         </div>
                     </div>
                 </div>
-                <!-- Provider Information -->
+                <!-- Provider Information -->                                    
                 <div class="col-md-4">
                     <div class="card">
                         <div class="card-body">
@@ -693,6 +693,9 @@
 
             </div>
         </div>
+
+
+        
     @php
         $showAdvance = false;
 

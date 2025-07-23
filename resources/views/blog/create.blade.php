@@ -115,8 +115,8 @@
                 </div>
             </div>
         </div>
-    </div>
-    @section('bottom_script')
+    </div>                                                                                                                                                                                                                                       
+    @section('bottom_script')     
         <script>
             function preview() {
                 blog_image_preview.src = URL.createObjectURL(event.target.files[0]);
@@ -148,9 +148,9 @@
 
             })(jQuery);
             document.addEventListener('DOMContentLoaded', function() { 
-    checkImage();
+              checkImage();
 });
-function checkImage() { 
+   function checkImage() { 
     var id = @json($blogdata->id ); 
     var route = "{{ route('check-image', ':id') }}";
     route = route.replace(':id', id);  
