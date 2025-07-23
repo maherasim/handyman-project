@@ -62,28 +62,31 @@ class HomeController extends Controller
             ->get();
     $statusColors = [
         'pending'         => '#ffc107', // Yellow
-         'completed'       => '#28a745', // Green
-        'accept'        => '#17b824ff', // Blue
-       
+        'accept'        => '#17a2b8', // Blue
+        'completed'       => '#28a745', // Green
         'pending_approve' => '#fd7e14', // Orange
         'cancelled'       => '#dc3545', // Red
     ];
         // Format as FullCalendar event objects
         $events = [];
 
-        foreach ($bookings as $booking) {
-            foreach ($booking->service_slots as $slot) {
-                $events[] = [
-                    'id'     => $booking->id,
-                    'title'  => $booking->service->name ?? 'Booking',
-                    'start'  => $slot->date,
-                    'allDay' => true,
-                    'color'  => $statusColors,
-                ];
-            }
-        }
+         foreach ($bookings as $booking) {
+        $status = $booking->status;
+        $color = $statusColors[$status] ?? '#6c757d'; // default gray if status unknown
 
-        return response()->json($events);
+        foreach ($booking->service_slots as $slot) {
+            $events[] = [
+                'id'        => $booking->id,
+                'title'     => $booking->service->name ?? 'Booking',
+                'start'     => $slot->date,
+                'allDay'    => true,
+                'color'     => $color,
+                'textColor' => '#ffffff',
+            ];
+        }
+    }
+
+    return response()->json($events);
     }
 
     // Regular dashboard data loading
