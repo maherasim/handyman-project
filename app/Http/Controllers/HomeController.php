@@ -77,7 +77,7 @@ class HomeController extends Controller
                     'title'  => $booking->service->name ?? 'Booking',
                     'start'  => $slot->date,
                     'allDay' => true,
-                    'color'  => $color,
+                    'color'  => $statusColors,
                 ];
             }
         }
