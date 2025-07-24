@@ -15,6 +15,7 @@
     :payment_type='@json($payment_type)'
     :booking_id="{{ $booking_id }}"
     :total_booking_amount="{{ $total_booking_amount }}"
+    :total_advance_paid_amount="{{ $total_advance_paid_amount }}"
 ></booking-wizard>
 
     </div>

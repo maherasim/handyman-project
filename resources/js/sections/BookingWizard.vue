@@ -574,7 +574,7 @@
           </template>
           <component :is="currentComponent" :service="service" :booking_id="bookingId" :customer_id="user_id"
             :discount="discount" :total_amount="totalAmount" :advance_payment_amount="advance_payment_amount"
-            :wallet_amount="wallet_amount" v-if="isChildComponentVisible" :payment_type="payment_type" />
+            :wallet_amount="wallet_amount" v-if="isChildComponentVisible" :payment_type="payment_type" :total_advance_paid_amount="total_advance_paid_amount" />
         </div>
       </form>
     </div>
@@ -618,7 +618,7 @@ import { Calendar, DatePicker } from 'v-calendar';
 import 'v-calendar/style.css';
 import moment from 'moment'
 const baseUrl = document.querySelector('meta[name="baseUrl"]').getAttribute('content');
-const props = defineProps(['service', 'coupons', 'taxes', 'user_id', 'availableserviceslot', 'serviceaddon', 'googlemapkey', 'wallet_amount', 'payment_type', 'booking_id', 'total_booking_amount']);
+const props = defineProps(['service', 'coupons', 'taxes', 'user_id', 'availableserviceslot', 'serviceaddon', 'googlemapkey', 'wallet_amount', 'payment_type', 'booking_id', 'total_booking_amount', 'total_advance_paid_amount']);
 const googlemapkey = props.googlemapkey;
 const maxDate = computed(() => {
   return props.service.end_at ? new Date(props.service.end_at) : null;
