@@ -166,8 +166,8 @@ public function savePayment(Request $request)
     $data = $request->all();
     $data['datetime'] = isset($request->datetime) ? date('Y-m-d H:i:s', strtotime($request->datetime)) : date('Y-m-d H:i:s');
 
-    $result = Payment::create($data);
     $booking = Booking::find($request->booking_id);
+    $result = Payment::create($data);
 
     if (!$booking || !$result) {
         return comman_message_response(__('messages.booking_not_found'), 404);
@@ -225,6 +225,8 @@ public function savePayment(Request $request)
         $advance_paid = $booking->advance_paid_amount ?? 0;
         $total_amount = $booking->total_amount;
         $remaining_amount = $total_amount - $advance_paid;
+        $result->total_amount = $remaining_amount;
+        $result->save();
 
         if ($remaining_amount > 0) {
             $admin_commission_amount = ($remaining_amount * $admin_commission_percentage) / 100;
