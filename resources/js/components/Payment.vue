@@ -110,15 +110,21 @@ import Swal from 'sweetalert2'
 import { confirmcancleSwal, confirmcancleWallet } from '../data/utilities'
 import Wallet from '../components/Wallet.vue'
 
-const props = defineProps(['booking_id', 'customer_id', 'discount', 'total_amount', 'advance_payment_amount', 'wallet_amount', 'payment_type'])
+const props = defineProps(['booking_id', 'customer_id', 'discount', 'total_amount', 'advance_payment_amount', 'wallet_amount', 'payment_type', 'total_advance_paid_amount'])
 
 const remainingAmount = computed(() => {
   return props.advance_payment_amount != null ? props.advance_payment_amount : props.total_amount
 })
 
 const paymentDisplayAmount = computed(() => {
-    return props.payment_type === 'paid' ? props.total_amount : props.advance_payment_amount
-})
+    if (props.payment_type === 'paid') {
+        const advancePaid = props.total_advance_paid_amount || 0;
+        return props.total_amount - advancePaid;
+    } else {
+        return props.advance_payment_amount;
+    }
+});
+
 
 
 const paymentGatewayList = ref([])
