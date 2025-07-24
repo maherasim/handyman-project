@@ -714,8 +714,7 @@ if ($matchedTax) {
         $booking_id = $request->booking_id ?? null;
         $booking = Booking::with('bookingExtraCharge')->find($booking_id);
         $total_booking_amount = $booking->total_amount ?? 0;
-       $total_advance_paid_amount = $booking ? $booking->advance_paid_amount : 0;
-
+        $total_advance_paid_amount = $booking->advance_paid_amount ?? 0;
 
         return view('landing-page.BookService', compact('service', 'coupons', 'taxes', 'user_id', 'availableserviceslot', 'serviceaddon', 'googlemapkey', 'wallet_amount', 'payment_type', 'booking_id', 'total_booking_amount', 'total_advance_paid_amount'));
     }
