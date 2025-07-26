@@ -86,6 +86,7 @@ class PayPalController extends Controller
         }
     }
 
+
 public function success(Request $request)
 {
     $token = $request->query('token');
@@ -103,7 +104,7 @@ public function success(Request $request)
         $response = $this->client->execute($captureRequest);
 
         if ($response->statusCode === 201 || $response->statusCode === 200) {
-            $result = Payment::where('booking_id', $id)->first();
+            $result = Payment::where('booking_id', $id)->latest()->first();
             $booking = Booking::find($id);
 
             if ($type == 'advance_payment') {
@@ -112,7 +113,7 @@ public function success(Request $request)
                 $result->payment_status = 'paid';
             }
 
-            $result->update();
+
 
             // ✅ Identify receiver (first handyman assigned to booking)
             $firstHandymanId = optional($booking->handymen()->first())->id;
@@ -191,6 +192,7 @@ public function success(Request $request)
                 $advance_paid = $booking->advance_paid_amount ?? 0;
                 $total_amount = $booking->total_amount;
                 $remaining_amount = $total_amount - $advance_paid;
+                $result->total_amount = $remaining_amount;
 
                 $admin_commission_percentage = Setting::getValueByKey('admin_commission_percentage', 'site-setup')->value ?? 10;
                 $admin_user_id = User::where('user_type', 'admin')->value('id');
@@ -198,43 +200,7 @@ public function success(Request $request)
                 if ($remaining_amount > 0) {
                     $admin_commission_amount = ($remaining_amount * $admin_commission_percentage) / 100;
                     $provider_earning = $remaining_amount - $admin_commission_amount;
-                    $handymen = BookingHandymanMapping::where('booking_id', $booking->id)->pluck('handyman_id');
-                    foreach ($handymen as $handyman_id) {
-                        $handyman = User::find($handyman_id);
 
-                        if ($handyman->handymantype_id == 1) {
-                            // Company: 60% of provider's earning
-                            $handyman_share = ($provider_earning * 60) / 100;
-                        } elseif ($handyman->handymantype_id == 2) {
-                            // Fixed amount
-                            $handyman_share = 5;
-                        } else {
-                            continue; // Unknown type, skip
-                        }
-
-                        // Subtract handyman share from provider's earning
-                        $provider_earning -= $handyman_share;
-
-                        // Pay the handyman
-                        Wallet::firstOrCreate(['user_id' => $handyman_id])->increment('amount', $handyman_share);
-                        HandymanPayout::create([
-                            'handyman_id' => $handyman_id,
-                            'booking_id' => $booking->id,
-                            'amount' => $handyman_share,
-                            'status' => 'paid',
-                            'paid_date' => Carbon::now(),
-                            'payment_method' => 'wallet',
-                            'payment_gateway' => 'wallet',
-                        ]);
-
-                        CommissionEarning::create([
-                            'booking_id' => $booking->id,
-                            'user_type' => 'handyman',
-                            'employee_id' => $handyman_id,
-                            'commission_amount' => $handyman_share,
-                            'commission_status' => 'paid',
-                        ]);
-                    }
                     Wallet::firstOrCreate(['user_id' => $booking->provider_id])->increment('amount', $provider_earning);
                     Wallet::firstOrCreate(['user_id' => $admin_user_id])->increment('amount', $admin_commission_amount);
 
@@ -270,6 +236,7 @@ public function success(Request $request)
 
             $booking->payment_id = $result->id;
             $booking->update();
+            $result->update();
 
             $activity_data = [
                 'activity_type' => 'payment_message_status',
@@ -288,6 +255,8 @@ public function success(Request $request)
         return redirect()->back()->with('error', 'Payment failed: ' . $e->getMessage());
     }
 }
+
+
 
 
 
