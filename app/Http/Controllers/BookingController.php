@@ -1149,18 +1149,23 @@ public function saveStripePayment(Request $request, $id)
     $stripe_session_id = $request->stripe_session_id;
     $payment_type = $request->payment_type;
 
-    // Get Stripe session data
+    // ✅ Get Stripe session object
     $session_object = getstripePaymnetId($stripe_session_id, $payment_type);
 
-    if (empty($session_object['payment_intent']) || $session_object['payment_status'] !== 'paid') {
-        return redirect()->back()->with('error', 'Payment not completed or invalid.');
+    // ✅ Check if session object is valid
+    if (!is_array($session_object) || !isset($session_object['payment_intent'], $session_object['payment_status'])) {
+        return redirect()->back()->with('error', 'Invalid or failed Stripe session response.');
+    }
+
+    if ($session_object['payment_status'] !== 'paid') {
+        return redirect()->back()->with('error', 'Payment not completed.');
     }
 
     $booking = Booking::find($id);
     $admin_user_id = User::where('user_type', 'admin')->value('id');
     $admin_commission_percentage = Setting::getValueByKey('admin_commission_percentage', 'site-setup')->value ?? 10;
 
-    // ✅ Always create a new payment entry
+    // ✅ Always create a new payment record
     $payment = Payment::create([
         'booking_id' => $id,
         'payment_type' => $type,
@@ -1171,14 +1176,13 @@ public function saveStripePayment(Request $request, $id)
         'created_at' => now(),
     ]);
 
-    // Update booking and handle earnings
+    // ✅ Handle advance payment
     if ($payment->payment_status === 'advanced_paid') {
         $booking->advance_paid_amount = $payment->total_amount;
         $booking->update();
 
-        $advance_paid_amount = $payment->total_amount;
-        $admin_commission_amount = ($advance_paid_amount * $admin_commission_percentage) / 100;
-        $provider_earning = $advance_paid_amount - $admin_commission_amount;
+        $admin_commission_amount = ($payment->total_amount * $admin_commission_percentage) / 100;
+        $provider_earning = $payment->total_amount - $admin_commission_amount;
 
         Wallet::firstOrCreate(['user_id' => $booking->provider_id])->increment('amount', $provider_earning);
         Wallet::firstOrCreate(['user_id' => $admin_user_id])->increment('amount', $admin_commission_amount);
@@ -1210,6 +1214,7 @@ public function saveStripePayment(Request $request, $id)
         ]);
     }
 
+    // ✅ Handle final/remaining payment
     if ($payment->payment_status === 'paid') {
         $advance_paid = $booking->advance_paid_amount ?? 0;
         $total_amount = $booking->total_amount;
@@ -1225,6 +1230,7 @@ public function saveStripePayment(Request $request, $id)
         $handymen = BookingHandymanMapping::where('booking_id', $booking->id)->pluck('handyman_id');
         foreach ($handymen as $handyman_id) {
             $handyman = User::find($handyman_id);
+            if (!$handyman) continue;
 
             if ($handyman->handymantype_id == 1) {
                 $handyman_share = ($provider_earning * 60) / 100;
@@ -1257,7 +1263,7 @@ public function saveStripePayment(Request $request, $id)
             ]);
         }
 
-        // Final earnings after handyman deductions
+        // Final provider and admin payout
         Wallet::firstOrCreate(['user_id' => $booking->provider_id])->increment('amount', $provider_earning);
         Wallet::firstOrCreate(['user_id' => $admin_user_id])->increment('amount', $admin_commission_amount);
 
@@ -1290,15 +1296,15 @@ public function saveStripePayment(Request $request, $id)
         CommissionEarning::where('booking_id', $booking->id)->update(['commission_status' => 'paid']);
     }
 
-    // ✅ Create new PaymentHistory
+    // ✅ Create PaymentHistory
     $firstHandymanId = optional($booking->handymanAdded->first())->handyman_id;
     $assignedUserData = User::find($firstHandymanId);
 
-    if ($firstHandymanId && $assignedUserData->user_type == 'provider') {
+    if ($firstHandymanId && $assignedUserData && $assignedUserData->user_type == 'provider') {
         $payment_history = [
             'payment_id' => $payment->id,
             'booking_id' => $payment->booking_id,
-            'parent_id' => $payment->booking_id, // temporary
+            'parent_id' => $payment->booking_id,
             'action' => config('constant.PAYMENT_HISTORY_ACTION.CUSTOMER_SEND_PROVIDER'),
             'status' => config('constant.PAYMENT_HISTORY_STATUS.PENDING_PROVIDER'),
             'sender_id' => $booking->customer_id,
@@ -1326,7 +1332,6 @@ public function saveStripePayment(Request $request, $id)
     $booking->payment_id = $payment->id;
     $booking->update();
 
-    // Send notification
     $this->sendNotification([
         'activity_type' => 'payment_message_status',
         'payment_status' => str_replace("_", " ", ucfirst($payment->payment_status)),
