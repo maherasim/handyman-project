@@ -1092,11 +1092,11 @@ public function bookingAssigned(Request $request)
 
         $payment_data = Payment::where('booking_id', $data['booking_id'])->first();
 
-        if (!empty($payment_data)) {
-            $payment_data->update($data);
-        } else {
+//        if (!empty($payment_data)) {
+//            $payment_data->update($data);
+//        } else {
             $payment_data = Payment::create($data);
-        }
+//        }
         $sitesetup = Setting::where('type', 'site-setup')->where('key', 'site-setup')->first();
         $sitesetupdata = $sitesetup ? json_decode($sitesetup->value, true) : null;
 
@@ -1144,7 +1144,7 @@ public function bookingAssigned(Request $request)
 public function saveStripePayment(Request $request, $id)
 {
     $type = $request->type;
-    $result = Payment::where('booking_id', $id)->first();
+    $result = Payment::where('booking_id', $id)->latest()->first();
 
     $stripe_session_id = $result->other_transaction_detail;
     $payment_type = $result->payment_type;

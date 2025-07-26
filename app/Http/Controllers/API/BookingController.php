@@ -315,8 +315,8 @@ class BookingController extends Controller
         $data['cancellation_charge_amount'] = isset($request->cancellation_charge_amount) ? $request->cancellation_charge_amount : 0;
 
         $bookingdata = Booking::find($id);
-       
-       
+
+
         $paymentdata = Payment::where('booking_id',$id)->first();
         $user_wallet = Wallet::where('user_id', $bookingdata->customer_id)->first();
         $wallet_amount = $user_wallet->amount;
@@ -475,7 +475,7 @@ class BookingController extends Controller
                         'title'      => $extra['title'],
                         'price'      => $extra['price'],
                         'qty'        => $extra['qty'],
-                    ]); 
+                    ]);
                 }
 
             }
@@ -513,8 +513,8 @@ class BookingController extends Controller
         }
 
         if($bookingdata->payment_id != null){
-            $payment_status = isset($data['payment_status']) ? $data['payment_status'] : 'pending';
-            $paymentdata->update(['payment_status' => $payment_status]);
+//            $payment_status = isset($data['payment_status']) ? $data['payment_status'] : 'pending';
+//            $paymentdata->update(['payment_status' => $payment_status]);
         }
 
         if($data['status'] == 'completed' && $data['payment_status'] == 'pending_by_admin'){
