@@ -1146,34 +1146,39 @@ public function bookingAssigned(Request $request)
 public function saveStripePayment(Request $request, $id)
 {
     $type = $request->type;
-    $result = Payment::where('booking_id', $id)->first();
+    $data = $request->all();
+    $data['datetime'] = isset($request->datetime)
+        ? date('Y-m-d H:i:s', strtotime($request->datetime))
+        : date('Y-m-d H:i:s');
 
-    $stripe_session_id = $result->other_transaction_detail;
-    $payment_type = $result->payment_type;
+    $booking = Booking::find($request->booking_id);
+    if (!$booking) {
+        return back()->with('error', 'Booking not found.');
+    }
+
+    $payment = Payment::create($data);
+    $stripe_session_id = $payment->other_transaction_detail;
+    $payment_type = $payment->payment_type;
 
     $session_object = getstripePaymnetId($stripe_session_id, $payment_type);
 
-    if ($session_object['payment_intent'] !== '' && $session_object['payment_status'] == 'paid') {
-        $result->txn_id = $session_object['payment_intent'];
-
-        if ($type == 'advance_payment') {
-            $result->payment_status = 'advanced_paid';
-        } else {
-            $result->payment_status = 'paid';
-        }
+    if (
+        is_array($session_object)
+        && !empty($session_object['payment_intent'])
+        && $session_object['payment_status'] === 'paid'
+    ) {
+        $payment->txn_id = $session_object['payment_intent'];
+        $payment->payment_status = ($type === 'advance_payment') ? 'advanced_paid' : 'paid';
     }
 
-    $result->update();
-
-    $booking = Booking::find($id);
     $admin_user_id = User::where('user_type', 'admin')->value('id');
     $admin_commission_percentage = Setting::getValueByKey('admin_commission_percentage', 'site-setup')->value ?? 10;
 
-    if (!empty($result) && $result->payment_status == 'advanced_paid') {
-        $booking->advance_paid_amount = $result->total_amount;
-//        $booking->status = 'pending';
+    // ---------- ADVANCE PAYMENT FLOW ----------
+    if (!empty($payment) && $payment->payment_status === 'advanced_paid') {
+        $booking->advance_paid_amount += $payment->total_amount;
 
-        $advance_paid_amount = $result->total_amount;
+        $advance_paid_amount = $payment->total_amount;
         $admin_commission_amount = ($advance_paid_amount * $admin_commission_percentage) / 100;
         $provider_earning = $advance_paid_amount - $admin_commission_amount;
 
@@ -1207,56 +1212,56 @@ public function saveStripePayment(Request $request, $id)
         ]);
     }
 
-    if (!empty($result) && $result->payment_status == 'paid') {
+    // ---------- FINAL PAYMENT FLOW ----------
+    if (!empty($payment) && $payment->payment_status === 'paid') {
         $booking->status = 'completed';
-        $booking->update();
 
         $advance_paid = $booking->advance_paid_amount ?? 0;
         $total_amount = $booking->total_amount;
         $remaining_amount = $total_amount - $advance_paid;
-        $result->total_amount = $remaining_amount;
-        $result->save();
+
+        $payment->total_amount = $remaining_amount;
+        $payment->save();
 
         if ($remaining_amount > 0) {
             $admin_commission_amount = ($remaining_amount * $admin_commission_percentage) / 100;
             $provider_earning = $remaining_amount - $admin_commission_amount;
+
             $handymen = BookingHandymanMapping::where('booking_id', $booking->id)->pluck('handyman_id');
             foreach ($handymen as $handyman_id) {
-                        $handyman = User::find($handyman_id);
+                $handyman = User::find($handyman_id);
 
-                        if ($handyman->handymantype_id == 1) {
-                            // Company: 60% of provider's earning
-                            $handyman_share = ($provider_earning * 60) / 100;
-                        } elseif ($handyman->handymantype_id == 2) {
-                            // Fixed amount
-                            $handyman_share = 5;
-                        } else {
-                            continue; // Unknown type, skip
-                        }
+                if ($handyman->handymantype_id == 1) {
+                    $handyman_share = ($provider_earning * 60) / 100;
+                } elseif ($handyman->handymantype_id == 2) {
+                    $handyman_share = 5;
+                } else {
+                    continue;
+                }
 
-                        // Subtract handyman share from provider's earning
-                        $provider_earning -= $handyman_share;
+                $provider_earning -= $handyman_share;
 
-                        // Pay the handyman
-                        Wallet::firstOrCreate(['user_id' => $handyman_id])->increment('amount', $handyman_share);
-                        HandymanPayout::create([
-                            'handyman_id' => $handyman_id,
-                            'booking_id' => $booking->id,
-                            'amount' => $handyman_share,
-                            'status' => 'paid',
-                            'paid_date' => Carbon::now(),
-                            'payment_method' => 'wallet',
-                            'payment_gateway' => 'wallet',
-                        ]);
+                Wallet::firstOrCreate(['user_id' => $handyman_id])->increment('amount', $handyman_share);
 
-                        CommissionEarning::create([
-                            'booking_id' => $booking->id,
-                            'user_type' => 'handyman',
-                            'employee_id' => $handyman_id,
-                            'commission_amount' => $handyman_share,
-                            'commission_status' => 'paid',
-                        ]);
-                    }
+                HandymanPayout::create([
+                    'handyman_id' => $handyman_id,
+                    'booking_id' => $booking->id,
+                    'amount' => $handyman_share,
+                    'status' => 'paid',
+                    'paid_date' => Carbon::now(),
+                    'payment_method' => 'wallet',
+                    'payment_gateway' => 'wallet',
+                ]);
+
+                CommissionEarning::create([
+                    'booking_id' => $booking->id,
+                    'user_type' => 'handyman',
+                    'employee_id' => $handyman_id,
+                    'commission_amount' => $handyman_share,
+                    'commission_status' => 'paid',
+                ]);
+            }
+
             Wallet::firstOrCreate(['user_id' => $booking->provider_id])->increment('amount', $provider_earning);
             Wallet::firstOrCreate(['user_id' => $admin_user_id])->increment('amount', $admin_commission_amount);
 
@@ -1290,52 +1295,50 @@ public function saveStripePayment(Request $request, $id)
         CommissionEarning::where('booking_id', $booking->id)->update(['commission_status' => 'paid']);
     }
 
-    // ✅ Always create a new PaymentHistory entry
+    // ---------- PAYMENT HISTORY ----------
     $firstHandymanId = optional($booking->handymanAdded->first())->handyman_id;
     $assignedUserData = User::find($firstHandymanId);
 
-    if ($firstHandymanId && $assignedUserData->user_type == 'provider') {
-        $payment_history = [
-            'payment_id' => $result->id,
-            'booking_id' => $result->booking_id,
-            'parent_id' => $result->booking_id, // temporary, will update below
+    if ($firstHandymanId && $assignedUserData && $assignedUserData->user_type == 'provider') {
+        $history = PaymentHistory::create([
+            'payment_id' => $payment->id,
+            'booking_id' => $payment->booking_id,
+            'parent_id' => $payment->booking_id,
             'action' => config('constant.PAYMENT_HISTORY_ACTION.CUSTOMER_SEND_PROVIDER'),
             'status' => config('constant.PAYMENT_HISTORY_STATUS.PENDING_PROVIDER'),
             'sender_id' => $booking->customer_id,
             'receiver_id' => $firstHandymanId,
             'datetime' => now(),
             'total_amount' => $request->total_amount,
-            'txn_id' => $result->txn_id,
-            'type' => $result->payment_type,
+            'txn_id' => $payment->txn_id,
+            'type' => $payment->payment_type,
             'text' => __('messages.payment_transfer', [
-            'from' => get_user_name($request->customer_id),
-            'to' => get_user_name($firstHandymanId),
-            'amount' => getPriceFormat(
-                ($result->payment_status == 'paid')
-                    ? ($booking->total_amount - ($booking->advance_paid_amount ?? 0))
-                    : (float)$request->total_amount
-            ),
-        ]),
-
-        ];
-
-        $res = PaymentHistory::create($payment_history);
-        $res->parent_id = $res->id;
-        $res->save();
+                'from' => get_user_name($request->customer_id),
+                'to' => get_user_name($firstHandymanId),
+                'amount' => getPriceFormat(
+                    ($payment->payment_status === 'paid')
+                        ? ($booking->total_amount - ($booking->advance_paid_amount ?? 0))
+                        : (float) $request->total_amount
+                ),
+            ]),
+        ]);
+        $history->parent_id = $history->id;
+        $history->save();
     }
 
-    $booking->payment_id = $result->id;
-    $booking->update();
+    $booking->payment_id = $payment->id;
+    $booking->save();
 
     $this->sendNotification([
         'activity_type' => 'payment_message_status',
-        'payment_status' => str_replace("_", " ", ucfirst($result->payment_status)),
+        'payment_status' => str_replace("_", " ", ucfirst($payment->payment_status)),
         'booking_id' => $booking->id,
         'booking' => $booking,
     ]);
 
     return redirect('/booking-list');
 }
+
 
 
     public function getEarningsBreakdown(Request $request)
