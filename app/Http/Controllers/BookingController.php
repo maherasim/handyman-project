@@ -1150,52 +1150,48 @@ public function saveStripePayment(Request $request, $id)
     $admin_user_id = User::where('user_type', 'admin')->value('id');
     $admin_commission_percentage = Setting::getValueByKey('admin_commission_percentage', 'site-setup')->value ?? 10;
 
-    // Find the latest stripe session and validate payment
+    // Find latest payment (only to get Stripe session ID)
     $latestPayment = Payment::where('booking_id', $id)->latest()->first();
     $stripe_session_id = $latestPayment->other_transaction_detail;
     $payment_type = $latestPayment->payment_type;
 
     $session_object = getstripePaymnetId($stripe_session_id, $payment_type);
 
-    if ($session_object['payment_intent'] !== '' && $session_object['payment_status'] == 'paid') {
-        $payment = new Payment(); // ✅ create new payment record
-        $payment->booking_id = $id;
-        $payment->txn_id = $session_object['payment_intent'];
-        $payment->payment_type = 'stripe';
-        $payment->other_transaction_detail = $stripe_session_id;
-        $payment->datetime = now();
-
-        if ($type === 'advance_payment') {
-            $payment->payment_status = 'advanced_paid';
-            $payment->total_amount = $request->total_amount;
-            $booking->advance_paid_amount = $request->total_amount;
-        } else {
-            $payment->payment_status = 'paid';
-
-            // ✅ Calculate and store remaining amount
-            $advance_paid = $booking->advance_paid_amount ?? 0;
-            $total_amount = $booking->total_amount;
-
-            $remaining_amount = $total_amount - $advance_paid;
-            $payment->total_amount = $remaining_amount;
-
-            // Optional: Add late fee logic
-            if (now()->gt($booking->due_date)) {
-                $late_fee = 10; // Fixed or dynamic
-                $payment->total_amount += $late_fee;
-            }
-
-            $booking->status = 'completed';
-        }
-
-        $payment->save();
-        $booking->payment_id = $payment->id;
-        $booking->update();
-    } else {
+    if (empty($session_object['payment_intent']) || $session_object['payment_status'] !== 'paid') {
         return back()->with('error', __('Payment failed or invalid.'));
     }
 
-    // Commission & Payout logic (same as before but updated)
+    // ✅ Create a new Payment entry
+    $payment = new Payment();
+    $payment->booking_id = $id;
+    $payment->txn_id = $session_object['payment_intent'];
+    $payment->payment_type = 'stripe';
+    $payment->other_transaction_detail = $stripe_session_id;
+    $payment->datetime = now();
+
+    if ($type === 'advance_payment') {
+        $payment->payment_status = 'advanced_paid';
+        $payment->total_amount = $request->total_amount;
+
+        $booking->advance_paid_amount = $request->total_amount;
+    } else {
+        $payment->payment_status = 'paid';
+
+        $advance_paid = $booking->advance_paid_amount ?? 0;
+        $total_amount = $booking->total_amount;
+        $remaining_amount = $total_amount - $advance_paid;
+
+        $payment->total_amount = $remaining_amount;
+        $booking->status = 'completed';
+    }
+
+    $payment->save();
+
+    // Update booking with latest payment ID
+    $booking->payment_id = $payment->id;
+    $booking->update();
+
+    // ✅ Commission and provider payout
     $paidAmount = $payment->total_amount;
     $adminCommission = ($paidAmount * $admin_commission_percentage) / 100;
     $providerEarning = $paidAmount - $adminCommission;
@@ -1229,7 +1225,7 @@ public function saveStripePayment(Request $request, $id)
         'payment_gateway' => 'stripe',
     ]);
 
-    // Handyman payout (only for final payment)
+    // ✅ Handyman payout (only on final payment)
     if ($payment->payment_status === 'paid') {
         $handymen = BookingHandymanMapping::where('booking_id', $booking->id)->pluck('handyman_id');
         foreach ($handymen as $handyman_id) {
@@ -1267,10 +1263,11 @@ public function saveStripePayment(Request $request, $id)
             ]);
         }
 
+        // Mark all commissions as paid
         CommissionEarning::where('booking_id', $booking->id)->update(['commission_status' => 'paid']);
     }
 
-    // Payment History
+    // ✅ Payment History
     $firstHandymanId = optional($booking->handymanAdded->first())->handyman_id;
     $assignedUserData = User::find($firstHandymanId);
 
@@ -1298,6 +1295,7 @@ public function saveStripePayment(Request $request, $id)
         $history->save();
     }
 
+    // ✅ Notification
     $this->sendNotification([
         'activity_type' => 'payment_message_status',
         'payment_status' => $payment->payment_status,
@@ -1307,6 +1305,7 @@ public function saveStripePayment(Request $request, $id)
 
     return redirect('/booking-list')->with('success', __('messages.payment_completed'));
 }
+
 
 
 
