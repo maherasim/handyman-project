@@ -1166,6 +1166,7 @@ public function saveStripePayment(Request $request, $id)
     $payment->booking_id = $id;
     $payment->txn_id = $session_object['payment_intent'];
     $payment->payment_type = 'stripe';
+    $payment->customer_id = $booking->customer_id;
     $payment->other_transaction_detail = $stripe_session_id;
     $payment->datetime = now();
 
