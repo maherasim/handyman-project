@@ -1337,6 +1337,7 @@ public function saveStripePayment(Request $request, $id)
 
 
 
+
     public function getEarningsBreakdown(Request $request)
     {
         $authRole = auth()->user()->roles->pluck('name')->first();
