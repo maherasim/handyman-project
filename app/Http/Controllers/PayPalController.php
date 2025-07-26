@@ -101,7 +101,7 @@ public function success(Request $request)
         $response = $this->client->execute($captureRequest);
 
         if ($response->statusCode === 201 || $response->statusCode === 200) {
-            $result = Payment::where('booking_id', $id)->first();
+            $result = Payment::where('booking_id', $id)->latest()->first();
             $booking = Booking::find($id);
 
             if ($type == 'advance_payment') {
@@ -110,7 +110,7 @@ public function success(Request $request)
                 $result->payment_status = 'paid';
             }
 
-            $result->update();
+
 
             // ✅ Identify receiver (first handyman assigned to booking)
             $firstHandymanId = optional($booking->handymen()->first())->id;
@@ -189,6 +189,7 @@ public function success(Request $request)
                 $advance_paid = $booking->advance_paid_amount ?? 0;
                 $total_amount = $booking->total_amount;
                 $remaining_amount = $total_amount - $advance_paid;
+                $result->total_amount = $remaining_amount;
 
                 $admin_commission_percentage = Setting::getValueByKey('admin_commission_percentage', 'site-setup')->value ?? 10;
                 $admin_user_id = User::where('user_type', 'admin')->value('id');
@@ -232,6 +233,7 @@ public function success(Request $request)
 
             $booking->payment_id = $result->id;
             $booking->update();
+            $result->update();
 
             $activity_data = [
                 'activity_type' => 'payment_message_status',

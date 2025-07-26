@@ -1161,8 +1161,6 @@ public function saveStripePayment(Request $request, $id)
         }
     }
 
-    $result->update();
-
     $booking = Booking::find($id);
     $admin_user_id = User::where('user_type', 'admin')->value('id');
     $admin_commission_percentage = Setting::getValueByKey('admin_commission_percentage', 'site-setup')->value ?? 10;
@@ -1212,6 +1210,8 @@ public function saveStripePayment(Request $request, $id)
         $advance_paid = $booking->advance_paid_amount ?? 0;
         $total_amount = $booking->total_amount;
         $remaining_amount = $total_amount - $advance_paid;
+
+        $result->total_amount = $remaining_amount;
 
         if ($remaining_amount > 0) {
             $admin_commission_amount = ($remaining_amount * $admin_commission_percentage) / 100;
@@ -1278,6 +1278,7 @@ public function saveStripePayment(Request $request, $id)
         $res->parent_id = $res->id;
         $res->save();
     }
+    $result->update();
 
     $booking->payment_id = $result->id;
     $booking->update();

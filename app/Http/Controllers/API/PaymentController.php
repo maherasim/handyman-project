@@ -463,11 +463,13 @@ public function getpaymentall(Request $request)
 
         if ($result->payment_status == 'paid') {
             $booking->status = 'completed';
+
             $booking->update();
 
             $advance_paid = $booking->advance_paid_amount ?? 0;
             $total_amount = $booking->total_amount;
             $remaining_amount = $total_amount - $advance_paid;
+            $result->total_amount = $remaining_amount;
 
             $admin_commission_percentage = Setting::getValueByKey('admin_commission_percentage', 'site-setup')->value ?? 10;
             $admin_user_id = User::where('user_type', 'admin')->value('id');
@@ -554,6 +556,8 @@ public function getpaymentall(Request $request)
         {
             $status_code = 400;
         }
+
+        $result->update();
 
         return comman_message_response($message,$status_code);
     }
