@@ -20,6 +20,7 @@ class PaymentResource extends JsonResource
             'customer_id'   => $this->customer_id,
             'total_amount'  => $this->total_amount,
             'payment_status'=> $this->payment_status,
+            'status'=> $this->status,
             'payment_type'  => $this->payment_type,
             'payment_method'=> $this->payment_type,
             'customer_name' => optional($this->customer)->display_name,
