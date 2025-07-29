@@ -61,7 +61,7 @@ class BookingDetailResource extends JsonResource
             'customer_name'      => optional($this->customer)->display_name,
             'service_name'       => optional($this->service)->name,
             'payment_status'     => optional($this->payment)->payment_status,
-            'status'     => optional($this->payment)->status,
+            'bank_transfer_status'     => optional($this->payment)->status,
             'payment_method'     => optional($this->payment)->payment_type,
             'payment_total_amount' => optional($this->payment)->total_amount,
             'payment_amount'     => $advancepaid,
