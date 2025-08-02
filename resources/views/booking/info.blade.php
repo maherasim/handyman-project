@@ -187,7 +187,7 @@
 
         {{-- ACCEPTED STATUS: Show based on handyman presence --}}
         @if ($bookingdata->status === 'accept')
-           
+            @if ($bookingdata->handymanAdded->count() = 30)
                 @hasanyrole(['provider', 'handyman'])
                     {{-- CASE 1: Handyman is assigned --}}
                     @if ($bookingdata->handymanAdded->count() != 0)
