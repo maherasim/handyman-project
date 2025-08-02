@@ -404,8 +404,11 @@
         @endif
 
         {{-- SERVICE PROOF BUTTON --}}
-        @if ($bookingdata->status === 'completed' && $payment->payment_status == 'paid')
-            @hasanyrole(['provider', 'handyman'])
+       @if ($bookingdata->status === 'completed' && $payment->payment_status == 'paid')
+    @hasanyrole(['provider', 'handyman'])
+
+        @if ($bookingdata->handymanAdded->count() != 0)
+            @hasrole('handyman')
                 <div class="w3-third d-flex align-items-end">
                     <button class="float-end btn btn-primary" id="service-proof-btn"
                             data-id="{{ $bookingdata->id }}"
@@ -415,8 +418,30 @@
                         {{ __('messages.service_proof') }}
                     </button>
                 </div>
-            @endhasanyrole
+            @endhasrole
+
+            @hasrole('provider')
+                <div class="alert alert-warning mt-3">
+                    <strong>{{ __('Notice:') }}</strong> {{ __('Service proof upload is disabled because this booking has been assigned to a handyman.') }}
+                </div>
+            @endhasrole
+
+        @else
+            {{-- If no handyman assigned, show to both --}}
+            <div class="w3-third d-flex align-items-end">
+                <button class="float-end btn btn-primary" id="service-proof-btn"
+                        data-id="{{ $bookingdata->id }}"
+                        data-service-id="{{ $bookingdata->service_id }}"
+                        data-user-id="{{ $bookingdata->customer_id }}">
+                    <i class="las la-clipboard-list"></i>
+                    {{ __('messages.service_proof') }}
+                </button>
+            </div>
         @endif
+
+    @endhasanyrole
+@endif
+
 
     @if ($bookingdata->status === 'completed' && $payment->payment_status == 'paid')    
       @hasanyrole(['provider'])
