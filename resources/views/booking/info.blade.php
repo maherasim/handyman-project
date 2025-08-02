@@ -450,7 +450,7 @@
                                     </div>
                                 </div>
                             </div>
-
+                          @hasanyrole(['provider'])
                             <div class="col-md-4">
                                 <div class="card h-100">
                                     <div class="card-body">
@@ -461,6 +461,7 @@
                                     </div>
                                 </div>
                             </div>
+                            @endhasanyrole
                             <div class="col-md-4">
                                 <div class="card h-100">
                                     <div class="card-body">
