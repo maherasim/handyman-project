@@ -514,7 +514,7 @@
 
                                         @if (isset($payment) && $payment->payment_type === 'bank_transfer' && $payment->status == 0)
                                             <p class="mb-0 text-warning">
-                                                {{ __('messages.pending') }}
+                                                {{ __('Pending Payment approval by Admin') }}
                                             </p>
                                         @elseif (isset($payment) && $payment->payment_status)
                                             @php
