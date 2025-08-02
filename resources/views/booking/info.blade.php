@@ -187,52 +187,48 @@
 
         {{-- ACCEPTED STATUS: Show based on handyman presence --}}
         @if ($bookingdata->status === 'accept')
-            @if ($bookingdata->handymanAdded->count() = 30)
-                @hasanyrole(['provider', 'handyman'])
-                    {{-- CASE 1: Handyman is assigned --}}
-                    @if ($bookingdata->handymanAdded->count() != 0)
+             @if ($bookingdata->handymanAdded->count() != 0)
+        @hasanyrole('handyman')
+            <div class="w3-third">
+                <button class="float-end btn btn-primary update-booking" id="start-booking"
+                        data-id="{{ $bookingdata->id }}"
+                        data-handyman-id="{{ $bookingdata->provider_id }}"
+                        data-status="on_going"
+                        data-confirm-message="You want to start this booking?">
+                    <i class="las la-play-circle"></i>
+                    {{ __('Start Work') }}
+                </button>
+            </div>
+        @endhasanyrole
 
-                        {{-- Show Start Work to assigned handyman --}}
-                        @hasrole('handyman')
-                            <div class="w3-third">
-                                <button class="float-end btn btn-primary update-booking" id="start-booking"
-                                        data-id="{{ $bookingdata->id }}"
-                                        data-handyman-id="{{ $bookingdata->provider_id }}"
-                                        data-status="on_going"
-                                        data-confirm-message="You want to start this booking?">
-                                    <i class="las la-play-circle"></i>
-                                    {{ __('Start Work') }}
-                                </button>
-                            </div>
-                        @endhasrole
+        @hasanyrole('provider')
+            <div class="alert alert-warning mt-3">
+                <strong>{{ __('Notice:') }}</strong>
+                {{ __('You cannot start this job because it is assigned to a handyman.') }}
+            </div>
+        @endhasanyrole
 
-                        {{-- Show warning to provider --}}
-                        @hasrole('provider')
-                            <div class="alert alert-warning mt-3">
-                                <strong>{{ __('Notice:') }}</strong> {{ __('You cannot start this job because it is assigned to a handyman.') }}
-                            </div>
-                        @endhasrole
 
-                    @endif
+                   
 
                     {{-- CASE 2: No handyman is assigned --}}
-                    @if ($bookingdata->handymanAdded->count() == 0)
-                        @hasanyrole(['provider', 'handyman'])
-                            <div class="w3-third">
-                                <button class="float-end btn btn-primary update-booking" id="start-booking"
-                                        data-id="{{ $bookingdata->id }}"
-                                        data-handyman-id="{{ $bookingdata->provider_id }}"
-                                        data-status="on_going"
-                                        data-confirm-message="You want to start this booking?">
-                                    <i class="las la-play-circle"></i>
-                                    {{ __('Start Work') }}
-                                </button>
-                            </div>
-                        @endhasanyrole
-                    @endif
+                     @else
+        @hasanyrole('provider')
+            <div class="w3-third">
+                <button class="float-end btn btn-primary update-booking" id="start-booking"
+                        data-id="{{ $bookingdata->id }}"
+                        data-handyman-id="{{ $bookingdata->provider_id }}"
+                        data-status="on_going"
+                        data-confirm-message="You want to start this booking?">
+                    <i class="las la-play-circle"></i>
+                    {{ __('Start Work') }}
+                </button>
+            </div>
+        @endhasanyrole
+    @endif
 
-                    
-                @endhasanyrole
+ 
+               
 
                 @hasanyrole('user')
                     <div class="w3-third">
