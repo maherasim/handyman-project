@@ -336,7 +336,8 @@
 
         {{-- PENDING APPROVAL --}}
         @if ($bookingdata->status === 'pending_approval')
-            @hasanyrole(['provider', 'handyman'])
+            @if ($bookingdata->handymanAdded->count() != 0)
+            @hasrole('handyman')
                 <div class="w3-third">
                     <button class="float-end btn btn-success update-booking"
                             data-id="{{ $bookingdata->id }}"
@@ -347,6 +348,7 @@
                         {{ __('messages.completed') }}
                     </button>
                 </div>
+
                 <button class="float-end btn btn-success" id="complete-booking"
                         data-id="{{ $bookingdata->id }}"
                         data-handyman-id="{{ $bookingdata->provider_id }}"
@@ -355,7 +357,9 @@
                     <i class="las la-file-invoice-dollar"></i>
                     {{ __('messages.add_extra_charges') }}
                 </button>
-            @endhasanyrole
+            @endhasrole
+        @endif
+
 
             @hasanyrole('user')
                 <div class="w3-third d-flex align-items-end">
