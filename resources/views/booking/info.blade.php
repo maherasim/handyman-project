@@ -402,13 +402,16 @@
             @endhasanyrole
         @endif
 
-        {{-- INVOICE --}}
+    @if ($bookingdata->status === 'completed' && $payment->payment_status == 'paid')    
+      @hasanyrole(['provider'])
         @if ($bookingdata->payment_id !== null)
             <a href="{{ route('invoice_pdf', $bookingdata->id) }}" class="btn btn-primary" target="_blank">
                 <i class="ri-file-text-line"></i>
                 {{ __('messages.invoice') }}
             </a>
         @endif
+          @endhasanyrole
+         @endif
 
     </div>
 </div>
