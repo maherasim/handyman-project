@@ -286,11 +286,37 @@
 
         {{-- ON GOING --}}
         @if ($bookingdata->status === 'on_going')
-            @hasanyrole(['provider', 'handyman'])
-                <div class="w3-third d-flex align-items-end">
-                    <p><span class="text-info font-size-14" style="font-weight: 700">Waiting for response</span></p>
-                </div>
-            @endhasanyrole
+          {{-- CASE 1: Handyman is assigned --}}
+            @if ($bookingdata->handymanAdded->count() != 0)
+
+                @hasrole('handyman')
+                    <div class="w3-third d-flex align-items-end">
+                        <p><span class="text-info font-size-14" style="font-weight: 700">
+                            {{ __('Waiting for response by customer side to start the job') }}
+                        </span></p>
+                    </div>
+                @endhasrole
+
+                @hasrole('provider')
+                    <div class="alert alert-warning mt-3">
+                        <strong>{{ __('Notice:') }}</strong>
+                        {{ __('You cannot proceed because the booking is assigned to a handyman.') }}
+                    </div>
+                @endhasrole
+
+            @endif
+
+            {{-- CASE 2: No handyman is assigned --}}
+            @if ($bookingdata->handymanAdded->count() == 0)
+                @hasanyrole(['provider', 'handyman'])
+                    <div class="w3-third d-flex align-items-end">
+                        <p><span class="text-info font-size-14" style="font-weight: 700">
+                            {{ __('Waiting for response by customer side to start the job') }}
+                        </span></p>
+                    </div>
+                @endhasanyrole
+            @endif
+
 
             @hasanyrole('user')
                 <div class="w3-third">
