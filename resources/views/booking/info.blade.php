@@ -228,7 +228,7 @@
     @endif
 
  
-               
+               @endif
 
                 @hasanyrole('user')
                     <div class="w3-third">
