@@ -300,7 +300,7 @@
                             data-status="in_progress"
                             data-confirm-message="You want to start this booking?">
                         <i class="las la-play-circle"></i>
-                        {{ __('messages.start') }}
+                        {{ __('Start Work') }}
                     </button>
                 </div>
             @endhasanyrole
