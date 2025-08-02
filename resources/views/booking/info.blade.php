@@ -186,79 +186,62 @@
         @endif
 
         {{-- ACCEPTED STATUS: Show based on handyman presence --}}
-      @if ($bookingdata->status === 'accept')
+        @if ($bookingdata->status === 'accept')
+            @if ($bookingdata->handymanAdded->count() != 0)
+                @hasanyrole(['provider', 'handyman'])
+                    <div class="w3-third">
+                        <button class="float-end btn btn-primary update-booking" id="start-booking"
+                                data-id="{{ $bookingdata->id }}"
+                                data-handyman-id="{{ $bookingdata->provider_id }}"
+                                data-status="on_going"
+                                data-confirm-message="You want to start this booking?">
+                            <i class="las la-play-circle"></i>
+                            {{ __('Start Work') }}
+                        </button>
+                    </div>
+                   
+                @endhasanyrole
 
-    {{-- CASE 1: Handyman is assigned --}}
-    @if ($bookingdata->handymanAdded->count() != 0)
-
-        {{-- Show "Start Work" only to the assigned Handyman --}}
-        @hasrole('handyman')
-            @php
-                // Get the current logged-in handyman ID
-                $loggedInHandymanId = auth()->user()->id;
-                $assignedHandymanIds = $bookingdata->handymanAdded->pluck('id')->toArray();
-            @endphp
-
-            @if (in_array($loggedInHandymanId, $assignedHandymanIds))
-                <div class="w3-third">
-                    <button class="float-end btn btn-primary update-booking" id="start-booking"
-                            data-id="{{ $bookingdata->id }}"
-                            data-handyman-id="{{ $bookingdata->provider_id }}"
-                            data-status="on_going"
-                            data-confirm-message="You want to start this booking?">
-                        <i class="las la-play-circle"></i>
-                        {{ __('Start Work') }}
-                    </button>
-                </div>
+                @hasanyrole('user')
+                    <div class="w3-third">
+                        <button class="float-end btn btn-primary update-booking" id="cancel-booking"
+                                data-id="{{ $bookingdata->id }}"
+                                data-handyman-id="{{ $bookingdata->provider_id }}"
+                                data-status="cancelled"
+                                data-confirm-message="You want to cancelled this booking?">
+                            <i class="las la-ban"></i>
+                            {{ __('messages.cancel') }}
+                        </button>
+                    </div>
+                @endhasanyrole
             @else
-                <div class="alert alert-warning mt-3">
-                    <strong>{{ __('Notice:') }}</strong>
-                    {{ __('You are not assigned to this job.') }}
-                </div>
+                @hasanyrole('admin|demo_admin|provider')
+                    @if ($is_enable_advance_payment == 0 || (isset($bookingdata->payment) && strtolower($bookingdata->payment->payment_status) == 'advanced_paid'))
+                        <div class="w3-third">
+                            <button class="float-end btn btn-primary" id="assign-provider"
+                                    data-id="{{ $bookingdata->id }}"
+                                    data-handyman-id="{{ $bookingdata->provider_id }}">
+                                <i class="lab la-telegram-plane"></i>
+                                {{ __('messages.assign_provider') }}
+                            </button>
+                        </div>
+                        <div class="w3-third">
+                            <a href="{{ route('booking.assign_form', ['id' => $bookingdata->id]) }}"
+                               class="float-end btn btn-primary loadRemoteModel">
+                                <i class="lab la-telegram-plane"></i>
+                                {{ __('messages.assign_handyman') }}
+                            </a>
+                        </div>
+                    @else
+                        <div class="w3-third d-flex align-items-end">
+                            <p><span class="text-info font-size-14" style="font-weight: 700">Waiting for
+                                client advance pay</span>
+                            </p>
+                        </div>
+                    @endif
+                @endhasanyrole
             @endif
-        @endhasrole
-
-        {{-- Show warning to Provider that job is assigned --}}
-        @hasrole('provider')
-            <div class="alert alert-warning mt-3">
-                <strong>{{ __('Notice:') }}</strong>
-                {{ __('This job is assigned to a handyman. You cannot start it.') }}
-            </div>
-        @endhasrole
-
-    {{-- CASE 2: No handyman is assigned --}}
-    @else
-        {{-- Provider can start the job directly --}}
-        @hasrole('provider')
-            <div class="w3-third">
-                <button class="float-end btn btn-primary update-booking" id="start-booking"
-                        data-id="{{ $bookingdata->id }}"
-                        data-handyman-id="{{ $bookingdata->provider_id }}"
-                        data-status="on_going"
-                        data-confirm-message="You want to start this booking?">
-                    <i class="las la-play-circle"></i>
-                    {{ __('Start Work') }}
-                </button>
-            </div>
-        @endhasrole
-    @endif
-
-    {{-- Optional: Cancel button for user --}}
-    @hasrole('user')
-        <div class="w3-third">
-            <button class="float-end btn btn-primary update-booking" id="cancel-booking"
-                    data-id="{{ $bookingdata->id }}"
-                    data-handyman-id="{{ $bookingdata->provider_id }}"
-                    data-status="cancelled"
-                    data-confirm-message="You want to cancelled this booking?">
-                <i class="las la-ban"></i>
-                {{ __('messages.cancel') }}
-            </button>
-        </div>
-    @endhasrole
-
-@endif
-
+        @endif
 
         {{-- ON GOING --}}
         @if ($bookingdata->status === 'on_going')
