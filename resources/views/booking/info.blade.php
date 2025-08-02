@@ -336,29 +336,41 @@
 
         {{-- PENDING APPROVAL --}}
         @if ($bookingdata->status === 'pending_approval')
+            
             @if ($bookingdata->handymanAdded->count() != 0)
-            @hasrole('handyman')
-                <div class="w3-third">
-                    <button class="float-end btn btn-success update-booking"
+                
+                {{-- Show to Handyman Only --}}
+                @hasanyrole('handyman')
+                    <div class="w3-third">
+                        <button class="float-end btn btn-success update-booking"
+                                data-id="{{ $bookingdata->id }}"
+                                data-handyman-id="{{ $bookingdata->provider_id }}"
+                                data-status="completed"
+                                data-confirm-message="Are you sure you want to complete this booking?">
+                            <i class="las la-check-circle"></i>
+                            {{ __('messages.completed') }}
+                        </button>
+                    </div>
+
+                    <button class="float-end btn btn-success" id="complete-booking"
                             data-id="{{ $bookingdata->id }}"
                             data-handyman-id="{{ $bookingdata->provider_id }}"
-                            data-status="completed"
-                            data-confirm-message="Are you sure you want to complete this booking?">
-                        <i class="las la-check-circle"></i>
-                        {{ __('messages.completed') }}
+                            data-status="cancelled"
+                            data-confirm-message="Are you sure you want to cancel this booking?">
+                        <i class="las la-file-invoice-dollar"></i>
+                        {{ __('messages.add_extra_charges') }}
                     </button>
-                </div>
+                @endhasanyrole
 
-                <button class="float-end btn btn-success" id="complete-booking"
-                        data-id="{{ $bookingdata->id }}"
-                        data-handyman-id="{{ $bookingdata->provider_id }}"
-                        data-status="cancelled"
-                        data-confirm-message="Are you sure you want to cancel this booking?">
-                    <i class="las la-file-invoice-dollar"></i>
-                    {{ __('messages.add_extra_charges') }}
-                </button>
-            @endhasrole
-        @endif
+                {{-- Message for Provider --}}
+                @hasanyrole('provider')
+                    <div class="alert alert-warning mt-3">
+                        <strong>{{ __('Notice:') }}</strong> {{ __('You cannot perform further actions on this booking because it has been assigned to a handyman.') }}
+                    </div>
+                @endhasanyrole
+
+            @endif
+
 
 
             @hasanyrole('user')
