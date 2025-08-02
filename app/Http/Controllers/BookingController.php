@@ -1217,64 +1217,73 @@ public function saveStripePayment(Request $request, $id)
         $result->total_amount = $remaining_amount;
         $result->save();
 
-        if ($remaining_amount > 0) {
-            $admin_commission_amount = ($remaining_amount * $admin_commission_percentage) / 100;
-            $provider_earning = $remaining_amount - $admin_commission_amount;
+     if ($remaining_amount > 0) {
+            // Admin commission
+            $advance_admin_commission = ($advance_paid * $admin_commission_percentage) / 100;
+            $remaining_admin_commission = ($remaining_amount * $admin_commission_percentage) / 100;
+
+            $advance_provider_earning = $advance_paid - $advance_admin_commission;
+            $remaining_provider_earning = $remaining_amount - $remaining_admin_commission;
+
+            $total_provider_earning = $advance_provider_earning + $remaining_provider_earning;
+
+            // Initialize share deduction
             $handymen = BookingHandymanMapping::where('booking_id', $booking->id)->pluck('handyman_id');
             foreach ($handymen as $handyman_id) {
-                        $handyman = User::find($handyman_id);
+                $handyman = User::find($handyman_id);
 
-                        if ($handyman->handymantype_id == 1) {
-                            // Company: 60% of provider's earning
-                            $handyman_share = ($provider_earning * 60) / 100;
-                        } elseif ($handyman->handymantype_id == 2) {
-                            // Fixed amount
-                            $handyman_share = 5;
-                        } else {
-                            continue; // Unknown type, skip
-                        }
+                if ($handyman->handymantype_id == 1) {
+                    // Company: 60% of total provider earning
+                    $handyman_share = ($total_provider_earning * 60) / 100;
+                } elseif ($handyman->handymantype_id == 2) {
+                    $handyman_share = 5;
+                } else {
+                    continue;
+                }
 
-                        // Subtract handyman share from provider's earning
-                        $provider_earning -= $handyman_share;
+                // Reduce this from remaining provider's share
+                $remaining_provider_earning -= $handyman_share;
 
-                        // Pay the handyman
-                        Wallet::firstOrCreate(['user_id' => $handyman_id])->increment('amount', $handyman_share);
-                        HandymanPayout::create([
-                            'handyman_id' => $handyman_id,
-                            'booking_id' => $booking->id,
-                            'amount' => $handyman_share,
-                            'status' => 'paid',
-                            'paid_date' => Carbon::now(),
-                            'payment_method' => 'wallet',
-                            'payment_gateway' => 'wallet',
-                        ]);
+                Wallet::firstOrCreate(['user_id' => $handyman_id])->increment('amount', $handyman_share);
 
-                        CommissionEarning::create([
-                            'booking_id' => $booking->id,
-                            'user_type' => 'handyman',
-                            'employee_id' => $handyman_id,
-                            'commission_amount' => $handyman_share,
-                            'commission_status' => 'paid',
-                        ]);
-                    }
-            Wallet::firstOrCreate(['user_id' => $booking->provider_id])->increment('amount', $provider_earning);
-            Wallet::firstOrCreate(['user_id' => $admin_user_id])->increment('amount', $admin_commission_amount);
+                HandymanPayout::create([
+                    'handyman_id' => $handyman_id,
+                    'booking_id' => $booking->id,
+                    'amount' => $handyman_share,
+                    'status' => 'paid',
+                    'paid_date' => Carbon::now(),
+                    'payment_method' => 'wallet',
+                    'payment_gateway' => 'wallet',
+                ]);
+
+                CommissionEarning::create([
+                    'booking_id' => $booking->id,
+                    'user_type' => 'handyman',
+                    'employee_id' => $handyman_id,
+                    'commission_amount' => $handyman_share,
+                    'commission_status' => 'paid',
+                ]);
+            }
+
+            // Pay remaining part to provider
+            Wallet::firstOrCreate(['user_id' => $booking->provider_id])->increment('amount', $remaining_provider_earning);
+            Wallet::firstOrCreate(['user_id' => $admin_user_id])->increment('amount', $remaining_admin_commission);
 
             ProviderPayout::create([
                 'provider_id' => $booking->provider_id,
-                'amount' => $provider_earning,
-                'payment_method' => 'stripe',
+                'amount' => $remaining_provider_earning,
+                'payment_method' => 'wallet',
                 'paid_date' => Carbon::now(),
                 'status' => 'paid',
                 'booking_id' => $booking->id,
-                'payment_gateway' => 'stripe',
+                'payment_gateway' => 'wallet',
             ]);
 
             CommissionEarning::create([
                 'booking_id' => $booking->id,
                 'user_type' => 'admin',
                 'employee_id' => $admin_user_id,
-                'commission_amount' => $admin_commission_amount,
+                'commission_amount' => $remaining_admin_commission,
                 'commission_status' => 'paid',
             ]);
 
@@ -1282,11 +1291,10 @@ public function saveStripePayment(Request $request, $id)
                 'booking_id' => $booking->id,
                 'user_type' => 'provider',
                 'employee_id' => $booking->provider_id,
-                'commission_amount' => $provider_earning,
+                'commission_amount' => $remaining_provider_earning,
                 'commission_status' => 'paid',
             ]);
         }
-
         CommissionEarning::where('booking_id', $booking->id)->update(['commission_status' => 'paid']);
     }
 
