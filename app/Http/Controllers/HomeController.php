@@ -60,6 +60,12 @@ class HomeController extends Controller
                   ->whereDate('date', '<=', $end);
             }])
             ->get();
+  dd([
+    'auth_user_id' => auth()->id(),
+    'bookings_count' => $bookings->count(),
+    'bookings' => $bookings->toArray()
+]);
+          
       $statusColors = [
         'pending'         => '#ffc107', // Yellow
         'accept'         => '#17a2b8', // Blue
