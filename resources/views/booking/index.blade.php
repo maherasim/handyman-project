@@ -379,11 +379,14 @@
                         name: 'status',
                         title: "{{ __('messages.status') }}"
                     },
+                     @if (!auth()->user()->hasRole('handyman'))
                     {
                         data: 'total_amount',
                         name: 'total_amount',
                         title: "{{ __('messages.total_amount') }}"
                     },
+                   @endif
+
                     {
                         data: 'payment_id',
                         name: 'payment_id',
