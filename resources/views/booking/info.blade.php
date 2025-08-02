@@ -187,7 +187,7 @@
 
         {{-- ACCEPTED STATUS: Show based on handyman presence --}}
         @if ($bookingdata->status === 'accept')
-            @if ($bookingdata->handymanAdded->count() != 0)
+           
                 @hasanyrole(['provider', 'handyman'])
                     {{-- CASE 1: Handyman is assigned --}}
                     @if ($bookingdata->handymanAdded->count() != 0)
@@ -231,16 +231,7 @@
                         @endhasanyrole
                     @endif
 
-                    {{-- <div class="w3-third">
-                        <button class="float-end btn btn-danger update-booking" id="reject-booking"
-                                data-id="{{ $bookingdata->id }}"
-                                data-handyman-id="{{ $bookingdata->provider_id }}"
-                                data-status="rejected"
-                                data-confirm-message="You want to reject this booking?">
-                            <i class="las la-times-circle"></i>
-                            {{ __('messages.decline') }}
-                        </button>
-                    </div> --}}
+                    
                 @endhasanyrole
 
                 @hasanyrole('user')
