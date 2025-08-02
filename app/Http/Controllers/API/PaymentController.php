@@ -52,7 +52,6 @@ public function savePayment(Request $request)
     if ($isAdvance) {
         $advance_paid_amount = $request->advance_paid_amount;
         $booking->advance_paid_amount = $advance_paid_amount;
-//        $booking->status = 'pending';
         $booking->update();
 
         $admin_commission_amount = ($advance_paid_amount * $admin_commission_percentage) / 100;
@@ -99,26 +98,32 @@ public function savePayment(Request $request)
         $result->save();
 
         if ($remaining_amount > 0) {
-            $admin_commission_amount = ($remaining_amount * $admin_commission_percentage) / 100;
-            $provider_earning = $remaining_amount - $admin_commission_amount;
+            // Admin commission
+            $advance_admin_commission = ($advance_paid * $admin_commission_percentage) / 100;
+            $remaining_admin_commission = ($remaining_amount * $admin_commission_percentage) / 100;
+
+            $advance_provider_earning = $advance_paid - $advance_admin_commission;
+            $remaining_provider_earning = $remaining_amount - $remaining_admin_commission;
+
+            $total_provider_earning = $advance_provider_earning + $remaining_provider_earning;
+
+            // Initialize share deduction
             $handymen = BookingHandymanMapping::where('booking_id', $booking->id)->pluck('handyman_id');
             foreach ($handymen as $handyman_id) {
                 $handyman = User::find($handyman_id);
 
                 if ($handyman->handymantype_id == 1) {
-                    // Company: 60% of provider's earning
-                    $handyman_share = ($provider_earning * 60) / 100;
+                    // Company: 60% of total provider earning
+                    $handyman_share = ($total_provider_earning * 60) / 100;
                 } elseif ($handyman->handymantype_id == 2) {
-                    // Fixed amount
                     $handyman_share = 5;
                 } else {
-                    continue; // Unknown type, skip
+                    continue;
                 }
 
-                // Subtract handyman share from provider's earning
-                $provider_earning -= $handyman_share;
+                // Reduce this from remaining provider's share
+                $remaining_provider_earning -= $handyman_share;
 
-                // Pay the handyman
                 Wallet::firstOrCreate(['user_id' => $handyman_id])->increment('amount', $handyman_share);
 
                 HandymanPayout::create([
@@ -139,13 +144,14 @@ public function savePayment(Request $request)
                     'commission_status' => 'paid',
                 ]);
             }
-          
-            Wallet::firstOrCreate(['user_id' => $booking->provider_id])->increment('amount', $provider_earning);
-            Wallet::firstOrCreate(['user_id' => $admin_user_id])->increment('amount', $admin_commission_amount);
+
+            // Pay remaining part to provider
+            Wallet::firstOrCreate(['user_id' => $booking->provider_id])->increment('amount', $remaining_provider_earning);
+            Wallet::firstOrCreate(['user_id' => $admin_user_id])->increment('amount', $remaining_admin_commission);
 
             ProviderPayout::create([
                 'provider_id' => $booking->provider_id,
-                'amount' => $provider_earning,
+                'amount' => $remaining_provider_earning,
                 'payment_method' => 'wallet',
                 'paid_date' => Carbon::now(),
                 'status' => 'paid',
@@ -157,7 +163,7 @@ public function savePayment(Request $request)
                 'booking_id' => $booking->id,
                 'user_type' => 'admin',
                 'employee_id' => $admin_user_id,
-                'commission_amount' => $admin_commission_amount,
+                'commission_amount' => $remaining_admin_commission,
                 'commission_status' => 'paid',
             ]);
 
@@ -165,7 +171,7 @@ public function savePayment(Request $request)
                 'booking_id' => $booking->id,
                 'user_type' => 'provider',
                 'employee_id' => $booking->provider_id,
-                'commission_amount' => $provider_earning,
+                'commission_amount' => $remaining_provider_earning,
                 'commission_status' => 'paid',
             ]);
         }
@@ -182,16 +188,15 @@ public function savePayment(Request $request)
         $payment_history = [
             'payment_id' => $result->id,
             'booking_id' => $result->booking_id,
-            'parent_id' => $result->booking_id, // placeholder, will set after creation
+            'parent_id' => $result->booking_id,
             'action' => config('constant.PAYMENT_HISTORY_ACTION.CUSTOMER_SEND_PROVIDER'),
             'status' => config('constant.PAYMENT_HISTORY_STATUS.PENDING_PROVIDER'),
             'sender_id' => $request->customer_id,
             'receiver_id' => $firstHandymanId,
             'datetime' => $request->datetime,
-           'total_amount' => ($result->payment_status == 'paid')
-    ? ($booking->total_amount - ($booking->advance_paid_amount ?? 0))
-    : $request->total_amount,
-
+            'total_amount' => ($result->payment_status == 'paid')
+                ? ($booking->total_amount - ($booking->advance_paid_amount ?? 0))
+                : $request->total_amount,
             'txn_id' => $request->txn_id,
             'type' => $request->payment_type,
             'text' => __('messages.payment_transfer', [
