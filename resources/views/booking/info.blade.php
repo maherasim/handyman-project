@@ -321,7 +321,7 @@
                         {{ __('messages.resume') }}
                     </button>
                 </div>
-                <div class="w3-third">
+                {{-- <div class="w3-third">
                     <button class="float-end btn btn-danger update-booking"
                             data-id="{{ $bookingdata->id }}"
                             data-handyman-id="{{ $bookingdata->provider_id }}"
@@ -330,7 +330,7 @@
                         <i class="las la-times-circle"></i>
                         {{ __('messages.cancel') }}
                     </button>
-                </div>
+                </div> --}}
             @endhasanyrole
         @endif
 
