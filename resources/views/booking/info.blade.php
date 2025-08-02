@@ -422,7 +422,7 @@
 
             @hasrole('provider')
                 <div class="alert alert-warning mt-3">
-                    <strong>{{ __('Notice:') }}</strong> {{ __('Service proof upload is disabled because this booking has been assigned to a handyman.') }}
+                    <strong>{{ __('Notice:') }}</strong> {{ __(' this booking has been assigned to a handyman.') }}
                 </div>
             @endhasrole
 
