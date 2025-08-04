@@ -475,25 +475,30 @@
                                     </div>
                                 </div>
                             </div>
-                            @hasanyrole(['provider'])
-                            @if (
-                                (isset($payment) && $payment->payment_type === 'bank_transfer' && $payment->status == 1) ||
-                                    (isset($payment) && $payment->payment_type !== 'bank_transfer'))
-                                <div class="col-md-4">
-                                    <div class="card h-65 border-0 shadow"
-                                         style="background: linear-gradient(135deg, #f7c59f, #ff9a9e); color: #fff;">
-                                        <div class="card-body">
-                                            <p class="mb-1 fw-bold text-uppercase" style="opacity: 0.9;">
-                                                {{ __('Advance Payment') }}
-                                            </p>
-                                            <p class="mb-0 fs-5 fw-bold" id="service_schedule__span">
-                                                {{ getPriceFormat($bookingdata->advance_paid_amount) }}
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-                            @endif
-                          @endhasanyrole
+                           @hasanyrole(['provider'])
+    @if (
+        isset($payment) &&
+        (
+            ($payment->payment_type === 'bank_transfer' && $payment->status == 1) ||
+            ($payment->payment_type !== 'bank_transfer')
+        )
+    )
+        <div class="col-md-4">
+            <div class="card h-65 border-0 shadow"
+                 style="background: linear-gradient(135deg, #f7c59f, #ff9a9e); color: #fff;">
+                <div class="card-body">
+                    <p class="mb-1 fw-bold text-uppercase" style="opacity: 0.9;">
+                        {{ __('Advance Payment') }}
+                    </p>
+                    <p class="mb-0 fs-5 fw-bold" id="service_schedule__span">
+                        {{ getPriceFormat($bookingdata->advance_paid_amount) }}
+                    </p>
+                </div>
+            </div>
+        </div>
+    @endif
+@endhasanyrole
+
 
                             <div class="col-md-4">
                                 <div class="card h-100">
