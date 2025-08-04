@@ -846,7 +846,7 @@
                             </tr>
 
                             <!-- Advance and Remaining -->
-                            @if ($showAdvance)
+                            {{-- @if ($showAdvance) --}}
                                  <tr> 
                                         <td>{{ __('Advance Payment') }}</td>
                                         <td class="bk-value">
@@ -860,7 +860,7 @@
                                         {{ getPriceFormat($grandTotal - $bookingdata->advance_paid_amount) }}
                                     </td>
                                 </tr>
-                            @endif
+                            {{-- @endif --}}
 
                             </tbody>
                         </table>
