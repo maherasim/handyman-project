@@ -847,22 +847,22 @@
 
                          
                                 @php
-    $advancePaid = $bookingdata->advance_paid_amount;
-    $advanceDisplay = $advancePaid;
+                                    $advancePaid = $bookingdata->advance_paid_amount;
+                                    $advanceDisplay = $advancePaid;
 
-    if ($advancePaid == 0) {
-         
-        $advancePercent = $bookingdata->service->advance_payment_amount ?? 0; // percentage, like 50
-        dd(  $advancePercent);
-        $advanceDisplay = ($grandTotal * $advancePercent) / 100;
-    }
-@endphp
-<tr> 
-    <td>{{ __('Advance Payment') }}</td>
-    <td class="bk-value">
-        {{ getPriceFormat($advanceDisplay) }}
-    </td>
-</tr>
+                                    if ($advancePaid == 0) {
+                                        
+                                        $advancePercent = $bookingdata->service->advance_payment_amount ?? 0; // percentage, like 50
+                                    
+                                        $advanceDisplay = ($grandTotal * $advanceservice) / 100;
+                                    }
+                                @endphp
+                                <tr> 
+                                    <td>{{ __('Advance Payment') }}</td>
+                                    <td class="bk-value">
+                                        {{ getPriceFormat($advanceDisplay) }}
+                                    </td>
+                                </tr>
 
 
                                 <tr class="grand-total">
