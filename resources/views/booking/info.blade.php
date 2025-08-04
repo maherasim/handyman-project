@@ -845,14 +845,23 @@
                                 <td class="bk-value">{{ getPriceFormat($grandTotal) }}</td>
                             </tr>
 
-                            <!-- Advance and Remaining -->
-                            {{-- @if ($showAdvance) --}}
-                                 <tr> 
-                                        <td>{{ __('Advance Payment') }}</td>
-                                        <td class="bk-value">
-                                            {{ getPriceFormat($bookingdata->advance_paid_amount > 0 ? $bookingdata->advance_paid_amount : $bookingdata->service->advance_payment_amount) }}
-                                        </td>
-                                    </tr>
+                         
+                                @php
+    $advancePaid = $bookingdata->advance_paid_amount;
+    $advanceDisplay = $advancePaid;
+
+    if ($advancePaid == 0) {
+        $advancePercent = $bookingdata->service->advance_payment_amount ?? 0; // e.g. 50
+        $advanceDisplay = ($grandTotal * $advancePercent) / 100;
+    }
+@endphp
+<tr> 
+    <td>{{ __('Advance Payment') }}</td>
+    <td class="bk-value">
+        {{ getPriceFormat($advanceDisplay) }}
+    </td>
+</tr>
+
 
                                 <tr class="grand-total">
                                     <td>{{ __('Remaining Amount') }}</td>
