@@ -851,8 +851,9 @@
     $advanceDisplay = $advancePaid;
 
     if ($advancePaid == 0) {
-        dd('helo');
+         
         $advancePercent = $bookingdata->service->advance_payment_amount ?? 0; // percentage, like 50
+        dd(  $advancePercent);
         $advanceDisplay = ($grandTotal * $advancePercent) / 100;
     }
 @endphp
