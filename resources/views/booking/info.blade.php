@@ -846,33 +846,34 @@
                             </tr>
 
                          @php 
-                            $advancePaid = $bookingdata->advance_paid_amount;
-                            $advanceDisplay = $advancePaid;
+    $advancePaid = $bookingdata->advance_paid_amount;
+    $advanceDisplay = $advancePaid;
 
-                            if ($advancePaid == 0) {
-                                $advanceDisplay = ($grandTotal * $advanceservice) / 100;
-                            }
-                        @endphp
+    if ($advancePaid == 0) {
+        $advanceDisplay = ($grandTotal * $advanceservice) / 100;
+    }
 
-                        <tr> 
-                            <td>
-                                {{ __('Advance Payment') }}
-                                @if ($advancePaid == 0 && $advanceservice)
-                                    ({{ $advanceservice }}%)
-                                @endif
-                            </td>
-                            <td class="bk-value">
-                                {{ getPriceFormat($advanceDisplay) }}
-                            </td>
-                        </tr>
+    $remainingAmount = $grandTotal - $advanceDisplay;
+@endphp
 
+<tr> 
+    <td>
+        {{ __('Advance Payment') }}
+        @if ($advancePaid == 0 && $advanceservice)
+            ({{ $advanceservice }}%)
+        @endif
+    </td>
+    <td class="bk-value">
+        {{ getPriceFormat($advanceDisplay) }}
+    </td>
+</tr>
 
-                                <tr class="grand-total">
-                                    <td>{{ __('Remaining Amount') }}</td>
-                                    <td class="bk-value">
-                                        {{ getPriceFormat($grandTotal - $bookingdata->advance_paid_amount) }}
-                                    </td>
-                                </tr>
+<tr class="grand-total">
+    <td>{{ __('Remaining Amount') }}</td>
+    <td class="bk-value">
+        {{ getPriceFormat($remainingAmount) }}
+    </td>
+</tr>
                             {{-- @endif --}}
 
                             </tbody>
