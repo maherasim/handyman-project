@@ -379,6 +379,7 @@ public function getpaymentall(Request $request)
 
         if ($result->payment_status == 'paid') {
             $booking->status = 'completed';
+
             $booking->update();
 
             $advance_paid = $booking->advance_paid_amount ?? 0;
@@ -529,6 +530,8 @@ public function getpaymentall(Request $request)
         {
             $status_code = 400;
         }
+
+        $result->update();
 
         return comman_message_response($message,$status_code);
  }

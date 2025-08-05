@@ -14,7 +14,6 @@ use App\Models\BookingHandymanMapping;
 use App\Models\BookingRating;
 use App\Models\Category;
 use App\Models\City;
-use App\Models\Tax;
 use App\Models\Country;
 use App\Models\Coupon;
 use App\Models\FrontendSetting;
@@ -23,12 +22,12 @@ use App\Models\HelpDesk;
 use App\Models\PostJobRequest;
 use App\Models\ProviderServiceAddressMapping;
 use App\Models\ProviderSubscription;
-use App\Models\ProviderTaxMapping;
 use App\Models\Service;
 use App\Models\ServiceAddon;
 use App\Models\ServicePackage;
 use App\Models\Setting;
 use App\Models\SubCategory;
+use App\Models\Tax;
 use App\Models\User;
 use App\Models\UserFavouriteService;
 use Auth;
@@ -566,19 +565,19 @@ class FrontendController extends Controller
         }
 
         if (isset($serviceData['provider']) && isset($serviceData['provider']['id'])) {
-    $completed_services = Booking::where('provider_id', $serviceData['provider']['id'])
-        ->where('status', 'completed')
-        ->count();
+            $completed_services = Booking::where('provider_id', $serviceData['provider']['id'])
+                ->where('status', 'completed')
+                ->count();
 
-    $knownLanguageArray = json_decode($serviceData['provider']['known_languages'] ?? '[]', true);
-} else {
-    $completed_services = 0;
-    $knownLanguageArray = [];
-}
+            $knownLanguageArray = json_decode($serviceData['provider']['known_languages'] ?? '[]', true);
+        } else {
+            $completed_services = 0;
+            $knownLanguageArray = [];
+        }
 
-$price = $serviceData['service_detail']['price'] ?? 0;
-$discount = $serviceData['service_detail']['discount'] ?? 0;
-$subtotal = $discount != 0 ? ($price - ($price * $discount / 100)) : $price;
+        $price = $serviceData['service_detail']['price'] ?? 0;
+        $discount = $serviceData['service_detail']['discount'] ?? 0;
+        $subtotal = $discount != 0 ? ($price - ($price * $discount / 100)) : $price;
 
 
         $total_ratings = BookingRating::where('service_id', $serviceData['service_detail']['id'])->get();
@@ -615,12 +614,14 @@ $subtotal = $discount != 0 ? ($price - ($price * $discount / 100)) : $price;
         $data_deletion_request = Setting::where('type', 'data_deletion_request')->where('key', 'data_deletion_request')->first();
         return view('landing-page.dataDeletion', compact('data_deletion_request'));
     }
+
     public function Imprint(Request $request)
     {
         $imprint = Setting::where('type', 'imprint')->where('key', 'imprint')->first();
 
         return view('landing-page.imprint', compact('imprint'));
     }
+
     public function AGB(Request $request)
     {
         $imprint = Setting::where('type', 'agb')->where('key', 'agb')->first();
@@ -658,21 +659,21 @@ $subtotal = $discount != 0 ? ($price - ($price * $discount / 100)) : $price;
 
         $user_id = Auth::id();
 
-      $matchedTax = Tax::where('status', 1)
-    ->where('id', $service->tax_country_id)
-    ->first();
+        $matchedTax = Tax::where('status', 1)
+            ->where('id', $service->tax_country_id)
+            ->first();
 
 
-      $taxes = [];
+        $taxes = [];
 
-if ($matchedTax) {
-    $taxes[] = [
-        'id' => $matchedTax->id,
-        'title' => $matchedTax->title,
-        'type' => $matchedTax->type,
-        'value' => $matchedTax->value,
-    ];
-}
+        if ($matchedTax) {
+            $taxes[] = [
+                'id' => $matchedTax->id,
+                'title' => $matchedTax->title,
+                'type' => $matchedTax->type,
+                'value' => $matchedTax->value,
+            ];
+        }
         $availableserviceslot = null;
 
         if ($service->is_slot == 1) {
@@ -681,7 +682,7 @@ if ($matchedTax) {
 
         }
 
-      //  $taxes = $transformedData;
+        //  $taxes = $transformedData;
 
         if ($request->package_id) {
             $service = ServicePackage::where('id', $request->package_id)->first();
@@ -852,6 +853,7 @@ if ($matchedTax) {
 
         return view('landing-page.RatingAll', compact('id', 'type', 'review_count'));
     }
+
     public function categoryDatatable(Datatables $datatable, Request $request)
     {
         $query = Category::query();
@@ -1092,59 +1094,59 @@ if ($matchedTax) {
         return $datatable->rawColumns(['name'])
             ->toJson();
     }
-public function providerDatatable(Datatables $datatable, Request $request)
-{
-    $query = User::query()
-        ->where('user_type', 'provider')
-        ->where('status', 1)
-        ->with('providerSubscription'); // Make sure relation is eager loaded
 
-    $filter = $request->filter;
-    if (isset($filter['search'])) {
-        $query->where(function ($q) use ($filter) {
-            $q->where('first_name', 'LIKE', '%' . $filter['search'] . '%')
-              ->orWhere('last_name', 'LIKE', '%' . $filter['search'] . '%');
-        });
-    }
+    public function providerDatatable(Datatables $datatable, Request $request)
+    {
+        $query = User::query()
+            ->where('user_type', 'provider')
+            ->where('status', 1)
+            ->with('providerSubscription'); // Make sure relation is eager loaded
 
-    $datatable = $datatable->eloquent($query)
-        ->editColumn('name', function ($data) {
-            // Service rating
-            $providers_service_rating = 0;
-            if (!empty($data->getServiceRating) && count($data->getServiceRating) > 0) {
-                $providers_service_rating = (float) number_format(max($data->getServiceRating->avg('rating'), 0), 2);
-            }
+        $filter = $request->filter;
+        if (isset($filter['search'])) {
+            $query->where(function ($q) use ($filter) {
+                $q->where('first_name', 'LIKE', '%' . $filter['search'] . '%')
+                    ->orWhere('last_name', 'LIKE', '%' . $filter['search'] . '%');
+            });
+        }
 
-            // Default to free plan icon
-            $plan_icon = asset('images/icon/freepng.png');
-
-            if ($data->providerSubscription) {
-
-                $plan_type = strtolower($data->providerSubscription->plan_type);
-                switch ($plan_type) {
-                    case 'silver plan':
-                        $plan_icon = asset('images/icon/silverpng.png');
-                        break;
-                    case 'gold plan':
-                        $plan_icon = asset('images/icon/goldpng.png');
-                        break;
-                    case 'free plan':
-                    default:
-                        $plan_icon = asset('images/icon/freepng.png');
-                        break;
+        $datatable = $datatable->eloquent($query)
+            ->editColumn('name', function ($data) {
+                // Service rating
+                $providers_service_rating = 0;
+                if (!empty($data->getServiceRating) && count($data->getServiceRating) > 0) {
+                    $providers_service_rating = (float)number_format(max($data->getServiceRating->avg('rating'), 0), 2);
                 }
-            }
 
-            // Pass $plan_icon to the blade view
-            return view('provider.datatable-card', compact('data', 'providers_service_rating', 'plan_icon'));
-        })
-        ->order(function ($query) {
-            $query->orderBy('id', 'desc');
-        });
+                // Default to free plan icon
+                $plan_icon = asset('images/icon/freepng.png');
 
-    return $datatable->rawColumns(['name'])->toJson();
-}
+                if ($data->providerSubscription) {
 
+                    $plan_type = strtolower($data->providerSubscription->plan_type);
+                    switch ($plan_type) {
+                        case 'silver plan':
+                            $plan_icon = asset('images/icon/silverpng.png');
+                            break;
+                        case 'gold plan':
+                            $plan_icon = asset('images/icon/goldpng.png');
+                            break;
+                        case 'free plan':
+                        default:
+                            $plan_icon = asset('images/icon/freepng.png');
+                            break;
+                    }
+                }
+
+                // Pass $plan_icon to the blade view
+                return view('provider.datatable-card', compact('data', 'providers_service_rating', 'plan_icon'));
+            })
+            ->order(function ($query) {
+                $query->orderBy('id', 'desc');
+            });
+
+        return $datatable->rawColumns(['name'])->toJson();
+    }
 
 
     public function bookingDatatable(Datatables $datatable, Request $request)
