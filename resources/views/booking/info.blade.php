@@ -886,7 +886,7 @@
     </div>
 
     <!-- Extra Charges table -->
-    @if (count($bookingdata->bookingExtraCharge) > 0)
+    {{-- @if (count($bookingdata->bookingExtraCharge) > 0) --}}
         <div class="col-md-12">
             <div class="card">
                 <div class="card-body">
@@ -917,7 +917,7 @@
                 </div>
             </div>
         </div>
-    @endif
+    {{-- @endif --}}
 
     @if (count($bookingdata->bookingRating) > 0)
         <div class="col-md-12">
