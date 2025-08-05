@@ -475,7 +475,7 @@
                                     </div>
                                 </div>
                             </div>
-                            @hasanyrole(['provider'])
+                            @hasanyrole(['provider','user'])
                             @if (
                                 (isset($payment) && $payment->payment_type === 'bank_transfer' && $payment->status == 1) ||
                                     (isset($payment) && $payment->payment_type !== 'bank_transfer'))
