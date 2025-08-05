@@ -463,22 +463,30 @@ class BookingController extends Controller
             {
                 $bookingdata->bookingExtraCharge()->delete();
             }
-            foreach($request->extra_charges as $extra) {
-                $extra_charge = [
-                    'title'   => $extra['title'],
-                    'price'   => $extra['price'],
-                    'qty'   => $extra['qty'],
-                    'booking_id'   =>$bookingdata->id,
-                ];
-                foreach ($request->extra_charges as $extra) {
-                    $bookingdata->bookingExtraCharge()->create([
-                        'title'      => $extra['title'],
-                        'price'      => $extra['price'],
-                        'qty'        => $extra['qty'],
-                    ]);
-                }
 
+            foreach ($request->extra_charges as $extra) {
+                $bookingdata->bookingExtraCharge()->create([
+                    'title'      => $extra['title'],
+                    'price'      => $extra['price'],
+                    'qty'        => $extra['qty'],
+                ]);
             }
+//            foreach($request->extra_charges as $extra) {
+//                $extra_charge = [
+//                    'title'   => $extra['title'],
+//                    'price'   => $extra['price'],
+//                    'qty'   => $extra['qty'],
+//                    'booking_id'   =>$bookingdata->id,
+//                ];
+//                foreach ($request->extra_charges as $extra) {
+//                    $bookingdata->bookingExtraCharge()->create([
+//                        'title'      => $extra['title'],
+//                        'price'      => $extra['price'],
+//                        'qty'        => $extra['qty'],
+//                    ]);
+//                }
+//
+//            }
             $subtotal = $bookingdata->getSubTotalValue() + $bookingdata->getServiceAddonValue() + $bookingdata->getExtraChargeValue();
 
             // without include extrachage tax caculation

@@ -110,18 +110,18 @@ import Swal from 'sweetalert2'
 import { confirmcancleSwal, confirmcancleWallet } from '../data/utilities'
 import Wallet from '../components/Wallet.vue'
 
-const props = defineProps(['booking_id', 'customer_id', 'discount', 'total_amount', 'advance_payment_amount', 'wallet_amount', 'payment_type', 'total_advance_paid_amount'])
+const props = defineProps(['booking_id', 'customer_id', 'discount', 'total_amount', 'advance_payment_amount', 'wallet_amount', 'payment_type', 'total_advance_paid_amount', 'total_booking_amount', 'advance_percentage'])
 
 const remainingAmount = computed(() => {
-  return props.advance_payment_amount != null ? props.advance_payment_amount : props.total_amount
+  return props.advance_payment_amount != null ? props.advance_payment_amount : props.total_booking_amount
 })
 
 const paymentDisplayAmount = computed(() => {
     if (props.payment_type === 'paid') {
         const advancePaid = props.total_advance_paid_amount || 0;
-        return props.total_amount - advancePaid;
+        return props.total_booking_amount - advancePaid;
     } else {
-        return props.advance_payment_amount;
+        return props.total_booking_amount * props.advance_percentage / 100;
     }
 });
 
@@ -179,13 +179,14 @@ const { value: payment_method } = useField('payment_method')
 const errorMessages = ref({})
 
 const formSubmit = handleSubmit(async (values) => {
+   let advance_payment = (props.total_booking_amount * props.advance_percentage) / 100;
   values.booking_id = props.booking_id
   values.customer_id = props.customer_id
   values.discount = props.discount
   values.payment_type = values.payment_method
   values.wallet_amount = props.wallet_amount
-  values.total_amount = props.payment_type == 'paid' ? props.total_amount : props.advance_payment_amount
-  values.advance_paid_amount = props.payment_type == 'paid' ? null : props.advance_payment_amount
+  values.total_amount = props.payment_type == 'paid' ? props.total_booking_amount : advance_payment
+  values.advance_paid_amount = props.payment_type == 'paid' ? null : advance_payment
 
   values.type = props.payment_type == 'paid' ? 'full_payment' : 'advance_payment'
   values.total_amount = Number(values.total_amount).toFixed(2)

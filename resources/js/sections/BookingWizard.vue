@@ -573,7 +573,7 @@
             </div>
           </template>
           <component :is="currentComponent" :service="service" :booking_id="bookingId" :customer_id="user_id"
-            :discount="discount" :total_amount="totalAmount" :advance_payment_amount="advance_payment_amount"
+            :discount="discount" :total_amount="totalAmount" :advance_payment_amount="advance_payment_amount" :total_booking_amount="total_booking_amount" :advance_percentage="service.advance_payment_amount"
             :wallet_amount="wallet_amount" v-if="isChildComponentVisible" :payment_type="payment_type" :total_advance_paid_amount="total_advance_paid_amount" />
         </div>
       </form>
@@ -1093,7 +1093,6 @@ const coupondiscount = computed(() => {
 });
 
 const totalAmount = computed(() => {
-
     if (props.payment_type == 'paid') {
        return props.total_booking_amount;
     }else{
@@ -1108,7 +1107,6 @@ const totalAmount = computed(() => {
 // });
 
 const advance_payment_amount = computed(() => {
-
   const rawValue = totalAmount.value * props.service.advance_payment_amount / 100;
   const roundedValue = Number(rawValue).toFixed(2);
   return parseFloat(roundedValue);
