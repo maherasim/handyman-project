@@ -337,7 +337,7 @@
         {{-- PENDING APPROVAL --}}
         @if ($bookingdata->status === 'pending_approval')
             
-            @hasrole('handyman','provider')
+            @hasanyrole(['provider', 'handyman'])
                 <div class="w3-third">
                     <button class="float-end btn btn-success update-booking"
                             data-id="{{ $bookingdata->id }}"
