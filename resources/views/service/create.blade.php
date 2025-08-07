@@ -221,7 +221,7 @@
                                                     <?php
                                                     $extention = in_array(strtolower(imageExtention($attchment->getFullUrl())), $file_extention);
                                                     ?>
-
+    <input type="hidden" name="existing_attachments[]" value="{{ $attchment->id }}">
                                                     <div class="col-md-2 pr-10 text-center galary file-gallary-{{ $servicedata->id }}"
                                                         data-gallery=".file-gallary-{{ $servicedata->id }}"
                                                         id="service_attachment_preview_{{ $attchment->id }}">
