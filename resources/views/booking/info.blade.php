@@ -190,7 +190,9 @@
             @if ($bookingdata->handymanAdded->count() != 0)
                 @if ($bookingdata->status === 'accept')
     {{-- CASE 1: Handyman is assigned → show to handyman --}}
+ @if ($bookingdata->status === 'accept')
     @if ($bookingdata->handymanAdded->count() > 0)
+        {{-- CASE 1: Handyman assigned → Only handyman can see --}}
         @role('handyman')
             <div class="w3-third">
                 <button class="float-end btn btn-primary update-booking" id="start-booking"
@@ -203,9 +205,8 @@
                 </button>
             </div>
         @endrole
-
-    {{-- CASE 2: Handyman is NOT assigned → show to provider --}}
     @else
+        {{-- CASE 2: No handyman assigned → Provider can start the work --}}
         @role('provider')
             <div class="w3-third">
                 <button class="float-end btn btn-primary update-booking" id="start-booking"
@@ -220,6 +221,7 @@
         @endrole
     @endif
 @endif
+
 
 
                 @hasanyrole('user')
