@@ -1,8 +1,6 @@
 <x-master-layout>
-    <script>
-        < script src = "https://cdn.tiny.cloud/1/m5d82gd2rwdlg96hsxpx0e5wwmfrl2zzkcw35ys8o3glilgq/tinymce/5/tinymce.min.js"
-        referrerpolicy = "origin" >
-    </script>
+    <script src = "https://cdn.tiny.cloud/1/m5d82gd2rwdlg96hsxpx0e5wwmfrl2zzkcw35ys8o3glilgq/tinymce/5/tinymce.min.js"
+    referrerpolicy = "origin" />
     <div class="container-fluid">
         <div class="row">
             <div class="col-lg-12">
@@ -64,9 +62,9 @@
             <div class=" col-md-2">
                 <label
                                                 for="country_id">{{ __('messages.select_name', ['select' => __('Tax Country')]) }}</label>
-            {{ html()->select('tax_country_id_display', 
+            {{ html()->select('tax_country_id_display',
                     optional($servicedata->tax_country)
-                        ? [optional($servicedata->tax_country)->id => optional($servicedata->tax_country)->name] 
+                        ? [optional($servicedata->tax_country)->id => optional($servicedata->tax_country)->name]
                         : []
                 )
                 ->class('form-group select2js tax_country')
@@ -588,7 +586,7 @@
                 }
             })(jQuery);
         </script>
-        
+
         <script type="text/javascript">
             document.addEventListener('DOMContentLoaded', function() {
                 handleDurationField($("#price_type").val());
