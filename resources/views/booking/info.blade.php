@@ -298,7 +298,7 @@
                         {{ __('messages.hold') }}
                     </button>
                 </div>  @endhasanyrole
-                 @hasanyrole(['provider','user'])
+                 @hasanyrole(['provider','user','handyman'])
                 <div class="w3-third">
                     <button class="float-end btn btn-primary update-booking"
                             data-id="{{ $bookingdata->id }}"
