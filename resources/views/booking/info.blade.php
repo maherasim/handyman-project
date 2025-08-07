@@ -286,31 +286,54 @@
         @endif
 
         {{-- IN PROGRESS --}}
-        @if ($bookingdata->status === 'in_progress')
-            @hasanyrole('user')
-                <div class="w3-third">
-                    <button class="float-end btn btn-warning hold-booking"
-                            data-id="{{ $bookingdata->id }}"
-                            data-handyman-id="{{ $bookingdata->provider_id }}"
-                            data-status="hold"
-                            data-confirm-message="You want to put this booking on hold?">
-                        <i class="las la-pause-circle"></i>
-                        {{ __('messages.hold') }}
-                    </button>
-                </div>  @endhasanyrole
-                 @hasanyrole(['provider','user','handyman'])
-                <div class="w3-third">
-                    <button class="float-end btn btn-primary update-booking"
-                            data-id="{{ $bookingdata->id }}"
-                            data-handyman-id="{{ $bookingdata->provider_id }}"
-                            data-status="pending_approval"
-                            data-confirm-message="You want to end this booking?">
-                        <i class="las la-check-circle"></i>
-                        {{ __('messages.done') }}
-                    </button>
-                </div>
-            @endhasanyrole
-        @endif
+         @if ($bookingdata->status === 'in_progress')
+    
+    {{-- USER: Always show "Hold" button --}}
+    @role('user')
+        <div class="w3-third">
+            <button class="float-end btn btn-warning hold-booking"
+                    data-id="{{ $bookingdata->id }}"
+                    data-handyman-id="{{ $bookingdata->provider_id }}"
+                    data-status="hold"
+                    data-confirm-message="You want to put this booking on hold?">
+                <i class="las la-pause-circle"></i>
+                {{ __('messages.hold') }}
+            </button>
+        </div>
+    @endrole
+
+    {{-- DONE Button Logic --}}
+    @if ($bookingdata->handymanAdded->count() > 0)
+        {{-- Handyman & User can see if handyman assigned --}}
+        @hasanyrole('handyman|user')
+            <div class="w3-third">
+                <button class="float-end btn btn-primary update-booking"
+                        data-id="{{ $bookingdata->id }}"
+                        data-handyman-id="{{ $bookingdata->provider_id }}"
+                        data-status="pending_approval"
+                        data-confirm-message="You want to end this booking?">
+                    <i class="las la-check-circle"></i>
+                    {{ __('messages.done') }}
+                </button>
+            </div>
+        @endhasanyrole
+    @else
+        {{-- Provider & User can see if NO handyman is assigned --}}
+        @hasanyrole('provider|user')
+            <div class="w3-third">
+                <button class="float-end btn btn-primary update-booking"
+                        data-id="{{ $bookingdata->id }}"
+                        data-handyman-id="{{ $bookingdata->provider_id }}"
+                        data-status="pending_approval"
+                        data-confirm-message="You want to end this booking?">
+                    <i class="las la-check-circle"></i>
+                    {{ __('messages.done') }}
+                </button>
+            </div>
+        @endhasanyrole
+    @endif
+@endif
+
 
         {{-- HOLD --}}
         @if ($bookingdata->status === 'hold')
