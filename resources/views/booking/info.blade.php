@@ -187,33 +187,19 @@
 
                                 {{-- ACCEPTED STATUS: Show based on handyman presence --}}
                                 @if ($bookingdata->status === 'accept')
-                                   @if ($bookingdata->handymanAdded->count() > 0)
+                                    @if ($bookingdata->handymanAdded->count() > 0)
                                         @role('handyman')
-                                    <div class="w3-third">
-                                        <button class="float-end btn btn-primary update-booking" id="start-booking"
-                                                data-id="{{ $bookingdata->id }}"
-                                                data-handyman-id="{{ $bookingdata->provider_id }}"
-                                                data-status="on_going"
-                                                data-confirm-message="You want to start this booking?">
-                                            <i class="las la-play-circle"></i>
-                                            {{ __('Start Work') }}
-                                        </button>
-                                    </div>
-                                @endrole
-
-
-                                        @hasanyrole('user')
                                             <div class="w3-third">
-                                                <button class="float-end btn btn-primary update-booking" id="cancel-booking"
+                                                <button class="float-end btn btn-primary update-booking" id="start-booking"
                                                     data-id="{{ $bookingdata->id }}"
                                                     data-handyman-id="{{ $bookingdata->provider_id }}"
-                                                    data-status="cancelled"
-                                                    data-confirm-message="You want to cancelled this booking?">
-                                                    <i class="las la-ban"></i>
-                                                    {{ __('messages.cancel') }}
+                                                    data-status="on_going"
+                                                    data-confirm-message="You want to start this booking?">
+                                                    <i class="las la-play-circle"></i>
+                                                    {{ __('Start Work') }}
                                                 </button>
                                             </div>
-                                        @endhasanyrole
+                                        @endrole
                                     @else
                                         @hasanyrole('admin|demo_admin|provider')
                                             @if (
@@ -237,9 +223,7 @@
                                             @else
                                                 <div class="w3-third d-flex align-items-end">
                                                     <p><span class="text-info font-size-14" style="font-weight: 700">Waiting
-                                                            for
-                                                            client advance pay</span>
-                                                    </p>
+                                                            for client advance pay</span></p>
                                                 </div>
                                             @endif
                                         @endhasanyrole
@@ -317,7 +301,6 @@
                                     @endif
                                 @endif
 
-
                                 {{-- HOLD --}}
                                 @if ($bookingdata->status === 'hold')
                                     @hasanyrole(['provider', 'handyman'])
@@ -340,16 +323,6 @@
                                                 {{ __('messages.resume') }}
                                             </button>
                                         </div>
-                                        {{-- <div class="w3-third">
-                    <button class="float-end btn btn-danger update-booking"
-                            data-id="{{ $bookingdata->id }}"
-                            data-handyman-id="{{ $bookingdata->provider_id }}"
-                            data-status="cancelled"
-                            data-confirm-message="Are you sure you want to cancel this booking?">
-                        <i class="las la-times-circle"></i>
-                        {{ __('messages.cancel') }}
-                    </button>
-                </div> --}}
                                     @endhasanyrole
                                 @endif
 
@@ -370,14 +343,16 @@
                                                 </button>
                                             </div>
 
-                                            <button class="float-end btn btn-success" id="complete-booking"
-                                                data-id="{{ $bookingdata->id }}"
-                                                data-handyman-id="{{ $bookingdata->provider_id }}"
-                                                data-status="cancelled"
-                                                data-confirm-message="Are you sure you want to cancel this booking?">
-                                                <i class="las la-file-invoice-dollar"></i>
-                                                {{ __('messages.add_extra_charges') }}
-                                            </button>
+                                            <div class="w3-third">
+                                                <button class="float-end btn btn-success" id="complete-booking"
+                                                    data-id="{{ $bookingdata->id }}"
+                                                    data-handyman-id="{{ $bookingdata->provider_id }}"
+                                                    data-status="cancelled"
+                                                    data-confirm-message="Are you sure you want to add extra charges?">
+                                                    <i class="las la-file-invoice-dollar"></i>
+                                                    {{ __('messages.add_extra_charges') }}
+                                                </button>
+                                            </div>
                                         @endrole
                                     @else
                                         {{-- Show only to provider when no handyman is assigned --}}
@@ -393,19 +368,18 @@
                                                 </button>
                                             </div>
 
-                                            <button class="float-end btn btn-success" id="complete-booking"
-                                                data-id="{{ $bookingdata->id }}"
-                                                data-handyman-id="{{ $bookingdata->provider_id }}"
-                                                data-status="cancelled"
-                                                data-confirm-message="Are you sure you want to cancel this booking?">
-                                                <i class="las la-file-invoice-dollar"></i>
-                                                {{ __('messages.add_extra_charges') }}
-                                            </button>
+                                            <div class="w3-third">
+                                                <button class="float-end btn btn-success" id="complete-booking"
+                                                    data-id="{{ $bookingdata->id }}"
+                                                    data-handyman-id="{{ $bookingdata->provider_id }}"
+                                                    data-status="cancelled"
+                                                    data-confirm-message="Are you sure you want to add extra charges?">
+                                                    <i class="las la-file-invoice-dollar"></i>
+                                                    {{ __('messages.add_extra_charges') }}
+                                                </button>
+                                            </div>
                                         @endrole
                                     @endif
-
-
-
 
                                     @hasanyrole('user')
                                         <div class="w3-third d-flex align-items-end">
@@ -467,6 +441,7 @@
 
                             </div>
                         </div>
+
 
                         <!-- Main Content Row -->
                         <div class="row ">
