@@ -184,33 +184,28 @@
                                 {{ html()->label(__('messages.visit_type') . ' ', 'visit_type')->class('form-control-label') }}
                                 <br />
                                 {{ html()->select('visit_type', $visittype, $servicedata->visit_type)->id('visit_type')->class('form-control select2js')->required() }}
-                            </div>
+                            </div> 
 
-
-
-
-
-                            <div class="form-group col-md-4">
+                             <div class="form-group col-md-4">
                                 <label class="form-control-label" for="service_attachment">{{ __('messages.image') }}
                                     <span class="text-danger">*</span>
                                 </label>
                                 <div class="custom-file">
                                     <input type="file" onchange="preview()" name="service_attachment[]"
                                         class="custom-file-input"
-                                        data-file-error="{{ __('messages.files_not_allowed') }}" multiple
-                                        accept="image/*">
+                                        data-file-error="{{ __('messages.files_not_allowed') }}" multiple>
                                     <label
                                         class="custom-file-label upload-label">{{ __('messages.choose_file', ['file' => __('messages.attachments')]) }}</label>
                                 </div>
                             </div>
-                              <img id="service_attachment_preview" src="" width="150px" />
+                            <img id="service_attachment_preview" src="" width="150px" />
                         </div>
 
 
                         <div class="row service_attachment_div">
                             <div class="col-md-12">
 
-
+ 
                                 @if (getMediaFileExit($servicedata, 'service_attachment'))
                                     @php
 
@@ -218,16 +213,16 @@
 
                                         $file_extention = config('constant.IMAGE_EXTENTIONS');
                                     @endphp
-                                    <div class="border-start">
-                                        <p class="ms-2"><b>{{ __('messages.attached_files') }}</b></p>
-                                        <div class="ms-2 my-3">
+                                    <div class="border-left-2">
+                                        <p class="ml-2"><b>{{ __('messages.attached_files') }}</b></p>
+                                        <div class="ml-2 my-3">
                                             <div class="row">
                                                 @foreach ($attchments as $attchment)
                                                     <?php
                                                     $extention = in_array(strtolower(imageExtention($attchment->getFullUrl())), $file_extention);
                                                     ?>
 
-                                                    <div class="col-md-2 pe-10 text-center galary file-gallary-{{ $servicedata->id }} position-relative"
+                                                    <div class="col-md-2 pr-10 text-center galary file-gallary-{{ $servicedata->id }}"
                                                         data-gallery=".file-gallary-{{ $servicedata->id }}"
                                                         id="service_attachment_preview_{{ $attchment->id }}">
                                                         @if ($extention)
@@ -260,8 +255,6 @@
                                             </div>
                                         </div>
                                     </div>
-
-                                    <img id="service_attachment_preview" src="" width="150px" />
                                 @endif
                             </div>
                         </div>
