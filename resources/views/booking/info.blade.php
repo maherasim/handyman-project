@@ -188,28 +188,39 @@
         {{-- ACCEPTED STATUS: Show based on handyman presence --}}
         @if ($bookingdata->status === 'accept')
             @if ($bookingdata->handymanAdded->count() != 0)
-                @hasanyrole(['provider', 'handyman'])
-                    <div class="w3-third">
-                        <button class="float-end btn btn-primary update-booking" id="start-booking"
-                                data-id="{{ $bookingdata->id }}"
-                                data-handyman-id="{{ $bookingdata->provider_id }}"
-                                data-status="on_going"
-                                data-confirm-message="You want to start this booking?">
-                            <i class="las la-play-circle"></i>
-                            {{ __('Start Work') }}
-                        </button>
-                    </div>
-                    {{-- <div class="w3-third">
-                        <button class="float-end btn btn-danger update-booking" id="reject-booking"
-                                data-id="{{ $bookingdata->id }}"
-                                data-handyman-id="{{ $bookingdata->provider_id }}"
-                                data-status="rejected"
-                                data-confirm-message="You want to reject this booking?">
-                            <i class="las la-times-circle"></i>
-                            {{ __('messages.decline') }}
-                        </button>
-                    </div> --}}
-                @endhasanyrole
+                @if ($bookingdata->status === 'accept')
+    {{-- CASE 1: Handyman is assigned → show to handyman --}}
+    @if ($bookingdata->handymanAdded->count() > 0)
+        @role('handyman')
+            <div class="w3-third">
+                <button class="float-end btn btn-primary update-booking" id="start-booking"
+                        data-id="{{ $bookingdata->id }}"
+                        data-handyman-id="{{ $bookingdata->provider_id }}"
+                        data-status="on_going"
+                        data-confirm-message="You want to start this booking?">
+                    <i class="las la-play-circle"></i>
+                    {{ __('Start Work') }}
+                </button>
+            </div>
+        @endrole
+
+    {{-- CASE 2: Handyman is NOT assigned → show to provider --}}
+    @else
+        @role('provider')
+            <div class="w3-third">
+                <button class="float-end btn btn-primary update-booking" id="start-booking"
+                        data-id="{{ $bookingdata->id }}"
+                        data-handyman-id="{{ $bookingdata->provider_id }}"
+                        data-status="on_going"
+                        data-confirm-message="You want to start this booking?">
+                    <i class="las la-play-circle"></i>
+                    {{ __('Start Work') }}
+                </button>
+            </div>
+        @endrole
+    @endif
+@endif
+
 
                 @hasanyrole('user')
                     <div class="w3-third">
