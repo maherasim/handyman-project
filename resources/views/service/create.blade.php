@@ -203,6 +203,7 @@
                                         class="custom-file-label upload-label">{{ __('messages.choose_file', ['file' => __('messages.attachments')]) }}</label>
                                 </div>
                             </div>
+                              <img id="service_attachment_preview" src="" width="150px" />
                         </div>
 
 
@@ -211,55 +212,57 @@
 
 
                                 @if (getMediaFileExit($servicedata, 'service_attachment'))
-    @php
-        $attchments = $servicedata->getMedia('service_attachment');
-        $file_extention = config('constant.IMAGE_EXTENTIONS');
-    @endphp
-    <div class="border-start">
-        <p class="ms-2"><b>{{ __('messages.attached_files') }}</b></p>
-        <div class="ms-2 my-3">
-            <div class="row">
-                @foreach ($attchments as $attchment)
-                    @php
-                        $isImage = in_array(strtolower(imageExtention($attchment->getFullUrl())), $file_extention);
-                    @endphp
+                                    @php
 
-                    <div class="col-md-2 pe-10 text-center galary file-gallary-{{ $servicedata->id }} position-relative"
-                        data-gallery=".file-gallary-{{ $servicedata->id }}"
-                        id="service_attachment_preview_{{ $attchment->id }}">
-                        @if ($isImage)
-                            <a id="attachment_files"
-                                href="{{ $attchment->getFullUrl() }}"
-                                class="list-group-item-action attachment-list"
-                                target="_blank">
-                                <img src="{{ $attchment->getFullUrl() }}"
-                                    class="attachment-image" alt="" width="150px">
-                            </a>
-                        @else
-                            <a id="attachment_files"
-                                class="video list-group-item-action attachment-list"
-                                href="{{ $attchment->getFullUrl() }}">
-                                <img src="{{ asset('images/file.png') }}"
-                                    class="attachment-file" width="150px">
-                            </a>
-                        @endif
+                                        $attchments = $servicedata->getMedia('service_attachment');
 
-                        <a class="text-danger remove-file"
-                            href="{{ route('remove.file', ['id' => $attchment->id, 'type' => 'service_attachment']) }}"
-                            data--submit="confirm_form" data--confirmation='true'
-                            data--ajax="true" data-toggle="tooltip"
-                            title='{{ __('messages.remove_file_title', ['name' => __('messages.attachments')]) }}'
-                            data-title='{{ __('messages.remove_file_title', ['name' => __('messages.attachments')]) }}'
-                            data-message='{{ __('messages.remove_file_msg') }}'>
-                            <i class="ri-close-circle-line"></i>
-                        </a>
-                    </div>
-                @endforeach
-            </div>
-        </div>
-    </div>
-@endif
+                                        $file_extention = config('constant.IMAGE_EXTENTIONS');
+                                    @endphp
+                                    <div class="border-start">
+                                        <p class="ms-2"><b>{{ __('messages.attached_files') }}</b></p>
+                                        <div class="ms-2 my-3">
+                                            <div class="row">
+                                                @foreach ($attchments as $attchment)
+                                                    <?php
+                                                    $extention = in_array(strtolower(imageExtention($attchment->getFullUrl())), $file_extention);
+                                                    ?>
 
+                                                    <div class="col-md-2 pe-10 text-center galary file-gallary-{{ $servicedata->id }} position-relative"
+                                                        data-gallery=".file-gallary-{{ $servicedata->id }}"
+                                                        id="service_attachment_preview_{{ $attchment->id }}">
+                                                        @if ($extention)
+                                                            <a id="attachment_files"
+                                                                href="{{ $attchment->getFullUrl() }}"
+                                                                class="list-group-item-action attachment-list"
+                                                                target="_blank">
+                                                                <img src="{{ $attchment->getFullUrl() }}"
+                                                                    class="attachment-image" alt="">
+                                                            </a>
+                                                        @else
+                                                            <a id="attachment_files"
+                                                                class="video list-group-item-action attachment-list"
+                                                                href="{{ $attchment->getFullUrl() }}">
+                                                                <img src="{{ asset('images/file.png') }}"
+                                                                    class="attachment-file">
+                                                            </a>
+                                                        @endif
+                                                        <a class="text-danger remove-file"
+                                                            href="{{ route('remove.file', ['id' => $attchment->id, 'type' => 'service_attachment']) }}"
+                                                            data--submit="confirm_form" data--confirmation='true'
+                                                            data--ajax="true" data-toggle="tooltip"
+                                                            title='{{ __('messages.remove_file_title', ['name' => __('messages.attachments')]) }}'
+                                                            data-title='{{ __('messages.remove_file_title', ['name' => __('messages.attachments')]) }}'
+                                                            data-message='{{ __('messages.remove_file_msg') }}'>
+                                                            <i class="ri-close-circle-line"></i>
+                                                        </a>
+                                                    </div>
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <img id="service_attachment_preview" src="" width="150px" />
+                                @endif
                             </div>
                         </div>
 
@@ -291,7 +294,7 @@
                                 </div>
                             @endif
                             <!-- @if (!empty($digitalservicedata) && $digitalservicedata->value == 1)
-<div class="form-group col-md-3">
+          <div class="form-group col-md-3">
                                 <div class="custom-control custom-switch">
                                     {{ Form::checkbox('digital_service', $servicedata->digital_service, null, ['class' => 'custom-control-input', 'id' => 'digital_service']) }}
                                     <label class="custom-control-label"
@@ -328,6 +331,9 @@
     @endphp
     @section('bottom_script')
         <script type="text/javascript">
+              function preview() {
+                service_attachment_preview.src = URL.createObjectURL(event.target.files[0]);
+            }
             var discountInput = document.getElementById('discount');
             var discountError = document.getElementById('discount-error');
 
