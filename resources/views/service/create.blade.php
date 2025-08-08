@@ -204,8 +204,8 @@
                         <div class="row service_attachment_div">
                             <div class="col-md-12">
 
-@dd($servicedata->getMedia('service_attachment'));
-                                @if (getMediaFileExit($servicedata, 'service_attachment'))
+{{-- @dd($servicedata->getMedia('service_attachment')); --}}
+                                {{-- @if (getMediaFileExit($servicedata, 'service_attachment')) --}}
 
                                     @php
 
@@ -257,7 +257,7 @@
                                     </div>
 
                                     <img id="service_attachment_preview" src="" width="150px" />
-                                @endif
+                                {{-- @endif --}}
                             </div>
                         </div>
 
