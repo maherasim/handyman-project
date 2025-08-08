@@ -204,7 +204,7 @@
                         <div class="row service_attachment_div">
                             <div class="col-md-12">
 
-@dd(getMediaFileExit($servicedata, 'service_attachment'));
+@dd($servicedata->getMedia('service_attachment'));
                                 @if (getMediaFileExit($servicedata, 'service_attachment'))
 
                                     @php
