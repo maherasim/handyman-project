@@ -137,8 +137,284 @@
                 <div class="card-body">
                     <div class="row">
                         <!-- Header Section -->
-                
+                        <div
+                            class="border-bottom pb-1 d-flex justify-content-between align-items-center gap-3 flex-wrap">
+                            <div>
+                                <h3 class="mb-2 text-primary">{{ __('messages.book_id') }}
+                                    {{ '#' . $bookingdata->id ?? '-' }}</h3>
+                            </div>
+                            <div class="d-flex flex-wrap flex-xxl-nowrap gap-3">
 
+                                @if ($bookingdata->status === 'pending')
+                                    @hasanyrole('admin|demo_admin|provider')
+                                    <div class="w3-third">
+                                        <button class="float-end btn btn-primary update-booking"
+                                                data-id="{{ $bookingdata->id }}"
+                                                data-handyman-id="{{ $bookingdata->provider_id }}" data-status="accept"
+                                                data-confirm-message="You want to accept this booking?">
+                                            <i class="las la-play-circle"></i>
+                                            {{ __('messages.accept_booking') }}
+                                        </button>
+                                    </div>
+
+                                    <div class="w3-third">
+                                        <button class="float-end btn btn-primary update-booking" id="cancel-booking"
+                                                data-id="{{ $bookingdata->id }}"
+                                                data-handyman-id="{{ $bookingdata->provider_id }}"
+                                                data-status="cancelled"
+                                                data-confirm-message="You want to cancelled this booking?">
+                                            <i class="las la-ban"></i>
+                                            {{ __('messages.cancel') }}
+                                        </button>
+                                    </div>
+                                    @endhasanyrole
+                                @endif
+
+                                @if ($bookingdata->status === 'accept')
+                                    @if($bookingdata->handymanAdded->isNotEmpty())
+                                        @hasanyrole(['provider', 'handyman'])
+                                        <div class="w3-third">
+                                            <button class="float-end btn btn-primary update-booking" id="start-booking"
+                                                    data-id="{{ $bookingdata->id }}"
+                                                    data-handyman-id="{{ $bookingdata->provider_id }}"
+                                                    data-status="on_going"
+                                                    data-confirm-message="You want to start this booking?">
+                                                <i class="las la-play-circle"></i>
+                                                {{ __('messages.start_drive') }}
+                                            </button>
+                                        </div>
+
+                                        <div class="w3-third">
+                                            <button class="float-end btn btn-danger update-booking" id="reject-booking"
+                                                    data-id="{{ $bookingdata->id }}"
+                                                    data-handyman-id="{{ $bookingdata->provider_id }}"
+                                                    data-status="rejected"
+                                                    data-confirm-message="You want to reject this booking?">
+                                                <i class="las la-times-circle"></i>
+                                                {{ __('messages.decline') }}
+                                            </button>
+                                        </div>
+                                        @endhasanyrole
+
+                                        @hasanyrole('user')
+                                        <div class="w3-third">
+                                            <button class="float-end btn btn-primary update-booking" id="cancel-booking"
+                                                    data-id="{{ $bookingdata->id }}"
+                                                    data-handyman-id="{{ $bookingdata->provider_id }}"
+                                                    data-status="cancelled"
+                                                    data-confirm-message="You want to cancelled this booking?">
+                                                <i class="las la-ban"></i>
+                                                {{ __('messages.cancel') }}
+                                            </button>
+                                        </div>
+                                        @endhasanyrole
+                                    @else
+                                        @hasanyrole('admin|demo_admin|provider')
+                                        @if($is_enable_advance_payment == 0 || (isset($bookingdata->payment) && strtolower($bookingdata->payment->payment_status) == 'advanced_paid'))
+                                            <div class="w3-third">
+                                                <button class="float-end btn btn-primary" id="assign-provider"
+                                                        data-id="{{ $bookingdata->id }}"
+                                                        data-handyman-id="{{ $bookingdata->provider_id }}">
+                                                    <i class="lab la-telegram-plane"></i>
+                                                    {{ __('messages.assign_provider') }}
+                                                </button>
+                                            </div>
+
+                                            <div class="w3-third">
+                                                <a href="{{ route('booking.assign_form', ['id' => $bookingdata->id]) }}"
+                                                   class="float-end btn btn-primary loadRemoteModel">
+                                                    <i class="lab la-telegram-plane"></i>
+                                                    {{ __('messages.assign_handyman') }}
+                                                </a>
+                                            </div>
+                                        @else
+                                            <div class="w3-third d-flex align-items-end">
+                                                <p><span class="text-info font-size-14" style="font-weight: 700">Waiting for
+                                                    client advance pay</span>
+                                                </p>
+                                            </div>
+                                        @endif
+                                        @endhasanyrole
+
+                                        @hasanyrole('user')
+                                        @if(!isset($bookingdata->payment) && $is_enable_advance_payment == 1)
+                                            <div class="w3-third">
+                                                <a class="float-end btn btn-primary"
+                                                   href="{{ route('book.service', ['id' => $bookingdata->service_id, 'booking_id' => $bookingdata->id, 'payment_type' => 'advance_paid']) }}"
+                                                   target="_blank" data-id="{{ $bookingdata->id }}">
+                                                    <i class="las la-credit-card"></i>
+                                                    {{ __('messages.advance_pay') }}
+                                                </a>
+                                            </div>
+                                        @endif
+                                        @endhasanyrole
+                                    @endif
+                                @endif
+
+                                @if ($bookingdata->status === 'on_going')
+                                    @hasanyrole(['provider', 'handyman'])
+                                    <div class="w3-third d-flex align-items-end">
+                                        <p><span class="text-info font-size-14" style="font-weight: 700">Waiting for
+                                                    response</span>
+                                        </p>
+                                    </div>
+                                    @endhasanyrole
+
+                                    @hasanyrole('user')
+                                    <div class="w3-third">
+                                        <button class="float-end btn btn-primary update-booking"
+                                                data-id="{{ $bookingdata->id }}"
+                                                data-handyman-id="{{ $bookingdata->provider_id }}"
+                                                data-status="in_progress"
+                                                data-confirm-message="You want to start this booking?">
+                                            <i class="las la-play-circle"></i>
+                                            {{ __('messages.start') }}
+                                        </button>
+                                    </div>
+                                    @endhasanyrole
+                                @endif
+
+                                @if ($bookingdata->status === 'in_progress')
+                                    @hasanyrole('user')
+                                    <div class="w3-third">
+                                        <button class="float-end btn btn-warning hold-booking"
+                                                data-id="{{ $bookingdata->id }}"
+                                                data-handyman-id="{{ $bookingdata->provider_id }}"
+                                                data-status="hold"
+                                                data-confirm-message="You want to start this booking?">
+                                            <i class="las la-pause-circle"></i>
+                                            {{ __('messages.hold') }}
+                                        </button>
+                                    </div>
+                                    <div class="w3-third">
+                                        <button class="float-end btn btn-primary update-booking"
+                                                data-id="{{ $bookingdata->id }}"
+                                                data-handyman-id="{{ $bookingdata->provider_id }}"
+                                                data-status="pending_approval"
+                                                data-confirm-message="You want to end this booking?">
+                                            <i class="las la-check-circle"></i>
+                                            {{ __('messages.done') }}
+                                        </button>
+                                    </div>
+                                    @endhasanyrole
+                                @endif
+
+                                @if ($bookingdata->status === 'hold')
+                                    @hasanyrole(['provider', 'handyman'])
+                                    <div class="w3-third d-flex align-items-end">
+                                        <p><span class="text-danger font-size-14" style="font-weight: 700">Hold Reason
+                                                    :</span> {{ $bookingdata->reason }}
+                                        </p>
+                                    </div>
+                                    @endhasanyrole
+
+                                    @hasanyrole('user')
+                                    <div class="w3-third">
+                                        <button class="float-end btn btn-primary update-booking"
+                                                data-id="{{ $bookingdata->id }}"
+                                                data-handyman-id="{{ $bookingdata->provider_id }}"
+                                                data-status="in_progress"
+                                                data-confirm-message="Are you sure you want to resume this booking?">
+                                            <i class="las la-play"></i>
+                                            {{ __('messages.resume') }}
+                                        </button>
+                                    </div>
+
+                                    <div class="w3-third">
+                                        <button class="float-end btn btn-danger update-booking" id="cancel-booking"
+                                                data-id="{{ $bookingdata->id }}"
+                                                data-handyman-id="{{ $bookingdata->provider_id }}"
+                                                data-status="cancelled"
+                                                data-confirm-message="Are you sure you want to cancelled this booking?">
+                                            <i class="las la-times-circle"></i>
+                                            {{ __('messages.cancel') }}
+                                        </button>
+                                    </div>
+                                    @endhasanyrole
+                                @endif
+
+                                @if ($bookingdata->status === 'pending_approval')
+                                    @hasanyrole(['provider', 'handyman'])
+                                    <div class="w3-third">
+                                        <button class="float-end btn btn-success update-booking"
+                                                data-id="{{ $bookingdata->id }}"
+                                                data-handyman-id="{{ $bookingdata->provider_id }}"
+                                                data-status="completed"
+                                                data-confirm-message="Are you sure you want to complete this booking?">
+                                            <i class="las la-check-circle"></i>
+                                            {{ __('messages.completed') }}
+                                        </button>
+                                    </div>
+
+                                    <button class="float-end btn btn-success" id="complete-booking"
+                                            data-id="{{ $bookingdata->id }}"
+                                            data-handyman-id="{{ $bookingdata->provider_id }}"
+                                            data-status="cancelled"
+                                            data-confirm-message="Are you sure you want to cancel this booking?">
+                                        <i class="las la-file-invoice-dollar"></i>
+                                        {{ __('messages.add_extra_charges') }}
+                                    </button>
+                                    @endhasanyrole
+
+                                    @hasanyrole('user')
+                                    <div class="w3-third d-flex align-items-end">
+                                        <p><span class="text-info font-size-14" style="font-weight: 700">Waiting for
+                                                    response</span>
+                                        </p>
+                                    </div>
+                                    @endhasanyrole
+                                @endif
+
+                                @if ($bookingdata->status === 'completed' && empty($customer_review))
+                                    @hasanyrole('user')
+                                    <div class="w3-third d-flex align-items-end">
+                                        <button class="float-end btn btn-warning" id="rate-now-btn"
+                                                data-id="{{ $bookingdata->id }}">
+                                            <i class="las la-star"></i>
+                                            <!-- Changed to a star icon (Line Awesome) -->
+                                            {{ __('messages.rate_now') }}
+                                        </button>
+                                    </div>
+                                    @if ($payment->payment_status != 'paid')
+                                        <div class="w3-third d-flex align-items-end">
+                                            <a class="float-end btn btn-warning"
+                                               href="{{ route('book.service', ['id' => $bookingdata->service_id, 'booking_id' => $bookingdata->id, 'payment_type' => 'full_payment']) }}"
+                                               target="_blank" data-id="{{ $bookingdata->id }}">
+                                                <i class="las la-credit-card"></i>
+                                                <!-- Changed to a star icon (Line Awesome) -->
+                                                {{ __('Pay now') }}
+                                            </a>
+                                        </div>
+                                    @endif
+                                    @endhasanyrole
+                                @endif
+
+                                @if ($bookingdata->status === 'completed' && $payment->payment_status == 'paid')
+                                    @hasanyrole('provider')
+                                    <div class="w3-third d-flex align-items-end">
+                                        <button class="float-end btn btn-primary" id="service-proof-btn"
+                                                data-id="{{ $bookingdata->id }}"
+                                                data-service-id="{{ $bookingdata->service_id }}"
+                                                data-user-id="{{ $bookingdata->customer_id }}">
+                                            <i class="las la-clipboard-list"></i>
+                                            {{ __('messages.service_proof') }}
+                                        </button>
+                                    </div>
+                                    @endhasanyrole
+
+                                @endif
+
+                                @if ($bookingdata->payment_id !== null)
+                                    <a href="{{ route('invoice_pdf', $bookingdata->id) }}" class="btn btn-primary"
+                                       target="_blank">
+                                        <i class="ri-file-text-line"></i>
+                                        {{ __('messages.invoice') }}
+                                    </a>
+                                @endif
+
+
+                            </div>
+                        </div>
                         <!-- Main Content Row -->
                         <div class="row ">
                             <div class="col-md-4 ">
@@ -173,7 +449,7 @@
                                     </div>
                                 </div>
                             </div>
-                         @hasanyrole(['provider','user'])
+
                             <div class="col-md-4">
                                 <div class="card h-100">
                                     <div class="card-body">
@@ -184,7 +460,6 @@
                                     </div>
                                 </div>
                             </div>
-                            @endhasanyrole
                             <div class="col-md-4">
                                 <div class="card h-100">
                                     <div class="card-body">
@@ -194,7 +469,6 @@
                                     </div>
                                 </div>
                             </div>
-                            @hasanyrole(['provider','user'])
                             @if (
                                 (isset($payment) && $payment->payment_type === 'bank_transfer' && $payment->status == 1) ||
                                     (isset($payment) && $payment->payment_type !== 'bank_transfer'))
@@ -212,7 +486,7 @@
                                     </div>
                                 </div>
                             @endif
-                          @endhasanyrole
+
 
                             <div class="col-md-4">
                                 <div class="card h-100">
@@ -241,8 +515,8 @@
                                         </p>
 
                                         @if (isset($payment) && $payment->payment_type === 'bank_transfer' && $payment->status == 0)
-                                            <p class="mb-0 text-danger">
-                                                {{ __('Pending Payment approval by Admin') }}
+                                            <p class="mb-0 text-warning">
+                                                {{ __('messages.pending') }}
                                             </p>
                                         @elseif (isset($payment) && $payment->payment_status)
                                             @php
@@ -282,7 +556,7 @@
                         </div>
                     </div>
                 </div>
-            </div>        
+            </div>
 
             <!-- Order information section  -->
             <div class="row">
@@ -330,7 +604,7 @@
                         </div>
                     </div>
                 </div>
-                <!-- Provider Information -->                                    
+                <!-- Provider Information -->
                 <div class="col-md-4">
                     <div class="card">
                         <div class="card-body">
@@ -421,9 +695,6 @@
 
             </div>
         </div>
-
-
-        
     @php
         $showAdvance = false;
 
@@ -438,7 +709,6 @@
 
     <!-- billing section -->
         <!-- billing section -->
-           @hasanyrole(['provider', 'user','admin'])
         <div class="col-md-4">
             <div class="card">
                 <div class="card-body">
@@ -564,36 +834,21 @@
                                 <td class="bk-value">{{ getPriceFormat($grandTotal) }}</td>
                             </tr>
 
-                         @php 
-    $advancePaid = $bookingdata->advance_paid_amount;
-    $advanceDisplay = $advancePaid;
-
-    if ($advancePaid == 0) {
-        $advanceDisplay = ($grandTotal * $advanceservice) / 100;
-    }
-
-    $remainingAmount = $grandTotal - $advanceDisplay;
-@endphp
-
-<tr> 
-    <td>
-        {{ __('Advance Payment') }}
-        @if ($advancePaid == 0 && $advanceservice)
-            ({{ $advanceservice }}%)
-        @endif
-    </td>
-    <td class="bk-value">
-        {{ getPriceFormat($advanceDisplay) }}
-    </td>
-</tr>
-
-<tr class="grand-total">
-    <td>{{ __('Remaining Amount') }}</td>
-    <td class="bk-value">
-        {{ getPriceFormat($remainingAmount) }}
-    </td>
-</tr>
-                            {{-- @endif --}}
+                            <!-- Advance and Remaining -->
+                            @if ($showAdvance)
+                                <tr>
+                                    <td>{{ __('Advance Payment') }}</td>
+                                    <td class="bk-value">
+                                        {{ getPriceFormat($bookingdata->advance_paid_amount) }}
+                                    </td>
+                                </tr>
+                                <tr class="grand-total">
+                                    <td>{{ __('Remaining Amount') }}</td>
+                                    <td class="bk-value">
+                                        {{ getPriceFormat($grandTotal - $bookingdata->advance_paid_amount) }}
+                                    </td>
+                                </tr>
+                            @endif
 
                             </tbody>
                         </table>
@@ -601,7 +856,7 @@
                 </div>
             </div>
         </div>
- @endhasanyrole
+
     </div>
 
     <!-- Extra Charges table -->
