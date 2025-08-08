@@ -206,7 +206,7 @@
 
 {{-- @dd($servicedata->getMedia('service_attachment')); --}}
                                 {{-- @if (getMediaFileExit($servicedata, 'service_attachment')) --}}
-
+@dd($servicedata);
                                     @php
 
                                         $attchments = $servicedata->getMedia('service_attachment');
