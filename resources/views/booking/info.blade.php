@@ -840,7 +840,7 @@
 
                            @php
                                $advancePaidAmount = $bookingdata->service->advance_payment_amount;
-                               dd( $advancePaidAmount);
+                               dd( $advancePaidAmount); 
 
                             if ($advancePaidAmount <= 0 && isset($bookingdata->service->advance_payment_amount)) {
                                
