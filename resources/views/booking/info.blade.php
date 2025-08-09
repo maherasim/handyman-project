@@ -842,6 +842,7 @@
                                $advancePaidAmount = $bookingdata->advance_paid_amount;
 
                             if ($advancePaidAmount <= 0 && isset($bookingdata->service->advance_payment_amount)) {
+                                dd("agya");
                                 // Get percentage value from service
                                 $advancePercentage = $bookingdata->service->advance_payment_amount;
                                 $advancePaidAmount = ($grandTotal * $advancePercentage) / 100;
