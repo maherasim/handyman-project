@@ -267,7 +267,7 @@ public function cash_index_data(DataTables $datatable, Request $request)
     {
 $query = Payment::query()
     ->myPayment()
-    ->with(['handymanEarnings' => function ($q) {
+    ->with(['handymanEarning' => function ($q) {
         $q->where('user_type', 'handyman');
     }])
     ->where(function ($q) {
