@@ -29,13 +29,10 @@ class Payment extends Model
 {
     return $this->hasMany(CommissionEarning::class, 'booking_id', 'booking_id');
 }
-public function handymanEarning()
+public function handymanEarnings()
 {
-    return $this->hasOne(CommissionEarning::class, 'booking_id', 'booking_id')
-        ->where('user_type', 'handyman')
-        ->where('commission_status', 'paid');
+    return $this->hasOne(CommissionEarning::class, 'booking_id', 'booking_id')->where('user_type', 'handyman') ->where('commission_status', 'paid');
 }
-
 
     public function scopeMyPayment($query)
     {
