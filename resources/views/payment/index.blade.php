@@ -165,12 +165,15 @@
                     { data: 'booking_id', name: 'booking_id', title: "{{ __('messages.service') }}" },
                     { data: 'customer_id', name: 'customer_id', title: "{{ __('messages.user') }}" },
                     { data: 'payment_type', name: 'payment_type', title: "{{ __('messages.payment_type') }}" },
-                  {
-                    data: 'payment_status', name: 'payment_status',title: "{{ __('messages.status') }}",
-                    render: function(data, type, row, meta) {
-                        return 'paid'; // 👈 This will always show "paid"
-                    }
-                },
+                 {
+    data: 'payment_status',
+    name: 'payment_status',
+    title: "{{ __('messages.status') }}",
+    render: function(data, type, row, meta) {
+        return '<span class="badge bg-primary">Paid</span>'; // 👈 styled like your image
+    }
+},
+
 
                     { data: 'datetime', name: 'datetime', title: "{{ __('messages.datetime') }}" },
                     { data: 'handyman_earning', name: 'handyman_earning', title: "My Earning" }
