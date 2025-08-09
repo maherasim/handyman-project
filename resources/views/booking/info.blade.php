@@ -304,14 +304,14 @@
                           @if ($bookingdata->status === 'pending_approval')
                             @hasanyrole(['user'])
                                 <div class="w3-third">
-                                    <button class="float-end btn btn-success confirm-booking"
-                                            data-id="{{ $bookingdata->id }}"
-                                            data-handyman-id="{{ $bookingdata->provider_id }}"
-                                            data-status="confirm"
-                                            data-confirm-message="You want to Confirm this booking?">
-                                        <i class="las la-check-circle"></i>
-                                        {{ __('Confirm') }}
-                                    </button>
+                                     <button class="float-end btn btn-success confirm-booking"
+                                        data-id="{{ $bookingdata->id }}"
+                                        data-handyman-id="{{ $bookingdata->provider_id }}"
+                                        data-status="confirm"
+                                        data-confirm-message="You want to Confirm this booking?">
+                                    <i class="las la-check-circle"></i>
+                                    {{ __('Confirm') }}
+                                </button>
                                 </div>
 
                             @endhasanyrole
