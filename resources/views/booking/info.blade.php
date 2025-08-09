@@ -845,6 +845,7 @@
                                  
                                 // Get percentage value from service
                                 $advancePercentage = $bookingdata->service->advance_payment_amount;
+                                dd( $advancePercentage);
                                 $advancePaidAmount = ($grandTotal * $advancePercentage) / 100;
                                 dd( $advancePaidAmount);
                             }
