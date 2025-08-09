@@ -83,7 +83,6 @@
             </div>
         </div>
     </div>
-    @if (auth()->user()->hasAnyRole(['admin','provider']))
     <script>
         document.addEventListener('DOMContentLoaded', (event) => {
 
@@ -138,14 +137,6 @@
                         name: 'customer_id',
                         title: "{{ __('messages.user') }}"
                     },
-                    @if (auth()->user()->hasAnyRole(['handyman']))
-                    {
-                        data: 'handyman_earning',
-                        name: 'handyman_earning',
-                        title: "My Earning"
-                    },
-                    @endif()
-
                     {
                         data: 'payment_type',
                         name: 'payment_type',
@@ -161,13 +152,11 @@
                         name: 'datetime',
                         title: "{{ __('messages.datetime') }}"
                     },
-                      @if (auth()->user()->hasAnyRole(['admin','provider']))
                     {
                         data: 'total_amount',
                         name: 'total_amount',
                         title: "{{ __('messages.total_paid_amount') }}"
                     },
-                     @endif ()
                     @if (auth()->user()->hasAnyRole(['admin']))
                         {
                             data: 'action',
@@ -252,39 +241,5 @@
             }
         });
     </script>
-    @endif
-     @if (auth()->user()->hasAnyRole(['handyman']))
-    <script>
-        document.addEventListener('DOMContentLoaded', (event) => {
-
-            window.renderedDataTable = $('#datatable').DataTable({
-                processing: true,
-                serverSide: true,
-                autoWidth: false,
-                responsive: true,
-                dom: '<"row align-items-center"><"table-responsive my-3 mt-3 mb-2 pb-1" rt><"row align-items-center data_table_widgets" <"col-md-6" <"d-flex align-items-center flex-wrap gap-3" l i>><"col-md-6" p>><"clear">',
-                ajax: {
-                    "type": "GET",
-                    "url": '{{ route('handyman.earnings.data') }}',
-                    "data": function(d) {
-                        d.search = {
-                            value: $('.dt-search').val()
-                        };
-                        d.filter = {
-                            column_status: $('#column_status').val()
-                        }
-                    },
-                },
-                  columns: [
-                    { data: 'booking', name: 'booking' },
-                    { data: 'commission_amount', name: 'commission_amount' },
-                    { data: 'created_at', name: 'created_at' }
-                ]
-               
-            });
-        });
- 
-    </script>
-    @endif
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 </x-master-layout>
