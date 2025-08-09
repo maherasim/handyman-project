@@ -141,7 +141,7 @@
                     {
                         data: 'handyman_earning',
                         name: 'handyman_earning',
-                        title: "Handyman Earning"
+                        title: "My Earning"
                     },
                     @endif()
 

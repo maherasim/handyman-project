@@ -32,7 +32,7 @@ class Payment extends Model
 public function handymanEarning()
 {
     return $this->hasOne(CommissionEarning::class, 'booking_id', 'booking_id')
-                ->where('user_type', 'handyman');
+                ->where('user_type', 'handyman') ->where('commission_status', 'paid');
 }
 
     public function scopeMyPayment($query)
