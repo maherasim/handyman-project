@@ -163,17 +163,13 @@ public function cash_index_data(DataTables $datatable, Request $request)
 
     public function index_data(DataTables $datatable,Request $request)
     {
-        $query = Payment::query()
-            ->myPayment()
-            ->with(['handymanEarning']) // eager load
-            ->where(function ($q) {
-                $q->where('payment_type', '!=', 'bank_transfer')
-                ->orWhere(function ($sub) {
-                    $sub->where('payment_type', 'bank_transfer')->where('status', 1);
-                });
-            })
-            ->groupBy('booking_id'); // Optional, if needed to avoid duplicates
-
+      $query = Payment::query()->myPayment()
+    ->where(function ($q) {
+        $q->where('payment_type', '!=', 'bank_transfer')
+          ->orWhere(function ($sub) {
+              $sub->where('payment_type', 'bank_transfer')->where('status', 1);
+          });
+    });
  
         // if (!$request->order) { 
         //     $query->orderBy('created_at', 'DESC');
@@ -251,11 +247,11 @@ public function cash_index_data(DataTables $datatable, Request $request)
             }
             return $payment_status;
         })
-       ->addColumn('handyman_earning', function($payment) {
-        $earning = optional($payment->handymanEarning)->commission_amount;
-        return getPriceFormat($earning ?? 0);
-    })
-
+        ->addColumn('handyman_earning', function($payment) {
+            // Optional: eager load in controller for performance
+            $earning = optional($payment->handymanEarning)->commission_amount;
+            return getPriceFormat($earning ?? 0);
+        })
 
 
         ->editColumn('total_amount', function($query) {
