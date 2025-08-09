@@ -302,20 +302,20 @@
                                 @endif
 
                           @if ($bookingdata->status === 'pending_approval')
-                                      @hasanyrole(['user', 'handyman'])
-                                    <div class="w3-third">
-                                        <button class="float-end btn btn-warning hold-booking"
-                                                data-id="{{ $bookingdata->id }}"
-                                                data-handyman-id="{{ $bookingdata->provider_id }}"
-                                                data-status="hold"
-                                                data-confirm-message="You want to start this booking?">
-                                            <i class="las la-pause-circle"></i>
-                                            {{ __('Confirm') }}
-                                        </button>
-                                    </div>
-                                    
-                             @endhasanyrole
-                         @endif
+                            @hasanyrole(['user', 'handyman'])
+                                <div class="w3-third">
+                                    <button class="float-end btn btn-success confirm-booking"
+                                            data-id="{{ $bookingdata->id }}"
+                                            data-handyman-id="{{ $bookingdata->provider_id }}"
+                                            data-status="confirm"
+                                            data-confirm-message="You want to Confirm this booking?">
+                                        <i class="las la-check-circle"></i>
+                                        {{ __('Confirm') }}
+                                    </button>
+                                </div>
+                            @endhasanyrole
+                        @endif
+
 
 
 
