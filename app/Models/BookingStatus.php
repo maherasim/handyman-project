@@ -18,7 +18,16 @@ class BookingStatus extends Model
         'sequence'  => 'integer',
     ];
 
-    protected function bookingStatus($status){
-        return $this->where('value',$status)->pluck('label')->implode(',');
+    public static function bookingStatus($status)
+    {
+        $label = static::query()->where('value', $status)->value('label');
+        if (!empty($label)) {
+            return $label;
+        }
+        // Fallback to a humanized version of the raw status value
+        if (is_string($status) && $status !== '') {
+            return ucwords(str_replace('_', ' ', $status));
+        }
+        return '';
     }
 }
