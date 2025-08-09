@@ -403,7 +403,7 @@
                                                 {{ __('messages.rate_now') }}
                                             </button>
                                         </div>
-                                        @if ($payment->payment_status != 'paid')
+                                        @if (isset($payment) && $payment->payment_status != 'paid')
                                             <div class="w3-third d-flex align-items-end">
                                                 <a class="float-end btn btn-warning"
                                                     href="{{ route('book.service', ['id' => $bookingdata->service_id, 'booking_id' => $bookingdata->id, 'payment_type' => 'full_payment']) }}"
@@ -417,7 +417,7 @@
                                     @endhasanyrole
                                 @endif
 
-                                @if ($bookingdata->status === 'completed' && $payment->payment_status == 'paid')
+                                @if ($bookingdata->status === 'completed' && isset($payment) && $payment->payment_status == 'paid')
                                     @hasanyrole('handyman')
                                         <div class="w3-third d-flex align-items-end">
                                             <button class="float-end btn btn-primary" id="service-proof-btn"
@@ -431,7 +431,7 @@
                                     @endhasanyrole
                                 @endif
                                 @hasanyrole(['user', 'provider', 'admin'])
-                                    @if ($bookingdata->status === 'completed' && $payment->payment_status == 'paid')
+                                    @if ($bookingdata->status === 'completed' && isset($payment) && $payment->payment_status == 'paid')
                                         <a href="{{ route('invoice_pdf', $bookingdata->id) }}" class="btn btn-primary"
                                             target="_blank">
                                             <i class="ri-file-text-line"></i>
@@ -574,7 +574,7 @@
                                     <div class="card-body">
                                         <p class="opacity-75 fz-12">{{ __('Working Address') }}</p>
                                         <p class="mb-0 text-primary">
-                                             {{ str_replace('_', ' ', ucfirst($payment->payment_status)) }}</p>
+                                             {{ isset($payment) && $payment->payment_status ? str_replace('_', ' ', ucfirst($payment->payment_status)) : __('messages.pending') }}</p>
                                     </div>
                                 </div>
                             </div>
