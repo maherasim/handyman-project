@@ -658,7 +658,7 @@ class BookingController extends Controller
 
 
         $bookingdata = Booking::with('bookingExtraCharge', 'payment', 'service')->myBooking()->find($id);
-
+dd( $bookingdata );
 
         $tabpage = 'info';
         if (empty($bookingdata)) {
