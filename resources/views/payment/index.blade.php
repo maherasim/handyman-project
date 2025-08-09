@@ -154,9 +154,9 @@
                         title: "{{ __('messages.datetime') }}"
                     },
                     {
-                        data: 'handyman_earning',
-                        name: 'handyman_earning',
-                        title: "My Earning"
+                        data: 'total_amount',
+                        name: 'total_amount',
+                        title: "{{ __('messages.total_paid_amount') }}"
                     },
                     @if (auth()->user()->hasAnyRole(['admin']))
                         {
@@ -242,7 +242,7 @@
             }
         });
     </script>
-     @endhasanyrole
+ @endhasanyrole
 @hasanyrole(['handyman'])
    <script>
         document.addEventListener('DOMContentLoaded', (event) => {
@@ -313,10 +313,10 @@
                         name: 'datetime',
                         title: "{{ __('messages.datetime') }}"
                     },
-                    {
-                        data: 'total_amount',
-                        name: 'total_amount',
-                        title: "{{ __('messages.total_paid_amount') }}"
+                     {
+                        data: 'handyman_earning',
+                        name: 'handyman_earning',
+                        title: "My Earning"
                     },
                     @if (auth()->user()->hasAnyRole(['admin']))
                         {
