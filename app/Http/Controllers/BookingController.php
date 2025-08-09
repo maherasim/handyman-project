@@ -658,7 +658,7 @@ class BookingController extends Controller
 
 
         $bookingdata = Booking::with('bookingExtraCharge', 'payment', 'service')->myBooking()->find($id);
-// dd( $bookingdata );
+ 
 
         $tabpage = 'info';
         if (empty($bookingdata)) {
@@ -1016,7 +1016,7 @@ public function bookingAssigned(Request $request)
         $user_id = $auth_user->id;
         $user_data = User::find($user_id);
         $bookingdata = Booking::with('handymanAdded', 'payment', 'bookingExtraCharge', 'bookingAddonService', 'slots',  'service.city','service.country','service', 'bookingRating')->myBooking()->find($id);
-      $advanceservice=  $bookingdata->service->advance_payment_amount;
+       $advanceservice=  $bookingdata->service->advance_payment_amount;
  
         $is_enable_advance_payment = $bookingdata->service->is_enable_advance_payment;
         $serviceProof = ServiceProof::where('booking_id',$id)->get();

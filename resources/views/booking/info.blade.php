@@ -838,31 +838,30 @@
                                 <td class="bk-value">{{ getPriceFormat($grandTotal) }}</td>
                             </tr>
 
-                           @php
-                               $advancePaidAmount = $bookingdata->advance_paid_amount;
-dd($bookingdata->service);
-                            if ($advancePaidAmount <= 0 && isset($bookingdata->service->advance_payment_amount)) {
-                                 
-                                // Get percentage value from service
-                                $advancePercentage = $bookingdata->service->advance_payment_amount;
-                                $advancePaidAmount = ($grandTotal * $advancePercentage) / 100;
-                            }
+                            @php
+                                $advancePaidAmount = $bookingdata->advance_paid_amount;
 
-                            $remainingAmount = $grandTotal - $advancePaidAmount;
-                        @endphp
+                                // Only calculate advance if not already paid
+                                if ($advancePaidAmount <= 0 && isset($advanceservice) && $advanceservice > 0) {
+                                    // $advanceservice is already the percentage (e.g., 50)
+                                    $advancePaidAmount = ($grandTotal * $advanceservice) / 100;
+                                }
+
+                                $remainingAmount = $grandTotal - $advancePaidAmount;
+                            @endphp
                           
                                  <tr>
-                                    <td>{{ __('Advance Payment') }}</td>
-                                    <td class="bk-value">
-                                        {{ getPriceFormat($advancePaidAmount) }}
-                                    </td>
-                                </tr>
-                                <tr class="grand-total">
-                                    <td>{{ __('Remaining Amount') }}</td>
-                                    <td class="bk-value">
-                                        {{ getPriceFormat($remainingAmount) }}
-                                    </td>
-                                </tr>
+                                <td>{{ __('Advance Payment') }}</td>
+                                <td class="bk-value">
+                                    {{ getPriceFormat($advancePaidAmount) }}
+                                </td>
+                            </tr>
+                            <tr class="grand-total">
+                                <td>{{ __('Remaining Amount') }}</td>
+                                <td class="bk-value">
+                                    {{ getPriceFormat($remainingAmount) }}
+                                </td>
+                            </tr>
 
                             {{-- @endif --}}
 
