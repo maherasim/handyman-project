@@ -1374,31 +1374,29 @@
             $(this).closest('.charge-row').remove();
         });
     });
-    $(document).ready(function () {
-        // Handle both update and confirm buttons
-        $('.update-booking, .confirm-booking').on('click', function () {
-            const bookingId = $(this).data('id');
-            const status = $(this).data('status');
-            const confirmMessage = $(this).data('confirm-message');
+   $(document).ready(function () {
+    // Handle all booking status update buttons (including confirm)
+    $(document).on('click', '.update-booking, .confirm-booking', function (e) {
+        e.preventDefault();
+        
+        const bookingId = $(this).data('id');
+        const status = $(this).data('status');
+        const confirmMessage = $(this).data('confirm-message');
+        const isAdvancePaid = $(this).data('advance') === 1;
 
-            // Handle optional data-advance (default to false if not provided)
-            const isAdvancePaid = $(this).data('advance') === 1;
-
-            Swal.fire({
-                title: 'Are you sure?',
-                text: confirmMessage,
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Yes!',
-                cancelButtonText: 'No, cancel'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    updateBookingStatus(bookingId, status, isAdvancePaid);
-                }
-            });
+        Swal.fire({
+            title: 'Are you sure?',
+            text: confirmMessage,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes!',
+            cancelButtonText: 'No, cancel'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                updateBookingStatus(bookingId, status, isAdvancePaid);
+            }
         });
     });
-
 
     let selectedRating = 0;
     let editingReviewId = null;
