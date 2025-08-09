@@ -839,18 +839,13 @@
                             </tr>
 
                            @php
-                               $advancePaidAmount = $bookingdata->service->advance_payment_amount;
-                               dd($bookingdata->service);
-
+                               $advancePaidAmount = $bookingdata->advance_paid_amount;
 
                             if ($advancePaidAmount <= 0 && isset($bookingdata->service->advance_payment_amount)) {
-                               
-                                 dd($bookingdata->service->advance_payment_amount)
+                                 
                                 // Get percentage value from service
                                 $advancePercentage = $bookingdata->service->advance_payment_amount;
-                                dd( $advancePercentage);
                                 $advancePaidAmount = ($grandTotal * $advancePercentage) / 100;
-                                dd( $advancePaidAmount);
                             }
 
                             $remainingAmount = $grandTotal - $advancePaidAmount;
