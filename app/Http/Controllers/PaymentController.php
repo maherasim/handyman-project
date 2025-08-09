@@ -360,7 +360,7 @@ $query = Payment::query()
     ->addColumn('handyman_earning', function($payment) {
         // Optional: eager load in controller for performance
         $earning = optional($payment->handymanEarning)->commission_amount;
-        dd(  $earning );
+        // dd(  $earning );
         return getPriceFormat($earning ?? 0);
     })
 
