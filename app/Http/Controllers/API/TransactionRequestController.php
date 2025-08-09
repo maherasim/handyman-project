@@ -59,7 +59,8 @@ class TransactionRequestController extends Controller
         ];
         $pageTitle = __('messages.Wallet Balance' );
         $assets = ['datatable'];
-        return view('transaction.wallet_balance', compact('pageTitle','assets','filter'));
+        $walletBalance = Wallet::where('user_id', auth()->id())->value('amount') ?? 0;
+        return view('transaction.wallet_balance', compact('pageTitle','assets','filter','walletBalance'));
     }
 
 
