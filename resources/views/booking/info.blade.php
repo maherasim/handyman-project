@@ -464,6 +464,7 @@
                                     </div>
                                 </div>
                             </div>
+                             @hasanyrole(['user', 'provider','admin'])
                             @if (
                                 (isset($payment) && $payment->payment_type === 'bank_transfer' && $payment->status == 1) ||
                                     (isset($payment) && $payment->payment_type !== 'bank_transfer'))
@@ -481,7 +482,7 @@
                                     </div>
                                 </div>
                             @endif
-
+                         @endhasanyrole
 
                             <div class="col-md-4">
                                 <div class="card h-100">
