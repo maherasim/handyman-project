@@ -702,7 +702,7 @@
     @endphp
 
     <!-- billing section -->
-        <!-- billing section -->
+       @hasanyrole(['user', 'provider','admin'])
         <div class="col-md-4">
             <div class="card">
                 <div class="card-body">
@@ -850,6 +850,7 @@
                 </div>
             </div>
         </div>
+        @endhasanyrole
 
     </div>
 
