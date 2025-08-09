@@ -313,7 +313,7 @@
                                         {{ __('Confirm') }}
                                     </button>
                                 </div>
-                                
+
                             @endhasanyrole
                         @endif
 
@@ -1372,6 +1372,30 @@
         // Remove a row
         $(document).on('click', '.remove-charge-row', function () {
             $(this).closest('.charge-row').remove();
+        });
+    });
+    $(document).ready(function () {
+        // Handle both update and confirm buttons
+        $('.update-booking, .confirm-booking').on('click', function () {
+            const bookingId = $(this).data('id');
+            const status = $(this).data('status');
+            const confirmMessage = $(this).data('confirm-message');
+
+            // Handle optional data-advance (default to false if not provided)
+            const isAdvancePaid = $(this).data('advance') === 1;
+
+            Swal.fire({
+                title: 'Are you sure?',
+                text: confirmMessage,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes!',
+                cancelButtonText: 'No, cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    updateBookingStatus(bookingId, status, isAdvancePaid);
+                }
+            });
         });
     });
 
