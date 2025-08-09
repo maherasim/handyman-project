@@ -152,11 +152,13 @@
                         name: 'datetime',
                         title: "{{ __('messages.datetime') }}"
                     },
+                      @if (auth()->user()->hasAnyRole(['admin','provider']))
                     {
                         data: 'total_amount',
                         name: 'total_amount',
                         title: "{{ __('messages.total_paid_amount') }}"
                     },
+                     @endif ()
                     @if (auth()->user()->hasAnyRole(['admin']))
                         {
                             data: 'action',
