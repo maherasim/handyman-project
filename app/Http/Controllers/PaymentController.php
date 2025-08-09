@@ -158,28 +158,6 @@ public function cash_index_data(DataTables $datatable, Request $request)
         ->toJson();
 }
 
- public function handymanEarningsData(DataTables $datatable)
-{
-    $query = CommissionEarning::query()
-        ->where('user_type', 'handyman')
-        ->where('commission_status', 'paid')
-        ->where('user_id', auth()->id()) // Only this handyman
-        ->groupBy('booking_id') // Group by booking
-        ->selectRaw('MAX(id) as id, booking_id, MAX(commission_amount) as commission_amount, MAX(created_at) as created_at');
-
-    return $datatable->eloquent($query)
-        ->addColumn('booking', function($row) {
-            return '<a href="' . route('booking.show', $row->booking_id) . '">#' . $row->booking_id . '</a>';
-        })
-        ->editColumn('commission_amount', function($row) {
-            return getPriceFormat($row->commission_amount);
-        })
-        ->editColumn('created_at', function($row) {
-            return optional($row->created_at)->format('d M Y, h:i A');
-        })
-        ->rawColumns(['booking'])
-        ->toJson();
-}
 
 
 
@@ -269,11 +247,11 @@ public function cash_index_data(DataTables $datatable, Request $request)
             }
             return $payment_status;
         })
-        ->addColumn('handyman_earning', function($payment) {
-            // Optional: eager load in controller for performance
-            $earning = optional($payment->handymanEarning)->commission_amount;
-            return getPriceFormat($earning ?? 0);
-        })
+    ->addColumn('handyman_earning', function($payment) {
+        // Optional: eager load in controller for performance
+        $earning = optional($payment->handymanEarning)->commission_amount;
+        return getPriceFormat($earning ?? 0);
+    })
 
 
         ->editColumn('total_amount', function($query) {
