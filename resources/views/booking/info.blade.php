@@ -392,7 +392,7 @@
                                 @endif
 
                                 @if ($bookingdata->status === 'completed' && $payment->payment_status == 'paid')
-                                    @hasanyrole('provider')
+                                    @hasanyrole('handyman')
                                     <div class="w3-third d-flex align-items-end">
                                         <button class="float-end btn btn-primary" id="service-proof-btn"
                                                 data-id="{{ $bookingdata->id }}"
