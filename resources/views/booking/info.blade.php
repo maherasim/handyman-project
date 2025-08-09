@@ -443,7 +443,7 @@
                                     </div>
                                 </div>
                             </div>
-
+ @hasanyrole(['user', 'provider','admin'])
                             <div class="col-md-4">
                                 <div class="card h-100">
                                     <div class="card-body">
@@ -454,6 +454,7 @@
                                     </div>
                                 </div>
                             </div>
+                            @endhasanyrole
                             <div class="col-md-4">
                                 <div class="card h-100">
                                     <div class="card-body">
@@ -725,14 +726,14 @@
                                 </td>
                             </tr>
 
-                             @hasanyrole(['user', 'provider','admin'])
+                            <!-- Total Amount (Price x Quantity) -->
                             <tr>
                                 <td>{{ __('Total Amount') }}</td>
                                 <td class="bk-value">
                                     {{ getPriceFormat($bookingdata->amount * $bookingdata->quantity) }}
                                 </td>
                             </tr>
-                            @endhasanyrole
+
                             <!-- Discount -->
                             @if ($bookingdata->discount > 0)
                                 <tr>
