@@ -171,7 +171,9 @@
                                 @endif
 
                                 @if ($bookingdata->status === 'accept')
-                                    @if($bookingdata->handymanAdded->isNotEmpty())
+                                        @if($bookingdata->handymanAdded->isNotEmpty() && $bookingdata->handymanAdded->contains(function ($item) {
+        return $item->handyman->id === auth()->id();
+    }))
                                         @hasanyrole(['provider', 'handyman'])
                                         <div class="w3-third">
                                             <button class="float-end btn btn-primary update-booking" id="start-booking"
@@ -208,7 +210,7 @@
                                             </button>
                                         </div>
                                         @endhasanyrole
-                                    @else
+                                    @elseif($bookingdata->handymanAdded->isEmpty())
                                         @hasanyrole('admin|demo_admin|provider')
                                         @if($is_enable_advance_payment == 0 || (isset($bookingdata->payment) && strtolower($bookingdata->payment->payment_status) == 'advanced_paid'))
                                             <div class="w3-third">
