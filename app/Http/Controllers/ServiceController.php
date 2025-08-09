@@ -474,9 +474,9 @@ public function store(ServiceRequest $request)
     } else {
         if ($request->hasFile('service_attachment')) {
             storeMediaFile($result, $request->file('service_attachment'), 'service_attachment');
-        } elseif (!getMediaFileExit($result, 'service_attachment')) {
+        } elseif ($request->id == null && $result->getMedia('service_attachment')->count() === 0) {
             return redirect()->route('service.create', ['id' => $result->id])
-                ->withErrors(['service_attachment' => 'The attachments field is required.'])
+                ->withErrors(['service_attachment' => __('validation.required', ['attribute' => 'attachments'])])
                 ->withInput();
         }
     }

@@ -231,9 +231,9 @@ class ServicePackageController extends Controller
 
             if ($request->hasFile('package_attachment')) {
                 storeMediaFile($result, $request->package_attachment, 'package_attachment');
-            } elseif (!getMediaFileExit($result, 'package_attachment')) {
+            } elseif ($request->id == null && $result->getMedia('package_attachment')->count() === 0) {
                 return redirect()->route('servicepackage.create', ['id' => $result->id])
-                ->withErrors(['package_attachment' => 'The attachments field is required.'])
+                ->withErrors(['package_attachment' => __('validation.required', ['attribute' => 'attachments'])])
                 ->withInput();
             }	
         }
