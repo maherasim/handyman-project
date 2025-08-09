@@ -233,6 +233,8 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
     });
 
     Route::resource('payment', PaymentController::class);
+     
+    Route::get('/handyman/earnings-data', [CommissionEarningController::class, 'handymanEarningsData'])->name('handyman.earnings.data');
     Route::get('cash-payment-list', [PaymentController::class, 'cashDatatable'])->name('cash.list');
     Route::get('cash-index-data', [PaymentController::class, 'cash_index_data'])->name('cash.index_data');
     Route::get('payment-index-data', [PaymentController::class, 'index_data'])->name('payment.index_data');
