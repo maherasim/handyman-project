@@ -283,67 +283,7 @@
                
             });
         });
-
-
-        $(document).ready(function() {
-            $('#statusSelect').change(function() {
-                var selectedValue = $(this).val();
-                var selectedOption = $('#statusSelect option:selected');
-                var route = selectedOption.data('route');
-
-                if (selectedValue === 'cash' && route) {
-                    window.location.href = route;
-                }
-                window.location.href = route;
-            });
-        });
-
-        function resetQuickAction() {
-            const actionValue = $('#quick-action-type').val();
-            console.log(actionValue)
-            if (actionValue != '') {
-                $('#quick-action-apply').removeAttr('disabled');
-
-                if (actionValue == 'change-status') {
-                    $('.quick-action-field').addClass('d-none');
-                    $('#change-status-action').removeClass('d-none');
-                } else {
-                    $('.quick-action-field').addClass('d-none');
-                }
-            } else {
-                $('#quick-action-apply').attr('disabled', true);
-                $('.quick-action-field').addClass('d-none');
-            }
-        }
-
-        $('#quick-action-type').change(function() {
-            resetQuickAction()
-        });
-
-        $(document).on('update_quick_action', function() {
-
-        })
-
-        $(document).on('click', '[data-ajax="true"]', function(e) {
-            e.preventDefault();
-            const button = $(this);
-            const confirmation = button.data('confirmation');
-
-            if (confirmation === 'true') {
-                const message = button.data('message');
-                if (confirm(message)) {
-                    const submitUrl = button.data('submit');
-                    const form = button.closest('form');
-                    form.attr('action', submitUrl);
-                    form.submit();
-                }
-            } else {
-                const submitUrl = button.data('submit');
-                const form = button.closest('form');
-                form.attr('action', submitUrl);
-                form.submit();
-            }
-        });
+ 
     </script>
     @endif
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
