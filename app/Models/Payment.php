@@ -25,6 +25,16 @@ class Payment extends Model
     public function booking(){
         return $this->belongsTo(Booking::class,'booking_id', 'id')->withTrashed();
     }
+    public function commissionEarnings()
+{
+    return $this->hasMany(CommissionEarning::class, 'booking_id', 'booking_id');
+}
+public function handymanEarning()
+{
+    return $this->hasOne(CommissionEarning::class, 'booking_id', 'booking_id')
+                ->where('user_type', 'handyman');
+}
+
     public function scopeMyPayment($query)
     {
         $user = auth()->user();

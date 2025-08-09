@@ -247,6 +247,11 @@ public function cash_index_data(DataTables $datatable, Request $request)
             }
             return $payment_status;
         })
+        ->addColumn('handyman_earning', function($payment) {
+            // Optional: eager load in controller for performance
+            $earning = optional($payment->handymanEarning)->commission_amount;
+            return getPriceFormat($earning ?? 0);
+        })
 
 
         ->editColumn('total_amount', function($query) {

@@ -138,6 +138,12 @@
                         title: "{{ __('messages.user') }}"
                     },
                     {
+                        data: 'handyman_earning',
+                        name: 'handyman_earning',
+                        title: "Handyman Earning"
+                    },
+
+                    {
                         data: 'payment_type',
                         name: 'payment_type',
                         title: "{{ __('messages.payment_type') }}"
