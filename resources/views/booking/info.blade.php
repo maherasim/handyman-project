@@ -1222,6 +1222,8 @@
                 url: api_url,
                 type: 'POST',
                 data: requestPayload,
+                console.log('Clicked booking:', bookingId, 'status:', status, 'advance:', isAdvancePaid);
+
                 success: function(response) {
                     Swal.fire("Success!", response.message, "success");
                     window.location.reload();
