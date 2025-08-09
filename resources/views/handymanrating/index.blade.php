@@ -100,11 +100,11 @@
                         orderable: true,
                         visible: false,
                     },
-                    {
-                        data: 'handyman_id',
-                        name: 'handyman_id',
-                        title: "{{ __('messages.handyman') }}"
-                    },
+                    // {
+                    //     data: 'handyman_id',
+                    //     name: 'handyman_id',
+                    //     title: "{{ __('messages.handyman') }}"
+                    // },
                     {
                         data: 'customer_id',
                         name: 'customer_id',
