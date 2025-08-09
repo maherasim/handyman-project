@@ -725,14 +725,14 @@
                                 </td>
                             </tr>
 
-                            <!-- Total Amount (Price x Quantity) -->
+                             @hasanyrole(['user', 'provider','admin'])
                             <tr>
                                 <td>{{ __('Total Amount') }}</td>
                                 <td class="bk-value">
                                     {{ getPriceFormat($bookingdata->amount * $bookingdata->quantity) }}
                                 </td>
                             </tr>
-
+                            @endhasanyrole
                             <!-- Discount -->
                             @if ($bookingdata->discount > 0)
                                 <tr>
