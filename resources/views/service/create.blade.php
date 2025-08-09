@@ -93,7 +93,7 @@
 
 
                             <input type="hidden" name="tax_country_id" id="tax_country_id"
-                                value="{{ old('tax_country_id', optional($servicedata->tax_country)->id) }}">
+                                value="{{ old('tax_country_id', $servicedata->tax_country_id) }}">
 
 
 
@@ -676,13 +676,15 @@
 
                     // Function to set tax country (hidden input)
                     function setTaxCountry(id, name) {
-                        if (!id || !name) return;
-                        // Set hidden input value
+                        if (!id) return;
+                        // Always set hidden input value so it is submitted
                         $('#tax_country_id').val(id).trigger('change');
-                        // Set display select option
-                        $('#tax_country_id_display').empty()
-                            .append(new Option(name, id, true, true))
-                            .trigger('change');
+                        // Only update the disabled display if we have a name
+                        if (name) {
+                            $('#tax_country_id_display').empty()
+                                .append(new Option(name, id, true, true))
+                                .trigger('change');
+                        }
                     }
 
                     // Function to get States by country
