@@ -406,7 +406,8 @@
 
                                 @endif
 
-                                @if ($bookingdata->payment_id !== null)
+                          @if ($bookingdata->status === 'completed' && $payment->payment_status == 'paid')
+
                                     <a href="{{ route('invoice_pdf', $bookingdata->id) }}" class="btn btn-primary"
                                        target="_blank">
                                         <i class="ri-file-text-line"></i>
