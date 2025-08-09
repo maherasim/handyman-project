@@ -447,11 +447,7 @@
                         priceformat(price_type);
                     })
 
-                    $(document).on('change', '#country_id', function() {
-                        var country = $(this).val();
-                        $('#city_id').empty();
-                        cityName(country);
-                    })
+
 
                     $(document).on('change', '#city_id', function() {
                         var city = $(this).val();
@@ -617,6 +613,7 @@
                         "{{ isset($servicedata->tax_country_id) ? $servicedata->tax_country_id : '' }}";
                     var state_id = "{{ isset($servicedata->state_id) ? $servicedata->state_id : '' }}";
                     var city_id = "{{ isset($servicedata->city_id) ? $servicedata->city_id : '' }}";
+                    var initialCityId = city_id;
                     var category_id = "{{ isset($servicedata->category_id) ? $servicedata->category_id : '' }}";
                     var subcategory_id =
                         "{{ isset($servicedata->subcategory_id) ? $servicedata->subcategory_id : '' }}";
@@ -629,7 +626,6 @@
 
                     // Load dependent dropdown data on page load
                     getStates(country_id, state_id);
-                    getCities(state_id, city_id);
                     getSubCategory(category_id, subcategory_id);
 
                     // Initialize tax_country_id_display and hidden tax_country_id inputs
@@ -668,7 +664,8 @@
                     // When state changes
                     $(document).on('change', '#state_id', function() {
                         var selectedStateId = $(this).val();
-                        getCities(selectedStateId, '');
+                        getCities(selectedStateId, initialCityId || '');
+                        initialCityId = '';
                     });
 
                     // When category changes
