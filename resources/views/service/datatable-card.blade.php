@@ -40,18 +40,8 @@
       @if($data->visit_type == 'ONLINE')
          <span class="online-service"></span>
       @endif
-      @php
-          // Prefer the first media from the service_attachment collection
-          $firstImageUrl = method_exists($data, 'getFirstMediaUrl') ? $data->getFirstMediaUrl('service_attachment') : null;
-          if (empty($firstImageUrl)) {
-              // Fallback to helper if available
-              $firstImageUrl = getSingleMedia($data, 'service_attachment', null);
-          }
-          // Final fallback placeholder
-          $firstImageUrl = $firstImageUrl ?: asset('images/placeholder-image.png');
-      @endphp
       <a href="{{ route('service.detail', $data->id) }}" class="service-img">
-         <img src="{{ $firstImageUrl }}" alt="service image"
+         <img src="{{ getSingleMedia($data,'service_attachment', false) }}" alt="service image"
          class="service-asim w-100 object-cover img-fluid rounded-3"> 
       </a>
 
