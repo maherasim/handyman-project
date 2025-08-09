@@ -277,7 +277,7 @@
                                 @endif
 
                                 @if ($bookingdata->status === 'in_progress')
-                                    @hasanyrole('user')
+                                      @hasanyrole(['user', 'handyman'])
                                     <div class="w3-third">
                                         <button class="float-end btn btn-warning hold-booking"
                                                 data-id="{{ $bookingdata->id }}"
