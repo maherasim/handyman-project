@@ -302,7 +302,7 @@
                                 @endif
 
                                 @if ($bookingdata->status === 'hold')
-                                    @hasanyrole(['provider', 'handyman'])
+                                    @hasanyrole(['user', 'handyman'])
                                     <div class="w3-third d-flex align-items-end">
                                         <p><span class="text-danger font-size-14" style="font-weight: 700">Hold Reason
                                                     :</span> {{ $bookingdata->reason }}
