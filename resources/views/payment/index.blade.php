@@ -137,11 +137,13 @@
                         name: 'customer_id',
                         title: "{{ __('messages.user') }}"
                     },
+                    @if (auth()->user()->hasAnyRole(['handyman']))
                     {
                         data: 'handyman_earning',
                         name: 'handyman_earning',
                         title: "Handyman Earning"
                     },
+                    @endif()
 
                     {
                         data: 'payment_type',
