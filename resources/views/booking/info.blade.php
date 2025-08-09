@@ -357,7 +357,7 @@
                                     @endhasanyrole
                                 @endif
 
-                                @if ($bookingdata->status === 'pending_approval')
+                                @if ($bookingdata->status === 'confirm')
                                     @hasanyrole(['handyman'])
                                     <div class="w3-third">
                                         <button class="float-end btn btn-success update-booking"
@@ -383,7 +383,7 @@
                                     @hasanyrole('user')
                                     <div class="w3-third d-flex align-items-end">
                                         <p><span class="text-info font-size-14" style="font-weight: 700">Waiting for
-                                                    response by Handyman</span>
+                                                    response </span>
                                         </p>
                                     </div>
                                     @endhasanyrole
