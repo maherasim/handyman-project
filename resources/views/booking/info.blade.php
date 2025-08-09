@@ -537,7 +537,7 @@
                                     @endphp
 
                                     <div class="card-body" style="{{ $cardStyle }}">
-                                        <p class="fz-12 {{ $isPaid ? 'text-dark' : 'opacity-75' }}">
+                                        <p class="fz-12 {{ $isPaid ? 'text-white' : 'opacity-75' }}">
                                             {{ __('messages.payment_status') }}
                                         </p>
 
@@ -548,11 +548,13 @@
                                         @elseif (isset($payment) && $payment->payment_status)
                                             @php
                                                 $statusClass = match ($payment->payment_status) {
-                                                    'paid', 'advanced_paid' => 'text-white fw-bold',
+                                                    'paid' => 'text-white fw-bold',
+                                                    'advanced_paid' => 'text-dark fw-bold', // Change here
                                                     'Advanced Refund' => 'text-warning',
                                                     default => 'text-danger',
                                                 };
                                             @endphp
+
                                             <p class="mb-0 {{ $statusClass }}">
                                                 {{ str_replace('_', ' ', ucfirst($payment->payment_status)) }}
                                             </p>
