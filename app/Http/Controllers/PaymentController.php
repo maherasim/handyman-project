@@ -308,7 +308,7 @@ $query = Payment::query()
             $query->orderBy('payments.booking_id', $order);  
         })
         ->addColumn('handyman_earning', function($payment) {        
-        $amount = optional($payment->handymanEarning)->commission_amount;
+        $amount = optional($payment->handymanEarnings)->commission_amount;
         return getPriceFormat($amount ?? 0);
     })
 
