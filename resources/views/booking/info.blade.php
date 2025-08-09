@@ -6,128 +6,128 @@
 <table class="table-sm title-color align-right w-100" style="display: none;">
 
     <tbody>
-    <!-- Unit Price -->
-    <tr>
-        <td>{{ __('Price (Unit Price)') }}</td>
-        <td class="bk-value">
-            {{ getPriceFormat($bookingdata->amount) }}
-        </td>
-    </tr>
-
-    <!-- Quantity -->
-    <tr>
-        <td>{{ __('Quantity (Nbr of Packages, Hours, Days)') }}</td>
-        <td class="bk-value">
-            {{ $bookingdata->quantity }}
-        </td>
-    </tr>
-
-    <!-- Total Amount (Price x Quantity) -->
-    <tr>
-        <td>{{ __('Total Amount') }}</td>
-        <td class="bk-value">
-            {{ getPriceFormat($bookingdata->amount * $bookingdata->quantity) }}
-        </td>
-    </tr>
-
-    <!-- Discount -->
-    @if ($bookingdata->discount > 0)
+        <!-- Unit Price -->
         <tr>
-            <td>{{ __('Discount') }} ({{ $bookingdata->discount }}% off)</td>
-            <td class="bk-value text-success">
-                -{{ getPriceFormat($bookingdata->final_discount_amount) }}
+            <td>{{ __('Price (Unit Price)') }}</td>
+            <td class="bk-value">
+                {{ getPriceFormat($bookingdata->amount) }}
             </td>
         </tr>
-    @endif
 
-    <!-- Coupon -->
-    @if ($bookingdata->couponAdded)
+        <!-- Quantity -->
         <tr>
-            <td>{{ __('Coupon') }} ({{ $bookingdata->couponAdded->code }})</td>
-            <td class="bk-value text-success">
-                -{{ getPriceFormat($bookingdata->final_coupon_discount_amount) }}
+            <td>{{ __('Quantity (Nbr of Packages, Hours, Days)') }}</td>
+            <td class="bk-value">
+                {{ $bookingdata->quantity }}
             </td>
         </tr>
-    @endif
 
-    <!-- Sub Total -->
-    @php
-        $subTotal = $bookingdata->amount * $bookingdata->quantity;
-        if ($bookingdata->discount > 0) {
-            $subTotal -= $bookingdata->final_discount_amount;
-        }
-        if ($bookingdata->couponAdded) {
-            $subTotal -= $bookingdata->final_coupon_discount_amount;
-        }
-    @endphp
-    <tr class="grand-sub-total">
-        <td>{{ __('Sub Total') }}</td>
-        <td class="bk-value">{{ getPriceFormat($subTotal) }}</td>
-    </tr>
+        <!-- Total Amount (Price x Quantity) -->
+        <tr>
+            <td>{{ __('Total Amount') }}</td>
+            <td class="bk-value">
+                {{ getPriceFormat($bookingdata->amount * $bookingdata->quantity) }}
+            </td>
+        </tr>
 
-    <!-- Extra Charges -->
-    <tr>
-        <td>{{ __('Extra Charges') }}</td>
-        <td class="bk-value">
-            {{ getPriceFormat($bookingdata->extra_charges) }}
-        </td>
-    </tr>
+        <!-- Discount -->
+        @if ($bookingdata->discount > 0)
+            <tr>
+                <td>{{ __('Discount') }} ({{ $bookingdata->discount }}% off)</td>
+                <td class="bk-value text-success">
+                    -{{ getPriceFormat($bookingdata->final_discount_amount) }}
+                </td>
+            </tr>
+        @endif
 
-    <!-- Total (Sub Total + Extra Charges) -->
-    @php
-        $totalWithExtras = $subTotal + $bookingdata->extra_charges;
-    @endphp
-    <tr>
-        <td>{{ __('Total') }}</td>
-        <td class="bk-value">{{ getPriceFormat($totalWithExtras) }}</td>
-    </tr>
+        <!-- Coupon -->
+        @if ($bookingdata->couponAdded)
+            <tr>
+                <td>{{ __('Coupon') }} ({{ $bookingdata->couponAdded->code }})</td>
+                <td class="bk-value text-success">
+                    -{{ getPriceFormat($bookingdata->final_coupon_discount_amount) }}
+                </td>
+            </tr>
+        @endif
 
-    <!-- Taxes -->
-    @php
-        // Get the tax_country_id from the service
-        $serviceTaxId = $bookingdata->service->tax_country_id ?? null;
+        <!-- Sub Total -->
+        @php
+            $subTotal = $bookingdata->amount * $bookingdata->quantity;
+            if ($bookingdata->discount > 0) {
+                $subTotal -= $bookingdata->final_discount_amount;
+            }
+            if ($bookingdata->couponAdded) {
+                $subTotal -= $bookingdata->final_coupon_discount_amount;
+            }
+        @endphp
+        <tr class="grand-sub-total">
+            <td>{{ __('Sub Total') }}</td>
+            <td class="bk-value">{{ getPriceFormat($subTotal) }}</td>
+        </tr>
 
-        // Initialize tax rate
-        $taxRate = 0;
+        <!-- Extra Charges -->
+        <tr>
+            <td>{{ __('Extra Charges') }}</td>
+            <td class="bk-value">
+                {{ getPriceFormat($bookingdata->extra_charges) }}
+            </td>
+        </tr>
 
-        // Look up tax rate from the taxes table using the service's tax_country_id
-        if ($serviceTaxId) {
-            $tax = \App\Models\Tax::find($serviceTaxId);
-            $taxRate = $tax->value ?? 0;
-        }
-        //dd($taxRate);
-        // Calculate tax amount
-        $taxAmount = ($totalWithExtras * $taxRate) / 100;
-    @endphp
-    <tr>
-        <td>{{ __('Tax') }} ({{ $taxRate }}%)</td>
-        <td class="bk-value text-danger">{{ getPriceFormat($taxAmount) }}</td>
-    </tr>
+        <!-- Total (Sub Total + Extra Charges) -->
+        @php
+            $totalWithExtras = $subTotal + $bookingdata->extra_charges;
+        @endphp
+        <tr>
+            <td>{{ __('Total') }}</td>
+            <td class="bk-value">{{ getPriceFormat($totalWithExtras) }}</td>
+        </tr>
 
-    <!-- Grand Total (Total + Taxes) -->
-    @php
-        $grandTotal = $totalWithExtras + $taxAmount;
-    @endphp
-    <tr>
-        <td>{{ __('Grand Total') }}</td>
-        <td class="bk-value">{{ getPriceFormat($grandTotal) }}</td>
-    </tr>
+        <!-- Taxes -->
+        @php
+            // Get the tax_country_id from the service
+            $serviceTaxId = $bookingdata->service->tax_country_id ?? null;
 
-    <!-- Advance Payment -->
-    <tr>
-        <td>{{ __('Advance Payment') }}</td>
-        <td class="bk-value">
-            {{ getPriceFormat($bookingdata->advance_paid_amount) }}
-        </td>
-    </tr>
+            // Initialize tax rate
+            $taxRate = 0;
 
-    <!-- Remaining Amount (Grand Total - Advance Payment) -->
-    <tr class="grand-total">
-        <td>{{ __('Remaining Amount') }}</td>
-        <td class="bk-value">
-            {{ getPriceFormat($grandTotal - $bookingdata->advance_paid_amount) }}
-        </td>
-    </tr>
+            // Look up tax rate from the taxes table using the service's tax_country_id
+            if ($serviceTaxId) {
+                $tax = \App\Models\Tax::find($serviceTaxId);
+                $taxRate = $tax->value ?? 0;
+            }
+            //dd($taxRate);
+            // Calculate tax amount
+            $taxAmount = ($totalWithExtras * $taxRate) / 100;
+        @endphp
+        <tr>
+            <td>{{ __('Tax') }} ({{ $taxRate }}%)</td>
+            <td class="bk-value text-danger">{{ getPriceFormat($taxAmount) }}</td>
+        </tr>
+
+        <!-- Grand Total (Total + Taxes) -->
+        @php
+            $grandTotal = $totalWithExtras + $taxAmount;
+        @endphp
+        <tr>
+            <td>{{ __('Grand Total') }}</td>
+            <td class="bk-value">{{ getPriceFormat($grandTotal) }}</td>
+        </tr>
+
+        <!-- Advance Payment -->
+        <tr>
+            <td>{{ __('Advance Payment') }}</td>
+            <td class="bk-value">
+                {{ getPriceFormat($bookingdata->advance_paid_amount) }}
+            </td>
+        </tr>
+
+        <!-- Remaining Amount (Grand Total - Advance Payment) -->
+        <tr class="grand-total">
+            <td>{{ __('Remaining Amount') }}</td>
+            <td class="bk-value">
+                {{ getPriceFormat($grandTotal - $bookingdata->advance_paid_amount) }}
+            </td>
+        </tr>
     </tbody>
 </table>
 <div class="container-fluid">
@@ -147,46 +147,47 @@
 
                                 @if ($bookingdata->status === 'pending')
                                     @hasanyrole('admin|demo_admin|provider')
-                                    <div class="w3-third">
-                                        <button class="float-end btn btn-primary update-booking"
+                                        <div class="w3-third">
+                                            <button class="float-end btn btn-primary update-booking"
                                                 data-id="{{ $bookingdata->id }}"
                                                 data-handyman-id="{{ $bookingdata->provider_id }}" data-status="accept"
                                                 data-confirm-message="You want to accept this booking?">
-                                            <i class="las la-play-circle"></i>
-                                            {{ __('messages.accept_booking') }}
-                                        </button>
-                                    </div>
+                                                <i class="las la-play-circle"></i>
+                                                {{ __('messages.accept_booking') }}
+                                            </button>
+                                        </div>
 
-                                    <div class="w3-third">
-                                        <button class="float-end btn btn-primary update-booking" id="cancel-booking"
+                                        <div class="w3-third">
+                                            <button class="float-end btn btn-primary update-booking" id="cancel-booking"
                                                 data-id="{{ $bookingdata->id }}"
-                                                data-handyman-id="{{ $bookingdata->provider_id }}"
-                                                data-status="cancelled"
+                                                data-handyman-id="{{ $bookingdata->provider_id }}" data-status="cancelled"
                                                 data-confirm-message="You want to cancelled this booking?">
-                                            <i class="las la-ban"></i>
-                                            {{ __('messages.cancel') }}
-                                        </button>
-                                    </div>
+                                                <i class="las la-ban"></i>
+                                                {{ __('messages.cancel') }}
+                                            </button>
+                                        </div>
                                     @endhasanyrole
                                 @endif
 
                                 @if ($bookingdata->status === 'accept')
-                                        @if($bookingdata->handymanAdded->isNotEmpty() && $bookingdata->handymanAdded->contains(function ($item) {
-        return $item->handyman->id === auth()->id();
-    }))
+                                    @if (
+                                        $bookingdata->handymanAdded->isNotEmpty() &&
+                                            $bookingdata->handymanAdded->contains(function ($item) {
+                                                return $item->handyman->id === auth()->id();
+                                            }))
                                         @hasanyrole(['provider', 'handyman'])
-                                        <div class="w3-third">
-                                            <button class="float-end btn btn-primary update-booking" id="start-booking"
+                                            <div class="w3-third">
+                                                <button class="float-end btn btn-primary update-booking" id="start-booking"
                                                     data-id="{{ $bookingdata->id }}"
                                                     data-handyman-id="{{ $bookingdata->provider_id }}"
                                                     data-status="on_going"
                                                     data-confirm-message="You want to start this booking?">
-                                                <i class="las la-play-circle"></i>
-                                                {{ __('Start Work') }}
-                                            </button>
-                                        </div>
+                                                    <i class="las la-play-circle"></i>
+                                                    {{ __('Start Work') }}
+                                                </button>
+                                            </div>
 
-                                        {{-- <div class="w3-third">
+                                            {{-- <div class="w3-third">
                                             <button class="float-end btn btn-danger update-booking" id="reject-booking"
                                                     data-id="{{ $bookingdata->id }}"
                                                     data-handyman-id="{{ $bookingdata->provider_id }}"
@@ -199,21 +200,23 @@
                                         @endhasanyrole
 
                                         @hasanyrole('user')
-                                        <div class="w3-third">
-                                            <button class="float-end btn btn-primary update-booking" id="cancel-booking"
+                                            <div class="w3-third">
+                                                <button class="float-end btn btn-primary update-booking" id="cancel-booking"
                                                     data-id="{{ $bookingdata->id }}"
                                                     data-handyman-id="{{ $bookingdata->provider_id }}"
                                                     data-status="cancelled"
                                                     data-confirm-message="You want to cancelled this booking?">
-                                                <i class="las la-ban"></i>
-                                                {{ __('messages.cancel') }}
-                                            </button>
-                                        </div>
+                                                    <i class="las la-ban"></i>
+                                                    {{ __('messages.cancel') }}
+                                                </button>
+                                            </div>
                                         @endhasanyrole
                                     @elseif($bookingdata->handymanAdded->isEmpty())
                                         @hasanyrole('admin|demo_admin|provider')
-                                        @if($is_enable_advance_payment == 0 || (isset($bookingdata->payment) && strtolower($bookingdata->payment->payment_status) == 'advanced_paid'))
-                                            {{-- <div class="w3-third">
+                                            @if (
+                                                $is_enable_advance_payment == 0 ||
+                                                    (isset($bookingdata->payment) && strtolower($bookingdata->payment->payment_status) == 'advanced_paid'))
+                                                {{-- <div class="w3-third">
                                                 <button class="float-end btn btn-primary" id="assign-provider"
                                                         data-id="{{ $bookingdata->id }}"
                                                         data-handyman-id="{{ $bookingdata->provider_id }}">
@@ -222,100 +225,101 @@
                                                 </button>
                                             </div> --}}
 
-                                            <div class="w3-third">
-                                                <a href="{{ route('booking.assign_form', ['id' => $bookingdata->id]) }}"
-                                                   class="float-end btn btn-primary loadRemoteModel">
-                                                    <i class="lab la-telegram-plane"></i>
-                                                    {{ __('messages.assign_handyman') }}
-                                                </a>
-                                            </div>
-                                        @else
-                                            <div class="w3-third d-flex align-items-end">
-                                                <p><span class="text-info font-size-14" style="font-weight: 700">Waiting for
-                                                    client advance pay</span>
-                                                </p>
-                                            </div>
-                                        @endif
+                                                <div class="w3-third">
+                                                    <a href="{{ route('booking.assign_form', ['id' => $bookingdata->id]) }}"
+                                                        class="float-end btn btn-primary loadRemoteModel">
+                                                        <i class="lab la-telegram-plane"></i>
+                                                        {{ __('messages.assign_handyman') }}
+                                                    </a>
+                                                </div>
+                                            @else
+                                                <div class="w3-third d-flex align-items-end">
+                                                    <p><span class="text-info font-size-14" style="font-weight: 700">Waiting
+                                                            for
+                                                            client advance pay</span>
+                                                    </p>
+                                                </div>
+                                            @endif
                                         @endhasanyrole
 
                                         @hasanyrole('user')
-                                        @if(!isset($bookingdata->payment) && $is_enable_advance_payment == 1)
-                                            <div class="w3-third">
-                                                <a class="float-end btn btn-primary"
-                                                   href="{{ route('book.service', ['id' => $bookingdata->service_id, 'booking_id' => $bookingdata->id, 'payment_type' => 'advance_paid']) }}"
-                                                   target="_blank" data-id="{{ $bookingdata->id }}">
-                                                    <i class="las la-credit-card"></i>
-                                                    {{ __('messages.advance_pay') }}
-                                                </a>
-                                            </div>
-                                        @endif
+                                            @if (!isset($bookingdata->payment) && $is_enable_advance_payment == 1)
+                                                <div class="w3-third">
+                                                    <a class="float-end btn btn-primary"
+                                                        href="{{ route('book.service', ['id' => $bookingdata->service_id, 'booking_id' => $bookingdata->id, 'payment_type' => 'advance_paid']) }}"
+                                                        target="_blank" data-id="{{ $bookingdata->id }}">
+                                                        <i class="las la-credit-card"></i>
+                                                        {{ __('messages.advance_pay') }}
+                                                    </a>
+                                                </div>
+                                            @endif
                                         @endhasanyrole
                                     @endif
                                 @endif
 
                                 @if ($bookingdata->status === 'on_going')
                                     @hasanyrole(['provider', 'handyman'])
-                                    <div class="w3-third d-flex align-items-end">
-                                        <p><span class="text-info font-size-14" style="font-weight: 700">Waiting for
+                                        <div class="w3-third d-flex align-items-end">
+                                            <p><span class="text-info font-size-14" style="font-weight: 700">Waiting for
                                                     response by customer</span>
-                                        </p>
-                                    </div>
+                                            </p>
+                                        </div>
                                     @endhasanyrole
 
                                     @hasanyrole('user')
-                                    <div class="w3-third">
-                                        <button class="float-end btn btn-primary update-booking"
+                                        <div class="w3-third">
+                                            <button class="float-end btn btn-primary update-booking"
                                                 data-id="{{ $bookingdata->id }}"
                                                 data-handyman-id="{{ $bookingdata->provider_id }}"
                                                 data-status="in_progress"
                                                 data-confirm-message="You want to start this booking?">
-                                            <i class="las la-play-circle"></i>
-                                            {{ __('messages.start') }}
-                                        </button>
-                                    </div>
+                                                <i class="las la-play-circle"></i>
+                                                {{ __('messages.start') }}
+                                            </button>
+                                        </div>
                                     @endhasanyrole
                                 @endif
 
                                 @if ($bookingdata->status === 'in_progress')
-                                      @hasanyrole(['user', 'handyman'])
-                                    <div class="w3-third">
-                                        <button class="float-end btn btn-warning hold-booking"
+                                    @hasanyrole(['user', 'handyman'])
+                                        <div class="w3-third">
+                                            <button class="float-end btn btn-warning hold-booking"
                                                 data-id="{{ $bookingdata->id }}"
-                                                data-handyman-id="{{ $bookingdata->provider_id }}"
-                                                data-status="hold"
+                                                data-handyman-id="{{ $bookingdata->provider_id }}" data-status="hold"
                                                 data-confirm-message="You want to start this booking?">
-                                            <i class="las la-pause-circle"></i>
-                                            {{ __('messages.hold') }}
-                                        </button>
-                                    </div>
-                                    <div class="w3-third">
-                                        <button class="float-end btn btn-primary update-booking"
+                                                <i class="las la-pause-circle"></i>
+                                                {{ __('messages.hold') }}
+                                            </button>
+                                        </div>
+                                        <div class="w3-third">
+                                            <button class="float-end btn btn-primary update-booking"
                                                 data-id="{{ $bookingdata->id }}"
                                                 data-handyman-id="{{ $bookingdata->provider_id }}"
                                                 data-status="pending_approval"
                                                 data-confirm-message="You want to end this booking?">
-                                            <i class="las la-check-circle"></i>
-                                            {{ __('messages.done') }}
-                                        </button>
-                                    </div>
+                                                <i class="las la-check-circle"></i>
+                                                {{ __('messages.done') }}
+                                            </button>
+                                        </div>
                                     @endhasanyrole
                                 @endif
 
-                          @if ($bookingdata->status === 'pending_approval')
-                            @hasanyrole(['user'])
-                                <div class="w3-third">
-                                     <button class="float-end btn btn-success confirm-booking"
-                                        data-id="{{ $bookingdata->id }}"
-                                        data-handyman-id="{{ $bookingdata->provider_id }}"
-                                        data-status="confirm"
-                                        data-confirm-message="You want to Confirm this booking?">
-                                    <i class="las la-check-circle"></i>
-                                    {{ __('Confirm') }}
-                                </button>
-                                </div>
+                                @if ($bookingdata->status === 'pending_approval')
+                                    @hasanyrole(['user'])
+                                        <div class="w3-third">
+                                             <button class="float-end btn btn-success confirm-booking"
+                                                data-id="{{ $bookingdata->id }}"
+                                                data-handyman-id="{{ $bookingdata->provider_id }}"
+                                                data-status="confirm"
+                                                data-advance="{{ $bookingdata->is_advance_paid ? 1 : 0 }}"
+                                                data-confirm-message="You want to Confirm this booking?">
+                                                <i class="las la-check-circle"></i>
+                                                {{ __('Confirm') }}
+                                            </button>
 
-                            @endhasanyrole
-                        @endif
+                                        </div>
+                                    @endhasanyrole
+                                @endif
 
 
 
@@ -335,109 +339,104 @@
 
                                 @if ($bookingdata->status === 'hold')
                                     @hasanyrole(['user', 'handyman'])
-                                    <div class="w3-third d-flex align-items-end">
-                                        <p><span class="text-danger font-size-14" style="font-weight: 700">Hold Reason
+                                        <div class="w3-third d-flex align-items-end">
+                                            <p><span class="text-danger font-size-14" style="font-weight: 700">Hold Reason
                                                     :</span> {{ $bookingdata->reason }}
-                                        </p>
-                                    </div>
+                                            </p>
+                                        </div>
                                     @endhasanyrole
 
                                     @hasanyrole(['user', 'handyman'])
-                                    <div class="w3-third">
-                                        <button class="float-end btn btn-primary update-booking"
+                                        <div class="w3-third">
+                                            <button class="float-end btn btn-primary update-booking"
                                                 data-id="{{ $bookingdata->id }}"
                                                 data-handyman-id="{{ $bookingdata->provider_id }}"
                                                 data-status="in_progress"
                                                 data-confirm-message="Are you sure you want to resume this booking?">
-                                            <i class="las la-play"></i>
-                                            {{ __('messages.resume') }}
-                                        </button>
-                                    </div>
-
-                                    
+                                                <i class="las la-play"></i>
+                                                {{ __('messages.resume') }}
+                                            </button>
+                                        </div>
                                     @endhasanyrole
                                 @endif
 
                                 @if ($bookingdata->status === 'confirm')
                                     @hasanyrole(['handyman'])
-                                    <div class="w3-third">
-                                        <button class="float-end btn btn-success update-booking"
+                                        <div class="w3-third">
+                                            <button class="float-end btn btn-success update-booking"
                                                 data-id="{{ $bookingdata->id }}"
                                                 data-handyman-id="{{ $bookingdata->provider_id }}"
                                                 data-status="completed"
                                                 data-confirm-message="Are you sure you want to complete this booking?">
-                                            <i class="las la--check-circle"></i>
-                                            {{ __('messages.completed') }}
-                                        </button>
-                                    </div>
+                                                <i class="las la--check-circle"></i>
+                                                {{ __('messages.completed') }}
+                                            </button>
+                                        </div>
 
-                                    <button class="float-end btn btn-success" id="complete-booking"
+                                        <button class="float-end btn btn-success" id="complete-booking"
                                             data-id="{{ $bookingdata->id }}"
-                                            data-handyman-id="{{ $bookingdata->provider_id }}"
-                                            data-status="cancelled"
+                                            data-handyman-id="{{ $bookingdata->provider_id }}" data-status="cancelled"
                                             data-confirm-message="Are you sure you want to cancel this booking?">
-                                        <i class="las la-file-invoice-dollar"></i>
-                                        {{ __('messages.add_extra_charges') }}
-                                    </button>
+                                            <i class="las la-file-invoice-dollar"></i>
+                                            {{ __('messages.add_extra_charges') }}
+                                        </button>
                                     @endhasanyrole
 
                                     @hasanyrole('user')
-                                    <div class="w3-third d-flex align-items-end">
-                                        <p><span class="text-info font-size-14" style="font-weight: 700">Waiting for
+                                        <div class="w3-third d-flex align-items-end">
+                                            <p><span class="text-info font-size-14" style="font-weight: 700">Waiting for
                                                     response </span>
-                                        </p>
-                                    </div>
+                                            </p>
+                                        </div>
                                     @endhasanyrole
                                 @endif
 
                                 @if ($bookingdata->status === 'completed' && empty($customer_review))
                                     @hasanyrole('user')
-                                    <div class="w3-third d-flex align-items-end">
-                                        <button class="float-end btn btn-warning" id="rate-now-btn"
-                                                data-id="{{ $bookingdata->id }}">
-                                            <i class="las la-star"></i>
-                                            <!-- Changed to a star icon (Line Awesome) -->
-                                            {{ __('messages.rate_now') }}
-                                        </button>
-                                    </div>
-                                    @if ($payment->payment_status != 'paid')
                                         <div class="w3-third d-flex align-items-end">
-                                            <a class="float-end btn btn-warning"
-                                               href="{{ route('book.service', ['id' => $bookingdata->service_id, 'booking_id' => $bookingdata->id, 'payment_type' => 'full_payment']) }}"
-                                               target="_blank" data-id="{{ $bookingdata->id }}">
-                                                <i class="las la-credit-card"></i>
+                                            <button class="float-end btn btn-warning" id="rate-now-btn"
+                                                data-id="{{ $bookingdata->id }}">
+                                                <i class="las la-star"></i>
                                                 <!-- Changed to a star icon (Line Awesome) -->
-                                                {{ __('Pay now') }}
-                                            </a>
+                                                {{ __('messages.rate_now') }}
+                                            </button>
                                         </div>
-                                    @endif
+                                        @if ($payment->payment_status != 'paid')
+                                            <div class="w3-third d-flex align-items-end">
+                                                <a class="float-end btn btn-warning"
+                                                    href="{{ route('book.service', ['id' => $bookingdata->service_id, 'booking_id' => $bookingdata->id, 'payment_type' => 'full_payment']) }}"
+                                                    target="_blank" data-id="{{ $bookingdata->id }}">
+                                                    <i class="las la-credit-card"></i>
+                                                    <!-- Changed to a star icon (Line Awesome) -->
+                                                    {{ __('Pay now') }}
+                                                </a>
+                                            </div>
+                                        @endif
                                     @endhasanyrole
                                 @endif
 
                                 @if ($bookingdata->status === 'completed' && $payment->payment_status == 'paid')
                                     @hasanyrole('handyman')
-                                    <div class="w3-third d-flex align-items-end">
-                                        <button class="float-end btn btn-primary" id="service-proof-btn"
+                                        <div class="w3-third d-flex align-items-end">
+                                            <button class="float-end btn btn-primary" id="service-proof-btn"
                                                 data-id="{{ $bookingdata->id }}"
                                                 data-service-id="{{ $bookingdata->service_id }}"
                                                 data-user-id="{{ $bookingdata->customer_id }}">
-                                            <i class="las la-clipboard-list"></i>
-                                            {{ __('messages.service_proof') }}
-                                        </button>
-                                    </div>
+                                                <i class="las la-clipboard-list"></i>
+                                                {{ __('messages.service_proof') }}
+                                            </button>
+                                        </div>
                                     @endhasanyrole
-
                                 @endif
-                           @hasanyrole(['user', 'provider','admin'])
-                                @if ($bookingdata->status === 'completed' && $payment->payment_status == 'paid')
-
-                                    <a href="{{ route('invoice_pdf', $bookingdata->id) }}" class="btn btn-primary"
-                                       target="_blank">
-                                        <i class="ri-file-text-line"></i>
-                                        {{ __('messages.invoice') }}
-                                    </a>
-                                @endif
-                         @endhasanyrole
+                                @hasanyrole(['user', 'provider', 'admin'])
+                                    @if ($bookingdata->status === 'completed' && $payment->payment_status == 'paid')
+                                        <a href="{{ route('invoice_pdf', $bookingdata->id) }}" class="btn btn-primary"
+                                            target="_blank">
+                                            <i class="ri-file-text-line"></i>
+                                            {{ __('messages.invoice') }}
+                                        </a>
+                                    @endif
+                                @endhasanyrole
 
                             </div>
                         </div>
@@ -475,17 +474,17 @@
                                     </div>
                                 </div>
                             </div>
-             @hasanyrole(['user', 'provider','admin'])
-                            <div class="col-md-4">
-                                <div class="card h-100">
-                                    <div class="card-body">
-                                        <p class="opacity-75 fz-12">{{ __('messages.total_amount') }}</p>
-                                        <p class="mb-0 text-primary">
-                                            {{ getPriceFormat($bookingdata->total_amount ?? 0) }}
-                                        </p>
+                            @hasanyrole(['user', 'provider', 'admin'])
+                                <div class="col-md-4">
+                                    <div class="card h-100">
+                                        <div class="card-body">
+                                            <p class="opacity-75 fz-12">{{ __('messages.total_amount') }}</p>
+                                            <p class="mb-0 text-primary">
+                                                {{ getPriceFormat($bookingdata->total_amount ?? 0) }}
+                                            </p>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
                             @endhasanyrole
                             <div class="col-md-4">
                                 <div class="card h-100">
@@ -496,25 +495,25 @@
                                     </div>
                                 </div>
                             </div>
-                             @hasanyrole(['user', 'provider','admin'])
-                            @if (
-                                (isset($payment) && $payment->payment_type === 'bank_transfer' && $payment->status == 1) ||
-                                    (isset($payment) && $payment->payment_type !== 'bank_transfer'))
-                                <div class="col-md-4">
-                                    <div class="card h-65 border-0 shadow"
-                                         style="background: linear-gradient(135deg, #f7c59f, #ff9a9e); color: #fff;">
-                                        <div class="card-body">
-                                            <p class="mb-1 fw-bold text-uppercase" style="opacity: 0.9;">
-                                                {{ __('Advance Payment') }}
-                                            </p>
-                                            <p class="mb-0 fs-5 fw-bold" id="service_schedule__span">
-                                                {{ getPriceFormat($bookingdata->advance_paid_amount) }}
-                                            </p>
+                            @hasanyrole(['user', 'provider', 'admin'])
+                                @if (
+                                    (isset($payment) && $payment->payment_type === 'bank_transfer' && $payment->status == 1) ||
+                                        (isset($payment) && $payment->payment_type !== 'bank_transfer'))
+                                    <div class="col-md-4">
+                                        <div class="card h-65 border-0 shadow"
+                                            style="background: linear-gradient(135deg, #f7c59f, #ff9a9e); color: #fff;">
+                                            <div class="card-body">
+                                                <p class="mb-1 fw-bold text-uppercase" style="opacity: 0.9;">
+                                                    {{ __('Advance Payment') }}
+                                                </p>
+                                                <p class="mb-0 fs-5 fw-bold" id="service_schedule__span">
+                                                    {{ getPriceFormat($bookingdata->advance_paid_amount) }}
+                                                </p>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            @endif
-                         @endhasanyrole
+                                @endif
+                            @endhasanyrole
 
                             <div class="col-md-4">
                                 <div class="card h-100">
@@ -568,7 +567,7 @@
 
                                 </div>
                             </div>
-                         <div class="col-md-4">
+                            <div class="col-md-4">
                                 <div class="card h-100">
                                     <div class="card-body">
                                         <p class="opacity-75 fz-12">{{ __('Working Address') }}</p>
@@ -605,12 +604,12 @@
                                 <div class="flex-shrink-0">
 
                                     <img src="{{ getSingleMedia($bookingdata->customer, 'profile_image', null) }}"
-                                         alt="Customer Profile" class="rounded-circle"
-                                         style="width: 60px; height: 60px; object-fit: cover;">
+                                        alt="Customer Profile" class="rounded-circle"
+                                        style="width: 60px; height: 60px; object-fit: cover;">
                                     @if (optional($bookingdata->customer)->profile_image)
                                         <img src="{{ asset('public/images/default.png') }}" alt="Default Profile"
-                                             class="rounded-circle"
-                                             style="width: 60px; height: 60px; object-fit: cover;">
+                                            class="rounded-circle"
+                                            style="width: 60px; height: 60px; object-fit: cover;">
                                     @endif
                                 </div>
                                 <div class="flex-grow-1">
@@ -627,7 +626,7 @@
                                     </span>
                                 </li>
 
-                            <!-- <li class="d-flex align-items-center mb-2">
+                                <!-- <li class="d-flex align-items-center mb-2">
                                         <i class="ri-mail-line me-2"></i>
                                         <a href="mailto:{{ optional($bookingdata->customer)->email }}" class="text-body">
                                             {{ optional($bookingdata->customer)->email ?? '-' }}
@@ -650,12 +649,12 @@
                                 <div class="flex-shrink-0">
 
                                     <img src="{{ getSingleMedia($bookingdata->provider, 'profile_image', null) }}"
-                                         alt="Provider Profile" class="rounded-circle"
-                                         style="width: 60px; height: 60px; object-fit: cover;">
+                                        alt="Provider Profile" class="rounded-circle"
+                                        style="width: 60px; height: 60px; object-fit: cover;">
                                     @if (optional($bookingdata->provider)->profile_image)
                                         <img src="{{ asset('images/default-user.png') }}" alt="Default Profile"
-                                             class="rounded-circle"
-                                             style="width: 60px; height: 60px; object-fit: cover;">
+                                            class="rounded-circle"
+                                            style="width: 60px; height: 60px; object-fit: cover;">
                                     @endif
                                 </div>
                                 <div class="flex-grow-1">
@@ -671,7 +670,7 @@
                                         {{ optional($bookingdata->provider)->created_at ? optional($bookingdata->provider)->created_at->format('Y-m-d') : '-' }}
                                     </span>
                                 </li>
-                            <!-- <li class="d-flex align-items-center mb-2">
+                                <!-- <li class="d-flex align-items-center mb-2">
                                             <i class="ri-mail-line me-2"></i>
                                             <a href="mailto:{{ optional($bookingdata->provider)->email }}" class="text-body">
                                                 {{ optional($bookingdata->provider)->email ?? '-' }}
@@ -696,12 +695,12 @@
                                         <div class="flex-shrink-0">
 
                                             <img src="{{ getSingleMedia($booking->handyman, 'profile_image', null) }}"
-                                                 alt="Handyman Profile" class="rounded-circle"
-                                                 style="width: 60px; height: 60px; object-fit: cover;">
+                                                alt="Handyman Profile" class="rounded-circle"
+                                                style="width: 60px; height: 60px; object-fit: cover;">
                                             @if (optional($booking->handyman)->profile_image)
                                                 <img src="{{ asset('images/default-user.png') }}"
-                                                     alt="Default Profile" class="rounded-circle"
-                                                     style="width: 60px; height: 60px; object-fit: cover;">
+                                                    alt="Default Profile" class="rounded-circle"
+                                                    style="width: 60px; height: 60px; object-fit: cover;">
                                             @endif
                                         </div>
                                         <div class="flex-grow-1">
@@ -733,178 +732,178 @@
 
             </div>
         </div>
-    @php
-        $showAdvance = false;
+        @php
+            $showAdvance = false;
 
-        if (isset($payment)) {
-            if ($payment->payment_type === 'bank_transfer' && $payment->status == 1) {
-                $showAdvance = true;
-            } elseif ($payment->payment_type !== 'bank_transfer') {
-                $showAdvance = true;
+            if (isset($payment)) {
+                if ($payment->payment_type === 'bank_transfer' && $payment->status == 1) {
+                    $showAdvance = true;
+                } elseif ($payment->payment_type !== 'bank_transfer') {
+                    $showAdvance = true;
+                }
             }
-        }
-    @endphp
+        @endphp
 
-    <!-- billing section -->
-       @hasanyrole(['user', 'provider','admin'])
-        <div class="col-md-4">
-            <div class="card">
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table text-nowrap align-middle mb-0">
-                            <tbody>
-                            <!-- Unit Price -->
-                            <tr>
-                                <td>{{ __('Price (Unit Price)') }}</td>
-                                <td class="bk-value">
-                                    {{ getPriceFormat($bookingdata->amount) }}
-                                </td>
-                            </tr>
+        <!-- billing section -->
+        @hasanyrole(['user', 'provider', 'admin'])
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table text-nowrap align-middle mb-0">
+                                <tbody>
+                                    <!-- Unit Price -->
+                                    <tr>
+                                        <td>{{ __('Price (Unit Price)') }}</td>
+                                        <td class="bk-value">
+                                            {{ getPriceFormat($bookingdata->amount) }}
+                                        </td>
+                                    </tr>
 
-                            <!-- Quantity -->
-                            <tr>
-                                <td>{{ __('Quantity (Nbr of Packages, Hours, Days)') }}</td>
-                                <td class="bk-value">
-                                    {{ $bookingdata->quantity }}
-                                </td>
-                            </tr>
+                                    <!-- Quantity -->
+                                    <tr>
+                                        <td>{{ __('Quantity (Nbr of Packages, Hours, Days)') }}</td>
+                                        <td class="bk-value">
+                                            {{ $bookingdata->quantity }}
+                                        </td>
+                                    </tr>
 
-                            <!-- Total Amount (Price x Quantity) -->
-                            <tr>
-                                <td>{{ __('Total Amount') }}</td>
-                                <td class="bk-value">
-                                    {{ getPriceFormat($bookingdata->amount * $bookingdata->quantity) }}
-                                </td>
-                            </tr>
+                                    <!-- Total Amount (Price x Quantity) -->
+                                    <tr>
+                                        <td>{{ __('Total Amount') }}</td>
+                                        <td class="bk-value">
+                                            {{ getPriceFormat($bookingdata->amount * $bookingdata->quantity) }}
+                                        </td>
+                                    </tr>
 
-                            <!-- Discount -->
-                            @if ($bookingdata->discount > 0)
-                                <tr>
-                                    <td>{{ __('Discount') }} ({{ $bookingdata->discount }}% off)</td>
-                                    <td class="bk-value text-success">
-                                        -{{ getPriceFormat($bookingdata->final_discount_amount) }}
-                                    </td>
-                                </tr>
-                            @endif
+                                    <!-- Discount -->
+                                    @if ($bookingdata->discount > 0)
+                                        <tr>
+                                            <td>{{ __('Discount') }} ({{ $bookingdata->discount }}% off)</td>
+                                            <td class="bk-value text-success">
+                                                -{{ getPriceFormat($bookingdata->final_discount_amount) }}
+                                            </td>
+                                        </tr>
+                                    @endif
 
-                            <!-- Coupon -->
-                            @if ($bookingdata->couponAdded)
-                                <tr>
-                                    <td>{{ __('Coupon') }} ({{ $bookingdata->couponAdded->code }})</td>
-                                    <td class="bk-value text-success">
-                                        -{{ getPriceFormat($bookingdata->final_coupon_discount_amount) }}
-                                    </td>
-                                </tr>
-                            @endif
+                                    <!-- Coupon -->
+                                    @if ($bookingdata->couponAdded)
+                                        <tr>
+                                            <td>{{ __('Coupon') }} ({{ $bookingdata->couponAdded->code }})</td>
+                                            <td class="bk-value text-success">
+                                                -{{ getPriceFormat($bookingdata->final_coupon_discount_amount) }}
+                                            </td>
+                                        </tr>
+                                    @endif
 
-                            <!-- Subtotal after discounts -->
-                            @php
-                                $baseTotal = $bookingdata->amount * $bookingdata->quantity;
-                                $subTotal = $baseTotal;
+                                    <!-- Subtotal after discounts -->
+                                    @php
+                                        $baseTotal = $bookingdata->amount * $bookingdata->quantity;
+                                        $subTotal = $baseTotal;
 
-                                if ($bookingdata->discount > 0) {
-                                    $subTotal -= $bookingdata->final_discount_amount;
-                                }
+                                        if ($bookingdata->discount > 0) {
+                                            $subTotal -= $bookingdata->final_discount_amount;
+                                        }
 
-                                if ($bookingdata->couponAdded) {
-                                    $subTotal -= $bookingdata->final_coupon_discount_amount;
-                                }
-                            @endphp
-                            <tr class="grand-sub-total">
-                                <td>{{ __('Sub Total (After Discount)') }}</td>
-                                <td class="bk-value">{{ getPriceFormat($subTotal) }}</td>
-                            </tr>
+                                        if ($bookingdata->couponAdded) {
+                                            $subTotal -= $bookingdata->final_coupon_discount_amount;
+                                        }
+                                    @endphp
+                                    <tr class="grand-sub-total">
+                                        <td>{{ __('Sub Total (After Discount)') }}</td>
+                                        <td class="bk-value">{{ getPriceFormat($subTotal) }}</td>
+                                    </tr>
 
-                            <!-- Addon Services -->
-                            @php
-                                $addonTotal = $bookingdata->bookingAddonService->sum('price');
-                            @endphp
-                            @if ($addonTotal > 0)
-                                <tr>
-                                    <td>{{ __('Service Addons') }}</td>
-                                    <td class="bk-value">{{ getPriceFormat($addonTotal) }}</td>
-                                </tr>
-                            @endif
+                                    <!-- Addon Services -->
+                                    @php
+                                        $addonTotal = $bookingdata->bookingAddonService->sum('price');
+                                    @endphp
+                                    @if ($addonTotal > 0)
+                                        <tr>
+                                            <td>{{ __('Service Addons') }}</td>
+                                            <td class="bk-value">{{ getPriceFormat($addonTotal) }}</td>
+                                        </tr>
+                                    @endif
 
-                            <!-- Extra Charges -->
-                            @php
-                                $extraChargeTotal = $bookingdata->bookingExtraCharge->sum(function ($item) {
-                                    return $item->price * $item->qty;
-                                });
-                            @endphp
-                            @if ($extraChargeTotal > 0)
-                                <tr>
-                                    <td>{{ __('Extra Charges') }}</td>
-                                    <td class="bk-value">{{ getPriceFormat($extraChargeTotal) }}</td>
-                                </tr>
-                            @endif
+                                    <!-- Extra Charges -->
+                                    @php
+                                        $extraChargeTotal = $bookingdata->bookingExtraCharge->sum(function ($item) {
+                                            return $item->price * $item->qty;
+                                        });
+                                    @endphp
+                                    @if ($extraChargeTotal > 0)
+                                        <tr>
+                                            <td>{{ __('Extra Charges') }}</td>
+                                            <td class="bk-value">{{ getPriceFormat($extraChargeTotal) }}</td>
+                                        </tr>
+                                    @endif
 
-                            <!-- Total after Addons and Extra Charges -->
-                            @php
-                                $totalBeforeTax = $subTotal + $addonTotal + $extraChargeTotal;
-                            @endphp
-                            <tr>
-                                <td>{{ __('Total') }}</td>
-                                <td class="bk-value">{{ getPriceFormat($totalBeforeTax) }}</td>
-                            </tr>
+                                    <!-- Total after Addons and Extra Charges -->
+                                    @php
+                                        $totalBeforeTax = $subTotal + $addonTotal + $extraChargeTotal;
+                                    @endphp
+                                    <tr>
+                                        <td>{{ __('Total') }}</td>
+                                        <td class="bk-value">{{ getPriceFormat($totalBeforeTax) }}</td>
+                                    </tr>
 
-                            <!-- Taxes -->
-                            @php
-                                $serviceTaxId = $bookingdata->service->tax_country_id ?? null;
-                                $taxRate = 0;
-                                if ($serviceTaxId) {
-                                    $tax = \App\Models\Tax::find($serviceTaxId);
-                                    $taxRate = $tax->value ?? 0;
-                                }
-                                $taxAmount = ($totalBeforeTax * $taxRate) / 100;
-                            @endphp
-                            <tr>
-                                <td>{{ __('Tax') }} ({{ $taxRate }}%)</td>
-                                <td class="bk-value text-danger">{{ getPriceFormat($taxAmount) }}</td>
-                            </tr>
+                                    <!-- Taxes -->
+                                    @php
+                                        $serviceTaxId = $bookingdata->service->tax_country_id ?? null;
+                                        $taxRate = 0;
+                                        if ($serviceTaxId) {
+                                            $tax = \App\Models\Tax::find($serviceTaxId);
+                                            $taxRate = $tax->value ?? 0;
+                                        }
+                                        $taxAmount = ($totalBeforeTax * $taxRate) / 100;
+                                    @endphp
+                                    <tr>
+                                        <td>{{ __('Tax') }} ({{ $taxRate }}%)</td>
+                                        <td class="bk-value text-danger">{{ getPriceFormat($taxAmount) }}</td>
+                                    </tr>
 
-                            <!-- Grand Total -->
-                            @php
-                                $grandTotal = $totalBeforeTax + $taxAmount;
-                            @endphp
-                            <tr>
-                                <td>{{ __('Grand Total') }}</td>
-                                <td class="bk-value">{{ getPriceFormat($grandTotal) }}</td>
-                            </tr>
+                                    <!-- Grand Total -->
+                                    @php
+                                        $grandTotal = $totalBeforeTax + $taxAmount;
+                                    @endphp
+                                    <tr>
+                                        <td>{{ __('Grand Total') }}</td>
+                                        <td class="bk-value">{{ getPriceFormat($grandTotal) }}</td>
+                                    </tr>
 
-                            @php
-                                $advancePaidAmount = $bookingdata->advance_paid_amount;
+                                    @php
+                                        $advancePaidAmount = $bookingdata->advance_paid_amount;
 
-                                // Only calculate advance if not already paid
-                                if ($advancePaidAmount <= 0 && isset($advanceservice) && $advanceservice > 0) {
-                                    // $advanceservice is already the percentage (e.g., 50)
-                                    $advancePaidAmount = ($grandTotal * $advanceservice) / 100;
-                                }
+                                        // Only calculate advance if not already paid
+                                        if ($advancePaidAmount <= 0 && isset($advanceservice) && $advanceservice > 0) {
+                                            // $advanceservice is already the percentage (e.g., 50)
+                                            $advancePaidAmount = ($grandTotal * $advanceservice) / 100;
+                                        }
 
-                                $remainingAmount = $grandTotal - $advancePaidAmount;
-                            @endphp
-                          
-                                 <tr>
-                                <td>{{ __('Advance Payment') }}</td>
-                                <td class="bk-value">
-                                    {{ getPriceFormat($advancePaidAmount) }}
-                                </td>
-                            </tr>
-                            <tr class="grand-total">
-                                <td>{{ __('Remaining Amount') }}</td>
-                                <td class="bk-value">
-                                    {{ getPriceFormat($remainingAmount) }}
-                                </td>
-                            </tr>
+                                        $remainingAmount = $grandTotal - $advancePaidAmount;
+                                    @endphp
 
-                            {{-- @endif --}}
+                                    <tr>
+                                        <td>{{ __('Advance Payment') }}</td>
+                                        <td class="bk-value">
+                                            {{ getPriceFormat($advancePaidAmount) }}
+                                        </td>
+                                    </tr>
+                                    <tr class="grand-total">
+                                        <td>{{ __('Remaining Amount') }}</td>
+                                        <td class="bk-value">
+                                            {{ getPriceFormat($remainingAmount) }}
+                                        </td>
+                                    </tr>
 
-                            </tbody>
-                        </table>
+                                    {{-- @endif --}}
+
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
         @endhasanyrole
 
     </div>
@@ -918,22 +917,22 @@
                         <h4 class="mb-3">{{ __('messages.extra_charge') }}</h4>
                         <table class="table table-bordered">
                             <thead>
-                            <tr>
-                                <th>{{ __('messages.title') }}</th>
-                                <th>{{ __('messages.price') }}</th>
-                                <th>{{ __('messages.quantity') }}</th>
-                                <th class="text-end">{{ __('messages.total_amount') }}</th>
-                            </tr>
+                                <tr>
+                                    <th>{{ __('messages.title') }}</th>
+                                    <th>{{ __('messages.price') }}</th>
+                                    <th>{{ __('messages.quantity') }}</th>
+                                    <th class="text-end">{{ __('messages.total_amount') }}</th>
+                                </tr>
                             </thead>
                             <tbody>
-                            @foreach ($bookingdata->bookingExtraCharge as $charge)
-                                <tr>
-                                    <td>{{ $charge->title }}</td>
-                                    <td>{{ getPriceFormat($charge->price) }}</td>
-                                    <td>{{ $charge->qty }}</td>
-                                    <td class="text-end">{{ getPriceFormat($charge->price * $charge->qty) }}</td>
-                                </tr>
-                            @endforeach
+                                @foreach ($bookingdata->bookingExtraCharge as $charge)
+                                    <tr>
+                                        <td>{{ $charge->title }}</td>
+                                        <td>{{ getPriceFormat($charge->price) }}</td>
+                                        <td>{{ $charge->qty }}</td>
+                                        <td class="text-end">{{ getPriceFormat($charge->price * $charge->qty) }}</td>
+                                    </tr>
+                                @endforeach
                             </tbody>
                         </table>
                     </div>
@@ -951,21 +950,21 @@
                         <h4 class="mb-3">{{ __('messages.Reviews') }}</h4>
                         <table class="table table-bordered">
                             <thead>
-                            <tr>
-                                <th>{{ __('messages.name') }}</th>
-                                <th>{{ __('messages.rating') }}</th>
-                                <th>{{ __('messages.review') }}</th>
-                            </tr>
+                                <tr>
+                                    <th>{{ __('messages.name') }}</th>
+                                    <th>{{ __('messages.rating') }}</th>
+                                    <th>{{ __('messages.review') }}</th>
+                                </tr>
                             </thead>
                             <tbody>
-                            @foreach ($bookingdata->bookingRating as $review)
-                                <tr>
-                                    <td>{{ $review->customer->first_name ?? '' }}
-                                        {{ $review->customer->last_name ?? '' }}</td>
-                                    <td>{{ $review->rating }}</td>
-                                    <td>{{ $review->review }}</td>
-                                </tr>
-                            @endforeach
+                                @foreach ($bookingdata->bookingRating as $review)
+                                    <tr>
+                                        <td>{{ $review->customer->first_name ?? '' }}
+                                            {{ $review->customer->last_name ?? '' }}</td>
+                                        <td>{{ $review->rating }}</td>
+                                        <td>{{ $review->review }}</td>
+                                    </tr>
+                                @endforeach
                             </tbody>
                         </table>
                     </div>
@@ -983,32 +982,32 @@
                         <h4 class="mb-3">{{ __('messages.my_review') }}</h4>
                         <table class="table table-bordered align-middle">
                             <thead>
-                            <tr>
-                                <th>{{ __('messages.name') }}</th>
-                                <th>{{ __('messages.rating') }}</th>
-                                <th>{{ __('messages.review') }}</th>
-                                <th class="text-center">{{ __('messages.actions') }}</th>
-                            </tr>
+                                <tr>
+                                    <th>{{ __('messages.name') }}</th>
+                                    <th>{{ __('messages.rating') }}</th>
+                                    <th>{{ __('messages.review') }}</th>
+                                    <th class="text-center">{{ __('messages.actions') }}</th>
+                                </tr>
                             </thead>
                             <tbody>
-                            <tr>
-                                <td>{{ $customer_review->customer->first_name ?? '' }}
-                                    {{ $customer_review->customer->last_name ?? '' }}</td>
-                                <td>{{ $customer_review->rating }}</td>
-                                <td>{{ $customer_review->review }}</td>
-                                <td class="text-center">
-                                    <button class="btn btn-sm btn-warning edit-review"
+                                <tr>
+                                    <td>{{ $customer_review->customer->first_name ?? '' }}
+                                        {{ $customer_review->customer->last_name ?? '' }}</td>
+                                    <td>{{ $customer_review->rating }}</td>
+                                    <td>{{ $customer_review->review }}</td>
+                                    <td class="text-center">
+                                        <button class="btn btn-sm btn-warning edit-review"
                                             data-id="{{ $customer_review->id }}"
                                             data-rating="{{ $customer_review->rating }}"
                                             data-review="{{ $customer_review->review }}">
-                                        <i class="las la-pen"></i> {{ __('messages.edit') }}
-                                    </button>
-                                    <button class="btn btn-sm btn-danger delete-review"
+                                            <i class="las la-pen"></i> {{ __('messages.edit') }}
+                                        </button>
+                                        <button class="btn btn-sm btn-danger delete-review"
                                             data-id="{{ $customer_review->id }}">
-                                        <i class="las la-trash"></i> {{ __('messages.delete') }}
-                                    </button>
-                                </td>
-                            </tr>
+                                            <i class="las la-trash"></i> {{ __('messages.delete') }}
+                                        </button>
+                                    </td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -1026,31 +1025,31 @@
                         <h4 class="mb-3">{{ __('messages.service_proof') }}</h4>
                         <table class="table table-bordered">
                             <thead>
-                            <tr>
-                                <th>{{ __('messages.title') }}</th>
-                                <th>{{ __('messages.description') }}</th>
-                                <th>{{ __('messages.attachments') }}</th>
-                            </tr>
+                                <tr>
+                                    <th>{{ __('messages.title') }}</th>
+                                    <th>{{ __('messages.description') }}</th>
+                                    <th>{{ __('messages.attachments') }}</th>
+                                </tr>
                             </thead>
                             <tbody>
-                            @foreach ($serviceProof as $proof)
-                                <tr>
-                                    <td>{{ $proof->title }}</td>
-                                    <td>{{ $proof->description }}</td>
-                                    <td>
-                                        @if (!empty($proof->proof_attachments))
-                                            @foreach ($proof->proof_attachments as $url)
-                                                <a href="{{ $url }}" target="_blank">
-                                                    <img src="{{ $url }}" alt="Proof Image"
-                                                         style="height: 50px; width: 50px; object-fit: cover; margin-right: 5px;">
-                                                </a>
-                                            @endforeach
-                                        @else
-                                            <span class="text-muted">No attachments</span>
-                                        @endif
-                                    </td>
-                                </tr>
-                            @endforeach
+                                @foreach ($serviceProof as $proof)
+                                    <tr>
+                                        <td>{{ $proof->title }}</td>
+                                        <td>{{ $proof->description }}</td>
+                                        <td>
+                                            @if (!empty($proof->proof_attachments))
+                                                @foreach ($proof->proof_attachments as $url)
+                                                    <a href="{{ $url }}" target="_blank">
+                                                        <img src="{{ $url }}" alt="Proof Image"
+                                                            style="height: 50px; width: 50px; object-fit: cover; margin-right: 5px;">
+                                                    </a>
+                                                @endforeach
+                                            @else
+                                                <span class="text-muted">No attachments</span>
+                                            @endif
+                                        </td>
+                                    </tr>
+                                @endforeach
                             </tbody>
                         </table>
                     </div>
@@ -1060,7 +1059,7 @@
     @endif
 
 
-<!-- Addon  Charges table -->
+    <!-- Addon  Charges table -->
     @if ($bookingdata->bookingAddonService->count() > 0)
         <div class="col-md-12">
             <div class="card">
@@ -1069,31 +1068,31 @@
                         <h4 class="mb-3">{{ __('messages.service_addon') }}</h4>
                         <table class="table table-bordered">
                             <thead>
-                            <tr>
-                                <th class="ps-lg-3">{{ __('messages.title') }}</th>
-                                <th>{{ __('messages.price') }}</th>
-                                <th class="text-end">{{ __('messages.total_amount') }}</th>
-                            </tr>
+                                <tr>
+                                    <th class="ps-lg-3">{{ __('messages.title') }}</th>
+                                    <th>{{ __('messages.price') }}</th>
+                                    <th class="text-end">{{ __('messages.total_amount') }}</th>
+                                </tr>
                             </thead>
                             <tbody>
-                            @php
-                                $addonTotalPrice = 0;
-                            @endphp
-                            @foreach ($bookingdata->bookingAddonService as $addonservice)
                                 @php
-                                    $addonTotalPrice += $addonservice->price;
+                                    $addonTotalPrice = 0;
                                 @endphp
-                                <tr>
-                                    <td class="text-wrap ps-lg-3">
-                                        <div class="d-flex flex-column">
-                                            <a href=""
-                                               class="booking-service-link fw-bold">{{ $addonservice->name }}</a>
-                                        </div>
-                                    </td>
-                                    <td>{{ getPriceFormat($addonservice->price) }}</td>
-                                    <td class="text-end">{{ getPriceFormat($addonservice->price) }}</td>
-                                </tr>
-                            @endforeach
+                                @foreach ($bookingdata->bookingAddonService as $addonservice)
+                                    @php
+                                        $addonTotalPrice += $addonservice->price;
+                                    @endphp
+                                    <tr>
+                                        <td class="text-wrap ps-lg-3">
+                                            <div class="d-flex flex-column">
+                                                <a href=""
+                                                    class="booking-service-link fw-bold">{{ $addonservice->name }}</a>
+                                            </div>
+                                        </td>
+                                        <td>{{ getPriceFormat($addonservice->price) }}</td>
+                                        <td class="text-end">{{ getPriceFormat($addonservice->price) }}</td>
+                                    </tr>
+                                @endforeach
                             </tbody>
                         </table>
                     </div>
@@ -1109,7 +1108,7 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
 <script>
     var baseUrl = "{{ env('APP_URL') }}";
-    $(document).on('change', '.bookingstatus', function () {
+    $(document).on('change', '.bookingstatus', function() {
         var status = $(this).val();
         var id = $(this).attr('data-id');
 
@@ -1121,13 +1120,13 @@
                 'status': status,
                 'bookingId': id
             },
-            success: function (data) {
+            success: function(data) {
                 // Handle success response
             }
         });
     });
 
-    $(document).on('change', '.paymentStatus', function () {
+    $(document).on('change', '.paymentStatus', function() {
         var status = $(this).val();
         var id = $(this).attr('data-id');
 
@@ -1139,14 +1138,14 @@
                 'status': status,
                 'bookingId': id
             },
-            success: function (data) {
+            success: function(data) {
                 // Handle success response
             }
         });
     });
 
-    $(document).ready(function () {
-        $('#assign-provider').on('click', function () {
+    $(document).ready(function() {
+        $('#assign-provider').on('click', function() {
             var bookingId = $(this).data('id');
             var handymanIds = [];
             handymanIds.push($(this).data('handyman-id'));
@@ -1171,11 +1170,11 @@
                             'handyman_id[]': handymanIds,
                             _token: '{{ csrf_token() }}'
                         },
-                        success: function (response) {
+                        success: function(response) {
                             Swal.fire("Success!", response.message, "success");
                             window.location.reload();
                         },
-                        error: function (xhr) {
+                        error: function(xhr) {
                             Swal.fire("Error!", xhr.responseText, "error");
                         }
                     });
@@ -1185,7 +1184,7 @@
             });
         });
 
-        $('.update-booking').on('click', function () {
+        $('.update-booking').on('click', function() {
             const bookingId = $(this).data('id');
             const isAdvancePaid = $(this).data('advance') === 1; // Pass as 1/0 from backend
             const status = $(this).data('status');
@@ -1223,11 +1222,11 @@
                 url: api_url,
                 type: 'POST',
                 data: requestPayload,
-                success: function (response) {
+                success: function(response) {
                     Swal.fire("Success!", response.message, "success");
                     window.location.reload();
                 },
-                error: function (xhr) {
+                error: function(xhr) {
                     console.log(xhr)
                     Swal.fire("Error!", xhr.responseText, "error");
                 }
@@ -1235,7 +1234,7 @@
         }
 
 
-        $(document).on('click', '.hold-booking', function () {
+        $(document).on('click', '.hold-booking', function() {
             const bookingId = $(this).data('id');
             const newStatus = $(this).data('status');
 
@@ -1245,7 +1244,7 @@
             $('#reasonModal').modal('show');
         });
 
-        $('#reasonForm').on('submit', function (e) {
+        $('#reasonForm').on('submit', function(e) {
             e.preventDefault();
 
             const bookingId = $('#bookingId').val();
@@ -1271,7 +1270,7 @@
 
 
         // Handle modal open
-        $('#complete-booking').on('click', function () {
+        $('#complete-booking').on('click', function() {
             $('#extraChargesWrapper').html(''); // Reset previous entries
             addChargeRow(); // Add first row by default
 
@@ -1283,16 +1282,16 @@
         });
 
         // Add new charge row
-        $('#addChargeRow').on('click', function () {
+        $('#addChargeRow').on('click', function() {
             addChargeRow();
         });
 
         // Submit charges
-        $('#extraChargesForm').on('submit', function (e) {
+        $('#extraChargesForm').on('submit', function(e) {
             e.preventDefault();
             const charges = [];
 
-            $('.charge-row').each(function () {
+            $('.charge-row').each(function() {
                 const title = $(this).find('.charge-detail').val();
                 const price = parseFloat($(this).find('.charge-amount').val()) || 0;
                 const qty = parseInt($(this).find('.charge-quantity').val()) || 0;
@@ -1358,196 +1357,198 @@
         }
 
         // Handle quantity buttons
-        $(document).on('click', '.increase-qty', function () {
+        $(document).on('click', '.increase-qty', function() {
             const input = $(this).closest('.input-group').find('.charge-quantity');
             input.val(parseInt(input.val()) + 1);
         });
 
-        $(document).on('click', '.decrease-qty', function () {
+        $(document).on('click', '.decrease-qty', function() {
             const input = $(this).closest('.input-group').find('.charge-quantity');
             let qty = parseInt(input.val());
             if (qty > 1) input.val(qty - 1);
         });
 
         // Remove a row
-        $(document).on('click', '.remove-charge-row', function () {
+        $(document).on('click', '.remove-charge-row', function() {
             $(this).closest('.charge-row').remove();
         });
     });
-   $(document).ready(function () {
-    // Handle all booking status update buttons (including confirm)
-    $(document).on('click', '.update-booking, .confirm-booking', function (e) {
-        e.preventDefault();
-        
-        const bookingId = $(this).data('id');
-        const status = $(this).data('status');
-        const confirmMessage = $(this).data('confirm-message');
-        const isAdvancePaid = $(this).data('advance') === 1;
+    $(document).ready(function() {
+                // Handle all booking status update buttons (including confirm)
+                $(document).on('click', '.update-booking, .confirm-booking', function(e) {
+                    e.preventDefault();
 
-        Swal.fire({
-            title: 'Are you sure?',
-            text: confirmMessage,
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonText: 'Yes!',
-            cancelButtonText: 'No, cancel'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                updateBookingStatus(bookingId, status, isAdvancePaid);
-            }
-        });
-    });
+                    const bookingId = $(this).data('id');
+                    const status = $(this).data('status');
+                    const confirmMessage = $(this).data('confirm-message');
+                    const isAdvancePaid = $(this).data('advance') === 1;
 
-    let selectedRating = 0;
-    let editingReviewId = null;
-
-    $(document).on('click', '#rate-now-btn', function () {
-        const bookingId = $(this).data('id');
-        $('#ratingBookingId').val(bookingId);
-        $('#reviewText').val('');
-        selectedRating = 0;
-        $('.star').removeClass('selected');
-        $('#ratingModal').modal('show');
-    });
-
-    // Handle star selection
-    $(document).on('click', '.star', function () {
-        selectedRating = $(this).data('value');
-        $('.star').removeClass('selected');
-        $(this).prevAll().addBack().addClass('selected');
-    });
-
-    // Submit review
-    $('#ratingForm').on('submit', function (e) {
-        e.preventDefault();
-
-        const bookingId = $('#ratingBookingId').val();
-        const review = $('#reviewText').val().trim();
-
-        if (selectedRating === 0) {
-            return Swal.fire('Error', 'Please select a star rating.', 'warning');
-        }
-
-        const payload = {
-            booking_id: "{{ $bookingdata->id }}",
-            service_id: "{{ $bookingdata->service_id }}",
-            {{--            handyman_id: "{{ $bookingdata->provider_id }}", --}}
-            customer_id: "{{ $bookingdata->customer_id }}",
-            rating: selectedRating,
-            review: review
-        };
-
-        if (editingReviewId) {
-            payload.id = editingReviewId;
-        }
-
-        $.ajax({
-            url: baseUrl + '/api/save-booking-rating',
-            type: 'POST',
-            data: payload,
-            success: function (response) {
-                Swal.fire('Thank you!', 'Your rating has been submitted.', 'success');
-                $('#ratingModal').modal('hide');
-                window.location.reload();
-            },
-            error: function (xhr) {
-                console.error(xhr);
-                Swal.fire('Error', 'Failed to submit rating.', 'error');
-            }
-        });
-    });
-
-
-    // Handle Edit Button
-    $(document).on('click', '.edit-review', function () {
-        const reviewId = $(this).data('id');
-        const rating = $(this).data('rating');
-        const reviewText = $(this).data('review');
-
-        selectedRating = rating;
-        editingReviewId = reviewId;
-
-        $('#reviewText').val(reviewText);
-        $('.star').removeClass('selected').each(function () {
-            if ($(this).data('value') <= rating) {
-                $(this).addClass('selected');
-            }
-        });
-
-        $('#ratingModal').modal('show');
-    });
-
-    $(document).on('click', '.delete-review', function () {
-        const reviewId = $(this).data('id');
-
-        Swal.fire({
-            title: 'Are you sure?',
-            text: 'You will not be able to recover this review!',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonText: 'Yes, delete it!'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                $.ajax({
-                    url: baseUrl + '/api/delete-booking-rating',
-                    type: 'POST',
-                    data: {
-                        id: reviewId
-                    },
-                    success: function (res) {
-                        Swal.fire('Deleted!', 'Your review has been removed.', 'success');
-                        window.location.reload();
-                    },
-                    error: function (xhr) {
-                        console.error(xhr);
-                        Swal.fire('Error!', 'Failed to delete the review.', 'error');
-                    }
+                    Swal.fire({
+                        title: 'Are you sure?',
+                        text: confirmMessage,
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonText: 'Yes!',
+                        cancelButtonText: 'No, cancel'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            updateBookingStatus(bookingId, status, isAdvancePaid);
+                        }
+                    });
                 });
-            }
-        });
-    });
 
-    document.getElementById('service-proof-btn').addEventListener('click', function () {
-        const bookingId = this.dataset.id;
-        const serviceId = this.dataset.serviceId;
-        const userId = this.dataset.userId;
+                let selectedRating = 0;
+                let editingReviewId = null;
 
-        document.getElementById('booking_id').value = bookingId;
-        document.getElementById('service_id').value = serviceId;
-        document.getElementById('user_id').value = userId;
+                $(document).on('click', '#rate-now-btn', function() {
+                    const bookingId = $(this).data('id');
+                    $('#ratingBookingId').val(bookingId);
+                    $('#reviewText').val('');
+                    selectedRating = 0;
+                    $('.star').removeClass('selected');
+                    $('#ratingModal').modal('show');
+                });
 
-        $('#serviceProofModal').modal('show');
-    });
+                // Handle star selection
+                $(document).on('click', '.star', function() {
+                    selectedRating = $(this).data('value');
+                    $('.star').removeClass('selected');
+                    $(this).prevAll().addBack().addClass('selected');
+                });
 
-    $('#serviceProofForm').on('submit', function (e) {
-        e.preventDefault();
+                // Submit review
+                $('#ratingForm').on('submit', function(e) {
+                    e.preventDefault();
 
-        const form = this;
-        const formData = new FormData(form);
-        const files = $('#attachments')[0].files;
+                    const bookingId = $('#ratingBookingId').val();
+                    const review = $('#reviewText').val().trim();
 
-        formData.append('attachment_count', files.length);
-        for (let i = 0; i < files.length; i++) {
-            formData.append(`booking_attachment_${i}`, files[i]);
-        }
+                    if (selectedRating === 0) {
+                        return Swal.fire('Error', 'Please select a star rating.', 'warning');
+                    }
 
-        $.ajax({
-            url: baseUrl + '/api/save-service-proof',
-            type: 'POST',
-            data: formData,
-            processData: false,
-            contentType: false,
-            success: function (response) {
-                Swal.fire('Success', response.message || 'Service proof submitted.', 'success');
-                $('#serviceProofModal').modal('hide');
-                $('#serviceProofForm')[0].reset();
-                location.reload();
-            },
-            error: function (xhr) {
-                console.error(xhr);
-                Swal.fire('Error', 'Failed to submit service proof.', 'error');
-            }
-        });
-    });
+                    const payload = {
+                        booking_id: "{{ $bookingdata->id }}",
+                        service_id: "{{ $bookingdata->service_id }}",
+                        {{--            handyman_id: "{{ $bookingdata->provider_id }}", --}}
+                        customer_id: "{{ $bookingdata->customer_id }}",
+                        rating: selectedRating,
+                        review: review
+                    };
 
+                    if (editingReviewId) {
+                        payload.id = editingReviewId;
+                    }
+
+                    $.ajax({
+                        url: baseUrl + '/api/save-booking-rating',
+                        type: 'POST',
+                        data: payload,
+                        success: function(response) {
+                            Swal.fire('Thank you!', 'Your rating has been submitted.', 'success');
+                            $('#ratingModal').modal('hide');
+                            window.location.reload();
+                        },
+                        error: function(xhr) {
+                            console.error(xhr);
+                            Swal.fire('Error', 'Failed to submit rating.', 'error');
+                        }
+                    });
+                });
+
+
+                // Handle Edit Button
+                $(document).on('click', '.edit-review', function() {
+                    const reviewId = $(this).data('id');
+                    const rating = $(this).data('rating');
+                    const reviewText = $(this).data('review');
+
+                    selectedRating = rating;
+                    editingReviewId = reviewId;
+
+                    $('#reviewText').val(reviewText);
+                    $('.star').removeClass('selected').each(function() {
+                        if ($(this).data('value') <= rating) {
+                            $(this).addClass('selected');
+                        }
+                    });
+
+                    $('#ratingModal').modal('show');
+                });
+
+                $(document).on('click', '.delete-review', function() {
+                    const reviewId = $(this).data('id');
+
+                    Swal.fire({
+                        title: 'Are you sure?',
+                        text: 'You will not be able to recover this review!',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonText: 'Yes, delete it!'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            $.ajax({
+                                url: baseUrl + '/api/delete-booking-rating',
+                                type: 'POST',
+                                data: {
+                                    id: reviewId
+                                },
+                                success: function(res) {
+                                    Swal.fire('Deleted!', 'Your review has been removed.',
+                                        'success');
+                                    window.location.reload();
+                                },
+                                error: function(xhr) {
+                                    console.error(xhr);
+                                    Swal.fire('Error!', 'Failed to delete the review.',
+                                        'error');
+                                }
+                            });
+                        }
+                    });
+                });
+
+                document.getElementById('service-proof-btn').addEventListener('click', function() {
+                    const bookingId = this.dataset.id;
+                    const serviceId = this.dataset.serviceId;
+                    const userId = this.dataset.userId;
+
+                    document.getElementById('booking_id').value = bookingId;
+                    document.getElementById('service_id').value = serviceId;
+                    document.getElementById('user_id').value = userId;
+
+                    $('#serviceProofModal').modal('show');
+                });
+
+                $('#serviceProofForm').on('submit', function(e) {
+                    e.preventDefault();
+
+                    const form = this;
+                    const formData = new FormData(form);
+                    const files = $('#attachments')[0].files;
+
+                    formData.append('attachment_count', files.length);
+                    for (let i = 0; i < files.length; i++) {
+                        formData.append(`booking_attachment_${i}`, files[i]);
+                    }
+
+                    $.ajax({
+                        url: baseUrl + '/api/save-service-proof',
+                        type: 'POST',
+                        data: formData,
+                        processData: false,
+                        contentType: false,
+                        success: function(response) {
+                            Swal.fire('Success', response.message || 'Service proof submitted.',
+                                'success');
+                            $('#serviceProofModal').modal('hide');
+                            $('#serviceProofForm')[0].reset();
+                            location.reload();
+                        },
+                        error: function(xhr) {
+                            console.error(xhr);
+                            Swal.fire('Error', 'Failed to submit service proof.', 'error');
+                        }
+                    });
+                });
 </script>
