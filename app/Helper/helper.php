@@ -95,9 +95,10 @@ function getSingleMedia($model, $collection = 'profile_image', $skip=true   ){
         $media = $model->getFirstMedia($collection);
     }
 
-    if (getFileExistsCheck($media)) {
+    if ($media) {
+        // Always trust the media URL; avoid over-eager file existence checks that can fail on some disks
         return $media->getFullUrl();
-    }else{
+    } else {
 
         switch ($collection) {
             case 'image_icon':
@@ -117,27 +118,6 @@ function getSingleMedia($model, $collection = 'profile_image', $skip=true   ){
                 break;
             case 'app_image':
                 $media = asset('images/frontend/mb-serv-1.png');
-                break;
-            case 'app_image_full':
-                $media = asset('images/frontend/mb-serv-full.png');
-                break;
-            case 'footer_logo':
-                $media = asset('landing-images/logo/logo.png');
-                break;
-            case 'logo':
-                $media = asset('images/logo.png');
-                break;
-            case 'favicon':
-                $media = asset('images/favicon.png');
-                break;
-            case 'loader':
-                $media = asset('images/loader.gif');
-                break;
-            case 'helpdesk_attachment':
-                $media = asset('images/default.png');
-                break;
-            case 'helpdesk_activity_attachment':
-                $media = asset('images/default.png');
                 break;
             default:
                 $media = asset('images/default.png');
