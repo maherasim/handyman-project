@@ -26,7 +26,7 @@
                         <div class="row">
                             <div class="form-group col-md-2">
                                 {{ html()->label(__('messages.name') . ' <span class="text-danger">*</span>', 'name')->class('form-control-label') }}
-                                {{ html()->text('name', $servicedata->name)->placeholder(__('messages.name'))->class('form-control')->attributes(['title' => 'Please enter alphabetic characters and spaces only']) }}
+                                {{ html()->text('name', old('name', $servicedata->name))->placeholder(__('messages.name'))->class('form-control')->attributes(['title' => 'Please enter alphabetic characters and spaces only']) }}
                                 <small class="help-block with-errors text-danger"></small>
                             </div>
 
@@ -36,7 +36,7 @@
                                 {{ html()->select(
                                         'category_id',
                                         [optional($servicedata->category)->id => optional($servicedata->category)->name],
-                                        optional($servicedata->category)->id,
+                                        old('category_id', optional($servicedata->category)->id),
                                     )->class('select2js form-group category')->required()->id('category_id')->attribute('data-placeholder', __('messages.select_name', ['select' => __('messages.category')]))->attribute('data-ajax--url', route('ajax-list', ['type' => 'category'])) }}
 
                             </div>
@@ -107,7 +107,7 @@
                                     {{ html()->select(
                                             'provider_id',
                                             [optional($servicedata->providers)->id => optional($servicedata->providers)->display_name],
-                                            optional($servicedata->providers)->id,
+                                            old('provider_id', optional($servicedata->providers)->id),
                                         )->class('select2js form-group')->id('provider_id')->attribute('onchange', 'selectprovider(this)')->required()->attribute('data-placeholder', __('messages.select_name', ['select' => __('messages.provider')]))->attribute('data-ajax--url', route('ajax-list', ['type' => 'provider'])) }}
                                 </div>
                             @endif
@@ -139,26 +139,26 @@
                                             'Daily' => __('Daily'), // Add 'daily' option here
                                             'free' => __('messages.free'),
                                         ],
-                                        $servicedata->type,
+                                        old('type', $servicedata->type),
                                     )->class('form-control select2js')->required()->id('price_type') }}
                             </div>
                             <div class="form-group col-md-4" id="price_div">
                                 {{ html()->label(__('messages.price') . ' <span class="text-danger">*</span>', 'price')->class('form-control-label') }}
-                                {{ html()->text('price', null)->attributes(['min' => 1, 'step' => 'any', 'pattern' => '^\\d+(\\.\\d{1,2})?$'])->placeholder(__('messages.price'))->class('form-control')->required()->id('price') }}
+                                {{ html()->text('price', old('price', $servicedata->price))->attributes(['min' => 1, 'step' => 'any', 'pattern' => '^\\d+(\\.\\d{1,2})?$'])->placeholder(__('messages.price'))->class('form-control')->required()->id('price') }}
                                 <small class="help-block with-errors text-danger"></small>
                             </div>
 
 
                             <div class="form-group col-md-4" id="minimum_booking_div">
                                 {{ html()->label(__('Minimum Booking'), 'minimum_booking')->class('form-control-label') }}
-                                {{ html()->text('minimum_booking', isset($servicedata->minimum_booking) ? $servicedata->minimum_booking : null)->attributes(['step' => 'any'])->placeholder(__('minimum booking'))->class('form-control')->id('minimum_booking') }}
+                                {{ html()->text('minimum_booking', old('minimum_booking', $servicedata->minimum_booking))->attributes(['step' => 'any'])->placeholder(__('minimum booking'))->class('form-control')->id('minimum_booking') }}
                                 <small class="help-block with-errors text-danger"></small>
                             </div>
 
 
                             <div class="form-group col-md-4" id="discount_div">
                                 {{ html()->label(__('messages.discount') . ' %', 'discount')->class('form-control-label') }}
-                                {{ html()->number('discount', null)->attributes(['min' => 0, 'max' => 99, 'step' => 'any'])->placeholder(__('messages.discount'))->class('form-control')->id('discount') }}
+                                {{ html()->number('discount', old('discount', $servicedata->discount))->attributes(['min' => 0, 'max' => 99, 'step' => 'any'])->placeholder(__('messages.discount'))->class('form-control')->id('discount') }}
 
                                 <span id="discount-error" class="text-danger"></span>
                             </div>
@@ -166,19 +166,19 @@
 
                             <div class="form-group col-md-4">
                                 {{ html()->label(__('messages.duration') . ' (hours) ', 'duration')->class('form-control-label') }}
-                                {{ html()->text('duration', $servicedata->duration)->placeholder(__('messages.duration'))->class('form-control min-datetimepicker-time') }}
+                                {{ html()->text('duration', old('duration', $servicedata->duration))->placeholder(__('messages.duration'))->class('form-control min-datetimepicker-time') }}
                                 <small class="help-block with-errors text-danger"></small>
                             </div>
 
                             <div class="form-group col-md-4">
                                 {{ html()->label(__('messages.status') . ' <span class="text-danger">*</span>', 'status')->class('form-control-label') }}
-                                {{ html()->select('status', ['1' => __('messages.active'), '0' => __('messages.inactive')], $servicedata->status)->class('form-control select2js')->required() }}
+                                {{ html()->select('status', ['1' => __('messages.active'), '0' => __('messages.inactive')], old('status', $servicedata->status))->class('form-control select2js')->required() }}
                             </div>
 
                             <div class="form-group col-md-4">
                                 {{ html()->label(__('messages.visit_type') . ' ', 'visit_type')->class('form-control-label') }}
                                 <br />
-                                {{ html()->select('visit_type', $visittype, $servicedata->visit_type)->id('visit_type')->class('form-control select2js')->required() }}
+                                {{ html()->select('visit_type', $visittype, old('visit_type', $servicedata->visit_type))->id('visit_type')->class('form-control select2js')->required() }}
                             </div>
 
 
@@ -264,16 +264,16 @@
                         <div class="row">
                             <div class="form-group col-md-12">
                                 {{ html()->label(__('messages.description'), 'description')->class('form-control-label') }}
-                                {{ html()->textarea('description', $servicedata->description)->class('form-control textarea')->rows(3)->placeholder(__('messages.description')) }}
+                                {{ html()->textarea('description', old('description', $servicedata->description))->class('form-control textarea')->rows(3)->placeholder(__('messages.description')) }}
                             </div>
                             <div class="form-group col-md-12">
                                 {{ html()->label(__('Cancellation Policy & Fees'), 'cancellation_policy')->class('form-control-label') }}
-                                {{ html()->textarea('cancellation_policy', $servicedata->cancellation_policy)->class('form-control textarea')->rows(3)->placeholder(__('cancellation_policy')) }}
+                                {{ html()->textarea('cancellation_policy', old('cancellation_policy', $servicedata->cancellation_policy))->class('form-control textarea')->rows(3)->placeholder(__('cancellation_policy')) }}
                             </div>
                             @if (!empty($slotservice) && $slotservice == 1)
                                 <div class="form-group col-md-3">
                                     <div class="custom-control custom-switch">
-                                        {{ html()->checkbox('is_slot', $servicedata->is_slot)->class('custom-control-input')->id('is_slot') }}
+                                        {{ html()->checkbox('is_slot', old('is_slot', $servicedata->is_slot))->class('custom-control-input')->id('is_slot') }}
                                         <label class="custom-control-label"
                                             for="is_slot">{{ __('messages.slot') }}</label>
                                     </div>
@@ -282,7 +282,7 @@
                             @if (auth()->check() && auth()->user()->user_type === 'provider')
                                 <div class="form-group col-md-3">
                                     <div class="custom-control custom-switch">
-                                        {{ html()->checkbox('is_featured', $servicedata->is_featured)->class('custom-control-input')->id('is_featured') }}
+                                        {{ html()->checkbox('is_featured', old('is_featured', $servicedata->is_featured))->class('custom-control-input')->id('is_featured') }}
                                         <label class="custom-control-label"
                                             for="is_featured">{{ __('messages.set_as_featured') }}</label>
                                     </div>
@@ -300,7 +300,7 @@
                             {{-- @if (!empty($advancedPaymentSetting) && $advancedPaymentSetting == 1) --}}
                             <div class="form-group col-md-3">
                                 <div class="custom-control custom-switch">
-                                    {{ html()->checkbox('is_enable_advance_payment', $servicedata->is_enable_advance_payment)->class('custom-control-input')->id('is_enable_advance_payment') }}
+                                    {{ html()->checkbox('is_enable_advance_payment', old('is_enable_advance_payment', $servicedata->is_enable_advance_payment))->class('custom-control-input')->id('is_enable_advance_payment') }}
                                     <label class="custom-control-label"
                                         for="is_enable_advance_payment">{{ __('messages.enable_advanced_payment') }}
                                     </label>
@@ -322,7 +322,9 @@
         </div>
     </div>
     @php
-        $data = $servicedata->providerServiceAddress->pluck('provider_address_id')->implode(',');
+        $data = old('provider_address_id')
+            ? implode(',', (array) old('provider_address_id'))
+            : $servicedata->providerServiceAddress->pluck('provider_address_id')->implode(',');
     @endphp
     @section('bottom_script')
         <script type="text/javascript">
@@ -417,16 +419,16 @@
             (function($) {
                 "use strict";
                 $(document).ready(function() {
-                    var provider_id = "{{ isset($servicedata->provider_id) ? $servicedata->provider_id : '' }}";
+                    var provider_id = "{{ old('provider_id', isset($servicedata->provider_id) ? $servicedata->provider_id : '') }}";
                     var provider_address_id = "{{ isset($data) ? $data : [] }}";
 
-                    var category_id = "{{ isset($servicedata->category_id) ? $servicedata->category_id : '' }}";
+                    var category_id = "{{ old('category_id', isset($servicedata->category_id) ? $servicedata->category_id : '') }}";
                     var subcategory_id =
-                        "{{ isset($servicedata->subcategory_id) ? $servicedata->subcategory_id : '' }}";
+                        "{{ old('subcategory_id', isset($servicedata->subcategory_id) ? $servicedata->subcategory_id : '') }}";
 
-                    var country_id = "{{ isset($servicedata->country_id) ? $servicedata->country_id : 0 }}";
-                    var city_id = "{{ isset($servicedata->city_id) ? $servicedata->city_id : 0 }}";
-                    var price_type = "{{ isset($servicedata->type) ? $servicedata->type : '' }}";
+                    var country_id = "{{ old('country_id', isset($servicedata->country_id) ? $servicedata->country_id : 0) }}";
+                    var city_id = "{{ old('city_id', isset($servicedata->city_id) ? $servicedata->city_id : 0) }}";
+                    var price_type = "{{ old('type', isset($servicedata->type) ? $servicedata->type : '') }}";
 
                     providerAddress(provider_id, provider_address_id)
                     getSubCategory(category_id, subcategory_id)
@@ -530,8 +532,8 @@
                         }
                     });
                 }
-                var price = "{{ isset($servicedata->price) ? $servicedata->price : '' }}";
-                var discount = "{{ isset($servicedata->discount) ? $servicedata->discount : '' }}";
+                var price = "{{ old('price', isset($servicedata->price) ? $servicedata->price : '') }}";
+                var discount = "{{ old('discount', isset($servicedata->discount) ? $servicedata->discount : '') }}";
 
                 function priceformat(value) {
                     if (value == 'free') {
@@ -608,15 +610,15 @@
                 "use strict";
 
                 $(document).ready(function() {
-                    var country_id = "{{ isset($servicedata->country_id) ? $servicedata->country_id : '' }}";
+                    var country_id = "{{ old('country_id', isset($servicedata->country_id) ? $servicedata->country_id : '') }}";
                     var tax_country_id =
-                        "{{ isset($servicedata->tax_country_id) ? $servicedata->tax_country_id : '' }}";
-                    var state_id = "{{ isset($servicedata->state_id) ? $servicedata->state_id : '' }}";
-                    var city_id = "{{ isset($servicedata->city_id) ? $servicedata->city_id : '' }}";
+                        "{{ old('tax_country_id', isset($servicedata->tax_country_id) ? $servicedata->tax_country_id : '') }}";
+                    var state_id = "{{ old('state_id', isset($servicedata->state_id) ? $servicedata->state_id : '') }}";
+                    var city_id = "{{ old('city_id', isset($servicedata->city_id) ? $servicedata->city_id : '') }}";
                     var initialCityId = city_id;
-                    var category_id = "{{ isset($servicedata->category_id) ? $servicedata->category_id : '' }}";
+                    var category_id = "{{ old('category_id', isset($servicedata->category_id) ? $servicedata->category_id : '') }}";
                     var subcategory_id =
-                        "{{ isset($servicedata->subcategory_id) ? $servicedata->subcategory_id : '' }}";
+                        "{{ old('subcategory_id', isset($servicedata->subcategory_id) ? $servicedata->subcategory_id : '') }}";
 
                     // Initialize select2 on all selects (including tax_country_id_display)
                     $('#country_id, #state_id, #city_id, #tax_country_id_display').select2({
