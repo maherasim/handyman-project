@@ -182,11 +182,11 @@
                                                     data-status="on_going"
                                                     data-confirm-message="You want to start this booking?">
                                                 <i class="las la-play-circle"></i>
-                                                {{ __('messages.start_drive') }}
+                                                {{ __('Start Work') }}
                                             </button>
                                         </div>
 
-                                        <div class="w3-third">
+                                        {{-- <div class="w3-third">
                                             <button class="float-end btn btn-danger update-booking" id="reject-booking"
                                                     data-id="{{ $bookingdata->id }}"
                                                     data-handyman-id="{{ $bookingdata->provider_id }}"
@@ -195,7 +195,7 @@
                                                 <i class="las la-times-circle"></i>
                                                 {{ __('messages.decline') }}
                                             </button>
-                                        </div>
+                                        </div> --}}
                                         @endhasanyrole
 
                                         @hasanyrole('user')
