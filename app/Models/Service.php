@@ -148,4 +148,7 @@ class Service extends Model implements  HasMedia
     public function city(){
         return $this->belongsTo(City::class, 'city_id','id');
     }
+    public function tax_country(){
+        return $this->belongsTo(Country::class, 'tax_country_id', 'id');
+    }
 }
