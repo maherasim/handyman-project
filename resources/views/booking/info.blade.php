@@ -257,7 +257,7 @@
                                     @hasanyrole(['provider', 'handyman'])
                                     <div class="w3-third d-flex align-items-end">
                                         <p><span class="text-info font-size-14" style="font-weight: 700">Waiting for
-                                                    response</span>
+                                                    response by customer</span>
                                         </p>
                                     </div>
                                     @endhasanyrole
@@ -361,7 +361,7 @@
                                     @hasanyrole('user')
                                     <div class="w3-third d-flex align-items-end">
                                         <p><span class="text-info font-size-14" style="font-weight: 700">Waiting for
-                                                    response</span>
+                                                    response by Handyman</span>
                                         </p>
                                     </div>
                                     @endhasanyrole
