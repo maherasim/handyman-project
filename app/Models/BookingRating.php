@@ -24,6 +24,29 @@ class BookingRating extends Model
     {
         return $this->belongsTo(User::class, 'customer_id', 'id');
     }
+    
+       public function scopeMyRating($query){
+        $user = auth()->user();
+        if($user->hasRole('admin') || $user->hasRole('demo_admin')) {
+            return $query;
+        }
+
+        if($user->hasRole('provider')) {
+            return $query->whereHas('handyman', function($q) use ($user) {
+                $q->where('provider_id', $user->id);
+            });
+        }
+
+        if($user->hasRole('user')) {
+            return $query->where('customer_id', $user->id);
+        }
+
+        if($user->hasRole('handyman')) {
+            return $query->where('handyman_id',$user->id);
+        }
+
+        return $query;
+    }
 
     public function booking()
     {
@@ -47,18 +70,5 @@ class BookingRating extends Model
         });
     }
 
-    public function scopeMyRating($query){
-        $user = auth()->user();
-        if($user->hasRole('admin') || $user->hasRole('demo_admin')) {
-            $query =  $query;
-        }
-
-        if($user->hasRole('provider')) {
-            $query = $query->whereHas('service',function ($q) use($user) {
-                $q->where('provider_id',$user->id);
-            });
-        }
-
-        return  $query;
-    }
+  
 }

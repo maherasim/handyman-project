@@ -25,7 +25,7 @@ class HandymanRatingController extends Controller
 
     public function index_data(DataTables $datatable,Request $request)
     {
-        $query = HandymanRating::query()->myRating();
+        $query = BookingRating::query()->myRating();
         dd( $query);
         $filter = $request->filter;
 
