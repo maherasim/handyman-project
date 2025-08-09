@@ -1106,6 +1106,7 @@
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
 <script>
     var baseUrl = "{{ env('APP_URL') }}";
     $(document).on('change', '.bookingstatus', function() {
@@ -1204,7 +1205,6 @@
             });
         });
 
-
         function updateBookingStatus(bookingId, newStatus, isAdvancePaid, reason = '', charges = null) {
             const requestPayload = {
                 id: bookingId,
@@ -1222,8 +1222,6 @@
                 url: api_url,
                 type: 'POST',
                 data: requestPayload,
-                console.log('Clicked booking:', bookingId, 'status:', status, 'advance:', isAdvancePaid);
-
                 success: function(response) {
                     Swal.fire("Success!", response.message, "success");
                     window.location.reload();
@@ -1234,7 +1232,6 @@
                 }
             });
         }
-
 
         $(document).on('click', '.hold-booking', function() {
             const bookingId = $(this).data('id');
@@ -1263,13 +1260,10 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     updateBookingStatus(bookingId, newStatus, 1, reason);
-
                     $('#reasonModal').modal('hide');
                 }
             });
-
         });
-
 
         // Handle modal open
         $('#complete-booking').on('click', function() {
@@ -1321,7 +1315,6 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     updateBookingStatus(bookingId, 'completed', 1, '', charges);
-
                     $('#extraChargesModal').modal('hide');
                 }
             });
@@ -1330,30 +1323,30 @@
         // Function to add a new charge row
         function addChargeRow() {
             const row = `
-          <div class="charge-row border p-3 mb-3 rounded bg-light">
-            <div class="row g-3 align-items-end">
-              <div class="col-md-5">
-                <label class="form-label">Extra Charge Detail</label>
-                <input type="text" class="form-control charge-detail" placeholder="e.g. Travel cost">
-              </div>
-              <div class="col-md-3">
-                <label class="form-label">Amount</label>
-                <input type="number" class="form-control charge-amount" placeholder="e.g. 100">
-              </div>
-              <div class="col-md-3">
-                <label class="form-label">Quantity</label>
-                <div class="input-group">
-                  <button class="btn btn-outline-secondary btn-sm decrease-qty" type="button">-</button>
-                  <input type="number" class="form-control text-center charge-quantity" value="1" min="1">
-                  <button class="btn btn-outline-secondary btn-sm increase-qty" type="button">+</button>
+                <div class="charge-row border p-3 mb-3 rounded bg-light">
+                    <div class="row g-3 align-items-end">
+                        <div class="col-md-5">
+                            <label class="form-label">Extra Charge Detail</label>
+                            <input type="text" class="form-control charge-detail" placeholder="e.g. Travel cost">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Amount</label>
+                            <input type="number" class="form-control charge-amount" placeholder="e.g. 100">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Quantity</label>
+                            <div class="input-group">
+                                <button class="btn btn-outline-secondary btn-sm decrease-qty" type="button">-</button>
+                                <input type="number" class="form-control text-center charge-quantity" value="1" min="1">
+                                <button class="btn btn-outline-secondary btn-sm increase-qty" type="button">+</button>
+                            </div>
+                        </div>
+                        <div class="col-md-1 text-end">
+                            <button class="btn btn-danger btn-sm remove-charge-row" type="button">&times;</button>
+                        </div>
+                    </div>
                 </div>
-              </div>
-              <div class="col-md-1 text-end">
-                <button class="btn btn-danger btn-sm remove-charge-row" type="button">&times;</button>
-              </div>
-            </div>
-          </div>
-        `;
+            `;
 
             $('#extraChargesWrapper').append(row);
         }
@@ -1374,183 +1367,178 @@
         $(document).on('click', '.remove-charge-row', function() {
             $(this).closest('.charge-row').remove();
         });
-    });
-    $(document).ready(function() {
-                // Handle all booking status update buttons (including confirm)
-                $(document).on('click', '.update-booking, .confirm-booking', function(e) {
-                    e.preventDefault();
 
-                    const bookingId = $(this).data('id');
-                    const status = $(this).data('status');
-                    const confirmMessage = $(this).data('confirm-message');
-                    const isAdvancePaid = $(this).data('advance') === 1;
+        // Handle all booking status update buttons (including confirm)
+        $(document).on('click', '.update-booking, .confirm-booking', function(e) {
+            e.preventDefault();
 
-                    Swal.fire({
-                        title: 'Are you sure?',
-                        text: confirmMessage,
-                        icon: 'warning',
-                        showCancelButton: true,
-                        confirmButtonText: 'Yes!',
-                        cancelButtonText: 'No, cancel'
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            updateBookingStatus(bookingId, status, isAdvancePaid);
-                        }
-                    });
-                });
+            const bookingId = $(this).data('id');
+            const status = $(this).data('status');
+            const confirmMessage = $(this).data('confirm-message');
+            const isAdvancePaid = $(this).data('advance') === 1;
 
-                let selectedRating = 0;
-                let editingReviewId = null;
+            Swal.fire({
+                title: 'Are you sure?',
+                text: confirmMessage,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes!',
+                cancelButtonText: 'No, cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    updateBookingStatus(bookingId, status, isAdvancePaid);
+                }
+            });
+        });
 
-                $(document).on('click', '#rate-now-btn', function() {
-                    const bookingId = $(this).data('id');
-                    $('#ratingBookingId').val(bookingId);
-                    $('#reviewText').val('');
-                    selectedRating = 0;
-                    $('.star').removeClass('selected');
-                    $('#ratingModal').modal('show');
-                });
+        let selectedRating = 0;
+        let editingReviewId = null;
 
-                // Handle star selection
-                $(document).on('click', '.star', function() {
-                    selectedRating = $(this).data('value');
-                    $('.star').removeClass('selected');
-                    $(this).prevAll().addBack().addClass('selected');
-                });
+        $(document).on('click', '#rate-now-btn', function() {
+            const bookingId = $(this).data('id');
+            $('#ratingBookingId').val(bookingId);
+            $('#reviewText').val('');
+            selectedRating = 0;
+            $('.star').removeClass('selected');
+            $('#ratingModal').modal('show');
+        });
 
-                // Submit review
-                $('#ratingForm').on('submit', function(e) {
-                    e.preventDefault();
+        // Handle star selection
+        $(document).on('click', '.star', function() {
+            selectedRating = $(this).data('value');
+            $('.star').removeClass('selected');
+            $(this).prevAll().addBack().addClass('selected');
+        });
 
-                    const bookingId = $('#ratingBookingId').val();
-                    const review = $('#reviewText').val().trim();
+        // Submit review
+        $('#ratingForm').on('submit', function(e) {
+            e.preventDefault();
 
-                    if (selectedRating === 0) {
-                        return Swal.fire('Error', 'Please select a star rating.', 'warning');
-                    }
+            const bookingId = $('#ratingBookingId').val();
+            const review = $('#reviewText').val().trim();
 
-                    const payload = {
-                        booking_id: "{{ $bookingdata->id }}",
-                        service_id: "{{ $bookingdata->service_id }}",
-                        {{--            handyman_id: "{{ $bookingdata->provider_id }}", --}}
-                        customer_id: "{{ $bookingdata->customer_id }}",
-                        rating: selectedRating,
-                        review: review
-                    };
+            if (selectedRating === 0) {
+                return Swal.fire('Error', 'Please select a star rating.', 'warning');
+            }
 
-                    if (editingReviewId) {
-                        payload.id = editingReviewId;
-                    }
+            const payload = {
+                booking_id: "{{ $bookingdata->id }}",
+                service_id: "{{ $bookingdata->service_id }}",
+                customer_id: "{{ $bookingdata->customer_id }}",
+                rating: selectedRating,
+                review: review
+            };
 
+            if (editingReviewId) {
+                payload.id = editingReviewId;
+            }
+
+            $.ajax({
+                url: baseUrl + '/api/save-booking-rating',
+                type: 'POST',
+                data: payload,
+                success: function(response) {
+                    Swal.fire('Thank you!', 'Your rating has been submitted.', 'success');
+                    $('#ratingModal').modal('hide');
+                    window.location.reload();
+                },
+                error: function(xhr) {
+                    console.error(xhr);
+                    Swal.fire('Error', 'Failed to submit rating.', 'error');
+                }
+            });
+        });
+
+        // Handle Edit Button
+        $(document).on('click', '.edit-review', function() {
+            const reviewId = $(this).data('id');
+            const rating = $(this).data('rating');
+            const reviewText = $(this).data('review');
+
+            selectedRating = rating;
+            editingReviewId = reviewId;
+
+            $('#reviewText').val(reviewText);
+            $('.star').removeClass('selected').each(function() {
+                if ($(this).data('value') <= rating) {
+                    $(this).addClass('selected');
+                }
+            });
+
+            $('#ratingModal').modal('show');
+        });
+
+        $(document).on('click', '.delete-review', function() {
+            const reviewId = $(this).data('id');
+
+            Swal.fire({
+                title: 'Are you sure?',
+                text: 'You will not be able to recover this review!',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
                     $.ajax({
-                        url: baseUrl + '/api/save-booking-rating',
+                        url: baseUrl + '/api/delete-booking-rating',
                         type: 'POST',
-                        data: payload,
-                        success: function(response) {
-                            Swal.fire('Thank you!', 'Your rating has been submitted.', 'success');
-                            $('#ratingModal').modal('hide');
+                        data: {
+                            id: reviewId
+                        },
+                        success: function(res) {
+                            Swal.fire('Deleted!', 'Your review has been removed.', 'success');
                             window.location.reload();
                         },
                         error: function(xhr) {
                             console.error(xhr);
-                            Swal.fire('Error', 'Failed to submit rating.', 'error');
+                            Swal.fire('Error!', 'Failed to delete the review.', 'error');
                         }
                     });
-                });
+                }
+            });
+        });
 
+        document.getElementById('service-proof-btn').addEventListener('click', function() {
+            const bookingId = this.dataset.id;
+            const serviceId = this.dataset.serviceId;
+            const userId = this.dataset.userId;
 
-                // Handle Edit Button
-                $(document).on('click', '.edit-review', function() {
-                    const reviewId = $(this).data('id');
-                    const rating = $(this).data('rating');
-                    const reviewText = $(this).data('review');
+            document.getElementById('booking_id').value = bookingId;
+            document.getElementById('service_id').value = serviceId;
+            document.getElementById('user_id').value = userId;
 
-                    selectedRating = rating;
-                    editingReviewId = reviewId;
+            $('#serviceProofModal').modal('show');
+        });
 
-                    $('#reviewText').val(reviewText);
-                    $('.star').removeClass('selected').each(function() {
-                        if ($(this).data('value') <= rating) {
-                            $(this).addClass('selected');
-                        }
-                    });
+        $('#serviceProofForm').on('submit', function(e) {
+            e.preventDefault();
 
-                    $('#ratingModal').modal('show');
-                });
+            const form = this;
+            const formData = new FormData(form);
+            const files = $('#attachments')[0].files;
 
-                $(document).on('click', '.delete-review', function() {
-                    const reviewId = $(this).data('id');
+            formData.append('attachment_count', files.length);
+            for (let i = 0; i < files.length; i++) {
+                formData.append(`booking_attachment_${i}`, files[i]);
+            }
 
-                    Swal.fire({
-                        title: 'Are you sure?',
-                        text: 'You will not be able to recover this review!',
-                        icon: 'warning',
-                        showCancelButton: true,
-                        confirmButtonText: 'Yes, delete it!'
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            $.ajax({
-                                url: baseUrl + '/api/delete-booking-rating',
-                                type: 'POST',
-                                data: {
-                                    id: reviewId
-                                },
-                                success: function(res) {
-                                    Swal.fire('Deleted!', 'Your review has been removed.',
-                                        'success');
-                                    window.location.reload();
-                                },
-                                error: function(xhr) {
-                                    console.error(xhr);
-                                    Swal.fire('Error!', 'Failed to delete the review.',
-                                        'error');
-                                }
-                            });
-                        }
-                    });
-                });
-
-                document.getElementById('service-proof-btn').addEventListener('click', function() {
-                    const bookingId = this.dataset.id;
-                    const serviceId = this.dataset.serviceId;
-                    const userId = this.dataset.userId;
-
-                    document.getElementById('booking_id').value = bookingId;
-                    document.getElementById('service_id').value = serviceId;
-                    document.getElementById('user_id').value = userId;
-
-                    $('#serviceProofModal').modal('show');
-                });
-
-                $('#serviceProofForm').on('submit', function(e) {
-                    e.preventDefault();
-
-                    const form = this;
-                    const formData = new FormData(form);
-                    const files = $('#attachments')[0].files;
-
-                    formData.append('attachment_count', files.length);
-                    for (let i = 0; i < files.length; i++) {
-                        formData.append(`booking_attachment_${i}`, files[i]);
-                    }
-
-                    $.ajax({
-                        url: baseUrl + '/api/save-service-proof',
-                        type: 'POST',
-                        data: formData,
-                        processData: false,
-                        contentType: false,
-                        success: function(response) {
-                            Swal.fire('Success', response.message || 'Service proof submitted.',
-                                'success');
-                            $('#serviceProofModal').modal('hide');
-                            $('#serviceProofForm')[0].reset();
-                            location.reload();
-                        },
-                        error: function(xhr) {
-                            console.error(xhr);
-                            Swal.fire('Error', 'Failed to submit service proof.', 'error');
-                        }
-                    });
-                });
+            $.ajax({
+                url: baseUrl + '/api/save-service-proof',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(response) {
+                    Swal.fire('Success', response.message || 'Service proof submitted.', 'success');
+                    $('#serviceProofModal').modal('hide');
+                    $('#serviceProofForm')[0].reset();
+                    location.reload();
+                },
+                error: function(xhr) {
+                    console.error(xhr);
+                    Swal.fire('Error', 'Failed to submit service proof.', 'error');
+                }
+            });
+        });
+    }); // This closes the document.ready function
 </script>
