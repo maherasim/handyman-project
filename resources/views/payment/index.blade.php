@@ -83,7 +83,168 @@
             </div>
         </div>
     </div>
+      @hasanyrole(['provider', 'user','admin','demo_admin'])
     <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
+
+            window.renderedDataTable = $('#datatable').DataTable({
+                processing: true,
+                serverSide: true,
+                autoWidth: false,
+                responsive: true,
+                dom: '<"row align-items-center"><"table-responsive my-3 mt-3 mb-2 pb-1" rt><"row align-items-center data_table_widgets" <"col-md-6" <"d-flex align-items-center flex-wrap gap-3" l i>><"col-md-6" p>><"clear">',
+                ajax: {
+                    "type": "GET",
+                    "url": '{{ route('payment.index_data') }}',
+                    "data": function(d) {
+                        d.search = {
+                            value: $('.dt-search').val()
+                        };
+                        d.filter = {
+                            column_status: $('#column_status').val()
+                        }
+                    },
+                },
+                columns: [
+                    @if (auth()->user()->hasAnyRole(['admin']))
+                        {
+                            name: 'check',
+                            data: 'check',
+                            title: '<input type="checkbox" class="form-check-input" name="select_all_table" id="select-all-table" onclick="selectAllTable(this)">',
+                            exportable: false,
+                            orderable: false,
+                            searchable: false,
+                        },
+                    @endif {
+                        data: 'updated_at',
+                        name: 'updated_at',
+                        title: "{{ __('product.lbl_update_at') }}",
+                        orderable: true,
+                        visible: false,
+                    },
+                    {
+                        data: 'id',
+                        name: 'id',
+                        title: "{{ __('messages.id') }}",
+                    },
+                    {
+                        data: 'booking_id',
+                        name: 'booking_id',
+                        title: "{{ __('messages.service') }}",
+                        //  orderable: false,
+                    },
+                    {
+                        data: 'customer_id',
+                        name: 'customer_id',
+                        title: "{{ __('messages.user') }}"
+                    },
+                    {
+                        data: 'payment_type',
+                        name: 'payment_type',
+                        title: "{{ __('messages.payment_type') }}"
+                    },
+                    {
+                        data: 'payment_status',
+                        name: 'payment_status',
+                        title: "{{ __('messages.status') }}"
+                    },
+                    {
+                        data: 'datetime',
+                        name: 'datetime',
+                        title: "{{ __('messages.datetime') }}"
+                    },
+                    {
+                        data: 'handyman_earning',
+                        name: 'handyman_earning',
+                        title: "My Earning"
+                    },
+                    @if (auth()->user()->hasAnyRole(['admin']))
+                        {
+                            data: 'action',
+                            name: 'action',
+                            orderable: false,
+                            searchable: false,
+                            title: "{{ __('messages.action') }}",
+                        }
+                    @endif ()
+                ],
+                order: [
+                    @if (auth()->user()->hasAnyRole(['admin']))
+                        [7, 'desc']
+                    @else
+                        [6, 'desc']
+                    @endif
+                ],
+                language: {
+                    processing: "{{ __('messages.processing') }}" // Set your custom processing text
+                }
+            });
+        });
+
+
+        $(document).ready(function() {
+            $('#statusSelect').change(function() {
+                var selectedValue = $(this).val();
+                var selectedOption = $('#statusSelect option:selected');
+                var route = selectedOption.data('route');
+
+                if (selectedValue === 'cash' && route) {
+                    window.location.href = route;
+                }
+                window.location.href = route;
+            });
+        });
+
+        function resetQuickAction() {
+            const actionValue = $('#quick-action-type').val();
+            console.log(actionValue)
+            if (actionValue != '') {
+                $('#quick-action-apply').removeAttr('disabled');
+
+                if (actionValue == 'change-status') {
+                    $('.quick-action-field').addClass('d-none');
+                    $('#change-status-action').removeClass('d-none');
+                } else {
+                    $('.quick-action-field').addClass('d-none');
+                }
+            } else {
+                $('#quick-action-apply').attr('disabled', true);
+                $('.quick-action-field').addClass('d-none');
+            }
+        }
+
+        $('#quick-action-type').change(function() {
+            resetQuickAction()
+        });
+
+        $(document).on('update_quick_action', function() {
+
+        })
+
+        $(document).on('click', '[data-ajax="true"]', function(e) {
+            e.preventDefault();
+            const button = $(this);
+            const confirmation = button.data('confirmation');
+
+            if (confirmation === 'true') {
+                const message = button.data('message');
+                if (confirm(message)) {
+                    const submitUrl = button.data('submit');
+                    const form = button.closest('form');
+                    form.attr('action', submitUrl);
+                    form.submit();
+                }
+            } else {
+                const submitUrl = button.data('submit');
+                const form = button.closest('form');
+                form.attr('action', submitUrl);
+                form.submit();
+            }
+        });
+    </script>
+     @endhasanyrole
+@hasanyrole(['handyman'])
+   <script>
         document.addEventListener('DOMContentLoaded', (event) => {
 
             window.renderedDataTable = $('#datatable').DataTable({
@@ -241,5 +402,6 @@
             }
         });
     </script>
+  @endhasanyrole
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 </x-master-layout>

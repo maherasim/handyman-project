@@ -263,6 +263,124 @@ public function cash_index_data(DataTables $datatable, Request $request)
 
 
 
+    public function index_data_handyman(DataTables $datatable,Request $request)
+    {
+$query = Payment::query()
+    ->myPayment()
+    ->with(['handymanEarnings' => function ($q) {
+        $q->where('user_type', 'handyman');
+    }])
+    ->where(function ($q) {
+        $q->where('payment_type', '!=', 'bank_transfer')
+          ->orWhere(function ($sub) {
+              $sub->where('payment_type', 'bank_transfer')->where('status', 1);
+          });
+    })
+    ->groupBy('booking_id'); // <- Important for uniqueness
+
+ 
+        // if (!$request->order) { 
+        //     $query->orderBy('created_at', 'DESC');
+        // } 
+        $filter = $request->filter;
+
+        if (isset($filter)) {
+            if (isset($filter['column_status'])) {
+                $query->where('payment_status', $filter['column_status']);
+            }
+        }
+        if (auth()->user()->hasAnyRole(['admin'])) {
+            $query->newQuery();
+        }
+
+        return $datatable->eloquent($query)
+            ->addColumn('check', function ($row) {
+                return '<input type="checkbox" class="form-check-input select-table-row"  id="datatable-row-'.$row->id.'"  name="datatable_ids[]" value="'.$row->id.'" onclick="dataTableRowCheck('.$row->id.')">';
+            })
+         ->editColumn('id', function($query) {
+    $booking = optional($query->booking);
+    return $booking->id
+        ? "<a class='btn-link btn-link-hover' href=" . route('booking.show', $booking->id) . ">#" . $booking->id . "</a>"
+        : '-';
+})
+
+        ->orderColumn('id', function($query, $order) {
+            $query->orderBy('payments.booking_id', $order);  
+        })
+        ->addColumn('handyman_earning', function($payment) {        
+        $amount = optional($payment->handymanEarning)->commission_amount;
+        return getPriceFormat($amount ?? 0);
+    })
+
+        ->editColumn('booking_id', function($query) {
+            if(!empty($query->booking->bookingPackage)){
+                $service_name = optional(optional($query->booking)->bookingPackage)->name." (".__('messages.service_package').")";
+            }
+            else{
+                $service_name = optional(optional($query->booking)->service)->name." (".__('messages.service').")";
+            }
+ 
+            return ($query->customer_id != null &&isset($query->booking->service)) ? $service_name :'-';
+        })
+        ->filterColumn('booking_id',function($query,$keyword){
+            $query->whereHas('booking.service',function ($q) use($keyword){
+                $q->where('name','like','%'.$keyword.'%');
+            });
+        })
+        ->orderColumn('booking_id', function ($query, $order) {
+            $query->join('bookings', 'bookings.id', '=', 'payments.booking_id')  
+                  ->join('services', 'services.id', '=', 'bookings.service_id')  
+                  ->orderBy('services.name', $order);  
+        })
+        ->editColumn('customer_id', function ($payment) {
+            return view('payment.user', compact('payment'));
+        })
+        ->filterColumn('customer_id',function($query,$keyword){
+            $query->whereHas('customer',function ($q) use($keyword){
+                $q->where('display_name','like','%'.$keyword.'%');
+            });
+        })
+        ->orderColumn('customer_id', function ($query, $order) {
+            $query->select('payments.*')
+                  ->join('users as customers', 'customers.id', '=', 'payments.customer_id')
+                  ->orderBy('customers.display_name', $order);   
+        })
+        ->editColumn('datetime' , function ($query){
+            $sitesetup = Setting::where('type','site-setup')->where('key', 'site-setup')->first();
+            $datetime = json_decode($sitesetup->value);
+            $date = date("$datetime->date_format $datetime->time_format", strtotime($query->datetime));
+            return $date;
+        })
+        ->editColumn('payment_status', function($query) {
+            $payment = $query->payment_status;
+            if($payment !== null){
+                $payment_status = '<span class="text-center text-white badge bg-primary">'.str_replace('_'," ",ucfirst($payment)).'</span>';
+            }else{
+                $payment_status = '<span class="text-center d-block">-</span>';
+            }
+            return $payment_status;
+        })
+    ->addColumn('handyman_earning', function($payment) {
+        // Optional: eager load in controller for performance
+        $earning = optional($payment->handymanEarning)->commission_amount;
+        return getPriceFormat($earning ?? 0);
+    })
+
+
+        ->editColumn('total_amount', function($query) {
+            return getPriceFormat($query->total_amount);
+        })
+        ->addColumn('action', function($payment){
+            return view('payment.action',compact('payment'))->render();
+        })
+        ->addIndexColumn()
+        ->rawColumns(['action','check','payment_status','id'])
+            ->toJson();
+    }
+
+
+
+
 
 
 
