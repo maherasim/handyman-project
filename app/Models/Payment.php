@@ -29,7 +29,7 @@ class Payment extends Model
 {
     return $this->hasMany(CommissionEarning::class, 'booking_id', 'booking_id');
 }
-public function handymanEarnings()
+public function handymanEarning()
 {
     return $this->hasOne(CommissionEarning::class, 'booking_id', 'booking_id')->where('user_type', 'handyman') ->where('commission_status', 'paid');
 }
