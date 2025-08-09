@@ -396,8 +396,8 @@
                                     @endhasanyrole
 
                                 @endif
-
-                          @if ($bookingdata->status === 'completed' && $payment->payment_status == 'paid')
+                           @hasanyrole(['user', 'provider','admin'])
+                                @if ($bookingdata->status === 'completed' && $payment->payment_status == 'paid')
 
                                     <a href="{{ route('invoice_pdf', $bookingdata->id) }}" class="btn btn-primary"
                                        target="_blank">
@@ -405,7 +405,7 @@
                                         {{ __('messages.invoice') }}
                                     </a>
                                 @endif
-
+                         @endhasanyrole
 
                             </div>
                         </div>
