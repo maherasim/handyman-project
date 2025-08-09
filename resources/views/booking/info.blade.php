@@ -1178,7 +1178,10 @@
                         },
                         success: function (response) {
                             Swal.fire("Success!", response.message, "success");
-                            window.location.reload();
+                            // Inline feedback: mark provider assigned without full reload
+                            $('.assign-provider-btn, .assign-provider').prop('disabled', true);
+                            $('.assign-provider-btn, .assign-provider').addClass('disabled');
+                            // Optionally update any UI badges here if needed
                         },
                         error: function (xhr) {
                             Swal.fire("Error!", xhr.responseText, "error");
@@ -1213,7 +1216,7 @@
             });
         });
 
-        // Function to update booking status
+        // Function to update booking status (no full page reload)
         function updateBookingStatus(bookingId, newStatus, isAdvancePaid, reason = '', charges = null) {
             const requestPayload = {
                 id: bookingId,
@@ -1227,18 +1230,42 @@
             };
 
             let api_url = baseUrl + '/api/booking-update';
+            // Show busy state on all status buttons to prevent double clicks
+            setButtonsPending(true);
             $.ajax({
                 url: api_url,
                 type: 'POST',
                 data: requestPayload,
                 success: function (response) {
+                    // Update status text inline
+                    const label = humanizeStatus(newStatus);
+                    $('#booking_status__span').text(label);
                     Swal.fire("Success!", response.message, "success");
-                    window.location.reload();
+                    // Disable status buttons after successful update to avoid repeated actions
+                    setButtonsPending(false);
+                    disableStatusActions();
                 },
                 error: function (xhr) {
                     Swal.fire("Error!", xhr.responseText, "error");
+                    setButtonsPending(false);
                 }
             });
+        }
+        function humanizeStatus(val){
+            if(!val) return '';
+            return String(val).replace(/_/g,' ').replace(/\b\w/g, c => c.toUpperCase());
+        }
+        function setButtonsPending(isPending){
+            const $btns = $('.status-content').find('button, a.btn');
+            if(isPending){
+                $btns.addClass('disabled').attr('aria-busy','true');
+            }else{
+                $btns.removeClass('disabled').removeAttr('aria-busy');
+            }
+        }
+        function disableStatusActions(){
+            // After a status change, disable action buttons to prevent immediate repeat
+            $('.update-booking, .confirm-booking, .hold-booking, #complete-booking').prop('disabled', true).addClass('disabled');
         }
 
         // Hold booking
