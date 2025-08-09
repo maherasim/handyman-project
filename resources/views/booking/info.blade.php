@@ -302,7 +302,7 @@
                                 @endif
 
                           @if ($bookingdata->status === 'pending_approval')
-                            @hasanyrole(['user', 'handyman'])
+                            @hasanyrole(['user'])
                                 <div class="w3-third">
                                     <button class="float-end btn btn-success confirm-booking"
                                             data-id="{{ $bookingdata->id }}"
