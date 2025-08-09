@@ -322,16 +322,7 @@
                                         </button>
                                     </div>
 
-                                    <div class="w3-third">
-                                        <button class="float-end btn btn-danger update-booking" id="cancel-booking"
-                                                data-id="{{ $bookingdata->id }}"
-                                                data-handyman-id="{{ $bookingdata->provider_id }}"
-                                                data-status="cancelled"
-                                                data-confirm-message="Are you sure you want to cancelled this booking?">
-                                            <i class="las la-times-circle"></i>
-                                            {{ __('messages.cancel') }}
-                                        </button>
-                                    </div>
+                                    
                                     @endhasanyrole
                                 @endif
 
