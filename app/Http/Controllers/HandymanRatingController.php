@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\BookingRating;
 use App\Models\HandymanRating;
 use Yajra\DataTables\DataTables;
 
@@ -26,7 +27,7 @@ class HandymanRatingController extends Controller
     public function index_data(DataTables $datatable,Request $request)
     {
         $query = BookingRating::query()->myRating();
-        dd( $query);
+       // dd( $query);
         $filter = $request->filter;
 
         if (isset($filter)) {
