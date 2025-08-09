@@ -840,7 +840,7 @@
 
                            @php
                                $advancePaidAmount = $bookingdata->advance_paid_amount;
-
+dd($bookingdata->service);
                             if ($advancePaidAmount <= 0 && isset($bookingdata->service->advance_payment_amount)) {
                                  
                                 // Get percentage value from service
