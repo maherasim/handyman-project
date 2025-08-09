@@ -41,11 +41,11 @@
          <span class="online-service"></span>
       @endif
       <a href="{{ route('service.detail', $data->id) }}" class="service-img">
-         @php
-    $firstImage = optional($data->getMedia('service_attachment')->first())->getUrl() ?? asset('images/default.jpg');
+          @php
+    $imageUrl = getSingleMediaUrl($data, 'service_attachment') ?? asset('images/default.jpg');
 @endphp
          
-         <img src="{{ $firstImage }}" alt="service image"
+         <img src="{{ $imageUrl }}" alt="service image"
      class="service-asim w-100 object-cover img-fluid rounded-3"> 
       </a>
 
