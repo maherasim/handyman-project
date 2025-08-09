@@ -301,7 +301,7 @@
                                     @endhasanyrole
                                 @endif
 
-                         @if ($bookingdata->status === 'pending_approval')
+                          @if ($bookingdata->status === 'pending_approval')
                                       @hasanyrole(['user', 'handyman'])
                                     <div class="w3-third">
                                         <button class="float-end btn btn-warning hold-booking"
@@ -315,7 +315,7 @@
                                     </div>
                                     
                              @endhasanyrole
-                        @endif
+                         @endif
 
 
 
@@ -530,11 +530,14 @@
                             <div class="col-md-4">
                                 <div class="card h-100">
                                     @php
-                                        $isPaid = isset($payment) && $payment->payment_status === 'paid';
-                                        $cardStyle = $isPaid
-                                            ? 'background: linear-gradient(135deg, #43e97b, #38f9d7); color: #fff; border-radius: 10px; padding: 12px;'
-                                            : '';
-                                    @endphp
+                        $statusClass = match ($payment->payment_status) {
+                            'paid' => 'text-white fw-bold',
+                            'advanced_paid' => 'text-dark fw-bold', // Change here
+                            'Advanced Refund' => 'text-warning',
+                            default => 'text-danger',
+                        };
+                    @endphp
+
 
                                     <div class="card-body" style="{{ $cardStyle }}">
                                         <p class="fz-12 {{ $isPaid ? 'text-white' : 'opacity-75' }}">
