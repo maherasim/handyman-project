@@ -530,17 +530,14 @@
                             <div class="col-md-4">
                                 <div class="card h-100">
                                     @php
-                        $statusClass = match ($payment->payment_status) {
-                            'paid' => 'text-white fw-bold',
-                            'advanced_paid' => 'text-dark fw-bold', // Change here
-                            'Advanced Refund' => 'text-warning',
-                            default => 'text-danger',
-                        };
-                    @endphp
-
+                                        $isPaid = isset($payment) && $payment->payment_status === 'paid';
+                                        $cardStyle = $isPaid
+                                            ? 'background: linear-gradient(135deg, #43e97b, #38f9d7); color: #fff; border-radius: 10px; padding: 12px;'
+                                            : '';
+                                    @endphp
 
                                     <div class="card-body" style="{{ $cardStyle }}">
-                                        <p class="fz-12 {{ $isPaid ? 'text-white' : 'opacity-75' }}">
+                                        <p class="fz-12 {{ $isPaid ? 'text-dark' : 'opacity-75' }}">
                                             {{ __('messages.payment_status') }}
                                         </p>
 
