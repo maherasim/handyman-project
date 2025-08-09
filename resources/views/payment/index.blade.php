@@ -170,7 +170,7 @@
                     render: function(data, type, row, meta) {
                         return 'paid'; // 👈 This will always show "paid"
                     }
-                }
+                },
 
                     { data: 'datetime', name: 'datetime', title: "{{ __('messages.datetime') }}" },
                     { data: 'handyman_earning', name: 'handyman_earning', title: "My Earning" }
