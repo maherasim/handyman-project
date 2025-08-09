@@ -443,7 +443,7 @@
                                     </div>
                                 </div>
                             </div>
- @hasanyrole(['user', 'provider','admin'])
+             @hasanyrole(['user', 'provider','admin'])
                             <div class="col-md-4">
                                 <div class="card h-100">
                                     <div class="card-body">
@@ -839,7 +839,7 @@
                             </tr>
 
                             <!-- Advance and Remaining -->
-                            @if ($showAdvance)
+                            {{-- @if ($showAdvance) --}}
                                 <tr>
                                     <td>{{ __('Advance Payment') }}</td>
                                     <td class="bk-value">
@@ -852,7 +852,7 @@
                                         {{ getPriceFormat($grandTotal - $bookingdata->advance_paid_amount) }}
                                     </td>
                                 </tr>
-                            @endif
+                            {{-- @endif --}}
 
                             </tbody>
                         </table>
