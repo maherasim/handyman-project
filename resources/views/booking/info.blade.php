@@ -310,7 +310,7 @@
                                     </div>
                                     @endhasanyrole
 
-                                    @hasanyrole('user')
+                                    @hasanyrole(['user', 'handyman'])
                                     <div class="w3-third">
                                         <button class="float-end btn btn-primary update-booking"
                                                 data-id="{{ $bookingdata->id }}"
@@ -334,7 +334,7 @@
                                                 data-handyman-id="{{ $bookingdata->provider_id }}"
                                                 data-status="completed"
                                                 data-confirm-message="Are you sure you want to complete this booking?">
-                                            <i class="las la-check-circle"></i>
+                                            <i class="las la--check-circle"></i>
                                             {{ __('messages.completed') }}
                                         </button>
                                     </div>
