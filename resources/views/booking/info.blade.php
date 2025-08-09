@@ -213,14 +213,14 @@
                                     @elseif($bookingdata->handymanAdded->isEmpty())
                                         @hasanyrole('admin|demo_admin|provider')
                                         @if($is_enable_advance_payment == 0 || (isset($bookingdata->payment) && strtolower($bookingdata->payment->payment_status) == 'advanced_paid'))
-                                            <div class="w3-third">
+                                            {{-- <div class="w3-third">
                                                 <button class="float-end btn btn-primary" id="assign-provider"
                                                         data-id="{{ $bookingdata->id }}"
                                                         data-handyman-id="{{ $bookingdata->provider_id }}">
                                                     <i class="lab la-telegram-plane"></i>
                                                     {{ __('messages.assign_provider') }}
                                                 </button>
-                                            </div>
+                                            </div> --}}
 
                                             <div class="w3-third">
                                                 <a href="{{ route('booking.assign_form', ['id' => $bookingdata->id]) }}"
