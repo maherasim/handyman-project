@@ -316,7 +316,7 @@
                                                 data-advance="{{ $bookingdata->is_advance_paid ? 1 : 0 }}"
                                                 data-confirm-message="You want to Confirm this booking?">
                                                 <i class="las la-check-circle"></i>
-                                                {{ __('Confirm') }}
+                                                {{ __('Confirm Job Done') }}
                                             </button>
 
                                         </div>
