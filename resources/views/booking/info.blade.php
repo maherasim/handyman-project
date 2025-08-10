@@ -572,7 +572,7 @@
                                     <div class="card-body">
                                         <p class="opacity-75 fz-12">{{ __('Working Address') }}</p>
                                         <p class="mb-0 text-primary">
-                                            {{ ($bookingdata->address) : '-' }}</p>
+                                             {{ isset($payment) ? ucfirst($bookingdata->address) : '-' }}</p>
                                     </div>
                                 </div>
                             </div>
