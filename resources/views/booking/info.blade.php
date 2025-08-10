@@ -291,6 +291,8 @@
                                                 {{ __('messages.hold') }}
                                             </button>
                                         </div>
+                                    @endhasanyrole
+                                      @hasanyrole(['handyman'])
                                         <div class="w3-third">
                                             <button class="float-end btn btn-primary update-booking"
                                                 data-id="{{ $bookingdata->id }}"
