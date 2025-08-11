@@ -1402,5 +1402,109 @@
                 </div>`;
             $('#extraChargesWrapper').append(row);
         }
+
+        // Rating and review handlers
+        let selectedRating = 0;
+        let editingReviewId = null;
+
+        $(document).on('click', '#rate-now-btn', function () {
+            const bookingId = $(this).data('id');
+            $('#ratingBookingId').val(bookingId);
+            $('#reviewText').val('');
+            selectedRating = 0;
+            $('.star').removeClass('selected');
+            $('#ratingModal').modal('show');
+        });
+
+        $(document).on('click', '.star', function () {
+            selectedRating = $(this).data('value');
+            $('.star').removeClass('selected');
+            $(this).prevAll().addBack().addClass('selected');
+        });
+
+        $('#ratingForm').on('submit', function (e) {
+            e.preventDefault();
+
+            const bookingId = $('#ratingBookingId').val();
+            const review = $('#reviewText').val().trim();
+
+            if (selectedRating === 0) {
+                return Swal.fire('Error', 'Please select a star rating.', 'warning');
+            }
+
+            const payload = {
+                booking_id: "{{ $bookingdata->id }}",
+                service_id: "{{ $bookingdata->service_id }}",
+                customer_id: "{{ $bookingdata->customer_id }}",
+                rating: selectedRating,
+                review: review
+            };
+
+            if (editingReviewId) {
+                payload.id = editingReviewId;
+            }
+
+            $.ajax({
+                url: baseUrl + '/api/save-booking-rating',
+                type: 'POST',
+                data: payload,
+                success: function (response) {
+                    Swal.fire('Thank you!', 'Your rating has been submitted.', 'success');
+                    $('#ratingModal').modal('hide');
+                    window.location.reload();
+                },
+                error: function (xhr) {
+                    console.error(xhr);
+                    Swal.fire('Error', 'Failed to submit rating.', 'error');
+                }
+            });
+        });
+
+        $(document).on('click', '.edit-review', function () {
+            const reviewId = $(this).data('id');
+            const rating = $(this).data('rating');
+            const reviewText = $(this).data('review');
+
+            selectedRating = rating;
+            editingReviewId = reviewId;
+
+            $('#reviewText').val(reviewText);
+            $('.star').removeClass('selected').each(function () {
+                if ($(this).data('value') <= rating) {
+                    $(this).addClass('selected');
+                }
+            });
+
+            $('#ratingModal').modal('show');
+        });
+
+        $(document).on('click', '.delete-review', function () {
+            const reviewId = $(this).data('id');
+
+            Swal.fire({
+                title: 'Are you sure?',
+                text: 'You will not be able to recover this review!',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: baseUrl + '/api/delete-booking-rating',
+                        type: 'POST',
+                        data: { id: reviewId },
+                        success: function (res) {
+                            Swal.fire('Deleted!', 'Your review has been removed.', 'success');
+                            window.location.reload();
+                        },
+                        error: function (xhr) {
+                            console.error(xhr);
+                            Swal.fire('Error!', 'Failed to delete the review.', 'error');
+                        }
+                    });
+                }
+            });
+        });
+
     });
 </script>
