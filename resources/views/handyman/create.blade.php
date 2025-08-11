@@ -135,17 +135,22 @@
                                         )->class('select2js form-group providers')->required()->attribute('data-placeholder', __('messages.select_name', ['select' => __('messages.providers')]))->attribute('data-ajax--url', route('ajax-list', ['type' => 'provider'])) }}
                                 </div>
                             @endif
-                            <div class="form-group col-md-4">
+                            {{-- <div class="form-group col-md-4">
                                 {{ html()->label(__('messages.select_name', ['select' => __('messages.handymantype')]) . ' <span class="text-danger">*</span>', 'handymantype_id')->class('form-control-label') }}
                                 <br />
                                 {{ html()->select('handymantype_id', [], old('handymantype_id'))->class('select2js form-group handymantype_id')->id('handymantype_id')->required()->attribute('data-placeholder', __('messages.select_name', ['select' => __('messages.handymantype')])) }}
+                            </div> --}}
+
+                           <div class="form-group col-md-4">
+                                {{ html()->label(__('Handyman Commission (%)'), 'handyman_commission')->class('form-control-label') }}
+                                {{ html()->number('handyman_commission', $handymandata->handyman_commission ?? null)
+                                    ->attributes(['min' => 1, 'max' => 85, 'step' => 'any', 'placeholder' => 'e.g. 34.5'])
+                                    ->class('form-control')
+                                    ->id('handyman_commission') }}
+                                <small class="text-muted">Enter 1 to 85. Decimals allowed (e.g., 34.5).</small>
+                                <small class="help-block text-danger" id="commission_error"></small>
                             </div>
 
-                            <div class="form-group col-md-4">
-                                {{ html()->label(__('Handyman Commission (%)'), 'handyman_commission')->class('form-control-label') }}
-                                {{ html()->number('handyman_commission', $handymandata->handyman_commission ?? null)->attributes(['min' => 1, 'max' => 85, 'step' => 'any', 'placeholder' => 'e.g. 34.5'])->class('form-control')->id('handyman_commission') }}
-                                <small class="text-muted">Enter 1 to 85. Decimals allowed (e.g., 34.5).</small>
-                            </div>
 
                             <div class="form-group col-md-4">
                                 {{ html()->label(__('messages.select_name', ['select' => __('messages.provider_address')]) . ' <span class="text-danger">*</span>', 'name')->class('form-control-label') }}
@@ -392,6 +397,22 @@
                 toolbar: 'undo redo | bold italic | bullist numlist | link image preview',
                 menubar: false
             });
+            $(document).on('input', '#handyman_commission', function () {
+    let value = parseFloat($(this).val());
+    let errorField = $('#commission_error');
+
+    if (isNaN(value)) {
+        errorField.text('');
+        return;
+    }
+
+    if (value < 1 || value > 85) {
+        errorField.text('Commission must be between 1 and 85.');
+    } else {
+        errorField.text('');
+    }
+});
+
         </script>
     @endsection
 </x-master-layout>
