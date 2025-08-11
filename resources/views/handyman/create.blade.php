@@ -135,11 +135,27 @@
                                         )->class('select2js form-group providers')->required()->attribute('data-placeholder', __('messages.select_name', ['select' => __('messages.providers')]))->attribute('data-ajax--url', route('ajax-list', ['type' => 'provider'])) }}
                                 </div>
                             @endif
-                            <div class="form-group col-md-4">
+                            {{-- <div class="form-group col-md-4">
                                 {{ html()->label(__('messages.select_name', ['select' => __('messages.handymantype')]) . ' <span class="text-danger">*</span>', 'handymantype_id')->class('form-control-label') }}
                                 <br />
                                 {{ html()->select('handymantype_id', [], old('handymantype_id'))->class('select2js form-group handymantype_id')->id('handymantype_id')->required()->attribute('data-placeholder', __('messages.select_name', ['select' => __('messages.handymantype')])) }}
+                            </div> --}}
+
+                             <div class="form-group col-md-4">
+                                {{ html()->label(__('messages.handymantype_id') . ' <span class="text-danger">*</span>', 'handymantype_id')->class('form-control-label') }}
+                                {{ html()->number('handymantype_id', $handymandata->handymantype_id)
+                                    ->placeholder(__('messages.handymantype_id'))
+                                    ->class('form-control')
+                                    ->attributes(['min' => 0, 'max' => 85])
+                                    ->required() }}
+                                <small class="help-block with-errors text-danger"></small>
                             </div>
+
+
+
+
+
+
 
                             <div class="form-group col-md-4">
                                 {{ html()->label(__('messages.select_name', ['select' => __('messages.provider_address')]) . ' <span class="text-danger">*</span>', 'name')->class('form-control-label') }}
