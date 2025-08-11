@@ -569,15 +569,22 @@
 
                                 </div>
                             </div>
-                            <div class="col-md-4">
+                            
+
+                        <div class="col-md-4">
                                 <div class="card h-100">
                                     <div class="card-body">
                                         <p class="opacity-75 fz-12">{{ __('Working Address') }}</p>
-                                        <p class="mb-0 text-primary">
-                                            {{ isset($payment) ? ucfirst($bookingdata->address) : '-' }}</p>
+                                        <p class="mb-0 text-primary" id="booking_status__span">
+                                            {{ str_replace('_', ' ', ucfirst($bookingdata->address)) }}</p>
                                     </div>
                                 </div>
-                            </div>
+                        </div>
+
+
+
+
+
 
                             <!-- Add Cancellation Reason Card -->
                             @if ($bookingdata->status === 'cancelled')
