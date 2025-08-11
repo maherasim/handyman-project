@@ -206,23 +206,26 @@ class PayPalController extends Controller
 
                         // Initialize share deduction
                         $handymen = BookingHandymanMapping::where( 'booking_id', $booking->id )->pluck( 'handyman_id' );
-                        foreach ( $handymen as $handyman_id ) {
-                            $handyman = User::find( $handyman_id );
+                         foreach ($handymen as $handyman_id) {
+                $handyman = User::find($handyman_id);
 
-                            if ( $handyman->handymantype_id == 1 ) {
-                                // Company: 60% of total provider earning
-                                $handyman_share = ( $total_provider_earning * 60 ) / 100;
-                            } elseif ( $handyman->handymantype_id == 2 ) {
-                                $handyman_share = 5;
-                            } else {
-                                continue;
-                            }
+                if (!$handyman || $handyman->handyman_commission === null) {
+                    continue; // Skip if no handyman or no commission set
+                }
 
-                            // Reduce this from remaining provider's share
+                // Ensure commission is between 1% and 85%
+                $commission_percent = max(1, min(85, $handyman->handyman_commission));
+
+                // Calculate handyman share
+                $handyman_share = ($total_provider_earning * $commission_percent) / 100;
+
+                // Deduct from provider's remaining share
                 $remaining_provider_earning -= $handyman_share;
 
+                // Add to handyman wallet
                 Wallet::firstOrCreate(['user_id' => $handyman_id])->increment('amount', $handyman_share);
 
+                // Record payout
                 HandymanPayout::create([
                     'handyman_id' => $handyman_id,
                     'booking_id' => $booking->id,
@@ -233,6 +236,7 @@ class PayPalController extends Controller
                     'payment_gateway' => 'wallet',
                 ]);
 
+                // Record commission earning
                 CommissionEarning::create([
                     'booking_id' => $booking->id,
                     'user_type' => 'handyman',
@@ -241,7 +245,6 @@ class PayPalController extends Controller
                     'commission_status' => 'paid',
                 ]);
             }
-
             // Pay remaining part to provider
             Wallet::firstOrCreate(['user_id' => $booking->provider_id])->increment('amount', $remaining_provider_earning);
             Wallet::firstOrCreate(['user_id' => $admin_user_id])->increment('amount', $remaining_admin_commission);
