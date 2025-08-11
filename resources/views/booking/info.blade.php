@@ -1247,7 +1247,9 @@
                     // Update status text inline
                     const label = humanizeStatus(newStatus);
                     $('#booking_status__span').text(label);
-                    Swal.fire("Success!", response.message, "success");
+                    Swal.fire("Success!", response.message, "success").then(() => {
+                        window.location.reload();
+                    });
                     // Disable status buttons after successful update to avoid repeated actions
                     setButtonsPending(false);
                     disableStatusActions();
