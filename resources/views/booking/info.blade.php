@@ -404,7 +404,6 @@
                                             </button>
                                         </div>
                                         @if (isset($payment) && $payment->payment_status != 'paid')
-                                        @if (isset($payment) && $payment->payment_status != 'paid')
                                             <div class="w3-third d-flex align-items-end">
                                                 <a class="float-end btn btn-warning"
                                                     href="{{ route('book.service', ['id' => $bookingdata->service_id, 'booking_id' => $bookingdata->id, 'payment_type' => 'full_payment']) }}"
