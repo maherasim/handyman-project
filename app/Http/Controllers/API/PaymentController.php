@@ -105,30 +105,24 @@ public function savePayment(Request $request)
             $advance_provider_earning = $advance_paid - $advance_admin_commission;
             $remaining_provider_earning = $remaining_amount - $remaining_admin_commission;
 
+            // Provider total earning across advance + remaining
             $total_provider_earning = $advance_provider_earning + $remaining_provider_earning;
 
-            // Initialize share deduction
+            // Calculate handyman commissions based on provider's total earning
             $handymen = BookingHandymanMapping::where('booking_id', $booking->id)->pluck('handyman_id');
+            $total_handyman_due = 0;
             foreach ($handymen as $handyman_id) {
                 $handyman = User::find($handyman_id);
-
                 if (!$handyman || $handyman->handyman_commission === null) {
-                    continue; // Skip if no handyman or no commission set
+                    continue;
                 }
-
-                // Ensure commission is between 1% and 85%
                 $commission_percent = max(1, min(85, $handyman->handyman_commission));
-
-                // Calculate handyman share
                 $handyman_share = ($total_provider_earning * $commission_percent) / 100;
+                $total_handyman_due += $handyman_share;
 
-                // Deduct from provider's remaining share
-                $remaining_provider_earning -= $handyman_share;
-
-                // Add to handyman wallet
+                // Pay handyman now
                 Wallet::firstOrCreate(['user_id' => $handyman_id])->increment('amount', $handyman_share);
 
-                // Record payout
                 HandymanPayout::create([
                     'handyman_id' => $handyman_id,
                     'booking_id' => $booking->id,
@@ -139,7 +133,6 @@ public function savePayment(Request $request)
                     'payment_gateway' => 'wallet',
                 ]);
 
-                // Record commission earning
                 CommissionEarning::create([
                     'booking_id' => $booking->id,
                     'user_type' => 'handyman',
@@ -149,14 +142,25 @@ public function savePayment(Request $request)
                 ]);
             }
 
+            // Net provider payout for the remaining payment after paying all handymen
+            $provider_remaining_net = $remaining_provider_earning - $total_handyman_due;
 
-            // Pay remaining part to provider
-            Wallet::firstOrCreate(['user_id' => $booking->provider_id])->increment('amount', $remaining_provider_earning);
+            // Credit/debit provider wallet based on net
+            if ($provider_remaining_net >= 0) {
+                Wallet::firstOrCreate(['user_id' => $booking->provider_id])->increment('amount', $provider_remaining_net);
+            } else {
+                // Shortfall implies we need to deduct from provider (advance earnings already credited)
+                $shortfall = abs($provider_remaining_net);
+                Wallet::firstOrCreate(['user_id' => $booking->provider_id])->decrement('amount', $shortfall);
+            }
+
+            // Credit admin commission for the remaining part
             Wallet::firstOrCreate(['user_id' => $admin_user_id])->increment('amount', $remaining_admin_commission);
 
+            // Record provider payout for remaining leg (can be negative)
             ProviderPayout::create([
                 'provider_id' => $booking->provider_id,
-                'amount' => $remaining_provider_earning,
+                'amount' => $provider_remaining_net,
                 'payment_method' => 'wallet',
                 'paid_date' => Carbon::now(),
                 'status' => 'paid',
