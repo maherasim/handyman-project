@@ -107,47 +107,59 @@ public function savePayment(Request $request)
 
             $total_provider_earning = $advance_provider_earning + $remaining_provider_earning;
 
-            // Initialize share deduction
+            
             $handymen = BookingHandymanMapping::where('booking_id', $booking->id)->pluck('handyman_id');
             foreach ($handymen as $handyman_id) {
                 $handyman = User::find($handyman_id);
 
                 if (!$handyman || $handyman->handyman_commission === null) {
-                    continue; // Skip if no handyman or no commission set
+                    continue;
                 }
 
                 // Ensure commission is between 1% and 85%
                 $commission_percent = max(1, min(85, $handyman->handyman_commission));
 
-                // Calculate handyman share
-                $handyman_share = ($total_provider_earning * $commission_percent) / 100;
+                // Handyman total share from full provider earning
+                $handyman_total_share = ($total_provider_earning * $commission_percent) / 100;
 
-                // Deduct from provider's remaining share
-                $remaining_provider_earning -= $handyman_share;
+                // Calculate handyman's share from advance portion
+                $handyman_advance_share = ($advance_provider_earning / $total_provider_earning) * $handyman_total_share;
+                $handyman_remaining_share = $handyman_total_share - $handyman_advance_share;
 
-                // Add to handyman wallet
-                Wallet::firstOrCreate(['user_id' => $handyman_id])->increment('amount', $handyman_share);
+                // If advance was already paid to provider, deduct handyman's advance share from provider wallet now
+                if ($handyman_advance_share > 0) {
+                    Wallet::firstOrCreate(['user_id' => $booking->provider_id])
+                        ->decrement('amount', $handyman_advance_share);
+                }
 
-                // Record payout
+                // Deduct handyman remaining share from provider's remaining payout
+                $remaining_provider_earning -= $handyman_remaining_share;
+
+                // Pay full handyman share now
+                Wallet::firstOrCreate(['user_id' => $handyman_id])
+                    ->increment('amount', $handyman_total_share);
+
+                // Record handyman payout
                 HandymanPayout::create([
                     'handyman_id' => $handyman_id,
                     'booking_id' => $booking->id,
-                    'amount' => $handyman_share,
+                    'amount' => $handyman_total_share,
                     'status' => 'paid',
                     'paid_date' => Carbon::now(),
                     'payment_method' => 'wallet',
                     'payment_gateway' => 'wallet',
                 ]);
 
-                // Record commission earning
+                // Record commission earning for handyman
                 CommissionEarning::create([
                     'booking_id' => $booking->id,
                     'user_type' => 'handyman',
                     'employee_id' => $handyman_id,
-                    'commission_amount' => $handyman_share,
+                    'commission_amount' => $handyman_total_share,
                     'commission_status' => 'paid',
                 ]);
             }
+
 
 
             // Pay remaining part to provider
