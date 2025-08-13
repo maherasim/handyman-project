@@ -62,7 +62,8 @@ class User extends Authenticatable implements HasMedia
         'is_subscribe'            => 'integer',
         'is_available'            => 'integer',
         'slots_for_all_services' => 'integer',
-        'is_email_verified'    => 'integer'
+        'is_email_verified'    => 'integer',
+        'handyman_commission'  => 'string'
     ];
 
     protected static function boot(){

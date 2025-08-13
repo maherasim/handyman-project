@@ -78,6 +78,7 @@ class UserResource extends JsonResource
             'designation' => $this->designation,
             'handymantype_id' => $this->handymantype_id,
             'handymantype' => optional($this->handymantype)->name,
+            'handyman_commission' => (string) $this->handyman_commission,
             'known_languages' => $this->known_languages,
             'language_option' => $this->language_option,
             'availability' => $this->availability,
