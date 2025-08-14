@@ -563,7 +563,7 @@
                 </p>
             @else
                 <p class="mb-0 text-danger">
-                     Cancelled
+                    {{ __('messages.pending') }}
                 </p>
             @endif
         </div>
