@@ -550,7 +550,7 @@
                 'paid' => 'text-white fw-bold',
                 'advanced_paid' => 'text-dark fw-bold',
                 'Advanced Refund' => 'text-warning',
-                'cancelled' => 'text-secondary fw-bold',
+                'cancelled' => 'text-danger fw-bold', // Red text for cancelled
                 default => 'text-danger',
             };
         @endphp
