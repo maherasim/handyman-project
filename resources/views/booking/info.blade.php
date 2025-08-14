@@ -529,13 +529,30 @@
                                     </div>
                                 </div>
                             </div>
-                           <div class="col-md-4"> 
+                           <div class="col-md-4">  
     <div class="card h-100">
         @php
-            $isPaid = isset($payment) && $payment->payment_status === 'paid';
+            // If booking is cancelled, override payment status
+            if (isset($bookingdata) && $bookingdata->status === 'cancelled') {
+                $paymentStatus = 'cancelled';
+            } elseif (isset($payment) && $payment->payment_status) {
+                $paymentStatus = $payment->payment_status;
+            } else {
+                $paymentStatus = null;
+            }
+
+            $isPaid = $paymentStatus === 'paid';
             $cardStyle = $isPaid
                 ? 'background: linear-gradient(135deg, #43e97b, #38f9d7); color: #fff; border-radius: 10px; padding: 12px;'
                 : '';
+
+            $statusClass = match ($paymentStatus) {
+                'paid' => 'text-white fw-bold',
+                'advanced_paid' => 'text-dark fw-bold',
+                'Advanced Refund' => 'text-warning',
+                'cancelled' => 'text-secondary fw-bold',
+                default => 'text-danger',
+            };
         @endphp
 
         <div class="card-body" style="{{ $cardStyle }}">
@@ -543,23 +560,9 @@
                 {{ __('messages.payment_status') }}
             </p>
 
-            @if (isset($payment) && $payment->payment_type === 'bank_transfer' && $payment->status == 0)
-                <p class="mb-0 text-warning">
-                    {{ __('Pending Admin Approval') }}
-                </p>
-            @elseif (isset($payment) && $payment->payment_status)
-                @php
-                    $statusClass = match ($payment->payment_status) {
-                        'paid' => 'text-white fw-bold',
-                        'advanced_paid' => 'text-dark fw-bold',
-                        'Advanced Refund' => 'text-warning',
-                        'cancelled' => 'text-secondary fw-bold', // Added cancelled here
-                        default => 'text-danger',
-                    };
-                @endphp
-
+            @if ($paymentStatus)
                 <p class="mb-0 {{ $statusClass }}">
-                    {{ str_replace('_', ' ', ucfirst($payment->payment_status)) }}
+                    {{ str_replace('_', ' ', ucfirst($paymentStatus)) }}
                 </p>
             @else
                 <p class="mb-0 text-danger">
