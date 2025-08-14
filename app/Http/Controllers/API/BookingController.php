@@ -449,14 +449,13 @@ class BookingController extends Controller
 
         }
         // If booking is cancelled and not an advance refund case, mark payment as 'cancelled' when appropriate
-        if($data['status'] == 'cancelled' && $paymentdata){
-            $current = $paymentdata->payment_status;
-            dd(  $current);
-            if(!in_array($current, ['Advanced Refund', 'paid', 'advanced_paid'])){
-                $paymentdata->payment_status = 'cancelled';
-                $paymentdata->save();
-            }
-        }
+if ($data['status'] === 'cancelled') {
+    if ($paymentdata && $paymentdata->payment_status === 'pending') {
+        $paymentdata->payment_status = 'cancelled';
+        $paymentdata->save();
+    }
+}
+
         $data['reason'] = isset($data['reason']) ? $data['reason'] : null;
 
         if($data['status'] == 'cancelled' && $data['cancellation_charge_amount'] > 0 && $clientPaymentStatus !=='advanced_paid' && !$actorIsProvider){
