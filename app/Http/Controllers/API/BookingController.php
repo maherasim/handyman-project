@@ -322,6 +322,8 @@ class BookingController extends Controller
         $wallet_amount = $user_wallet->amount;
         // Normalize client-provided payment_status for safe comparisons
         $clientPaymentStatus = strtolower(str_replace(' ', '_', $data['payment_status'] ?? ''));
+        // Determine if the actor is the assigned provider
+        $actorIsProvider = auth()->check() && auth()->user()->hasAnyRole(['provider']) && auth()->id() === $bookingdata->provider_id;
 
         if($request->type == 'service_addon'){
             if($request->has('service_addon') && $request->service_addon != null ){
@@ -456,7 +458,7 @@ class BookingController extends Controller
         }
         $data['reason'] = isset($data['reason']) ? $data['reason'] : null;
 
-        if($data['status'] == 'cancelled' && $data['cancellation_charge_amount'] > 0 && $data['payment_status'] !=='advanced_paid'){
+        if($data['status'] == 'cancelled' && $data['cancellation_charge_amount'] > 0 && $clientPaymentStatus !=='advanced_paid' && !$actorIsProvider){
             $cancellation_charges = $data['cancellation_charge_amount'];
             $user_wallet->amount = $wallet_amount - $cancellation_charges;
             $user_wallet->update();
