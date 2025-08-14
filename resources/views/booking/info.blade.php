@@ -1272,9 +1272,9 @@
                     // Update status text inline
                     const label = humanizeStatus(newStatus);
                     $('#booking_status__span').text(label);
-                    // No success popup or reload; update UI silently
                     setButtonsPending(false);
                     disableStatusActions();
+                    window.location.reload();
                 },
                 error: function (xhr) {
                     Swal.fire("Error!", xhr.responseText, "error");
