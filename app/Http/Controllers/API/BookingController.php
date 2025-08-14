@@ -320,6 +320,9 @@ class BookingController extends Controller
         $paymentdata = Payment::where('booking_id',$id)->first();
         $user_wallet = Wallet::where('user_id', $bookingdata->customer_id)->first();
         $wallet_amount = $user_wallet->amount;
+        // Normalize client-provided payment_status for safe comparisons
+        $clientPaymentStatus = strtolower(str_replace(' ', '_', $data['payment_status'] ?? ''));
+
         if($request->type == 'service_addon'){
             if($request->has('service_addon') && $request->service_addon != null ){
                 foreach($request->service_addon as $serviceaddon){
@@ -418,7 +421,7 @@ class BookingController extends Controller
             }
         }
 
-        if(($data['status'] == 'rejected' || $data['status'] == 'cancelled') && $data['payment_status'] =='advanced_paid'){
+        if(($data['status'] == 'rejected' || $data['status'] == 'cancelled') && (($clientPaymentStatus == 'advanced_paid') || (optional($paymentdata)->payment_status == 'advanced_paid'))){
             $advance_paid_amount = $bookingdata->advance_paid_amount;
             $cancellation_charges = $data['cancellation_charge_amount'];
 
@@ -442,6 +445,14 @@ class BookingController extends Controller
             ];
             $this->sendNotification($activity_data);
 
+        }
+        // If booking is cancelled and not an advance refund case, mark payment as 'cancelled' when appropriate
+        if($data['status'] == 'cancelled' && $paymentdata){
+            $current = $paymentdata->payment_status;
+            if(!in_array($current, ['Advanced Refund', 'paid', 'advanced_paid'])){
+                $paymentdata->payment_status = 'cancelled';
+                $paymentdata->save();
+            }
         }
         $data['reason'] = isset($data['reason']) ? $data['reason'] : null;
 
