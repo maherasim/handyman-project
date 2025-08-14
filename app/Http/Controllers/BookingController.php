@@ -252,10 +252,18 @@ class BookingController extends Controller
             })
 
             ->editColumn('payment_id', function ($query) {
-                $payment = $query->payment()->orderBy('id', 'desc')->first();
-                $payment_status = $payment ? $payment->payment_status : null;
+                // If booking is cancelled, force payment status to 'cancelled'
+                $payment_status = null;
+                if ($query->status === 'cancelled') {
+                    $payment_status = 'cancelled';
+                } else {
+                    $payment = $query->payment()->orderBy('id', 'desc')->first();
+                    $payment_status = $payment ? $payment->payment_status : null;
+                }
+
                 if ($payment_status !== null) {
-                    $status = '<span class="text-center text-white badge bg-primary">' . str_replace('_', " ", ucfirst($payment_status)) . '</span>';
+                    $badgeClass = $payment_status === 'cancelled' ? 'bg-danger' : 'bg-primary';
+                    $status = '<span class="text-center text-white badge ' . $badgeClass . '">' . str_replace('_', " ", ucfirst($payment_status)) . '</span>';
                 } else {
                     $status = '<span class="badge text-primary bg-primary-subtle">' . __('messages.pending') . '</span>';
                 }
