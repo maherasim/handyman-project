@@ -907,7 +907,7 @@ public function bookingAssigned(Request $request)
         }
         $providerdata = User::with([
             'providerBooking' => function ($query) {
-                $query->orderBy('updated_at', 'desc');
+                $query->orderBy('updated_at', 'desc')->with('slots');
             }
         ])->where('user_type', 'provider')->where('id', $id)->first();
 
@@ -923,8 +923,27 @@ public function bookingAssigned(Request $request)
             $city = optional($booking->provider)->city->name ?? '-';
             $amount = $booking->total_amount;
             $payment_status = optional($booking->payment)->payment_status ?? null;
-            $start_at = $booking->start_at;
-            $end_at = $booking->end_at;
+            // Derive start/end from service_slots if booking fields are empty
+            $derivedStart = null;
+            $derivedEnd = null;
+            if ($booking->relationLoaded('slots') && $booking->slots->count() > 0) {
+                $derivedStart = $booking->slots
+                    ->map(function ($slot) {
+                        return trim(($slot->date ?? '') . ' ' . ($slot->start_time ?? ''));
+                    })
+                    ->filter()
+                    ->sort()
+                    ->first();
+                $derivedEnd = $booking->slots
+                    ->map(function ($slot) {
+                        return trim(($slot->date ?? '') . ' ' . ($slot->end_time ?? ''));
+                    })
+                    ->filter()
+                    ->sort()
+                    ->last();
+            }
+            $start_at = $booking->start_at ?: $derivedStart;
+            $end_at = $booking->end_at ?: $derivedEnd;
             $earningData[] = [
                 'provider_id' => $providerdata->id,
                 'booking_id' => $booking->id,
