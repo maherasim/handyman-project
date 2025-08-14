@@ -232,7 +232,7 @@
 
                                 @if($bookingData['booking_detail']['status'] == 'accept' || $bookingData['booking_detail']['status'] == 'on_going' || $bookingData['booking_detail']['status'] == 'in_progress' || $bookingData['booking_detail']['status'] == 'hold')
                                 <ul class="list-inline mt-3 mb-0 p-0">
-                                    @if(!empty($bookingData['provider_data']['city_name']))
+                                    @if(!empty($bookingData['provider_data']['city_name']) || !empty($bookingData['provider_data']['country_name']))
                                     <li class="mb-1">
                                         <div class="d-flex align-items-center gap-2">
                                             <span class="text-body flex-shrink-0">
@@ -241,20 +241,7 @@
                                                     <path fill-rule="evenodd" clip-rule="evenodd" d="M6.99963 14.25C6.10078 14.25 1.375 10.4238 1.375 6.42247C1.375 3.28998 3.89283 0.75 6.99963 0.75C10.1064 0.75 12.625 3.28998 12.625 6.42247C12.625 10.4238 7.89849 14.25 6.99963 14.25Z" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"></path>
                                                 </svg>
                                             </span>
-                                            <span class="h6 text-body">{{ $bookingData['provider_data']['city_name'] }}</span>
-                                        </div>
-                                    </li>
-                                    @endif
-                                    @if(!empty($bookingData['provider_data']['country_name']))
-                                    <li class="mb-1">
-                                        <div class="d-flex align-items-center gap-2">
-                                            <span class="text-body flex-shrink-0">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="17" viewBox="0 0 14 15" fill="none">
-                                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M8.875 6.37538C8.875 5.33943 8.03557 4.5 7.00038 4.5C5.96443 4.5 5.125 5.33943 5.125 6.37538C5.125 7.41057 5.96443 8.25 7.00038 8.25C8.03557 8.25 8.875 7.41057 8.875 6.37538Z" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"></path>
-                                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M6.99963 14.25C6.10078 14.25 1.375 10.4238 1.375 6.42247C1.375 3.28998 3.89283 0.75 6.99963 0.75C10.1064 0.75 12.625 3.28998 12.625 6.42247C12.625 10.4238 7.89849 14.25 6.99963 14.25Z" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"></path>
-                                                </svg>
-                                            </span>
-                                            <span class="h6 text-body">{{ $bookingData['provider_data']['country_name'] }}</span>
+                                            <span class="h6 text-body">{{ $bookingData['provider_data']['city_name'] ?? '' }}@if(!empty($bookingData['provider_data']['city_name']) && !empty($bookingData['provider_data']['country_name'])) - @endif{{ $bookingData['provider_data']['country_name'] ?? '' }}</span>
                                         </div>
                                     </li>
                                     @endif
