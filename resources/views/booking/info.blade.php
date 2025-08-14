@@ -1218,7 +1218,32 @@
                 cancelButtonText: 'No, cancel'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    updateBookingStatus(bookingId, status, isAdvancePaid);
+                    if (status === 'cancelled') {
+                        Swal.fire({
+                            title: 'Cancellation Reason',
+                            input: 'textarea',
+                            inputLabel: 'Please provide a reason for cancellation',
+                            inputPlaceholder: 'Type your reason here...',
+                            inputAttributes: {
+                                'aria-label': 'Cancellation reason'
+                            },
+                            showCancelButton: true,
+                            confirmButtonText: 'Submit',
+                            cancelButtonText: 'Close',
+                            inputValidator: (value) => {
+                                if (!value || value.trim() === '') {
+                                    return 'Reason is required';
+                                }
+                            }
+                        }).then((inputResult) => {
+                            if (inputResult.isConfirmed) {
+                                const reason = inputResult.value;
+                                updateBookingStatus(bookingId, status, isAdvancePaid, reason);
+                            }
+                        });
+                    } else {
+                        updateBookingStatus(bookingId, status, isAdvancePaid);
+                    }
                 }
             });
         });
