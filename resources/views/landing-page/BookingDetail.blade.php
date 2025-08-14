@@ -57,8 +57,7 @@
                                 @if($bookingData['booking_detail']['status'] === 'pending' &&
                                     ($bookingData['booking_detail']['payment_status'] !== 'failed' ||
                                      $bookingData['booking_detail']['payment_status'] === 'pending' ||
-                                     $bookingData['booking_detail']['payment_status'] === 'advanced_paid') ||
-                                    $bookingData['booking_detail']['status'] === 'accept')
+                                     $bookingData['booking_detail']['payment_status'] === 'advanced_paid'))
                                     @if(!$bookingData['service']['is_enable_advance_payment'] ||
                                         ($bookingData['service']['is_enable_advance_payment'] &&
                                          $bookingData['booking_detail']['payment_status'] === 'advanced_paid'))
