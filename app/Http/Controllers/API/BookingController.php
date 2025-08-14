@@ -436,7 +436,7 @@ class BookingController extends Controller
 
             $user_wallet->update();
             $paymentData = Payment::where('booking_id', $bookingdata->id)->first();
-            $paymentData->payment_status = 'Advanced Refund';
+            $paymentData->payment_status = 'Cancelled';
             $paymentData->update();
             $activity_data = [
                 'activity_type' => 'wallet_refund',
@@ -449,12 +449,12 @@ class BookingController extends Controller
 
         }
         // If booking is cancelled and not an advance refund case, mark payment as 'cancelled' when appropriate
-if ($data['status'] === 'cancelled') {
-    if ($paymentdata && $paymentdata->payment_status === 'pending') {
-        $paymentdata->payment_status = 'cancelled';
-        $paymentdata->save();
-    }
-}
+        if ($data['status'] === 'cancelled') {
+            if ($paymentdata && $paymentdata->payment_status === 'pending') {
+                $paymentdata->payment_status = 'cancelled';
+                $paymentdata->save();
+            }
+        }
 
         $data['reason'] = isset($data['reason']) ? $data['reason'] : null;
 
