@@ -164,11 +164,15 @@
                fill="currentColor" />
          </svg>
          <h6 class="font-size-14">{{ round($totalRating, 1) }}
-           
-              <a href="{{ route('rating.all', ['service_id' => $data->id]) }}" class="text-body ms-1">({{$totalReviews }} {{__('messages.reviews')}})</a></h6>
-          
+              <a href="{{ route('rating.all', ['service_id' => $data->id]) }}" class="text-body ms-1">({{$totalReviews }} {{__('messages.reviews')}})</a>
+         </h6>
 
          <strong class="px-3">{{ $completedBookingCount }} Bookings</strong>
+
+         <span class="px-2" title="Views">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns=" "><path d="M12 5c-7.633 0-10 7-10 7s2.367 7 10 7 10-7 10-7-2.367-7-10-7Zm0 12a5 5 0 1 1 0-10 5 5 0 0 1 0 10Zm0-8a3 3 0 1 0 .002 6.002A3 3 0 0 0 12 9Z" fill="currentColor"/></svg>
+            <span class="ms-1">{{ $data->total_views ?? 0 }}</span>
+         </span>
       </div>  
       <div class="d-flex" style="gap: 14px; justify-content: center;">
          <a href="#"><img

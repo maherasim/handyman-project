@@ -29,6 +29,7 @@
                             :favourite="isFavourite(data.id)"
                             :visit_type="data.visit_type"
                             :discount="data.discount"
+                            :totalViews="data.total_views || 0"
                         />
                     </div>
                 </template>
