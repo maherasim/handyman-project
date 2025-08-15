@@ -63,8 +63,11 @@
                     <button id="readMoreBtn" class="btn btn-link p-0" style="display: none;">Read More</button>
 
 
-                    <p id="fullDescription" class="mb-0" style="display: none;">
-                        {{ $jobrequest->description }}
+                    <p id="fullDescription" class="mb-0" style="display: none;">                        
+                      <p id="fullDescription" class="mb-0" style="display: none;">
+    {!! $jobrequest->description !!}
+</p>
+
                     </p>
 
                     <hr>
