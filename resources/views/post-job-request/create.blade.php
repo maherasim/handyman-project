@@ -44,9 +44,12 @@
                                         required
                                         data-placeholder="{{ __('messages.select_name', ['select' => __('messages.country')]) }}"
                                         data-ajax--url="{{ route('ajax-list', ['type' => 'country']) }}">
-                                        <option value="{{ optional($postJob->country)->id }}" selected>
-                                            {{ optional($postJob->country)->name }}
+                                                                                @php $oldCountryId = old('country_id', optional($postJob->country)->id); @endphp
+                                        @if($oldCountryId)
+                                        <option value="{{ $oldCountryId }}" selected>
+                                            {{ optional($postJob->country)->id == $oldCountryId ? optional($postJob->country)->name : '' }}
                                         </option>
+                                        @endif
                                     </select>
                                 </div>
 
@@ -78,8 +81,12 @@
                                         required
                                         data-placeholder="{{ __('messages.select_name', ['select' => __('messages.category')]) }}"
                                         data-ajax--url="{{ route('ajax-list', ['type' => 'category']) }}">
-                                        <option value="{{ optional($postJob->category_id)->id }}" selected>
-                                            {{ optional($postJob->category)->name }}</option>
+                                        @php $oldCategoryId = old('category_id', optional($postJob->category)->id); @endphp
+                                        @if($oldCategoryId)
+                                        <option value="{{ $oldCategoryId }}" selected>
+                                            {{ optional($postJob->category)->id == $oldCategoryId ? optional($postJob->category)->name : '' }}
+                                        </option>
+                                        @endif
                                     </select>
                                 </div>
 
@@ -98,9 +105,9 @@
                                     <label for="price_type">{{ __('Pice Type') }} <span
                                             class="text-danger">*</span></label>
                                     <select name="job_price" id="job_price" class="form-control" required>
-                                        <option value="fixed">{{ __('Fixed') }}</option>
-                                        <option value="hourly">{{ __('Hourly') }}</option>
-                                        <option value="daily">{{ __('Daily') }}</option>
+                                        <option value="fixed" {{ old('job_price', $postJob->job_price) == 'fixed' ? 'selected' : '' }}>{{ __('Fixed') }}</option>
+                                        <option value="hourly" {{ old('job_price', $postJob->job_price) == 'hourly' ? 'selected' : '' }}>{{ __('Hourly') }}</option>
+                                        <option value="daily" {{ old('job_price', $postJob->job_price) == 'daily' ? 'selected' : '' }}>{{ __('Daily') }}</option>
                                     </select>
                                 </div>
 
@@ -108,9 +115,9 @@
                                     <label for="job_type">{{ __('Job Type') }} <span
                                             class="text-danger">*</span></label>
                                     <select name="type" id="type" class="form-control" required>
-                                        <option value="onsite">{{ __('Onsite') }}</option>
-                                        <option value="remote">{{ __('Remote/Homeoffice') }}</option>
-                                        <option value="hybrid">{{ __('Hybrid') }}</option>
+                                        <option value="onsite" {{ old('type', $postJob->type) == 'onsite' ? 'selected' : '' }}>{{ __('Onsite') }}</option>
+                                        <option value="remote" {{ old('type', $postJob->type) == 'remote' ? 'selected' : '' }}>{{ __('Remote/Homeoffice') }}</option>
+                                        <option value="hybrid" {{ old('type', $postJob->type) == 'hybrid' ? 'selected' : '' }}>{{ __('Hybrid') }}</option>
                                     </select>
                                 </div>
                                 <div class="form-group col-md-2" id="price_div">
@@ -126,7 +133,7 @@
                                     <label for="start_date">{{ __('Start Date') }} <span
                                             class="text-danger">*</span></label>
                                     <input type="date" name="start_date" id="start_date" class="form-control"
-                                        required value="{{ old('start_date', $postJob->start_date) }}">
+                                        required value="{{ old('start_date', optional($postJob->start_date)->format('Y-m-d')) }}">
                                     <small class="help-block with-errors text-danger"></small>
                                 </div>
 
@@ -134,7 +141,7 @@
                                     <label for="end_date">{{ __('End Date') }} <span
                                             class="text-danger">*</span></label>
                                     <input type="date" name="end_date" id="end_date" class="form-control"
-                                        required value="{{ old('end_date', $postJob->end_date) }}">
+                                        required value="{{ old('end_date', optional($postJob->end_date)->format('Y-m-d')) }}">
                                     <small class="help-block with-errors text-danger"></small>
                                 </div>
 
@@ -176,7 +183,7 @@
                                             class="text-danger">*</span></label>
                                     <input type="text" name="requirement" id="requirement" class="form-control"
                                         placeholder="{{ __('requirement') }}" title="requirement"
-                                        value="{{ old('title', $postJob->requirement) }}" required>
+                                        value="{{ old('requirement', $postJob->requirement) }}" required>
                                     <small class="help-block with-errors text-danger"></small>
                                 </div></div>
                                 <div class="form-group custom-file col-md-6 mt-30">
@@ -250,15 +257,27 @@
              (function($) {
                  "use strict";
                  $(document).ready(function() {
-                     var country_id = "{{ isset($postJob->country_id) ? $postJob->country_id : '' }}";
-                     var state_id = "{{ isset($postJob->state_id) ? $postJob->state_id : '' }}";
-                     var city_id = "{{ isset($postJob->city_id) ? $postJob->city_id : '' }}";
-                     var category_id = "{{ isset($postJob->category_id) ? $postJob->category_id : '' }}";
-                     var subcategory_id = "{{ isset($postJob->subcategory_id) ? $postJob->subcategory_id : '' }}";
- 
-                     getStates(country_id, state_id); // Initial load of states based on country
-                     getCities(state_id, city_id); // Initial load of cities based on state
-                     getSubCategory(category_id, subcategory_id); // Initial load of subcategory based on category
+                                         var country_id = "{{ old('country_id', $postJob->country_id) }}";
+                    var state_id = "{{ old('state_id', $postJob->state_id) }}";
+                    var city_id = "{{ old('city_id', $postJob->city_id) }}";
+                    var category_id = "{{ old('category_id', $postJob->category_id) }}";
+                    var subcategory_id = "{{ old('subcategory_id', $postJob->subcategory_id) }}";
+
+                    getStates(country_id, state_id); // Initial load of states based on country
+                    getCities(state_id, city_id); // Initial load of cities based on state
+                    getSubCategory(category_id, subcategory_id); // Initial load of subcategory based on category
+
+                    // If dates already present (old input), calculate totals and show them
+                    var startVal = $('#start_date').val();
+                    var endVal = $('#end_date').val();
+                    var oldTotalDays = "{{ old('total_days', $postJob->total_days) }}";
+                    var oldTotalHours = "{{ old('total_hours', $postJob->total_hours) }}";
+                    if (startVal && endVal) {
+                        calculateDays();
+                    } else {
+                        if (oldTotalDays) { $('#total_day_div').val(oldTotalDays); $('#hidden_total_days').val(oldTotalDays); }
+                        if (oldTotalHours) { $('#total_hours_div').val(oldTotalHours); $('#hidden_total_hours').val(oldTotalHours); }
+                    }
  
                      // Preview selected images
                      const input = document.getElementById('image');

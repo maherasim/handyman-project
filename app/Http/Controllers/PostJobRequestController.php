@@ -185,6 +185,25 @@ public function index_data(DataTables $datatable, Request $request)
      */
     public function store(Request $request)
     {
+        // Basic validation to preserve old input on errors
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'country_id' => 'required|integer',
+            'state_id' => 'required|integer',
+            'city_id' => 'required|integer',
+            'category_id' => 'required|integer',
+            'subcategory_id' => 'required|integer',
+            'job_price' => 'required|in:fixed,hourly,daily',
+            'type' => 'required|in:onsite,remote,hybrid',
+            'price' => 'required|numeric|min:1',
+            'start_date' => 'required|date',
+            'end_date' => 'required|date|after_or_equal:start_date',
+            'requirement' => 'required|string',
+            'description' => 'nullable|string',
+            'image.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
+            'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
+        ]);
+
         $data = $request->all();
         $data['customer_id'] = $request->customer_id ?? auth()->user()->id;
     
@@ -219,16 +238,6 @@ public function index_data(DataTables $datatable, Request $request)
         }
     
         $result = PostJobRequest::updateOrCreate(['id' => $request->id], $data);
-    
-        // ✅ Send notification
-        // $this->sendNotification([
-        //     'activity_type' => $request->status == 'assigned' ? 'user_accept_bid' : 'job_requested',
-        //     'post_job_id' => $result->id,
-        //     'customer_name' => optional($result->customer)->display_name,
-        //     'provider_name' => optional($result->provider)->display_name,
-        //     'latitude' => $data['latitude'] ?? 0.0,
-        //     'longitude' => $data['longitude'] ?? 0.0,
-        // ]);
     
         // ✅ Handle services
         $result->postServiceMapping()->delete();
