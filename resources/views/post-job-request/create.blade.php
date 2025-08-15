@@ -134,7 +134,7 @@
                                             class="text-danger">*</span></label>
                                     <input type="number" name="total_budget" id="total_budget" class="form-control"
                                         min="0" step="any" placeholder="{{ __('Total Budget') }}"
-                                        required value="{{ old('total_budget', $postJob->total_budget) }}" readonly>
+                                        value="{{ old('total_budget', $postJob->total_budget) }}" readonly>
                                     <small class="help-block with-errors text-danger"></small>
                                 </div>
 
@@ -513,7 +513,7 @@ function calculateDays() {
                 recalcBudget();
             });
 
-            $('#price, #total_hours_div').on('input', function(){
+            $('#price, #total_hours_div, #total_day_div').on('input', function(){
                 recalcBudget();
             });
                 // Function to fetch subcategories based on selected category
