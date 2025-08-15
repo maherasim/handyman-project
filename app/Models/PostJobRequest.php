@@ -10,9 +10,9 @@ class PostJobRequest extends Model
 {
     use HasFactory;
     protected $table = 'post_job_requests';
-    protected $fillable = [
+        protected $fillable = [
         'title', 'type','customer_id', 'status' ,'description','provider_id','reason','price','date','job_price','country_id','city_id','category_id','subcategory_id','start_date','end_date','total_hours','total_days','requirement'
-,'image'
+ ,'image','total_views'
          
     ];
 

@@ -61,6 +61,13 @@ class PostJobRequestController extends Controller
             $message = __('messages.record_not_found');
             return comman_message_response($message,400);   
         }
+        // increment total views
+        try {
+            $post_request->increment('total_views');
+        } catch (\Throwable $e) {
+            // ignore
+        }
+
         $post_request_detail = new PostJobRequestDetailResource($post_request);
         $bider_data = PostJobBiderResource::collection(PostJobBid::where('post_request_id',$id)->get());
         $response = [
