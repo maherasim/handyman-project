@@ -113,8 +113,9 @@
                         <li>
                             <a class="text-dark">
                                 <b>Start Date:</b>
-                                @dd($jobrequest->start_date);
-                                {{ optional($jobrequest->start_date)->format('Y-m-d') ?? 'N/A' }}
+                            {{ $jobrequest->start_date ? \Carbon\Carbon::parse($jobrequest->start_date)->format('Y-m-d') : 'N/A' }}
+
+                                
                             </a>
                         </li>
 
@@ -122,7 +123,9 @@
                         <li>
                             <a class="text-dark">
                                 <b>End Date:</b>
-                                {{ optional($jobrequest->end_date)->format('Y-m-d') ?? 'N/A' }}
+                                {{ $jobrequest->end_date ? \Carbon\Carbon::parse($jobrequest->end_date)->format('Y-m-d') : 'N/A' }}
+
+                                
                             </a>
                         </li>
 
