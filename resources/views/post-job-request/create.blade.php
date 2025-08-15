@@ -548,25 +548,25 @@ function calculateDays() {
 
             })(jQuery);
         </script>
-        <script>
-            < script src = "https://cdn.tiny.cloud/1/m5d82gd2rwdlg96hsxpx0e5wwmfrl2zzkcw35ys8o3glilgq/tinymce/5/tinymce.min.js"
-            referrerpolicy = "origin" >
-        </script>
          <script>
-            tinymce.init({
-                selector: '#description', // Target the textarea
-                plugins: 'lists link image preview', // Add plugins
-                toolbar: 'undo redo | bold italic | bullist numlist | link image preview',
-                menubar: false
-            });
+            if (window.tinymce) {
+                tinymce.init({
+                    selector: '#description',
+                    plugins: 'lists link image preview',
+                    toolbar: 'undo redo | bold italic | bullist numlist | link image preview',
+                    menubar: false
+                });
+            }
         </script>
         <script>
-            tinymce.init({
-                selector: '#requirement', // Target the textarea
-                plugins: 'lists link image preview', // Add plugins
-                toolbar: 'undo redo | bold italic | bullist numlist | link image preview',
-                menubar: false
-            });
+            if (window.tinymce) {
+                tinymce.init({
+                    selector: '#requirement',
+                    plugins: 'lists link image preview',
+                    toolbar: 'undo redo | bold italic | bullist numlist | link image preview',
+                    menubar: false
+                });
+            }
         </script>
     @endsection
 </x-master-layout>
