@@ -63,12 +63,12 @@
                     <button id="readMoreBtn" class="btn btn-link p-0" style="display: none;">Read More</button>
 
 
-                    <p id="fullDescription" class="mb-0" style="display: none;">                        
+                                       
                       <p id="fullDescription" class="mb-0" style="display: none;">
     {!! $jobrequest->description !!}
 </p>
 
-                    </p>
+                    
 
                     <hr>
                     <button id="continueBtn" class="btn btn-cont text-white col-md-12"
