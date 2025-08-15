@@ -13,27 +13,16 @@
                                 {{ optional($jobrequest->country)->name ?? 'N/A' }}
                             </b></p>
                     </div>
-                    @if (!empty($jobrequest->image))
-                    <img src="{{ asset('storage/' . $jobrequest->image) }}" 
-                         alt="Job Image" 
-                         class="img-fluid" 
-                         style="border-radius: 12px;">
-                         
-                    <img src="{{ asset('storage/' . $jobrequest->image) }}" 
-                         style="width: 100px; border-radius: 10px;" 
-                         class="mt-3" 
-                         alt="Job Image">
-                @else
-                    <img src="{{ asset('images/post-job/ac_refresh_and_revive.png') }}" 
-                         alt="Default Image" 
-                         class="img-fluid" 
-                         style="border-radius: 12px;">
-                         
-                    <img src="{{ asset('images/post-job/ac_refresh_and_revive.png') }}" 
-                         style="width: 100px; border-radius: 10px;" 
-                         class="mt-3" 
-                         alt="Default Image">
-                @endif
+                    @if (!empty($attachments) && count($attachments) > 0)
+                        <div class="mt-3">
+                            <section-thumbnail-section :attachments="{{ json_encode($attachments) }}"></section-thumbnail-section>
+                        </div>
+                    @else
+                        <img src="{{ asset('images/post-job/ac_refresh_and_revive.png') }}" 
+                             alt="Default Image" 
+                             class="img-fluid" 
+                             style="border-radius: 12px;">
+                    @endif
                 
 
 

@@ -244,40 +244,91 @@
                 /* Add margin between images */
                 margin-bottom: 10px;
             }
-        </style>
-
-        <script type="text/javascript">
-            (function($) {
-                "use strict";
-                $(document).ready(function() {
-                    var country_id = "{{ isset($postJob->country_id) ? $postJob->country_id : '' }}";
-                    var state_id = "{{ isset($postJob->state_id) ? $postJob->state_id : '' }}";
-                    var city_id = "{{ isset($postJob->city_id) ? $postJob->city_id : '' }}";
-                    var category_id = "{{ isset($postJob->category_id) ? $postJob->category_id : '' }}";
-                    var subcategory_id = "{{ isset($postJob->subcategory_id) ? $postJob->subcategory_id : '' }}";
-
-                    getStates(country_id, state_id); // Initial load of states based on country
-                    getCities(state_id, city_id); // Initial load of cities based on state
-                    getSubCategory(category_id, subcategory_id); // Initial load of subcategory based on category
-
-                    // Fetch states based on selected country
-                    $(document).on('change', '#country_id', function() {
-                        var selectedCountryId = $(this).val();
-                        getStates(selectedCountryId, state_id);
-                    });
-
-                    // Fetch cities based on selected state
-                    $(document).on('change', '#state_id', function() {
-                        var selectedStateId = $(this).val();
-                        getCities(selectedStateId, city_id);
-                    });
-
-                    // Fetch subcategories based on selected category
-                    $(document).on('change', '#category_id', function() {
-                        var selectedCategoryId = $(this).val();
-                        getSubCategory(selectedCategoryId, subcategory_id);
-                    });
-                });
+                        </style>
+ 
+         <script type="text/javascript">
+             (function($) {
+                 "use strict";
+                 $(document).ready(function() {
+                     var country_id = "{{ isset($postJob->country_id) ? $postJob->country_id : '' }}";
+                     var state_id = "{{ isset($postJob->state_id) ? $postJob->state_id : '' }}";
+                     var city_id = "{{ isset($postJob->city_id) ? $postJob->city_id : '' }}";
+                     var category_id = "{{ isset($postJob->category_id) ? $postJob->category_id : '' }}";
+                     var subcategory_id = "{{ isset($postJob->subcategory_id) ? $postJob->subcategory_id : '' }}";
+ 
+                     getStates(country_id, state_id); // Initial load of states based on country
+                     getCities(state_id, city_id); // Initial load of cities based on state
+                     getSubCategory(category_id, subcategory_id); // Initial load of subcategory based on category
+ 
+                     // Preview selected images
+                     const input = document.getElementById('image');
+                     const container = document.getElementById('imageContainer');
+                     const showMoreBtn = document.getElementById('showMoreButton');
+                     const MAX_VISIBLE = 4;
+                     function clearContainer() {
+                         while (container.firstChild) container.removeChild(container.firstChild);
+                     }
+                     function renderPreviews(files) {
+                         clearContainer();
+                         const urls = [];
+                         Array.from(files).forEach((file, idx) => {
+                             const reader = new FileReader();
+                             reader.onload = (e) => {
+                                 const img = document.createElement('img');
+                                 img.src = e.target.result;
+                                 img.alt = 'preview-' + idx;
+                                 img.className = 'rounded';
+                                 img.style.maxWidth = '120px';
+                                 img.style.maxHeight = '120px';
+                                 img.style.marginRight = '10px';
+                                 img.style.marginBottom = '10px';
+                                 const wrapper = document.createElement('div');
+                                 wrapper.style.display = idx < MAX_VISIBLE ? 'inline-block' : 'none';
+                                 wrapper.appendChild(img);
+                                 container.appendChild(wrapper);
+                                 urls.push({ wrapper });
+                                 if (idx === files.length - 1) {
+                                     showMoreBtn.style.display = files.length > MAX_VISIBLE ? 'inline-block' : 'none';
+                                     showMoreBtn.textContent = 'Show More';
+                                     showMoreBtn.dataset.expanded = 'false';
+                                 }
+                             };
+                             reader.readAsDataURL(file);
+                         });
+                         showMoreBtn.onclick = () => {
+                             const expanded = showMoreBtn.dataset.expanded === 'true';
+                             const children = Array.from(container.children);
+                             children.forEach((child, idx) => {
+                                 if (idx >= MAX_VISIBLE) {
+                                     child.style.display = expanded ? 'none' : 'inline-block';
+                                 }
+                             });
+                             showMoreBtn.textContent = expanded ? 'Show More' : 'Show Less';
+                             showMoreBtn.dataset.expanded = expanded ? 'false' : 'true';
+                         };
+                     }
+                     if (input) {
+                         input.addEventListener('change', (e) => renderPreviews(e.target.files));
+                     }
+ 
+                     // Fetch states based on selected country
+                     $(document).on('change', '#country_id', function() {
+                         var selectedCountryId = $(this).val();
+                         getStates(selectedCountryId, state_id);
+                     });
+ 
+                     // Fetch cities based on selected state
+                     $(document).on('change', '#state_id', function() {
+                         var selectedStateId = $(this).val();
+                         getCities(selectedStateId, city_id);
+                     });
+ 
+                     // Fetch subcategories based on selected category
+                     $(document).on('change', '#category_id', function() {
+                         var selectedCategoryId = $(this).val();
+                         getSubCategory(selectedCategoryId, subcategory_id);
+                     });
+                 });
 
                 // Function to fetch states
                 function getStates(country_id, selectedState = "") {

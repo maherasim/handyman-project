@@ -12,7 +12,7 @@ class PostJobRequest extends Model
     protected $table = 'post_job_requests';
         protected $fillable = [
         'title', 'type','customer_id', 'status' ,'description','provider_id','reason','price','date','job_price','country_id','city_id','category_id','subcategory_id','start_date','end_date','total_hours','total_days','requirement'
- ,'image','total_views'
+ ,'image','images','total_views'
          
     ];
 
@@ -22,6 +22,7 @@ class PostJobRequest extends Model
         'price' => 'double',
         'job_price' => 'double',
         'image' => 'string',
+        'images' => 'array',
     ];
     public function postServiceMapping(){
         return $this->hasMany(PostJobServiceMapping::class, 'post_request_id','id');

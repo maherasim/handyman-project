@@ -188,34 +188,33 @@ public function index_data(DataTables $datatable, Request $request)
         $data = $request->all();
         $data['customer_id'] = $request->customer_id ?? auth()->user()->id;
     
-        // ✅ Handle single image upload
+        // ✅ Handle image uploads (supports single and multiple)
+        $imagePaths = [];
         if ($request->hasFile('image')) {
-            $image = $request->file('image'); // Get the file (not an array)
-    
-            if (is_array($image)) {
-                $image = $image[0]; // If mistakenly sent as an array, get the first one
+            $incoming = $request->file('image');
+            $files = is_array($incoming) ? $incoming : [$incoming];
+            foreach ($files as $idx => $file) {
+                $filename = time() . '_' . $file->getClientOriginalName();
+                $path = $file->storeAs('images', $filename, 'public');
+                $imagePaths[] = $path;
+                if ($idx === 0) {
+                    $data['image'] = $path; // first image as cover
+                }
             }
-    
-            $filename = time() . '_' . $image->getClientOriginalName(); // Unique filename
-            $path = $image->storeAs('images', $filename, 'public'); // Store in storage/app/public/images
-            $data['image'] = $path; // Save file path in the database
         }
-    
-        // ✅ Handle multiple image uploads (if needed)
-        if ($request->hasFile('images')) { // Assuming multiple images are sent as 'images' key
-            $imagePaths = [];
-    
+        if ($request->hasFile('images')) {
             foreach ($request->file('images') as $img) {
-                $filename = time() . '_' . $img->getClientOriginalName(); // Unique filename
+                $filename = time() . '_' . $img->getClientOriginalName();
                 $path = $img->storeAs('images', $filename, 'public');
                 $imagePaths[] = $path;
             }
-    
-            $data['images'] = json_encode($imagePaths, JSON_UNESCAPED_SLASHES); // Store array in DB
         }
-    
-        // ✅ Handle pre-uploaded image (if sent as a string)
-        if ($request->has('image') && is_string($request->image)) {
+        if (!empty($imagePaths)) {
+            // remove duplicates and reindex
+            $data['images'] = array_values(array_unique($imagePaths));
+        }
+        // ✅ Handle pre-uploaded cover image string (edge case)
+        if ($request->has('image') && is_string($request->image) && empty($data['image'])) {
             $data['image'] = $request->image;
         }
     

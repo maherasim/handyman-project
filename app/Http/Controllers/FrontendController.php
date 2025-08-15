@@ -729,10 +729,23 @@ class FrontendController extends Controller
             abort(404); // Return 404 if the job doesn't exist
         }
 
+        // Build attachments array similar to service detail
+        $attachments = [];
+        if (!empty($jobrequest->image)) {
+            $attachments[] = asset('storage/' . ltrim($jobrequest->image, '/'));
+        }
+        $extraImages = [];
+        if (!empty($jobrequest->images)) {
+            $extraImages = is_array($jobrequest->images) ? $jobrequest->images : json_decode($jobrequest->images, true) ?? [];
+        }
+        foreach ($extraImages as $imgPath) {
+            $attachments[] = asset('storage/' . ltrim($imgPath, '/'));
+        }
+
         // Get total bids
         $totalBids = $jobrequest->total_bids;
         //dd( $totalBids);
-        return view('job.job_details', compact('jobrequest', 'totalBids'));
+        return view('job.job_details', compact('jobrequest', 'totalBids', 'attachments'));
     }
 
     public function bookPostJobView(Request $request)
