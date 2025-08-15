@@ -202,10 +202,18 @@ public function index_data(DataTables $datatable, Request $request)
             'description' => 'nullable|string',
             'image.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
             'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
+            'total_days' => 'nullable|integer|min:0',
+            'total_hours' => 'nullable|integer|min:0',
         ]);
 
         $data = $request->all();
         $data['customer_id'] = $request->customer_id ?? auth()->user()->id;
+
+        // Enforce daily rule: hours = 8 * days
+        if (($data['job_price'] ?? null) === 'daily') {
+            $days = (int)($data['total_days'] ?? 0);
+            $data['total_hours'] = $days * 8;
+        }
     
         // ✅ Handle image uploads (supports single and multiple)
         $imagePaths = [];

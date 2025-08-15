@@ -151,7 +151,7 @@
                                             class="text-danger">*</span></label>
                                     <input type="number" name="total_day" id="total_day_div" class="form-control"
                                         min="1" step="any" placeholder="{{ __('total days') }}"
-                                        required disabled>
+                                        required>
                                     <small class="help-block with-errors text-danger"></small>
                                 </div>
 
@@ -166,7 +166,7 @@
                                     <input type="number" name="total_hours" id="total_hours_div"
                                         class="form-control" min="1" step="any"
                                         placeholder="{{ __('total_hours') }}" required
-                                        value="{{ old('total_hours', $postJob->total_hours) }}" disabled>
+                                        value="{{ old('total_hours', $postJob->total_hours) }}">
                                     <small class="help-block with-errors text-danger"></small>
                                 </div>
                             </div>
@@ -416,6 +416,7 @@
 function calculateDays() {
     var startDate = $('#start_date').val();
     var endDate = $('#end_date').val();
+    var priceType = $('#job_price').val();
 
     if (startDate && endDate) {
         if (startDate > endDate) {
@@ -431,18 +432,31 @@ function calculateDays() {
             if (diffDays > 0) {
                 $('#total_day_div').val(diffDays);
                 $('#hidden_total_days').val(diffDays);
-                $('#total_hours_div').val(diffDays * 8).attr('max', diffDays * 8); // Adjusted to 8 hours per day
-                $('#hidden_total_hours').val(diffDays * 8).attr('max', diffDays * 8); // Adjusted to 8 hours per day
+                if (priceType === 'daily') {
+                    // 8 hours per day calculated automatically
+                    var hours = diffDays * 8;
+                    $('#total_hours_div').val(hours).attr('max', hours).attr('readonly', true);
+                    $('#hidden_total_hours').val(hours).attr('max', hours);
+                } else {
+                    // user can set hours manually for fixed/hourly
+                    $('#total_hours_div').attr('readonly', false).attr('max', null);
+                }
             } else {
                 $('#total_day_div').val(0);
                 $('#hidden_total_days').val(0);
-                $('#total_hours_div').val(0).attr('max', 0);
-                $('#hidden_total_hours').val(0).attr('max', 0);
+                if (priceType === 'daily') {
+                    $('#total_hours_div').val(0).attr('readonly', true);
+                    $('#hidden_total_hours').val(0);
+                }
             }
         }
     } else {
         $('#hidden_total_days').val(0);
         $('#total_day_div').val(0).attr('max', 0);
+        if (priceType === 'daily') {
+            $('#total_hours_div').val(0).attr('readonly', true);
+            $('#hidden_total_hours').val(0);
+        }
     }
 }
 
@@ -450,13 +464,24 @@ function calculateDays() {
            setMinDates();
        
            // Attach event listeners
-           $('#start_date, #end_date').on('change', function() {
+                       $('#start_date, #end_date').on('change', function() {
                calculateDays();
                var startDate = $('#start_date').val();
                if (startDate) {
                    $('#end_date').attr('min', startDate);
                } else {
                    setMinDates();
+               }
+           });
+
+           $('#job_price').on('change', function() {
+               var priceType = $(this).val();
+               if (priceType === 'daily') {
+                   // force auto-calc of hours based on dates
+                   calculateDays();
+               } else {
+                   // manual entry for fixed/hourly
+                   $('#total_hours_div').attr('readonly', false).attr('max', null);
                }
            });
                 // Function to fetch subcategories based on selected category
