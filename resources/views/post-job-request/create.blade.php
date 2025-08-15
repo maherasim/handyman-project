@@ -129,6 +129,15 @@
                                     <small class="help-block with-errors text-danger"></small>
                                 </div>
 
+                                <div class="form-group col-md-2" id="total_budget_div">
+                                    <label for="total_budget">{{ __('Total Budget') }} <span
+                                            class="text-danger">*</span></label>
+                                    <input type="number" name="total_budget" id="total_budget" class="form-control"
+                                        min="0" step="any" placeholder="{{ __('Total Budget') }}"
+                                        required value="{{ old('total_budget', $postJob->total_budget) }}" readonly>
+                                    <small class="help-block with-errors text-danger"></small>
+                                </div>
+
                                 <div class="form-group col-md-2">
                                     <label for="start_date">{{ __('Start Date') }} <span
                                             class="text-danger">*</span></label>
@@ -278,6 +287,8 @@
                         if (oldTotalDays) { $('#total_day_div').val(oldTotalDays); $('#hidden_total_days').val(oldTotalDays); }
                         if (oldTotalHours) { $('#total_hours_div').val(oldTotalHours); $('#hidden_total_hours').val(oldTotalHours); }
                     }
+                    // initialize budget
+                    setTimeout(recalcBudget, 0);
  
                      // Preview selected images
                      const input = document.getElementById('image');
@@ -474,16 +485,37 @@ function calculateDays() {
                }
            });
 
-           $('#job_price').on('change', function() {
-               var priceType = $(this).val();
-               if (priceType === 'daily') {
-                   // force auto-calc of hours based on dates
-                   calculateDays();
-               } else {
-                   // manual entry for fixed/hourly
-                   $('#total_hours_div').attr('readonly', false).attr('max', null);
-               }
-           });
+                       function recalcBudget() {
+                var priceType = $('#job_price').val();
+                var price = parseFloat($('#price').val()) || 0;
+                var days = parseInt($('#total_day_div').val(), 10) || 0;
+                var hours = parseInt($('#total_hours_div').val(), 10) || 0;
+                var total = 0;
+                if (priceType === 'daily') {
+                    total = price * days;
+                } else if (priceType === 'hourly') {
+                    total = price * hours;
+                } else if (priceType === 'fixed') {
+                    total = price;
+                }
+                $('#total_budget').val(total);
+                $('#hidden_total_hours').val(hours);
+                $('#hidden_total_days').val(days);
+            }
+
+            $('#job_price').on('change', function() {
+                var priceType = $(this).val();
+                if (priceType === 'daily') {
+                    calculateDays();
+                } else {
+                    $('#total_hours_div').attr('readonly', false).attr('max', null);
+                }
+                recalcBudget();
+            });
+
+            $('#price, #total_hours_div').on('input', function(){
+                recalcBudget();
+            });
                 // Function to fetch subcategories based on selected category
                 function getSubCategory(category_id, selectedSubCategory = "") {
                     if (category_id != '') {

@@ -214,6 +214,19 @@ public function index_data(DataTables $datatable, Request $request)
             $days = (int)($data['total_days'] ?? 0);
             $data['total_hours'] = $days * 8;
         }
+
+        // Compute total_budget based on price type
+        $price = (float)($data['price'] ?? 0);
+        $type = $data['job_price'] ?? 'fixed';
+        $totalBudget = 0.0;
+        if ($type === 'daily') {
+            $totalBudget = $price * ((int)($data['total_days'] ?? 0));
+        } elseif ($type === 'hourly') {
+            $totalBudget = $price * ((int)($data['total_hours'] ?? 0));
+        } else {
+            $totalBudget = $price;
+        }
+        $data['total_budget'] = $totalBudget;
     
         // ✅ Handle image uploads (supports single and multiple)
         $imagePaths = [];
