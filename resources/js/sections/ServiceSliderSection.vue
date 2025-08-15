@@ -37,6 +37,7 @@
               :duration="service.duration"
               :favourite="isFavourite(service.id)"
               :visit_type="service.visit_type"
+              :totalViews="service.total_views || 0"
               />
         </div>
     </div>

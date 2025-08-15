@@ -33,6 +33,11 @@
                                                     ({{ $serviceData['service_detail']['total_review'] }}
                                                     {{ __('messages.reviews') }})</span></a></h6>
                                     @endif
+
+                                    <span class="ms-3 d-inline-flex align-items-center" title="Views">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns=" "><path d="M12 5c-7.633 0-10 7-10 7s2.367 7 10 7 10-7 10-7-2.367-7-10-7Zm0 12a5 5 0 1 1 0-10 5 5 0 0 1 0 10Zm0-8a3 3 0 1 0 .002 6.002A3 3 0 0 0 12 9Z" fill="currentColor"/></svg>
+                                        <span class="ms-1">{{ $serviceData['service_detail']['total_views'] ?? 0 }}</span>
+                                    </span>
                                 </div>
                             </li>
                             @if (!empty($serviceData['service_detail']['duration']))

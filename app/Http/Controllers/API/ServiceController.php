@@ -203,6 +203,13 @@ class ServiceController extends Controller
         }
 
 
+        // Increment total views for this service when details are fetched
+        try {
+            $service->increment('total_views');
+        } catch (\Throwable $e) {
+            // ignore silently
+        }
+
         $service_detail = new ServiceDetailResource($service);
         $related = $service->where('service_type','service')->where('category_id',$service->category_id);
          if(default_earning_type() === 'subscription'){
