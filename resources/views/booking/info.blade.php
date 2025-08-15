@@ -146,7 +146,7 @@
                             <div class="d-flex flex-wrap flex-xxl-nowrap gap-3">
 
                                 @if ($bookingdata->status === 'pending')
-                                    @hasanyrole('admin|demo_admin|provider')
+                                    @hasanyrole('admin|demo_admin|provider|user')
                                         <div class="w3-third">
                                             <button class="float-end btn btn-primary update-booking"
                                                 data-id="{{ $bookingdata->id }}"
