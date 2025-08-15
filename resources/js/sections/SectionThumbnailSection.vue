@@ -14,7 +14,8 @@
                         :src="data"
                         alt=""
                         loading="lazy"
-                        class="img-fluid object-cover rounded-3"
+                        :class="['img-fluid', props.mainFit === 'contain' ? 'object-contain' : 'object-cover', 'rounded-3']"
+                        :style="props.mainFit === 'contain' ? 'background:#f8f9fa;max-height:600px;width:100%;' : ''"
                     />
                 </div>
             </SwiperSlide>
@@ -54,7 +55,10 @@ import { Swiper, SwiperSlide } from "swiper/vue";
 import { Controller } from "swiper";
 
 // Define props for the component
-const props = defineProps(["attachments"]);
+const props = defineProps({
+    attachments: { type: Array, default: () => [] },
+    mainFit: { type: String, default: 'cover' } // 'cover' | 'contain'
+});
 
 // Main Swiper and Thumbnail Swiper references
 const mainSwiper = ref(null);
@@ -99,5 +103,10 @@ const updateMainSwiper = (index) => {
 
 .tab-slider .swiper-content {
     max-width: 100%;
+}
+
+/* Utility for contain fit */
+.object-contain {
+    object-fit: contain;
 }
 </style>

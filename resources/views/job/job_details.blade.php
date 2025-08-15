@@ -15,7 +15,7 @@
                     </div>
                     @if (!empty($attachments) && count($attachments) > 0)
                         <div class="mt-3">
-                            <section-thumbnail-section :attachments="{{ json_encode($attachments) }}"></section-thumbnail-section>
+                            <section-thumbnail-section :attachments="{{ json_encode($attachments) }}" main-fit="contain"></section-thumbnail-section>
                         </div>
                     @else
                         <img src="{{ asset('images/post-job/ac_refresh_and_revive.png') }}" 
