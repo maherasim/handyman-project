@@ -136,7 +136,7 @@
                             </a></li>
                         <li><a class="text-dark"> <b>Total Bids:</b> {{ $totalBids }}
                             </a></li>
-                        <li><a class="text-dark"> <b>Total Views:</b>{{ rand(1, 5) }} </a></li>
+                        <li><a class="text-dark"> <b>Total Views:</b>{{ $jobrequest->total_views ?? 'N/A' }} </a></li>
 
                     </ul>
                     <a href="{{ auth()->check() ? route('post-job-request.index') : route('login') }}"
