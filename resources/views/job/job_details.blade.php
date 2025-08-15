@@ -113,6 +113,7 @@
                         <li>
                             <a class="text-dark">
                                 <b>Start Date:</b>
+                                @dd($jobrequest->start_date);
                                 {{ optional($jobrequest->start_date)->format('Y-m-d') ?? 'N/A' }}
                             </a>
                         </li>
