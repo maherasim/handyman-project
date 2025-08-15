@@ -448,6 +448,10 @@
                                                 <a href="{{ route('rating.all', ['service_id' => $data->id]) }}">({{  $data->total_reviews }} {{ __('messages.reviews') }})</a>
                                             </div>
                                             <p class="mb-0">{{ $data->booking_count }} Bookings</p>
+                                            <span class="ms-2 d-inline-flex align-items-center" title="Views">
+                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns=" "><path d="M12 5c-7.633 0-10 7-10 7s2.367 7 10 7 10-7 10-7-2.367-7-10-7Zm0 12a5 5 0 1 1 0-10 5 5 0 0 1 0 10Zm0-8a3 3 0 1 0 .002 6.002A3 3 0 0 0 12 9Z" fill="currentColor"/></svg>
+                                                <span class="ms-1">{{ $data->total_views ?? 0 }}</span>
+                                            </span>
                                         </div>
                                         
 
@@ -657,6 +661,10 @@
                                             <a href="{{ route('rating.all', ['service_id' => $data->id]) }}">({{  $data->total_reviews }} {{ __('messages.reviews') }})</a>
                                         </div>
                                         <p class="mb-0">{{ $data->booking_count }} Bookings</p>
+                                        <span class="ms-2 d-inline-flex align-items-center" title="Views">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns=" "><path d="M12 5c-7.633 0-10 7-10 7s2.367 7 10 7 10-7 10-7-2.367-7-10-7Zm0 12a5 5 0 1 1 0-10 5 5 0 0 1 0 10Zm0-8a3 3 0 1 0 .002 6.002A3 3 0 0 0 12 9Z" fill="currentColor"/></svg>
+                                            <span class="ms-1">{{ $data->total_views ?? 0 }}</span>
+                                        </span>
                                     </div>
 
 

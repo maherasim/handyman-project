@@ -76,6 +76,7 @@ class ServiceDetailResource extends JsonResource
             'visit_type'           => $this->visit_type,
             'is_enable_advance_payment' => $this->is_enable_advance_payment == 1 ? $this->is_enable_advance_payment : $global_advance_payment ,
             'advance_payment_amount' => $this->is_enable_advance_payment == 1 ? ($this->advance_payment_amount === null ? 0 : (double) $this->advance_payment_amount) : (double) $advancePaymentPercentage,
+            'total_views' => (int) ($this->total_views ?? 0),
         ];
     }
 }
