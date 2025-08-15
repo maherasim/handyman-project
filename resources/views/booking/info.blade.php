@@ -146,7 +146,7 @@
                             <div class="d-flex flex-wrap flex-xxl-nowrap gap-3">
 
                                 @if ($bookingdata->status === 'pending')
-                                    @hasanyrole('admin|demo_admin|provider|user')
+                                    @hasanyrole('admin|demo_admin|provider')
                                         <div class="w3-third">
                                             <button class="float-end btn btn-primary update-booking"
                                                 data-id="{{ $bookingdata->id }}"
@@ -156,7 +156,10 @@
                                                 {{ __('messages.accept_booking') }}
                                             </button>
                                         </div>
-
+                                        @endhasanyrole
+                                    @endif
+                                  @if ($bookingdata->status === 'pending')
+                                   @hasanyrole('user')
                                         <div class="w3-third">
                                             <button class="float-end btn btn-primary update-booking" id="cancel-booking"
                                                 data-id="{{ $bookingdata->id }}"
