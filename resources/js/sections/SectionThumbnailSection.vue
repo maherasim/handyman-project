@@ -30,9 +30,8 @@
             :spaceBetween="10"
             :watchSlidesProgress="true"
             :grabCursor="true"
-            :slideToClickedSlide="true"
+            :allowTouchMove="false"
             @swiper="setThumbSwiper"
-            @click="updateMainSwiper"
         >
             <SwiperSlide v-for="(data, index) in props.attachments" :key="index">
                 <div class="thumb-wrapper p-1 rounded-3">
@@ -71,9 +70,9 @@ const setThumbSwiper = (swiper) => {
 
 // Function to update main Swiper when a thumbnail is clicked
 const updateMainSwiper = (index) => {
-    if (mainSwiper.value) {
+    if (mainSwiper.value != null && typeof index === 'number') {
         nextTick(() => {
-            mainSwiper.value.slideTo(index); // Move the main Swiper to the clicked index
+            mainSwiper.value.slideTo(index);
         });
     }
 };
