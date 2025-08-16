@@ -163,7 +163,7 @@
                                     <input type="number" name="total_day" id="total_day_div" class="form-control"
                                         min="1" step="any" placeholder="{{ __('total days') }}"
                                         required>
-                                    <small class="help-block with-errors text-danger"></small>
+                                     
                                 </div>
 
                                 <input type="hidden" name="total_days" id="hidden_total_days"
