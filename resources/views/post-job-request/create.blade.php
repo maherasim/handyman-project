@@ -113,15 +113,14 @@
                                 </div>
 
                                 <div class="form-group col-md-2">
-                                    <label for="job_type">{{ __('Job Type') }} <span
-                                            class="text-danger">*</span></label>
+                                    <label for="job_type">{{ __('Job Type') }} <span class="text-danger">*</span></label>
                                     <select name="type" id="type" class="form-control" required>
                                         <option value="onsite" {{ old('type', $postJob->type) == 'onsite' ? 'selected' : '' }}>{{ __('Onsite') }}</option>
                                         <option value="remote" {{ old('type', $postJob->type) == 'remote' ? 'selected' : '' }}>{{ __('Remote/Homeoffice') }}</option>
                                         <option value="hybrid" {{ old('type', $postJob->type) == 'hybrid' ? 'selected' : '' }}>{{ __('Hybrid') }}</option>
                                     </select>
                                 </div>
-                                <div class="form-group col-md-2" id="price_div">
+                                <div class="form-group col-md-3" id="price_div">
                                     <label for="price">{{ __('messages.price') }} <span
                                             class="text-danger">*</span></label>
                                     <input type="number" name="price" id="price" class="form-control"
@@ -130,7 +129,7 @@
                                     <small class="help-block with-errors text-danger"></small>
                                 </div>
 
-                                <div class="form-group col-md-2" id="total_budget_div">
+                                <div class="form-group col-md-3" id="total_budget_div">
                                     <label for="total_budget">{{ __('Total Budget') }} <span
                                             class="text-danger">*</span></label>
                                     <input type="number" name="total_budget" id="total_budget" class="form-control"
@@ -157,27 +156,23 @@
                                 </div>
 
 
-                                <div class="form-group col-md-2">
-                                    <label for="total_day_div">{{ __('Total Days') }} <span
-                                            class="text-danger">*</span></label>
-                                    <input type="number" name="total_day" id="total_day_div" class="form-control"
-                                        min="1" step="any" placeholder="{{ __('total days') }}"
-                                        required>
-                                     
+                                                                <div class="form-group col-md-2">
+                                    <label for="total_day_div">{{ __('Total Days') }} <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">📅</span>
+                                        <input type="number" name="total_day" id="total_day_div" class="form-control" min="1" step="any" placeholder="{{ __('total days') }}" required>
+                                    </div>
                                 </div>
 
-                                <input type="hidden" name="total_days" id="hidden_total_days"
-                                    value="{{ old('total_days', $postJob->total_days) }}">
-                                <input type="hidden" name="total_hours" id="hidden_total_hours"
-                                    value="{{ old('total_hours', $postJob->total_hours) }}">
+                                <input type="hidden" name="total_days" id="hidden_total_days" value="{{ old('total_days', $postJob->total_days) }}">
+                                <input type="hidden" name="total_hours" id="hidden_total_hours" value="{{ old('total_hours', $postJob->total_hours) }}">
 
                                 <div class="form-group col-md-2">
-                                    <label for="total_hours_div">{{ __('Total Hours') }} <span
-                                            class="text-danger">*</span></label>
-                                    <input type="number" name="total_hours" id="total_hours_div"
-                                        class="form-control" min="1" step="any"
-                                        placeholder="{{ __('total_hours') }}" required
-                                        value="{{ old('total_hours', $postJob->total_hours) }}">
+                                    <label for="total_hours_div">{{ __('Total Hours') }} <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">⏱</span>
+                                        <input type="number" name="total_hours" id="total_hours_div" class="form-control" min="1" step="any" placeholder="{{ __('total_hours') }}" required value="{{ old('total_hours', $postJob->total_hours) }}">
+                                    </div>
                                     <small class="help-block with-errors text-danger"></small>
                                 </div>
                             </div>
@@ -267,7 +262,7 @@
                                     <textarea name="benefits" id="benefits" class="form-control textarea" rows="3" placeholder="{{ __('benefits') }}">{{ old('benefits', $postJob->benefits) }}</textarea>
                                 </div>
                             </div>
-                                <div class="form-group custom-file col-md-6 mt-30">
+                                <div class="form-group custom-file col-md-6 mt-4">
                                     <label for="image"
                                         class="custom-file-label upload-label">{{ __('messages.image') }}</label>
                                     <input type="file" name="image[]" id="image"
@@ -278,18 +273,11 @@
                                         style="display: none;">Show More</button>
                                 </div>
                             </div>
-                            <br>
-                            <br>
-                            <br>
-                            <br>
-                            <br>
-                            <br>
-                            <br>
-                            <br>
-                            <br>
-                            <div class="form-group custom-file col-md-3 mt-30">
-                            <button type="submit"
-                                class="btn btn-md btn-primary float-right">{{ __('messages.save') }}</button></div><div class="form-group custom-file col-md-9 mt-30"></div>
+                            <div class="row mt-4">
+                                <div class="col-md-12 d-flex justify-content-end">
+                                    <button type="submit" class="btn btn-md btn-primary">{{ __('messages.save') }}</button>
+                                </div>
+                            </div>
                         </form>
 
                         <!-- Image Modal -->
@@ -524,8 +512,10 @@ function calculateDays() {
                     // user can set hours manually for fixed/hourly
                     $('#total_hours_div').attr('readonly', false).attr('max', null);
                 }
+                // ensure no conflicting max on days
+                $('#total_day_div').removeAttr('max');
             } else {
-                $('#total_day_div').val(0);
+                $('#total_day_div').val(0).removeAttr('max');
                 $('#hidden_total_days').val(0);
                 if (priceType === 'daily') {
                     $('#total_hours_div').val(0).attr('readonly', true);
@@ -535,7 +525,7 @@ function calculateDays() {
         }
     } else {
         $('#hidden_total_days').val(0);
-        $('#total_day_div').val(0).attr('max', 0);
+        $('#total_day_div').val(0).removeAttr('max');
         if (priceType === 'daily') {
             $('#total_hours_div').val(0).attr('readonly', true);
             $('#hidden_total_hours').val(0);
@@ -586,6 +576,14 @@ function calculateDays() {
             });
 
             $('#price, #total_hours_div, #total_day_div').on('input', function(){
+                // guard against invalid max combinations
+                var days = parseInt($('#total_day_div').val(), 10) || 0;
+                var priceType = $('#price_type').val();
+                if (priceType === 'daily') {
+                    var hours = days * 8;
+                    $('#total_hours_div').val(hours).attr('readonly', true).attr('max', hours);
+                    $('#hidden_total_hours').val(hours);
+                }
                 recalcBudget();
             });
                 // Function to fetch subcategories based on selected category
