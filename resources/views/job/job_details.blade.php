@@ -97,9 +97,11 @@
 
                     <div class="card mt-4">
                         <div class="card-body">
-                            <h6 class="mb-3">Customer Details</h6>
+                            <h6 class="mb-3 text-center">Customer Details</h6>
+                            <div class="text-center mb-3">
+                                <img src="{{ getSingleMedia($jobrequest->customer,'profile_image', null) }}" alt="photo" style="width:120px;height:120px;border-radius:50%;object-fit:cover;margin:0 auto;">
+                            </div>
                             <div class="d-flex align-items-center gap-3">
-                                <img src="{{ getSingleMedia($jobrequest->customer,'profile_image', null) }}" alt="photo" style="width:64px;height:64px;border-radius:8px;object-fit:cover;">
                                 <div>
                                     <div><b>Full Name:</b> {{ $jobrequest->customer->display_name ?? $jobrequest->customer->username ?? 'N/A' }}</div>
                                     <div><b>Position:</b> {{ $jobrequest->customer->designation ?? 'N/A' }}</div>
