@@ -175,18 +175,32 @@
          </span>
       </div>  
       <div class="d-flex" style="gap: 14px; justify-content: center;">
-         <a href="#"><img
-                 src="https://static.vecteezy.com/system/resources/previews/016/716/481/original/facebook-icon-free-png.png"
-                 style="width: 30px; border-radius: 8px;" alt=""></a>
-         <a href="#"><img
-                 src="https://upload.wikimedia.org/wikipedia/commons/9/95/Instagram_logo_2022.svg"
-                 style="width: 30px; border-radius: 8px;" alt=""></a>
-         <a href="#"><img
-                 src="https://cdn.pixabay.com/photo/2015/03/10/17/30/twitter-667462_640.png"
-                 style="width: 30px; border-radius: 8px;" alt=""></a>
-         <a href="#"><img
-                 src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRokEYt0yyh6uNDKL8uksVLlhZ35laKNQgZ9g&s"
-                 style="width: 30px; border-radius: 8px;" alt=""></a>
+         <a href="#" class="social-share-btn" data-platform="facebook" data-service-id="{{ $data->id }}" style="cursor: pointer;">
+             <img src="https://static.vecteezy.com/system/resources/previews/016/716/481/original/facebook-icon-free-png.png"
+                 style="width: 30px; border-radius: 8px;" alt="Share on Facebook">
+         </a>
+         <a href="#" class="social-share-btn" data-platform="twitter" data-service-id="{{ $data->id }}" style="cursor: pointer;">
+             <img src="https://cdn.pixabay.com/photo/2015/03/10/17/30/twitter-667462_640.png"
+                 style="width: 30px; border-radius: 8px;" alt="Share on Twitter">
+         </a>
+         <a href="#" class="social-share-btn" data-platform="instagram" data-service-id="{{ $data->id }}" style="cursor: pointer;">
+             <img src="https://upload.wikimedia.org/wikipedia/commons/9/95/Instagram_logo_2022.svg"
+                 style="width: 30px; border-radius: 8px;" alt="Share on Instagram">
+         </a>
+         <a href="#" class="social-share-btn" data-platform="linkedin" data-service-id="{{ $data->id }}" style="cursor: pointer;">
+             <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRokEYt0yyh6uNDKL8uksVLlhZ35laKNQgZ9g&s"
+                 style="width: 30px; border-radius: 8px;" alt="Share on LinkedIn">
+         </a>
+         <a href="#" class="social-share-btn" data-platform="whatsapp" data-service-id="{{ $data->id }}" style="cursor: pointer;">
+             <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg"
+                 style="width: 30px; border-radius: 8px;" alt="Share on WhatsApp">
+         </a>
+         <a href="#" class="social-share-btn" data-platform="copy" data-service-id="{{ $data->id }}" style="cursor: pointer;" title="Copy Service Link">
+             <svg width="30" height="30" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="border-radius: 8px; background: #f8f9fa; padding: 5px;">
+                 <path d="M16 12.9A4.978 4.978 0 0 0 12 15a4.978 4.978 0 0 0-4-2.1A2.999 2.999 0 0 0 0 16c0 1.66 1.34 3 3 3h10c1.66 0 3-1.34 3-3s-1.34-3-3-3zM6 18c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1z" fill="#6c757d"/>
+                 <path d="M12 7c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4z" fill="#6c757d"/>
+             </svg>
+         </a>
      </div>
      
    
@@ -195,6 +209,169 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.1/dist/sweetalert2.all.min.js"></script>
+
+<!-- Social Media Sharing Script -->
+<script>
+$(document).ready(function () {
+    // Social Media Sharing Functionality
+    $('.social-share-btn').on('click', function(e) {
+        e.preventDefault();
+        
+        const platform = $(this).data('platform');
+        const serviceId = $(this).data('service-id');
+        const serviceCard = $(this).closest('.service-box-card');
+        
+        // Get service information from the card
+        const serviceName = serviceCard.find('.service-heading').text().trim() || 'Amazing Service';
+        const servicePrice = serviceCard.find('.price-box').text().trim() || 'Check Price';
+        const serviceImage = serviceCard.find('.service-img img').attr('src');
+        const serviceUrl = window.location.origin + '/service-detail/' + serviceId;
+        const providerName = serviceCard.find('.provider-name').text().trim() || 'Professional Provider';
+        const rating = serviceCard.find('.font-size-14').text().trim() || '5.0';
+        const bookings = serviceCard.find('strong').text().trim() || '0 Bookings';
+        const views = serviceCard.find('span[title="Views"] span').text().trim() || '0';
+        
+        // Enhanced shareable content with more details
+        const shareContent = {
+            title: serviceName,
+            description: `🚀 **${serviceName}**\n\n👨‍💼 **Provider:** ${providerName}\n💰 **Price:** ${servicePrice}\n⭐ **Rating:** ${rating}\n📊 **Stats:** ${bookings} • ${views} Views\n\n🔍 **Service Details:**\nThis professional service offers top-quality solutions with excellent customer satisfaction.\n\n📱 **Book Now:** ${serviceUrl}\n\n#services #professional #quality #recommended #handyman #expert`,
+            url: serviceUrl,
+            image: serviceImage,
+            hashtags: 'services,professional,quality,recommended,handyman,expert'
+        };
+        
+        // Share based on platform
+        switch(platform) {
+            case 'facebook':
+                shareToFacebook(shareContent);
+                break;
+            case 'twitter':
+                shareToTwitter(shareContent);
+                break;
+            case 'instagram':
+                shareToInstagram(shareContent);
+                break;
+            case 'linkedin':
+                shareToLinkedIn(shareContent);
+                break;
+            case 'whatsapp':
+                shareToWhatsApp(shareContent);
+                break;
+            case 'copy':
+                copyServiceLink(shareContent);
+                break;
+        }
+    });
+    
+    // Facebook Sharing
+    function shareToFacebook(content) {
+        const fbUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(content.url)}&quote=${encodeURIComponent(content.description)}`;
+        openShareWindow(fbUrl, 'facebook-share', 600, 400);
+        Swal.fire('Sharing to Facebook!', 'Facebook sharing window opened. Complete your post there.', 'info');
+    }
+    
+    // Twitter Sharing
+    function shareToTwitter(content) {
+        const tweetText = `${content.description}\n\n${content.url}`;
+        const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}&hashtags=${content.hashtags}`;
+        openShareWindow(twitterUrl, 'twitter-share', 600, 400);
+        Swal.fire('Sharing to Twitter!', 'Twitter sharing window opened. Complete your tweet there.', 'info');
+    }
+    
+    // Instagram Sharing (Note: Instagram doesn't support direct sharing via URL)
+    function shareToInstagram(content) {
+        // Create a modal with Instagram sharing instructions
+        Swal.fire({
+            title: 'Share to Instagram',
+            html: `
+                <div class="text-center">
+                    <p><strong>Instagram doesn't support direct sharing via links.</strong></p>
+                    <p>Here's what you can copy and paste:</p>
+                    <div class="bg-light p-3 rounded mb-3">
+                        <strong>Caption:</strong><br>
+                        <textarea class="form-control mt-2" rows="4" readonly>${content.description}</textarea>
+                    </div>
+                    <div class="bg-light p-3 rounded">
+                        <strong>Service URL:</strong><br>
+                        <input type="text" class="form-control mt-2" value="${content.url}" readonly>
+                    </div>
+                </div>
+            `,
+            icon: 'info',
+            confirmButtonText: 'Copy & Close',
+            showCancelButton: true,
+            cancelButtonText: 'Close'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Copy caption to clipboard
+                navigator.clipboard.writeText(content.description + '\n\n' + content.url);
+                Swal.fire('Copied!', 'Content copied to clipboard. You can now paste it on Instagram.', 'success');
+            }
+        });
+    }
+    
+    // LinkedIn Sharing
+    function shareToLinkedIn(content) {
+        const linkedinUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(content.url)}&title=${encodeURIComponent(content.title)}&summary=${encodeURIComponent(content.description)}`;
+        openShareWindow(linkedinUrl, 'linkedin-share', 600, 500);
+        Swal.fire('Sharing to LinkedIn!', 'LinkedIn sharing window opened. Complete your post there.', 'info');
+    }
+    
+    // WhatsApp Sharing
+    function shareToWhatsApp(content) {
+        const whatsappText = `${content.description}\n\n${content.url}`;
+        const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(whatsappText)}`;
+        openShareWindow(whatsappUrl, 'whatsapp-share', 600, 400);
+        Swal.fire('Sharing to WhatsApp!', 'WhatsApp sharing window opened. Complete your message there.', 'info');
+    }
+    
+    // Copy Service Link
+    function copyServiceLink(content) {
+        const fullContent = `${content.description}\n\n🔗 ${content.url}`;
+        copyToClipboard(fullContent);
+    }
+    
+    // Helper function to open share windows
+    function openShareWindow(url, name, width, height) {
+        const left = (screen.width - width) / 2;
+        const top = (screen.height - height) / 2;
+        
+        window.open(url, name, 
+            `width=${width},height=${height},left=${left},top=${top},` +
+            'toolbar=0,location=0,menubar=0,directories=0,scrollbars=0'
+        );
+    }
+    
+    // Enhanced sharing with clipboard fallback
+    function copyToClipboard(text) {
+        if (navigator.clipboard && window.isSecureContext) {
+            navigator.clipboard.writeText(text).then(() => {
+                Swal.fire('Copied!', 'Content copied to clipboard!', 'success');
+            });
+        } else {
+            // Fallback for older browsers
+            const textArea = document.createElement('textarea');
+            textArea.value = text;
+            textArea.style.position = 'fixed';
+            textArea.style.left = '-999999px';
+            textArea.style.top = '-999999px';
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            
+            try {
+                document.execCommand('copy');
+                Swal.fire('Copied!', 'Content copied to clipboard!', 'success');
+            } catch (err) {
+                Swal.fire('Error', 'Could not copy to clipboard', 'error');
+            }
+            
+            document.body.removeChild(textArea);
+        }
+    }
+});
+
+</script>
 <script>
    $(document).ready(function () {
    
