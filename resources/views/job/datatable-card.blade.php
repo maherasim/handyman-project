@@ -65,63 +65,247 @@
          .review-count {
              color: #777;
          }
+
+         /* Professional Job Card Styling */
+         .job-card {
+             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+         }
+
+         .job-card:hover {
+             transform: translateY(-8px);
+             box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+             border-color: #667eea;
+         }
+
+         .job-card:hover .image-container img {
+             transform: scale(1.05);
+         }
+
+         .heart-icon:hover {
+             background: #667eea !important;
+             transform: scale(1.1);
+         }
+
+         .heart-icon:hover i {
+             color: white !important;
+         }
+
+         .social-link:hover {
+             background: #667eea !important;
+             transform: translateY(-2px);
+         }
+
+         .social-link:hover img {
+             filter: brightness(0) invert(1);
+         }
+
+         .price-badge {
+             animation: fadeInUp 0.6s ease-out;
+         }
+
+         .status-badge {
+             animation: fadeInRight 0.6s ease-out;
+         }
+
+         @keyframes fadeInUp {
+             from {
+                 opacity: 0;
+                 transform: translateY(20px);
+             }
+             to {
+                 opacity: 1;
+                 transform: translateY(0);
+             }
+         }
+
+         @keyframes fadeInRight {
+             from {
+                 opacity: 0;
+                 transform: translateX(20px);
+             }
+             to {
+                 opacity: 1;
+                 transform: translateX(0);
+             }
+         }
+
+         /* Responsive adjustments */
+         @media (max-width: 768px) {
+             .job-card {
+                 margin-bottom: 20px;
+             }
+             
+             .card-content {
+                 padding: 20px !important;
+             }
+             
+             .job-title {
+                 font-size: 16px !important;
+                 min-height: 44px !important;
+             }
+         }
+
+         @media (max-width: 576px) {
+             .col-12 {
+                 padding: 0 10px;
+             }
+             
+             .card-content {
+                 padding: 16px !important;
+             }
+         }
+
+         /* Filter Select Styling */
+         .filter-select {
+             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+         }
+
+         .filter-select:hover {
+             transform: translateY(-2px);
+             box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+         }
+
+         .filter-select:focus {
+             outline: none;
+             box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.3);
+             transform: translateY(-2px);
+         }
+
+         /* Enhanced typography */
+         .job-title {
+             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+         }
+
+         .price-badge {
+             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+             letter-spacing: 0.5px;
+         }
+
+         .status-badge {
+             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+         }
      </style>
      </head>
 
      <body>
          <div class="container mt-5">
-             <div class="d-flex justify-content-between">
-                 <!-- Filter by Category -->
-                 <!-- Category Filter -->
-                 <select class="form-select" id="category-select" aria-label="Filter by Category">
-                     <option selected>Filter by Category</option>
-                     @foreach ($categories as $category)
-                         <option value="{{ $category->id }}">{{ $category->name }}</option>
-                     @endforeach
-                 </select>
+             <div class="filter-section" style="
+                 background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                 border-radius: 20px;
+                 padding: 30px;
+                 margin-bottom: 40px;
+                 box-shadow: 0 8px 32px rgba(102, 126, 234, 0.2);
+             ">
+                 <h4 class="text-white text-center mb-4" style="
+                     font-weight: 700;
+                     font-size: 24px;
+                     margin-bottom: 30px;
+                     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                 ">
+                     <i class='bx bx-filter-alt' style="margin-right: 10px;"></i>
+                     Find Your Perfect Job
+                 </h4>
+                 
+                 <div class="row g-3">
+                     <div class="col-lg-2 col-md-4 col-6">
+                         <select class="form-select filter-select" id="category-select" aria-label="Filter by Category" style="
+                             border: none;
+                             border-radius: 12px;
+                             padding: 12px 16px;
+                             font-weight: 500;
+                             background: rgba(255, 255, 255, 0.95);
+                             backdrop-filter: blur(10px);
+                             transition: all 0.3s ease;
+                         ">
+                             <option selected>Category</option>
+                             @foreach ($categories as $category)
+                                 <option value="{{ $category->id }}">{{ $category->name }}</option>
+                             @endforeach
+                         </select>
+                     </div>
 
-                 <!-- Sub-Category Filter -->
-                 <select class="form-select" id="subcategory-select" aria-label="Filter by Sub-Category">
-                     <option selected>Filter by Sub-Category</option>
-                     @foreach ($subcategories as $subcategory)
-                         <option value="{{ $subcategory->id }}">{{ $subcategory->name }}</option>
-                     @endforeach
-                 </select>
+                     <div class="col-lg-2 col-md-4 col-6">
+                         <select class="form-select filter-select" id="subcategory-select" aria-label="Filter by Sub-Category" style="
+                             border: none;
+                             border-radius: 12px;
+                             padding: 12px 16px;
+                             font-weight: 500;
+                             background: rgba(255, 255, 255, 0.95);
+                             backdrop-filter: blur(10px);
+                             transition: all 0.3s ease;
+                         ">
+                             <option selected>Sub-Category</option>
+                             @foreach ($subcategories as $subcategory)
+                                 <option value="{{ $subcategory->id }}">{{ $subcategory->name }}</option>
+                             @endforeach
+                         </select>
+                     </div>
 
-                 <!-- Customer Filter -->
-                 <select class="form-select" id="customer-select" aria-label="Filter by Customer">
-                     <option selected>Filter by Customer</option>
-                     @foreach ($customers as $customer)
-                         <option value="{{ $customer->id }}">{{ $customer->display_name }}</option>
-                     @endforeach
-                 </select>
+                     <div class="col-lg-2 col-md-4 col-6">
+                         <select class="form-select filter-select" id="customer-select" aria-label="Filter by Customer" style="
+                             border: none;
+                             border-radius: 12px;
+                             padding: 12px 16px;
+                             font-weight: 500;
+                             background: rgba(255, 255, 255, 0.95);
+                             backdrop-filter: blur(10px);
+                             transition: all 0.3s ease;
+                         ">
+                             <option selected>Customer</option>
+                             @foreach ($customers as $customer)
+                                 <option value="{{ $customer->id }}">{{ $customer->display_name }}</option>
+                             @endforeach
+                         </select>
+                     </div>
 
-                 <!-- Country Filter -->
-                 <select class="form-select" id="country-select" aria-label="Filter by Country">
-                     <option selected>Filter by Country</option>
-                     @foreach ($countries as $country)
-                         <option value="{{ $country->id }}">{{ $country->name }}</option>
-                     @endforeach
-                 </select>
+                     <div class="col-lg-2 col-md-4 col-6">
+                         <select class="form-select filter-select" id="country-select" aria-label="Filter by Country" style="
+                             border: none;
+                             border-radius: 12px;
+                             padding: 12px 16px;
+                             font-weight: 500;
+                             background: rgba(255, 255, 255, 0.95);
+                             backdrop-filter: blur(10px);
+                             transition: all 0.3s ease;
+                         ">
+                             <option selected>Country</option>
+                             @foreach ($countries as $country)
+                                 <option value="{{ $country->id }}">{{ $country->name }}</option>
+                             @endforeach
+                         </select>
+                     </div>
 
-                 <!-- City Filter -->
-                 <select class="form-select" id="city-select" aria-label="Filter by City">
-                     <option selected>Filter by City</option>
-                 </select>
+                     <div class="col-lg-2 col-md-4 col-6">
+                         <select class="form-select filter-select" id="city-select" aria-label="Filter by City" style="
+                             border: none;
+                             border-radius: 12px;
+                             padding: 12px 16px;
+                             font-weight: 500;
+                             background: rgba(255, 255, 255, 0.95);
+                             backdrop-filter: blur(10px);
+                             transition: all 0.3s ease;
+                         ">
+                             <option selected>City</option>
+                         </select>
+                     </div>
 
-
-                 <!-- Sort Filter (Optional) -->
-                 <select class="form-select" id="sort-select" aria-label="Sort by Price">
-                     <option selected>Sort by Price</option>
-                     <option value="1">Price: Low to High</option>
-                     <option value="2">Price: High to Low</option>
-                 </select>
-
-
-
-
+                     <div class="col-lg-2 col-md-4 col-6">
+                         <select class="form-select filter-select" id="sort-select" aria-label="Sort by Price" style="
+                             border: none;
+                             border-radius: 12px;
+                             padding: 12px 16px;
+                             font-weight: 500;
+                             background: rgba(255, 255, 255, 0.95);
+                             backdrop-filter: blur(10px);
+                             transition: all 0.3s ease;
+                         ">
+                             <option selected>Sort by</option>
+                             <option value="1">Price: Low to High</option>
+                             <option value="2">Price: High to Low</option>
+                         </select>
+                     </div>
+                 </div>
              </div>
-             <hr class="my-4">
          </div>
 
          <div class="container mt-5">
@@ -136,78 +320,235 @@
                  @else
 
                  @foreach ($jobrequest as $jobRequest)
-                 <div class="col-lg-3 col-md-4 col-12 mb-0">
-                     <a href="{{ route('job.details', $jobRequest->id) }}" class="card-link">
-                         <div class="card mt-5 p-3"
-                             style="position: relative; background: #FAF9FF; border-radius: 10px; height: 400px; display: flex; flex-direction: column; ">
-                             <!-- Card Image -->
-                             <div class="card-imgd" style="position: relative;">
+                 <div class="col-lg-4 col-md-6 col-12 mb-4">
+                     <a href="{{ route('job.details', $jobRequest->id) }}" class="card-link text-decoration-none">
+                         <div class="job-card h-100" style="
+                             background: #FFFFFF;
+                             border: 1px solid #E8E9EC;
+                             border-radius: 16px;
+                             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+                             transition: all 0.3s ease;
+                             overflow: hidden;
+                             position: relative;
+                         ">
+                             <!-- Card Image Container -->
+                             <div class="image-container" style="position: relative; height: 200px; overflow: hidden;">
                                 @if(!empty($jobRequest->image))
                                 <img src="{{ asset('storage/' . $jobRequest->image) }}" alt="Job Image"
-                                     style="border-radius: 10px; width: 100%; height: 200px; object-fit: cover;">
+                                     style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease;">
                             @else
-                                <img class="card-img-top" 
+                                <img class="default-image" 
                                      src="{{ asset('images/post-job/ac_refresh_and_revive.png') }}"
                                      alt="Default Image"
-                                     style="border-radius: 10px; width: 100%; height: 200px; object-fit: cover;">
+                                     style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease;">
                             @endif
                             
-                                 <!-- Price Overlay -->
-                                 <div
-                                     style="position: absolute; bottom: -20px; left: 50%; transform: translateX(-50%); width:80%; background-image: url('{{ asset('images/icon/banner2.jpg') }}'); background-size: cover; background-repeat: no-repeat; background-position: center; padding: 10px 20px; color: #fff; font-weight: 600; font-size: 18px; border-radius: 10px; border: 3px solid #E1DCDD;">
-                                     € {{ $jobRequest->price }}  / {{ $jobRequest->type }}
+                                 <!-- Price Badge -->
+                                 <div class="price-badge" style="
+                                     position: absolute;
+                                     bottom: 16px;
+                                     left: 16px;
+                                     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                                     color: white;
+                                     padding: 8px 16px;
+                                     border-radius: 20px;
+                                     font-weight: 600;
+                                     font-size: 14px;
+                                     box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+                                     backdrop-filter: blur(10px);
+                                 ">
+                                     €{{ number_format($jobRequest->price) }} / {{ ucfirst($jobRequest->price_type ?? 'fixed') }}
                                  </div>
+                                 
                                  <!-- Heart Icon -->
-                                 <i class='bx bx-heart'
-                                     style="position: absolute; top: 10px; right: 10px; padding: 7px; color: #8384AE; border-radius: 50%;"></i>
+                                 <div class="heart-icon" style="
+                                     position: absolute;
+                                     top: 16px;
+                                     right: 16px;
+                                     width: 36px;
+                                     height: 36px;
+                                     background: rgba(255, 255, 255, 0.9);
+                                     border-radius: 50%;
+                                     display: flex;
+                                     align-items: center;
+                                     justify-content: center;
+                                     backdrop-filter: blur(10px);
+                                     transition: all 0.3s ease;
+                                 ">
+                                     <i class='bx bx-heart' style="color: #667eea; font-size: 18px;"></i>
+                                 </div>
                              </div>
+                             
                              <!-- Card Content -->
-                             <div class="card-body p-2"
-                                 style="flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; p">
-                                 <!-- Title and Social Icons -->
-                                 <div class="d-flex justify-content-between align-items-center mt-3">
-                                     <h5 class="categories-name text-capitalize " style="font-size: 15px;">
-                                         <b>{{ $jobRequest->title }}</b>
-                                     </h5>
-                                    
-                                 </div>
-                                 <!-- Location -->
-                                 <h5 class="mt-0 mb-0 text-truncate">
-                                    <span style="font-size: 12px;"> {{ $jobRequest->city ? $jobRequest->city->name : 'City' }}-{{ $jobRequest->country ? $jobRequest->country->name : 'Country' }}</span>
-
+                             <div class="card-content" style="padding: 24px;">
+                                 <!-- Job Title -->
+                                 <h5 class="job-title" style="
+                                     font-size: 18px;
+                                     font-weight: 700;
+                                     color: #1a1a1a;
+                                     margin-bottom: 12px;
+                                     line-height: 1.4;
+                                     display: -webkit-box;
+                                     -webkit-line-clamp: 2;
+                                     -webkit-box-orient: vertical;
+                                     overflow: hidden;
+                                     min-height: 50px;
+                                 ">
+                                     {{ $jobRequest->title }}
                                  </h5>
-                                 <!-- Published Info -->
-                                 <p class="mb-0" style="font-weight: 60;">Published at:
-                                     {{ $jobRequest->created_at->toDateString() }}</p>
-
-
-                                 <div class="d-flex align-items-center gap-2">
-                                     <img src="{{ getSingleMedia($jobRequest->customer,'profile_image', null) ?? 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQnnM0ib-pYCZg4DbbB_T5_mfxpqrDHYXFLy208bjvHjIM5q1FF4lzLvNFp2qZ5Eo11orA&usqp=CAU' }}"
-                                         alt="Customer" style="width: 35px; height: 35px; border-radius: 50%; object-fit: cover;">
-                                     <p style="margin: 0; color: #8081dc;">
-                                         {{ $jobRequest->customer->display_name ?? $jobRequest->customer->username ?? 'Unknown' }}</p>
+                                 
+                                 <!-- Location -->
+                                 <div class="location-info" style="margin-bottom: 16px;">
+                                     <div class="d-flex align-items-center" style="gap: 8px;">
+                                         <i class='bx bx-map-pin' style="color: #667eea; font-size: 16px;"></i>
+                                         <span style="
+                                             font-size: 14px;
+                                             color: #666;
+                                             font-weight: 500;
+                                         ">
+                                             {{ $jobRequest->city ? $jobRequest->city->name : 'City' }}, {{ $jobRequest->country ? $jobRequest->country->name : 'Country' }}
+                                         </span>
+                                     </div>
                                  </div>
-                                 <!-- Status -->
-                                 <h6 style="font-weight: 100;">Status: <span
-                                         style="font-weight: 100; font-size: 13px;">{{ $jobRequest->status }}</span>
-                                 </h6>
-                                 <div class="d-flex align-items-center gap-2">
-                                     <a href="#"><img
-                                             src="https://static.vecteezy.com/system/resources/previews/016/716/481/original/facebook-icon-free-png.png"
-                                             alt="Facebook"
-                                             style="width: 20px; height: 20px; border-radius: 8px;"></a>
-                                     <a href="#"><img
-                                             src="https://upload.wikimedia.org/wikipedia/commons/9/95/Instagram_logo_2022.svg"
-                                             alt="Instagram"
-                                             style="width: 20px; height: 20px; border-radius: 8px;"></a>
-                                     <a href="#"><img
-                                             src="https://cdn.pixabay.com/photo/2015/03/10/17/30/twitter-667462_640.png"
-                                             alt="Twitter"
-                                             style="width: 20px; height: 20px; border-radius: 8px;"></a>
-                                     <a href="#"><img
-                                             src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRokEYt0yyh6uNDKL8uksVLlhZ35laKNQgZ9g&s"
-                                             alt="LinkedIn"
-                                             style="width: 20px; height: 20px; border-radius: 8px;"></a>
+                                 
+                                 <!-- Published Date -->
+                                 <div class="published-info" style="margin-bottom: 20px;">
+                                     <div class="d-flex align-items-center" style="gap: 8px;">
+                                         <i class='bx bx-calendar' style="color: #8e8e93; font-size: 14px;"></i>
+                                         <span style="
+                                             font-size: 13px;
+                                             color: #8e8e93;
+                                             font-weight: 400;
+                                         ">
+                                             Published {{ $jobRequest->created_at->diffForHumans() }}
+                                         </span>
+                                     </div>
+                                 </div>
+                                 
+                                 <!-- Customer Info -->
+                                 <div class="customer-info" style="margin-bottom: 20px;">
+                                     <div class="d-flex align-items-center" style="gap: 12px;">
+                                         <div class="customer-avatar" style="
+                                             width: 40px;
+                                             height: 40px;
+                                             border-radius: 50%;
+                                             overflow: hidden;
+                                             border: 2px solid #f0f0f0;
+                                         ">
+                                             <img src="{{ getSingleMedia($jobRequest->customer,'profile_image', null) ?? 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQnnM0ib-pYCZg4DbbB_T5_mfxpqrDHYXFLy208bjvHjIM5q1FF4lzLvNFp2qZ5Eo11orA&usqp=CAU' }}"
+                                                 alt="Customer" style="width: 100%; height: 100%; object-fit: cover;">
+                                         </div>
+                                         <div class="customer-details">
+                                             <div style="
+                                                 font-size: 14px;
+                                                 font-weight: 600;
+                                                 color: #1a1a1a;
+                                                 margin-bottom: 2px;
+                                             ">
+                                                 {{ $jobRequest->customer->display_name ?? $jobRequest->customer->username ?? 'Unknown' }}
+                                             </div>
+                                             <div style="
+                                                 font-size: 12px;
+                                                 color: #8e8e93;
+                                                 font-weight: 400;
+                                             ">
+                                                 Job Poster
+                                             </div>
+                                         </div>
+                                     </div>
+                                 </div>
+                                 
+                                 <!-- Status Badge -->
+                                 <div class="status-section" style="margin-bottom: 20px;">
+                                     <div class="d-flex align-items-center justify-content-between">
+                                         <span style="
+                                             font-size: 12px;
+                                             color: #8e8e93;
+                                             font-weight: 500;
+                                             text-transform: uppercase;
+                                             letter-spacing: 0.5px;
+                                         ">
+                                             Status
+                                         </span>
+                                         <span class="status-badge" style="
+                                             padding: 6px 12px;
+                                             border-radius: 12px;
+                                             font-size: 11px;
+                                             font-weight: 600;
+                                             text-transform: uppercase;
+                                             letter-spacing: 0.5px;
+                                             background: {{ $jobRequest->status === 'active' ? '#e8f5e8' : '#fff3cd' }};
+                                             color: {{ $jobRequest->status === 'active' ? '#2d5a2d' : '#856404' }};
+                                         ">
+                                             {{ ucfirst($jobRequest->status ?? 'Pending') }}
+                                         </span>
+                                     </div>
+                                 </div>
+                                 
+                                 <!-- Social Icons -->
+                                 <div class="social-icons" style="
+                                     display: flex;
+                                     align-items: center;
+                                     gap: 12px;
+                                     padding-top: 16px;
+                                     border-top: 1px solid #f0f0f0;
+                                 ">
+                                     <a href="#" class="social-link" style="
+                                         width: 32px;
+                                         height: 32px;
+                                         border-radius: 8px;
+                                         background: #f8f9fa;
+                                         display: flex;
+                                         align-items: center;
+                                         justify-content: center;
+                                         transition: all 0.3s ease;
+                                         text-decoration: none;
+                                     ">
+                                         <img src="https://static.vecteezy.com/system/resources/previews/016/716/481/original/facebook-icon-free-png.png"
+                                             alt="Facebook" style="width: 16px; height: 16px;">
+                                     </a>
+                                     <a href="#" class="social-link" style="
+                                         width: 32px;
+                                         height: 32px;
+                                         border-radius: 8px;
+                                         background: #f8f9fa;
+                                         display: flex;
+                                         align-items: center;
+                                         justify-content: center;
+                                         transition: all 0.3s ease;
+                                         text-decoration: none;
+                                     ">
+                                         <img src="https://upload.wikimedia.org/wikipedia/commons/9/95/Instagram_logo_2022.svg"
+                                             alt="Instagram" style="width: 16px; height: 16px;">
+                                     </a>
+                                     <a href="#" class="social-link" style="
+                                         width: 32px;
+                                         height: 32px;
+                                         border-radius: 8px;
+                                         background: #f8f9fa;
+                                         display: flex;
+                                         align-items: center;
+                                         justify-content: center;
+                                         transition: all 0.3s ease;
+                                         text-decoration: none;
+                                     ">
+                                         <img src="https://cdn.pixabay.com/photo/2015/03/10/17/30/twitter-667462_640.png"
+                                             alt="Twitter" style="width: 16px; height: 16px;">
+                                     </a>
+                                     <a href="#" class="social-link" style="
+                                         width: 32px;
+                                         height: 32px;
+                                         border-radius: 8px;
+                                         background: #f8f9fa;
+                                         transition: all 0.3s ease;
+                                         text-decoration: none;
+                                         display: flex;
+                                         align-items: center;
+                                         justify-content: center;
+                                     ">
+                                         <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRokEYt0yyh6uNDKL8uksVLlhZ35laKNQgZ9g&s"
+                                             alt="LinkedIn" style="width: 16px; height: 16px;">
+                                     </a>
                                  </div>
                              </div>
                          </div>
