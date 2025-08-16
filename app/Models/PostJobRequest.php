@@ -11,9 +11,7 @@ class PostJobRequest extends Model
     use HasFactory;
     protected $table = 'post_job_requests';
         protected $fillable = [
-        'title', 'type','customer_id', 'status' ,'description','provider_id','reason','price','total_budget','date','job_price','country_id','city_id','category_id','subcategory_id','start_date','end_date','total_hours','total_days','requirement'
- ,'image','images','total_views'
-         
+        'title', 'type','customer_id', 'status' ,'description','provider_id','reason','price','total_budget','date','job_price','price_type','country_id','state_id','city_id','category_id','subcategory_id','start_date','end_date','total_hours','total_days','requirement','job_schedule','remote_work_level','career_level','travel_required','education_level','duties','benefits','image','images','total_views'
     ];
 
     protected $casts = [
@@ -21,9 +19,11 @@ class PostJobRequest extends Model
         'provider_id'  => 'integer',
         'price' => 'double',
         'total_budget' => 'double',
-        'job_price' => 'double',
+        'job_price' => 'string',
+        'price_type' => 'string',
         'image' => 'string',
         'images' => 'array',
+        'travel_required' => 'boolean',
     ];
     public function postServiceMapping(){
         return $this->hasMany(PostJobServiceMapping::class, 'post_request_id','id');

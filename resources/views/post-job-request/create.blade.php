@@ -102,12 +102,13 @@
 
                             <div class="row">
                                 <div class="form-group col-md-2">
-                                    <label for="price_type">{{ __('Pice Type') }} <span
+                                    <label for="price_type">{{ __('Price Type') }} <span
                                             class="text-danger">*</span></label>
-                                    <select name="job_price" id="job_price" class="form-control" required>
-                                        <option value="fixed" {{ old('job_price', $postJob->job_price) == 'fixed' ? 'selected' : '' }}>{{ __('Fixed') }}</option>
-                                        <option value="hourly" {{ old('job_price', $postJob->job_price) == 'hourly' ? 'selected' : '' }}>{{ __('Hourly') }}</option>
-                                        <option value="daily" {{ old('job_price', $postJob->job_price) == 'daily' ? 'selected' : '' }}>{{ __('Daily') }}</option>
+                                    <select name="price_type" id="price_type" class="form-control" required>
+                                        @php $oldPriceType = old('price_type', $postJob->price_type ?? 'fixed'); @endphp
+                                        <option value="fixed" {{ $oldPriceType == 'fixed' ? 'selected' : '' }}>{{ __('Fixed') }}</option>
+                                        <option value="hourly" {{ $oldPriceType == 'hourly' ? 'selected' : '' }}>{{ __('Hourly') }}</option>
+                                        <option value="daily" {{ $oldPriceType == 'daily' ? 'selected' : '' }}>{{ __('Daily') }}</option>
                                     </select>
                                 </div>
 
@@ -144,6 +145,7 @@
                                     <input type="date" name="start_date" id="start_date" class="form-control"
                                         required value="{{ old('start_date', optional($postJob->start_date)->format('Y-m-d')) }}">
                                     <small class="help-block with-errors text-danger"></small>
+                                    <small id="start_date_error" class="text-danger" style="display:none;">{{ __('Start date must be before end date') }}</small>
                                 </div>
 
                                 <div class="form-group col-md-2">
@@ -179,22 +181,92 @@
                                     <small class="help-block with-errors text-danger"></small>
                                 </div>
                             </div>
-                            
+
+                            <div class="row">
+                                <div class="form-group col-md-2">
+                                    <label for="job_schedule">{{ __('Job Schedule') }} <span class="text-danger">*</span></label>
+                                    <select name="job_schedule" id="job_schedule" class="form-control" required>
+                                        @php $oldSchedule = old('job_schedule', $postJob->job_schedule); @endphp
+                                        <option value="full_time" {{ $oldSchedule == 'full_time' ? 'selected' : '' }}>{{ __('Full-Time') }}</option>
+                                        <option value="part_time" {{ $oldSchedule == 'part_time' ? 'selected' : '' }}>{{ __('Part-Time') }}</option>
+                                        <option value="contract" {{ $oldSchedule == 'contract' ? 'selected' : '' }}>{{ __('Contract') }}</option>
+                                        <option value="temporary" {{ $oldSchedule == 'temporary' ? 'selected' : '' }}>{{ __('Temporary') }}</option>
+                                        <option value="internship" {{ $oldSchedule == 'internship' ? 'selected' : '' }}>{{ __('Internship') }}</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group col-md-2">
+                                    <label for="remote_work_level">{{ __('Remote Work Level') }} <span class="text-danger">*</span></label>
+                                    <select name="remote_work_level" id="remote_work_level" class="form-control" required>
+                                        @php $oldRemote = old('remote_work_level', $postJob->remote_work_level); @endphp
+                                        <option value="onsite" {{ $oldRemote == 'onsite' ? 'selected' : '' }}>{{ __('Onsite (0%)') }}</option>
+                                        <option value="25_remote" {{ $oldRemote == '25_remote' ? 'selected' : '' }}>{{ __('25% Remote') }}</option>
+                                        <option value="50_remote" {{ $oldRemote == '50_remote' ? 'selected' : '' }}>{{ __('50% Remote') }}</option>
+                                        <option value="75_remote" {{ $oldRemote == '75_remote' ? 'selected' : '' }}>{{ __('75% Remote') }}</option>
+                                        <option value="100_remote" {{ $oldRemote == '100_remote' ? 'selected' : '' }}>{{ __('100% Remote') }}</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group col-md-2">
+                                    <label for="career_level">{{ __('Career Level') }} <span class="text-danger">*</span></label>
+                                    <select name="career_level" id="career_level" class="form-control" required>
+                                        @php $oldCareer = old('career_level', $postJob->career_level); @endphp
+                                        <option value="intern" {{ $oldCareer == 'intern' ? 'selected' : '' }}>{{ __('Intern') }}</option>
+                                        <option value="entry" {{ $oldCareer == 'entry' ? 'selected' : '' }}>{{ __('Entry') }}</option>
+                                        <option value="junior" {{ $oldCareer == 'junior' ? 'selected' : '' }}>{{ __('Junior') }}</option>
+                                        <option value="mid" {{ $oldCareer == 'mid' ? 'selected' : '' }}>{{ __('Mid-Level') }}</option>
+                                        <option value="senior" {{ $oldCareer == 'senior' ? 'selected' : '' }}>{{ __('Senior') }}</option>
+                                        <option value="lead" {{ $oldCareer == 'lead' ? 'selected' : '' }}>{{ __('Lead') }}</option>
+                                        <option value="manager" {{ $oldCareer == 'manager' ? 'selected' : '' }}>{{ __('Manager') }}</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group col-md-2">
+                                    <label for="travel_required">{{ __('Travel Required') }} <span class="text-danger">*</span></label>
+                                    <select name="travel_required" id="travel_required" class="form-control" required>
+                                        @php $oldTravel = old('travel_required', $postJob->travel_required); @endphp
+                                        <option value="0" {{ (string)$oldTravel === '0' ? 'selected' : '' }}>{{ __('No') }}</option>
+                                        <option value="1" {{ (string)$oldTravel === '1' ? 'selected' : '' }}>{{ __('Yes') }}</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group col-md-2">
+                                    <label for="education_level">{{ __('Education Level') }} <span class="text-danger">*</span></label>
+                                    <select name="education_level" id="education_level" class="form-control" required>
+                                        @php $oldEdu = old('education_level', $postJob->education_level); @endphp
+                                        <option value="high_school" {{ $oldEdu == 'high_school' ? 'selected' : '' }}>{{ __('High School') }}</option>
+                                        <option value="associate" {{ $oldEdu == 'associate' ? 'selected' : '' }}>{{ __('Associate Degree') }}</option>
+                                        <option value="undergraduate" {{ $oldEdu == 'undergraduate' ? 'selected' : '' }}>{{ __('Undergraduate Degree') }}</option>
+                                        <option value="graduate" {{ $oldEdu == 'graduate' ? 'selected' : '' }}>{{ __('Graduate/Master\'s') }}</option>
+                                        <option value="doctorate" {{ $oldEdu == 'doctorate' ? 'selected' : '' }}>{{ __('Doctorate') }}</option>
+                                    </select>
+                                </div>
+                            </div>
+
                             <div class="row">
                                 <div class="form-group col-md-6">
                                     <label for="description">{{ __('messages.description') }}</label>
                                     <textarea name="description" id="description" class="form-control textarea" rows="3"
                                         placeholder="{{ __('messages.description') }}">{{ old('description', $postJob->description) }}</textarea>
-                                </div> 
-                                
+                                </div>
+
                                 <div class="form-group col-md-6">
-                                    <label for="title">{{ __('Requirment') }} <span
+                                    <label for="requirement">{{ __('Skills & Requirements') }} <span
                                             class="text-danger">*</span></label>
-                                    <input type="text" name="requirement" id="requirement" class="form-control"
-                                        placeholder="{{ __('requirement') }}" title="requirement"
-                                        value="{{ old('requirement', $postJob->requirement) }}" required>
+                                    <textarea name="requirement" id="requirement" class="form-control textarea" rows="3" placeholder="{{ __('requirements') }}" required>{{ old('requirement', $postJob->requirement) }}</textarea>
                                     <small class="help-block with-errors text-danger"></small>
                                 </div></div>
+
+                            <div class="row">
+                                <div class="form-group col-md-6">
+                                    <label for="duties">{{ __('Duties & Responsibilities') }}</label>
+                                    <textarea name="duties" id="duties" class="form-control textarea" rows="3" placeholder="{{ __('duties & responsibilities') }}">{{ old('duties', $postJob->duties) }}</textarea>
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label for="benefits">{{ __('Benefits') }}</label>
+                                    <textarea name="benefits" id="benefits" class="form-control textarea" rows="3" placeholder="{{ __('benefits') }}">{{ old('benefits', $postJob->benefits) }}</textarea>
+                                </div>
+                            </div>
                                 <div class="form-group custom-file col-md-6 mt-30">
                                     <label for="image"
                                         class="custom-file-label upload-label">{{ __('messages.image') }}</label>
@@ -427,7 +499,7 @@
 function calculateDays() {
     var startDate = $('#start_date').val();
     var endDate = $('#end_date').val();
-    var priceType = $('#job_price').val();
+    var priceType = $('#price_type').val();
 
     if (startDate && endDate) {
         if (startDate > endDate) {
@@ -486,7 +558,7 @@ function calculateDays() {
            });
 
                        function recalcBudget() {
-                var priceType = $('#job_price').val();
+                var priceType = $('#price_type').val();
                 var price = parseFloat($('#price').val()) || 0;
                 var days = parseInt($('#total_day_div').val(), 10) || 0;
                 var hours = parseInt($('#total_hours_div').val(), 10) || 0;
@@ -503,7 +575,7 @@ function calculateDays() {
                 $('#hidden_total_days').val(days);
             }
 
-            $('#job_price').on('change', function() {
+            $('#price_type').on('change', function() {
                 var priceType = $(this).val();
                 if (priceType === 'daily') {
                     calculateDays();
@@ -561,7 +633,7 @@ function calculateDays() {
         <script>
             if (window.tinymce) {
                 tinymce.init({
-                    selector: '#requirement',
+                    selector: '#requirement, #duties, #benefits',
                     plugins: 'lists link image preview',
                     toolbar: 'undo redo | bold italic | bullist numlist | link image preview',
                     menubar: false

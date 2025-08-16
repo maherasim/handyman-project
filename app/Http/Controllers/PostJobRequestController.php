@@ -193,13 +193,20 @@ public function index_data(DataTables $datatable, Request $request)
             'city_id' => 'required|integer',
             'category_id' => 'required|integer',
             'subcategory_id' => 'required|integer',
-            'job_price' => 'required|in:fixed,hourly,daily',
+            'price_type' => 'required|in:fixed,hourly,daily',
             'type' => 'required|in:onsite,remote,hybrid',
             'price' => 'required|numeric|min:1',
             'start_date' => 'required|date',
             'end_date' => 'required|date|after_or_equal:start_date',
             'requirement' => 'required|string',
             'description' => 'nullable|string',
+            'job_schedule' => 'required|in:full_time,part_time,contract,temporary,internship',
+            'remote_work_level' => 'required|in:onsite,25_remote,50_remote,75_remote,100_remote',
+            'career_level' => 'required|in:intern,entry,junior,mid,senior,lead,manager',
+            'travel_required' => 'required|in:0,1',
+            'education_level' => 'required|in:high_school,associate,undergraduate,graduate,doctorate',
+            'duties' => 'nullable|string',
+            'benefits' => 'nullable|string',
             'image.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
             'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
             'total_days' => 'nullable|integer|min:0',
@@ -209,6 +216,11 @@ public function index_data(DataTables $datatable, Request $request)
         $data = $request->all();
         $data['customer_id'] = $request->customer_id ?? auth()->user()->id;
 
+        // Normalize price_type -> job_price for backward compatibility
+        if (isset($data['price_type'])) {
+            $data['job_price'] = $data['price_type'];
+        }
+
         // Enforce daily rule: hours = 8 * days
         if (($data['job_price'] ?? null) === 'daily') {
             $days = (int)($data['total_days'] ?? 0);
@@ -217,7 +229,7 @@ public function index_data(DataTables $datatable, Request $request)
 
         // Compute total_budget based on price type
         $price = (float)($data['price'] ?? 0);
-        $type = $data['job_price'] ?? 'fixed';
+        $type = $data['job_price'] ?? $data['price_type'] ?? 'fixed';
         $totalBudget = 0.0;
         if ($type === 'daily') {
             $totalBudget = $price * ((int)($data['total_days'] ?? 0));
