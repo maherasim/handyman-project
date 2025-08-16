@@ -182,10 +182,10 @@
 
 
                                  <div class="d-flex align-items-center gap-2">
-                                     <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQnnM0ib-pYCZg4DbbB_T5_mfxpqrDHYXFLy208bjvHjIM5q1FF4lzLvNFp2qZ5Eo11orA&usqp=CAU"
-                                         alt="Provider" style="width: 35px; border-radius: 50%;">
+                                     <img src="{{ getSingleMedia($jobRequest->customer,'profile_image', null) ?? 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQnnM0ib-pYCZg4DbbB_T5_mfxpqrDHYXFLy208bjvHjIM5q1FF4lzLvNFp2qZ5Eo11orA&usqp=CAU' }}"
+                                         alt="Customer" style="width: 35px; height: 35px; border-radius: 50%; object-fit: cover;">
                                      <p style="margin: 0; color: #8081dc;">
-                                         {{ $jobRequest->provider->username ?? 'Unknown' }}</p>
+                                         {{ $jobRequest->customer->display_name ?? $jobRequest->customer->username ?? 'Unknown' }}</p>
                                  </div>
                                  <!-- Status -->
                                  <h6 style="font-weight: 100;">Status: <span

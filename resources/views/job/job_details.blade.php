@@ -15,13 +15,13 @@
                     </div>
                     @if (!empty($attachments) && count($attachments) > 0)
                         <div class="mt-3">
-                            <section-thumbnail-section :attachments="{{ json_encode($attachments) }}" main-fit="contain"></section-thumbnail-section>
+                            <section-thumbnail-section :attachments="{{ json_encode($attachments) }}" main-fit="cover"></section-thumbnail-section>
                         </div>
                     @else
                         <img src="{{ asset('images/post-job/ac_refresh_and_revive.png') }}" 
                              alt="Default Image" 
                              class="img-fluid" 
-                             style="border-radius: 12px;">
+                             style="border-radius: 12px; width: 100%; height: auto; max-height: 400px; object-fit: cover;">
                     @endif
                 
                     <div class="mt-2">
