@@ -720,13 +720,12 @@ class FrontendController extends Controller
         return view('landing-page.BookService', compact('service', 'coupons', 'taxes', 'user_id', 'availableserviceslot', 'serviceaddon', 'googlemapkey', 'wallet_amount', 'payment_type', 'booking_id', 'total_booking_amount', 'total_advance_paid_amount'));
     }
 
-    public function showdetails($id)
+     public function showdetails($id)
     {
-        // Use 'with' to eager-load the relationships, including 'postBidList'
-        $jobrequest = PostJobRequest::with(['city', 'country', 'provider', 'postBidList'])->find($id);
-        // dd(  $jobrequest);
+        // Eager-load related data including customer with location and bids
+        $jobrequest = PostJobRequest::with(['city', 'country', 'state', 'category', 'subCategory', 'provider', 'customer.city', 'customer.country', 'postBidList'])->find($id);
         if (!$jobrequest) {
-            abort(404); // Return 404 if the job doesn't exist
+            abort(404);
         }
 
         // Build attachments array similar to service detail
@@ -742,10 +741,11 @@ class FrontendController extends Controller
             $attachments[] = asset('storage/' . ltrim($imgPath, '/'));
         }
 
-        // Get total bids
+        // Aggregates
         $totalBids = $jobrequest->total_bids;
-        //dd( $totalBids);
-        return view('job.job_details', compact('jobrequest', 'totalBids', 'attachments'));
+        $jobsPublishedCount = PostJobRequest::where('customer_id', $jobrequest->customer_id)->count();
+
+        return view('job.job_details', compact('jobrequest', 'totalBids', 'attachments', 'jobsPublishedCount'));
     }
 
     public function bookPostJobView(Request $request)
