@@ -320,7 +320,7 @@
                  @else
 
                  @foreach ($jobrequest as $jobRequest)
-                 <div class="col-lg-4 col-md-6 col-12 mb-4">
+                 <div class="col-lg-3 col-md-6 col-12 mb-3">
                      <a href="{{ route('job.details', $jobRequest->id) }}" class="card-link text-decoration-none">
                          <div class="job-card h-100" style="
                              background: #FFFFFF;
@@ -332,7 +332,7 @@
                              position: relative;
                          ">
                              <!-- Card Image Container -->
-                             <div class="image-container" style="position: relative; height: 160px; overflow: hidden;">
+                             <div class="image-container" style="position: relative; height: 120px; overflow: hidden;">
                                 @if(!empty($jobRequest->image))
                                 <img src="{{ asset('storage/' . $jobRequest->image) }}" alt="Job Image"
                                      style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease;">
@@ -346,14 +346,14 @@
                                  <!-- Price Badge -->
                                  <div class="price-badge" style="
                                      position: absolute;
-                                     bottom: 12px;
-                                     left: 12px;
+                                     bottom: 8px;
+                                     left: 8px;
                                      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
                                      color: white;
-                                     padding: 6px 12px;
-                                     border-radius: 16px;
+                                     padding: 4px 8px;
+                                     border-radius: 12px;
                                      font-weight: 600;
-                                     font-size: 12px;
+                                     font-size: 10px;
                                      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
                                      backdrop-filter: blur(10px);
                                  ">
@@ -363,10 +363,10 @@
                                  <!-- Heart Icon -->
                                  <div class="heart-icon" style="
                                      position: absolute;
-                                     top: 12px;
-                                     right: 12px;
-                                     width: 32px;
-                                     height: 32px;
+                                     top: 8px;
+                                     right: 8px;
+                                     width: 28px;
+                                     height: 28px;
                                      background: rgba(255, 255, 255, 0.9);
                                      border-radius: 50%;
                                      display: flex;
@@ -375,34 +375,34 @@
                                      backdrop-filter: blur(10px);
                                      transition: all 0.3s ease;
                                  ">
-                                     <i class='bx bx-heart' style="color: #667eea; font-size: 16px;"></i>
+                                     <i class='bx bx-heart' style="color: #667eea; font-size: 14px;"></i>
                                  </div>
                              </div>
                              
                              <!-- Card Content -->
-                             <div class="card-content" style="padding: 16px;">
+                             <div class="card-content" style="padding: 12px;">
                                  <!-- Job Title -->
                                  <h5 class="job-title" style="
-                                     font-size: 16px;
+                                     font-size: 14px;
                                      font-weight: 700;
                                      color: #1a1a1a;
-                                     margin-bottom: 8px;
-                                     line-height: 1.3;
+                                     margin-bottom: 6px;
+                                     line-height: 1.2;
                                      display: -webkit-box;
                                      -webkit-line-clamp: 2;
                                      -webkit-box-orient: vertical;
                                      overflow: hidden;
-                                     min-height: 42px;
+                                     min-height: 34px;
                                  ">
                                      {{ $jobRequest->title }}
                                  </h5>
                                  
                                  <!-- Location -->
-                                 <div class="location-info" style="margin-bottom: 10px;">
-                                     <div class="d-flex align-items-center" style="gap: 6px;">
-                                         <i class='bx bx-map-pin' style="color: #667eea; font-size: 14px;"></i>
+                                 <div class="location-info" style="margin-bottom: 8px;">
+                                     <div class="d-flex align-items-center" style="gap: 5px;">
+                                         <i class='bx bx-map-pin' style="color: #667eea; font-size: 12px;"></i>
                                          <span style="
-                                             font-size: 13px;
+                                             font-size: 12px;
                                              color: #666;
                                              font-weight: 500;
                                          ">
@@ -412,11 +412,11 @@
                                  </div>
                                  
                                  <!-- Published Date -->
-                                 <div class="published-info" style="margin-bottom: 12px;">
-                                     <div class="d-flex align-items-center" style="gap: 6px;">
-                                         <i class='bx bx-calendar' style="color: #8e8e93; font-size: 12px;"></i>
+                                 <div class="published-info" style="margin-bottom: 8px;">
+                                     <div class="d-flex align-items-center" style="gap: 5px;">
+                                         <i class='bx bx-calendar' style="color: #8e8e93; font-size: 11px;"></i>
                                          <span style="
-                                             font-size: 12px;
+                                             font-size: 11px;
                                              color: #8e8e93;
                                              font-weight: 400;
                                          ">
@@ -426,11 +426,11 @@
                                  </div>
                                  
                                  <!-- Customer Info -->
-                                 <div class="customer-info" style="margin-bottom: 12px;">
-                                     <div class="d-flex align-items-center" style="gap: 8px;">
+                                 <div class="customer-info" style="margin-bottom: 8px;">
+                                     <div class="d-flex align-items-center" style="gap: 6px;">
                                          <div class="customer-avatar" style="
-                                             width: 32px;
-                                             height: 32px;
+                                             width: 28px;
+                                             height: 28px;
                                              border-radius: 50%;
                                              overflow: hidden;
                                              border: 2px solid #f0f0f0;
@@ -440,7 +440,7 @@
                                          </div>
                                          <div class="customer-details">
                                              <div style="
-                                                 font-size: 13px;
+                                                 font-size: 12px;
                                                  font-weight: 600;
                                                  color: #1a1a1a;
                                                  margin-bottom: 1px;
@@ -448,7 +448,7 @@
                                                  {{ $jobRequest->customer->display_name ?? $jobRequest->customer->username ?? 'Unknown' }}
                                              </div>
                                              <div style="
-                                                 font-size: 11px;
+                                                 font-size: 10px;
                                                  color: #8e8e93;
                                                  font-weight: 400;
                                              ">
@@ -459,10 +459,10 @@
                                  </div>
                                  
                                  <!-- Status Badge -->
-                                 <div class="status-section" style="margin-bottom: 12px;">
+                                 <div class="status-section" style="margin-bottom: 8px;">
                                      <div class="d-flex align-items-center justify-content-between">
                                          <span style="
-                                             font-size: 11px;
+                                             font-size: 10px;
                                              color: #8e8e93;
                                              font-weight: 500;
                                              text-transform: uppercase;
@@ -471,9 +471,9 @@
                                              Status
                                          </span>
                                          <span class="status-badge" style="
-                                             padding: 4px 8px;
-                                             border-radius: 10px;
-                                             font-size: 10px;
+                                             padding: 3px 6px;
+                                             border-radius: 8px;
+                                             font-size: 9px;
                                              font-weight: 600;
                                              text-transform: uppercase;
                                              letter-spacing: 0.5px;
@@ -489,14 +489,14 @@
                                  <div class="social-icons" style="
                                      display: flex;
                                      align-items: center;
-                                     gap: 8px;
-                                     padding-top: 12px;
+                                     gap: 6px;
+                                     padding-top: 8px;
                                      border-top: 1px solid #f0f0f0;
                                  ">
                                      <a href="#" class="social-link" style="
-                                         width: 28px;
-                                         height: 28px;
-                                         border-radius: 6px;
+                                         width: 24px;
+                                         height: 24px;
+                                         border-radius: 5px;
                                          background: #f8f9fa;
                                          display: flex;
                                          align-items: center;
@@ -505,12 +505,12 @@
                                          text-decoration: none;
                                      ">
                                          <img src="https://static.vecteezy.com/system/resources/previews/016/716/481/original/facebook-icon-free-png.png"
-                                             alt="Facebook" style="width: 14px; height: 14px;">
+                                             alt="Facebook" style="width: 12px; height: 12px;">
                                      </a>
                                      <a href="#" class="social-link" style="
-                                         width: 28px;
-                                         height: 28px;
-                                         border-radius: 6px;
+                                         width: 24px;
+                                         height: 24px;
+                                         border-radius: 5px;
                                          background: #f8f9fa;
                                          display: flex;
                                          align-items: center;
@@ -519,12 +519,12 @@
                                          text-decoration: none;
                                      ">
                                          <img src="https://upload.wikimedia.org/wikipedia/commons/9/95/Instagram_logo_2022.svg"
-                                             alt="Instagram" style="width: 14px; height: 14px;">
+                                             alt="Instagram" style="width: 12px; height: 12px;">
                                      </a>
                                      <a href="#" class="social-link" style="
-                                         width: 28px;
-                                         height: 28px;
-                                         border-radius: 6px;
+                                         width: 24px;
+                                         height: 24px;
+                                         border-radius: 5px;
                                          background: #f8f9fa;
                                          display: flex;
                                          align-items: center;
@@ -533,12 +533,12 @@
                                          text-decoration: none;
                                      ">
                                          <img src="https://cdn.pixabay.com/photo/2015/03/10/17/30/twitter-667462_640.png"
-                                             alt="Twitter" style="width: 14px; height: 14px;">
+                                             alt="Twitter" style="width: 12px; height: 12px;">
                                      </a>
                                      <a href="#" class="social-link" style="
-                                         width: 28px;
-                                         height: 28px;
-                                         border-radius: 6px;
+                                         width: 24px;
+                                         height: 24px;
+                                         border-radius: 5px;
                                          background: #f8f9fa;
                                          transition: all 0.3s ease;
                                          text-decoration: none;
@@ -547,7 +547,7 @@
                                          justify-content: center;
                                      ">
                                          <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRokEYt0yyh6uNDKL8uksVLlhZ35laKNQgZ9g&s"
-                                             alt="LinkedIn" style="width: 14px; height: 14px;">
+                                             alt="LinkedIn" style="width: 12px; height: 12px;">
                                      </a>
                                  </div>
                              </div>
