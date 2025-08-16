@@ -524,8 +524,10 @@ function calculateDays() {
                     // user can set hours manually for fixed/hourly
                     $('#total_hours_div').attr('readonly', false).attr('max', null);
                 }
+                // ensure no conflicting max on days
+                $('#total_day_div').removeAttr('max');
             } else {
-                $('#total_day_div').val(0);
+                $('#total_day_div').val(0).removeAttr('max');
                 $('#hidden_total_days').val(0);
                 if (priceType === 'daily') {
                     $('#total_hours_div').val(0).attr('readonly', true);
@@ -535,7 +537,7 @@ function calculateDays() {
         }
     } else {
         $('#hidden_total_days').val(0);
-        $('#total_day_div').val(0).attr('max', 0);
+        $('#total_day_div').val(0).removeAttr('max');
         if (priceType === 'daily') {
             $('#total_hours_div').val(0).attr('readonly', true);
             $('#hidden_total_hours').val(0);
@@ -586,6 +588,14 @@ function calculateDays() {
             });
 
             $('#price, #total_hours_div, #total_day_div').on('input', function(){
+                // guard against invalid max combinations
+                var days = parseInt($('#total_day_div').val(), 10) || 0;
+                var priceType = $('#price_type').val();
+                if (priceType === 'daily') {
+                    var hours = days * 8;
+                    $('#total_hours_div').val(hours).attr('readonly', true).attr('max', hours);
+                    $('#hidden_total_hours').val(hours);
+                }
                 recalcBudget();
             });
                 // Function to fetch subcategories based on selected category
