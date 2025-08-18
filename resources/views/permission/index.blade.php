@@ -21,12 +21,12 @@
                                 $k = ucwords($a);
                             ?>
                             <div class="card mb-2">
-                                <div class="card-header d-flex justify-content-between collapsed btn" id="heading_{{$key}}" data-bs-toggle="collapse" data-bs-target="#pr_{{$key}}" aria-expanded="false" aria-controls="pr_{{$key}}">
+                                <div class="card-header d-flex justify-content-between collapsed btn" id="heading_{{$key}}" data-toggle="collapse" data-target="#pr_{{$key}}" aria-expanded="false" aria-controls="pr_{{$key}}">
                                     <div class="header-title">
                                         <h6 class="mb-0 text-capitalize permission-text"> <i class="fa fa-plus me-10"></i> {{ $data->name }}<span class="badge badge-secondary"></span></h6>
                                     </div>
                                 </div>
-                                <div id="pr_{{$key}}" class="collapse bg_light_gray" aria-labelledby="heading_{{$key}}" data-bs-parent="#permissionList">
+                                <div id="pr_{{$key}}" class="collapse bg_light_gray" aria-labelledby="heading_{{$key}}" data-parent="#permissionList">
                                     <div class="card-body p-0 table-responsive">
                                         <table class="table text-center table-bordered bg_white">
                                             <tr>
