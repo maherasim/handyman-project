@@ -266,13 +266,11 @@
                         <div class="row">
                             <div class="form-group col-md-12">
                                 {{ html()->label(__('messages.description'), 'description')->class('form-control-label') }}
-                                {{ html()->textarea('description', old('description', $servicedata->description))->id('description')->class('form-control d-none')->rows(3)->placeholder(__('messages.description')) }}
-                                <div id="description_editor" class="quill-editor">{!! old('description', $servicedata->description) !!}</div>
+                                {{ html()->textarea('description', old('description', $servicedata->description))->id('description')->class('form-control textarea')->rows(3)->placeholder(__('messages.description')) }}
                             </div>
                             <div class="form-group col-md-12">
                                 {{ html()->label(__('Cancellation Policy & Fees'), 'cancellation_policy')->class('form-control-label') }}
-                                {{ html()->textarea('cancellation_policy', old('cancellation_policy', $servicedata->cancellation_policy))->id('cancellation_policy')->class('form-control d-none')->rows(3)->placeholder(__('cancellation_policy')) }}
-                                <div id="cancellation_policy_editor" class="quill-editor">{!! old('cancellation_policy', $servicedata->cancellation_policy) !!}</div>
+                                {{ html()->textarea('cancellation_policy', old('cancellation_policy', $servicedata->cancellation_policy))->id('cancellation_policy')->class('form-control textarea')->rows(3)->placeholder(__('cancellation_policy')) }}
                             </div>
                             @if (!empty($slotservice) && $slotservice == 1)
                                 <div class="form-group col-md-3">
