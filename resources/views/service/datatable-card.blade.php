@@ -1,18 +1,18 @@
 
 <style>
    .price-box {
-      background: rgba(0, 0, 0, 0.7);
-      color: #fff;
-      font-size: .95rem;
-      font-weight: 700;
-      line-height: 1;
-      padding: .4rem .75rem;
-      border-radius: 999px;
-      display: inline-flex;
-      align-items: center;
-      gap: .35rem;
-      box-shadow: 0 6px 20px rgba(0,0,0,.12);
-      backdrop-filter: blur(2px);
+      background-color: #007bff; /* Blue background */
+      color: white; /* White text for better visibility */
+      font-size: 18px; /* Increased text size */
+      font-weight: bold;
+      color: red; /* Red text for price */
+      text-align: center;
+      padding: 10px 15px; /* Added consistent padding */
+      border-radius: 10px; /* Rounded corners */
+      display: inline-block;
+      radius: 15%;
+      width: 180px; /* Increased width */
+      margin: 5px 0; /* Optional: Adds spacing around the box */
    }
    .service-asim {
             height: 10.5rem !important;
@@ -102,11 +102,11 @@
                                                 style="position:relative; z-index:1111; margin:auto; background-image: url('{{ asset('images/icon/banner2.jpg') }}'); background-size: cover; width:85% ; margin-top:-32px;  background-repeat: no-repeat; background-position: center; padding: 10px 20px; color: white; font-weight: 600; font-size: 18px; border-radius: 10px; border: 3px solid #E1DCDD;">
 
    @if($data->price==0)
-   <li class="text-primary fw-500 d-inline-block position-relative font-size-18"><span class="price-box">Free</span></li>
+   <li class="text-primary fw-500 d-inline-block position-relative font-size-18">Free</li>
    @else
    <li class="text-white fw-500 d-inline-block position-relative font-size-18" 
    @if(isset($col) && $col) style="font-size:16px !important" @endif>
-   <span class="price-box">{{ getPriceFormat($data->price) }} / {{ $data->type }}</span>
+   {{ getPriceFormat($data->price) }} / {{ $data->type }}
 </li>
 
 
