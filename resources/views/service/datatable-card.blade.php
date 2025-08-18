@@ -1,21 +1,22 @@
 
 <style>
    .price-box {
-      background-color: #007bff; /* Blue background */
-      color: white; /* White text for better visibility */
-      font-size: 18px; /* Increased text size */
-      font-weight: bold;
-      color: red; /* Red text for price */
-      text-align: center;
-      padding: 10px 15px; /* Added consistent padding */
-      border-radius: 10px; /* Rounded corners */
-      display: inline-block;
-      radius: 15%;
-      width: 180px; /* Increased width */
-      margin: 5px 0; /* Optional: Adds spacing around the box */
+      background: rgba(0, 0, 0, 0.7);
+      color: #fff;
+      font-size: .95rem;
+      font-weight: 700;
+      line-height: 1;
+      padding: .4rem .75rem;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      gap: .35rem;
+      box-shadow: 0 6px 20px rgba(0,0,0,.12);
+      backdrop-filter: blur(2px);
    }
    .service-asim {
             height: 10.5rem !important;
+            object-fit: cover;
         }
         .provider-info {
     display: flex;
@@ -34,8 +35,13 @@
     display: block;
 }
 
+/* Card polish */
+.service-box-card { border: 1px solid #eef0f2; transition: box-shadow .2s ease, transform .2s ease; background: #fff; }
+.service-box-card:hover { box-shadow: 0 10px 24px rgba(18,38,63,.08); transform: translateY(-2px); }
+.social-share img, .social-share svg { width: 28px; height: 28px; border-radius: 6px; }
+
 </style>
-<div class="service-box-card bg-light rounded-3 mb-0" data-service-id="{{ $data->id }}">
+<div class="service-box-card bg-white rounded-3 mb-0 shadow-sm h-100" data-service-id="{{ $data->id }}">
    <div class="iq-image position-relative">
       @if($data->visit_type == 'ONLINE')
          <span class="online-service"></span>
@@ -96,11 +102,11 @@
                                                 style="position:relative; z-index:1111; margin:auto; background-image: url('{{ asset('images/icon/banner2.jpg') }}'); background-size: cover; width:85% ; margin-top:-32px;  background-repeat: no-repeat; background-position: center; padding: 10px 20px; color: white; font-weight: 600; font-size: 18px; border-radius: 10px; border: 3px solid #E1DCDD;">
 
    @if($data->price==0)
-   <li class="text-primary fw-500 d-inline-block position-relative font-size-18">Free</li>
+   <li class="text-primary fw-500 d-inline-block position-relative font-size-18"><span class="price-box">Free</span></li>
    @else
    <li class="text-white fw-500 d-inline-block position-relative font-size-18" 
    @if(isset($col) && $col) style="font-size:16px !important" @endif>
-   {{ getPriceFormat($data->price) }} / {{ $data->type }}
+   <span class="price-box">{{ getPriceFormat($data->price) }} / {{ $data->type }}</span>
 </li>
 
 
@@ -174,7 +180,7 @@
             <span class="ms-1">{{ $data->total_views ?? 0 }}</span>
          </span>
       </div>  
-      <div class="d-flex" style="gap: 14px; justify-content: center;">
+      <div class="d-flex social-share" style="gap: 14px; justify-content: center;">
          <a href="#" class="social-share-btn" data-platform="facebook" data-service-id="{{ $data->id }}" style="cursor: pointer;">
              <img src="https://static.vecteezy.com/system/resources/previews/016/716/481/original/facebook-icon-free-png.png"
                  style="width: 30px; border-radius: 8px;" alt="Share on Facebook">
