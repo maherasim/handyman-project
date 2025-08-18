@@ -651,7 +651,7 @@
                         <div class="d-flex align-items-center  mt-2 justify-content-evenly">
 
                             <img src="{{ asset('images/icon/verifiedpng.png') }}" alt="icon"
-                                style="width: 15%; height: 70%; margin-right: 10px;">
+                                style="width: 25px; height: 25px; margin-right: 10px;">
 
 
                             <div class="d-flex align-items-center gap-2 flex-wrap">
@@ -669,7 +669,7 @@
 
 
                             <img src="{{ asset('images/icon/freeicon.jpg') }}" alt="icon"
-                                style="width: 15%; height: 8%;">
+                                style="width: 25px; height: 25px;">
 
 
                         </div>
