@@ -14,7 +14,8 @@
                         :src="data"
                         alt=""
                         loading="lazy"
-                        class="img-fluid object-cover rounded-3"
+                        :class="['img-fluid', props.mainFit === 'contain' ? 'object-contain' : 'object-cover', 'rounded-3']"
+                        :style="props.mainFit === 'contain' ? 'background:#f8f9fa;max-height:600px;width:100%;' : ''"
                     />
                 </div>
             </SwiperSlide>
@@ -30,9 +31,8 @@
             :spaceBetween="10"
             :watchSlidesProgress="true"
             :grabCursor="true"
-            :slideToClickedSlide="true"
+            :allowTouchMove="false"
             @swiper="setThumbSwiper"
-            @click="updateMainSwiper"
         >
             <SwiperSlide v-for="(data, index) in props.attachments" :key="index">
                 <div class="thumb-wrapper p-1 rounded-3">
@@ -55,7 +55,10 @@ import { Swiper, SwiperSlide } from "swiper/vue";
 import { Controller } from "swiper";
 
 // Define props for the component
-const props = defineProps(["attachments"]);
+const props = defineProps({
+    attachments: { type: Array, default: () => [] },
+    mainFit: { type: String, default: 'cover' } // 'cover' | 'contain'
+});
 
 // Main Swiper and Thumbnail Swiper references
 const mainSwiper = ref(null);
@@ -71,9 +74,9 @@ const setThumbSwiper = (swiper) => {
 
 // Function to update main Swiper when a thumbnail is clicked
 const updateMainSwiper = (index) => {
-    if (mainSwiper.value) {
+    if (mainSwiper.value != null && typeof index === 'number') {
         nextTick(() => {
-            mainSwiper.value.slideTo(index); // Move the main Swiper to the clicked index
+            mainSwiper.value.slideTo(index);
         });
     }
 };
@@ -100,5 +103,10 @@ const updateMainSwiper = (index) => {
 
 .tab-slider .swiper-content {
     max-width: 100%;
+}
+
+/* Utility for contain fit */
+.object-contain {
+    object-fit: contain;
 }
 </style>

@@ -44,9 +44,12 @@
                                         required
                                         data-placeholder="{{ __('messages.select_name', ['select' => __('messages.country')]) }}"
                                         data-ajax--url="{{ route('ajax-list', ['type' => 'country']) }}">
-                                        <option value="{{ optional($postJob->country)->id }}" selected>
-                                            {{ optional($postJob->country)->name }}
+                                                                                @php $oldCountryId = old('country_id', optional($postJob->country)->id); @endphp
+                                        @if($oldCountryId)
+                                        <option value="{{ $oldCountryId }}" selected>
+                                            {{ optional($postJob->country)->id == $oldCountryId ? optional($postJob->country)->name : '' }}
                                         </option>
+                                        @endif
                                     </select>
                                 </div>
 
@@ -78,8 +81,12 @@
                                         required
                                         data-placeholder="{{ __('messages.select_name', ['select' => __('messages.category')]) }}"
                                         data-ajax--url="{{ route('ajax-list', ['type' => 'category']) }}">
-                                        <option value="{{ optional($postJob->category_id)->id }}" selected>
-                                            {{ optional($postJob->category)->name }}</option>
+                                        @php $oldCategoryId = old('category_id', optional($postJob->category)->id); @endphp
+                                        @if($oldCategoryId)
+                                        <option value="{{ $oldCategoryId }}" selected>
+                                            {{ optional($postJob->category)->id == $oldCategoryId ? optional($postJob->category)->name : '' }}
+                                        </option>
+                                        @endif
                                     </select>
                                 </div>
 
@@ -95,25 +102,25 @@
 
                             <div class="row">
                                 <div class="form-group col-md-2">
-                                    <label for="price_type">{{ __('Pice Type') }} <span
+                                    <label for="price_type">{{ __('Price Type') }} <span
                                             class="text-danger">*</span></label>
-                                    <select name="job_price" id="job_price" class="form-control" required>
-                                        <option value="fixed">{{ __('Fixed') }}</option>
-                                        <option value="hourly">{{ __('Hourly') }}</option>
-                                        <option value="daily">{{ __('Daily') }}</option>
+                                    <select name="price_type" id="price_type" class="form-control" required>
+                                        @php $oldPriceType = old('price_type', $postJob->price_type ?? 'fixed'); @endphp
+                                        <option value="fixed" {{ $oldPriceType == 'fixed' ? 'selected' : '' }}>{{ __('Fixed') }}</option>
+                                        <option value="hourly" {{ $oldPriceType == 'hourly' ? 'selected' : '' }}>{{ __('Hourly') }}</option>
+                                        <option value="daily" {{ $oldPriceType == 'daily' ? 'selected' : '' }}>{{ __('Daily') }}</option>
                                     </select>
                                 </div>
 
                                 <div class="form-group col-md-2">
-                                    <label for="job_type">{{ __('Job Type') }} <span
-                                            class="text-danger">*</span></label>
+                                    <label for="job_type">{{ __('Job Type') }} <span class="text-danger">*</span></label>
                                     <select name="type" id="type" class="form-control" required>
-                                        <option value="onsite">{{ __('Onsite') }}</option>
-                                        <option value="remote">{{ __('Remote/Homeoffice') }}</option>
-                                        <option value="hybrid">{{ __('Hybrid') }}</option>
+                                        <option value="onsite" {{ old('type', $postJob->type) == 'onsite' ? 'selected' : '' }}>{{ __('Onsite') }}</option>
+                                        <option value="remote" {{ old('type', $postJob->type) == 'remote' ? 'selected' : '' }}>{{ __('Remote/Homeoffice') }}</option>
+                                        <option value="hybrid" {{ old('type', $postJob->type) == 'hybrid' ? 'selected' : '' }}>{{ __('Hybrid') }}</option>
                                     </select>
                                 </div>
-                                <div class="form-group col-md-2" id="price_div">
+                                <div class="form-group col-md-3" id="price_div">
                                     <label for="price">{{ __('messages.price') }} <span
                                             class="text-danger">*</span></label>
                                     <input type="number" name="price" id="price" class="form-control"
@@ -122,64 +129,140 @@
                                     <small class="help-block with-errors text-danger"></small>
                                 </div>
 
+                                <div class="form-group col-md-3" id="total_budget_div">
+                                    <label for="total_budget">{{ __('Total Budget') }} <span
+                                            class="text-danger">*</span></label>
+                                    <input type="number" name="total_budget" id="total_budget" class="form-control"
+                                        min="0" step="any" placeholder="{{ __('Total Budget') }}"
+                                        value="{{ old('total_budget', $postJob->total_budget) }}" readonly>
+                                    <small class="help-block with-errors text-danger"></small>
+                                </div>
+
                                 <div class="form-group col-md-2">
                                     <label for="start_date">{{ __('Start Date') }} <span
                                             class="text-danger">*</span></label>
                                     <input type="date" name="start_date" id="start_date" class="form-control"
-                                        required value="{{ old('start_date', $postJob->start_date) }}">
+                                        required value="{{ old('start_date', optional($postJob->start_date)->format('Y-m-d')) }}">
                                     <small class="help-block with-errors text-danger"></small>
+                                    <small id="start_date_error" class="text-danger" style="display:none;">{{ __('Start date must be before end date') }}</small>
                                 </div>
 
                                 <div class="form-group col-md-2">
                                     <label for="end_date">{{ __('End Date') }} <span
                                             class="text-danger">*</span></label>
                                     <input type="date" name="end_date" id="end_date" class="form-control"
-                                        required value="{{ old('end_date', $postJob->end_date) }}">
+                                        required value="{{ old('end_date', optional($postJob->end_date)->format('Y-m-d')) }}">
                                     <small class="help-block with-errors text-danger"></small>
                                 </div>
 
 
-                                <div class="form-group col-md-2">
-                                    <label for="total_day_div">{{ __('Total Days') }} <span
-                                            class="text-danger">*</span></label>
-                                    <input type="number" name="total_day" id="total_day_div" class="form-control"
-                                        min="1" step="any" placeholder="{{ __('total days') }}"
-                                        required disabled>
-                                    <small class="help-block with-errors text-danger"></small>
+                                                                <div class="form-group col-md-2">
+                                    <label for="total_day_div">{{ __('Total Days') }} <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">📅</span>
+                                        <input type="number" name="total_day" id="total_day_div" class="form-control" min="1" step="any" placeholder="{{ __('total days') }}" required>
+                                    </div>
                                 </div>
 
-                                <input type="hidden" name="total_days" id="hidden_total_days"
-                                    value="{{ old('total_days', $postJob->total_days) }}">
-                                <input type="hidden" name="total_hours" id="hidden_total_hours"
-                                    value="{{ old('total_hours', $postJob->total_hours) }}">
+                                <input type="hidden" name="total_days" id="hidden_total_days" value="{{ old('total_days', $postJob->total_days) }}">
+                                <input type="hidden" name="total_hours" id="hidden_total_hours" value="{{ old('total_hours', $postJob->total_hours) }}">
 
                                 <div class="form-group col-md-2">
-                                    <label for="total_hours_div">{{ __('Total Hours') }} <span
-                                            class="text-danger">*</span></label>
-                                    <input type="number" name="total_hours" id="total_hours_div"
-                                        class="form-control" min="1" step="any"
-                                        placeholder="{{ __('total_hours') }}" required
-                                        value="{{ old('total_hours', $postJob->total_hours) }}" disabled>
+                                    <label for="total_hours_div">{{ __('Total Hours') }} <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">⏱</span>
+                                        <input type="number" name="total_hours" id="total_hours_div" class="form-control" min="1" step="any" placeholder="{{ __('total_hours') }}" required value="{{ old('total_hours', $postJob->total_hours) }}">
+                                    </div>
                                     <small class="help-block with-errors text-danger"></small>
                                 </div>
                             </div>
-                            
+
+                            <div class="row">
+                                <div class="form-group col-md-2">
+                                    <label for="job_schedule">{{ __('Job Schedule') }} <span class="text-danger">*</span></label>
+                                    <select name="job_schedule" id="job_schedule" class="form-control" required>
+                                        @php $oldSchedule = old('job_schedule', $postJob->job_schedule); @endphp
+                                        <option value="full_time" {{ $oldSchedule == 'full_time' ? 'selected' : '' }}>{{ __('Full-Time') }}</option>
+                                        <option value="part_time" {{ $oldSchedule == 'part_time' ? 'selected' : '' }}>{{ __('Part-Time') }}</option>
+                                        <option value="contract" {{ $oldSchedule == 'contract' ? 'selected' : '' }}>{{ __('Contract') }}</option>
+                                        <option value="temporary" {{ $oldSchedule == 'temporary' ? 'selected' : '' }}>{{ __('Temporary') }}</option>
+                                        <option value="internship" {{ $oldSchedule == 'internship' ? 'selected' : '' }}>{{ __('Internship') }}</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group col-md-2">
+                                    <label for="remote_work_level">{{ __('Remote Work Level') }} <span class="text-danger">*</span></label>
+                                    <select name="remote_work_level" id="remote_work_level" class="form-control" required>
+                                        @php $oldRemote = old('remote_work_level', $postJob->remote_work_level); @endphp
+                                        <option value="onsite" {{ $oldRemote == 'onsite' ? 'selected' : '' }}>{{ __('Onsite (0%)') }}</option>
+                                        <option value="25_remote" {{ $oldRemote == '25_remote' ? 'selected' : '' }}>{{ __('25% Remote') }}</option>
+                                        <option value="50_remote" {{ $oldRemote == '50_remote' ? 'selected' : '' }}>{{ __('50% Remote') }}</option>
+                                        <option value="75_remote" {{ $oldRemote == '75_remote' ? 'selected' : '' }}>{{ __('75% Remote') }}</option>
+                                        <option value="100_remote" {{ $oldRemote == '100_remote' ? 'selected' : '' }}>{{ __('100% Remote') }}</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group col-md-2">
+                                    <label for="career_level">{{ __('Career Level') }} <span class="text-danger">*</span></label>
+                                    <select name="career_level" id="career_level" class="form-control" required>
+                                        @php $oldCareer = old('career_level', $postJob->career_level); @endphp
+                                        <option value="intern" {{ $oldCareer == 'intern' ? 'selected' : '' }}>{{ __('Intern') }}</option>
+                                        <option value="entry" {{ $oldCareer == 'entry' ? 'selected' : '' }}>{{ __('Entry') }}</option>
+                                        <option value="junior" {{ $oldCareer == 'junior' ? 'selected' : '' }}>{{ __('Junior') }}</option>
+                                        <option value="mid" {{ $oldCareer == 'mid' ? 'selected' : '' }}>{{ __('Mid-Level') }}</option>
+                                        <option value="senior" {{ $oldCareer == 'senior' ? 'selected' : '' }}>{{ __('Senior') }}</option>
+                                        <option value="lead" {{ $oldCareer == 'lead' ? 'selected' : '' }}>{{ __('Lead') }}</option>
+                                        <option value="manager" {{ $oldCareer == 'manager' ? 'selected' : '' }}>{{ __('Manager') }}</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group col-md-2">
+                                    <label for="travel_required">{{ __('Travel Required') }} <span class="text-danger">*</span></label>
+                                    <select name="travel_required" id="travel_required" class="form-control" required>
+                                        @php $oldTravel = old('travel_required', $postJob->travel_required); @endphp
+                                        <option value="0" {{ (string)$oldTravel === '0' ? 'selected' : '' }}>{{ __('No') }}</option>
+                                        <option value="1" {{ (string)$oldTravel === '1' ? 'selected' : '' }}>{{ __('Yes') }}</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group col-md-2">
+                                    <label for="education_level">{{ __('Education Level') }} <span class="text-danger">*</span></label>
+                                    <select name="education_level" id="education_level" class="form-control" required>
+                                        @php $oldEdu = old('education_level', $postJob->education_level); @endphp
+                                        <option value="high_school" {{ $oldEdu == 'high_school' ? 'selected' : '' }}>{{ __('High School') }}</option>
+                                        <option value="associate" {{ $oldEdu == 'associate' ? 'selected' : '' }}>{{ __('Associate Degree') }}</option>
+                                        <option value="undergraduate" {{ $oldEdu == 'undergraduate' ? 'selected' : '' }}>{{ __('Undergraduate Degree') }}</option>
+                                        <option value="graduate" {{ $oldEdu == 'graduate' ? 'selected' : '' }}>{{ __('Graduate/Master\'s') }}</option>
+                                        <option value="doctorate" {{ $oldEdu == 'doctorate' ? 'selected' : '' }}>{{ __('Doctorate') }}</option>
+                                    </select>
+                                </div>
+                            </div>
+
                             <div class="row">
                                 <div class="form-group col-md-6">
                                     <label for="description">{{ __('messages.description') }}</label>
                                     <textarea name="description" id="description" class="form-control textarea" rows="3"
                                         placeholder="{{ __('messages.description') }}">{{ old('description', $postJob->description) }}</textarea>
-                                </div> 
-                                
+                                </div>
+
                                 <div class="form-group col-md-6">
-                                    <label for="title">{{ __('Requirment') }} <span
+                                    <label for="requirement">{{ __('Skills & Requirements') }} <span
                                             class="text-danger">*</span></label>
-                                    <input type="text" name="requirement" id="requirement" class="form-control"
-                                        placeholder="{{ __('requirement') }}" title="requirement"
-                                        value="{{ old('title', $postJob->requirement) }}" required>
+                                    <textarea name="requirement" id="requirement" class="form-control textarea" rows="3" placeholder="{{ __('requirements') }}" required>{{ old('requirement', $postJob->requirement) }}</textarea>
                                     <small class="help-block with-errors text-danger"></small>
                                 </div></div>
-                                <div class="form-group custom-file col-md-6 mt-30">
+
+                            <div class="row">
+                                <div class="form-group col-md-6">
+                                    <label for="duties">{{ __('Duties & Responsibilities') }}</label>
+                                    <textarea name="duties" id="duties" class="form-control textarea" rows="3" placeholder="{{ __('duties & responsibilities') }}">{{ old('duties', $postJob->duties) }}</textarea>
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label for="benefits">{{ __('Benefits') }}</label>
+                                    <textarea name="benefits" id="benefits" class="form-control textarea" rows="3" placeholder="{{ __('benefits') }}">{{ old('benefits', $postJob->benefits) }}</textarea>
+                                </div>
+                            </div>
+                                <div class="form-group custom-file col-md-6 mt-4">
                                     <label for="image"
                                         class="custom-file-label upload-label">{{ __('messages.image') }}</label>
                                     <input type="file" name="image[]" id="image"
@@ -190,18 +273,11 @@
                                         style="display: none;">Show More</button>
                                 </div>
                             </div>
-                            <br>
-                            <br>
-                            <br>
-                            <br>
-                            <br>
-                            <br>
-                            <br>
-                            <br>
-                            <br>
-                            <div class="form-group custom-file col-md-3 mt-30">
-                            <button type="submit"
-                                class="btn btn-md btn-primary float-right">{{ __('messages.save') }}</button></div><div class="form-group custom-file col-md-9 mt-30"></div>
+                            <div class="row mt-4">
+                                <div class="col-md-12 d-flex justify-content-end">
+                                    <button type="submit" class="btn btn-md btn-primary">{{ __('messages.save') }}</button>
+                                </div>
+                            </div>
                         </form>
 
                         <!-- Image Modal -->
@@ -244,40 +320,105 @@
                 /* Add margin between images */
                 margin-bottom: 10px;
             }
-        </style>
-
-        <script type="text/javascript">
-            (function($) {
-                "use strict";
-                $(document).ready(function() {
-                    var country_id = "{{ isset($postJob->country_id) ? $postJob->country_id : '' }}";
-                    var state_id = "{{ isset($postJob->state_id) ? $postJob->state_id : '' }}";
-                    var city_id = "{{ isset($postJob->city_id) ? $postJob->city_id : '' }}";
-                    var category_id = "{{ isset($postJob->category_id) ? $postJob->category_id : '' }}";
-                    var subcategory_id = "{{ isset($postJob->subcategory_id) ? $postJob->subcategory_id : '' }}";
+                        </style>
+ 
+         <script type="text/javascript">
+             (function($) {
+                 "use strict";
+                 $(document).ready(function() {
+                                         var country_id = "{{ old('country_id', $postJob->country_id) }}";
+                    var state_id = "{{ old('state_id', $postJob->state_id) }}";
+                    var city_id = "{{ old('city_id', $postJob->city_id) }}";
+                    var category_id = "{{ old('category_id', $postJob->category_id) }}";
+                    var subcategory_id = "{{ old('subcategory_id', $postJob->subcategory_id) }}";
 
                     getStates(country_id, state_id); // Initial load of states based on country
                     getCities(state_id, city_id); // Initial load of cities based on state
                     getSubCategory(category_id, subcategory_id); // Initial load of subcategory based on category
 
-                    // Fetch states based on selected country
-                    $(document).on('change', '#country_id', function() {
-                        var selectedCountryId = $(this).val();
-                        getStates(selectedCountryId, state_id);
-                    });
-
-                    // Fetch cities based on selected state
-                    $(document).on('change', '#state_id', function() {
-                        var selectedStateId = $(this).val();
-                        getCities(selectedStateId, city_id);
-                    });
-
-                    // Fetch subcategories based on selected category
-                    $(document).on('change', '#category_id', function() {
-                        var selectedCategoryId = $(this).val();
-                        getSubCategory(selectedCategoryId, subcategory_id);
-                    });
-                });
+                    // If dates already present (old input), calculate totals and show them
+                    var startVal = $('#start_date').val();
+                    var endVal = $('#end_date').val();
+                    var oldTotalDays = "{{ old('total_days', $postJob->total_days) }}";
+                    var oldTotalHours = "{{ old('total_hours', $postJob->total_hours) }}";
+                    if (startVal && endVal) {
+                        calculateDays();
+                    } else {
+                        if (oldTotalDays) { $('#total_day_div').val(oldTotalDays); $('#hidden_total_days').val(oldTotalDays); }
+                        if (oldTotalHours) { $('#total_hours_div').val(oldTotalHours); $('#hidden_total_hours').val(oldTotalHours); }
+                    }
+                    // initialize budget
+                    setTimeout(recalcBudget, 0);
+ 
+                     // Preview selected images
+                     const input = document.getElementById('image');
+                     const container = document.getElementById('imageContainer');
+                     const showMoreBtn = document.getElementById('showMoreButton');
+                     const MAX_VISIBLE = 4;
+                     function clearContainer() {
+                         while (container.firstChild) container.removeChild(container.firstChild);
+                     }
+                     function renderPreviews(files) {
+                         clearContainer();
+                         const urls = [];
+                         Array.from(files).forEach((file, idx) => {
+                             const reader = new FileReader();
+                             reader.onload = (e) => {
+                                 const img = document.createElement('img');
+                                 img.src = e.target.result;
+                                 img.alt = 'preview-' + idx;
+                                 img.className = 'rounded';
+                                 img.style.maxWidth = '120px';
+                                 img.style.maxHeight = '120px';
+                                 img.style.marginRight = '10px';
+                                 img.style.marginBottom = '10px';
+                                 const wrapper = document.createElement('div');
+                                 wrapper.style.display = idx < MAX_VISIBLE ? 'inline-block' : 'none';
+                                 wrapper.appendChild(img);
+                                 container.appendChild(wrapper);
+                                 urls.push({ wrapper });
+                                 if (idx === files.length - 1) {
+                                     showMoreBtn.style.display = files.length > MAX_VISIBLE ? 'inline-block' : 'none';
+                                     showMoreBtn.textContent = 'Show More';
+                                     showMoreBtn.dataset.expanded = 'false';
+                                 }
+                             };
+                             reader.readAsDataURL(file);
+                         });
+                         showMoreBtn.onclick = () => {
+                             const expanded = showMoreBtn.dataset.expanded === 'true';
+                             const children = Array.from(container.children);
+                             children.forEach((child, idx) => {
+                                 if (idx >= MAX_VISIBLE) {
+                                     child.style.display = expanded ? 'none' : 'inline-block';
+                                 }
+                             });
+                             showMoreBtn.textContent = expanded ? 'Show More' : 'Show Less';
+                             showMoreBtn.dataset.expanded = expanded ? 'false' : 'true';
+                         };
+                     }
+                     if (input) {
+                         input.addEventListener('change', (e) => renderPreviews(e.target.files));
+                     }
+ 
+                     // Fetch states based on selected country
+                     $(document).on('change', '#country_id', function() {
+                         var selectedCountryId = $(this).val();
+                         getStates(selectedCountryId, state_id);
+                     });
+ 
+                     // Fetch cities based on selected state
+                     $(document).on('change', '#state_id', function() {
+                         var selectedStateId = $(this).val();
+                         getCities(selectedStateId, city_id);
+                     });
+ 
+                     // Fetch subcategories based on selected category
+                     $(document).on('change', '#category_id', function() {
+                         var selectedCategoryId = $(this).val();
+                         getSubCategory(selectedCategoryId, subcategory_id);
+                     });
+                 });
 
                 // Function to fetch states
                 function getStates(country_id, selectedState = "") {
@@ -346,6 +487,7 @@
 function calculateDays() {
     var startDate = $('#start_date').val();
     var endDate = $('#end_date').val();
+    var priceType = $('#price_type').val();
 
     if (startDate && endDate) {
         if (startDate > endDate) {
@@ -361,18 +503,33 @@ function calculateDays() {
             if (diffDays > 0) {
                 $('#total_day_div').val(diffDays);
                 $('#hidden_total_days').val(diffDays);
-                $('#total_hours_div').val(diffDays * 8).attr('max', diffDays * 8); // Adjusted to 8 hours per day
-                $('#hidden_total_hours').val(diffDays * 8).attr('max', diffDays * 8); // Adjusted to 8 hours per day
+                if (priceType === 'daily') {
+                    // 8 hours per day calculated automatically
+                    var hours = diffDays * 8;
+                    $('#total_hours_div').val(hours).attr('max', hours).attr('readonly', true);
+                    $('#hidden_total_hours').val(hours).attr('max', hours);
+                } else {
+                    // user can set hours manually for fixed/hourly
+                    $('#total_hours_div').attr('readonly', false).attr('max', null);
+                }
+                // ensure no conflicting max on days
+                $('#total_day_div').removeAttr('max');
             } else {
-                $('#total_day_div').val(0);
+                $('#total_day_div').val(0).removeAttr('max');
                 $('#hidden_total_days').val(0);
-                $('#total_hours_div').val(0).attr('max', 0);
-                $('#hidden_total_hours').val(0).attr('max', 0);
+                if (priceType === 'daily') {
+                    $('#total_hours_div').val(0).attr('readonly', true);
+                    $('#hidden_total_hours').val(0);
+                }
             }
         }
     } else {
         $('#hidden_total_days').val(0);
-        $('#total_day_div').val(0).attr('max', 0);
+        $('#total_day_div').val(0).removeAttr('max');
+        if (priceType === 'daily') {
+            $('#total_hours_div').val(0).attr('readonly', true);
+            $('#hidden_total_hours').val(0);
+        }
     }
 }
 
@@ -380,7 +537,7 @@ function calculateDays() {
            setMinDates();
        
            // Attach event listeners
-           $('#start_date, #end_date').on('change', function() {
+                       $('#start_date, #end_date').on('change', function() {
                calculateDays();
                var startDate = $('#start_date').val();
                if (startDate) {
@@ -389,6 +546,46 @@ function calculateDays() {
                    setMinDates();
                }
            });
+
+                       function recalcBudget() {
+                var priceType = $('#price_type').val();
+                var price = parseFloat($('#price').val()) || 0;
+                var days = parseInt($('#total_day_div').val(), 10) || 0;
+                var hours = parseInt($('#total_hours_div').val(), 10) || 0;
+                var total = 0;
+                if (priceType === 'daily') {
+                    total = price * days;
+                } else if (priceType === 'hourly') {
+                    total = price * hours;
+                } else if (priceType === 'fixed') {
+                    total = price;
+                }
+                $('#total_budget').val(total);
+                $('#hidden_total_hours').val(hours);
+                $('#hidden_total_days').val(days);
+            }
+
+            $('#price_type').on('change', function() {
+                var priceType = $(this).val();
+                if (priceType === 'daily') {
+                    calculateDays();
+                } else {
+                    $('#total_hours_div').attr('readonly', false).attr('max', null);
+                }
+                recalcBudget();
+            });
+
+            $('#price, #total_hours_div, #total_day_div').on('input', function(){
+                // guard against invalid max combinations
+                var days = parseInt($('#total_day_div').val(), 10) || 0;
+                var priceType = $('#price_type').val();
+                if (priceType === 'daily') {
+                    var hours = days * 8;
+                    $('#total_hours_div').val(hours).attr('readonly', true).attr('max', hours);
+                    $('#hidden_total_hours').val(hours);
+                }
+                recalcBudget();
+            });
                 // Function to fetch subcategories based on selected category
                 function getSubCategory(category_id, selectedSubCategory = "") {
                     if (category_id != '') {
@@ -421,25 +618,25 @@ function calculateDays() {
 
             })(jQuery);
         </script>
-        <script>
-            < script src = "https://cdn.tiny.cloud/1/m5d82gd2rwdlg96hsxpx0e5wwmfrl2zzkcw35ys8o3glilgq/tinymce/5/tinymce.min.js"
-            referrerpolicy = "origin" >
-        </script>
          <script>
-            tinymce.init({
-                selector: '#description', // Target the textarea
-                plugins: 'lists link image preview', // Add plugins
-                toolbar: 'undo redo | bold italic | bullist numlist | link image preview',
-                menubar: false
-            });
+            if (window.tinymce) {
+                tinymce.init({
+                    selector: '#description',
+                    plugins: 'lists link image preview',
+                    toolbar: 'undo redo | bold italic | bullist numlist | link image preview',
+                    menubar: false
+                });
+            }
         </script>
         <script>
-            tinymce.init({
-                selector: '#requirement', // Target the textarea
-                plugins: 'lists link image preview', // Add plugins
-                toolbar: 'undo redo | bold italic | bullist numlist | link image preview',
-                menubar: false
-            });
+            if (window.tinymce) {
+                tinymce.init({
+                    selector: '#requirement, #duties, #benefits',
+                    plugins: 'lists link image preview',
+                    toolbar: 'undo redo | bold italic | bullist numlist | link image preview',
+                    menubar: false
+                });
+            }
         </script>
     @endsection
 </x-master-layout>

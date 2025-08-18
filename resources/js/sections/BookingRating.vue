@@ -31,7 +31,6 @@
                 <h5 class="mb-5">{{ $t('landingpage.your_review') }}</h5>
                 <div class="d-inline-flex align-items-center gap-2">
                     <button @click="editRating" class="btn btn-sm btn-primary-subtle px-2"><i class="fas fa-edit"></i></button>
-                    <button @click="deleteRating(bookingrating.id)" class="btn btn-sm btn-danger-subtle px-2"><i class="fas fa-trash"></i></button>
                 </div>
             </div>
             <ul class="comment-list list-inline m-0">
@@ -69,7 +68,7 @@
 <script setup>
 import { ref,computed,onMounted} from 'vue';
 import { useField, useForm } from 'vee-validate';
-import { STORE_BOOKING_RATING_API, DELETE_BOOKING_RATING_API} from '../data/api'; 
+import { STORE_BOOKING_RATING_API } from '../data/api'; 
 import * as yup from 'yup';
 import Swal from 'sweetalert2';
 
@@ -153,46 +152,6 @@ const editRating = () =>{
     ratingval.value = props.bookingrating.rating
     rating.value = props.bookingrating.rating
     review.value = props.bookingrating.review
-}
-
-const deleteRating = async(id) =>{
-    const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
-    const result = await Swal.fire({
-        title: 'Are you sure?',
-        text: 'You won\'t be able to revert this!',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Yes, delete it!',
-    });
-
-    if(result.isConfirmed) {
-        const response = await fetch(DELETE_BOOKING_RATING_API, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': csrfToken,
-            },
-            body: JSON.stringify({id}),
-        });
-
-        if (response.ok) {
-            const responseData = await response.json();
-            Swal.fire({
-            title: 'Done',
-            text: responseData.message,
-            icon: 'success',
-            iconColor: '#5F60B9'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    window.location.reload();
-                }
-            })
-        } else {
-            console.error('Error delete rating:', response.statusText);
-        }
-    }
 }
 
 onMounted(() => {

@@ -16,6 +16,7 @@
    }
    .service-asim {
             height: 10.5rem !important;
+            object-fit: cover;
         }
         .provider-info {
     display: flex;
@@ -34,8 +35,13 @@
     display: block;
 }
 
+/* Card polish */
+.service-box-card { border: 1px solid #eef0f2; transition: box-shadow .2s ease, transform .2s ease; background: #fff; }
+.service-box-card:hover { box-shadow: 0 10px 24px rgba(18,38,63,.08); transform: translateY(-2px); }
+.social-share img, .social-share svg { width: 28px; height: 28px; border-radius: 6px; }
+
 </style>
-<div class="service-box-card bg-light rounded-3 mb-0" data-service-id="{{ $data->id }}">
+<div class="service-box-card bg-white rounded-3 mb-0 shadow-sm h-100" data-service-id="{{ $data->id }}">
    <div class="iq-image position-relative">
       @if($data->visit_type == 'ONLINE')
          <span class="online-service"></span>
@@ -110,10 +116,11 @@
 </ul>
    @endif 
    <a href="{{ route('service.detail', $data->id) }}"
-      class="service-heading mt-2 d-block p-0">
-      <h5 class="service-heading text-capitalize"    style="font-size:15px">
-        <b>{{ Str::words($data->name, 4, '') }}</b> 
-         </h5>
+      class="service-heading mt-2 d-block p-0 text-decoration-none"
+      data-bs-toggle="tooltip" data-bs-placement="top" title="{{ $data->name }}" aria-label="{{ $data->name }}">
+      <h5 class="service-heading text-capitalize text-truncate" style="font-size:15px">
+        <b>{{ Str::limit($data->name, 48) }}</b>
+      </h5>
   </a>
   
   <h5  class="mt-0 mb-0 text-truncate" style="font-size: 12;">
@@ -134,9 +141,9 @@
    </div>
    <div class="d-flex align-items-center justify-content-end">
        <img src="{{ asset('images/icon/freeicon.jpg') }}" alt="icon"
-           style="width: 20px; height: 20px; margin-right: 10px;">
+           style="width: 26px; height: 26px; margin-right: 10px;">
        <img src="{{ asset('images/icon/verifiedpng.png') }}" alt="icon"
-           style="width: 20px; height: 20px;">
+           style="width: 26px; height: 26px;">
    </div>
 </div>
 
@@ -164,25 +171,33 @@
                fill="currentColor" />
          </svg>
          <h6 class="font-size-14">{{ round($totalRating, 1) }}
-           
-              <a href="{{ route('rating.all', ['service_id' => $data->id]) }}" class="text-body ms-1">({{$totalReviews }} {{__('messages.reviews')}})</a></h6>
-          
+              <a href="{{ route('rating.all', ['service_id' => $data->id]) }}" class="text-body ms-1">({{$totalReviews }} {{__('messages.reviews')}})</a>
+         </h6>
 
          <strong class="px-3">{{ $completedBookingCount }} Bookings</strong>
+
+         <span class="px-2" title="Views">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns=" "><path d="M12 5c-7.633 0-10 7-10 7s2.367 7 10 7 10-7 10-7-2.367-7-10-7Zm0 12a5 5 0 1 1 0-10 5 5 0 0 1 0 10Zm0-8a3 3 0 1 0 .002 6.002A3 3 0 0 0 12 9Z" fill="currentColor"/></svg>
+            <span class="ms-1">{{ $data->total_views ?? 0 }}</span>
+         </span>
       </div>  
-      <div class="d-flex" style="gap: 14px; justify-content: center;">
-         <a href="#"><img
-                 src="https://static.vecteezy.com/system/resources/previews/016/716/481/original/facebook-icon-free-png.png"
-                 style="width: 30px; border-radius: 8px;" alt=""></a>
-         <a href="#"><img
-                 src="https://upload.wikimedia.org/wikipedia/commons/9/95/Instagram_logo_2022.svg"
-                 style="width: 30px; border-radius: 8px;" alt=""></a>
-         <a href="#"><img
-                 src="https://cdn.pixabay.com/photo/2015/03/10/17/30/twitter-667462_640.png"
-                 style="width: 30px; border-radius: 8px;" alt=""></a>
-         <a href="#"><img
-                 src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRokEYt0yyh6uNDKL8uksVLlhZ35laKNQgZ9g&s"
-                 style="width: 30px; border-radius: 8px;" alt=""></a>
+      <div class="d-flex social-share" style="gap: 14px; justify-content: center;">
+         <a href="#" class="social-share-btn" data-platform="facebook" data-service-id="{{ $data->id }}" style="cursor: pointer;">
+             <img src="https://static.vecteezy.com/system/resources/previews/016/716/481/original/facebook-icon-free-png.png"
+                 style="width: 30px; border-radius: 8px;" alt="Share on Facebook">
+         </a>
+         <a href="#" class="social-share-btn" data-platform="twitter" data-service-id="{{ $data->id }}" style="cursor: pointer;">
+             <img src="https://cdn.pixabay.com/photo/2015/03/10/17/30/twitter-667462_640.png"
+                 style="width: 30px; border-radius: 8px;" alt="Share on Twitter">
+         </a>
+         <a href="#" class="social-share-btn" data-platform="instagram" data-service-id="{{ $data->id }}" style="cursor: pointer;">
+             <img src="https://upload.wikimedia.org/wikipedia/commons/9/95/Instagram_logo_2022.svg"
+                 style="width: 30px; border-radius: 8px;" alt="Share on Instagram">
+         </a>
+         <a href="#" class="social-share-btn" data-platform="linkedin" data-service-id="{{ $data->id }}" style="cursor: pointer;">
+             <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRokEYt0yyh6uNDKL8uksVLlhZ35laKNQgZ9g&s"
+                 style="width: 30px; border-radius: 8px;" alt="Share on LinkedIn">
+         </a>
      </div>
      
    
@@ -191,6 +206,162 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.1/dist/sweetalert2.all.min.js"></script>
+
+<!-- Social Media Sharing Script -->
+<script>
+$(document).ready(function () {
+    // Social Media Sharing Functionality
+    $('.social-share-btn').on('click', function(e) {
+        e.preventDefault();
+        
+        const platform = $(this).data('platform');
+        const serviceId = $(this).data('service-id');
+        const serviceCard = $(this).closest('.service-box-card');
+        
+        // Get service information from the card
+        const serviceName = serviceCard.find('.service-heading').text().trim() || 'Amazing Service';
+        const servicePrice = serviceCard.find('.price-box').text().trim() || 'Check Price';
+        const serviceImage = serviceCard.find('.service-img img').attr('src');
+        const serviceUrl = window.location.origin + '/service-detail/' + serviceId;
+        const providerName = serviceCard.find('.provider-name').text().trim() || 'Professional Provider';
+        const rating = serviceCard.find('.font-size-14').text().trim() || '5.0';
+        const bookings = serviceCard.find('strong').text().trim() || '0 Bookings';
+        const views = serviceCard.find('span[title="Views"] span').text().trim() || '0';
+        
+        // Enhanced shareable content with more details
+        const shareContent = {
+            title: serviceName,
+            description: `🚀 **${serviceName}**\n\n👨‍💼 **Provider:** ${providerName}\n💰 **Price:** ${servicePrice}\n⭐ **Rating:** ${rating}\n📊 **Stats:** ${bookings} • ${views} Views\n\n🔍 **Service Details:**\nThis professional service offers top-quality solutions with excellent customer satisfaction.\n\n📱 **Book Now:** ${serviceUrl}\n\n#services #professional #quality #recommended #handyman #expert`,
+            url: serviceUrl,
+            image: serviceImage,
+            hashtags: 'services,professional,quality,recommended,handyman,expert'
+        };
+        
+        // Share based on platform
+        switch(platform) {
+            case 'facebook':
+                shareToFacebook(shareContent);
+                break;
+            case 'twitter':
+                shareToTwitter(shareContent);
+                break;
+            case 'instagram':
+                shareToInstagram(shareContent);
+                break;
+            case 'linkedin':
+                shareToLinkedIn(shareContent);
+                break;
+            // removed whatsapp and copy link
+        }
+    });
+    
+    // Facebook Sharing
+    function shareToFacebook(content) {
+        const fbUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(content.url)}&quote=${encodeURIComponent(content.description)}`;
+        openShareWindow(fbUrl, 'facebook-share', 600, 400);
+        Swal.fire('Sharing to Facebook!', 'Facebook sharing window opened. Complete your post there.', 'info');
+    }
+    
+    // Twitter Sharing
+    function shareToTwitter(content) {
+        const tweetText = `${content.description}\n\n${content.url}`;
+        const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}&hashtags=${content.hashtags}`;
+        openShareWindow(twitterUrl, 'twitter-share', 600, 400);
+        Swal.fire('Sharing to Twitter!', 'Twitter sharing window opened. Complete your tweet there.', 'info');
+    }
+    
+    // Instagram Sharing (Note: Instagram doesn't support direct sharing via URL)
+    function shareToInstagram(content) {
+        // Create a modal with Instagram sharing instructions
+        Swal.fire({
+            title: 'Share to Instagram',
+            html: `
+                <div class="text-center">
+                    <p><strong>Instagram doesn't support direct sharing via links.</strong></p>
+                    <p>Here's what you can copy and paste:</p>
+                    <div class="bg-light p-3 rounded mb-3">
+                        <strong>Caption:</strong><br>
+                        <textarea class="form-control mt-2" rows="4" readonly>${content.description}</textarea>
+                    </div>
+                    <div class="bg-light p-3 rounded">
+                        <strong>Service URL:</strong><br>
+                        <input type="text" class="form-control mt-2" value="${content.url}" readonly>
+                    </div>
+                </div>
+            `,
+            icon: 'info',
+            confirmButtonText: 'Copy & Close',
+            showCancelButton: true,
+            cancelButtonText: 'Close'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Copy caption to clipboard
+                navigator.clipboard.writeText(content.description + '\n\n' + content.url);
+                Swal.fire('Copied!', 'Content copied to clipboard. You can now paste it on Instagram.', 'success');
+            }
+        });
+    }
+    
+    // LinkedIn Sharing
+    function shareToLinkedIn(content) {
+        const linkedinUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(content.url)}&title=${encodeURIComponent(content.title)}&summary=${encodeURIComponent(content.description)}`;
+        openShareWindow(linkedinUrl, 'linkedin-share', 600, 500);
+        Swal.fire('Sharing to LinkedIn!', 'LinkedIn sharing window opened. Complete your post there.', 'info');
+    }
+    
+    // removed WhatsApp and copy link functionality
+    
+    // Helper function to open share windows
+    function openShareWindow(url, name, width, height) {
+        const left = (screen.width - width) / 2;
+        const top = (screen.height - height) / 2;
+        
+        window.open(url, name, 
+            `width=${width},height=${height},left=${left},top=${top},` +
+            'toolbar=0,location=0,menubar=0,directories=0,scrollbars=0'
+        );
+    }
+    
+    // Enhanced sharing with clipboard fallback
+    function copyToClipboard(text) {
+        if (navigator.clipboard && window.isSecureContext) {
+            navigator.clipboard.writeText(text).then(() => {
+                Swal.fire('Copied!', 'Content copied to clipboard!', 'success');
+            });
+        } else {
+            // Fallback for older browsers
+            const textArea = document.createElement('textarea');
+            textArea.value = text;
+            textArea.style.position = 'fixed';
+            textArea.style.left = '-999999px';
+            textArea.style.top = '-999999px';
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            
+            try {
+                document.execCommand('copy');
+                Swal.fire('Copied!', 'Content copied to clipboard!', 'success');
+            } catch (err) {
+                Swal.fire('Error', 'Could not copy to clipboard', 'error');
+            }
+            
+            document.body.removeChild(textArea);
+        }
+    }
+});
+
+</script>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    if (window.bootstrap && bootstrap.Tooltip) {
+      var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+      tooltipTriggerList.forEach(function (tooltipTriggerEl) {
+        new bootstrap.Tooltip(tooltipTriggerEl)
+      })
+    }
+  });
+</script>
 <script>
    $(document).ready(function () {
    

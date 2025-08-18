@@ -1,8 +1,7 @@
 <x-master-layout>
-    <script>
-        < script src = "https://cdn.tiny.cloud/1/m5d82gd2rwdlg96hsxpx0e5wwmfrl2zzkcw35ys8o3glilgq/tinymce/5/tinymce.min.js"
-        referrerpolicy = "origin" >
-    </script>
+    <script src="https://cdn.tiny.cloud/1/m5d82gd2rwdlg96hsxpx0e5wwmfrl2zzkcw35ys8o3glilgq/tinymce/5/tinymce.min.js"
+        referrerpolicy="origin"></script>
+
     <div class="container-fluid">
         <div class="row">
             <div class="col-lg-12">
@@ -27,7 +26,7 @@
                         <div class="row">
                             <div class="form-group col-md-2">
                                 {{ html()->label(__('messages.name') . ' <span class="text-danger">*</span>', 'name')->class('form-control-label') }}
-                                {{ html()->text('name', $servicedata->name)->placeholder(__('messages.name'))->class('form-control')->attributes(['title' => 'Please enter alphabetic characters and spaces only']) }}
+                                {{ html()->text('name', old('name', $servicedata->name))->placeholder(__('messages.name'))->class('form-control')->attributes(['title' => 'Please enter alphabetic characters and spaces only']) }}
                                 <small class="help-block with-errors text-danger"></small>
                             </div>
 
@@ -37,7 +36,7 @@
                                 {{ html()->select(
                                         'category_id',
                                         [optional($servicedata->category)->id => optional($servicedata->category)->name],
-                                        optional($servicedata->category)->id,
+                                        old('category_id', optional($servicedata->category)->id),
                                     )->class('select2js form-group category')->required()->id('category_id')->attribute('data-placeholder', __('messages.select_name', ['select' => __('messages.category')]))->attribute('data-ajax--url', route('ajax-list', ['type' => 'category'])) }}
 
                             </div>
@@ -61,21 +60,16 @@
                                     </option>
                                 </select>
                             </div>
-            <div class=" col-md-2">
-                <label
-                                                for="country_id">{{ __('messages.select_name', ['select' => __('Tax Country')]) }}</label>
-            {{ html()->select('tax_country_id_display', 
-                    optional($servicedata->tax_country)
-                        ? [optional($servicedata->tax_country)->id => optional($servicedata->tax_country)->name] 
-                        : []
-                )
-                ->class('form-group select2js tax_country')
-                ->attribute('data-placeholder', __('messages.select_name', ['select' => __('messages.tax_country')]))
-                ->attribute('data-ajax--url', route('ajax-list', ['type' => 'country']))
-                ->attribute('disabled', true)
-                ->id('tax_country_id_display')
-            }}
-            </div>
+                            <div class=" col-md-2">
+                                <label
+                                    for="country_id">{{ __('messages.select_name', ['select' => __('Tax Country')]) }}</label>
+                                {{ html()->select(
+                                        'tax_country_id_display',
+                                        optional($servicedata->tax_country)
+                                            ? [optional($servicedata->tax_country)->id => optional($servicedata->tax_country)->name]
+                                            : [],
+                                    )->class('form-group select2js tax_country')->attribute('data-placeholder', __('messages.select_name', ['select' => __('messages.tax_country')]))->attribute('data-ajax--url', route('ajax-list', ['type' => 'country']))->attribute('disabled', true)->id('tax_country_id_display') }}
+                            </div>
 
                             <div class="form-group col-md-2">
                                 <label
@@ -98,7 +92,8 @@
                             </div>
 
 
-<input type="hidden" name="tax_country_id" id="tax_country_id" value="{{ old('tax_country_id', optional($servicedata->tax_country)->id) }}">
+                            <input type="hidden" name="tax_country_id" id="tax_country_id"
+                                value="{{ old('tax_country_id', $servicedata->tax_country_id) }}">
 
 
 
@@ -112,7 +107,7 @@
                                     {{ html()->select(
                                             'provider_id',
                                             [optional($servicedata->providers)->id => optional($servicedata->providers)->display_name],
-                                            optional($servicedata->providers)->id,
+                                            old('provider_id', optional($servicedata->providers)->id),
                                         )->class('select2js form-group')->id('provider_id')->attribute('onchange', 'selectprovider(this)')->required()->attribute('data-placeholder', __('messages.select_name', ['select' => __('messages.provider')]))->attribute('data-ajax--url', route('ajax-list', ['type' => 'provider'])) }}
                                 </div>
                             @endif
@@ -144,26 +139,26 @@
                                             'Daily' => __('Daily'), // Add 'daily' option here
                                             'free' => __('messages.free'),
                                         ],
-                                        $servicedata->type,
+                                        old('type', $servicedata->type),
                                     )->class('form-control select2js')->required()->id('price_type') }}
                             </div>
                             <div class="form-group col-md-4" id="price_div">
                                 {{ html()->label(__('messages.price') . ' <span class="text-danger">*</span>', 'price')->class('form-control-label') }}
-                                {{ html()->text('price', null)->attributes(['min' => 1, 'step' => 'any', 'pattern' => '^\\d+(\\.\\d{1,2})?$'])->placeholder(__('messages.price'))->class('form-control')->required()->id('price') }}
+                                {{ html()->text('price', old('price', $servicedata->price))->attributes(['min' => 1, 'step' => 'any', 'pattern' => '^\\d+(\\.\\d{1,2})?$'])->placeholder(__('messages.price'))->class('form-control')->required()->id('price') }}
                                 <small class="help-block with-errors text-danger"></small>
                             </div>
 
 
                             <div class="form-group col-md-4" id="minimum_booking_div">
                                 {{ html()->label(__('Minimum Booking'), 'minimum_booking')->class('form-control-label') }}
-                                {{ html()->text('minimum_booking', isset($servicedata->minimum_booking) ? $servicedata->minimum_booking : null)->attributes(['step' => 'any'])->placeholder(__('minimum booking'))->class('form-control')->id('minimum_booking') }}
+                                {{ html()->text('minimum_booking', old('minimum_booking', $servicedata->minimum_booking))->attributes(['step' => 'any'])->placeholder(__('minimum booking'))->class('form-control')->id('minimum_booking') }}
                                 <small class="help-block with-errors text-danger"></small>
                             </div>
 
 
                             <div class="form-group col-md-4" id="discount_div">
                                 {{ html()->label(__('messages.discount') . ' %', 'discount')->class('form-control-label') }}
-                                {{ html()->number('discount', null)->attributes(['min' => 0, 'max' => 99, 'step' => 'any'])->placeholder(__('messages.discount'))->class('form-control')->id('discount') }}
+                                {{ html()->number('discount', old('discount', $servicedata->discount))->attributes(['min' => 0, 'max' => 99, 'step' => 'any'])->placeholder(__('messages.discount'))->class('form-control')->id('discount') }}
 
                                 <span id="discount-error" class="text-danger"></span>
                             </div>
@@ -171,19 +166,19 @@
 
                             <div class="form-group col-md-4">
                                 {{ html()->label(__('messages.duration') . ' (hours) ', 'duration')->class('form-control-label') }}
-                                {{ html()->text('duration', $servicedata->duration)->placeholder(__('messages.duration'))->class('form-control min-datetimepicker-time') }}
+                                {{ html()->text('duration', old('duration', $servicedata->duration))->placeholder(__('messages.duration'))->class('form-control min-datetimepicker-time') }}
                                 <small class="help-block with-errors text-danger"></small>
                             </div>
 
                             <div class="form-group col-md-4">
                                 {{ html()->label(__('messages.status') . ' <span class="text-danger">*</span>', 'status')->class('form-control-label') }}
-                                {{ html()->select('status', ['1' => __('messages.active'), '0' => __('messages.inactive')], $servicedata->status)->class('form-control select2js')->required() }}
+                                {{ html()->select('status', ['1' => __('messages.active'), '0' => __('messages.inactive')], old('status', $servicedata->status))->class('form-control select2js')->required() }}
                             </div>
 
                             <div class="form-group col-md-4">
                                 {{ html()->label(__('messages.visit_type') . ' ', 'visit_type')->class('form-control-label') }}
                                 <br />
-                                {{ html()->select('visit_type', $visittype, $servicedata->visit_type)->id('visit_type')->class('form-control select2js')->required() }}
+                                {{ html()->select('visit_type', $visittype, old('visit_type', $servicedata->visit_type))->id('visit_type')->class('form-control select2js')->required() }}
                             </div>
 
 
@@ -209,8 +204,9 @@
                         <div class="row service_attachment_div">
                             <div class="col-md-12">
 
+{{-- @dd($servicedata->getMedia('service_attachment')); --}}
+                                {{-- @if (getMediaFileExit($servicedata, 'service_attachment')) --}}
 
-                                @if (getMediaFileExit($servicedata, 'service_attachment'))
                                     @php
 
                                         $attchments = $servicedata->getMedia('service_attachment');
@@ -261,23 +257,23 @@
                                     </div>
 
                                     <img id="service_attachment_preview" src="" width="150px" />
-                                @endif
+                                {{-- @endif --}}
                             </div>
                         </div>
 
                         <div class="row">
                             <div class="form-group col-md-12">
                                 {{ html()->label(__('messages.description'), 'description')->class('form-control-label') }}
-                                {{ html()->textarea('description', $servicedata->description)->class('form-control textarea')->rows(3)->placeholder(__('messages.description')) }}
+                                {{ html()->textarea('description', old('description', $servicedata->description))->class('form-control textarea')->rows(3)->placeholder(__('messages.description')) }}
                             </div>
                             <div class="form-group col-md-12">
                                 {{ html()->label(__('Cancellation Policy & Fees'), 'cancellation_policy')->class('form-control-label') }}
-                                {{ html()->textarea('cancellation_policy', $servicedata->cancellation_policy)->class('form-control textarea')->rows(3)->placeholder(__('cancellation_policy')) }}
+                                {{ html()->textarea('cancellation_policy', old('cancellation_policy', $servicedata->cancellation_policy))->class('form-control textarea')->rows(3)->placeholder(__('cancellation_policy')) }}
                             </div>
                             @if (!empty($slotservice) && $slotservice == 1)
                                 <div class="form-group col-md-3">
                                     <div class="custom-control custom-switch">
-                                        {{ html()->checkbox('is_slot', $servicedata->is_slot)->class('custom-control-input')->id('is_slot') }}
+                                        {{ html()->checkbox('is_slot', old('is_slot', $servicedata->is_slot))->class('custom-control-input')->id('is_slot') }}
                                         <label class="custom-control-label"
                                             for="is_slot">{{ __('messages.slot') }}</label>
                                     </div>
@@ -286,7 +282,7 @@
                             @if (auth()->check() && auth()->user()->user_type === 'provider')
                                 <div class="form-group col-md-3">
                                     <div class="custom-control custom-switch">
-                                        {{ html()->checkbox('is_featured', $servicedata->is_featured)->class('custom-control-input')->id('is_featured') }}
+                                        {{ html()->checkbox('is_featured', old('is_featured', $servicedata->is_featured))->class('custom-control-input')->id('is_featured') }}
                                         <label class="custom-control-label"
                                             for="is_featured">{{ __('messages.set_as_featured') }}</label>
                                     </div>
@@ -304,7 +300,7 @@
                             {{-- @if (!empty($advancedPaymentSetting) && $advancedPaymentSetting == 1) --}}
                             <div class="form-group col-md-3">
                                 <div class="custom-control custom-switch">
-                                    {{ html()->checkbox('is_enable_advance_payment', $servicedata->is_enable_advance_payment)->class('custom-control-input')->id('is_enable_advance_payment') }}
+                                    {{ html()->checkbox('is_enable_advance_payment', old('is_enable_advance_payment', $servicedata->is_enable_advance_payment))->class('custom-control-input')->id('is_enable_advance_payment') }}
                                     <label class="custom-control-label"
                                         for="is_enable_advance_payment">{{ __('messages.enable_advanced_payment') }}
                                     </label>
@@ -326,7 +322,9 @@
         </div>
     </div>
     @php
-        $data = $servicedata->providerServiceAddress->pluck('provider_address_id')->implode(',');
+        $data = old('provider_address_id')
+            ? implode(',', (array) old('provider_address_id'))
+            : $servicedata->providerServiceAddress->pluck('provider_address_id')->implode(',');
     @endphp
     @section('bottom_script')
         <script type="text/javascript">
@@ -421,16 +419,16 @@
             (function($) {
                 "use strict";
                 $(document).ready(function() {
-                    var provider_id = "{{ isset($servicedata->provider_id) ? $servicedata->provider_id : '' }}";
+                    var provider_id = "{{ old('provider_id', isset($servicedata->provider_id) ? $servicedata->provider_id : '') }}";
                     var provider_address_id = "{{ isset($data) ? $data : [] }}";
 
-                    var category_id = "{{ isset($servicedata->category_id) ? $servicedata->category_id : '' }}";
+                    var category_id = "{{ old('category_id', isset($servicedata->category_id) ? $servicedata->category_id : '') }}";
                     var subcategory_id =
-                        "{{ isset($servicedata->subcategory_id) ? $servicedata->subcategory_id : '' }}";
+                        "{{ old('subcategory_id', isset($servicedata->subcategory_id) ? $servicedata->subcategory_id : '') }}";
 
-                    var country_id = "{{ isset($servicedata->country_id) ? $servicedata->country_id : 0 }}";
-                    var city_id = "{{ isset($servicedata->city_id) ? $servicedata->city_id : 0 }}";
-                    var price_type = "{{ isset($servicedata->type) ? $servicedata->type : '' }}";
+                    var country_id = "{{ old('country_id', isset($servicedata->country_id) ? $servicedata->country_id : 0) }}";
+                    var city_id = "{{ old('city_id', isset($servicedata->city_id) ? $servicedata->city_id : 0) }}";
+                    var price_type = "{{ old('type', isset($servicedata->type) ? $servicedata->type : '') }}";
 
                     providerAddress(provider_id, provider_address_id)
                     getSubCategory(category_id, subcategory_id)
@@ -451,11 +449,7 @@
                         priceformat(price_type);
                     })
 
-                    $(document).on('change', '#country_id', function() {
-                        var country = $(this).val();
-                        $('#city_id').empty();
-                        cityName(country);
-                    })
+
 
                     $(document).on('change', '#city_id', function() {
                         var city = $(this).val();
@@ -538,8 +532,8 @@
                         }
                     });
                 }
-                var price = "{{ isset($servicedata->price) ? $servicedata->price : '' }}";
-                var discount = "{{ isset($servicedata->discount) ? $servicedata->discount : '' }}";
+                var price = "{{ old('price', isset($servicedata->price) ? $servicedata->price : '') }}";
+                var discount = "{{ old('discount', isset($servicedata->discount) ? $servicedata->discount : '') }}";
 
                 function priceformat(value) {
                     if (value == 'free') {
@@ -588,7 +582,7 @@
                 }
             })(jQuery);
         </script>
-        
+
         <script type="text/javascript">
             document.addEventListener('DOMContentLoaded', function() {
                 handleDurationField($("#price_type").val());
@@ -611,172 +605,184 @@
             });
         </script>
 
-<script type="text/javascript">
-  (function ($) {
-    "use strict";
+        <script type="text/javascript">
+            (function($) {
+                "use strict";
 
-    $(document).ready(function () {
-      var country_id = "{{ isset($servicedata->country_id) ? $servicedata->country_id : '' }}";
-      var tax_country_id = "{{ isset($servicedata->tax_country_id) ? $servicedata->tax_country_id : '' }}";
-      var state_id = "{{ isset($servicedata->state_id) ? $servicedata->state_id : '' }}";
-      var city_id = "{{ isset($servicedata->city_id) ? $servicedata->city_id : '' }}";
-      var category_id = "{{ isset($servicedata->category_id) ? $servicedata->category_id : '' }}";
-      var subcategory_id = "{{ isset($servicedata->subcategory_id) ? $servicedata->subcategory_id : '' }}";
+                $(document).ready(function() {
+                    var country_id = "{{ old('country_id', isset($servicedata->country_id) ? $servicedata->country_id : '') }}";
+                    var tax_country_id =
+                        "{{ old('tax_country_id', isset($servicedata->tax_country_id) ? $servicedata->tax_country_id : '') }}";
+                    var state_id = "{{ old('state_id', isset($servicedata->state_id) ? $servicedata->state_id : '') }}";
+                    var city_id = "{{ old('city_id', isset($servicedata->city_id) ? $servicedata->city_id : '') }}";
+                    var initialCityId = city_id;
+                    var category_id = "{{ old('category_id', isset($servicedata->category_id) ? $servicedata->category_id : '') }}";
+                    var subcategory_id =
+                        "{{ old('subcategory_id', isset($servicedata->subcategory_id) ? $servicedata->subcategory_id : '') }}";
 
-      // Initialize select2 on all selects (including tax_country_id_display)
-      $('#country_id, #state_id, #city_id, #tax_country_id_display').select2({
-        width: '100%',
-        placeholder: "{{ __('messages.select_name', ['select' => __('messages.country')]) }}"
-      });
+                    // Initialize select2 on all selects (including tax_country_id_display)
+                    $('#country_id, #state_id, #city_id, #tax_country_id_display').select2({
+                        width: '100%',
+                        placeholder: "{{ __('messages.select_name', ['select' => __('messages.country')]) }}"
+                    });
 
-      // Load dependent dropdown data on page load
-      getStates(country_id, state_id);
-      getCities(state_id, city_id);
-      getSubCategory(category_id, subcategory_id);
+                    // Load dependent dropdown data on page load
+                    getStates(country_id, state_id);
+                    getSubCategory(category_id, subcategory_id);
 
-      // Initialize tax_country_id_display and hidden tax_country_id inputs
-      if (tax_country_id) {
-        var taxCountryName = $('#tax_country_id_display option:selected').text();
-        setTaxCountry(tax_country_id, taxCountryName);
-      } else if (country_id) {
-        // If tax_country_id not set, default it to country_id
-        var selectedCountryName = $('#country_id option:selected').text();
-        setTaxCountry(country_id, selectedCountryName);
-      }
+                    // Initialize tax_country_id_display and hidden tax_country_id inputs
+                    if (tax_country_id) {
+                        var taxCountryName = $('#tax_country_id_display option:selected').text();
+                        setTaxCountry(tax_country_id, taxCountryName);
+                    } else if (country_id) {
+                        // If tax_country_id not set, default it to country_id
+                        var selectedCountryName = $('#country_id option:selected').text();
+                        setTaxCountry(country_id, selectedCountryName);
+                    }
 
-      // When country changes
-      $(document).on('change', '#country_id', function () {
-        var selectedCountryId = $(this).val();
-        var selectedCountryName = $('#country_id option:selected').text();
+                    // When country changes
+                    $(document).on('change', '#country_id', function() {
+                        var selectedCountryId = $(this).val();
+                        var selectedCountryName = $('#country_id option:selected').text();
 
-        // Only update tax country if not manually changed or empty
-        var currentTaxVal = $('#tax_country_id').val();
-        if (!currentTaxVal || currentTaxVal === country_id) {
-          setTaxCountry(selectedCountryId, selectedCountryName);
-        }
+                        // Only update tax country if not manually changed or empty
+                        var currentTaxVal = $('#tax_country_id').val();
+                        if (!currentTaxVal || currentTaxVal === country_id) {
+                            setTaxCountry(selectedCountryId, selectedCountryName);
+                        }
 
-        getStates(selectedCountryId, '');
-        $('#city_id').empty();
+                        getStates(selectedCountryId, '');
+                        $('#city_id').empty();
 
-        // Update the disabled select display for tax country
-        $('#tax_country_id_display').empty()
-          .append(new Option(selectedCountryName, selectedCountryId, true, true))
-          .trigger('change');
+                        // Update the disabled select display for tax country
+                        $('#tax_country_id_display').empty()
+                            .append(new Option(selectedCountryName, selectedCountryId, true, true))
+                            .trigger('change');
 
-        // Update hidden input value for backend submission
-        $('#tax_country_id').val(selectedCountryId).trigger('change');
-      });
+                        // Update hidden input value for backend submission
+                        $('#tax_country_id').val(selectedCountryId).trigger('change');
+                    });
 
-      // When state changes
-      $(document).on('change', '#state_id', function () {
-        var selectedStateId = $(this).val();
-        getCities(selectedStateId, '');
-      });
+                    // When state changes
+                    $(document).on('change', '#state_id', function() {
+                        var selectedStateId = $(this).val();
+                        getCities(selectedStateId, initialCityId || '');
+                        initialCityId = '';
+                    });
 
-      // When category changes
-      $(document).on('change', '#category_id', function () {
-        var selectedCategoryId = $(this).val();
-        getSubCategory(selectedCategoryId, '');
-      });
+                    // When category changes
+                    $(document).on('change', '#category_id', function() {
+                        var selectedCategoryId = $(this).val();
+                        getSubCategory(selectedCategoryId, '');
+                    });
 
-      // Function to set tax country (hidden input)
-      function setTaxCountry(id, name) {
-        if (!id || !name) return;
-        // Set hidden input value
-        $('#tax_country_id').val(id).trigger('change');
-        // Set display select option
-        $('#tax_country_id_display').empty()
-          .append(new Option(name, id, true, true))
-          .trigger('change');
-      }
+                    // Function to set tax country (hidden input)
+                    function setTaxCountry(id, name) {
+                        if (!id) return;
+                        // Always set hidden input value so it is submitted
+                        $('#tax_country_id').val(id).trigger('change');
+                        // Only update the disabled display if we have a name
+                        if (name) {
+                            $('#tax_country_id_display').empty()
+                                .append(new Option(name, id, true, true))
+                                .trigger('change');
+                        }
+                    }
 
-      // Function to get States by country
-      function getStates(country_id, selectedState = "") {
-        if (country_id !== '') {
-          var getStateListUrl = "{{ route('ajax-list', ['type' => 'state', 'country_id' => '']) }}" + country_id;
-          getStateListUrl = getStateListUrl.replace('amp;', '');
+                    // Function to get States by country
+                    function getStates(country_id, selectedState = "") {
+                        if (country_id !== '') {
+                            var getStateListUrl =
+                                "{{ route('ajax-list', ['type' => 'state', 'country_id' => '']) }}" + country_id;
+                            getStateListUrl = getStateListUrl.replace('amp;', '');
 
-          $('#state_id').select2({
-            width: '100%',
-            placeholder: "{{ __('messages.select_name', ['select' => __('messages.state')]) }}"
-          });
+                            $('#state_id').select2({
+                                width: '100%',
+                                placeholder: "{{ __('messages.select_name', ['select' => __('messages.state')]) }}"
+                            });
 
-          $.ajax({
-            url: getStateListUrl,
-            success: function (result) {
-              $('#state_id').empty();
-              result.results.forEach(function (state) {
-                var option = new Option(state.text, state.id, false, false);
-                $('#state_id').append(option);
-              });
+                            $.ajax({
+                                url: getStateListUrl,
+                                success: function(result) {
+                                    $('#state_id').empty();
+                                    result.results.forEach(function(state) {
+                                        var option = new Option(state.text, state.id, false,
+                                            false);
+                                        $('#state_id').append(option);
+                                    });
 
-              if (selectedState !== null && selectedState !== 0) {
-                $("#state_id").val(selectedState).trigger('change');
-              }
-            }
-          });
-        }
-      }
+                                    if (selectedState !== null && selectedState !== 0) {
+                                        $("#state_id").val(selectedState).trigger('change');
+                                    }
+                                }
+                            });
+                        }
+                    }
 
-      // Function to get Cities by state
-      function getCities(state_id, selectedCity = "") {
-        if (state_id !== '') {
-          var getCityListUrl = "{{ route('ajax-list', ['type' => 'city', 'state_id' => '']) }}" + state_id;
-          getCityListUrl = getCityListUrl.replace('amp;', '');
+                    // Function to get Cities by state
+                    function getCities(state_id, selectedCity = "") {
+                        if (state_id !== '') {
+                            var getCityListUrl =
+                                "{{ route('ajax-list', ['type' => 'city', 'state_id' => '']) }}" + state_id;
+                            getCityListUrl = getCityListUrl.replace('amp;', '');
 
-          $('#city_id').select2({
-            width: '100%',
-            placeholder: "{{ __('messages.select_name', ['select' => __('messages.city')]) }}"
-          });
+                            $('#city_id').select2({
+                                width: '100%',
+                                placeholder: "{{ __('messages.select_name', ['select' => __('messages.city')]) }}"
+                            });
 
-          $.ajax({
-            url: getCityListUrl,
-            success: function (result) {
-              $('#city_id').empty();
-              result.results.forEach(function (city) {
-                var option = new Option(city.text, city.id, false, false);
-                $('#city_id').append(option);
-              });
+                            $.ajax({
+                                url: getCityListUrl,
+                                success: function(result) {
+                                    $('#city_id').empty();
+                                    result.results.forEach(function(city) {
+                                        var option = new Option(city.text, city.id, false,
+                                            false);
+                                        $('#city_id').append(option);
+                                    });
 
-              if (selectedCity !== null && selectedCity !== 0) {
-                $("#city_id").val(selectedCity).trigger('change');
-              }
-            }
-          });
-        }
-      }
+                                    if (selectedCity !== null && selectedCity !== 0) {
+                                        $("#city_id").val(selectedCity).trigger('change');
+                                    }
+                                }
+                            });
+                        }
+                    }
 
-      // Function to get Subcategories by category
-      function getSubCategory(category_id, selectedSubCategory = "") {
-        if (category_id !== '') {
-          var getSubCategoryListUrl = "{{ route('ajax-list', ['type' => 'subcategory_list', 'category_id' => '']) }}" + category_id;
-          getSubCategoryListUrl = getSubCategoryListUrl.replace('amp;', '');
+                    // Function to get Subcategories by category
+                    function getSubCategory(category_id, selectedSubCategory = "") {
+                        if (category_id !== '') {
+                            var getSubCategoryListUrl =
+                                "{{ route('ajax-list', ['type' => 'subcategory_list', 'category_id' => '']) }}" +
+                                category_id;
+                            getSubCategoryListUrl = getSubCategoryListUrl.replace('amp;', '');
 
-          $('#subcategory_id').select2({
-            width: '100%',
-            placeholder: "{{ __('messages.select_name', ['select' => __('messages.subcategory')]) }}"
-          });
+                            $('#subcategory_id').select2({
+                                width: '100%',
+                                placeholder: "{{ __('messages.select_name', ['select' => __('messages.subcategory')]) }}"
+                            });
 
-          $.ajax({
-            url: getSubCategoryListUrl,
-            success: function (result) {
-              $('#subcategory_id').empty();
-              result.results.forEach(function (subcategory) {
-                var option = new Option(subcategory.text, subcategory.id, false, false);
-                $('#subcategory_id').append(option);
-              });
+                            $.ajax({
+                                url: getSubCategoryListUrl,
+                                success: function(result) {
+                                    $('#subcategory_id').empty();
+                                    result.results.forEach(function(subcategory) {
+                                        var option = new Option(subcategory.text, subcategory
+                                            .id, false, false);
+                                        $('#subcategory_id').append(option);
+                                    });
 
-              if (selectedSubCategory !== null && selectedSubCategory !== 0) {
-                $("#subcategory_id").val(selectedSubCategory).trigger('change');
-              }
-            }
-          });
-        }
-      }
+                                    if (selectedSubCategory !== null && selectedSubCategory !== 0) {
+                                        $("#subcategory_id").val(selectedSubCategory).trigger('change');
+                                    }
+                                }
+                            });
+                        }
+                    }
 
-    });
-  })(jQuery);
-</script>
+                });
+            })(jQuery);
+        </script>
 
 
 

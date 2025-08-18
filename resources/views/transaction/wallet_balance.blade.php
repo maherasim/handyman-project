@@ -12,10 +12,13 @@
             <div class="card-body p-0">
                 <div class="d-flex justify-content-between align-items-center p-3 flex-wrap gap-3">
                     <h5 class="fw-bold">Wallet Balance</h5>
-                    <a href="{{ route('wallet.create') }}" class="float-end me-1 btn btn-sm btn-primary">
-                        <i class="fa fa-plus-circle"></i> 
-                        {{ trans('messages.add_form_title', ['form' => trans('messages.wallet')]) }}
-                    </a>
+                    <div class="d-flex align-items-center gap-3">
+                        <span class="fw-bold">{{ __('messages.wallet_balance') }}: {{ isset($walletBalance) ? getPriceFormat($walletBalance) : getPriceFormat(0) }}</span>
+                        <a href="{{ route('wallet.create') }}" class="float-end me-1 btn btn-sm btn-primary">
+                            <i class="fa fa-plus-circle"></i> 
+                            {{ trans('messages.add_form_title', ['form' => trans('messages.wallet')]) }}
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>

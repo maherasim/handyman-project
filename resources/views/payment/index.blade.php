@@ -83,163 +83,152 @@
             </div>
         </div>
     </div>
-    <script>
-        document.addEventListener('DOMContentLoaded', (event) => {
+      <script>
+    document.addEventListener('DOMContentLoaded', function () {
 
-            window.renderedDataTable = $('#datatable').DataTable({
+        @if(auth()->user()->hasAnyRole(['provider', 'user', 'admin', 'demo_admin']))
+            // Init DataTable for Admin / Provider / User
+            $('#datatable').DataTable({
                 processing: true,
                 serverSide: true,
                 autoWidth: false,
                 responsive: true,
                 dom: '<"row align-items-center"><"table-responsive my-3 mt-3 mb-2 pb-1" rt><"row align-items-center data_table_widgets" <"col-md-6" <"d-flex align-items-center flex-wrap gap-3" l i>><"col-md-6" p>><"clear">',
                 ajax: {
-                    "type": "GET",
-                    "url": '{{ route('payment.index_data') }}',
-                    "data": function(d) {
-                        d.search = {
-                            value: $('.dt-search').val()
-                        };
-                        d.filter = {
-                            column_status: $('#column_status').val()
-                        }
-                    },
+                    type: "GET",
+                    url: '{{ route('payment.index_data') }}',
+                    data: function (d) {
+                        d.search = { value: $('.dt-search').val() };
+                        d.filter = { column_status: $('#column_status').val() };
+                    }
                 },
                 columns: [
-                    @if (auth()->user()->hasAnyRole(['admin']))
-                        {
-                            name: 'check',
-                            data: 'check',
-                            title: '<input type="checkbox" class="form-check-input" name="select_all_table" id="select-all-table" onclick="selectAllTable(this)">',
-                            exportable: false,
-                            orderable: false,
-                            searchable: false,
-                        },
-                    @endif {
-                        data: 'updated_at',
-                        name: 'updated_at',
-                        title: "{{ __('product.lbl_update_at') }}",
-                        orderable: true,
-                        visible: false,
-                    },
+                    @if(auth()->user()->hasRole('admin'))
                     {
-                        data: 'id',
-                        name: 'id',
-                        title: "{{ __('messages.id') }}",
+                        name: 'check',
+                        data: 'check',
+                        title: '<input type="checkbox" class="form-check-input" name="select_all_table" id="select-all-table" onclick="selectAllTable(this)">',
+                        exportable: false,
+                        orderable: false,
+                        searchable: false,
                     },
+                    @endif
+                    { data: 'updated_at', name: 'updated_at', title: "{{ __('product.lbl_update_at') }}", orderable: true, visible: false },
+                    { data: 'id', name: 'id', title: "{{ __('messages.id') }}" },
+                    { data: 'booking_id', name: 'booking_id', title: "{{ __('messages.service') }}" },
+                    { data: 'customer_id', name: 'customer_id', title: "{{ __('messages.user') }}" },
+                    { data: 'payment_type', name: 'payment_type', title: "{{ __('messages.payment_type') }}" },
+                    { data: 'payment_status', name: 'payment_status', title: "{{ __('messages.status') }}" },
+                    { data: 'datetime', name: 'datetime', title: "{{ __('messages.datetime') }}" },
+                    { data: 'total_amount', name: 'total_amount', title: "{{ __('messages.total_paid_amount') }}" },
+                    @if(auth()->user()->hasRole('admin'))
                     {
-                        data: 'booking_id',
-                        name: 'booking_id',
-                        title: "{{ __('messages.service') }}",
-                        //  orderable: false,
-                    },
-                    {
-                        data: 'customer_id',
-                        name: 'customer_id',
-                        title: "{{ __('messages.user') }}"
-                    },
-                    {
-                        data: 'payment_type',
-                        name: 'payment_type',
-                        title: "{{ __('messages.payment_type') }}"
-                    },
-                    {
-                        data: 'payment_status',
-                        name: 'payment_status',
-                        title: "{{ __('messages.status') }}"
-                    },
-                    {
-                        data: 'datetime',
-                        name: 'datetime',
-                        title: "{{ __('messages.datetime') }}"
-                    },
-                    {
-                        data: 'total_amount',
-                        name: 'total_amount',
-                        title: "{{ __('messages.total_paid_amount') }}"
-                    },
-                    @if (auth()->user()->hasAnyRole(['admin']))
-                        {
-                            data: 'action',
-                            name: 'action',
-                            orderable: false,
-                            searchable: false,
-                            title: "{{ __('messages.action') }}",
-                        }
-                    @endif ()
+                        data: 'action',
+                        name: 'action',
+                        orderable: false,
+                        searchable: false,
+                        title: "{{ __('messages.action') }}",
+                    }
+                    @endif
                 ],
                 order: [
-                    @if (auth()->user()->hasAnyRole(['admin']))
+                    @if(auth()->user()->hasRole('admin'))
                         [7, 'desc']
                     @else
                         [6, 'desc']
                     @endif
                 ],
                 language: {
-                    processing: "{{ __('messages.processing') }}" // Set your custom processing text
+                    processing: "{{ __('messages.processing') }}"
                 }
             });
-        });
 
+        @elseif(auth()->user()->hasRole('handyman'))
+            // Init DataTable for Handyman (Commission Earning view)
+            $('#datatable').DataTable({
+                processing: true,
+                serverSide: true,
+                autoWidth: false,
+                responsive: true,
+                dom: '<"row align-items-center"><"table-responsive my-3 mt-3 mb-2 pb-1" rt><"row align-items-center data_table_widgets" <"col-md-6" <"d-flex align-items-center flex-wrap gap-3" l i>><"col-md-6" p>><"clear">',
+                ajax: {
+                    type: "GET",
+                    url: '{{ route('handyman.earnings.index_data') }}', // <-- New route for handyman commission earnings
+                    data: function (d) {
+                        d.search = { value: $('.dt-search').val() };
+                        d.filter = { column_status: $('#column_status').val() };
+                    }
+                },
+                columns: [
+                    { data: 'updated_at', name: 'updated_at', title: "{{ __('product.lbl_update_at') }}", orderable: true, visible: false },
+                    { data: 'id', name: 'id', title: "{{ __('messages.id') }}" },
+                    { data: 'booking_id', name: 'booking_id', title: "{{ __('messages.service') }}" },
+                    { data: 'customer_id', name: 'customer_id', title: "{{ __('messages.user') }}" },
+                    { data: 'payment_type', name: 'payment_type', title: "{{ __('messages.payment_type') }}" },
+                  {
+    data: 'payment_status',
+    name: 'payment_status',
+    title: "{{ __('messages.status') }}",
+    render: function(data, type, row, meta) {
+        return '<span class="badge bg-primary text-white">Paid</span>';
+    }
+},
 
-        $(document).ready(function() {
-            $('#statusSelect').change(function() {
-                var selectedValue = $(this).val();
-                var selectedOption = $('#statusSelect option:selected');
-                var route = selectedOption.data('route');
-
-                if (selectedValue === 'cash' && route) {
-                    window.location.href = route;
+                    { data: 'datetime', name: 'datetime', title: "{{ __('messages.datetime') }}" },
+                    { data: 'handyman_earning', name: 'handyman_earning', title: "My Earning" }
+                ],
+                order: [[6, 'desc']],
+                language: {
+                    processing: "{{ __('messages.processing') }}"
                 }
-                window.location.href = route;
             });
-        });
 
-        function resetQuickAction() {
-            const actionValue = $('#quick-action-type').val();
-            console.log(actionValue)
-            if (actionValue != '') {
-                $('#quick-action-apply').removeAttr('disabled');
+        @endif
+    });
 
-                if (actionValue == 'change-status') {
-                    $('.quick-action-field').addClass('d-none');
-                    $('#change-status-action').removeClass('d-none');
-                } else {
-                    $('.quick-action-field').addClass('d-none');
-                }
+    // Quick action reset
+    function resetQuickAction() {
+        const actionValue = $('#quick-action-type').val();
+        if (actionValue != '') {
+            $('#quick-action-apply').removeAttr('disabled');
+            if (actionValue == 'change-status') {
+                $('.quick-action-field').addClass('d-none');
+                $('#change-status-action').removeClass('d-none');
             } else {
-                $('#quick-action-apply').attr('disabled', true);
                 $('.quick-action-field').addClass('d-none');
             }
+        } else {
+            $('#quick-action-apply').attr('disabled', true);
+            $('.quick-action-field').addClass('d-none');
         }
+    }
 
-        $('#quick-action-type').change(function() {
-            resetQuickAction()
-        });
+    $('#quick-action-type').change(function () {
+        resetQuickAction();
+    });
 
-        $(document).on('update_quick_action', function() {
+    $(document).on('click', '[data-ajax="true"]', function (e) {
+        e.preventDefault();
+        const button = $(this);
+        const confirmation = button.data('confirmation');
 
-        })
-
-        $(document).on('click', '[data-ajax="true"]', function(e) {
-            e.preventDefault();
-            const button = $(this);
-            const confirmation = button.data('confirmation');
-
-            if (confirmation === 'true') {
-                const message = button.data('message');
-                if (confirm(message)) {
-                    const submitUrl = button.data('submit');
-                    const form = button.closest('form');
-                    form.attr('action', submitUrl);
-                    form.submit();
-                }
-            } else {
+        if (confirmation === 'true') {
+            const message = button.data('message');
+            if (confirm(message)) {
                 const submitUrl = button.data('submit');
                 const form = button.closest('form');
                 form.attr('action', submitUrl);
                 form.submit();
             }
-        });
-    </script>
+        } else {
+            const submitUrl = button.data('submit');
+            const form = button.closest('form');
+            form.attr('action', submitUrl);
+            form.submit();
+        }
+    });
+</script>
+
+ 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 </x-master-layout>

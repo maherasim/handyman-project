@@ -33,6 +33,11 @@
                                                     ({{ $serviceData['service_detail']['total_review'] }}
                                                     {{ __('messages.reviews') }})</span></a></h6>
                                     @endif
+
+                                    <span class="ms-3 d-inline-flex align-items-center" title="Views">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns=" "><path d="M12 5c-7.633 0-10 7-10 7s2.367 7 10 7 10-7 10-7-2.367-7-10-7Zm0 12a5 5 0 1 1 0-10 5 5 0 0 1 0 10Zm0-8a3 3 0 1 0 .002 6.002A3 3 0 0 0 12 9Z" fill="currentColor"/></svg>
+                                        <span class="ms-1">{{ $serviceData['service_detail']['total_views'] ?? 0 }}</span>
+                                    </span>
                                 </div>
                             </li>
                             @if (!empty($serviceData['service_detail']['duration']))
@@ -111,7 +116,9 @@
                                     </div>
                                     <div class="form-check">
                                         <input class="form-check-input service-addon-checkbox" type="checkbox"
-                                            value="" id="serviceaddon" data-addon-id="{{ $serviceaddon['id'] }}">
+                                            value="" id="serviceaddon" data-addon-id="{{ $serviceaddon['id'] }}"
+                                            style="width: 20px; height: 20px; background-color: white; border: 2px solid #000;">
+
                                     </div>
                                 </div>
                             @endforeach
@@ -644,7 +651,7 @@
                         <div class="d-flex align-items-center  mt-2 justify-content-evenly">
 
                             <img src="{{ asset('images/icon/verifiedpng.png') }}" alt="icon"
-                                style="width: 15%; height: 70%; margin-right: 10px;">
+                                style="width: 26px; height: 26px; margin-right: 10px;">
 
 
                             <div class="d-flex align-items-center gap-2 flex-wrap">
@@ -662,7 +669,7 @@
 
 
                             <img src="{{ asset('images/icon/freeicon.jpg') }}" alt="icon"
-                                style="width: 15%; height: 8%;">
+                                style="width: 26px; height: 26px;">
 
 
                         </div>

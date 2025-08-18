@@ -782,10 +782,25 @@ const calculateDuration = (index) => {
 
     } else {
         // For hourly service
+        // if (slot.endTime) {
+        //     let endTimeFormatted;
+        //
+        //     // Handle case: flatpickr might emit a Date object OR a time string
+        //     if (slot.endTime instanceof Date) {
+        //         endTimeFormatted = moment(slot.endTime).format('HH:mm');
+        //     } else {
+        //         endTimeFormatted = slot.endTime;
+        //     }
+        //
+        //     end = moment(`${slot.date} ${endTimeFormatted}`, 'YYYY-MM-DD HH:mm');
+        //     console.log('slot end time: ' + slot.endTime)
+        //     console.log('endTimeFormatted: ' + endTimeFormatted)
+        //
+        //     console.log("Using user-selected End Time (hourly):", end.format('HH:mm'));
+        // }
         if (slot.endTime) {
             let endTimeFormatted;
 
-            // Handle case: flatpickr might emit a Date object OR a time string
             if (slot.endTime instanceof Date) {
                 endTimeFormatted = moment(slot.endTime).format('HH:mm');
             } else {
@@ -793,11 +808,15 @@ const calculateDuration = (index) => {
             }
 
             end = moment(`${slot.date} ${endTimeFormatted}`, 'YYYY-MM-DD HH:mm');
-            console.log('slot end time: ' + slot.endTime)
-            console.log('endTimeFormatted: ' + endTimeFormatted)
 
-            console.log("Using user-selected End Time (hourly):", end.format('HH:mm'));
+            // ✅ FIX: If end time is earlier than start, assume it's the next day
+            if (end.isBefore(start)) {
+                end.add(1, 'day');
+            }
+
+            console.log("Using user-selected End Time (hourly):", end.format('YYYY-MM-DD HH:mm'));
         }
+
         else {
             const durationString = props.service.duration;
 
@@ -828,7 +847,7 @@ const calculateDuration = (index) => {
             const duration = moment.duration(end.diff(start));
             const totalMinutes = duration.asMinutes();
             const totalHours = totalMinutes / 60;
-
+            console.log(totalHours)
             slot.totalDays = 0;
             slot.totalHours = totalHours;
         }

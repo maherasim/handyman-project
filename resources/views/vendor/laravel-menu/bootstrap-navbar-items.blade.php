@@ -24,7 +24,7 @@
             <span class="navbar-text">{!! $item->title !!}</span>
         @endif
         @if($item->hasChildren())
-            <ul class="submenu collapse  {{ $active != '' ? 'show' : '' }}" id="{!! str_replace('#','',$item->url()) !!}">
+            <ul class="submenu collapse {{ $active != '' ? 'show' : '' }}" id="{!! str_replace('#','',$item->url()) !!}">
                 @include(config('laravel-menu.views.bootstrap-items'),array('items' => $item->children()))
             </ul>
         @endif

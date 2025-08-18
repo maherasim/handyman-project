@@ -172,7 +172,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 
 
 
-    Route::post('save-provider-slot', [ App\Http\Controllers\ProviderSlotController::class, 'store'] );
+    Route::post('save-provider-slot', [ API\ProviderSlotController::class, 'store'] );
     Route::get('get-provider-slot', [API\ProviderSlotController::class, 'getProviderSlot' ] );
 
 

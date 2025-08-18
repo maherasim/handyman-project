@@ -233,9 +233,11 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
     });
 
     Route::resource('payment', PaymentController::class);
+     
     Route::get('cash-payment-list', [PaymentController::class, 'cashDatatable'])->name('cash.list');
     Route::get('cash-index-data', [PaymentController::class, 'cash_index_data'])->name('cash.index_data');
     Route::get('payment-index-data', [PaymentController::class, 'index_data'])->name('payment.index_data');
+    Route::get('payment-index-data-handman', [PaymentController::class, 'index_data_handyman'])->name('handyman.earnings.index_data');
     Route::post('payment-bulk-action', [PaymentController::class, 'bulk_action'])->name('payment.bulk-action');
     Route::get('cash/history/{id?}', [PaymentController::class, 'cashIndex'])->name('cash.index');
     Route::get('paymenthistory-index-data/{id}', [PaymentController::class, 'paymenthistory_index_data'])->name('paymenthistory.index_data');
@@ -574,3 +576,4 @@ Route::post('/transaction-request/{id}/confirm', [TransactionRequestController::
 
 Route::get('wallet_balance', [TransactionRequestController::class, 'walletindex'])->name('wallet_balance.index');
 Route::get('wallet_balance/data', [TransactionRequestController::class, 'walletindexData'])->name('wallet_balance.index_data');
+Route::get('/handyman/earnings-data', [PaymentController::class, 'handymanEarningsData'])->name('handyman.earnings.data');

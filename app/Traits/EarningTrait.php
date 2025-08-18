@@ -135,18 +135,18 @@ trait EarningTrait {
         foreach ($handymen as $handyman) {
             $handymanData = User::where('id', $handyman->handyman_id)->with('handymantype')->first();
 
-            $handyman_commission = $handymanData->handymantype ? json_encode($handymanData->handymantype) : null;
-            $commissionData = json_decode($handyman_commission, false);
-    
-            if ($commissionData) {
-                if ($commissionData->type === 'percent') {
-                    $handymanEarning = 0;
-                    if($provider_earning > 0){
-                        $handymanEarning += ($provider_earning * $commissionData->commission) / 100;
-                    }
-                    
-                } else {
-                    $handymanEarning += $commissionData->commission;
+            // Prefer per-handyman commission override if set; otherwise fall back to handymantype commission
+            $commissionPercent = null;
+            if (!is_null($handymanData->handyman_commission)) {
+                $commissionPercent = (float) $handymanData->handyman_commission;
+            } else {
+                $commissionPercent = optional($handymanData->handymantype)->commission;
+            }
+
+            if (!is_null($commissionPercent)) {
+                $handymanEarning = 0;
+                if ($provider_earning > 0) {
+                    $handymanEarning += ($provider_earning * $commissionPercent) / 100;
                 }
             }
 

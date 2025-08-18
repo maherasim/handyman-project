@@ -185,51 +185,92 @@ public function index_data(DataTables $datatable, Request $request)
      */
     public function store(Request $request)
     {
+        // Basic validation to preserve old input on errors
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'country_id' => 'required|integer',
+            'state_id' => 'required|integer',
+            'city_id' => 'required|integer',
+            'category_id' => 'required|integer',
+            'subcategory_id' => 'required|integer',
+            'price_type' => 'required|in:fixed,hourly,daily',
+            'type' => 'required|in:onsite,remote,hybrid',
+            'price' => 'required|numeric|min:1',
+            'start_date' => 'required|date',
+            'end_date' => 'required|date|after_or_equal:start_date',
+            'requirement' => 'required|string',
+            'description' => 'nullable|string',
+            'job_schedule' => 'required|in:full_time,part_time,contract,temporary,internship',
+            'remote_work_level' => 'required|in:onsite,25_remote,50_remote,75_remote,100_remote',
+            'career_level' => 'required|in:intern,entry,junior,mid,senior,lead,manager',
+            'travel_required' => 'required|in:0,1',
+            'education_level' => 'required|in:high_school,associate,undergraduate,graduate,doctorate',
+            'duties' => 'nullable|string',
+            'benefits' => 'nullable|string',
+            'image.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
+            'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
+            'total_days' => 'nullable|integer|min:0',
+            'total_hours' => 'nullable|integer|min:0',
+        ]);
+
         $data = $request->all();
         $data['customer_id'] = $request->customer_id ?? auth()->user()->id;
-    
-        // ✅ Handle single image upload
-        if ($request->hasFile('image')) {
-            $image = $request->file('image'); // Get the file (not an array)
-    
-            if (is_array($image)) {
-                $image = $image[0]; // If mistakenly sent as an array, get the first one
-            }
-    
-            $filename = time() . '_' . $image->getClientOriginalName(); // Unique filename
-            $path = $image->storeAs('images', $filename, 'public'); // Store in storage/app/public/images
-            $data['image'] = $path; // Save file path in the database
+
+        // Normalize price_type -> job_price for backward compatibility
+        if (isset($data['price_type'])) {
+            $data['job_price'] = $data['price_type'];
         }
+
+        // Enforce daily rule: hours = 8 * days
+        if (($data['job_price'] ?? null) === 'daily') {
+            $days = (int)($data['total_days'] ?? 0);
+            $data['total_hours'] = $days * 8;
+        }
+
+        // Compute total_budget based on price type
+        $price = (float)($data['price'] ?? 0);
+        $type = $data['job_price'] ?? $data['price_type'] ?? 'fixed';
+        $totalBudget = 0.0;
+        if ($type === 'daily') {
+            $totalBudget = $price * ((int)($data['total_days'] ?? 0));
+        } elseif ($type === 'hourly') {
+            $totalBudget = $price * ((int)($data['total_hours'] ?? 0));
+        } else {
+            $totalBudget = $price;
+        }
+        $data['total_budget'] = $totalBudget;
     
-        // ✅ Handle multiple image uploads (if needed)
-        if ($request->hasFile('images')) { // Assuming multiple images are sent as 'images' key
-            $imagePaths = [];
-    
+        // ✅ Handle image uploads (supports single and multiple)
+        $imagePaths = [];
+        if ($request->hasFile('image')) {
+            $incoming = $request->file('image');
+            $files = is_array($incoming) ? $incoming : [$incoming];
+            foreach ($files as $idx => $file) {
+                $filename = time() . '_' . $file->getClientOriginalName();
+                $path = $file->storeAs('images', $filename, 'public');
+                $imagePaths[] = $path;
+                if ($idx === 0) {
+                    $data['image'] = $path; // first image as cover
+                }
+            }
+        }
+        if ($request->hasFile('images')) {
             foreach ($request->file('images') as $img) {
-                $filename = time() . '_' . $img->getClientOriginalName(); // Unique filename
+                $filename = time() . '_' . $img->getClientOriginalName();
                 $path = $img->storeAs('images', $filename, 'public');
                 $imagePaths[] = $path;
             }
-    
-            $data['images'] = json_encode($imagePaths, JSON_UNESCAPED_SLASHES); // Store array in DB
         }
-    
-        // ✅ Handle pre-uploaded image (if sent as a string)
-        if ($request->has('image') && is_string($request->image)) {
+        if (!empty($imagePaths)) {
+            // remove duplicates and reindex
+            $data['images'] = array_values(array_unique($imagePaths));
+        }
+        // ✅ Handle pre-uploaded cover image string (edge case)
+        if ($request->has('image') && is_string($request->image) && empty($data['image'])) {
             $data['image'] = $request->image;
         }
     
         $result = PostJobRequest::updateOrCreate(['id' => $request->id], $data);
-    
-        // ✅ Send notification
-        // $this->sendNotification([
-        //     'activity_type' => $request->status == 'assigned' ? 'user_accept_bid' : 'job_requested',
-        //     'post_job_id' => $result->id,
-        //     'customer_name' => optional($result->customer)->display_name,
-        //     'provider_name' => optional($result->provider)->display_name,
-        //     'latitude' => $data['latitude'] ?? 0.0,
-        //     'longitude' => $data['longitude'] ?? 0.0,
-        // ]);
     
         // ✅ Handle services
         $result->postServiceMapping()->delete();

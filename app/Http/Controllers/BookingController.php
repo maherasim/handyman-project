@@ -7,6 +7,8 @@ use App\Http\Requests\BookingUpdateRequest;
 use App\Http\Resources\API\ServiceProofResource;
 use App\Models\AppSetting;
 use App\Models\Booking;
+use App\Models\BookingHandymanMapping;
+use App\Models\HandymanPayout;
 use App\Models\BookingRating;
 use App\Models\BookingStatus;
 use App\Models\PaymentHistory;
@@ -250,10 +252,18 @@ class BookingController extends Controller
             })
 
             ->editColumn('payment_id', function ($query) {
-                $payment = $query->payment()->orderBy('id', 'desc')->first();
-                $payment_status = $payment ? $payment->payment_status : null;
+                // If booking is cancelled, force payment status to 'cancelled'
+                $payment_status = null;
+                if ($query->status === 'cancelled') {
+                    $payment_status = 'cancelled';
+                } else {
+                    $payment = $query->payment()->orderBy('id', 'desc')->first();
+                    $payment_status = $payment ? $payment->payment_status : null;
+                }
+
                 if ($payment_status !== null) {
-                    $status = '<span class="text-center text-white badge bg-primary">' . str_replace('_', " ", ucfirst($payment_status)) . '</span>';
+                    $badgeClass = $payment_status === 'cancelled' ? 'bg-danger' : 'bg-primary';
+                    $status = '<span class="text-center text-white badge ' . $badgeClass . '">' . str_replace('_', " ", ucfirst($payment_status)) . '</span>';
                 } else {
                     $status = '<span class="badge text-primary bg-primary-subtle">' . __('messages.pending') . '</span>';
                 }
@@ -656,7 +666,7 @@ class BookingController extends Controller
 
 
         $bookingdata = Booking::with('bookingExtraCharge', 'payment', 'service')->myBooking()->find($id);
-
+ 
 
         $tabpage = 'info';
         if (empty($bookingdata)) {
@@ -905,7 +915,7 @@ public function bookingAssigned(Request $request)
         }
         $providerdata = User::with([
             'providerBooking' => function ($query) {
-                $query->orderBy('updated_at', 'desc');
+                $query->orderBy('updated_at', 'desc')->with('slots');
             }
         ])->where('user_type', 'provider')->where('id', $id)->first();
 
@@ -921,8 +931,27 @@ public function bookingAssigned(Request $request)
             $city = optional($booking->provider)->city->name ?? '-';
             $amount = $booking->total_amount;
             $payment_status = optional($booking->payment)->payment_status ?? null;
-            $start_at = $booking->start_at;
-            $end_at = $booking->end_at;
+            // Derive start/end from service_slots if booking fields are empty
+            $derivedStart = null;
+            $derivedEnd = null;
+            if ($booking->relationLoaded('slots') && $booking->slots->count() > 0) {
+                $derivedStart = $booking->slots
+                    ->map(function ($slot) {
+                        return trim(($slot->date ?? '') . ' ' . ($slot->start_time ?? ''));
+                    })
+                    ->filter()
+                    ->sort()
+                    ->first();
+                $derivedEnd = $booking->slots
+                    ->map(function ($slot) {
+                        return trim(($slot->date ?? '') . ' ' . ($slot->end_time ?? ''));
+                    })
+                    ->filter()
+                    ->sort()
+                    ->last();
+            }
+            $start_at = $booking->start_at ?: $derivedStart;
+            $end_at = $booking->end_at ?: $derivedEnd;
             $earningData[] = [
                 'provider_id' => $providerdata->id,
                 'booking_id' => $booking->id,
@@ -1013,7 +1042,9 @@ public function bookingAssigned(Request $request)
         $auth_user = authSession();
         $user_id = $auth_user->id;
         $user_data = User::find($user_id);
-        $bookingdata = Booking::with('handymanAdded', 'payment', 'bookingExtraCharge', 'bookingAddonService', 'slots',  'service.city','service.country', 'bookingRating')->myBooking()->find($id);
+        $bookingdata = Booking::with('handymanAdded', 'payment', 'bookingExtraCharge', 'bookingAddonService', 'slots',  'service.city','service.country','service', 'bookingRating')->myBooking()->find($id);
+       $advanceservice=  $bookingdata->service->advance_payment_amount;
+ 
         $is_enable_advance_payment = $bookingdata->service->is_enable_advance_payment;
         $serviceProof = ServiceProof::where('booking_id',$id)->get();
         $customer_review = BookingRating::with('customer')->where('customer_id',$user_id)->where('service_id',$bookingdata->service_id)->where('booking_id',$id)->first();
@@ -1026,7 +1057,7 @@ public function bookingAssigned(Request $request)
 
         switch ($tabpage) {
             case 'info':
-                $data = view('booking.' . $tabpage, compact('user_data', 'tabpage', 'auth_user', 'bookingdata', 'payment', 'customer_review', 'serviceProof', 'is_enable_advance_payment'))->render();
+                $data = view('booking.' . $tabpage, compact('user_data', 'tabpage', 'auth_user', 'bookingdata', 'payment','advanceservice', 'customer_review', 'serviceProof', 'is_enable_advance_payment'))->render();
                 break;
             case 'status':
                 $data = view('booking.' . $tabpage, compact('user_data', 'tabpage', 'auth_user', 'bookingdata', 'payment'))->render();
@@ -1171,9 +1202,8 @@ public function saveStripePayment(Request $request, $id)
 
         $advance_paid_amount = $result->total_amount;
         $admin_commission_amount = ($advance_paid_amount * $admin_commission_percentage) / 100;
-        $provider_earning = $advance_paid_amount - $admin_commission_amount;
 
-        Wallet::firstOrCreate(['user_id' => $booking->provider_id])->increment('amount', $provider_earning);
+        // Hold provider advance payout; credit admin only
         Wallet::firstOrCreate(['user_id' => $admin_user_id])->increment('amount', $admin_commission_amount);
 
         CommissionEarning::create([
@@ -1182,24 +1212,6 @@ public function saveStripePayment(Request $request, $id)
             'employee_id' => $admin_user_id,
             'commission_amount' => $admin_commission_amount,
             'commission_status' => 'paid',
-        ]);
-
-        CommissionEarning::create([
-            'booking_id' => $booking->id,
-            'user_type' => 'provider',
-            'employee_id' => $booking->provider_id,
-            'commission_amount' => $provider_earning,
-            'commission_status' => 'unpaid',
-        ]);
-
-        ProviderPayout::create([
-            'provider_id' => $booking->provider_id,
-            'amount' => $provider_earning,
-            'payment_method' => 'stripe',
-            'paid_date' => Carbon::now(),
-            'status' => 'paid',
-            'booking_id' => $booking->id,
-            'payment_gateway' => 'stripe',
         ]);
     }
 
@@ -1210,42 +1222,96 @@ public function saveStripePayment(Request $request, $id)
         $advance_paid = $booking->advance_paid_amount ?? 0;
         $total_amount = $booking->total_amount;
         $remaining_amount = $total_amount - $advance_paid;
-
         $result->total_amount = $remaining_amount;
+        $result->save();
 
-        if ($remaining_amount > 0) {
-            $admin_commission_amount = ($remaining_amount * $admin_commission_percentage) / 100;
-            $provider_earning = $remaining_amount - $admin_commission_amount;
+        // Compute totals across the whole booking
+        $total_admin_commission = ($total_amount * $admin_commission_percentage) / 100;
+        $provider_total_earning = $total_amount - $total_admin_commission;
+        $remaining_admin_commission = ($remaining_amount > 0)
+            ? ($remaining_amount * $admin_commission_percentage) / 100
+            : 0;
 
-            Wallet::firstOrCreate(['user_id' => $booking->provider_id])->increment('amount', $provider_earning);
-            Wallet::firstOrCreate(['user_id' => $admin_user_id])->increment('amount', $admin_commission_amount);
+        // Calculate handyman payouts from provider_total_earning
+        $handymen = BookingHandymanMapping::where('booking_id', $booking->id)->pluck('handyman_id');
+        $handyman_payouts = [];
+        $total_handyman_share = 0;
+        foreach ($handymen as $handyman_id) {
+            $handyman = User::find($handyman_id);
+            if (!$handyman || $handyman->handyman_commission === null) {
+                continue; // Skip if no handyman or no commission set
+            }
 
-            ProviderPayout::create([
-                'provider_id' => $booking->provider_id,
-                'amount' => $provider_earning,
-                'payment_method' => 'stripe',
-                'paid_date' => Carbon::now(),
-                'status' => 'paid',
+            $commission_percent = max(1, min(85, $handyman->handyman_commission));
+            $handyman_share = ($provider_total_earning * $commission_percent) / 100;
+            $total_handyman_share += $handyman_share;
+            $handyman_payouts[] = [
+                'handyman_id' => $handyman_id,
+                'amount' => $handyman_share,
+            ];
+        }
+
+        $provider_final_earning = $provider_total_earning - $total_handyman_share;
+        if ($provider_final_earning < 0) {
+            $provider_final_earning = 0;
+        }
+
+        // Pay handymen
+        foreach ($handyman_payouts as $payout) {
+            Wallet::firstOrCreate(['user_id' => $payout['handyman_id']])->increment('amount', $payout['amount']);
+
+            HandymanPayout::create([
+                'handyman_id' => $payout['handyman_id'],
                 'booking_id' => $booking->id,
-                'payment_gateway' => 'stripe',
+                'amount' => $payout['amount'],
+                'status' => 'paid',
+                'paid_date' => Carbon::now(),
+                'payment_method' => 'wallet',
+                'payment_gateway' => 'wallet',
             ]);
+
+            CommissionEarning::create([
+                'booking_id' => $booking->id,
+                'user_type' => 'handyman',
+                'employee_id' => $payout['handyman_id'],
+                'commission_amount' => $payout['amount'],
+                'commission_status' => 'paid',
+            ]);
+        }
+
+        // Pay remaining admin commission only for the remaining payment now
+        if ($remaining_admin_commission > 0) {
+            Wallet::firstOrCreate(['user_id' => $admin_user_id])->increment('amount', $remaining_admin_commission);
 
             CommissionEarning::create([
                 'booking_id' => $booking->id,
                 'user_type' => 'admin',
                 'employee_id' => $admin_user_id,
-                'commission_amount' => $admin_commission_amount,
-                'commission_status' => 'paid',
-            ]);
-
-            CommissionEarning::create([
-                'booking_id' => $booking->id,
-                'user_type' => 'provider',
-                'employee_id' => $booking->provider_id,
-                'commission_amount' => $provider_earning,
+                'commission_amount' => $remaining_admin_commission,
                 'commission_status' => 'paid',
             ]);
         }
+
+        // Pay provider the final net amount once (advance was held)
+        Wallet::firstOrCreate(['user_id' => $booking->provider_id])->increment('amount', $provider_final_earning);
+
+        ProviderPayout::create([
+            'provider_id' => $booking->provider_id,
+            'amount' => $provider_final_earning,
+            'payment_method' => 'wallet',
+            'paid_date' => Carbon::now(),
+            'status' => 'paid',
+            'booking_id' => $booking->id,
+            'payment_gateway' => 'wallet',
+        ]);
+
+        CommissionEarning::create([
+            'booking_id' => $booking->id,
+            'user_type' => 'provider',
+            'employee_id' => $booking->provider_id,
+            'commission_amount' => $provider_final_earning,
+            'commission_status' => 'paid',
+        ]);
 
         CommissionEarning::where('booking_id', $booking->id)->update(['commission_status' => 'paid']);
     }
@@ -1264,14 +1330,19 @@ public function saveStripePayment(Request $request, $id)
             'sender_id' => $booking->customer_id,
             'receiver_id' => $firstHandymanId,
             'datetime' => now(),
-            'total_amount' => $result->total_amount,
+            'total_amount' => $request->total_amount,
             'txn_id' => $result->txn_id,
             'type' => $result->payment_type,
             'text' => __('messages.payment_transfer', [
-                'from' => get_user_name($booking->customer_id),
-                'to' => get_user_name($firstHandymanId),
-                'amount' => getPriceFormat((float)$result->total_amount),
-            ]),
+            'from' => get_user_name($request->customer_id),
+            'to' => get_user_name($firstHandymanId),
+            'amount' => getPriceFormat(
+                ($result->payment_status == 'paid')
+                    ? ($booking->total_amount - ($booking->advance_paid_amount ?? 0))
+                    : (float)$request->total_amount
+            ),
+        ]),
+
         ];
 
         $res = PaymentHistory::create($payment_history);
@@ -1431,5 +1502,3 @@ public function saveStripePayment(Request $request, $id)
 
 
 }
-
-

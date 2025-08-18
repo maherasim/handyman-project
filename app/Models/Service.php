@@ -16,7 +16,7 @@ class Service extends Model implements  HasMedia
     protected $fillable = [
         'name', 'category_id', 'provider_id' , 'type' , 'is_slot','discount' , 'duration' ,'description','country_id', 'state_id',  'city_id' , 
         'is_featured', 'status' , 'price' , 'added_by','subcategory_id','service_type','visit_type','cancellation_policy','minimum_booking','tax_country_id',
-        'is_enable_advance_payment','advance_payment_amount'
+        'is_enable_advance_payment','advance_payment_amount','total_views'
     ];
 
     protected $casts = [
@@ -147,5 +147,8 @@ class Service extends Model implements  HasMedia
     }
     public function city(){
         return $this->belongsTo(City::class, 'city_id','id');
+    }
+    public function tax_country(){
+        return $this->belongsTo(Country::class, 'tax_country_id', 'id');
     }
 }

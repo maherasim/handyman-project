@@ -16,7 +16,8 @@
                         <div class="col-lg-6">
                             <h4 class="mb-3 mt-0">{{ $postJobData['post_request_detail']['title'] }}</h4>
                             <p class="mt-0 mb-4">{{ $postJobData['post_request_detail']['description'] }}</p>
-                            <div class="d-flex align-items-center">
+                            <div class="d-flex align-items-center justify-content-between flex-wrap">
+                                <div class="d-flex align-items-center">
                                 @if($postJobData['post_request_detail']['status'] == 'assigned')
                                     <h5 class="m-0 text-primary">{{ getPriceFormat($postJobData['post_request_detail']['job_price']) }}</h5>
                                     <span class="text-primary text-capitalize">(job price)</span>
@@ -24,6 +25,13 @@
                                     <h5 class="m-0 text-primary">{{ getPriceFormat($postJobData['post_request_detail']['price']) }}</h5>
                                     <span class="text-primary text-capitalize">(estimate price)</span>
                                 @endif
+                                </div>
+                                <div class="d-inline-flex align-items-center">
+                                    <span class="ms-3 d-inline-flex align-items-center" title="Views">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns=" "><path d="M12 5c-7.633 0-10 7-10 7s2.367 7 10 7 10-7 10-7-2.367-7-10-7Zm0 12a5 5 0 1 1 0-10 5 5 0 0 1 0 10Zm0-8a3 3 0 1 0 .002 6.002A3 3 0 0 0 12 9Z" fill="currentColor"/></svg>
+                                        <span class="ms-1">{{ $postJobData['post_request_detail']['total_views'] ?? 0 }}</span>
+                                    </span>
+                                </div>
                             </div>
                         </div>
                         <div class="col-lg-2"></div>

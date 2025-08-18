@@ -28,10 +28,11 @@ class WalletController extends Controller
         $filter = [
             'status' => $request->status,
         ];
-        $pageTitle = __('messages.list_form_title',['form' => __('messages.wallet')] );
+        $pageTitle = __('messages.list_form_title',["form" => __('messages.wallet')] );
         $auth_user = authSession();
         $assets = ['datatable'];
-        return view('wallet.index', compact('pageTitle','auth_user','assets','filter'));
+        $walletBalance = Wallet::where('user_id', auth()->id())->value('amount') ?? 0;
+        return view('wallet.index', compact('pageTitle','auth_user','assets','filter','walletBalance'));
     }
     public function cashIndex($id)
     {

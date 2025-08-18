@@ -15,6 +15,7 @@
               :price="data.price"
               :duration="data.duration"
               :visit_type="data.visit_type"
+              :totalViews="data.total_views || 0"
             />
         </div>
           </div>

@@ -50,7 +50,7 @@ class HomeController extends Controller
 
         // Get relevant bookings with slots in date range
         $bookings = Booking::myBooking()
-            ->where('status', 'pending')
+            // ->where('status', 'pending')  status
             ->whereHas('service_slots', function ($query) use ($start, $end) {
                 $query->whereDate('date', '>=', $start)
                       ->whereDate('date', '<=', $end);
@@ -60,22 +60,34 @@ class HomeController extends Controller
                   ->whereDate('date', '<=', $end);
             }])
             ->get();
-
+            
+      $statusColors = [
+        'pending'         => '#ffc107', // Yellow
+        'accept'         => '#17a2b8', // Blue
+        'completed'       => '#28a745', // Green
+        'pending_approve' => '#fd7e14', // Orange
+        'cancelled'       => '#dc3545', // Red
+    ];
         // Format as FullCalendar event objects
         $events = [];
 
-        foreach ($bookings as $booking) {
-            foreach ($booking->service_slots as $slot) {
-                $events[] = [
-                    'id'     => $booking->id,
-                    'title'  => $booking->service->name ?? 'Booking',
-                    'start'  => $slot->date,
-                    'allDay' => true,
-                ];
-            }
-        }
+         foreach ($bookings as $booking) {
+        $status = $booking->status;
+        $color = $statusColors[$status] ?? '#6c757d'; // default gray if status unknown
 
-        return response()->json($events);
+        foreach ($booking->service_slots as $slot) {
+            $events[] = [
+                'id'        => $booking->id,
+                'title'     => $booking->service->name ?? 'Booking',
+                'start'     => $slot->date,
+                'allDay'    => true,
+                'color'     => $color,
+                'textColor' => '#ffffff',
+            ];
+        }
+    }
+
+    return response()->json($events);
     }
 
     // Regular dashboard data loading
@@ -143,7 +155,7 @@ class HomeController extends Controller
         $commissions = $user->commission_earning()
             ->where('commission_status', 'unpaid')
             ->pluck('booking_id');
-// dd(  $commissions);
+ //dd(  $commissions);
         $ProviderEarning = $commissions->isNotEmpty()
             ? CommissionEarning::whereIn('booking_id', $commissions)
                 ->whereIn('user_type', ['provider', 'handyman'])

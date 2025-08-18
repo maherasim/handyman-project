@@ -32,6 +32,7 @@ class UserRequest extends FormRequest
                 'email'             => 'required|email|max:255|unique:users,email,'.$id,
                 'contact_number'    => 'nullable', //unique:users,contact_number,'.$id,
                 'profile_image'     => 'mimetypes:image/jpeg,image/png,image/jpg,image/gif',
+                'handyman_commission' => 'nullable|numeric|min:1|max:85',
         ];
     }
 
