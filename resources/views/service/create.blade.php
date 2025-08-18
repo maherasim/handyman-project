@@ -802,13 +802,18 @@
 
 
 
+        <script src="{{ asset('vendor/tinymce/js/tinymce/tinymce.min.js') }}"></script>
         <script>
-            tinymce.init({
-                selector: '#description, #cancellation_policy',
-                plugins: 'lists link image preview', // Add any plugins you want to use
-                toolbar: 'undo redo | bold italic | bullist numlist | link image preview',
-                menubar: false
-            })
+            if (window.tinymce) {
+                tinymce.init({
+                    selector: '#description, #cancellation_policy',
+                    plugins: 'lists link image preview',
+                    toolbar: 'undo redo | bold italic | bullist numlist | link image preview',
+                    menubar: false
+                });
+            } else {
+                console.error('TinyMCE not found');
+            }
         </script>
         
     @endsection
