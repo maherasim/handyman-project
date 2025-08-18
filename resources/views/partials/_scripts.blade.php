@@ -1,5 +1,5 @@
-  <!-- app JavaScript -->
-   <script src="{{ asset('js/app.js')}}"></script>
+  <!-- Backend bundle (jQuery, Bootstrap, Select2, etc.) -->
+   <script src="{{ asset('js/backend-bundle.min.js')}}"></script>
   @include('helper.app_message')
   <script>
     document.addEventListener('DOMContentLoaded', function () {
