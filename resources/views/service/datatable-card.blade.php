@@ -197,16 +197,6 @@
              <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRokEYt0yyh6uNDKL8uksVLlhZ35laKNQgZ9g&s"
                  style="width: 30px; border-radius: 8px;" alt="Share on LinkedIn">
          </a>
-         <a href="#" class="social-share-btn" data-platform="whatsapp" data-service-id="{{ $data->id }}" style="cursor: pointer;">
-             <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg"
-                 style="width: 30px; border-radius: 8px;" alt="Share on WhatsApp">
-         </a>
-         <a href="#" class="social-share-btn" data-platform="copy" data-service-id="{{ $data->id }}" style="cursor: pointer;" title="Copy Service Link">
-             <svg width="30" height="30" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="border-radius: 8px; background: #f8f9fa; padding: 5px;">
-                 <path d="M16 12.9A4.978 4.978 0 0 0 12 15a4.978 4.978 0 0 0-4-2.1A2.999 2.999 0 0 0 0 16c0 1.66 1.34 3 3 3h10c1.66 0 3-1.34 3-3s-1.34-3-3-3zM6 18c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1z" fill="#6c757d"/>
-                 <path d="M12 7c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4z" fill="#6c757d"/>
-             </svg>
-         </a>
      </div>
      
    
@@ -260,12 +250,7 @@ $(document).ready(function () {
             case 'linkedin':
                 shareToLinkedIn(shareContent);
                 break;
-            case 'whatsapp':
-                shareToWhatsApp(shareContent);
-                break;
-            case 'copy':
-                copyServiceLink(shareContent);
-                break;
+            // removed whatsapp and copy link
         }
     });
     
@@ -323,19 +308,7 @@ $(document).ready(function () {
         Swal.fire('Sharing to LinkedIn!', 'LinkedIn sharing window opened. Complete your post there.', 'info');
     }
     
-    // WhatsApp Sharing
-    function shareToWhatsApp(content) {
-        const whatsappText = `${content.description}\n\n${content.url}`;
-        const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(whatsappText)}`;
-        openShareWindow(whatsappUrl, 'whatsapp-share', 600, 400);
-        Swal.fire('Sharing to WhatsApp!', 'WhatsApp sharing window opened. Complete your message there.', 'info');
-    }
-    
-    // Copy Service Link
-    function copyServiceLink(content) {
-        const fullContent = `${content.description}\n\n🔗 ${content.url}`;
-        copyToClipboard(fullContent);
-    }
+    // removed WhatsApp and copy link functionality
     
     // Helper function to open share windows
     function openShareWindow(url, name, width, height) {
