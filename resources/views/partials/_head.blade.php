@@ -10,6 +10,7 @@
 <link rel="stylesheet" href="{{ asset('vendor/line-awesome/dist/line-awesome/css/line-awesome.min.css')}}">
 <link rel="stylesheet" href="{{ asset('vendor/remixicon/fonts/remixicon.css')}}">
 <link rel="stylesheet" href="{{ asset('vendor/confirmJs/jquery-confirm.css')}}">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.snow.css">
 <!-- <link rel="stylesheet" href="{{ asset('vendor/select2/css/select2.min.css')}}"> -->
 <link rel="stylesheet" href="{{ asset('css/themes/select2.min.css')}}">
 <link rel="stylesheet" href="{{ asset('vendor/magnific-popup/magnific-popup.css') }}">
