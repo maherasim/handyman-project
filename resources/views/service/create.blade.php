@@ -43,7 +43,7 @@
                             <div class="form-group col-md-2">
                                 {{ html()->label(__('messages.select_name', ['select' => __('messages.subcategory')]), 'subcategory_id')->class('form-control-label') }}
                                 <br />
-                                {{ html()->select('subcategory_id', [])->class('select2js form-group subcategory_id')->attribute('data-placeholder', __('messages.select_name', ['select' => __('messages.subcategory')])) }}
+                                {{ html()->select('subcategory_id', [])->class('select2js form-group subcategory_id')->id('subcategory_id')->attribute('data-placeholder', __('messages.select_name', ['select' => __('messages.subcategory')])) }}
                             </div>
 
 
@@ -521,6 +521,8 @@
                     $.ajax({
                         url: get_subcategory_list,
                         success: function(result) {
+                            $('#subcategory_id').select2('destroy');
+                            $('#subcategory_id').empty();
                             $('#subcategory_id').select2({
                                 width: '100%',
                                 placeholder: "{{ trans('messages.select_name', ['select' => trans('messages.subcategory')]) }}",
@@ -696,6 +698,8 @@
                                 "{{ route('ajax-list', ['type' => 'state', 'country_id' => '']) }}" + country_id;
                             getStateListUrl = getStateListUrl.replace('amp;', '');
 
+                            $('#state_id').select2('destroy');
+                            $('#state_id').empty();
                             $('#state_id').select2({
                                 width: '100%',
                                 placeholder: "{{ __('messages.select_name', ['select' => __('messages.state')]) }}"
@@ -726,6 +730,8 @@
                                 "{{ route('ajax-list', ['type' => 'city', 'state_id' => '']) }}" + state_id;
                             getCityListUrl = getCityListUrl.replace('amp;', '');
 
+                            $('#city_id').select2('destroy');
+                            $('#city_id').empty();
                             $('#city_id').select2({
                                 width: '100%',
                                 placeholder: "{{ __('messages.select_name', ['select' => __('messages.city')]) }}"
