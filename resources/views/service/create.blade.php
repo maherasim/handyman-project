@@ -264,11 +264,11 @@
                         <div class="row">
                             <div class="form-group col-md-12">
                                 {{ html()->label(__('messages.description'), 'description')->class('form-control-label') }}
-                                {{ html()->textarea('description', old('description', $servicedata->description))->class('form-control textarea')->rows(3)->placeholder(__('messages.description')) }}
+                                {{ html()->textarea('description', old('description', $servicedata->description))->id('description')->class('form-control textarea')->rows(3)->placeholder(__('messages.description')) }}
                             </div>
                             <div class="form-group col-md-12">
                                 {{ html()->label(__('Cancellation Policy & Fees'), 'cancellation_policy')->class('form-control-label') }}
-                                {{ html()->textarea('cancellation_policy', old('cancellation_policy', $servicedata->cancellation_policy))->class('form-control textarea')->rows(3)->placeholder(__('cancellation_policy')) }}
+                                {{ html()->textarea('cancellation_policy', old('cancellation_policy', $servicedata->cancellation_policy))->id('cancellation_policy')->class('form-control textarea')->rows(3)->placeholder(__('cancellation_policy')) }}
                             </div>
                             @if (!empty($slotservice) && $slotservice == 1)
                                 <div class="form-group col-md-3">
@@ -804,19 +804,12 @@
 
         <script>
             tinymce.init({
-                selector: '#description', // Target the ID of your textarea
+                selector: '#description, #cancellation_policy',
                 plugins: 'lists link image preview', // Add any plugins you want to use
                 toolbar: 'undo redo | bold italic | bullist numlist | link image preview',
                 menubar: false
             })
         </script>
-        <script>
-            tinymce.init({
-                selector: '#cancellation_policy', // Target the ID of your textarea
-                plugins: 'lists link image preview', // Add any plugins you want to use
-                toolbar: 'undo redo | bold italic | bullist numlist | link image preview',
-                menubar: false
-            })
-        </script>
+        
     @endsection
 </x-master-layout>
