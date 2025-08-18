@@ -116,10 +116,11 @@
 </ul>
    @endif 
    <a href="{{ route('service.detail', $data->id) }}"
-      class="service-heading mt-2 d-block p-0">
-      <h5 class="service-heading text-capitalize"    style="font-size:15px">
-        <b>{{ Str::words($data->name, 4, '') }}</b> 
-         </h5>
+      class="service-heading mt-2 d-block p-0 text-decoration-none"
+      data-bs-toggle="tooltip" data-bs-placement="top" title="{{ $data->name }}" aria-label="{{ $data->name }}">
+      <h5 class="service-heading text-capitalize text-truncate" style="font-size:15px">
+        <b>{{ Str::limit($data->name, 48) }}</b>
+      </h5>
   </a>
   
   <h5  class="mt-0 mb-0 text-truncate" style="font-size: 12;">
@@ -350,6 +351,16 @@ $(document).ready(function () {
     }
 });
 
+</script>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    if (window.bootstrap && bootstrap.Tooltip) {
+      var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+      tooltipTriggerList.forEach(function (tooltipTriggerEl) {
+        new bootstrap.Tooltip(tooltipTriggerEl)
+      })
+    }
+  });
 </script>
 <script>
    $(document).ready(function () {
