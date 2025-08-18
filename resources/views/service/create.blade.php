@@ -802,18 +802,32 @@
 
 
 
-        <script src="{{ asset('vendor/tinymce/js/tinymce/tinymce.min.js') }}"></script>
         <script>
-            if (window.tinymce) {
-                tinymce.init({
-                    selector: '#description, #cancellation_policy',
-                    plugins: 'lists link image preview',
-                    toolbar: 'undo redo | bold italic | bullist numlist | link image preview',
-                    menubar: false
+            (function(){
+                function initTiny(){
+                    if (!window.tinymce) return;
+                    tinymce.init({
+                        selector: '#description, #cancellation_policy',
+                        plugins: 'lists link image preview',
+                        toolbar: 'undo redo | bold italic | bullist numlist | link image preview',
+                        menubar: false
+                    });
+                }
+                function loadScript(src, cb){
+                    var s = document.createElement('script');
+                    s.src = src; s.referrerPolicy = 'origin';
+                    s.onload = cb; s.onerror = cb; document.head.appendChild(s);
+                }
+                if (window.tinymce){ initTiny(); return; }
+                // Try CDN first
+                loadScript('https://cdn.tiny.cloud/1/m5d82gd2rwdlg96hsxpx0e5wwmfrl2zzkcw35ys8o3glilgq/tinymce/5/tinymce.min.js', function(){
+                    if (window.tinymce){ initTiny(); }
+                    else {
+                        // Fallback to local vendor path if available
+                        loadScript('{{ asset('vendor/tinymce/js/tinymce/tinymce.min.js') }}', function(){ initTiny(); });
+                    }
                 });
-            } else {
-                console.error('TinyMCE not found');
-            }
+            })();
         </script>
         
     @endsection
