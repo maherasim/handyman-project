@@ -140,9 +140,9 @@
    </div>
    <div class="d-flex align-items-center justify-content-end">
        <img src="{{ asset('images/icon/freeicon.jpg') }}" alt="icon"
-           style="width: 25px; height: 25px; margin-right: 10px;">
+           style="width: 26px; height: 26px; margin-right: 10px;">
        <img src="{{ asset('images/icon/verifiedpng.png') }}" alt="icon"
-           style="width: 25px; height: 25px;">
+           style="width: 26px; height: 26px;">
    </div>
 </div>
 
