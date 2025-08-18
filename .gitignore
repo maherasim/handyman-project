@@ -1,20 +1,50 @@
-node_modules
-/public/hot
-/public/storage
-/storage/*.key
-/vendor
+# ─── Node & Composer ───────────────────────────────────────────────
+node_modules/
+vendor/
+
+# ─── Laravel Environment ───────────────────────────────────────────
 .env
 .env.backup
+
+# ─── Laravel Generated Files ───────────────────────────────────────
+/public/hot
+/public/storage
+/public/mix-manifest.json
+/storage/*.key
+/storage/media-library/**/*
 .phpunit.result.cache
-npm-debug.log
+
+# ─── Build Artifacts ───────────────────────────────────────────────
 composer.lock
 package-lock.json
 yarn-error.log
-/.idea
-/.vscode
-*.cache
+npm-debug.log
+
+# ─── IDE & OS Specific Files ───────────────────────────────────────
 .DS_Store
-/*.json
-/.env
+/.idea/
+/.vscode/
+*.cache
+
+# ─── SSL / Keys ────────────────────────────────────────────────────
 *.key
 *.pem
+
+# ─── Public Assets ─────────────────────────────────────────────────
+
+# ✅ Exclude all CSS files in public/css/
+# ✅ But keep the folder and any .gitkeep
+/public/css/*
+!/public/css/.gitkeep
+
+# ✅ Do NOT ignore anything in public/js/ — JS will be committed
+# (so this section is removed)
+
+# ✅ Optional: Keep public/modules/ folder but ignore contents
+/public/modules/*
+!/public/modules/.gitkeep
+
+# ─── Docker / Homestead ────────────────────────────────────────────
+docker-compose.override.yml
+Homestead.json
+Homestead.yaml
