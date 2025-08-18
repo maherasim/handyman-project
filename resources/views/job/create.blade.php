@@ -198,36 +198,38 @@
                                     <div class="ml-2 my-3">
                                         <div class="row">
                                             @foreach($attchments as $attchment )
-                                            <?php
-                                            $extention = in_array(strtolower(imageExtention($attchment->getFullUrl())), $file_extention);
-                                            ?>
+                                                @if (getFileExistsCheck($attchment))
+                                                    <?php
+                                                    $extention = in_array(strtolower(imageExtention($attchment->getFullUrl())), $file_extention);
+                                                    ?>
 
-                                            <div class="col-md-2 pr-10 text-center galary file-gallary-{{$servicedata->id}}"
-                                                data-gallery=".file-gallary-{{$servicedata->id}}"
-                                                id="service_attachment_preview_{{$attchment->id}}">
-                                                @if($extention)
-                                                <a id="attachment_files" href="{{ $attchment->getFullUrl() }}"
-                                                    class="list-group-item-action attachment-list" target="_blank">
-                                                    <img src="{{ $attchment->getFullUrl() }}" class="attachment-image"
-                                                        alt="">
-                                                </a>
-                                                @else
-                                                <a id="attachment_files"
-                                                    class="video list-group-item-action attachment-list"
-                                                    href="{{ $attchment->getFullUrl() }}">
-                                                    <img src="{{ asset('images/file.png') }}" class="attachment-file">
-                                                </a>
+                                                    <div class="col-md-2 pr-10 text-center galary file-gallary-{{$servicedata->id}}"
+                                                        data-gallery=".file-gallary-{{$servicedata->id}}"
+                                                        id="service_attachment_preview_{{$attchment->id}}">
+                                                        @if($extention)
+                                                        <a id="attachment_files" href="{{ $attchment->getFullUrl() }}"
+                                                            class="list-group-item-action attachment-list" target="_blank">
+                                                            <img src="{{ $attchment->getFullUrl() }}" class="attachment-image"
+                                                                alt="">
+                                                        </a>
+                                                        @else
+                                                        <a id="attachment_files"
+                                                            class="video list-group-item-action attachment-list"
+                                                            href="{{ $attchment->getFullUrl() }}">
+                                                            <img src="{{ asset('images/file.png') }}" class="attachment-file">
+                                                        </a>
+                                                        @endif
+                                                        <a class="text-danger remove-file"
+                                                            href="{{ route('remove.file', ['id' => $attchment->id, 'type' => 'service_attachment']) }}"
+                                                            data--submit="confirm_form" data--confirmation='true'
+                                                            data--ajax="true" data-toggle="tooltip"
+                                                            title='{{ __("messages.remove_file_title" , ["name" =>  __("messages.attachments") ] ) }}'
+                                                            data-title='{{ __("messages.remove_file_title" , ["name" =>  __("messages.attachments") ] ) }}'
+                                                            data-message='{{ __("messages.remove_file_msg") }}'>
+                                                            <i class="ri-close-circle-line"></i>
+                                                        </a>
+                                                    </div>
                                                 @endif
-                                                <a class="text-danger remove-file"
-                                                    href="{{ route('remove.file', ['id' => $attchment->id, 'type' => 'service_attachment']) }}"
-                                                    data--submit="confirm_form" data--confirmation='true'
-                                                    data--ajax="true" data-toggle="tooltip"
-                                                    title='{{ __("messages.remove_file_title" , ["name" =>  __("messages.attachments") ] ) }}'
-                                                    data-title='{{ __("messages.remove_file_title" , ["name" =>  __("messages.attachments") ] ) }}'
-                                                    data-message='{{ __("messages.remove_file_msg") }}'>
-                                                    <i class="ri-close-circle-line"></i>
-                                                </a>
-                                            </div>
                                             @endforeach
                                         </div>
                                     </div>
