@@ -1,4 +1,6 @@
-  <!-- app JavaScript -->
+  <!-- Backend bundle (jQuery, Bootstrap, Select2, etc.) -->
+   <script src="{{ asset('js/backend-bundle.min.js')}}"></script>
+  <!-- app JavaScript (page-specific) -->
    <script src="{{ asset('js/app.js')}}"></script>
   @include('helper.app_message')
   <script>
