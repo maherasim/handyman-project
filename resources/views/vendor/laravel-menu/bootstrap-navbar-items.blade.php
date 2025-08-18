@@ -12,7 +12,7 @@
     ?>
     <li @lm_attrs($item) @if($item->hasChildren()) @endif @lm_endattrs>
         @if($item->link) <a @lm_attrs($item->link)
-            @if($item->hasChildren()) data-toggle="collapse" role="button" aria-expanded="{{ $active != '' ? 'true' : 'false' }}" aria-controls="collapseExample" @else class="nav-link" @endif @lm_endattrs href="{!! $item->url() !!}">
+            @if($item->hasChildren()) data-bs-toggle="collapse" role="button" aria-expanded="{{ $active != '' ? 'true' : 'false' }}" aria-controls="collapseExample" @else class="nav-link" @endif @lm_endattrs href="{!! $item->url() !!}">
             {!! $item->title !!}
             @if($item->hasChildren())
                 <svg xmlns="http://www.w3.org/2000/svg" class="svg-icon iq-arrow-right arrow-active" height="14" width="15" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -24,7 +24,7 @@
             <span class="navbar-text">{!! $item->title !!}</span>
         @endif
         @if($item->hasChildren())
-            <ul class="submenu collapse  {{ $active != '' ? 'show' : '' }}" id="{!! str_replace('#','',$item->url()) !!}">
+            <ul class="submenu collapse {{ $active != '' ? 'show' : '' }}" id="{!! str_replace('#','',$item->url()) !!}">
                 @include(config('laravel-menu.views.bootstrap-items'),array('items' => $item->children()))
             </ul>
         @endif
