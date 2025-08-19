@@ -432,4 +432,29 @@ public function index_data(DataTables $datatable, Request $request)
         return redirect()->back()->withSuccess($msg);
 
     }
+
+    public function startWork(Request $request, $id)
+    {
+        $post = PostJobRequest::findOrFail($id);
+        if (!auth()->user()->hasAnyRole(['provider'])) {
+            return response()->json(['message' => 'Forbidden'], 403);
+        }
+        // Provider starts work on assigned post request
+        if ($post->status !== 'assigned') {
+            return response()->json(['message' => 'Job is not assigned'], 400);
+        }
+        $post->status = 'on_going';
+        $post->save();
+
+        // Notify user about start
+        try {
+            $this->sendNotification([
+                'activity_type' => 'update_booking_status',
+                'post_job' => $post,
+            ]);
+        } catch (\Throwable $e) {
+        }
+
+        return response()->json(['status' => true, 'message' => 'Work started']);
+    }
 }

@@ -175,7 +175,7 @@
                 </div>
                 @endif
 
-                @if(!empty($postJobData['post_request_detail']['provider_id']))
+                @if(!empty($postJobData['post_request_detail']['provider_id']) && $postJobData['post_request_detail']['status'] == 'assigned')
                     <div class="text-center my-4">
                         <a href="{{ route('book.post_job', ['id' => $postJobData['post_request_detail']['id']]) }}" class="btn btn-lg btn-primary continue-button">Book Now</a>
                     </div>
