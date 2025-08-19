@@ -286,6 +286,18 @@ public function index_data(DataTables $datatable, Request $request)
         }
     
         $result = PostJobRequest::updateOrCreate(['id' => $request->id], $data);
+
+        // If user accepted a provider's bid -> status becomes 'assigned'
+        if (($data['status'] ?? null) === 'assigned' && isset($data['provider_id'])) {
+            try {
+                $this->sendNotification([
+                    'activity_type' => 'user_accept_bid',
+                    'post_job' => $result,
+                ]);
+            } catch (\Throwable $e) {
+                \Log::warning('Failed to send bid accepted notification: ' . $e->getMessage());
+            }
+        }
     
         // ✅ Handle services
         $result->postServiceMapping()->delete();

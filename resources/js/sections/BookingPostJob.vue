@@ -216,6 +216,19 @@ const formSubmit = handleSubmit(async(values) => {
 
     const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
 
+    // Build a minimal schedule slot so backend doesn't fail on missing slots
+    const scheduledDate = moment(values.date).format('YYYY-MM-DD');
+    const scheduledStart = moment(values.date).format('HH:mm');
+    values.schedule_slots = [
+      {
+        date: scheduledDate,
+        start_time: scheduledStart,
+        end_time: null,
+        total_days: 1,
+        total_hours: 1,
+      },
+    ];
+
     const response = await fetch(STORE_BOOKING_API, {
            method: 'POST',
            headers: {
