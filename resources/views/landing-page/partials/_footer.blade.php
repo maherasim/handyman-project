@@ -181,15 +181,19 @@
                                     $mediaServiceImages = $service ? $service->getMedia('service_attachment') : null;
                                 @endphp
                                 @if ($service && $mediaServiceImages->isNotEmpty())
-
-                                <li>
-                                    <div class="text-center">
-                                        <a href="{{ route('service.detail', $service->id) }}" class="text-body">
-                                            <img src="{{ url($mediaServiceImages->first()->getUrl()) }}" alt="service-image" style="width: 100px; height: auto;">
-                                            <span class="mt-2 line-count-2 popular-service-text">{{$service->name}}</span>
-                                        </a>
-                                    </div>
-                                </li>
+                                    @php
+                                        $firstMedia = $mediaServiceImages->first();
+                                    @endphp
+                                    @if ($firstMedia && getFileExistsCheck($firstMedia))
+                                    <li>
+                                        <div class="text-center">
+                                            <a href="{{ route('service.detail', $service->id) }}" class="text-body">
+                                                <img src="{{ url($firstMedia->getUrl()) }}" alt="service-image" style="width: 100px; height: auto;">
+                                                <span class="mt-2 line-count-2 popular-service-text">{{$service->name}}</span>
+                                            </a>
+                                        </div>
+                                    </li>
+                                    @endif
                                 @endif
 
                                 @endforeach

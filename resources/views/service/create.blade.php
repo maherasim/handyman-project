@@ -204,20 +204,26 @@
                         <div class="row service_attachment_div">
                             <div class="col-md-12">
 
-{{-- @dd($servicedata->getMedia('service_attachment')); --}}
-                                {{-- @if (getMediaFileExit($servicedata, 'service_attachment')) --}}
+                                @php
+                                    $attchments = $servicedata->getMedia('service_attachment');
+                                    $file_extention = config('constant.IMAGE_EXTENTIONS');
+                                    $validAttachments = collect();
+                                    
+                                    if ($attchments->isNotEmpty()) {
+                                        foreach ($attchments as $attchment) {
+                                            if (getFileExistsCheck($attchment)) {
+                                                $validAttachments->push($attchment);
+                                            }
+                                        }
+                                    }
+                                @endphp
 
-                                    @php
-
-                                        $attchments = $servicedata->getMedia('service_attachment');
-
-                                        $file_extention = config('constant.IMAGE_EXTENTIONS');
-                                    @endphp
+                                @if ($validAttachments->isNotEmpty())
                                     <div class="border-start">
                                         <p class="ms-2"><b>{{ __('messages.attached_files') }}</b></p>
                                         <div class="ms-2 my-3">
                                             <div class="row">
-                                                @foreach ($attchments as $attchment)
+                                                @foreach ($validAttachments as $attchment)
                                                     <?php
                                                     $extention = in_array(strtolower(imageExtention($attchment->getFullUrl())), $file_extention);
                                                     ?>
@@ -257,7 +263,7 @@
                                     </div>
 
                                     <img id="service_attachment_preview" src="" width="150px" />
-                                {{-- @endif --}}
+                                @endif
                             </div>
                         </div>
 
