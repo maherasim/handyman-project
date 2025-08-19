@@ -45,28 +45,43 @@ class PostJobRequestController extends Controller
     
         return view('postrequest.view', compact('pageTitle', 'auth_user', 'asset', 'postJobBids'));
     }
-    public function bidshow()
-    {
-        $auth_user = authSession();
-    
-        // Fetch all bids that belong to the logged-in provider and load provider data
-        $postJobBids = PostJobBid::where('provider_id', $auth_user->id)
-        ->with(['provider:id,display_name', 'customer:id,display_name', 'postrequest:id,title', ])
-        ->get();
-     
-        return DataTables::of($postJobBids)
-            ->addIndexColumn()
-            ->addColumn('provider_name', function ($postJobBid) {
-                return $postJobBid->provider->display_name ?? 'N/A';
-            })
-            ->addColumn('customer_name', function ($postJobBid) {
-                return $postJobBid->customer->display_name ?? 'N/A';
-            })
-            ->addColumn('post_title', function ($postJobBid) {
-                return $postJobBid->postrequest->title ?? 'N/A';
-            })
-            ->toJson();
+public function bidshow()
+{
+    $auth_user = authSession();
+
+    $query = PostJobBid::query()->with([
+        'provider:id,display_name',
+        'customer:id,display_name',
+        'postrequest:id,title,customer_id'
+    ]);
+
+    // Check user type and adjust query
+    if ($auth_user->user_type === 'provider') {
+        // Provider sees only their own bids
+        $query->where('provider_id', $auth_user->id);
+    } elseif ($auth_user->user_type === 'user') {
+        // User sees bids for their own post requests
+        $query->whereHas('postrequest', function ($q) use ($auth_user) {
+            $q->where('customer_id', $auth_user->id);
+        });
     }
+
+    $postJobBids = $query->get();
+
+    return DataTables::of($postJobBids)
+        ->addIndexColumn()
+        ->addColumn('provider_name', function ($postJobBid) {
+            return $postJobBid->provider->display_name ?? 'N/A';
+        })
+        ->addColumn('customer_name', function ($postJobBid) {
+            return $postJobBid->customer->display_name ?? 'N/A';
+        })
+        ->addColumn('post_title', function ($postJobBid) {
+            return $postJobBid->postrequest->title ?? 'N/A';
+        })
+        ->toJson();
+}
+
 
 
 public function index_data(DataTables $datatable, Request $request)
