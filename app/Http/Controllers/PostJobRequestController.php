@@ -33,18 +33,23 @@ class PostJobRequestController extends Controller
         return view('postrequest.index', compact('pageTitle','auth_user','assets','filter'));
 
     }
-    public function bidshowindex()
-    {
-        $auth_user = authSession();
-        
-        // Fetch all bids that belong to the logged-in provider
-        $postJobBids = PostJobBid::where('provider_id', $auth_user->id)->get();
-    
-        $pageTitle = trans('messages.list_form_title', ['form' => trans('messages.postbid')]);
-        $assets = ['datatable'];
-    
-        return view('postrequest.view', compact('pageTitle', 'auth_user', 'assets', 'postJobBids'));
-    }
+public function bidshowindex()
+{
+    $auth_user = authSession();
+
+    // Fetch assigned post for this provider (if any)
+    $assignedPost = PostJobRequest::where('provider_id', $auth_user->id)
+                    ->where('status', 'assigned')
+                    ->first();
+
+    $postJobBids = PostJobBid::where('provider_id', $auth_user->id)->get();
+
+    $pageTitle = trans('messages.list_form_title', ['form' => trans('messages.postbid')]);
+    $assets = ['datatable'];
+
+    return view('postrequest.view', compact('pageTitle', 'auth_user', 'assets', 'postJobBids', 'assignedPost'));
+}
+
 public function bidshow()
 {
     $auth_user = authSession();
