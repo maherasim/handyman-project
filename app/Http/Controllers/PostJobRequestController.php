@@ -429,6 +429,7 @@ public function index_data(DataTables $datatable, Request $request)
      */
     public function show($id)
     {
+        dd('as');
         $pageTitle = trans('messages.list_form_title',['form' => trans('messages.postbid')] );
         $auth_user = authSession();
         $assets = ['datatable'];
