@@ -4,20 +4,36 @@
             <div class="col-lg-12">
 
                 <!-- Page Header -->
-                <div class="card card-block card-stretch mb-3">
+              <div class="card card-block card-stretch mb-3">
                     <div class="card-body d-flex justify-content-between align-items-center">
                         <h5 class="fw-bold mb-0">{{ $pageTitle }}</h5>
 
+                        {{-- Provider sees Start Work --}}
                         @if (isset($assignedPost) && auth()->id() === $assignedPost->provider_id)
-                            <div class="d-flex align-items-center gap-2">
-                                {{-- Start Work button --}}
-                                <button class="btn btn-primary startWorkBtn" data-post-id="{{ $assignedPost->id }}">
-                                    <i class="fas fa-play"></i> Start Work
+                            <button class="btn btn-primary startWorkBtn" data-post-id="{{ $assignedPost->id }}">
+                                <i class="fas fa-play"></i> Start Work
+                            </button>
+                        @endif
+
+                        {{-- Customer sees Pay Advance --}}
+                        @if (isset($assignedPost) && auth()->id() === $assignedPost->customer_id)
+                            @php
+                                $advancePayment = \App\Models\Payment::where('post_job_request_id', $assignedPost->id)
+                                                ->where('payment_type', 'advance')
+                                                ->first();
+                            @endphp
+
+                            @if ($advancePayment && $advancePayment->status == 'unpaid')
+                                <button class="btn btn-success payAdvanceBtn" 
+                                        data-payment-id="{{ $advancePayment->id }}" 
+                                        data-amount="{{ $advancePayment->amount }}">
+                                    <i class="fas fa-credit-card"></i> Pay Advance ({{ $advancePayment->amount }})
                                 </button>
-                            </div>
+                            @endif
                         @endif
                     </div>
                 </div>
+
 
                 <!-- Search Bar -->
                 <div class="card mb-3">
