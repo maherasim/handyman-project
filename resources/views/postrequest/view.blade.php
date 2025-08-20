@@ -92,7 +92,7 @@ $(document).on('click', '.acceptBid', function () {
     }).then((result) => {
         if (result.isConfirmed) {
             $.ajax({
-                url: '{{ route("bids.accept", ":id") }}'.replace(':id', bidId),
+                url: '{{ url("/bids/accept") }}/' + bidId,
                 type: "POST",
                 data: {
                     _token: '{{ csrf_token() }}'

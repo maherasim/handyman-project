@@ -41,9 +41,9 @@ class PostJobRequestController extends Controller
         $postJobBids = PostJobBid::where('provider_id', $auth_user->id)->get();
     
         $pageTitle = trans('messages.list_form_title', ['form' => trans('messages.postbid')]);
-        $asset = ['datatable'];
+        $assets = ['datatable'];
     
-        return view('postrequest.view', compact('pageTitle', 'auth_user', 'asset', 'postJobBids'));
+        return view('postrequest.view', compact('pageTitle', 'auth_user', 'assets', 'postJobBids'));
     }
 public function bidshow()
 {
@@ -80,14 +80,25 @@ public function bidshow()
             return $postJobBid->postrequest->title ?? 'N/A';
         })
         ->addColumn('action', function ($bid) use ($auth_user) {
-    // Only customer can accept a provider's bid
-    if ($auth_user->user_type === 'user' && $bid->status !== 'accepted') {
-        return '<button class="btn btn-sm btn-success acceptBid" data-id="'.$bid->id.'">Accept</button>';
+                // Determine acceptance based on PostJobRequest assignment
+                $post = $bid->postrequest;
+                $isAssignedToThisProvider = $post && $post->status === 'assigned' && (int)$post->provider_id === (int)$bid->provider_id;
+
+                // Only customer can accept a provider's bid
+                if ($auth_user->user_type === 'user') {
+                    if ($post && $post->status === 'assigned') {
+                        return $isAssignedToThisProvider
+                            ? '<span class="badge badge-success">Accepted</span>'
+                            : '<span class="badge badge-secondary">Assigned</span>';
+                    }
+                    return '<button class="btn btn-sm btn-success acceptBid" data-id="'.$bid->id.'">Accept</button>';
                 }
 
-                return $bid->status === 'accepted'
-                    ? '<span class="badge badge-success">Accepted</span>'
-                    : '-';
+                // For others, just show status
+                if ($isAssignedToThisProvider) {
+                    return '<span class="badge badge-success">Accepted</span>';
+                }
+                return '-';
             })
             ->rawColumns(['action'])
 
@@ -101,20 +112,27 @@ public function acceptBid($id)
     $bid = PostJobBid::with('postrequest')->findOrFail($id);
 
     // Ensure customer owns this job request
-    if ($auth_user->id !== $bid->postrequest->customer_id) {
+    if (!$bid->postrequest || (int)$auth_user->id !== (int)$bid->postrequest->customer_id) {
         return response()->json(['status' => false, 'message' => 'Unauthorized'], 403);
     }
 
-    // Mark this bid as accepted
-    $bid->status = 'accepted';
-    $bid->save();
+    // Assign provider to the post job request and update status
+    $post = $bid->postrequest;
+    $post->provider_id = $bid->provider_id;
+    $post->status = 'assigned';
+    $post->save();
 
-    // Optionally: reject all other bids on same job
-    PostJobBid::where('post_request_id', $bid->post_request_id)
-        ->where('id', '!=', $bid->id)
-        ->update(['status' => 'rejected']);
+    // Optionally, notify the provider/user about assignment
+    try {
+        $this->sendNotification([
+            'activity_type' => 'user_accept_bid',
+            'post_job' => $post,
+        ]);
+    } catch (\Throwable $e) {
+        // Silent fail for notifications
+    }
 
-    return response()->json(['status' => true, 'message' => 'Bid accepted successfully!']);
+    return response()->json(['status' => true, 'message' => 'Bid accepted and job assigned successfully!']);
 }
 
 
@@ -348,8 +366,8 @@ public function index_data(DataTables $datatable, Request $request)
     {
         $pageTitle = trans('messages.list_form_title',['form' => trans('messages.postbid')] );
         $auth_user = authSession();
-        $asset = ['datatable'];
-        return view('postrequest.view', compact('pageTitle', 'auth_user', 'asset','id'));
+        $assets = ['datatable'];
+        return view('postrequest.view', compact('pageTitle', 'auth_user', 'assets','id'));
     }
 
     // public function postrequest_index_data(DataTables $datatable,$id)
