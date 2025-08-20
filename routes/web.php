@@ -551,7 +551,9 @@ Route::group(['middleware' => ['permission:helpdesk list']], function () {
 Route::get('bidsshow',[PostJobRequestController::class,'bidshowindex'])->name('bidsshow');
 Route::get('bidsindex',[PostJobRequestController::class,'bidshow'])->name('bidsshowjson');
 Route::post('/bids/accept/{id}', [PostJobRequestController::class, 'acceptBid'])->name('bids.accept');
- Route::post('/post-job-request/{id}/set-advance', [PostJobRequestController::class, 'setAdvance'])->name('postjob.setadvance');
+ 
+Route::post('/post-job-request/{id}/set-advance', [PostJobRequestController::class, 'setAdvanceSplit']);
+
 
 // routes/web.php
 Route::post('/post-job-request/{id}/start-work', [PostJobRequestController::class, 'startWork'])->name('postjob.startwork');

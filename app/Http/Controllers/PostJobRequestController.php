@@ -49,6 +49,21 @@ public function bidshowindex()
 
     return view('postrequest.view', compact('pageTitle', 'auth_user', 'assets', 'postJobBids', 'assignedPost'));
 }
+ public function setAdvanceSplit(Request $request, $id)
+    {
+        $request->validate([
+            'advance_percent' => 'required|integer|min:0|max:100',
+            'remaining_percent' => 'required|integer|min:0|max:100',
+        ]);
+
+        $post = PostJobRequest::findOrFail($id);
+        $post->advance_percent = $request->advance_percent;
+        $post->remaining_percent = $request->remaining_percent;
+        $post->status = 'in_progress';
+        $post->save();
+
+        return response()->json(['status' => true, 'message' => 'Payment split set & work started.']);
+    }
 
 public function bidshow()
 {
