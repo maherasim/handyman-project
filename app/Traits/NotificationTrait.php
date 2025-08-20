@@ -373,7 +373,11 @@ trait NotificationTrait
                 $data['provider_name'] = $post_job->provider->display_name ?? null;
                 $data['user_name'] = $post_job->customer->display_name ?? null;
                 $job_request_id= isset($post_job->id) ?  $post_job->id :'';
-                $data['job_price'] = isset(optional($data['post_job'])->job_price) ? optional($data['post_job'])->job_price : '';
+                // Respect job_price passed in, otherwise fall back to post job's price fields
+                if (empty($data['job_price'])) {
+                    $fallbackPrice = isset($post_job->price) ? getPriceFormat($post_job->price) : '';
+                    $data['job_price'] = $fallbackPrice;
+                }
                 $activity_data = [
                     'post_request_id' => $post_job->post_request_id,
                     'customer_id' => $post_job->customer_id,
