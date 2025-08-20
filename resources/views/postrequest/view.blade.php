@@ -62,7 +62,7 @@ in card fetch status of postjobreuest as well ,set bg of status looks gracefuuly
                     { data: 'provider_name', name: 'provider_name' },
                     { data: 'customer_name', name: 'customer_name' },
                     { data: 'price', name: 'price' },
-                    { data: 'duration', name: 'duration' },
+                    { data: 'status', name: 'status' },
                     { data: 'action', name: 'action', orderable: false, searchable: false }
                 ],
                 drawCallback: function(settings) {
@@ -79,7 +79,7 @@ in card fetch status of postjobreuest as well ,set bg of status looks gracefuuly
                                     <p class="text-muted mb-1"><i class="fas fa-user"></i> Provider: ${row.provider_name}</p>
                                     <p class="text-muted mb-1"><i class="fas fa-user-tie"></i> Customer: ${row.customer_name}</p>
                                     <p class="mb-1"><i class="fas fa-dollar-sign"></i> Bid: <span class="fw-bold">${row.price}</span></p>
-                                    <p class="mb-3"><i class="fas fa-clock"></i> Duration: ${row.duration}</p>
+                                    <p class="mb-3"><i class="fas fa-clock"></i> Status: ${row.status}</p>
                                     <div class="mt-auto">
                                         ${row.action}
                                     </div>
