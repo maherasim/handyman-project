@@ -37,19 +37,36 @@
         </div>
     </div>
 
-    <!-- DataTable Init (no visible table, only for data source) -->
+    <!-- Hidden DataTable (only for fetching data) -->
     <table id="datatable" class="d-none"></table>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             let bidsContainer = $("#bidsContainer");
 
+            // Helpers
+            function getStatusColor(status) {
+                switch (status) {
+                    case 'pending': return 'secondary';
+                    case 'assigned': return 'info';
+                    case 'in_progress': return 'warning';
+                    case 'completed': return 'success';
+                    case 'cancelled': return 'danger';
+                    default: return 'dark';
+                }
+            }
+
+            function capitalize(str) {
+                return str ? str.charAt(0).toUpperCase() + str.slice(1).replace('_',' ') : '';
+            }
+
+            // DataTable init
             let table = $('#datatable').DataTable({
                 processing: true,
                 serverSide: true,
                 searching: false,
                 paging: true,
-                pageLength: 5,
+                pageLength: 6,
                 ajax: {
                     url: '{{ route("bidsshowjson") }}',
                     type: "GET",
@@ -63,6 +80,7 @@
                     { data: 'customer_name', name: 'customer_name' },
                     { data: 'price', name: 'price' },
                     { data: 'duration', name: 'duration' },
+                    { data: 'status', name: 'status' }, // 👈 include status
                     { data: 'action', name: 'action', orderable: false, searchable: false }
                 ],
                 drawCallback: function(settings) {
@@ -73,13 +91,24 @@
                     data.each(function(row) {
                         let card = `
                         <div class="col-md-6 col-lg-4 mb-3">
-                            <div class="card shadow-sm h-100">
+                            <div class="card shadow-sm h-100 border-0">
                                 <div class="card-body d-flex flex-column">
-                                    <h6 class="fw-bold mb-2">${row.post_title}</h6>
+
+                                    <!-- Title & Status -->
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <h6 class="fw-bold mb-0">${row.post_title}</h6>
+                                        <span class="badge bg-${getStatusColor(row.status)} text-white px-3 py-2">
+                                            ${capitalize(row.status)}
+                                        </span>
+                                    </div>
+
+                                    <!-- Details -->
                                     <p class="text-muted mb-1"><i class="fas fa-user"></i> Provider: ${row.provider_name}</p>
                                     <p class="text-muted mb-1"><i class="fas fa-user-tie"></i> Customer: ${row.customer_name}</p>
                                     <p class="mb-1"><i class="fas fa-dollar-sign"></i> Bid: <span class="fw-bold">${row.price}</span></p>
                                     <p class="mb-3"><i class="fas fa-clock"></i> Duration: ${row.duration}</p>
+
+                                    <!-- Actions -->
                                     <div class="mt-auto">
                                         ${row.action}
                                     </div>
@@ -98,6 +127,5 @@
         });
     </script>
 
-     
-    {{-- Extracted your SweetAlert accept/startWork code into a partial for reusability --}}
+    @include('postrequest.partials.bid-actions')
 </x-master-layout>
