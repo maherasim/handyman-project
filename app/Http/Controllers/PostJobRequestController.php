@@ -79,6 +79,18 @@ public function bidshow()
         ->addColumn('post_title', function ($postJobBid) {
             return $postJobBid->postrequest->title ?? 'N/A';
         })
+        ->addColumn('action', function ($bid) use ($auth_user) {
+    // Only customer can accept a provider's bid
+    if ($auth_user->user_type === 'user' && $bid->status !== 'accepted') {
+        return '<button class="btn btn-sm btn-success acceptBid" data-id="'.$bid->id.'">Accept</button>';
+                }
+
+                return $bid->status === 'accepted'
+                    ? '<span class="badge badge-success">Accepted</span>'
+                    : '-';
+            })
+            ->rawColumns(['action'])
+
         ->toJson();
 }
 

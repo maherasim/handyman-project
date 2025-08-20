@@ -55,41 +55,22 @@
                         }
                     },
                 },
-                columns: [{
-                        name: 'DT_RowIndex',
-                        data: 'DT_RowIndex',
-                        title: "{{ __('messages.no') }}",
-                        exportable: false,
-                        orderable: false,
-                        searchable: false,
-                    },
-                    {
-                        data: 'post_title',
-                        name: 'post_title',
-                        title: "{{ __('messages.postjob') }}"
-                    },
-                    {
-                        data: 'provider_name',
-                        name: 'provider_name',
-                        title: "{{ __('messages.provider') }}"
-                    },
-                    {
-                        data: 'customer_name',
-                        name: 'customer_name',
-                        title: "{{ __('messages.customer') }}"
-                    },
-                    {
-                        data: 'price',
-                        name: 'price',
-                        title: "{{ __('messages.price') }}"
-                    },
-                    {
-                        data: 'duration',
-                        name: 'duration',
-                        title: "{{ __('messages.duration') }}"
-                    }
+              columns: [
+                { data: 'DT_RowIndex', name: 'DT_RowIndex', title: "#", orderable: false, searchable: false },
+                { data: 'post_title', name: 'post_title', title: "Job Post" },
+                { data: 'provider_name', name: 'provider_name', title: "Provider" },
+                { data: 'customer_name', name: 'customer_name', title: "Customer" },
+                { data: 'price', name: 'price', title: "Bid Price" },
+                { data: 'duration', name: 'duration', title: "Duration" },
+                {
+                    data: 'action',
+                    name: 'action',
+                    title: "Action",
+                    orderable: false,
+                    searchable: false
+                }
+            ]
 
-                ]
 
             });
         });
