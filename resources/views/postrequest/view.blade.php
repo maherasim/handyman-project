@@ -16,7 +16,7 @@
                         @endif
 
                         {{-- Customer sees Pay Advance --}}
-                        @if (isset($jobpost) && $jobpost->status === 'in_progress')
+                        @if (isset($jobpost->status === 'in_progress'))
                         <button class="btn btn-success payAdvanceBtn" 
                                 data-payment-id="{{ $advancePayment->id }}" 
                                 data-amount="{{ $advancePayment->amount }}">
