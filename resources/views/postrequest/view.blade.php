@@ -55,24 +55,63 @@
                         }
                     },
                 },
-              columns: [
-                { data: 'DT_RowIndex', name: 'DT_RowIndex', title: "#", orderable: false, searchable: false },
-                { data: 'post_title', name: 'post_title', title: "Job Post" },
-                { data: 'provider_name', name: 'provider_name', title: "Provider" },
-                { data: 'customer_name', name: 'customer_name', title: "Customer" },
-                { data: 'price', name: 'price', title: "Bid Price" },
-                { data: 'duration', name: 'duration', title: "Duration" },
-                {
-                    data: 'action',
-                    name: 'action',
-                    title: "Action",
-                    orderable: false,
-                    searchable: false
-                }
-            ]
+             columns: [
+            { data: 'DT_RowIndex', name: 'DT_RowIndex', title: "#", orderable: false, searchable: false },
+            { data: 'post_title', name: 'post_title', title: "Job Post" },
+            { data: 'provider_name', name: 'provider_name', title: "Provider" },
+            { data: 'customer_name', name: 'customer_name', title: "Customer" },
+            { data: 'price', name: 'price', title: "Bid Price" },
+            { data: 'duration', name: 'duration', title: "Duration" },
+            {
+                data: 'action',
+                name: 'action',
+                title: "Action",
+                orderable: false,
+                searchable: false
+            }
+        ]
+
 
 
             });
         });
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+$(document).on('click', '.acceptBid', function () {
+    let bidId = $(this).data('id');
+
+    Swal.fire({
+        title: "Are you sure?",
+        text: "Do you want to accept this bid?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#28a745",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, accept it!"
+    }).then((result) => {
+        if (result.isConfirmed) {
+            $.ajax({
+                url: '{{ route("bids.accept", ":id") }}'.replace(':id', bidId),
+                type: "POST",
+                data: {
+                    _token: '{{ csrf_token() }}'
+                },
+                success: function (response) {
+                    if (response.status) {
+                        Swal.fire("Accepted!", response.message, "success");
+                        $('#datatable').DataTable().ajax.reload();
+                    } else {
+                        Swal.fire("Error!", response.message, "error");
+                    }
+                },
+                error: function () {
+                    Swal.fire("Error!", "Something went wrong!", "error");
+                }
+            });
+        }
+    });
+});
+</script>
+
 </x-master-layout>
