@@ -4,40 +4,20 @@
             <div class="col-lg-12">
 
                 <!-- Page Header -->
-                <!-- Page Header -->
-    
+                <div class="card card-block card-stretch mb-3">
+                    <div class="card-body d-flex justify-content-between align-items-center">
+                        <h5 class="fw-bold mb-0">{{ $pageTitle }}</h5>
 
-<div class="card card-block card-stretch mb-3">
-    <div class="card-body d-flex justify-content-between align-items-center">
-        <h5 class="fw-bold mb-0">{{ $pageTitle }}</h5>
-
-        @if(isset($assignedPost) && auth()->id() === $assignedPost->provider_id)
-            <div class="d-flex align-items-center gap-2">
-                {{-- Show status badge of assigned post --}}
-                @php
-                    $badgeClass = match($assignedPost->status) {
-                        'pending' => 'bg-warning text-dark',
-                        'assigned' => 'bg-info text-white',
-                        'in_progress' => 'bg-primary text-white',
-                        'completed' => 'bg-success text-white',
-                        'cancelled' => 'bg-danger text-white',
-                        default => 'bg-secondary text-white',
-                    };
-                @endphp
-
-                <span class="badge {{ $badgeClass }} px-3 py-2 text-capitalize">
-                    {{ str_replace('_',' ', $assignedPost->status) }}
-                </span>
-
-                {{-- Start Work button --}}
-                <button class="btn btn-primary startWorkBtn" data-post-id="{{ $assignedPost->id }}">
-                    <i class="fas fa-play"></i> Start Work
-                </button>
-            </div>
-        @endif
-    </div>
-</div>
-
+                        @if(isset($assignedPost) && auth()->id() === $assignedPost->provider_id)
+                            <div class="d-flex align-items-center gap-2">
+                                {{-- Start Work button --}}
+                                <button class="btn btn-primary startWorkBtn" data-post-id="{{ $assignedPost->id }}">
+                                    <i class="fas fa-play"></i> Start Work
+                                </button>
+                            </div>
+                        @endif
+                    </div>
+                </div>
 
                 <!-- Search Bar -->
                 <div class="card mb-3">
@@ -52,9 +32,7 @@
                 </div>
 
                 <!-- Bids Container -->
-                <div id="bidsContainer" class="row">
-                    <!-- Cards will be loaded here dynamically from DataTable -->
-                </div>
+                <div id="bidsContainer" class="row"></div>
 
             </div>
         </div>
@@ -85,7 +63,7 @@
                     { data: 'provider_name', name: 'provider_name' },
                     { data: 'customer_name', name: 'customer_name' },
                     { data: 'price', name: 'price' },
-                    { data: 'status', name: 'status' }, // <-- status from post_job_requests
+                    { data: 'status', name: 'status' },
                     { data: 'action', name: 'action', orderable: false, searchable: false }
                 ],
                 drawCallback: function(settings) {
@@ -94,24 +72,19 @@
                     let data = this.api().rows({ page: 'current' }).data();
 
                     data.each(function(row) {
-                        // Status Badge (graceful colors)
+                        // Status Badge
                         let statusBadge = '';
                         switch(row.status) {
                             case 'pending':
-                                statusBadge = `<span class="badge bg-warning text-dark px-3 py-2">${row.status}</span>`;
-                                break;
+                                statusBadge = `<span class="badge bg-warning text-dark px-3 py-2">${row.status}</span>`; break;
                             case 'assigned':
-                                statusBadge = `<span class="badge bg-info text-white px-3 py-2">${row.status}</span>`;
-                                break;
+                                statusBadge = `<span class="badge bg-info text-white px-3 py-2">${row.status}</span>`; break;
                             case 'in_progress':
-                                statusBadge = `<span class="badge bg-primary text-white px-3 py-2">In Progress</span>`;
-                                break;
+                                statusBadge = `<span class="badge bg-primary text-white px-3 py-2">In Progress</span>`; break;
                             case 'completed':
-                                statusBadge = `<span class="badge bg-success text-white px-3 py-2">${row.status}</span>`;
-                                break;
+                                statusBadge = `<span class="badge bg-success text-white px-3 py-2">${row.status}</span>`; break;
                             case 'cancelled':
-                                statusBadge = `<span class="badge bg-danger text-white px-3 py-2">${row.status}</span>`;
-                                break;
+                                statusBadge = `<span class="badge bg-danger text-white px-3 py-2">${row.status}</span>`; break;
                             default:
                                 statusBadge = `<span class="badge bg-secondary text-white px-3 py-2">${row.status}</span>`;
                         }
@@ -139,6 +112,70 @@
             // Live search
             $('.dt-search').on('keyup', function() {
                 table.ajax.reload();
+            });
+
+            // Accept Bid click
+            $(document).on("click", ".acceptBid", function() {
+                let bidId = $(this).data("id");
+
+                Swal.fire({
+                    title: "Accept this bid?",
+                    text: "Once accepted, other bids will be closed.",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonText: "Yes, Accept",
+                    cancelButtonText: "Cancel",
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: "{{ route('acceptBid') }}", // your accept route
+                            type: "POST",
+                            data: {
+                                _token: "{{ csrf_token() }}",
+                                id: bidId
+                            },
+                            success: function(res) {
+                                Swal.fire("Accepted!", res.message, "success");
+                                table.ajax.reload();
+                            },
+                            error: function(err) {
+                                Swal.fire("Error!", "Something went wrong.", "error");
+                            }
+                        });
+                    }
+                });
+            });
+
+            // Start Work click
+            $(document).on("click", ".startWorkBtn", function() {
+                let postId = $(this).data("post-id");
+
+                Swal.fire({
+                    title: "Start work now?",
+                    text: "This will mark the job as In Progress.",
+                    icon: "info",
+                    showCancelButton: true,
+                    confirmButtonText: "Yes, Start",
+                    cancelButtonText: "Cancel",
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: "{{ route('startWork') }}", // your start work route
+                            type: "POST",
+                            data: {
+                                _token: "{{ csrf_token() }}",
+                                id: postId
+                            },
+                            success: function(res) {
+                                Swal.fire("Started!", res.message, "success");
+                                table.ajax.reload();
+                            },
+                            error: function(err) {
+                                Swal.fire("Error!", "Something went wrong.", "error");
+                            }
+                        });
+                    }
+                });
             });
         });
     </script>
