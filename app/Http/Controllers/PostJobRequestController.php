@@ -105,7 +105,7 @@ public function bidshow()
         ->toJson();
 }
 
-public function acceptBid($id)
+public function acceptBid($id) 
 {
     $auth_user = authSession();
 
@@ -122,11 +122,13 @@ public function acceptBid($id)
     $post->status = 'assigned';
     $post->save();
 
-    // Optionally, notify the provider/user about assignment
+    // Notify provider with correct bid price
     try {
         $this->sendNotification([
             'activity_type' => 'user_accept_bid',
-            'post_job' => $post,
+            'post_job'      => $post,
+            'bid'           => $bid, // 👈 pass bid too
+            'price'         => $bid->price, // 👈 explicitly include price
         ]);
     } catch (\Throwable $e) {
         // Silent fail for notifications
