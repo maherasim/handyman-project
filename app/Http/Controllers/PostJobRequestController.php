@@ -84,9 +84,14 @@ public function bidshow()
     ]);
 
     if ($auth_user->user_type === 'provider') {
+        // Provider sees all their bids
         $query->where('provider_id', $auth_user->id);
     } elseif ($auth_user->user_type === 'user') {
-        $query->whereHas('postrequest', fn($q) => $q->where('customer_id', $auth_user->id));
+        // Customer sees only posts that are in_progress
+        $query->whereHas('postrequest', function ($q) use ($auth_user) {
+            $q->where('customer_id', $auth_user->id)
+              ->where('status', 'in_progress'); // only show in_progress
+        });
     }
 
     $postJobBids = $query->get();
@@ -100,19 +105,22 @@ public function bidshow()
         ->addColumn('action', function ($bid) use ($auth_user) {
             $post = $bid->postrequest;
 
-            // Provider: Start Work button
-            if ($auth_user->user_type === 'provider' && $post && $post->status === 'assigned' && $post->provider_id == $bid->provider_id) {
+            // Provider: show Start Work button only if assigned
+            if ($auth_user->user_type === 'provider' 
+                && $post 
+                && $post->status === 'assigned' 
+                && $post->provider_id == $bid->provider_id
+            ) {
                 return '<button class="btn btn-sm btn-primary startWorkBtn" data-post-id="'.$post->id.'">Start Work</button>';
             }
 
-            // Customer: Pay Advance button
+            // Customer: show Pay Advance only if in_progress
             if ($auth_user->user_type === 'user' && $post && $post->status === 'in_progress') {
                 if ($post->remaining_percent) {
                     return '<button class="btn btn-sm btn-success payAdvanceBtn" 
                                 data-post-id="'.$post->id.'" 
                                 data-amount="'.$post->remaining_percent.'">
-                                <i class="fas fa-credit-card"></i> Pay Advance ('.$post->remaining_percent.')
-                            </button>';
+                                <i class="fas fa-credit-card"></i> Pay Advance ('.$post->remaining_percent.')</button>';
                 }
                 return '-';
             }
@@ -122,6 +130,7 @@ public function bidshow()
         ->rawColumns(['action'])
         ->toJson();
 }
+
 
 
 public function setAdvance(Request $request, $id)
