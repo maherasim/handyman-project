@@ -4,17 +4,38 @@
             <div class="col-lg-12">
 
                 <!-- Page Header -->
-                <div class="card card-block card-stretch mb-3">
-                    <div class="card-body d-flex justify-content-between align-items-center">
-                        <h5 class="fw-bold mb-0">{{ $pageTitle }}</h5>
+                <!-- Page Header -->
+<div class="card card-block card-stretch mb-3">
+    <div class="card-body d-flex justify-content-between align-items-center">
+        <h5 class="fw-bold mb-0">{{ $pageTitle }}</h5>
 
-                        @if(isset($assignedPost) && auth()->id() === $assignedPost->provider_id)
-                            <button class="btn btn-primary startWorkBtn" data-post-id="{{ $assignedPost->id }}">
-                                <i class="fas fa-play"></i> Start Work
-                            </button>
-                        @endif
-                    </div>
-                </div>
+        @if(isset($assignedPost) && auth()->id() === $assignedPost->provider_id)
+            <div class="d-flex align-items-center gap-2">
+                {{-- Show status badge of assigned post --}}
+                @php
+                    $badgeClass = match($assignedPost->status) {
+                        'pending' => 'bg-warning text-dark',
+                        'assigned' => 'bg-info text-white',
+                        'in_progress' => 'bg-primary text-white',
+                        'completed' => 'bg-success text-white',
+                        'cancelled' => 'bg-danger text-white',
+                        default => 'bg-secondary text-white',
+                    };
+                @endphp
+
+                <span class="badge {{ $badgeClass }} px-3 py-2 text-capitalize">
+                    {{ str_replace('_',' ', $assignedPost->status) }}
+                </span>
+
+                {{-- Start Work button --}}
+                <button class="btn btn-primary startWorkBtn" data-post-id="{{ $assignedPost->id }}">
+                    <i class="fas fa-play"></i> Start Work
+                </button>
+            </div>
+        @endif
+    </div>
+</div>
+
 
                 <!-- Search Bar -->
                 <div class="card mb-3">
