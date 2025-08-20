@@ -5,6 +5,10 @@
 
                 <!-- Page Header -->
                 <!-- Page Header -->
+                @if(isset($assignedPost) && auth()->id() === $assignedPost->provider_id)
+    {{ dd($assignedPost->status) }}
+@endif
+
 <div class="card card-block card-stretch mb-3">
     <div class="card-body d-flex justify-content-between align-items-center">
         <h5 class="fw-bold mb-0">{{ $pageTitle }}</h5>
