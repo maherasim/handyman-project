@@ -242,41 +242,7 @@
                     }
                 });
             });
-            $(document).on('click', '.startWorkBtn', function() {
-                const postId = $(this).data('post-id');
-                Swal.fire({
-                    title: "Start work?",
-                    text: "This will move the job to in progress.",
-                    icon: "question",
-                    showCancelButton: true,
-                    confirmButtonColor: "#0d6efd",
-                    cancelButtonColor: "#6c757d",
-                    confirmButtonText: "Yes, start!"
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        $.ajax({
-                            url: '{{ url('/post-job-request') }}/' + postId + '/start-work',
-                            type: "POST",
-                            data: {
-                                _token: '{{ csrf_token() }}'
-                            },
-                            success: function(response) {
-                                if (response.status) {
-                                    Swal.fire("Started!", response.message ||
-                                        "Work started.", "success");
-                                    $('#datatable').DataTable().ajax.reload();
-                                } else {
-                                    Swal.fire("Error!", response.message ||
-                                        "Unable to start.", "error");
-                                }
-                            },
-                            error: function() {
-                                Swal.fire("Error!", "Something went wrong!", "error");
-                            }
-                        });
-                    }
-                });
-            });
+          
         });
     </script>
     <script>
@@ -320,6 +286,20 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 });
+</script>
+<script>
+    let assignedPostId = @json($assignedPost->id ?? null);
+
+    if (assignedPostId) {
+        $.ajax({
+            url: `/post-job-request/${assignedPostId}/set-advance`,
+            method: 'POST',
+            data: {
+                _token: '{{ csrf_token() }}',
+                advance_percent: 50
+            }
+        });
+    }
 </script>
 
 </x-master-layout>
