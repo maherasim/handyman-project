@@ -1,4 +1,4 @@
-in card fetch status of postjobreuest as well ,set bg of status looks gracefuuly etc <x-master-layout>
+<x-master-layout>
     <div class="container-fluid">
         <div class="row">
             <div class="col-lg-12">
@@ -37,7 +37,7 @@ in card fetch status of postjobreuest as well ,set bg of status looks gracefuuly
         </div>
     </div>
 
-    <!-- DataTable Init (no visible table, only for data source) -->
+    <!-- Hidden DataTable (acts as data source) -->
     <table id="datatable" class="d-none"></table>
 
     <script>
@@ -49,7 +49,7 @@ in card fetch status of postjobreuest as well ,set bg of status looks gracefuuly
                 serverSide: true,
                 searching: false,
                 paging: true,
-                pageLength: 5,
+                pageLength: 6,
                 ajax: {
                     url: '{{ route("bidsshowjson") }}',
                     type: "GET",
@@ -62,7 +62,7 @@ in card fetch status of postjobreuest as well ,set bg of status looks gracefuuly
                     { data: 'provider_name', name: 'provider_name' },
                     { data: 'customer_name', name: 'customer_name' },
                     { data: 'price', name: 'price' },
-                    { data: 'status', name: 'status' },
+                    { data: 'status', name: 'status' }, // <-- status from post_job_requests
                     { data: 'action', name: 'action', orderable: false, searchable: false }
                 ],
                 drawCallback: function(settings) {
@@ -71,6 +71,28 @@ in card fetch status of postjobreuest as well ,set bg of status looks gracefuuly
                     let data = this.api().rows({ page: 'current' }).data();
 
                     data.each(function(row) {
+                        // Status Badge (graceful colors)
+                        let statusBadge = '';
+                        switch(row.status) {
+                            case 'pending':
+                                statusBadge = `<span class="badge bg-warning text-dark px-3 py-2">${row.status}</span>`;
+                                break;
+                            case 'assigned':
+                                statusBadge = `<span class="badge bg-info text-white px-3 py-2">${row.status}</span>`;
+                                break;
+                            case 'in_progress':
+                                statusBadge = `<span class="badge bg-primary text-white px-3 py-2">In Progress</span>`;
+                                break;
+                            case 'completed':
+                                statusBadge = `<span class="badge bg-success text-white px-3 py-2">${row.status}</span>`;
+                                break;
+                            case 'cancelled':
+                                statusBadge = `<span class="badge bg-danger text-white px-3 py-2">${row.status}</span>`;
+                                break;
+                            default:
+                                statusBadge = `<span class="badge bg-secondary text-white px-3 py-2">${row.status}</span>`;
+                        }
+
                         let card = `
                         <div class="col-md-6 col-lg-4 mb-3">
                             <div class="card shadow-sm h-100">
@@ -79,7 +101,7 @@ in card fetch status of postjobreuest as well ,set bg of status looks gracefuuly
                                     <p class="text-muted mb-1"><i class="fas fa-user"></i> Provider: ${row.provider_name}</p>
                                     <p class="text-muted mb-1"><i class="fas fa-user-tie"></i> Customer: ${row.customer_name}</p>
                                     <p class="mb-1"><i class="fas fa-dollar-sign"></i> Bid: <span class="fw-bold">${row.price}</span></p>
-                                    <p class="mb-3"><i class="fas fa-clock"></i> Status: ${row.status}</p>
+                                    <p class="mb-3"><i class="fas fa-flag"></i> Status: ${statusBadge}</p>
                                     <div class="mt-auto">
                                         ${row.action}
                                     </div>
@@ -97,7 +119,4 @@ in card fetch status of postjobreuest as well ,set bg of status looks gracefuuly
             });
         });
     </script>
-
-    
-    {{-- Extracted your SweetAlert accept/startWork code into a partial for reusability --}}
 </x-master-layout>
