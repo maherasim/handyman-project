@@ -33,24 +33,33 @@ class PostJobRequestController extends Controller
         return view('postrequest.index', compact('pageTitle','auth_user','assets','filter'));
 
     }
-public function bidshowindex()
+ public function bidshowindex()
 {
     $auth_user = authSession();
 
-    // Fetch assigned post for this provider (if any)
     $assignedPost = PostJobRequest::where('provider_id', $auth_user->id)
-                    ->where('status', 'assigned')
-                    ->first();
-   $jobpost = PostJobRequest::where('customer_id', $auth_user->id)->latest()->first();
-    
+        ->whereIn('status', ['assigned','in_progress'])
+        ->first();
+
+    // If the viewer is a customer, get their latest assigned/in_progress job
+    $jobpost = null;
+    if ($auth_user->user_type === 'user') {
+        $jobpost = PostJobRequest::where('customer_id', $auth_user->id)
+            ->whereIn('status', ['assigned','in_progress'])
+            ->latest()
+            ->first();
+    }
 
     $postJobBids = PostJobBid::where('provider_id', $auth_user->id)->get();
 
     $pageTitle = trans('messages.list_form_title', ['form' => trans('messages.postbid')]);
     $assets = ['datatable'];
 
-    return view('postrequest.view', compact('pageTitle', 'auth_user', 'assets', 'postJobBids', 'assignedPost','jobpost'));
+    return view('postrequest.view', compact(
+        'pageTitle', 'auth_user', 'assets', 'postJobBids', 'assignedPost', 'jobpost'
+    ));
 }
+
  public function setAdvanceSplit(Request $request, $id)
     {
         $request->validate([
