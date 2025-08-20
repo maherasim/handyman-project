@@ -16,14 +16,14 @@
                         @endif
 
                       {{-- Customer sees Pay Advance --}}
-                            @if ($jobpost && $jobpost->status === 'in_progress' && auth()->user()->user_type === 'user')
+                            {{-- @if ($jobpost && $jobpost->status === 'in_progress' && auth()->user()->user_type === 'user') --}}
                                 <button class="btn btn-success payAdvanceBtn" 
                                         data-payment-id="{{ $advancePayment->id }}" 
                                         data-amount="{{ $advancePayment->amount }}">
                                     <i class="fas fa-credit-card"></i> 
                                     Pay Advance ({{ $advancePayment->amount }})
                                 </button>
-                            @endif
+                            {{-- @endif --}}
 
 
                     </div>
