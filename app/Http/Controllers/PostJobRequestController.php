@@ -41,7 +41,7 @@ class PostJobRequestController extends Controller
 
 
 $assignedPost = PostJobRequest::get();
-
+dd($assignedPost);
     // If the viewer is a customer, get their latest assigned/in_progress job
      
 
