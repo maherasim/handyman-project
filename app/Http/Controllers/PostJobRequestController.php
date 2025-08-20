@@ -135,7 +135,6 @@ public function acceptBid($id)
     return response()->json(['status' => true, 'message' => 'Bid accepted and job assigned successfully!']);
 }
 
-
 public function index_data(DataTables $datatable, Request $request)
 {
     $query = PostJobRequest::query();
