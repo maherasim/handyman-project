@@ -92,6 +92,8 @@ public function bidshow()
             $q->where('customer_id', $auth_user->id)
               ->where('status', 'in_progress'); // ✅ only in_progress
         });
+         dd($query->toSql(), $query->getBindings()); // SQL & bindings
+
     }
 
     $postJobBids = $query->get();
