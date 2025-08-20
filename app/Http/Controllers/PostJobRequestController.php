@@ -37,7 +37,7 @@ class PostJobRequestController extends Controller
  public function bidshowindex()
 {
     
-   // $auth_user = authSession();
+    $auth_user = authSession();
 
 
 $assignedPost = PostJobRequest::where('provider_id', $auth_user->id)
