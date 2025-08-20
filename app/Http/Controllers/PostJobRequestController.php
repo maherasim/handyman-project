@@ -96,7 +96,12 @@ public function bidshow()
 
     }
 
-    $postJobBids = $query->get();
+$postJobBids = $query->get()->filter(function($bid) use ($auth_user) {
+    if ($auth_user->user_type === 'user') {
+        return $bid->postrequest && $bid->postrequest->status === 'in_progress';
+    }
+    return true; // provider sees all their assigned/started bids
+});
 
     return DataTables::of($postJobBids)
         ->addIndexColumn()
