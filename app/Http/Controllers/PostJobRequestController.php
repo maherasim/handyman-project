@@ -121,14 +121,14 @@ public function acceptBid($id)
     $post->provider_id = $bid->provider_id;
     $post->status = 'assigned';
     $post->save();
-
+dd($bid->price);
     // Notify provider with correct bid price
     try {
         $this->sendNotification([
             'activity_type' => 'user_accept_bid',
-            'post_job' => $post,
-            // Provide the accepted bid price for templates/notifications
-            'job_price' => getPriceFormat($bid->price),
+            'post_job'      => $post,
+            'bid'           => $bid, // 👈 pass bid too
+            'price'         => $bid->price, // 👈 explicitly include price
         ]);
     } catch (\Throwable $e) {
         // Silent fail for notifications
@@ -136,6 +136,7 @@ public function acceptBid($id)
 
     return response()->json(['status' => true, 'message' => 'Bid accepted and job assigned successfully!']);
 }
+
 
 public function index_data(DataTables $datatable, Request $request)
 {
