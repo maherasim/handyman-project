@@ -44,9 +44,9 @@ $auth_user = auth()->user();
 
 // Fetch all posts related to this user (provider or customer)
 if ($auth_user->user_type === 'provider') {
-    $assignedPost = PostJobRequest::where('provider_id', $auth_user->id)->get();
+    $assignedPosts  = PostJobRequest::where('provider_id', $auth_user->id)->get();
 } else {
-    $assignedPost = PostJobRequest::where('customer_id', $auth_user->id)->get();
+    $assignedPosts  = PostJobRequest::where('customer_id', $auth_user->id)->get();
 }
 
     // If the viewer is a customer, get their latest assigned/in_progress job
@@ -58,7 +58,7 @@ if ($auth_user->user_type === 'provider') {
     $assets = ['datatable'];
 
     return view('postrequest.view', compact(
-        'pageTitle', 'auth_user', 'assets', 'postJobBids', 'assignedPost'));
+        'pageTitle', 'auth_user', 'assets', 'postJobBids', 'assignedPosts'));
 }
 
  public function setAdvanceSplit(Request $request, $id)
