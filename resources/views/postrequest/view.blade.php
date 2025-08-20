@@ -78,38 +78,40 @@
     </script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-$(document).on('click', '.acceptBid', function () {
-    let bidId = $(this).data('id');
+document.addEventListener('DOMContentLoaded', function(){
+    $(document).on('click', '.acceptBid', function () {
+        let bidId = $(this).data('id');
 
-    Swal.fire({
-        title: "Are you sure?",
-        text: "Do you want to accept this bid?",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#28a745",
-        cancelButtonColor: "#d33",
-        confirmButtonText: "Yes, accept it!"
-    }).then((result) => {
-        if (result.isConfirmed) {
-            $.ajax({
-                url: '{{ url("/bids/accept") }}/' + bidId,
-                type: "POST",
-                data: {
-                    _token: '{{ csrf_token() }}'
-                },
-                success: function (response) {
-                    if (response.status) {
-                        Swal.fire("Accepted!", response.message, "success");
-                        $('#datatable').DataTable().ajax.reload();
-                    } else {
-                        Swal.fire("Error!", response.message, "error");
+        Swal.fire({
+            title: "Are you sure?",
+            text: "Do you want to accept this bid?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#28a745",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, accept it!"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: '{{ url("/bids/accept") }}/' + bidId,
+                    type: "POST",
+                    data: {
+                        _token: '{{ csrf_token() }}'
+                    },
+                    success: function (response) {
+                        if (response.status) {
+                            Swal.fire("Accepted!", response.message, "success");
+                            $('#datatable').DataTable().ajax.reload();
+                        } else {
+                            Swal.fire("Error!", response.message, "error");
+                        }
+                    },
+                    error: function () {
+                        Swal.fire("Error!", "Something went wrong!", "error");
                     }
-                },
-                error: function () {
-                    Swal.fire("Error!", "Something went wrong!", "error");
-                }
-            });
-        }
+                });
+            }
+        });
     });
 });
 </script>
