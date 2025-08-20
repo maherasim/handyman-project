@@ -41,8 +41,8 @@ public function bidshowindex()
     $assignedPost = PostJobRequest::where('provider_id', $auth_user->id)
                     ->where('status', 'assigned')
                     ->first();
-    $jobpost = PostJobRequest::where('customer_id', $auth_user->id)->get();
-         // dd( $jobpost);        
+   $jobpost = PostJobRequest::where('customer_id', $auth_user->id)->latest()->first();
+    
 
     $postJobBids = PostJobBid::where('provider_id', $auth_user->id)->get();
 
