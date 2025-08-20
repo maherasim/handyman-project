@@ -9,20 +9,24 @@
                         <h5 class="fw-bold mb-0">{{ $pageTitle }} asim</h5>
 
                         {{-- Provider sees Start Work --}}
-                       @if ($assignedPost && $assignedPost->status === 'assigned' && auth()->user()->user_type === 'provider')
-                        <button class="btn btn-primary startWorkBtn" data-post-id="{{ $assignedPost->id }}">
-                            <i class="fas fa-play"></i> Start Work
-                        </button>
-                    @endif
+                       @foreach($assignedPosts as $post)
+    {{-- Provider sees Start Work --}}
+    @if($post->status === 'assigned' && $auth_user->user_type === 'provider')
+        <button class="btn btn-primary startWorkBtn" data-post-id="{{ $post->id }}">
+            <i class="fas fa-play"></i> Start Work
+        </button>
+    @endif
 
+    {{-- Customer sees Pay Advance --}}
+    @if($post->status === 'in_progress' && $auth_user->user_type === 'user')
+        <button class="btn btn-success payAdvanceBtn" 
+                data-payment-id="{{ $post->payment?->id }}" 
+                data-amount="{{ $post->payment?->amount }}">
+            <i class="fas fa-credit-card"></i> Pay Advance ({{ $post->payment?->amount }})
+        </button>
+    @endif
+@endforeach
 
-                      {{-- Customer sees Pay Advance --}}
-                            {{-- @if ($jobpost && $jobpost->status === 'in_progress' && auth()->user()->user_type === 'user') --}}
-                                <button class="btn btn-success payAdvanceBtn"  >
-                                 
-                                    Pay Advance 
-                                </button>
-                            {{-- @endif --}}
 
 
                     </div>

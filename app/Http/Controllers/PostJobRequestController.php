@@ -37,10 +37,17 @@ class PostJobRequestController extends Controller
  public function bidshowindex()
 {
     
-    $auth_user = authSession();
+   // $auth_user = authSession();
 
 
-$assignedPost = PostJobRequest::get();
+$auth_user = auth()->user();
+
+// Fetch all posts related to this user (provider or customer)
+if ($auth_user->user_type === 'provider') {
+    $assignedPost = PostJobRequest::where('provider_id', $auth_user->id)->get();
+} else {
+    $assignedPost = PostJobRequest::where('customer_id', $auth_user->id)->get();
+}
 
     // If the viewer is a customer, get their latest assigned/in_progress job
      
