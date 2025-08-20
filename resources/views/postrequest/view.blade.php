@@ -16,21 +16,15 @@
                         @endif
 
                         {{-- Customer sees Pay Advance --}}
-                        @if (isset($assignedPost) && auth()->id() === $assignedPost->customer_id)
-                            @php
-                                $advancePayment = \App\Models\Payment::where('post_job_request_id', $assignedPost->id)
-                                                ->where('payment_type', 'advance')
-                                                ->first();
-                            @endphp
+                        @if (isset($jobpost) && $jobpost->status === 'in_progress')
+                        <button class="btn btn-success payAdvanceBtn" 
+                                data-payment-id="{{ $advancePayment->id }}" 
+                                data-amount="{{ $advancePayment->amount }}">
+                            <i class="fas fa-credit-card"></i> 
+                            Pay Advance ({{ $advancePayment->amount }})
+                        </button>
+                    @endif
 
-                            @if ($advancePayment && $advancePayment->status == 'unpaid')
-                                <button class="btn btn-success payAdvanceBtn" 
-                                        data-payment-id="{{ $advancePayment->id }}" 
-                                        data-amount="{{ $advancePayment->amount }}">
-                                    <i class="fas fa-credit-card"></i> Pay Advance ({{ $advancePayment->amount }})
-                                </button>
-                            @endif
-                        @endif
                     </div>
                 </div>
 

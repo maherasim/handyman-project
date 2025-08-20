@@ -41,13 +41,15 @@ public function bidshowindex()
     $assignedPost = PostJobRequest::where('provider_id', $auth_user->id)
                     ->where('status', 'assigned')
                     ->first();
+    $jobpost = PostJobRequest::where('customer_id', $auth_user->id)->get();
+                  
 
     $postJobBids = PostJobBid::where('provider_id', $auth_user->id)->get();
 
     $pageTitle = trans('messages.list_form_title', ['form' => trans('messages.postbid')]);
     $assets = ['datatable'];
 
-    return view('postrequest.view', compact('pageTitle', 'auth_user', 'assets', 'postJobBids', 'assignedPost'));
+    return view('postrequest.view', compact('pageTitle', 'auth_user', 'assets', 'postJobBids', 'assignedPost','jobpost'));
 }
  public function setAdvanceSplit(Request $request, $id)
     {
