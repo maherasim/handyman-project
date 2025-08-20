@@ -1,9 +1,13 @@
 <x-master-layout>
-    @php 
-    $advancePayment = \App\Models\Payment::where('post_job_request_id', $assignedPost->id)
-                                        ->where('payment_type','advance')
-                                        ->first();
+   @php 
+    $advancePayment = null;
+    if(isset($assignedPost)) {
+        $advancePayment = \App\Models\Payment::where('post_job_request_id', $assignedPost->id)
+                                            ->where('payment_type','advance')
+                                            ->first();
+    }
 @endphp
+
     <div class="container-fluid">
         <div class="row">
             <div class="col-lg-12">
