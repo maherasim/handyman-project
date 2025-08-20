@@ -80,7 +80,7 @@ public function bidshow()
     $query = PostJobBid::query()->with([
         'provider:id,display_name',
         'customer:id,display_name',
-        'postrequest:id,title,customer_id,status,provider_id,advance_payment'
+        'postrequest:id,title,customer_id,status,provider_id,remaining_percent'
     ]);
 
     if ($auth_user->user_type === 'provider') {
