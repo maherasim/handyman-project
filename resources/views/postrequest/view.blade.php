@@ -127,5 +127,5 @@
         });
     </script>
 
-    @include('postrequest.partials.bid-actions')
+    {{-- @include('postrequest.partials.bid-actions') --}}
 </x-master-layout>
