@@ -39,18 +39,10 @@ class PostJobRequestController extends Controller
     
     $auth_user = authSession();
 
-    $assignedPost = PostJobRequest::where('provider_id', $auth_user->id)
-        ->whereIn('status', ['assigned','in_progress'])
-        ->first();
+    $assignedPost = PostJobRequest::get();
 
     // If the viewer is a customer, get their latest assigned/in_progress job
-    $jobpost = null;
-    if ($auth_user->user_type === 'user') {
-        $jobpost = PostJobRequest::where('customer_id', $auth_user->id)
-            ->whereIn('status', ['assigned','in_progress'])
-            ->latest()
-            ->first();
-    }
+     
 
     $postJobBids = PostJobBid::where('provider_id', $auth_user->id)->get();
 

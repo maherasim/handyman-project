@@ -9,7 +9,7 @@
                         <h5 class="fw-bold mb-0">{{ $pageTitle }} asim</h5>
 
                         {{-- Provider sees Start Work --}}
-                        @if (isset($assignedPost) && auth()->id() === $assignedPost->provider_id)
+                        @if ($assignedPost && $assignedPost->status === 'assigned' && auth()->user()->user_type === 'user')
                             <button class="btn btn-primary startWorkBtn" data-post-id="{{ $assignedPost->id }}">
                                 <i class="fas fa-play"></i> Start Work
                             </button>
