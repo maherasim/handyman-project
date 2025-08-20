@@ -84,7 +84,7 @@ public function bidshow()
                 $post = $bid->postrequest;
                 $isAssignedToThisProvider = $post && $post->status === 'assigned' && (int)$post->provider_id === (int)$bid->provider_id;
 
-                // Only customer can accept a provider's bid
+                // Customer: accept flow
                 if ($auth_user->user_type === 'user') {
                     if ($post && $post->status === 'assigned') {
                         return $isAssignedToThisProvider
@@ -94,7 +94,15 @@ public function bidshow()
                     return '<button class="btn btn-sm btn-success acceptBid" data-id="'.$bid->id.'">Accept</button>';
                 }
 
-                // For others, just show status
+                // Provider: show Start Work if assigned to them
+                if ($auth_user->user_type === 'provider') {
+                    if ($isAssignedToThisProvider) {
+                        return '<button class="btn btn-sm btn-primary startWorkBtn" data-post-id="'.$post->id.'">Start Work</button>';
+                    }
+                    return '-';
+                }
+
+                // Others
                 if ($isAssignedToThisProvider) {
                     return '<span class="badge badge-success">Accepted</span>';
                 }
@@ -496,7 +504,7 @@ public function index_data(DataTables $datatable, Request $request)
         if ($post->status !== 'assigned') {
             return response()->json(['message' => 'Job is not assigned'], 400);
         }
-        $post->status = 'on_going';
+        $post->status = 'in_progress';
         $post->save();
 
         // Notify user about start
