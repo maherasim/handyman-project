@@ -104,7 +104,7 @@ public function bidshow()
 
         ->toJson();
 }
-public function acceptBid($id) 
+public function acceptBid($id)
 {
     $auth_user = authSession();
 
@@ -121,26 +121,20 @@ public function acceptBid($id)
     $post->status = 'assigned';
     $post->save();
 
-    // Debug: check price (remove when done)
-    // dd($bid->price);
+    // Optionally, notify the provider/user about assignment
+    try {
+        $this->sendNotification([
+            'activity_type' => 'user_accept_bid',
+            'post_job' => $post,
+            // Provide the accepted bid price for templates/notifications
+            'job_price' => getPriceFormat($bid->price),
+        ]);
+    } catch (\Throwable $e) {
+        // Silent fail for notifications
+    }
 
-    // Prepare notification payload
-    $activity_data = [
-        'activity_type' => 'user_accept_bid',
-        'post_job'      => $post,
-        'bid'           => $bid,        // pass bid model
-        'price'         => $bid->price, // explicitly include price
-    ];
-
-    // Send notification
-    $this->sendNotification($activity_data);
-
-    return response()->json([
-        'status'  => true,
-        'message' => 'Bid accepted and job assigned successfully!'
-    ]);
+    return response()->json(['status' => true, 'message' => 'Bid accepted and job assigned successfully!']);
 }
-
 
 
 public function index_data(DataTables $datatable, Request $request)
