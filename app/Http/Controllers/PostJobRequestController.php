@@ -23,7 +23,7 @@ class PostJobRequestController extends Controller
      */
     public function index(Request $request)
     {
-        dd("asim");
+        
         $filter = [
             'status' => $request->status,
         ];
@@ -36,7 +36,7 @@ class PostJobRequestController extends Controller
     }
  public function bidshowindex()
 {
-    dd('test');
+    
     $auth_user = authSession();
 
     $assignedPost = PostJobRequest::where('provider_id', $auth_user->id)
