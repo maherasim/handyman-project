@@ -108,6 +108,37 @@ public function bidshow()
         ->rawColumns(['action'])
         ->toJson();
 }
+public function setAdvance(Request $request, $id)
+{
+    $post = PostJobRequest::findOrFail($id);
+
+    $request->validate([
+        'advance_percent' => 'required|numeric|min:1|max:100',
+    ]);
+
+    $advancePercent = $request->advance_percent;
+    $advanceAmount = ($post->price * $advancePercent) / 100;
+    $remainingAmount = $post->price - $advanceAmount;
+
+    $payment = Payment::updateOrCreate(
+        [
+            'post_job_request_id' => $post->id,
+            'payment_type'        => 'advance'
+        ],
+        [
+            'customer_id'     => $post->customer_id,
+            'total_amount'    => $advanceAmount,
+            'discount'        => 0,
+            'payment_status'  => 'pending', // waiting for payment
+            'datetime'        => now(),
+        ]
+    );
+
+    return response()->json([
+        'status'  => true,
+        'message' => 'Advance terms saved successfully. Awaiting customer payment.'
+    ]);
+}
 
 
 public function acceptBid($id)

@@ -1,4 +1,9 @@
 <x-master-layout>
+    @php 
+    $advancePayment = \App\Models\Payment::where('post_job_request_id', $assignedPost->id)
+                                        ->where('payment_type','advance')
+                                        ->first();
+@endphp
     <div class="container-fluid">
         <div class="row">
             <div class="col-lg-12">
@@ -14,16 +19,57 @@
                         @if (isset($assignedPost) && auth()->id() === $assignedPost->provider_id)
                             <div class="d-flex align-items-center gap-2">
 
-                                {{-- Start Work button --}}
-                                <button class="btn btn-primary startWorkBtn" data-post-id="{{ $assignedPost->id }}">
-                                    <i class="fas fa-play"></i> Start Work
-                                </button>
+                                @if(!$assignedPost->payment || $assignedPost->payment->status !== 'advance_paid')
+                                    {{-- Advance terms form --}}
+                                    <form id="advanceForm" class="d-flex align-items-center gap-2">
+                                        <div>
+                                            <label class="form-label mb-0 small">Advance %</label>
+                                            <input type="number" name="advance_percent" id="advancePercent" class="form-control form-control-sm" value="40" min="1" max="100" required>
+                                        </div>
+                                        <div>
+                                            <label class="form-label mb-0 small">Remaining</label>
+                                            <input type="text" id="remainingAmount" class="form-control form-control-sm" readonly>
+                                        </div>
+                                        <button type="submit" class="btn btn-success btn-sm">Submit Terms</button>
+                                    </form>
+                                @elseif($assignedPost->payment && $assignedPost->payment->status === 'advance_paid')
+                                    {{-- After payment --}}
+                                    <button class="btn btn-primary startWorkBtn" data-post-id="{{ $assignedPost->id }}">
+                                        <i class="fas fa-play"></i> Start Work
+                                    </button>
+                                @endif
+
                             </div>
                         @endif
                     </div>
-                </div>
+               </div>
 
 
+@if(!$advancePayment)
+    {{-- Advance terms form --}}
+    <form id="advanceForm" class="d-flex align-items-center gap-2">
+        <div>
+            <label class="form-label mb-0 small">Advance %</label>
+            <input type="number" name="advance_percent" id="advancePercent" 
+                   class="form-control form-control-sm" value="40" min="1" max="100" required>
+        </div>
+        <div>
+            <label class="form-label mb-0 small">Remaining</label>
+            <input type="text" id="remainingAmount" class="form-control form-control-sm" readonly>
+        </div>
+        <button type="submit" class="btn btn-success btn-sm">Submit Terms</button>
+    </form>
+@else
+    @if($advancePayment->payment_status === 'pending' && auth()->id() === $assignedPost->customer_id)
+        <a href="{{ route('payment.checkout', $advancePayment->id) }}" class="btn btn-warning btn-sm">
+            <i class="fas fa-credit-card"></i> Pay Advance ({{ $advancePayment->total_amount }})
+        </a>
+    @elseif($advancePayment->payment_status === 'advance_paid' && auth()->id() === $assignedPost->provider_id)
+        <button class="btn btn-primary startWorkBtn" data-post-id="{{ $assignedPost->id }}">
+            <i class="fas fa-play"></i> Start Work
+        </button>
+    @endif
+@endif
                 <!-- Search Bar -->
                 <div class="card mb-3">
                     <div class="card-body">
@@ -229,4 +275,47 @@
             });
         });
     </script>
+    <script>
+document.addEventListener('DOMContentLoaded', function () {
+    const advancePercentInput = document.getElementById('advancePercent');
+    const remainingInput = document.getElementById('remainingAmount');
+    const totalAmount = {{ $assignedPost->price ?? 0 }};
+
+    function updateRemaining() {
+        let advancePercent = parseFloat(advancePercentInput.value) || 0;
+        let advanceAmount = (totalAmount * advancePercent) / 100;
+        let remaining = totalAmount - advanceAmount;
+        remainingInput.value = remaining.toFixed(2);
+    }
+
+    if (advancePercentInput) {
+        advancePercentInput.addEventListener('input', updateRemaining);
+        updateRemaining();
+    }
+
+    // Submit terms AJAX
+    $('#advanceForm').on('submit', function(e) {
+        e.preventDefault();
+        $.ajax({
+            url: '{{ url('/post-job-request') }}/{{ $assignedPost->id }}/set-advance',
+            method: 'POST',
+            data: {
+                _token: '{{ csrf_token() }}',
+                advance_percent: $('#advancePercent').val()
+            },
+            success: function(response) {
+                if(response.status){
+                    Swal.fire("Saved!", response.message, "success").then(() => location.reload());
+                } else {
+                    Swal.fire("Error!", response.message, "error");
+                }
+            },
+            error: function() {
+                Swal.fire("Error!", "Something went wrong!", "error");
+            }
+        });
+    });
+});
+</script>
+
 </x-master-layout>
