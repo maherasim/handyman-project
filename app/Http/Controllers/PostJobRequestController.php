@@ -57,15 +57,13 @@ public function bidshow()
     $query = PostJobBid::query()->with([
         'provider:id,display_name',
         'customer:id,display_name',
-        'postrequest:id,title,customer_id'
+        'postrequest:id,title,customer_id,status,provider_id'
     ]);
 
     // Check user type and adjust query
     if ($auth_user->user_type === 'provider') {
-        // Provider sees only their own bids
         $query->where('provider_id', $auth_user->id);
     } elseif ($auth_user->user_type === 'user') {
-        // User sees bids for their own post requests
         $query->whereHas('postrequest', function ($q) use ($auth_user) {
             $q->where('customer_id', $auth_user->id);
         });
@@ -75,48 +73,42 @@ public function bidshow()
 
     return DataTables::of($postJobBids)
         ->addIndexColumn()
-        ->addColumn('provider_name', function ($postJobBid) {
-            return $postJobBid->provider->display_name ?? 'N/A';
-        })
-        ->addColumn('customer_name', function ($postJobBid) {
-            return $postJobBid->customer->display_name ?? 'N/A';
-        })
-        ->addColumn('post_title', function ($postJobBid) {
-            return $postJobBid->postrequest->title ?? 'N/A';
-        })
+        ->addColumn('provider_name', fn($postJobBid) => $postJobBid->provider->display_name ?? 'N/A')
+        ->addColumn('customer_name', fn($postJobBid) => $postJobBid->customer->display_name ?? 'N/A')
+        ->addColumn('post_title', fn($postJobBid) => $postJobBid->postrequest->title ?? 'N/A')
+        ->addColumn('status', fn($postJobBid) => $postJobBid->postrequest->status ?? 'N/A') // ✅ Always return status
         ->addColumn('action', function ($bid) use ($auth_user) {
-                // Determine acceptance based on PostJobRequest assignment
-                $post = $bid->postrequest;
-                $isAssignedToThisProvider = $post && $post->status === 'assigned' && (int)$post->provider_id === (int)$bid->provider_id;
+            $post = $bid->postrequest;
+            $isAssignedToThisProvider = $post && $post->status === 'assigned' && (int)$post->provider_id === (int)$bid->provider_id;
 
-                // Customer: accept flow
-                if ($auth_user->user_type === 'user') {
-                    if ($post && $post->status === 'assigned') {
-                        return $isAssignedToThisProvider
-                            ? '<span class="badge badge-success">Accepted</span>'
-                            : '<span class="badge badge-secondary">Assigned</span>';
-                    }
-                    return '<button class="btn btn-sm btn-success acceptBid" data-id="'.$bid->id.'">Accept</button>';
+            // Customer: accept flow
+            if ($auth_user->user_type === 'user') {
+                if ($post && $post->status === 'assigned') {
+                    return $isAssignedToThisProvider
+                        ? '<span class="badge badge-success">Accepted</span>'
+                        : '<span class="badge badge-secondary">Assigned</span>';
                 }
+                return '<button class="btn btn-sm btn-success acceptBid" data-id="'.$bid->id.'">Accept</button>';
+            }
 
-                // Provider: show Start Work if assigned to them
-                if ($auth_user->user_type === 'provider') {
-                    if ($isAssignedToThisProvider) {
-                        return '<button class="btn btn-sm btn-primary startWorkBtn" data-post-id="'.$post->id.'">Start Work</button>';
-                    }
-                    return '-';
-                }
-
-                // Others
+            // Provider: show Start Work if assigned to them
+            if ($auth_user->user_type === 'provider') {
                 if ($isAssignedToThisProvider) {
-                    return '<span class="badge badge-success">Accepted</span>';
+                    return '<button class="btn btn-sm btn-primary startWorkBtn" data-post-id="'.$post->id.'">Start Work</button>';
                 }
                 return '-';
-            })
-            ->rawColumns(['action'])
+            }
 
+            // Others
+            if ($isAssignedToThisProvider) {
+                return '<span class="badge badge-success">Accepted</span>';
+            }
+            return '-';
+        })
+        ->rawColumns(['action'])
         ->toJson();
 }
+
 
 public function acceptBid($id)
 {
