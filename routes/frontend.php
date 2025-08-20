@@ -56,6 +56,8 @@ Route::middleware([CheckInstallation::class])->group(function () {
     Route::get('/book-service', [FrontendController::class, 'bookServiceView'])->name('book.service');
     Route::get('/rating-all', [FrontendController::class, 'ratingList'])->name('rating.all');
     Route::get('/booking-detail/{id}', [FrontendController::class, 'bookingDetail'])->name('booking.detail');
+    Route::get('/post-job-detail/{id}', [FrontendController::class, 'postJobDetail'])->name('post.job.detail');
+    Route::get('/book-post-job/{id}', [FrontendController::class, 'bookPostJobView'])->name('book.post_job');
 });
 
 
