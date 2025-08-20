@@ -373,10 +373,20 @@ trait NotificationTrait
                 $data['provider_name'] = $post_job->provider->display_name ?? null;
                 $data['user_name'] = $post_job->customer->display_name ?? null;
                 $job_request_id= isset($post_job->id) ?  $post_job->id :'';
-                // Respect job_price passed in, otherwise fall back to post job's price fields
-                if (empty($data['job_price'])) {
-                    $fallbackPrice = isset($post_job->price) ? getPriceFormat($post_job->price) : '';
-                    $data['job_price'] = $fallbackPrice;
+                // Resolve price: prefer explicitly passed job_price, then price, else fall back to PostJobRequest price
+                $resolvedPrice = null;
+                if (!empty($data['job_price'])) {
+                    $resolvedPrice = $data['job_price'];
+                } elseif (isset($data['price'])) {
+                    $resolvedPrice = $data['price'];
+                } elseif (isset($post_job->price)) {
+                    $resolvedPrice = $post_job->price;
+                }
+                if ($resolvedPrice !== null && $resolvedPrice !== '') {
+                    // If numeric, format; if already formatted string, keep as is
+                    $data['job_price'] = is_numeric($resolvedPrice) ? getPriceFormat($resolvedPrice) : $resolvedPrice;
+                } else {
+                    $data['job_price'] = '';
                 }
                 $activity_data = [
                     'post_request_id' => $post_job->post_request_id,
