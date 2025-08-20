@@ -92,12 +92,12 @@ public function bidshow()
             }
 
             // Provider: show Start Work if assigned to them
-            if ($auth_user->user_type === 'provider') {
-                if ($isAssignedToThisProvider) {
-                    return '<button class="btn btn-sm btn-primary startWorkBtn" data-post-id="'.$post->id.'">Start Work</button>';
-                }
-                return '-';
-            }
+            // if ($auth_user->user_type === 'provider') {
+            //     if ($isAssignedToThisProvider) {
+            //         return '<button class="btn btn-sm btn-primary startWorkBtn" data-post-id="'.$post->id.'">Start Work</button>';
+            //     }
+            //     return '-';
+            // }
 
             // Others
             if ($isAssignedToThisProvider) {
