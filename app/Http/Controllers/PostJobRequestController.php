@@ -432,6 +432,13 @@ public function index_data(DataTables $datatable, Request $request)
         $pageTitle = trans('messages.list_form_title',['form' => trans('messages.postbid')] );
         $auth_user = authSession();
         $assets = ['datatable'];
+        $jobpost = null;
+        if ($auth_user->user_type === 'user') {
+            $jobpost = PostJobRequest::where('customer_id', $auth_user->id)
+                ->whereIn('status', ['assigned','in_progress'])
+                ->latest()
+                ->first();
+        }
         return view('postrequest.view', compact('pageTitle', 'auth_user', 'assets','id'));
     }
 
