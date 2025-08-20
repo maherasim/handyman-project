@@ -40,14 +40,10 @@ class PostJobRequestController extends Controller
    // $auth_user = authSession();
 
 
-$auth_user = auth()->user();
+$assignedPost = PostJobRequest::where('provider_id', $auth_user->id)
+    ->where('status', 'assigned')
+    ->first();
 
-// Fetch all posts related to this user (provider or customer)
-if ($auth_user->user_type === 'provider') {
-    $assignedPosts  = PostJobRequest::where('provider_id', $auth_user->id)->get();
-} else {
-    $assignedPosts  = PostJobRequest::where('customer_id', $auth_user->id)->get();
-}
 
     // If the viewer is a customer, get their latest assigned/in_progress job
      
@@ -58,7 +54,7 @@ if ($auth_user->user_type === 'provider') {
     $assets = ['datatable'];
 
     return view('postrequest.view', compact(
-        'pageTitle', 'auth_user', 'assets', 'postJobBids', 'assignedPosts'));
+        'pageTitle', 'auth_user', 'assets', 'postJobBids', 'assignedPost'));
 }
 
  public function setAdvanceSplit(Request $request, $id)
