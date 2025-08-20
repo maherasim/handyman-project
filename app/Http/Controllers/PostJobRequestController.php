@@ -112,6 +112,7 @@ public function bidshow()
 
         ->toJson();
 }
+
 public function acceptBid($id)
 {
     $auth_user = authSession();
