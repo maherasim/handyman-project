@@ -125,9 +125,9 @@ public function acceptBid($id)
     try {
         $this->sendNotification([
             'activity_type' => 'user_accept_bid',
-            'post_job' => $post,
+            // 'post_job' => $post,
             // Provide the accepted bid price for templates/notifications
-            'job_price' => getPriceFormat($bid->price),
+            // 'job_price' => getPriceFormat($bid->price),
         ]);
     } catch (\Throwable $e) {
         // Silent fail for notifications
