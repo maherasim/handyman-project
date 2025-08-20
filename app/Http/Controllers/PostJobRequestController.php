@@ -33,51 +33,21 @@ class PostJobRequestController extends Controller
         return view('postrequest.index', compact('pageTitle','auth_user','assets','filter'));
 
     }
-// public function bidshowindex()
-// {
-//     $auth_user = authSession();
-
-//     // Fetch assigned post for this provider (if any)
-//     $assignedPost = PostJobRequest::where('provider_id', $auth_user->id)
-//                     ->where('status', 'assigned')
-//                     ->first();
-
-//     $postJobBids = PostJobBid::where('provider_id', $auth_user->id)->get();
-
-//     $pageTitle = trans('messages.list_form_title', ['form' => trans('messages.postbid')]);
-//     $assets = ['datatable'];
-
-//     return view('postrequest.view', compact('pageTitle', 'auth_user', 'assets', 'postJobBids', 'assignedPost'));
-// }
-public function bidshowindex(Request $request)
+public function bidshowindex()
 {
     $auth_user = authSession();
 
-    $query = PostJobBid::with(['postJobRequest', 'provider', 'customer'])
-        ->where('provider_id', $auth_user->id);
+    // Fetch assigned post for this provider (if any)
+    $assignedPost = PostJobRequest::where('provider_id', $auth_user->id)
+                    ->where('status', 'assigned')
+                    ->first();
 
-    return DataTables::of($query)
-        ->addColumn('post_title', function ($row) {
-            return $row->postJobRequest->title ?? '-';
-        })
-        ->addColumn('provider_name', function ($row) {
-            return $row->provider->name ?? '-';
-        })
-        ->addColumn('customer_name', function ($row) {
-            return $row->customer->name ?? '-';
-        })
-        ->addColumn('price', function ($row) {
-            return $row->price;
-        })
-        ->addColumn('status', function ($row) {
-            // ✅ Now fetch status from post_job_requests
-            return $row->postJobRequest->status ?? 'pending';
-        })
-        ->addColumn('action', function ($row) {
-            return view('postrequest.partials.action', compact('row'))->render();
-        })
-        ->rawColumns(['action'])
-        ->make(true);
+    $postJobBids = PostJobBid::where('provider_id', $auth_user->id)->get();
+
+    $pageTitle = trans('messages.list_form_title', ['form' => trans('messages.postbid')]);
+    $assets = ['datatable'];
+
+    return view('postrequest.view', compact('pageTitle', 'auth_user', 'assets', 'postJobBids', 'assignedPost'));
 }
 
 public function bidshow()
