@@ -51,8 +51,7 @@ $assignedPost = PostJobRequest::get();
     $assets = ['datatable'];
 
     return view('postrequest.view', compact(
-        'pageTitle', 'auth_user', 'assets', 'postJobBids', 'assignedPost', 'jobpost'
-    ));
+        'pageTitle', 'auth_user', 'assets', 'postJobBids', 'assignedPost'));
 }
 
  public function setAdvanceSplit(Request $request, $id)
