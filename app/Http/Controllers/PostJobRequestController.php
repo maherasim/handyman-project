@@ -94,6 +94,28 @@ public function bidshow()
         ->toJson();
 }
 
+public function acceptBid($id)
+{
+    $auth_user = authSession();
+
+    $bid = PostJobBid::with('postrequest')->findOrFail($id);
+
+    // Ensure customer owns this job request
+    if ($auth_user->id !== $bid->postrequest->customer_id) {
+        return response()->json(['status' => false, 'message' => 'Unauthorized'], 403);
+    }
+
+    // Mark this bid as accepted
+    $bid->status = 'accepted';
+    $bid->save();
+
+    // Optionally: reject all other bids on same job
+    PostJobBid::where('post_request_id', $bid->post_request_id)
+        ->where('id', '!=', $bid->id)
+        ->update(['status' => 'rejected']);
+
+    return response()->json(['status' => true, 'message' => 'Bid accepted successfully!']);
+}
 
 
 public function index_data(DataTables $datatable, Request $request)
