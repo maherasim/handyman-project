@@ -2,130 +2,157 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-lg-12">
+                <div class="card card-block card-stretch">
+                    <div class="card-body p-0">
+                        <div class="d-flex justify-content-between align-items-center p-3">
+                        <h5 class="font-weight-bold">{{ $pageTitle }} asim</h5>
 
-                <!-- Page Header -->
-                <div class="card card-block card-stretch mb-3">
-                    <div class="card-body d-flex justify-content-between align-items-center">
-                        <h5 class="fw-bold mb-0">{{ $pageTitle }}</h5>
-
-                        @if(isset($assignedPost) && auth()->id() === $assignedPost->provider_id)
+                         @if(isset($assignedPost) && auth()->id() === $assignedPost->provider_id)
                             <button class="btn btn-primary startWorkBtn" data-post-id="{{ $assignedPost->id }}">
                                 <i class="fas fa-play"></i> Start Work
                             </button>
                         @endif
+
+                    </div>
+
+
                     </div>
                 </div>
-
-                <!-- Search Bar -->
-                <div class="card mb-3">
+                <div class="card">
                     <div class="card-body">
-                        <div class="d-flex justify-content-end">
-                            <div class="input-group w-25">
-                                <span class="input-group-text"><i class="fas fa-search"></i></span>
-                                <input type="text" class="form-control dt-search" placeholder="Search bids...">
+                        <div class="float-right ">
+                            <div class="d-flex justify-content-end">
+
+                                <div class="input-group ml-auto">
+                                    <span class="input-group-text" id="addon-wrapping"><i
+                                            class="fas fa-search"></i></span>
+                                    <input type="text" class="form-control dt-search" placeholder="Search..."
+                                        aria-label="Search" aria-describedby="addon-wrapping"
+                                        aria-controls="dataTableBuilder">
+                                </div>
                             </div>
+                        </div>
+                        <div class="table-responsive">
+                            <table id="datatable" class="table table-striped border">
+
+                            </table>
                         </div>
                     </div>
                 </div>
-
-                <!-- Bids Container -->
-                <div id="bidsContainer" class="row">
-                    <!-- Cards will be loaded here dynamically from DataTable -->
-                </div>
-
             </div>
         </div>
     </div>
-
-    <!-- Hidden DataTable (only for fetching data) -->
-    <table id="datatable" class="d-none"></table>
-
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            let bidsContainer = $("#bidsContainer");
+        document.addEventListener('DOMContentLoaded', (event) => {
 
-            // Helpers
-            function getStatusColor(status) {
-                switch (status) {
-                    case 'pending': return 'secondary';
-                    case 'assigned': return 'info';
-                    case 'in_progress': return 'warning';
-                    case 'completed': return 'success';
-                    case 'cancelled': return 'danger';
-                    default: return 'dark';
-                }
-            }
-
-            function capitalize(str) {
-                return str ? str.charAt(0).toUpperCase() + str.slice(1).replace('_',' ') : '';
-            }
-
-            // DataTable init
-            let table = $('#datatable').DataTable({
+            window.renderedDataTable = $('#datatable').DataTable({
                 processing: true,
                 serverSide: true,
-                searching: false,
-                paging: true,
-                pageLength: 6,
+                autoWidth: false,
+                responsive: true,
+                dom: '<"row align-items-center"><"table-responsive my-3" rt><"row align-items-center" <"col-md-6" l><"col-md-6" p>><"clear">',
                 ajax: {
-                    url: '{{ route("bidsshowjson") }}',
-                    type: "GET",
-                    data: function(d) {
-                        d.search = { value: $('.dt-search').val() }
-                    }
+                    "type": "GET",
+                    "url": '{{ route('bidsshowjson') }}',
+                    "data": function(d) {
+                        d.search = {
+                            value: $('.dt-search').val()
+                        };
+                        d.filter = {
+                            column_status: $('#column_status').val()
+                        }
+                    },
                 },
-                columns: [
-                    { data: 'post_title', name: 'post_title' },
-                    { data: 'provider_name', name: 'provider_name' },
-                    { data: 'customer_name', name: 'customer_name' },
-                    { data: 'price', name: 'price' },
-                    { data: 'duration', name: 'duration' },
-                    { data: 'status', name: 'status' }, // 👈 include status
-                    { data: 'action', name: 'action', orderable: false, searchable: false }
-                ],
-                drawCallback: function(settings) {
-                    bidsContainer.empty();
+             columns: [
+            { data: 'DT_RowIndex', name: 'DT_RowIndex', title: "#", orderable: false, searchable: false },
+            { data: 'post_title', name: 'post_title', title: "Job Post" },
+            { data: 'provider_name', name: 'provider_name', title: "Provider" },
+            { data: 'customer_name', name: 'customer_name', title: "Customer" },
+            { data: 'price', name: 'price', title: "Bid Price" },
+            { data: 'duration', name: 'duration', title: "Duration" },
+            {
+                data: 'action',
+                name: 'action',
+                title: "Action",
+                orderable: false,
+                searchable: false
+            }
+        ]
 
-                    let data = this.api().rows({ page: 'current' }).data();
 
-                    data.each(function(row) {
-                        let card = `
-                        <div class="col-md-6 col-lg-4 mb-3">
-                            <div class="card shadow-sm h-100 border-0">
-                                <div class="card-body d-flex flex-column">
 
-                                    <!-- Title & Status -->
-                                    <div class="d-flex justify-content-between align-items-center mb-2">
-                                        <h6 class="fw-bold mb-0">${row.post_title}</h6>
-                                        <span class="badge bg-${getStatusColor(row.status)} text-white px-3 py-2">
-                                            ${capitalize(row.status)}
-                                        </span>
-                                    </div>
-
-                                    <!-- Details -->
-                                    <p class="text-muted mb-1"><i class="fas fa-user"></i> Provider: ${row.provider_name}</p>
-                                    <p class="text-muted mb-1"><i class="fas fa-user-tie"></i> Customer: ${row.customer_name}</p>
-                                    <p class="mb-1"><i class="fas fa-dollar-sign"></i> Bid: <span class="fw-bold">${row.price}</span></p>
-                                    <p class="mb-3"><i class="fas fa-clock"></i> Duration: ${row.duration}</p>
-
-                                    <!-- Actions -->
-                                    <div class="mt-auto">
-                                        ${row.action}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>`;
-                        bidsContainer.append(card);
-                    });
-                }
-            });
-
-            // Live search
-            $('.dt-search').on('keyup', function() {
-                table.ajax.reload();
             });
         });
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+    $(document).on('click', '.acceptBid', function () {
+        let bidId = $(this).data('id');
 
-    {{-- @include('postrequest.partials.bid-actions') --}}
+        Swal.fire({
+            title: "Are you sure?",
+            text: "Do you want to accept this bid?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#28a745",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, accept it!"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: '{{ url("/bids/accept") }}/' + bidId,
+                    type: "POST",
+                    data: {
+                        _token: '{{ csrf_token() }}'
+                    },
+                    success: function (response) {
+                        if (response.status) {
+                            Swal.fire("Accepted!", response.message, "success");
+                            $('#datatable').DataTable().ajax.reload();
+                        } else {
+                            Swal.fire("Error!", response.message, "error");
+                        }
+                    },
+                    error: function () {
+                        Swal.fire("Error!", "Something went wrong!", "error");
+                    }
+                });
+            }
+        });
+    });
+    $(document).on('click', '.startWorkBtn', function () {
+        const postId = $(this).data('post-id');
+        Swal.fire({
+            title: "Start work?",
+            text: "This will move the job to in progress.",
+            icon: "question",
+            showCancelButton: true,
+            confirmButtonColor: "#0d6efd",
+            cancelButtonColor: "#6c757d",
+            confirmButtonText: "Yes, start!"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: '{{ url("/post-job-request") }}/' + postId + '/start-work',
+                    type: "POST",
+                    data: { _token: '{{ csrf_token() }}' },
+                    success: function (response) {
+                        if (response.status) {
+                            Swal.fire("Started!", response.message || "Work started.", "success");
+                            $('#datatable').DataTable().ajax.reload();
+                        } else {
+                            Swal.fire("Error!", response.message || "Unable to start.", "error");
+                        }
+                    },
+                    error: function () {
+                        Swal.fire("Error!", "Something went wrong!", "error");
+                    }
+                });
+            }
+        });
+    });
+});
+</script>
+
 </x-master-layout>
