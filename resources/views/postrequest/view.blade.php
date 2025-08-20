@@ -6,7 +6,7 @@
                 <!-- Page Header -->
               <div class="card card-block card-stretch mb-3">
                     <div class="card-body d-flex justify-content-between align-items-center">
-                        <h5 class="fw-bold mb-0">{{ $pageTitle }} asim</h5>
+                        <h5 class="fw-bold mb-0">{{ $pageTitle }} </h5>
 
                         {{-- Provider sees Start Work --}}
                         @if (isset($assignedPost) && auth()->id() === $assignedPost->provider_id)
