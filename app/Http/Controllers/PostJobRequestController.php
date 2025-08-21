@@ -7,6 +7,7 @@ use App\Models\PostJobRequest;
 use Yajra\DataTables\DataTables;
 use App\Models\Service;
 use App\Models\SubCategory;
+use App\Models\Wallet;
 use App\Models\Setting;
 
 use App\Models\PostJobBid;
