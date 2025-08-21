@@ -87,6 +87,7 @@
                         switch (row.status) {
                             case 'pending':    statusBadge = `<span class="badge bg-warning text-dark px-3 py-2">${row.status}</span>`; break;
                             case 'assigned':   statusBadge = `<span class="badge bg-info text-white px-3 py-2">${row.status}</span>`; break;
+                            case 'accepted':   statusBadge = `<span class="badge bg-success text-white px-3 py-2">${row.status}</span>`; break;
                             case 'in_progress':statusBadge = `<span class="badge bg-primary text-white px-3 py-2">In Progress</span>`; break;
                             case 'completed':  statusBadge = `<span class="badge bg-success text-white px-3 py-2">${row.status}</span>`; break;
                             case 'cancelled':  statusBadge = `<span class="badge bg-danger text-white px-3 py-2">${row.status}</span>`; break;
