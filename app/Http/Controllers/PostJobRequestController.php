@@ -573,9 +573,7 @@ public function startWork(Request $request, $id)
     $post = PostJobBid::findOrFail($id);
 
     // Ensure user is a provider
-    if (!auth()->user()->hasAnyRole(['provider'])) {
-        return response()->json(['message' => 'Forbidden'], 403);
-    }
+     
  
 
     // Update advance, remaining, and status
