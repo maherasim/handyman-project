@@ -2,29 +2,21 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
-use App\Models\ProviderPayout;
-
-use App\Traits\EarningTrait;
-use App\Models\BookingHandymanMapping;
-use App\Models\HandymanPayout;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
-use App\Models\Payment;
-use App\Models\Booking;
-use App\Models\Wallet;
-use App\Models\User;
-use App\Models\PaymentHistory;
-use App\Models\PaymentGateway;
-use App\Http\Resources\API\PaymentResource;
-use App\Http\Resources\API\PaymentHistoryResource;
-use App\Http\Resources\API\GetCashPaymentHistoryResource;
-use App\Traits\NotificationTrait;
-use App\Http\Resources\API\PaymentGatewayResource;
+use App\Models\PostJobRequest;
+use Yajra\DataTables\DataTables;
 use App\Models\Service;
+use App\Models\SubCategory;
+use App\Models\Wallet;
 use App\Models\Setting;
 use DB;
+use Carbon\Carbon;
+
+use App\Models\ProviderPayout;
 use App\Models\CommissionEarning;
+use App\Models\PostJobBid;
+use App\Traits\NotificationTrait;
+use Illuminate\Support\Facades\Log;
 
 class PostJobRequestController extends Controller
 {
