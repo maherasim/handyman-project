@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use App\Models\PaymentHistory;
 use App\Models\Payment;
 use App\Models\Setting;
+use App\Models\Wallet;
+use Illuminate\Support\Facades\DB;
 use Facade\Ignition\DumpRecorder\Dump;
 use Yajra\DataTables\DataTables;
 use App\Models\Booking;
@@ -86,6 +88,60 @@ public function paymenthistory_index_data(DataTables $datatable, $id)
         $assets = ['datatable'];
         return view('payment.cash', compact('pageTitle','assets','filter'));
     }
+
+
+
+public function payAdvance(Request $request, $id)
+{
+    $user = auth()->user();
+    $post = PostJobBid::findOrFail($id);
+
+    // Calculate advance amount from bid price
+    $advanceAmount = ($post->bid_price * $post->advance_percent) / 100;
+dd( $advanceAmount);
+    // Check wallet balance
+    $wallet = Wallet::where('user_id', $user->id)->first();
+
+    if (!$wallet || $wallet->amount < $advanceAmount) {
+        return response()->json(['status' => false, 'message' => 'Insufficient wallet balance'], 400);
+    }
+
+    DB::beginTransaction();
+    try {
+        // Deduct from wallet
+        $wallet->amount -= $advanceAmount;
+        $wallet->save();
+
+        // Update post status
+        $post->status = 'advance_paid';
+        $post->save();
+
+        // Record transaction (optional, if you want history)
+        Wallet::create([
+            'user_id' => $user->id,
+            'title'   => "Advance Payment for Job #{$post->id}",
+            'amount'  => -$advanceAmount,
+            'status'  => 1,
+            'new_amount' => $wallet->amount,
+        ]);
+
+        DB::commit();
+
+        return response()->json([
+            'status' => true,
+            'message' => "Advance payment of €{$advanceAmount} successful",
+            'balance' => $wallet->amount
+        ]);
+    } catch (\Exception $e) {
+        DB::rollBack();
+        return response()->json(['status' => false, 'message' => 'Payment failed'], 500);
+    }
+}
+
+
+
+
+
 
 public function cash_index_data(DataTables $datatable, Request $request)
 {
