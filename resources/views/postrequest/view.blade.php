@@ -206,26 +206,27 @@
                     if (result.isConfirmed) {
                         const { advance, remaining } = result.value;
 
-                        $.ajax({
-                            url: '{{ url('/post-job-request') }}/' + postId + '/set-advance',
-                            type: "POST",
-                            data: {
-                                _token: '{{ csrf_token() }}',
-                                advance_percent: advance,
-                                remaining_percent: remaining
-                            },
-                            success: function(response) {
-                                if (response.status) {
-                                    Swal.fire("Saved!", response.message || "Payment split set & work started.", "success");
-                                    $('#datatable').DataTable().ajax.reload();
-                                } else {
-                                    Swal.fire("Error!", response.message || "Unable to save.", "error");
+                       $.ajax({
+                                url: '{{ route("post-job-request.start-work", ":id") }}'.replace(':id', postId),
+                                type: "POST",
+                                data: {
+                                    _token: '{{ csrf_token() }}',
+                                    advance_percent: advance,
+                                    remaining_percent: remaining
+                                },
+                                success: function(response) {
+                                    if (response.status) {
+                                        Swal.fire("Saved!", response.message || "Payment split set & work started.", "success");
+                                        $('#datatable').DataTable().ajax.reload();
+                                    } else {
+                                        Swal.fire("Error!", response.message || "Unable to save.", "error");
+                                    }
+                                },
+                                error: function() {
+                                    Swal.fire("Error!", "Something went wrong!", "error");
                                 }
-                            },
-                            error: function() {
-                                Swal.fire("Error!", "Something went wrong!", "error");
-                            }
-                        });
+                            });
+
                     }
                 });
             });
