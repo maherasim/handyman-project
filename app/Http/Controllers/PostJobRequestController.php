@@ -572,11 +572,7 @@ public function startWork(Request $request, $id)
     if (!auth()->user()->hasAnyRole(['provider'])) {
         return response()->json(['message' => 'Forbidden'], 403);
     }
-
-    // Only allow if status is 'assigned'
-    if ($post->status !== 'assigned') {
-        return response()->json(['message' => 'Job is not assigned'], 400);
-    }
+ 
 
     // Update advance, remaining, and status
     $post->advance_percent = $request->input('advance_percent');
