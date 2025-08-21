@@ -26,12 +26,12 @@
                                 @endphp
 
                                 <!-- Pay Advance -->
-                                <button class="btn btn-success payAdvanceBtn" data-post-id="{{ $advance_payment->id }}"
-                                    data-advance="{{ $advance_payment->advance_percent }}"
-                                    data-remaining="{{ $advance_payment->remaining_percent }}">
-                                    <i class="fas fa-wallet"></i>
-                                    Pay Advance {{ $advanceAmount }} € ({{ $advance_payment->advance_percent }}%)
-                                </button>
+                                 <button class="btn btn-success payAdvanceBtn"  
+                                data-post-id="{{ $advance_payment->id }}">
+                                <i class="fas fa-wallet"></i> 
+                                Pay Advance {{ $advanceAmount }} ({{ $advance_payment->advance_percent }}%)
+                            </button>
+
 
                                 <!-- Pay Remaining -->
                                 {{-- <button class="btn btn-info payRemainingBtn" 
