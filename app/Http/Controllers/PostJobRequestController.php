@@ -182,12 +182,12 @@ public function acceptBid($id)
     $bid->save();
 
     // Optionally, assign the provider to the post request
-    $post = $bid->postrequest;
-    if ($post) {
-        $post->provider_id = $bid->provider_id;
-        $post->status = 'assigned'; // This is optional if you still want post request status to reflect assignment
-        $post->save();
-    }
+    // $post = $bid->postrequest;
+    // if ($post) {
+    //     $post->provider_id = $bid->provider_id;
+    //     $post->status = 'assigned'; // This is optional if you still want post request status to reflect assignment
+    //     $post->save();
+    // }
 
     // Notify provider/user if needed
     try {
