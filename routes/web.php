@@ -36,7 +36,7 @@ use App\Http\Controllers\SubCategoryController;
 use App\Http\Controllers\PlanController;
 use App\Http\Controllers\BankController;
 use App\Http\Controllers\PostJobRequestController;
-use App\Http\Controllers\ServicePackageControlle
+use App\Http\Controllers\ServicePackageController;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\BookingRatingController;
 use App\Http\Controllers\HandymanRatingController;
