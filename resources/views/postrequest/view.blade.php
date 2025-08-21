@@ -14,11 +14,14 @@
                                 <i class="fas fa-play"></i> Set Payment
                             </button>
                         @endif  
-                         @if (isset($advance_payment))
-                            <button class="btn btn-primary startWorkBtn" data-post-id="{{ $advance_payment->id }}">
-                                <i class="fas fa-play"></i> Pay Advance 
+
+                        {{-- Customer sees Pay Advance --}}
+                        @if (isset($advance_payment))
+                            <button class="btn btn-success payAdvanceBtn" data-post-id="{{ $advance_payment->id }}">
+                                <i class="fas fa-credit-card"></i> Pay Advance
                             </button>
-                        @endif                     
+                        @endif  
+                  
 
                     </div>
                 </div>
