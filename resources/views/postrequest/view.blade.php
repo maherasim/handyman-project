@@ -397,27 +397,40 @@
             });
         });
     $(document).on("click", ".payAdvanceBtn", function() {
-    let postId = $(this).data("post-id");
+        let postId = $(this).data("post-id");
 
-    $.ajax({
-        url: '{{ route("post-job-request.pay-advance", ":id") }}'.replace(':id', postId),
-        type: "POST",
-        data: {
-            _token: '{{ csrf_token() }}'
-        },
-        success: function(response) {
-            if (response.status) {
-                Swal.fire("Success", response.message, "success");
-                $('#datatable').DataTable().ajax.reload();
-            } else {
-                Swal.fire("Error", response.message, "error");
+        Swal.fire({
+            title: "Confirm Advance Payment",
+            text: "Are you sure you want to proceed with the advance payment?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#28a745",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, pay advance",
+            cancelButtonText: "Cancel"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: '{{ route("post-job-request.pay-advance", ":id") }}'.replace(':id', postId),
+                    type: "POST",
+                    data: {
+                        _token: '{{ csrf_token() }}'
+                    },
+                    success: function(response) {
+                        if (response.status) {
+                            Swal.fire("Success", response.message, "success");
+                            $('#datatable').DataTable().ajax.reload();
+                        } else {
+                            Swal.fire("Error", response.message, "error");
+                        }
+                    },
+                    error: function() {
+                        Swal.fire("Error", "Something went wrong!", "error");
+                    }
+                });
             }
-        },
-        error: function() {
-            Swal.fire("Error", "Something went wrong!", "error");
-        }
+        });
     });
-});
 
     </script>
 </x-master-layout>
