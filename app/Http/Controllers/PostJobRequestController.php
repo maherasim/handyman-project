@@ -565,6 +565,7 @@ public function index_data(DataTables $datatable, Request $request)
 
     public function startWork(Request $request, $id)
     {
+        dd($request->all(),$id);
         $post = PostJobRequest::findOrFail($id);
         if (!auth()->user()->hasAnyRole(['provider'])) {
             return response()->json(['message' => 'Forbidden'], 403);
