@@ -276,14 +276,17 @@
     </script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        // Isolate Pay Advance binding to ensure it initializes after SweetAlert is loaded
+        // Isolate Pay Advance binding without jQuery dependency
         (function bindPayAdvanceOnce() {
-            // Avoid double-binding
             if (window.__payAdvanceBound) return;
             window.__payAdvanceBound = true;
 
-            $(document).on("click", ".payAdvanceBtn", function() {
-                const postId = $(this).data("post-id");
+            document.addEventListener('click', function (evt) {
+                const btn = evt.target && evt.target.closest && evt.target.closest('.payAdvanceBtn');
+                if (!btn) return;
+
+                const postId = btn.getAttribute('data-post-id');
+                if (!postId) return;
 
                 Swal.fire({
                     title: "Confirm Advance Payment",
@@ -295,27 +298,34 @@
                     confirmButtonText: "Yes, pay advance",
                     cancelButtonText: "Cancel"
                 }).then((result) => {
-                    if (result.isConfirmed) {
-                        $.ajax({
-                            url: '{{ route("post-job-request.pay-advance", ":id") }}'.replace(':id', postId),
-                            type: "POST",
-                            data: { _token: '{{ csrf_token() }}' },
-                            success: function(response) {
-                                if (response.status) {
-                                    Swal.fire("Success", response.message, "success");
-                                    $('#datatable').DataTable().ajax.reload();
-                                } else {
-                                    Swal.fire("Error", response.message || "Unable to process.", "error");
-                                }
-                            },
-                            error: function(xhr) {
-                                const msg = (xhr && xhr.responseJSON && xhr.responseJSON.message) ? xhr.responseJSON.message : "Something went wrong!";
-                                Swal.fire("Error", msg, "error");
+                    if (!result.isConfirmed) return;
+
+                    const url = '{{ route("post-job-request.pay-advance", ":id") }}'.replace(':id', postId);
+                    fetch(url, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        },
+                        body: JSON.stringify({})
+                    })
+                    .then(function (res) { return res.json(); })
+                    .then(function (response) {
+                        if (response && response.status) {
+                            Swal.fire("Success", response.message || "Advance paid successfully.", "success");
+                            if (window.jQuery && window.jQuery.fn && window.jQuery.fn.DataTable && window.jQuery('#datatable').length) {
+                                window.jQuery('#datatable').DataTable().ajax.reload();
                             }
-                        });
-                    }
+                        } else {
+                            Swal.fire("Error", (response && response.message) ? response.message : "Unable to process.", "error");
+                        }
+                    })
+                    .catch(function () {
+                        Swal.fire("Error", "Something went wrong!", "error");
+                    });
                 });
-            });
+            }, { passive: true });
         })();
     </script>
     <script>
