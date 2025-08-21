@@ -15,12 +15,16 @@
                             </button>
                         @endif  
 
-                        {{-- Customer sees Pay Advance --}}
-                        @if (isset($advance_payment))
-                            <button class="btn btn-success payAdvanceBtn" data-post-id="{{ $advance_payment->id }}">
-                                <i class="fas fa-credit-card"></i> Pay Advance
-                            </button>
-                        @endif  
+                      {{-- Customer sees Pay / Update Advance --}}
+@if (isset($advance_payment))
+    <button class="btn btn-warning updateAdvanceBtn" 
+            data-post-id="{{ $advance_payment->id }}"
+            data-advance="{{ $advance_payment->advance_percent }}"
+            data-remaining="{{ $advance_payment->remaining_percent }}">
+        <i class="fas fa-credit-card"></i> Pay / Update Advance
+    </button>
+@endif
+
                   
 
                     </div>
@@ -132,6 +136,75 @@
                 table.ajax.reload();
             });
         });
+        // Update / Alter Payment
+$(document).on('click', '.updateAdvanceBtn', function() {
+    const postId = $(this).data('post-id');
+    const currentAdvance = $(this).data('advance');
+    const currentRemaining = $(this).data('remaining');
+
+    Swal.fire({
+        title: "Update Payment Split",
+        html: `
+            <div class="mb-3 text-start">
+                <label class="form-label fw-bold">Advance Percentage</label>
+                <input type="number" id="advanceInput" class="form-control" value="${currentAdvance}" min="0" max="100" />
+            </div>
+            <div class="text-start">
+                <label class="form-label fw-bold">Remaining Percentage</label>
+                <input type="number" id="remainingInput" class="form-control" value="${currentRemaining}" readonly />
+            </div>
+        `,
+        focusConfirm: false,
+        showCancelButton: true,
+        confirmButtonText: "Update",
+        preConfirm: () => {
+            const advance = document.getElementById('advanceInput').value;
+            const remaining = document.getElementById('remainingInput').value;
+
+            if (!advance || advance < 0 || advance > 100) {
+                Swal.showValidationMessage("Please enter a valid advance percentage (0-100)");
+                return false;
+            }
+            return { advance, remaining };
+        },
+        didOpen: () => {
+            const advanceInput = document.getElementById('advanceInput');
+            const remainingInput = document.getElementById('remainingInput');
+
+            advanceInput.addEventListener('input', function() {
+                let val = parseInt(this.value) || 0;
+                if (val > 100) val = 100;
+                remainingInput.value = 100 - val;
+            });
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            const { advance, remaining } = result.value;
+
+            $.ajax({
+                url: '{{ route("adjustpayment.start-work", ":id") }}'.replace(':id', postId),
+                type: "POST",
+                data: {
+                    _token: '{{ csrf_token() }}',
+                    advance_percent: advance,
+                    remaining_percent: remaining
+                },
+                success: function(response) {
+                    if (response.status) {
+                        Swal.fire("Updated!", response.message || "Payment split updated.", "success");
+                        $('#datatable').DataTable().ajax.reload();
+                    } else {
+                        Swal.fire("Error!", response.message || "Unable to update.", "error");
+                    }
+                },
+                error: function() {
+                    Swal.fire("Error!", "Something went wrong!", "error");
+                }
+            });
+        }
+    });
+});
+
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
