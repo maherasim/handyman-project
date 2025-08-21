@@ -103,9 +103,9 @@ public function bidshow()
             if (!$post) return '-';
 
             // Provider: Start Work if assigned
-            if ($auth_user->user_type === 'provider' && $post->status === 'assigned' && $post->provider_id == $bid->provider_id) {
-                return '<button class="btn btn-sm btn-primary startWorkBtn" data-post-id="'.$post->id.'">Start Work</button>';
-            }
+            // if ($auth_user->user_type === 'provider' && $post->status === 'assigned' && $post->provider_id == $bid->provider_id) {
+            //     return '<button class="btn btn-sm btn-primary startWorkBtn" data-post-id="'.$post->id.'">Start Work</button>';
+            // }
 
             // Customer: Accept bid if requested
             if ($auth_user->user_type === 'user' && $post->status === 'requested' && $bid->status !== 'accepted') {
