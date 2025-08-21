@@ -135,7 +135,7 @@ public function bidshow()
 public function payAdvance(Request $request, $id)
 {
 //    dd($id);
-    dd($request->all());
+    // dd($request->all());
     $user = auth()->user();
     $post = PostJobBid::findOrFail($id);
 
