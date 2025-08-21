@@ -208,7 +208,9 @@
 
                        $.ajax({
                                
-                                    url: '{{ route("post-job-request.start-work", ":id") }}'.replace(':id', postId),
+                        url: '{{ route("adjustpayment.start-work", ":id") }}'.replace(':id', postId),
+
+                        
 
                                 type: "POST",
                                 data: {
