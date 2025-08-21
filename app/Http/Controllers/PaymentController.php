@@ -9,11 +9,14 @@ use App\Models\Payment;
 use App\Models\Setting;
 use App\Models\Wallet;
 use App\Models\PostJobBid;
+use App\Models\ProviderPayout;
+use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Facade\Ignition\DumpRecorder\Dump;
 use Yajra\DataTables\DataTables;
 use App\Models\Booking;
 use App\Models\CommissionEarning;
+use Carbon\Carbon;
 
 class PaymentController extends Controller
 {
@@ -127,14 +130,65 @@ public function payAdvance(Request $request, $id)
         $post->status = 'advance_paid';
         $post->save();
 
-        // Record transaction (optional, if you want history)
-        Wallet::create([
-            'user_id' => $user->id,
-            'title'   => "Advance Payment for Job #{$post->id}",
-            'amount'  => -$advanceAmount,
-            'status'  => 1,
-            'new_amount' => $wallet->amount,
-        ]);
+        // Compute commission and payouts
+        $adminCommissionSetting = Setting::getValueByKey('admin_commission_percentage', 'site-setup');
+        $adminCommissionPercent = 10;
+        if (is_object($adminCommissionSetting) && isset($adminCommissionSetting->value)) {
+            $adminCommissionPercent = (float) $adminCommissionSetting->value;
+        }
+
+        $adminCommissionAmount = ($advanceAmount * $adminCommissionPercent) / 100.0;
+        $providerPayoutAmount = max(0, $advanceAmount - $adminCommissionAmount);
+
+        // Credit admin wallet with commission
+        $adminUserId = User::where('user_type', 'admin')->value('id');
+        if ($adminUserId) {
+            Wallet::firstOrCreate(['user_id' => $adminUserId])->increment('amount', $adminCommissionAmount);
+        }
+
+        // Credit provider wallet with remaining payout
+        if ($providerPayoutAmount > 0) {
+            Wallet::firstOrCreate(['user_id' => $post->provider_id])->increment('amount', $providerPayoutAmount);
+
+            // Create provider payout record
+            ProviderPayout::create([
+                'provider_id'    => $post->provider_id,
+                'amount'         => $providerPayoutAmount,
+                'payment_method' => 'wallet',
+                'paid_date'      => Carbon::now(),
+                'status'         => 'paid',
+                'description'    => "Advance payout for Bid #{$post->id}",
+            ]);
+        }
+
+        // Link to booking if exists for post_request_id
+        $booking = null;
+        if (!empty($post->post_request_id)) {
+            $booking = Booking::where('post_request_id', $post->post_request_id)->latest('id')->first();
+        }
+
+        // Commission earnings records (only if booking exists as booking_id is required)
+        if ($booking) {
+            if ($adminUserId && $adminCommissionAmount > 0) {
+                CommissionEarning::create([
+                    'booking_id'         => $booking->id,
+                    'user_type'          => 'admin',
+                    'employee_id'        => $adminUserId,
+                    'commission_amount'  => $adminCommissionAmount,
+                    'commission_status'  => 'paid',
+                ]);
+            }
+
+            if ($providerPayoutAmount > 0) {
+                CommissionEarning::create([
+                    'booking_id'         => $booking->id,
+                    'user_type'          => 'provider',
+                    'employee_id'        => $post->provider_id,
+                    'commission_amount'  => $providerPayoutAmount,
+                    'commission_status'  => 'paid',
+                ]);
+            }
+        }
 
         DB::commit();
 
