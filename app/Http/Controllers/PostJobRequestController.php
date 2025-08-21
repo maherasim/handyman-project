@@ -136,28 +136,26 @@ public function bidshow()
         ->rawColumns(['action'])
         ->toJson();
 }
-
 public function payAdvance(Request $request, $id)
 {
-//    dd($id);
-    // dd($request->all());
     $user = auth()->user();
     $post = PostJobBid::findOrFail($id);
 
-    // Allow client-provided amount; otherwise calculate from bid price
+    // Determine advance amount
     $requestedAmount = $request->input('amount');
     if (is_string($requestedAmount) && trim($requestedAmount) === '') {
         $requestedAmount = null;
     }
     $advanceAmount = is_null($requestedAmount)
-        ? (($post->price * $post->advance_percent) / 100)
+        ? ($post->price * $post->advance_percent / 100)
         : (float) $requestedAmount;
+
     if ($advanceAmount <= 0) {
         return response()->json(['status' => false, 'message' => 'Invalid advance amount'], 422);
     }
+
     // Check wallet balance
     $wallet = Wallet::where('user_id', $user->id)->first();
-
     if (!$wallet || $wallet->amount < $advanceAmount) {
         return response()->json(['status' => false, 'message' => 'Insufficient wallet balance'], 400);
     }
@@ -172,7 +170,7 @@ public function payAdvance(Request $request, $id)
         $post->status = 'advance_paid';
         $post->save();
 
-        // Compute commission and payouts
+        // Admin commission
         $adminCommissionSetting = Setting::getValueByKey('admin_commission_percentage', 'site-setup');
         $adminCommissionPercent = 10;
         if (is_object($adminCommissionSetting) && isset($adminCommissionSetting->value)) {
@@ -182,50 +180,39 @@ public function payAdvance(Request $request, $id)
         $adminCommissionAmount = ($advanceAmount * $adminCommissionPercent) / 100.0;
         $providerPayoutAmount = max(0, $advanceAmount - $adminCommissionAmount);
 
-         
-
-        // Credit provider wallet with remaining payout
+        // Credit provider wallet
         if ($providerPayoutAmount > 0) {
             Wallet::firstOrCreate(['user_id' => $post->provider_id])->increment('amount', $providerPayoutAmount);
 
-            // Create provider payout record
             ProviderPayout::create([
                 'provider_id'    => $post->provider_id,
                 'amount'         => $providerPayoutAmount,
                 'payment_method' => 'wallet',
                 'paid_date'      => Carbon::now(),
-                'status'         => 'paid',
+                'status'         => 'advance paid',
                 'description'    => "Advance payout for Bid #{$post->id}",
             ]);
         }
 
-        // Link to booking if exists for post_request_id
-        $booking = null;
-        if (!empty($post->post_request_id)) {
-            $booking = Booking::where('post_request_id', $post->post_request_id)->latest('id')->first();
+        // Record commission for admin
+        if ($adminCommissionAmount > 0) {
+            CommissionEarning::create([
+                'user_type'         => 'admin',
+                'employee_id'       => 1,
+                'commission_amount' => $adminCommissionAmount,
+                'commission_status' => 'paid',
+            ]);
         }
 
-        // Commission earnings records (only if booking exists as booking_id is required)
-        if ($booking) {
-            if ($adminUserId && $adminCommissionAmount > 0) {
-                CommissionEarning::create([
-                    'booking_id'         => $booking->id,
-                    'user_type'          => 'admin',
-                    'employee_id'        => $adminUserId,
-                    'commission_amount'  => $adminCommissionAmount,
-                    'commission_status'  => 'paid',
-                ]);
-            }
-
-            if ($providerPayoutAmount > 0) {
-                CommissionEarning::create([
-                    'booking_id'         => $booking->id,
-                    'user_type'          => 'provider',
-                    'employee_id'        => $post->provider_id,
-                    'commission_amount'  => $providerPayoutAmount,
-                    'commission_status'  => 'paid',
-                ]);
-            }
+        // Record commission for provider
+        if ($providerPayoutAmount > 0) {
+            CommissionEarning::create([
+                 
+                'user_type'         => 'provider',
+                'employee_id'       => $post->provider_id,
+                'commission_amount' => $providerPayoutAmount,
+                'commission_status' => 'paid',
+            ]);
         }
 
         DB::commit();
@@ -233,13 +220,14 @@ public function payAdvance(Request $request, $id)
         return response()->json([
             'status' => true,
             'message' => "Advance payment of €{$advanceAmount} successful",
-            'balance' => $wallet->amount
+            'balance' => $wallet->amount,
         ]);
     } catch (\Exception $e) {
         DB::rollBack();
-        return response()->json(['status' => false, 'message' => 'Payment failed'], 500);
+        return response()->json(['status' => false, 'message' => 'Payment failed', 'error' => $e->getMessage()], 500);
     }
 }
+
 
 
 
