@@ -105,6 +105,16 @@ $postJobBids = $query->get()->filter(function($bid) use ($auth_user) {
 
     return DataTables::of($postJobBids)
         ->addIndexColumn()
+        ->addColumn('action', function ($bid) use ($auth_user) {
+    // Only customer can accept a provider's bid
+    if ($auth_user->user_type === 'user' && $bid->status !== 'accepted') {
+        return '<button class="btn btn-sm btn-success acceptBid" data-id="'.$bid->id.'">Accept</button>';
+    }
+
+    return $bid->status === 'accepted'
+        ? '<span class="badge badge-success">Accepted</span>'
+        : '-';
+})
         ->addColumn('provider_name', fn($bid) => $bid->provider->display_name ?? 'N/A')
         ->addColumn('customer_name', fn($bid) => $bid->customer->display_name ?? 'N/A')
         ->addColumn('post_title', fn($bid) => $bid->postrequest->title ?? 'N/A')
