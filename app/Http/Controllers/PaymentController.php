@@ -94,6 +94,7 @@ public function paymenthistory_index_data(DataTables $datatable, $id)
 
 public function payAdvance(Request $request, $id)
 {
+    dd($request->all());
     $user = auth()->user();
     $post = PostJobBid::findOrFail($id);
 
