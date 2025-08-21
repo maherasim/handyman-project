@@ -29,7 +29,7 @@
                         data-advance="{{ $advance_payment->advance_percent }}" 
                         data-remaining="{{ $advance_payment->remaining_percent }}">
                         <i class="fas fa-wallet"></i> 
-                        Pay Advance {{ $advanceAmount }} ({{ $advance_payment->advance_percent }}%)
+                        Pay Advance {{ $advanceAmount }} € ({{ $advance_payment->advance_percent }}%)
                     </button>
 
                     <!-- Pay Remaining -->
