@@ -96,7 +96,7 @@ public function bidshow()
         ->addColumn('provider_name', fn($bid) => $bid->provider->display_name ?? 'N/A')
         ->addColumn('customer_name', fn($bid) => $bid->customer->display_name ?? 'N/A')
         ->addColumn('post_title', fn($bid) => $bid->postrequest->title ?? 'N/A')
-        ->addColumn('status', fn($bid) => $bid->postrequest->status ?? 'N/A')
+        ->addColumn('status', fn($bid) => $bid->status ?? 'N/A')
         ->addColumn('action', function($bid) use ($auth_user) {
             $post = $bid->postrequest;
 
