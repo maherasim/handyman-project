@@ -101,8 +101,9 @@
                                     <p class="text-muted mb-1"><i class="fas fa-user"></i> Provider: ${row.provider_name}</p>
                                     <p class="text-muted mb-1"><i class="fas fa-user-tie"></i> Customer: ${row.customer_name}</p>
                                     <p class="mb-1"><i class="fas fa-dollar-sign"></i> Bid: <span class="fw-bold">${row.price}</span></p>
-                                    <p class="mb-3"><i class="fas fa-flag  badge bg-info text-black px-3 py-2"></i> Status: ${row.status}</p>
-                                    <div class="mt-auto">
+                                    <p class="mb-3"><i class="fas fa-flag badge bg-info px-3 py-2" style="color:black !important;"></i>Status: ${row.status}</p>
+
+                                     <div class="mt-auto">
                                         ${row.action}
                                     </div>
                                 </div>
