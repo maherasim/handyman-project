@@ -17,18 +17,31 @@
                         @endif  
 
                         {{-- Customer sees Pay Advance --}}
-                        @if (isset($advance_payment))
-                            <button class="btn btn-success payAdvanceBtn" data-post-id="{{ $advance_payment->id }}">
-                                <i class="fas fa-wallet"></i> Pay Advance ({{ $advance_payment->advance_percent }}%)
-                            </button>
+                       @if (isset($advance_payment))
+                    @php
+                        $advanceAmount = ($advance_payment->price * $advance_payment->advance_percent) / 100;
+                        $remainingAmount = ($advance_payment->price * $advance_payment->remaining_percent) / 100;
+                    @endphp
 
-                            <button class="btn btn-warning updateAdvanceBtn" 
-                                    data-post-id="{{ $advance_payment->id }}"
-                                    data-advance="{{ $advance_payment->advance_percent }}"
-                                    data-remaining="{{ $advance_payment->remaining_percent }}">
-                                <i class="fas fa-edit"></i> Update Payment
-                            </button>
-                        @endif
+                    <!-- Pay Advance -->
+                    <button class="btn btn-success payAdvanceBtn" 
+                        data-post-id="{{ $advance_payment->id }}" 
+                        data-advance="{{ $advance_payment->advance_percent }}" 
+                        data-remaining="{{ $advance_payment->remaining_percent }}">
+                        <i class="fas fa-wallet"></i> 
+                        Pay Advance {{ $advanceAmount }} ({{ $advance_payment->advance_percent }}%)
+                    </button>
+
+                    <!-- Pay Remaining -->
+                    <button class="btn btn-info payRemainingBtn" 
+                        data-post-id="{{ $advance_payment->id }}" 
+                        data-advance="{{ $advance_payment->advance_percent }}" 
+                        data-remaining="{{ $advance_payment->remaining_percent }}">
+                        <i class="fas fa-credit-card"></i> 
+                        Pay Remaining {{ $remainingAmount }} ({{ $advance_payment->remaining_percent }}%)
+                    </button>
+                @endif
+
                     </div>
 
                     </div>
