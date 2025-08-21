@@ -169,6 +169,7 @@ public function acceptBid($id)
 {
     $auth_user = authSession();
 
+    // Load the bid with its post request
     $bid = PostJobBid::with('postrequest')->findOrFail($id);
 
     // Ensure customer owns this job request
@@ -176,25 +177,33 @@ public function acceptBid($id)
         return response()->json(['status' => false, 'message' => 'Unauthorized'], 403);
     }
 
-    // Assign provider to the post job request and update status
-    $post = $bid->postrequest;
-    $post->provider_id = $bid->provider_id;
-    $post->status = 'assigned';
-    $post->save();
+    // Update the bid status instead of post request
+    $bid->status = 'accepted';
+    $bid->save();
 
-    // Optionally, notify the provider/user about assignment
+    // Optionally, assign the provider to the post request
+    $post = $bid->postrequest;
+    if ($post) {
+        $post->provider_id = $bid->provider_id;
+        $post->status = 'assigned'; // This is optional if you still want post request status to reflect assignment
+        $post->save();
+    }
+
+    // Notify provider/user if needed
     try {
         $this->sendNotification([
             'activity_type' => 'user_accept_bid',
             // 'post_job' => $post,
-            // Provide the accepted bid price for templates/notifications
             // 'job_price' => getPriceFormat($bid->price),
         ]);
     } catch (\Throwable $e) {
-        // Silent fail for notifications
+        // Ignore notification failures
     }
 
-    return response()->json(['status' => true, 'message' => 'Bid accepted and job assigned successfully!']);
+    return response()->json([
+        'status' => true,
+        'message' => 'Bid accepted successfully and status updated!'
+    ]);
 }
 
 
