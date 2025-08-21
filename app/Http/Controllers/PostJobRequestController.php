@@ -9,6 +9,7 @@ use App\Models\Service;
 use App\Models\SubCategory;
 use App\Models\Wallet;
 use App\Models\Setting;
+use DB;
 
 use App\Models\PostJobBid;
 use App\Traits\NotificationTrait;
