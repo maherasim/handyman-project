@@ -2,36 +2,57 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-lg-12">
- <div class="card card-block card-stretch mb-3"> 
-    <div class="card-body d-flex justify-content-between align-items-center">
-        <h5 class="fw-bold mb-0">{{ $pageTitle }}</h5>
 
-        <div class="d-flex gap-2"> {{-- buttons grouped together --}}
-            {{-- Provider sees Set Payment --}}
-            @if (isset($assignedPost) && auth()->id() === $assignedPost->provider_id)
-                <button class="btn btn-primary startWorkBtn" data-post-id="{{ $assignedPost->id }}">
-                    <i class="fas fa-play"></i> Set Payment
-                </button>
-            @endif  
+                <!-- Page Header -->
+              <div class="card card-block card-stretch mb-3">
+                    <div class="card-body d-flex justify-content-between align-items-center">
+                        <h5 class="fw-bold mb-0">{{ $pageTitle }} </h5>
 
-            {{-- Customer sees Pay Advance --}}
-            @if (isset($advance_payment))
-                <button class="btn btn-success payAdvanceBtn" data-post-id="{{ $advance_payment->id }}">
-                    <i class="fas fa-wallet"></i> Pay Advance ({{ $advance_payment->advance_percent }}%)
-                </button>
+                                    <div class="d-flex gap-2"> {{-- buttons grouped together --}}
+                        {{-- Provider sees Set Payment --}}
+                        @if (isset($assignedPost) && auth()->id() === $assignedPost->provider_id)
+                            <button class="btn btn-primary startWorkBtn" data-post-id="{{ $assignedPost->id }}">
+                                <i class="fas fa-play"></i> Set Payment
+                            </button>
+                        @endif  
 
-                <button class="btn btn-warning updateAdvanceBtn" 
-                        data-post-id="{{ $advance_payment->id }}"
-                        data-advance="{{ $advance_payment->advance_percent }}"
-                        data-remaining="{{ $advance_payment->remaining_percent }}">
-                    <i class="fas fa-edit"></i> Update Payment
-                </button>
-            @endif
-        </div>
-    </div>
-</div>
+                        {{-- Customer sees Pay Advance --}}
+                        @if (isset($advance_payment))
+                            <button class="btn btn-success payAdvanceBtn" data-post-id="{{ $advance_payment->id }}">
+                                <i class="fas fa-wallet"></i> Pay Advance ({{ $advance_payment->advance_percent }}%)
+                            </button>
 
-               
+                            <button class="btn btn-warning updateAdvanceBtn" 
+                                    data-post-id="{{ $advance_payment->id }}"
+                                    data-advance="{{ $advance_payment->advance_percent }}"
+                                    data-remaining="{{ $advance_payment->remaining_percent }}">
+                                <i class="fas fa-edit"></i> Update Payment
+                            </button>
+                        @endif
+                    </div>
+
+                    </div>
+                </div>
+
+
+                <!-- Search Bar -->
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-end">
+                            <div class="input-group w-25">
+                                <span class="input-group-text"><i class="fas fa-search"></i></span>
+                                <input type="text" class="form-control dt-search" placeholder="Search bids...">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bids Container -->
+                <div id="bidsContainer" class="row">
+                    <!-- Cards will be loaded here dynamically from DataTable -->
+                </div>
+
+            </div>
         </div>
     </div>
 
