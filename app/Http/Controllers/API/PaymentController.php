@@ -395,8 +395,8 @@ public function getpaymentall(Request $request)
                     'amount' => $payout['amount'],
                     'status' => 'paid',
                     'paid_date' => Carbon::now(),
-                    'payment_method' => 'wallet',
-                    'payment_gateway' => 'wallet',
+                    'payment_method' => 'Bank Trasnfer',
+                    'payment_gateway' => 'Bank Trasnfer',
                 ]);
 
                 CommissionEarning::create([
@@ -427,11 +427,11 @@ public function getpaymentall(Request $request)
             ProviderPayout::create([
                 'provider_id' => $booking->provider_id,
                 'amount' => $provider_final_earning,
-                'payment_method' => 'wallet',
+                'payment_method' => 'Bank Trasnfer',
                 'paid_date' => Carbon::now(),
                 'status' => 'paid',
                 'booking_id' => $booking->id,
-                'payment_gateway' => 'wallet',
+                'payment_gateway' => 'Bank Trasnfer',
             ]);
 
             CommissionEarning::create([
