@@ -120,12 +120,14 @@ public function bidshow()
                 return '<button class="btn btn-sm btn-success acceptBid" data-id="'.$bid->id.'">Accept</button>';
             }
 
-            // Customer: Pay Advance if in_progress
-            if ($auth_user->user_type === 'user' && $post->status === 'in_progress') {
-                return '<button class="btn btn-sm btn-success payAdvanceBtn" 
-                        data-post-id="'.$post->id.'" 
-                        data-amount="'.$post->remaining_percent.'">
-                        <i class="fas fa-credit-card"></i> Pay Advance ('.$post->remaining_percent.')</button>';
+            // Provider: show Start Work when advance is paid on bid
+            if ($auth_user->user_type === 'provider' && (int)$auth_user->id === (int)$bid->provider_id && $bid->status === 'advance_paid') {
+                return '<button class="btn btn-sm btn-primary updateStatusBtn" data-id="'.$bid->id.'" data-status="in_progress">Start Work</button>';
+            }
+
+            // Customer: show Let's Start Work when already in progress (idempotent)
+            if ($auth_user->user_type === 'user' && (int)$auth_user->id === (int)$bid->customer_id && $bid->status === 'in_progress') {
+                return '<button class="btn btn-sm btn-info updateStatusBtn" data-id="'.$bid->id.'" data-status="in_progress">Let\'s Start Work</button>';
             }
 
             // Otherwise

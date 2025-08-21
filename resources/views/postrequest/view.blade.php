@@ -368,6 +368,42 @@
                 });
             });
 
+            // Unified status update (provider/user)
+            $(document).on('click', '.updateStatusBtn', function() {
+                const bidId = $(this).data('id');
+                const nextStatus = $(this).data('status');
+
+                Swal.fire({
+                    title: 'Confirm',
+                    text: 'Do you want to update status to ' + nextStatus.replace('_',' ') + '?',
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes, update',
+                }).then((result) => {
+                    if (!result.isConfirmed) return;
+
+                    $.ajax({
+                        url: '{{ route('postjob.updateStatus', ':id') }}'.replace(':id', bidId),
+                        type: 'POST',
+                        data: {
+                            _token: '{{ csrf_token() }}',
+                            status: nextStatus
+                        },
+                        success: function(response) {
+                            if (response && response.status) {
+                                Swal.fire('Updated', response.message || 'Status updated', 'success');
+                                $('#datatable').DataTable().ajax.reload();
+                            } else {
+                                Swal.fire('Error', (response && response.message) ? response.message : 'Unable to update', 'error');
+                            }
+                        },
+                        error: function(xhr) {
+                            Swal.fire('Error', (xhr && xhr.responseJSON && xhr.responseJSON.message) ? xhr.responseJSON.message : 'Something went wrong', 'error');
+                        }
+                    });
+                });
+            });
+
             // Start Work with Payment Split
             $(document).on('click', '.startWorkBtn', function() {
                 const postId = $(this).data('post-id');

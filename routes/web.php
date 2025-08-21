@@ -476,6 +476,8 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
     });
     Route::post('adjustpayment/{id}/set-advance', [PostJobRequestController::class, 'startWork'])->name('adjustpayment.start-work');
     Route::post('pay-advance/{id}', [PostJobRequestController::class, 'payAdvance'])->name('post-job-request.pay-advance');
+    Route::post('/post-job-request/{id}/status', [PostJobRequestController::class, 'updateBidStatus'])->name('postjob.updateStatus');
+
 
     Route::group(['middleware' => ['permission:servicepackage list']], function () {
         Route::resource('servicepackage', ServicePackageController::class);
