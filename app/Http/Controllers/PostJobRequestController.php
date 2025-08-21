@@ -43,6 +43,9 @@ class PostJobRequestController extends Controller
 $assignedPost = PostJobBid::where('provider_id', $auth_user->id)
     ->where('status', 'accepted')
     ->first();
+$advance_payment = PostJobBid::where('customer_id', $auth_user->id)
+    ->where('status', 'advance_payment')
+    ->first();
 
     // If the viewer is a customer, get their latest assigned/in_progress job
      
@@ -53,7 +56,7 @@ $assignedPost = PostJobBid::where('provider_id', $auth_user->id)
     $assets = ['datatable'];
 
     return view('postrequest.view', compact(
-        'pageTitle', 'auth_user', 'assets', 'postJobBids', 'assignedPost'));
+        'pageTitle', 'auth_user', 'assets', 'postJobBids', 'assignedPost','advance_payment'));
 }
 
  public function setAdvanceSplit(Request $request, $id)

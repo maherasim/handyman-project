@@ -13,6 +13,11 @@
                             <button class="btn btn-primary startWorkBtn" data-post-id="{{ $assignedPost->id }}">
                                 <i class="fas fa-play"></i> Set Payment
                             </button>
+                        @endif  
+                         @if (isset($advance_payment) && auth()->id() === $advance_payment->customer_id)
+                            <button class="btn btn-primary startWorkBtn" data-post-id="{{ $advance_payment->id }}">
+                                <i class="fas fa-play"></i> Pay Advance 
+                            </button>
                         @endif                     
 
                     </div>
