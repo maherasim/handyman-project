@@ -16,12 +16,12 @@
                         @endif
 
                       {{-- Customer sees Pay Advance --}}
-                            @if ($postjob && $postjob->status === 'in_progress' && auth()->user()->user_type === 'user')
+                            {{-- @if ($postjob && $postjob->status === 'in_progress' && auth()->user()->user_type === 'user')
                                 <button class="btn btn-success payAdvanceBtn"  >
                                  
                                     Pay Advance 
                                 </button>
-                            @endif
+                            @endif --}}
 
 
                     </div>
