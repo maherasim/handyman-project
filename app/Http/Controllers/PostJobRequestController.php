@@ -563,29 +563,41 @@ public function index_data(DataTables $datatable, Request $request)
 
     }
 
-    public function startWork(Request $request, $id)
-    {
-        dd($request->all(),$id);
-        $post = PostJobRequest::findOrFail($id);
-        if (!auth()->user()->hasAnyRole(['provider'])) {
-            return response()->json(['message' => 'Forbidden'], 403);
-        }
-        // Provider starts work on assigned post request
-        if ($post->status !== 'assigned') {
-            return response()->json(['message' => 'Job is not assigned'], 400);
-        }
-        $post->status = 'in_progress';
-        $post->save();
+public function startWork(Request $request, $id) 
+{
+    // Find the bid
+    $post = PostJobBid::findOrFail($id);
 
-        // Notify user about start
-        try {
-            $this->sendNotification([
-                'activity_type' => 'update_booking_status',
-                'post_job' => $post,
-            ]);
-        } catch (\Throwable $e) {
-        }
-
-        return response()->json(['status' => true, 'message' => 'Work started']);
+    // Ensure user is a provider
+    if (!auth()->user()->hasAnyRole(['provider'])) {
+        return response()->json(['message' => 'Forbidden'], 403);
     }
+
+    // Only allow if status is 'assigned'
+    if ($post->status !== 'assigned') {
+        return response()->json(['message' => 'Job is not assigned'], 400);
+    }
+
+    // Update advance, remaining, and status
+    $post->advance_percent = $request->input('advance_percent');
+    $post->remaining_percent = $request->input('remaining_percent');
+    $post->status = 'advance_payment';
+    $post->save();
+
+    // Optionally notify the user
+    try {
+        $this->sendNotification([
+            'activity_type' => 'update_booking_status',
+            'post_job' => $post,
+        ]);
+    } catch (\Throwable $e) {
+        // Silent fail
+    }
+
+    return response()->json([
+        'status' => true, 
+        'message' => 'Work started and payment split updated successfully!'
+    ]);
+}
+
 }
