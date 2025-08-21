@@ -207,7 +207,9 @@
                         const { advance, remaining } = result.value;
 
                        $.ajax({
-                               url: '{{ url("post-job-request") }}/' + postId + '/set-advance',                               
+                               
+                                    url: '{{ route("post-job-request.start-work", ":id") }}'.replace(':id', postId),
+
                                 type: "POST",
                                 data: {
                                     _token: '{{ csrf_token() }}',
