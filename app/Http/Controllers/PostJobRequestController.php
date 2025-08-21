@@ -39,8 +39,8 @@ class PostJobRequestController extends Controller
     
     $auth_user = authSession();
 
-
-$assignedPost = PostJobRequest::where('provider_id', $auth_user->id)
+ 
+$assignedPost = PostJobBid::where('provider_id', $auth_user->id)
     ->where('status', 'assigned')
     ->first();
 
