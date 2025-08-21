@@ -276,6 +276,49 @@
     </script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
+        // Isolate Pay Advance binding to ensure it initializes after SweetAlert is loaded
+        (function bindPayAdvanceOnce() {
+            // Avoid double-binding
+            if (window.__payAdvanceBound) return;
+            window.__payAdvanceBound = true;
+
+            $(document).on("click", ".payAdvanceBtn", function() {
+                const postId = $(this).data("post-id");
+
+                Swal.fire({
+                    title: "Confirm Advance Payment",
+                    text: "Are you sure you want to proceed with the advance payment?",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#28a745",
+                    cancelButtonColor: "#d33",
+                    confirmButtonText: "Yes, pay advance",
+                    cancelButtonText: "Cancel"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: '{{ route("post-job-request.pay-advance", ":id") }}'.replace(':id', postId),
+                            type: "POST",
+                            data: { _token: '{{ csrf_token() }}' },
+                            success: function(response) {
+                                if (response.status) {
+                                    Swal.fire("Success", response.message, "success");
+                                    $('#datatable').DataTable().ajax.reload();
+                                } else {
+                                    Swal.fire("Error", response.message || "Unable to process.", "error");
+                                }
+                            },
+                            error: function(xhr) {
+                                const msg = (xhr && xhr.responseJSON && xhr.responseJSON.message) ? xhr.responseJSON.message : "Something went wrong!";
+                                Swal.fire("Error", msg, "error");
+                            }
+                        });
+                    }
+                });
+            });
+        })();
+    </script>
+    <script>
         document.addEventListener('DOMContentLoaded', function() {
 
             // Accept Bid
@@ -396,41 +439,7 @@
                 });
             });
         });
-    $(document).on("click", ".payAdvanceBtn", function() {
-        let postId = $(this).data("post-id");
-
-        Swal.fire({
-            title: "Confirm Advance Payment",
-            text: "Are you sure you want to proceed with the advance payment?",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#28a745",
-            cancelButtonColor: "#d33",
-            confirmButtonText: "Yes, pay advance",
-            cancelButtonText: "Cancel"
-        }).then((result) => {
-            if (result.isConfirmed) {
-                $.ajax({
-                    url: '{{ route("post-job-request.pay-advance", ":id") }}'.replace(':id', postId),
-                    type: "POST",
-                    data: {
-                        _token: '{{ csrf_token() }}'
-                    },
-                    success: function(response) {
-                        if (response.status) {
-                            Swal.fire("Success", response.message, "success");
-                            $('#datatable').DataTable().ajax.reload();
-                        } else {
-                            Swal.fire("Error", response.message, "error");
-                        }
-                    },
-                    error: function() {
-                        Swal.fire("Error", "Something went wrong!", "error");
-                    }
-                });
-            }
-        });
-    });
+    
 
     </script>
 </x-master-layout>
