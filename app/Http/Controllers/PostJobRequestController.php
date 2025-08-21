@@ -44,7 +44,7 @@ $assignedPost = PostJobRequest::where('provider_id', $auth_user->id)
     ->where('status', 'assigned')
     ->first();
 
-
+$postjob=PostJobRequest::get();
     // If the viewer is a customer, get their latest assigned/in_progress job
      
 
@@ -54,7 +54,7 @@ $assignedPost = PostJobRequest::where('provider_id', $auth_user->id)
     $assets = ['datatable'];
 
     return view('postrequest.view', compact(
-        'pageTitle', 'auth_user', 'assets', 'postJobBids', 'assignedPost'));
+        'pageTitle', 'auth_user', 'assets', 'postJobBids', 'assignedPost','postjob'));
 }
 
  public function setAdvanceSplit(Request $request, $id)

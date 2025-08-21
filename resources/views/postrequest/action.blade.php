@@ -13,7 +13,9 @@ $auth_user= authSession();
     <i class="far fa-trash-alt text-danger"></i>
 </a>
 @endif
+
 <a class="" href="{{ route('post-job-request.show', $post_job->id) }}" title="{{ __('messages.view_form_title',['form'=>  __('messages.postjob') ]) }}"><i class="far fa-eye text-secondary me-2"></i></a>
+
 @if(auth()->user()->hasAnyRole(['provider']))
     @if($post_job->status != 'assigned')
         <button class="btn btn-success btn-sm bid-button mr-1" style="font-size: 14px; padding: 5px 10px;" type="button" onclick="openBidModal({{ $post_job->id }}, {{ auth()->user()->id }})">
