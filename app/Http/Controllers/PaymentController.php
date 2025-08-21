@@ -98,8 +98,17 @@ public function payAdvance(Request $request, $id)
     $user = auth()->user();
     $post = PostJobBid::findOrFail($id);
 
-    // Calculate advance amount from bid price
-    $advanceAmount = ($post->bid_price * $post->advance_percent) / 100;
+    // Allow client-provided amount; otherwise calculate from bid price
+    $requestedAmount = $request->input('amount');
+    if (is_string($requestedAmount) && trim($requestedAmount) === '') {
+        $requestedAmount = null;
+    }
+    $advanceAmount = is_null($requestedAmount)
+        ? (($post->price * $post->advance_percent) / 100)
+        : (float) $requestedAmount;
+    if ($advanceAmount <= 0) {
+        return response()->json(['status' => false, 'message' => 'Invalid advance amount'], 422);
+    }
     // Check wallet balance
     $wallet = Wallet::where('user_id', $user->id)->first();
 

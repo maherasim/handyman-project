@@ -27,7 +27,8 @@
 
                                 <!-- Pay Advance -->
                                  <button class="btn btn-success payAdvanceBtn"  
-                                data-post-id="{{ $advance_payment->id }}">
+                                data-post-id="{{ $advance_payment->id }}"
+                                data-amount="{{ $advanceAmount }}">
                                 <i class="fas fa-wallet"></i> 
                                 Pay Advance {{ $advanceAmount }} ({{ $advance_payment->advance_percent }}%)
                             </button>
@@ -286,11 +287,12 @@
                 if (!btn) return;
 
                 const postId = btn.getAttribute('data-post-id');
+                const providedAmount = btn.getAttribute('data-amount');
                 if (!postId) return;
 
                 Swal.fire({
                     title: "Confirm Advance Payment",
-                    text: "Are you sure you want to proceed with the advance payment?",
+                    text: providedAmount ? `Pay advance amount: ${providedAmount}. Proceed?` : "Are you sure you want to proceed with the advance payment?",
                     icon: "warning",
                     showCancelButton: true,
                     confirmButtonColor: "#28a745",
@@ -308,7 +310,7 @@
                             'X-Requested-With': 'XMLHttpRequest',
                             'X-CSRF-TOKEN': '{{ csrf_token() }}'
                         },
-                        body: JSON.stringify({})
+                        body: JSON.stringify({ amount: providedAmount })
                     })
                     .then(function (res) { return res.json(); })
                     .then(function (response) {
