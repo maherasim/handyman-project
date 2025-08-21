@@ -43,10 +43,11 @@ class PostJobRequestController extends Controller
 $assignedPost = PostJobBid::where('provider_id', $auth_user->id)
     ->where('status', 'accepted')
     ->first();
+    dd($auth_user->id);
 $advance_payment = PostJobBid::where('customer_id', $auth_user->id)
     ->where('status', 'advance_payment')
     ->first();
-dd($advance_payment);
+//dd($advance_payment);
     // If the viewer is a customer, get their latest assigned/in_progress job
      
 
