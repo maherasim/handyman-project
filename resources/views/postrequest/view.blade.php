@@ -17,8 +17,11 @@
 
                         {{-- Customer sees Pay Advance --}}
                         @if (isset($advance_payment))
-                            <button class="btn btn-success payAdvanceBtn" data-post-id="{{ $advance_payment->id }}">
-                                <i class="fas fa-credit-card"></i> Pay Advance
+                            <button class="btn btn-success payAdvanceBtn" 
+                                data-post-id="{{ $advance_payment->id }}" 
+                                data-advance="{{ $advance_payment->advance_percent }}" 
+                                data-remaining="{{ $advance_payment->remaining_percent }}">
+                                <i class="fas fa-wallet"></i> Pay Advance
                             </button>
                         @endif  
                   @if (isset($advance_payment))
