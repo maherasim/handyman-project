@@ -44,7 +44,7 @@ $assignedPost = PostJobRequest::where('provider_id', $auth_user->id)
     ->where('status', 'assigned')
     ->first();
 
-$postjob=PostJobRequest::get();
+
     // If the viewer is a customer, get their latest assigned/in_progress job
      
 
@@ -54,7 +54,7 @@ $postjob=PostJobRequest::get();
     $assets = ['datatable'];
 
     return view('postrequest.view', compact(
-        'pageTitle', 'auth_user', 'assets', 'postJobBids', 'assignedPost','postjob'));
+        'pageTitle', 'auth_user', 'assets', 'postJobBids', 'assignedPost'));
 }
 
  public function setAdvanceSplit(Request $request, $id)
@@ -72,7 +72,6 @@ $postjob=PostJobRequest::get();
 
         return response()->json(['status' => true, 'message' => 'Payment split set & work started.']);
     }
-
 public function bidshow()
 {
     $auth_user = authSession();
@@ -84,62 +83,52 @@ public function bidshow()
     ]);
 
     if ($auth_user->user_type === 'provider') {
-        // Providers see their assigned/started posts
         $query->where('provider_id', $auth_user->id);
     } elseif ($auth_user->user_type === 'user') {
-        // Users see only their posts which are in_progress
-        $query->whereHas('postrequest', function ($q) use ($auth_user) {
-            $q->where('customer_id', $auth_user->id)
-              ->where('status', 'in_progress'); // ✅ only in_progress
-        });
-        // dd($query->toSql(), $query->getBindings()); // SQL & bindings
-
+        // Users see all their posts (don't filter by status here)
+        $query->whereHas('postrequest', fn($q) => $q->where('customer_id', $auth_user->id));
     }
 
-$postJobBids = $query->get()->filter(function($bid) use ($auth_user) {
-    if ($auth_user->user_type === 'user') {
-        return $bid->postrequest && $bid->postrequest->status === 'in_progress';
-    }
-    return true; // provider sees all their assigned/started bids
-});
+    $postJobBids = $query->get();
 
     return DataTables::of($postJobBids)
         ->addIndexColumn()
-        ->addColumn('action', function ($bid) use ($auth_user) {
-    // Only customer can accept a provider's bid
-    if ($auth_user->user_type === 'user' && $bid->status !== 'accepted') {
-        return '<button class="btn btn-sm btn-success acceptBid" data-id="'.$bid->id.'">Accept</button>';
-    }
-
-    return $bid->status === 'accepted'
-        ? '<span class="badge badge-success">Accepted</span>'
-        : '-';
-})
         ->addColumn('provider_name', fn($bid) => $bid->provider->display_name ?? 'N/A')
         ->addColumn('customer_name', fn($bid) => $bid->customer->display_name ?? 'N/A')
         ->addColumn('post_title', fn($bid) => $bid->postrequest->title ?? 'N/A')
         ->addColumn('status', fn($bid) => $bid->postrequest->status ?? 'N/A')
-        ->addColumn('action', function ($bid) use ($auth_user) {
+        ->addColumn('action', function($bid) use ($auth_user) {
             $post = $bid->postrequest;
 
-            // Provider: Start Work
-            if ($auth_user->user_type === 'provider' && $post && $post->status === 'assigned' && $post->provider_id == $bid->provider_id) {
+            if (!$post) return '-';
+
+            // Provider: Start Work if assigned
+            if ($auth_user->user_type === 'provider' && $post->status === 'assigned' && $post->provider_id == $bid->provider_id) {
                 return '<button class="btn btn-sm btn-primary startWorkBtn" data-post-id="'.$post->id.'">Start Work</button>';
             }
 
-            // Customer: Pay Advance
-            if ($auth_user->user_type === 'user' && $post && $post->status === 'in_progress') {
-                return '<button class="btn btn-sm btn-success payAdvanceBtn" 
-                            data-post-id="'.$post->id.'" 
-                            data-amount="'.$post->remaining_percent.'">
-                            <i class="fas fa-credit-card"></i> Pay Advance ('.$post->remaining_percent.')</button>';
+            // Customer: Accept bid if requested
+            if ($auth_user->user_type === 'user' && $post->status === 'requested' && $bid->status !== 'accepted') {
+                return '<button class="btn btn-sm btn-success acceptBid" data-id="'.$bid->id.'">Accept</button>';
             }
 
-            return '-';
+            // Customer: Pay Advance if in_progress
+            if ($auth_user->user_type === 'user' && $post->status === 'in_progress') {
+                return '<button class="btn btn-sm btn-success payAdvanceBtn" 
+                        data-post-id="'.$post->id.'" 
+                        data-amount="'.$post->remaining_percent.'">
+                        <i class="fas fa-credit-card"></i> Pay Advance ('.$post->remaining_percent.')</button>';
+            }
+
+            // Otherwise
+            return $bid->status === 'accepted'
+                ? '<span class="badge badge-success">Accepted</span>'
+                : '-';
         })
         ->rawColumns(['action'])
         ->toJson();
 }
+
 
 
 
