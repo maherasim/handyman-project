@@ -15,17 +15,20 @@
                             </button>
                         @endif  
 
-                      {{-- Customer sees Pay / Update Advance --}}
-@if (isset($advance_payment))
-    <button class="btn btn-warning updateAdvanceBtn" 
-            data-post-id="{{ $advance_payment->id }}"
-            data-advance="{{ $advance_payment->advance_percent }}"
-            data-remaining="{{ $advance_payment->remaining_percent }}">
-        <i class="fas fa-credit-card"></i> Pay / Update Advance
-    </button>
-@endif
-
-                  
+                        {{-- Customer sees Pay Advance --}}
+                        @if (isset($advance_payment))
+                            <button class="btn btn-success payAdvanceBtn" data-post-id="{{ $advance_payment->id }}">
+                                <i class="fas fa-credit-card"></i> Pay Advance
+                            </button>
+                        @endif  
+                  @if (isset($advance_payment))
+                    <button class="btn btn-warning updateAdvanceBtn" 
+                            data-post-id="{{ $advance_payment->id }}"
+                            data-advance="{{ $advance_payment->advance_percent }}"
+                            data-remaining="{{ $advance_payment->remaining_percent }}">
+                        <i class="fas fa-edit"></i> Update Payment
+                    </button>
+                @endif
 
                     </div>
                 </div>
@@ -136,8 +139,7 @@
                 table.ajax.reload();
             });
         });
-        // Update / Alter Payment
-$(document).on('click', '.updateAdvanceBtn', function() {
+        $(document).on('click', '.updateAdvanceBtn', function() {
     const postId = $(this).data('post-id');
     const currentAdvance = $(this).data('advance');
     const currentRemaining = $(this).data('remaining');
@@ -157,16 +159,6 @@ $(document).on('click', '.updateAdvanceBtn', function() {
         focusConfirm: false,
         showCancelButton: true,
         confirmButtonText: "Update",
-        preConfirm: () => {
-            const advance = document.getElementById('advanceInput').value;
-            const remaining = document.getElementById('remainingInput').value;
-
-            if (!advance || advance < 0 || advance > 100) {
-                Swal.showValidationMessage("Please enter a valid advance percentage (0-100)");
-                return false;
-            }
-            return { advance, remaining };
-        },
         didOpen: () => {
             const advanceInput = document.getElementById('advanceInput');
             const remainingInput = document.getElementById('remainingInput');
@@ -176,11 +168,19 @@ $(document).on('click', '.updateAdvanceBtn', function() {
                 if (val > 100) val = 100;
                 remainingInput.value = 100 - val;
             });
+        },
+        preConfirm: () => {
+            const advance = document.getElementById('advanceInput').value;
+            const remaining = document.getElementById('remainingInput').value;
+            if (!advance || advance < 0 || advance > 100) {
+                Swal.showValidationMessage("Please enter a valid advance percentage (0-100)");
+                return false;
+            }
+            return { advance, remaining };
         }
     }).then((result) => {
         if (result.isConfirmed) {
             const { advance, remaining } = result.value;
-
             $.ajax({
                 url: '{{ route("adjustpayment.start-work", ":id") }}'.replace(':id', postId),
                 type: "POST",
@@ -196,9 +196,6 @@ $(document).on('click', '.updateAdvanceBtn', function() {
                     } else {
                         Swal.fire("Error!", response.message || "Unable to update.", "error");
                     }
-                },
-                error: function() {
-                    Swal.fire("Error!", "Something went wrong!", "error");
                 }
             });
         }
