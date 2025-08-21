@@ -16,12 +16,12 @@
                         @endif
 
                       {{-- Customer sees Pay Advance --}}
-                            {{-- @if ($postjob && $postjob->status === 'in_progress' && auth()->user()->user_type === 'user')
+                            {{-- @if ($jobpost && $jobpost->status === 'in_progress' && auth()->user()->user_type === 'user') --}}
                                 <button class="btn btn-success payAdvanceBtn"  >
                                  
                                     Pay Advance 
                                 </button>
-                            @endif --}}
+                            {{-- @endif --}}
 
 
                     </div>
@@ -84,15 +84,29 @@
                     data.each(function(row) {
                         // Status Badge
                         let statusBadge = '';
-                        switch (row.status) {
-                            case 'pending':    statusBadge = `<span class="badge bg-warning text-dark px-3 py-2">${row.status}</span>`; break;
-                            case 'assigned':   statusBadge = `<span class="badge bg-info text-white px-3 py-2">${row.status}</span>`; break;
-                            case 'accepted':   statusBadge = `<span class="badge bg-success text-white px-3 py-2">${row.status}</span>`; break;
-                            case 'in_progress':statusBadge = `<span class="badge bg-primary text-white px-3 py-2">In Progress</span>`; break;
-                            case 'completed':  statusBadge = `<span class="badge bg-success text-white px-3 py-2">${row.status}</span>`; break;
-                            case 'cancelled':  statusBadge = `<span class="badge bg-danger text-white px-3 py-2">${row.status}</span>`; break;
-                            default:           statusBadge = `<span class="badge bg-secondary text-white px-3 py-2">${row.status}</span>`;
-                        }
+                       switch (row.status) {
+                        case 'pending':
+                            statusBadge = `<span class="badge px-3 py-2" style="background-color:#FFC107; color:black;">${row.status}</span>`;
+                            break;
+                        case 'assigned':
+                            statusBadge = `<span class="badge px-3 py-2" style="background-color:#17a2b8; color:black;">${row.status}</span>`;
+                            break;
+                        case 'accepted':
+                            statusBadge = `<span class="badge px-3 py-2" style="background-color:#20c997; color:black;">${row.status}</span>`;
+                            break;
+                        case 'in_progress':
+                            statusBadge = `<span class="badge px-3 py-2" style="background-color:#007bff; color:black;">In Progress</span>`;
+                            break;
+                        case 'completed':
+                            statusBadge = `<span class="badge px-3 py-2" style="background-color:#28a745; color:black;">${row.status}</span>`;
+                            break;
+                        case 'cancelled':
+                            statusBadge = `<span class="badge px-3 py-2" style="background-color:#dc3545; color:black;">${row.status}</span>`;
+                            break;
+                        default:
+                            statusBadge = `<span class="badge px-3 py-2" style="background-color:#6c757d; color:black;">${row.status}</span>`;
+                    }
+
 
                         let card = `
                         <div class="col-md-6 col-lg-4 mb-3">
@@ -102,7 +116,7 @@
                                     <p class="text-muted mb-1"><i class="fas fa-user"></i> Provider: ${row.provider_name}</p>
                                     <p class="text-muted mb-1"><i class="fas fa-user-tie"></i> Customer: ${row.customer_name}</p>
                                     <p class="mb-1"><i class="fas fa-dollar-sign"></i> Bid: <span class="fw-bold">${row.price}</span></p>
-                                    <p class="mb-3"><i class="fas fa-flag  badge bg-info text-black px-3 py-2"></i> Status: ${row.status}</p>
+                                    <p class="mb-3"><i class="fas fa-flag"></i> Status: ${statusBadge}</p>
                                     <div class="mt-auto">
                                         ${row.action}
                                     </div>
