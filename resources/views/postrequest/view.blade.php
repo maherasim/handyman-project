@@ -11,18 +11,9 @@
                         {{-- Provider sees Start Work --}}
                         @if (isset($assignedPost) && auth()->id() === $assignedPost->provider_id)
                             <button class="btn btn-primary startWorkBtn" data-post-id="{{ $assignedPost->id }}">
-                                <i class="fas fa-play"></i> Start Work
+                                <i class="fas fa-play"></i> Set Payment
                             </button>
-                        @endif
-
-                      {{-- Customer sees Pay Advance --}}
-                            {{-- @if ($jobpost && $jobpost->status === 'in_progress' && auth()->user()->user_type === 'user') --}}
-                                <button class="btn btn-success payAdvanceBtn"  >
-                                 
-                                    Pay Advance 
-                                </button>
-                            {{-- @endif --}}
-
+                        @endif                     
 
                     </div>
                 </div>
@@ -190,7 +181,7 @@
                     `,
                     focusConfirm: false,
                     showCancelButton: true,
-                    confirmButtonText: "Save & Start Work",
+                    confirmButtonText: "Submit",
                     preConfirm: () => {
                         const advance = document.getElementById('advanceInput').value;
                         const remaining = document.getElementById('remainingInput').value;
