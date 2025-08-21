@@ -72,65 +72,28 @@ $postjob=PostJobRequest::get();
 
         return response()->json(['status' => true, 'message' => 'Payment split set & work started.']);
     }
-
-public function bidshow()
-{
-    $auth_user = authSession();
-
-    $query = PostJobBid::query()->with([
-        'provider:id,display_name',
-        'customer:id,display_name',
-        'postrequest:id,title,customer_id,status,provider_id,remaining_percent'
-    ]);
-
-    if ($auth_user->user_type === 'provider') {
-        // Providers see their assigned/started posts
-        $query->where('provider_id', $auth_user->id);
-    } elseif ($auth_user->user_type === 'user') {
-        // Users see only their posts which are in_progress
-        $query->whereHas('postrequest', function ($q) use ($auth_user) {
-            $q->where('customer_id', $auth_user->id)
-              ->where('status', 'in_progress'); // ✅ only in_progress
-        });
-        // dd($query->toSql(), $query->getBindings()); // SQL & bindings
-
+    public function bidshow()
+    {
+        $auth_user = authSession();
+    
+        // Fetch all bids that belong to the logged-in provider and load provider data
+        $postJobBids = PostJobBid::where('provider_id', $auth_user->id)
+        ->with(['provider:id,display_name', 'customer:id,display_name', 'postrequest:id,title', ])
+        ->get();
+     
+        return DataTables::of($postJobBids)
+            ->addIndexColumn()
+            ->addColumn('provider_name', function ($postJobBid) {
+                return $postJobBid->provider->display_name ?? 'N/A';
+            })
+            ->addColumn('customer_name', function ($postJobBid) {
+                return $postJobBid->customer->display_name ?? 'N/A';
+            })
+            ->addColumn('post_title', function ($postJobBid) {
+                return $postJobBid->postrequest->title ?? 'N/A';
+            })
+            ->toJson();
     }
-
-$postJobBids = $query->get()->filter(function($bid) use ($auth_user) {
-    if ($auth_user->user_type === 'user') {
-        return $bid->postrequest && $bid->postrequest->status === 'in_progress';
-    }
-    return true; // provider sees all their assigned/started bids
-});
-
-    return DataTables::of($postJobBids)
-        ->addIndexColumn()
-        ->addColumn('provider_name', fn($bid) => $bid->provider->display_name ?? 'N/A')
-        ->addColumn('customer_name', fn($bid) => $bid->customer->display_name ?? 'N/A')
-        ->addColumn('post_title', fn($bid) => $bid->postrequest->title ?? 'N/A')
-        ->addColumn('status', fn($bid) => $bid->postrequest->status ?? 'N/A')
-        ->addColumn('action', function ($bid) use ($auth_user) {
-            $post = $bid->postrequest;
-
-            // Provider: Start Work
-            if ($auth_user->user_type === 'provider' && $post && $post->status === 'assigned' && $post->provider_id == $bid->provider_id) {
-                return '<button class="btn btn-sm btn-primary startWorkBtn" data-post-id="'.$post->id.'">Start Work</button>';
-            }
-
-            // Customer: Pay Advance
-            if ($auth_user->user_type === 'user' && $post && $post->status === 'in_progress') {
-                return '<button class="btn btn-sm btn-success payAdvanceBtn" 
-                            data-post-id="'.$post->id.'" 
-                            data-amount="'.$post->remaining_percent.'">
-                            <i class="fas fa-credit-card"></i> Pay Advance ('.$post->remaining_percent.')</button>';
-            }
-
-            return '-';
-        })
-        ->rawColumns(['action'])
-        ->toJson();
-}
-
 
 
 public function setAdvance(Request $request, $id)
