@@ -8,6 +8,7 @@ use App\Models\PaymentHistory;
 use App\Models\Payment;
 use App\Models\Setting;
 use App\Models\Wallet;
+use App\Models\PostJobBid;
 use Illuminate\Support\Facades\DB;
 use Facade\Ignition\DumpRecorder\Dump;
 use Yajra\DataTables\DataTables;
@@ -98,7 +99,6 @@ public function payAdvance(Request $request, $id)
 
     // Calculate advance amount from bid price
     $advanceAmount = ($post->bid_price * $post->advance_percent) / 100;
-dd( $advanceAmount);
     // Check wallet balance
     $wallet = Wallet::where('user_id', $user->id)->first();
 
