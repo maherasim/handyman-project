@@ -45,7 +45,7 @@
                                     data-post-id="{{ $advance_payment->id }}"
                                     data-advance="{{ $advance_payment->advance_percent }}"
                                     data-remaining="{{ $advance_payment->remaining_percent }}">
-                                <i class="fas fa-edit"></i> Update Payment
+                                <i class="fas fa-edit"></i> Alter  Payment
                    </button>
                 @endif
 
