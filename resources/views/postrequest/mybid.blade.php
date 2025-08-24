@@ -168,15 +168,11 @@
                         const AUTH_USER_ID = {{ auth()->id() }};
                         const AUTH_USER_TYPE = @json(auth()->user()->user_type);
                         try {
-                            if (AUTH_USER_TYPE === 'user') {
-                                if (row.status !== 'accepted') {
-                                    actionHtml += `<button class="btn btn-sm btn-success acceptBid" data-id="${row.id}">Accept</button> `;
-                                }
-                                if (String(row.customer_id) === String(AUTH_USER_ID) && (row.status === 'in_progress' || row.status === 'in_process')) {
-                                    actionHtml += `<button class="btn btn-sm btn-info updateStatusBtn" data-id="${row.id}" data-status="in_process">Let's Start Work</button> `;
-                                }
-                            }
+                            
                             if (AUTH_USER_TYPE === 'provider' && String(row.provider_id) === String(AUTH_USER_ID)) {
+                                 if (row.status == 'accepted') {
+                                    actionHtml += `<button class="btn btn-sm btn-success acceptBid" data-id="${row.id}">Split the payment</button> `;
+                                }
                                 if (row.status === 'advance_paid') {
                                     actionHtml += `<button class="btn btn-sm btn-primary updateStatusBtn" data-id="${row.id}" data-status="in_progress">Start Work</button> `;
                                 }

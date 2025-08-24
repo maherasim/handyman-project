@@ -797,7 +797,7 @@ public function startWork(Request $request, $id)
 
     return response()->json([
         'status' => true, 
-        'message' => 'Work started and payment split updated successfully!'
+        'message' => ' payment split updated successfully!'
     ]);
 }
 
