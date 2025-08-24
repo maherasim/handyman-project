@@ -126,8 +126,16 @@ public function bidshow()
             }
 
             // Customer: show Let's Start Work when already in progress (idempotent)
-            if ($auth_user->user_type === 'user' && (int)$auth_user->id === (int)$bid->customer_id && $bid->status === 'in_progress') {
-                return '<button class="btn btn-sm btn-info updateStatusBtn" data-id="'.$bid->id.'" data-status="in_progress">Let\'s Start Work</button>';
+            if ($auth_user->user_type === 'user' && (int)$auth_user->id === (int)$bid->customer_id && in_array($bid->status, ['in_progress','in_process'])) {
+                return '<button class="btn btn-sm btn-info updateStatusBtn" data-id="'.$bid->id.'" data-status="in_process">Let\'s Start Work</button>';
+            }
+
+            // Provider: when in progress or in process, show Hold and Done
+            if ($auth_user->user_type === 'provider' && (int)$auth_user->id === (int)$bid->provider_id && in_array($bid->status, ['in_progress','in_process','hold'])) {
+                $buttons = [];
+                $buttons[] = '<button class="btn btn-sm btn-warning holdBidBtn" data-id="'.$bid->id.'">Hold</button>';
+                $buttons[] = '<button class="btn btn-sm btn-success updateStatusBtn" data-id="'.$bid->id.'" data-status="done">Done</button>';
+                return implode(' ', $buttons);
             }
 
             // Otherwise
@@ -238,34 +246,58 @@ public function payAdvance(Request $request, $id)
 public function updateBidStatus(Request $request, $id)
 {
     $request->validate([
-        'status' => 'required|string|in:in_progress',
+        'status' => 'required|string|in:in_progress,in_process,hold,done',
+        'hold_reason' => 'nullable|string|max:500'
     ]);
 
     $user = auth()->user();
     $bid = PostJobBid::findOrFail($id);
 
-    // Authorization and transition rules
+    $requestedStatus = $request->input('status');
+
+    // Role-based authorization and transition rules
     if ($user->user_type === 'provider') {
         if ((int) $bid->provider_id !== (int) $user->id) {
             return response()->json(['status' => false, 'message' => 'Unauthorized'], 403);
         }
-        if ($bid->status !== 'advance_paid' && $bid->status !== 'in_progress') {
-            return response()->json(['status' => false, 'message' => 'Invalid state transition'], 422);
+
+        if ($requestedStatus === 'in_progress') {
+            if (!in_array($bid->status, ['advance_paid', 'in_progress', 'in_process'])) {
+                return response()->json(['status' => false, 'message' => 'Invalid state transition'], 422);
+            }
+        } elseif ($requestedStatus === 'in_process') {
+            if (!in_array($bid->status, ['in_progress', 'in_process'])) {
+                return response()->json(['status' => false, 'message' => 'Invalid state transition'], 422);
+            }
+        } elseif ($requestedStatus === 'hold') {
+            if (!in_array($bid->status, ['in_progress', 'in_process', 'hold'])) {
+                return response()->json(['status' => false, 'message' => 'Invalid state transition'], 422);
+            }
+            if (!$request->filled('hold_reason')) {
+                return response()->json(['status' => false, 'message' => 'Hold reason is required'], 422);
+            }
+            $bid->hold_reason = $request->input('hold_reason');
+        } elseif ($requestedStatus === 'done') {
+            if (!in_array($bid->status, ['in_progress', 'in_process'])) {
+                return response()->json(['status' => false, 'message' => 'Invalid state transition'], 422);
+            }
         }
     } elseif ($user->user_type === 'user') {
         if ((int) $bid->customer_id !== (int) $user->id) {
             return response()->json(['status' => false, 'message' => 'Unauthorized'], 403);
         }
-        // User confirms start; should already be in_progress. Allow idempotent set.
-        if ($bid->status !== 'in_progress') {
-            return response()->json(['status' => false, 'message' => 'Work not started by provider yet'], 422);
+
+        if ($requestedStatus === 'in_process') {
+            if ($bid->status !== 'in_progress' && $bid->status !== 'in_process') {
+                return response()->json(['status' => false, 'message' => 'Work not started by provider yet'], 422);
+            }
+        } else {
+            return response()->json(['status' => false, 'message' => 'Action not allowed'], 403);
         }
-    } else {
-        // Admin or other roles can proceed
     }
 
-    // Apply status (idempotent)
-    $bid->status = 'in_progress';
+    // Apply status idempotently
+    $bid->status = $requestedStatus;
     $bid->save();
 
     try {
@@ -279,7 +311,7 @@ public function updateBidStatus(Request $request, $id)
 
     return response()->json([
         'status' => true,
-        'message' => 'Status updated to in_progress',
+        'message' => 'Status updated',
     ]);
 }
 

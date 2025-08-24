@@ -153,6 +153,18 @@
                                 statusBadge =
                                     `<span class="badge px-3 py-2" style="background-color:#007bff; color:black;">In Progress</span>`;
                                 break;
+                            case 'in_process':
+                                statusBadge =
+                                    `<span class="badge px-3 py-2" style="background-color:#0dcaf0; color:black;">In Process</span>`;
+                                break;
+                            case 'hold':
+                                statusBadge =
+                                    `<span class="badge px-3 py-2" style="background-color:#ffc107; color:black;">On Hold</span>`;
+                                break;
+                            case 'done':
+                                statusBadge =
+                                    `<span class="badge px-3 py-2" style="background-color:#28a745; color:black;">Done</span>`;
+                                break;
                             case 'completed':
                                 statusBadge =
                                     `<span class="badge px-3 py-2" style="background-color:#28a745; color:black;">${row.status}</span>`;
@@ -392,6 +404,56 @@
                         success: function(response) {
                             if (response && response.status) {
                                 Swal.fire('Updated', response.message || 'Status updated', 'success');
+                                $('#datatable').DataTable().ajax.reload();
+                            } else {
+                                Swal.fire('Error', (response && response.message) ? response.message : 'Unable to update', 'error');
+                            }
+                        },
+                        error: function(xhr) {
+                            Swal.fire('Error', (xhr && xhr.responseJSON && xhr.responseJSON.message) ? xhr.responseJSON.message : 'Something went wrong', 'error');
+                        }
+                    });
+                });
+            });
+
+            // Provider: Hold with reason
+            $(document).on('click', '.holdBidBtn', function() {
+                const bidId = $(this).data('id');
+                Swal.fire({
+                    title: 'Put on Hold',
+                    input: 'textarea',
+                    inputLabel: 'Provide hold reason',
+                    inputPlaceholder: 'Type your reason here... (max 500 chars)',
+                    inputAttributes: {
+                        'aria-label': 'Hold reason'
+                    },
+                    showCancelButton: true,
+                    confirmButtonText: 'Submit',
+                    preConfirm: (value) => {
+                        if (!value || value.trim().length === 0) {
+                            Swal.showValidationMessage('Hold reason is required');
+                            return false;
+                        }
+                        if (value.length > 500) {
+                            Swal.showValidationMessage('Reason too long (max 500 chars)');
+                            return false;
+                        }
+                        return value;
+                    }
+                }).then((result) => {
+                    if (!result.isConfirmed) return;
+
+                    $.ajax({
+                        url: '{{ route('postjob.updateStatus', ':id') }}'.replace(':id', bidId),
+                        type: 'POST',
+                        data: {
+                            _token: '{{ csrf_token() }}',
+                            status: 'hold',
+                            hold_reason: result.value
+                        },
+                        success: function(response) {
+                            if (response && response.status) {
+                                Swal.fire('On Hold', response.message || 'Status updated to hold', 'success');
                                 $('#datatable').DataTable().ajax.reload();
                             } else {
                                 Swal.fire('Error', (response && response.message) ? response.message : 'Unable to update', 'error');
