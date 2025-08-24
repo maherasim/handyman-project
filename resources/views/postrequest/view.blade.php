@@ -246,9 +246,13 @@
                                 if (row.status !== 'accepted') {
                                     actionHtml += `<button class="btn btn-sm btn-success acceptBid" data-id="${row.id}">Accept</button> `;
                                 }
-                                if (String(row.customer_id) === String(AUTH_USER_ID) && (row.status === 'in_progress' || row.status === 'in_process')) {
+                              if (String(row.customer_id) === String(AUTH_USER_ID) && row.status === 'in_progress') {
                                     actionHtml += `<button class="btn btn-sm btn-info updateStatusBtn" data-id="${row.id}" data-status="in_process">Let's Start Work</button> `;
                                 }
+                             if (String(row.customer_id) === String(AUTH_USER_ID) && row.status === 'done') {
+                                    actionHtml += `<button class="btn btn-sm btn-info updateStatusBtn" data-id="${row.id}" data-status="confirm_done">Confirm Work Done</button> `;
+                                }
+
                             }
                             if (AUTH_USER_TYPE === 'provider' && String(row.provider_id) === String(AUTH_USER_ID)) {
                                 if (row.status === 'advance_paid') {
