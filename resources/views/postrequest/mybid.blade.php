@@ -181,9 +181,9 @@
                                     actionHtml += `<button class="btn btn-sm btn-primary updateStatusBtn" data-id="${row.id}" data-status="in_progress">Start Work</button> `;
                                 }
                                  if (row.status === 'hold') {
-                                    actionHtml += `<button class="btn btn-sm btn-primary updateStatusBtn" data-id="${row.id}" data-status="in_process">Resume Work</button> `;
+                                    actionHtml += `<button class="btn btn-sm btn-primary updateStatusBtn" data-id="${row.id}" data-status="in_progress">Resume Work</button> `;
                                 }
-                                if (["in_progress","in_process","hold"].includes(row.status)) {
+                                if (["in_progress","in_process"].includes(row.status)) {
                                     actionHtml += `<button class="btn btn-sm btn-warning holdBidBtn" data-id="${row.id}">Hold</button> `;
                                     actionHtml += `<button class="btn btn-sm btn-success updateStatusBtn" data-id="${row.id}" data-status="done">Done</button> `;
                                 }
