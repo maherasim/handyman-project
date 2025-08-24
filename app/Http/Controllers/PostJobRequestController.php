@@ -251,52 +251,20 @@ public function payAdvance(Request $request, $id)
 public function updateBidStatus(Request $request, $id)
 {
     $request->validate([
-      'status' => 'required|string',
+        'status' => 'required|string',
         'hold_reason' => 'nullable|string|max:500'
     ]);
 
     $bid = PostJobBid::findOrFail($id);
-    $requestedStatus = $request->input('status');
 
-    // Transition rules
-    switch ($requestedStatus) {
-        case 'in_progress':
-            if (!in_array($bid->status, ['advance_paid', 'in_progress', 'in_process', 'hold'])) {
-                return response()->json(['status' => false, 'message' => 'Invalid state transition'], 422);
-            }
-            break;
+    // Set new status
+    $bid->status = $request->input('status');
 
-        case 'in_process':
-            if (!in_array($bid->status, ['in_progress', 'in_process'])) {
-                return response()->json(['status' => false, 'message' => 'Invalid state transition'], 422);
-            }
-            break;
-
-        case 'hold':
-            if (!in_array($bid->status, ['in_progress', 'in_process', 'hold'])) {
-                return response()->json(['status' => false, 'message' => 'Invalid state transition'], 422);
-            }
-            if (!$request->filled('hold_reason')) {
-                return response()->json(['status' => false, 'message' => 'Hold reason is required'], 422);
-            }
-            $bid->hold_reason = $request->input('hold_reason');
-            break;
-
-        case 'done':
-            if (!in_array($bid->status, ['in_progress', 'in_process'])) {
-                return response()->json(['status' => false, 'message' => 'Invalid state transition'], 422);
-            }
-            break;
-
-        case 'confirm_done':
-            if ($bid->status !== 'done') {
-                return response()->json(['status' => false, 'message' => 'Invalid state transition'], 422);
-            }
-            break;
+    // If hold → save reason
+    if ($bid->status === 'hold' && $request->filled('hold_reason')) {
+        $bid->hold_reason = $request->input('hold_reason');
     }
 
-    // Save status
-    $bid->status = $requestedStatus;
     $bid->save();
 
     try {
@@ -305,14 +273,16 @@ public function updateBidStatus(Request $request, $id)
             'post_job' => $bid,
         ]);
     } catch (\Throwable $e) {
-        // Ignore notification errors
+        // silent fail for notifications
     }
 
     return response()->json([
         'status' => true,
-        'message' => 'Status updated',
+        'message' => 'Status updated successfully',
     ]);
 }
+
+
 
 
 public function setAdvance(Request $request, $id)
