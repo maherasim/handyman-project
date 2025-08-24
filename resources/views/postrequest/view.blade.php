@@ -64,25 +64,61 @@
                     </div>
                 </div>
 
-                <!-- Bids Container -->
-                <div id="bidsContaineras" class="row">
-                   <div class="row">
+                <div class="row" id="bidsContainer">
     @forelse($bids as $bid)
+        @php
+            // Status Badge logic (moved from JS to PHP)
+            switch ($bid->status) {
+                case 'pending':
+                    $statusBadge = '<span class="badge px-3 py-2" style="background-color:#FFC107; color:black;">Pending</span>';
+                    break;
+                case 'assigned':
+                    $statusBadge = '<span class="badge px-3 py-2" style="background-color:#17a2b8; color:black;">Assigned</span>';
+                    break;
+                case 'accepted':
+                    $statusBadge = '<span class="badge px-3 py-2" style="background-color:#20c997; color:black;">Accepted</span>';
+                    break;
+                case 'in_progress':
+                    $statusBadge = '<span class="badge px-3 py-2" style="background-color:#007bff; color:black;">In Progress</span>';
+                    break;
+                case 'in_process':
+                    $statusBadge = '<span class="badge px-3 py-2" style="background-color:#0dcaf0; color:black;">In Process</span>';
+                    break;
+                case 'hold':
+                    $statusBadge = '<span class="badge px-3 py-2" style="background-color:#ffc107; color:black;">On Hold</span>';
+                    break;
+                case 'done':
+                    $statusBadge = '<span class="badge px-3 py-2" style="background-color:#28a745; color:black;">Done</span>';
+                    break;
+                case 'completed':
+                    $statusBadge = '<span class="badge px-3 py-2" style="background-color:#28a745; color:black;">Completed</span>';
+                    break;
+                case 'cancelled':
+                    $statusBadge = '<span class="badge px-3 py-2" style="background-color:#dc3545; color:black;">Cancelled</span>';
+                    break;
+                default:
+                    $statusBadge = '<span class="badge px-3 py-2" style="background-color:#6c757d; color:black;">'.ucfirst($bid->status).'</span>';
+            }
+
+            // Hold reason
+            $reasonHtml = '';
+            if (in_array($bid->status, ['hold','on_hold']) && $bid->hold_reason) {
+                $reasonHtml = '<p class="mb-3 text-warning"><i class="fas fa-comment-dots"></i> Reason: '.$bid->hold_reason.'</p>';
+            }
+        @endphp
+
         <div class="col-md-6 col-lg-4 mb-3">
             <div class="card shadow-sm h-100">
                 <div class="card-body d-flex flex-column">
-                    <h6 class="fw-bold mb-2">{{ $bid->postrequest->title ?? 'N/A' }}</h6>
+                    <h6 class="fw-bold mb-2">{{ $bid->postrequest->title ?? '' }}</h6>
                     <p class="text-muted mb-1"><i class="fas fa-user"></i> Provider: {{ $bid->provider->display_name ?? 'N/A' }}</p>
                     <p class="text-muted mb-1"><i class="fas fa-user-tie"></i> Customer: {{ $bid->customer->display_name ?? 'N/A' }}</p>
                     <p class="mb-1"><i class="fas fa-dollar-sign"></i> Bid: <span class="fw-bold">{{ $bid->price }}</span></p>
-                    <p class="mb-1"><i class="fas fa-flag"></i> Status: {{ ucfirst($bid->status) }}</p>
-
-                    @if($bid->status === 'hold' && $bid->hold_reason)
-                        <p class="text-warning"><i class="fas fa-comment-dots"></i> Reason: {{ $bid->hold_reason }}</p>
-                    @endif
+                    <p class="mb-1"><i class="fas fa-flag"></i> Status: {!! $statusBadge !!}</p>
+                    {!! $reasonHtml !!}
 
                     <div class="mt-auto">
-                        {{-- action buttons logic (copy from your bidshow) --}}
+                        {{-- Action buttons (copy from your bidshow "action" column logic) --}}
                     </div>
                 </div>
             </div>
@@ -91,8 +127,6 @@
         <p class="text-muted">No bids found for this request.</p>
     @endforelse
 </div>
-
-                </div>
 
             </div>
         </div>
