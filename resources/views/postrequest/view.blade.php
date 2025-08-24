@@ -179,6 +179,10 @@
                         }
 
 
+                        let reasonHtml = '';
+                        if ((row.status === 'hold' || row.status === 'on_hold') && row.hold_reason) {
+                            reasonHtml = `<p class="mb-3 text-warning"><i class="fas fa-comment-dots"></i> Reason: ${row.hold_reason}</p>`;
+                        }
                         let card = `
                         <div class="col-md-6 col-lg-4 mb-3">
                             <div class="card shadow-sm h-100">
@@ -187,7 +191,8 @@
                                     <p class="text-muted mb-1"><i class="fas fa-user"></i> Provider: ${row.provider_name}</p>
                                     <p class="text-muted mb-1"><i class="fas fa-user-tie"></i> Customer: ${row.customer_name}</p>
                                     <p class="mb-1"><i class="fas fa-dollar-sign"></i> Bid: <span class="fw-bold">${row.price}</span></p>
-                                    <p class="mb-3"><i class="fas fa-flag"></i> Status: ${statusBadge}</p>
+                                    <p class="mb-1"><i class="fas fa-flag"></i> Status: ${statusBadge}</p>
+                                    ${reasonHtml}
                                     <div class="mt-auto">
                                         ${row.action}
                                     </div>
