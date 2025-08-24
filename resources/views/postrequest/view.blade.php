@@ -246,6 +246,13 @@
                                 if (row.status == 'requested') {
                                     actionHtml += `<button class="btn btn-sm btn-success acceptBid" data-id="${row.id} data-status="accepted" ">Accept</button> `;
                                 }
+                                 if (row.status === 'advance_payment' && String(row.customer_id) === String(AUTH_USER_ID)) {
+                                    var advPct = (typeof row.advance_percent !== 'undefined' && row.advance_percent !== null) ? parseFloat(row.advance_percent) : null;
+                                    var amount = (advPct !== null && !isNaN(advPct)) ? (parseFloat(row.price) * advPct / 100) : null;
+                                    var labelSuffix = amount !== null ? ` ${amount.toFixed(2)} (${advPct}%)` : '';
+                                    var amountAttr = amount !== null ? ` data-amount="${amount}"` : '';
+                                    actionHtml += `<button class="btn btn-sm btn-success payAdvanceBtn" data-post-id="${row.id}"${amountAttr}><i class="fas fa-wallet"></i> Pay Advance${labelSuffix}</button> `;
+                                }
                               if (String(row.customer_id) === String(AUTH_USER_ID) && row.status === 'in_progress') {
                                     actionHtml += `<button class="btn btn-sm btn-info updateStatusBtn" data-id="${row.id}" data-status="in_process">Let's Start Work</button> `;
                                 }
