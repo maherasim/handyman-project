@@ -43,12 +43,12 @@
                         Pay Remaining {{ $remainingAmount }} ({{ $advance_payment->remaining_percent }}%)
                     </button> 
 
-                                <button class="btn btn-warning updateAdvanceBtn"
+                                {{-- <button class="btn btn-warning updateAdvanceBtn"
                                     data-post-id="{{ $advance_payment->id }}"
                                     data-advance="{{ $advance_payment->advance_percent }}"
                                     data-remaining="{{ $advance_payment->remaining_percent }}">
                                     <i class="fas fa-edit"></i> Alter Payment
-                                </button>
+                                </button> --}}
                             @endif
 
                         </div>
