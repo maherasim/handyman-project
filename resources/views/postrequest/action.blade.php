@@ -14,7 +14,7 @@ $auth_user= authSession();
 </a>
 @endif
 
-<a class="" href="{{ route('post-job-request.show', $post_job->id) }}" title="{{ __('messages.view_form_title',['form'=>  __('messages.postjob') ]) }}"><i class="far fa-eye text-secondary me-2"></i></a>
+<a class="" href="{{ route('post-job-request.bids', $post_job->id) }}" title="{{ __('messages.view_form_title',['form'=>  __('messages.postjob') ]) }}"><i class="far fa-eye text-secondary me-2"></i></a>
 
 @if(auth()->user()->hasAnyRole(['provider']))
     @if($post_job->status != 'assigned')
