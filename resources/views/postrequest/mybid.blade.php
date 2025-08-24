@@ -177,7 +177,7 @@
                                     actionHtml += `<button class="btn btn-sm btn-primary updateStatusBtn" data-id="${row.id}" data-status="in_progress">Start Work</button> `;
                                 }
                                  if (row.status === 'hold') {
-                                    actionHtml += `<button class="btn btn-sm btn-primary updateStatusBtn" data-id="${row.id}" data-status="in_progress">Resume Work</button> `;
+                                    actionHtml += `<button class="btn btn-sm btn-primary updateStatusBtn" data-id="${row.id}" data-status="in_process">Resume Work</button> `;
                                 }
                                  if (row.status === 'confirm_done') {
                                     actionHtml += `<button class="btn btn-sm btn-primary updateStatusBtn" data-id="${row.id}" data-status="completed">Completed</button> `;
