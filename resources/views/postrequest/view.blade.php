@@ -243,7 +243,7 @@
                         const AUTH_USER_TYPE = @json(auth()->user()->user_type);
                         try {
                             if (AUTH_USER_TYPE === 'user') {
-                                if (row.status !== 'accepted') {
+                                if (row.status == 'requested') {
                                     actionHtml += `<button class="btn btn-sm btn-success acceptBid" data-id="${row.id}">Accept</button> `;
                                 }
                               if (String(row.customer_id) === String(AUTH_USER_ID) && row.status === 'in_progress') {
@@ -257,15 +257,7 @@
                                 }
 
                             }
-                            if (AUTH_USER_TYPE === 'provider' && String(row.provider_id) === String(AUTH_USER_ID)) {
-                                if (row.status === 'advance_paid') {
-                                    actionHtml += `<button class="btn btn-sm btn-primary updateStatusBtn" data-id="${row.id}" data-status="in_progress">Start Work</button> `;
-                                }
-                                if (["in_progress","in_process","hold"].includes(row.status)) {
-                                    actionHtml += `<button class="btn btn-sm btn-warning holdBidBtn" data-id="${row.id}">Hold</button> `;
-                                    actionHtml += `<button class="btn btn-sm btn-success updateStatusBtn" data-id="${row.id}" data-status="done">Done</button> `;
-                                }
-                            }
+                            
                         } catch (e) {}
 
                         if (!actionHtml && row.status === 'accepted') {
