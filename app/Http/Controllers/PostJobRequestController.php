@@ -251,7 +251,7 @@ public function payAdvance(Request $request, $id)
 public function updateBidStatus(Request $request, $id)
 {
     $request->validate([
-        'status' => 'required|string|in:in_progress,in_process,hold,done,confirm_done',
+      'status' => 'required|string',
         'hold_reason' => 'nullable|string|max:500'
     ]);
 
