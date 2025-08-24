@@ -552,6 +552,7 @@ Route::group(['middleware' => ['permission:helpdesk list']], function () {
 });
 
 Route::get('bidsshow',[PostJobRequestController::class,'bidshowindex'])->name('bidsshow');
+Route::get('post-job-request/{id}/bids', [PostJobRequestController::class, 'viewPostBids'])->name('post-job-request.bids');
 Route::get('bidsindex',[PostJobRequestController::class,'bidshow'])->name('bidsshowjson');
 Route::post('/bids/accept/{id}', [PostJobRequestController::class, 'acceptBid'])->name('bids.accept');
  

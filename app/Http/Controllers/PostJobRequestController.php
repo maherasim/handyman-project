@@ -748,6 +748,14 @@ public function index_data(DataTables $datatable, Request $request)
 
     }
 
+public function viewPostBids($id)
+{
+    $auth_user = authSession();
+    $pageTitle = __('messages.list_form_title', ['form' => __('messages.postbid')]);
+    $assets = ['datatable'];
+    return view('postrequest.bids', compact('pageTitle', 'auth_user', 'assets', 'id'));
+}
+
 public function startWork(Request $request, $id) 
 {
     // Find the bid
