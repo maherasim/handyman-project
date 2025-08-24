@@ -260,7 +260,11 @@
                                     actionHtml += `<button class="btn btn-sm btn-info updateStatusBtn" data-id="${row.id}" data-status="confirm_done">Confirm Work Done</button> `;
                                 }
                                   if (String(row.customer_id) === String(AUTH_USER_ID) && row.status === 'completed') {
-                                    actionHtml += `<button class="btn btn-sm btn-info updateStatusBtn" data-id="${row.id}" data-status="remaing_amount_paid">Pay Remaining amount</button> `;
+                                    var remPct = (typeof row.remaining_percent !== 'undefined' && row.remaining_percent !== null) ? parseFloat(row.remaining_percent) : null;
+                                    var amountRem = (remPct !== null && !isNaN(remPct)) ? (parseFloat(row.price) * remPct / 100) : null;
+                                    var labelRem = amountRem !== null ? ` ${amountRem.toFixed(2)} (${remPct}%)` : '';
+                                    var amountAttrRem = amountRem !== null ? ` data-amount="${amountRem}"` : '';
+                                    actionHtml += `<button class="btn btn-sm btn-primary payRemainingBtn" data-post-id="${row.id}"${amountAttrRem}><i class="fas fa-credit-card"></i> Pay Remaining${labelRem}</button> `;
                                 }
 
                             }
@@ -388,21 +392,22 @@
             window.__payAdvanceBound = true;
 
             document.addEventListener('click', function (evt) {
-                const btn = evt.target && evt.target.closest && evt.target.closest('.payAdvanceBtn');
+                const btn = evt.target && evt.target.closest && (evt.target.closest('.payAdvanceBtn') || evt.target.closest('.payRemainingBtn'));
                 if (!btn) return;
 
                 const postId = btn.getAttribute('data-post-id');
                 const providedAmount = btn.getAttribute('data-amount');
+                const isRemaining = btn.classList.contains('payRemainingBtn');
                 if (!postId) return;
 
                 Swal.fire({
-                    title: "Confirm Advance Payment",
-                    text: providedAmount ? `Pay advance amount: ${providedAmount}. Proceed?` : "Are you sure you want to proceed with the advance payment?",
+                    title: isRemaining ? "Confirm Remaining Payment" : "Confirm Advance Payment",
+                    text: providedAmount ? `${isRemaining ? 'Pay remaining amount' : 'Pay advance amount'}: ${providedAmount}. Proceed?` : (isRemaining ? "Proceed to pay remaining amount?" : "Are you sure you want to proceed with the advance payment?"),
                     icon: "warning",
                     showCancelButton: true,
                     confirmButtonColor: "#28a745",
                     cancelButtonColor: "#d33",
-                    confirmButtonText: "Yes, pay advance",
+                    confirmButtonText: isRemaining ? "Yes, pay remaining" : "Yes, pay advance",
                     cancelButtonText: "Cancel"
                 }).then((result) => {
                     if (!result.isConfirmed) return;
@@ -415,12 +420,12 @@
                             'X-Requested-With': 'XMLHttpRequest',
                             'X-CSRF-TOKEN': '{{ csrf_token() }}'
                         },
-                        body: JSON.stringify({ amount: providedAmount })
+                        body: JSON.stringify({ amount: providedAmount, type: isRemaining ? 'remaining' : 'advance' })
                     })
                     .then(function (res) { return res.json(); })
                     .then(function (response) {
                         if (response && response.status) {
-                            Swal.fire("Success", response.message || "Advance paid successfully.", "success");
+                            Swal.fire("Success", response.message || (isRemaining ? "Remaining paid successfully." : "Advance paid successfully."), "success");
                             if (window.jQuery && window.jQuery.fn && window.jQuery.fn.DataTable && window.jQuery('#datatable').length) {
                                 window.jQuery('#datatable').DataTable().ajax.reload();
                             }
