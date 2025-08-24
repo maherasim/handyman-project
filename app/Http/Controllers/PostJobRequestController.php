@@ -267,7 +267,7 @@ public function updateBidStatus(Request $request, $id)
         }
 
         if ($requestedStatus === 'in_progress') {
-            if (!in_array($bid->status, ['advance_paid', 'in_progress', 'in_process'])) {
+            if (!in_array($bid->status, ['advance_paid', 'in_progress', 'in_process', 'hold'])) {
                 return response()->json(['status' => false, 'message' => 'Invalid state transition'], 422);
             }
         } elseif ($requestedStatus === 'in_process') {
