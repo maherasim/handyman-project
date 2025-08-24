@@ -183,6 +183,9 @@
                                  if (row.status === 'hold') {
                                     actionHtml += `<button class="btn btn-sm btn-primary updateStatusBtn" data-id="${row.id}" data-status="in_process">Resume Work</button> `;
                                 }
+                                 if (row.status === 'confirm_done') {
+                                    actionHtml += `<button class="btn btn-sm btn-primary updateStatusBtn" data-id="${row.id}" data-status="completed">Completed</button> `;
+                                }
                                 
                               if (row.status === "in_process") {
                                                 actionHtml += `<button class="btn btn-sm btn-warning holdBidBtn" data-id="${row.id}">Hold</button> `;
