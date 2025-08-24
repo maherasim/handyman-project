@@ -255,26 +255,24 @@ public function updateBidStatus(Request $request, $id)
         'hold_reason' => 'nullable|string|max:500'
     ]);
 
-    $user = auth()->user();
     $bid = PostJobBid::findOrFail($id);
-
     $requestedStatus = $request->input('status');
 
-    // Role-based authorization and transition rules
-    if ($user->user_type === 'provider') {
-        if ((int) $bid->provider_id !== (int) $user->id) {
-            return response()->json(['status' => false, 'message' => 'Unauthorized'], 403);
-        }
-
-        if ($requestedStatus === 'in_progress') {
+    // Transition rules
+    switch ($requestedStatus) {
+        case 'in_progress':
             if (!in_array($bid->status, ['advance_paid', 'in_progress', 'in_process', 'hold'])) {
                 return response()->json(['status' => false, 'message' => 'Invalid state transition'], 422);
             }
-        } elseif ($requestedStatus === 'in_process') {
+            break;
+
+        case 'in_process':
             if (!in_array($bid->status, ['in_progress', 'in_process'])) {
                 return response()->json(['status' => false, 'message' => 'Invalid state transition'], 422);
             }
-        } elseif ($requestedStatus === 'hold') {
+            break;
+
+        case 'hold':
             if (!in_array($bid->status, ['in_progress', 'in_process', 'hold'])) {
                 return response()->json(['status' => false, 'message' => 'Invalid state transition'], 422);
             }
@@ -282,26 +280,22 @@ public function updateBidStatus(Request $request, $id)
                 return response()->json(['status' => false, 'message' => 'Hold reason is required'], 422);
             }
             $bid->hold_reason = $request->input('hold_reason');
-        } elseif ($requestedStatus === 'done') {
+            break;
+
+        case 'done':
             if (!in_array($bid->status, ['in_progress', 'in_process'])) {
                 return response()->json(['status' => false, 'message' => 'Invalid state transition'], 422);
             }
-        }
-    } elseif ($user->user_type === 'user') {
-        if ((int) $bid->customer_id !== (int) $user->id) {
-            return response()->json(['status' => false, 'message' => 'Unauthorized'], 403);
-        }
+            break;
 
-        if ($requestedStatus === 'in_process') {
-            if ($bid->status !== 'in_progress' && $bid->status !== 'in_process') {
-                return response()->json(['status' => false, 'message' => 'Work not started by provider yet'], 422);
+        case 'confirm_done':
+            if ($bid->status !== 'done') {
+                return response()->json(['status' => false, 'message' => 'Invalid state transition'], 422);
             }
-        } else {
-            return response()->json(['status' => false, 'message' => 'Action not allowed'], 403);
-        }
+            break;
     }
 
-    // Apply status idempotently
+    // Save status
     $bid->status = $requestedStatus;
     $bid->save();
 
@@ -311,7 +305,7 @@ public function updateBidStatus(Request $request, $id)
             'post_job' => $bid,
         ]);
     } catch (\Throwable $e) {
-        // Silent
+        // Ignore notification errors
     }
 
     return response()->json([
