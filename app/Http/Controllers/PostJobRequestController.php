@@ -80,7 +80,7 @@ $advance_payment = PostJobBid::where('customer_id', $auth_user->id)
 
         return response()->json(['status' => true, 'message' => 'Payment split set & work started.']);
     }
-public function bidshow()
+public function bidshow(Request $request)
 {
     $auth_user = authSession();
 
@@ -97,6 +97,10 @@ public function bidshow()
         $query->whereHas('postrequest', fn($q) => $q->where('customer_id', $auth_user->id));
     }
 
+    if ($request->filled('post_request_id')) {
+        $query->where('post_request_id', (int) $request->post_request_id);
+    }
+
     $postJobBids = $query->get();
 
     return DataTables::of($postJobBids)
@@ -105,6 +109,7 @@ public function bidshow()
         ->addColumn('customer_name', fn($bid) => $bid->customer->display_name ?? 'N/A')
         ->addColumn('post_title', fn($bid) => $bid->postrequest->title ?? 'N/A')
         ->addColumn('status', fn($bid) => $bid->status ?? 'N/A')
+        ->addColumn('hold_reason', fn($bid) => $bid->hold_reason ?? null)
         ->addColumn('action', function($bid) use ($auth_user) {
             $post = $bid->postrequest;
 

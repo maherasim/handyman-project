@@ -95,9 +95,10 @@
                     url: '{{ route('bidsshowjson') }}',
                     type: "GET",
                     data: function(d) {
-                        d.search = {
-                            value: $('.dt-search').val()
-                        }
+                        d.search = { value: $('.dt-search').val() };
+                        @if(isset($id))
+                        d.post_request_id = {{ (int) $id }};
+                        @endif
                     }
                 },
                 columns: [{
@@ -540,9 +541,7 @@
                                         "Payment split set & work started.",
                                         "success");
                                     $('#datatable').DataTable().ajax.reload();
-ble().ajax.reload();
-x.reload();
-                                } else {
+} else {
                                     Swal.fire("Error!", response.message ||
                                         "Unable to save.", "error");
                                 }
