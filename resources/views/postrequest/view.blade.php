@@ -252,6 +252,9 @@
                              if (String(row.customer_id) === String(AUTH_USER_ID) && row.status === 'done') {
                                     actionHtml += `<button class="btn btn-sm btn-info updateStatusBtn" data-id="${row.id}" data-status="confirm_done">Confirm Work Done</button> `;
                                 }
+                                  if (String(row.customer_id) === String(AUTH_USER_ID) && row.status === 'completed') {
+                                    actionHtml += `<button class="btn btn-sm btn-info updateStatusBtn" data-id="${row.id}" data-status="remaing_amount_paid">Pay Remaining amount</button> `;
+                                }
 
                             }
                             if (AUTH_USER_TYPE === 'provider' && String(row.provider_id) === String(AUTH_USER_ID)) {
