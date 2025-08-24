@@ -230,8 +230,58 @@ public function payAdvance(Request $request, $id)
     }
 }
 
+/**
+ * Unified status update API for PostJobBid.
+ * Allows provider to move advance_paid -> in_progress, and
+ * allows user to confirm in_progress idempotently.
+ */
+public function updateBidStatus(Request $request, $id)
+{
+    $request->validate([
+        'status' => 'required|string|in:in_progress',
+    ]);
 
+    $user = auth()->user();
+    $bid = PostJobBid::findOrFail($id);
 
+    // Authorization and transition rules
+    if ($user->user_type === 'provider') {
+        if ((int) $bid->provider_id !== (int) $user->id) {
+            return response()->json(['status' => false, 'message' => 'Unauthorized'], 403);
+        }
+        if ($bid->status !== 'advance_paid' && $bid->status !== 'in_progress') {
+            return response()->json(['status' => false, 'message' => 'Invalid state transition'], 422);
+        }
+    } elseif ($user->user_type === 'user') {
+        if ((int) $bid->customer_id !== (int) $user->id) {
+            return response()->json(['status' => false, 'message' => 'Unauthorized'], 403);
+        }
+        // User confirms start; should already be in_progress. Allow idempotent set.
+        if ($bid->status !== 'in_progress') {
+            return response()->json(['status' => false, 'message' => 'Work not started by provider yet'], 422);
+        }
+    } else {
+        // Admin or other roles can proceed
+    }
+
+    // Apply status (idempotent)
+    $bid->status = 'in_progress';
+    $bid->save();
+
+    try {
+        $this->sendNotification([
+            'activity_type' => 'update_booking_status',
+            'post_job' => $bid,
+        ]);
+    } catch (\Throwable $e) {
+        // Silent
+    }
+
+    return response()->json([
+        'status' => true,
+        'message' => 'Status updated to in_progress',
+    ]);
+}
 
 
 public function setAdvance(Request $request, $id)
