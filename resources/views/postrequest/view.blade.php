@@ -69,87 +69,122 @@
                     </div>
                 </div>
 
-                <!-- Bids Table -->
-                <div class="table-responsive">
-                    <table id="bidsTable" class="table table-striped table-bordered w-100">
-                        <thead>
-                            <tr>
-                                <th>Post</th>
-                                <th>Provider</th>
-                                <th>Customer</th>
-                                <th>Price</th>
-                                <th>Status</th>
-                                <th>View</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>
+                <!-- Bids Container -->
+                <div id="bidsContainer" class="row">
+                    <!-- Cards will be loaded here dynamically from DataTable -->
                 </div>
 
             </div>
         </div>
     </div>
 
-    
+    <!-- Hidden DataTable -->
+    <table id="datatable" class="d-none"></table>
+
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const isDetail = @json(isset($id));
-            const ajaxUrl = isDetail ? @json(isset($id) ? route('postrequest.index_data', $id) : '') : @json(route('bidsshowjson'));
+            let bidsContainer = $("#bidsContainer");
 
-            const columns = isDetail ? [
-                { data: 'post_request_id', name: 'post_request_id', title: 'Post' },
-                { data: 'provider_id', name: 'provider_id', title: 'Provider' },
-                { data: 'customer_id', name: 'customer_id', title: 'Customer' },
-                { data: 'price', name: 'price', title: 'Price' },
-                { data: 'duration', name: 'duration', title: 'Duration' }
-            ] : [
-                { data: 'post_title', name: 'post_title' },
-                { data: 'provider_name', name: 'provider_name' },
-                { data: 'customer_name', name: 'customer_name' },
-                { data: 'price', name: 'price' },
-                { data: 'status', name: 'status', render: function(data, type, row) {
-                    let badge = '';
-                    switch (data) {
-                        case 'pending': badge = '<span class="badge px-3 py-2" style="background-color:#FFC107; color:black;">'+data+'</span>'; break;
-                        case 'assigned': badge = '<span class="badge px-3 py-2" style="background-color:#17a2b8; color:black;">'+data+'</span>'; break;
-                        case 'accepted': badge = '<span class="badge px-3 py-2" style="background-color:#20c997; color:black;">'+data+'</span>'; break;
-                        case 'in_progress': badge = '<span class="badge px-3 py-2" style="background-color:#007bff; color:black;">In Progress</span>'; break;
-                        case 'in_process': badge = '<span class="badge px-3 py-2" style="background-color:#0dcaf0; color:black;">In Process</span>'; break;
-                        case 'hold': badge = '<span class="badge px-3 py-2" style="background-color:#ffc107; color:black;">On Hold</span>'; break;
-                        case 'done': badge = '<span class="badge px-3 py-2" style="background-color:#28a745; color:black;">Done</span>'; break;
-                        case 'completed': badge = '<span class="badge px-3 py-2" style="background-color:#28a745; color:black;">'+data+'</span>'; break;
-                        case 'cancelled': badge = '<span class="badge px-3 py-2" style="background-color:#dc3545; color:black;">'+data+'</span>'; break;
-                        default: badge = '<span class="badge px-3 py-2" style="background-color:#6c757d; color:black;">'+(data || '-')+'</span>';
-                    }
-                    if ((row.status === 'hold' || row.status === 'on_hold') && row.hold_reason) {
-                        badge += ' <i class="fas fa-info-circle text-warning" title="Reason: '+String(row.hold_reason).replace(/"/g,'&quot;')+'"></i>';
-                    }
-                    return badge;
-                }},
-                { data: null, name: 'view', orderable: false, searchable: false, render: function(data, type, row) {
-                    var postId = row.post_request_id || row.post_id || row.postId || '';
-                    if (!postId) return '-';
-                    var url = @json(route('post-job-request.show', ['post_job_request' => 0])).replace('/0', '/' + postId);
-                    return '<a class="btn btn-sm btn-outline-primary" href="'+url+'"><i class="fas fa-eye"></i> View</a>';
-                }},
-                { data: 'action', name: 'action', orderable: false, searchable: false }
-            ];
-
-            const table = $('#bidsTable').DataTable({
+            let table = $('#datatable').DataTable({
                 processing: true,
                 serverSide: true,
                 searching: false,
                 paging: true,
-                pageLength: 10,
+                pageLength: 6,
                 ajax: {
-                    url: ajaxUrl,
-                    type: 'GET',
+                    url: '{{ route('bidsshowjson') }}',
+                    type: "GET",
                     data: function(d) {
-                        d.search = { value: $('.dt-search').val() };
+                        d.search = {
+                            value: $('.dt-search').val()
+                        }
                     }
                 },
-                columns: columns
+                columns: [{
+                        data: 'post_title',
+                        name: 'post_title'
+                    },
+                    {
+                        data: 'provider_name',
+                        name: 'provider_name'
+                    },
+                    {
+                        data: 'customer_name',
+                        name: 'customer_name'
+                    },
+                    {
+                        data: 'price',
+                        name: 'price'
+                    },
+                    {
+                        data: 'status',
+                        name: 'status'
+                    },
+                    {
+                        data: 'action',
+                        name: 'action',
+                        orderable: false,
+                        searchable: false
+                    }
+                ],
+                drawCallback: function(settings) {
+                    bidsContainer.empty();
+                    let data = this.api().rows({
+                        page: 'current'
+                    }).data();
+
+                    data.each(function(row) {
+                        // Status Badge
+                        let statusBadge = '';
+                        switch (row.status) {
+                            case 'pending':
+                                statusBadge =
+                                    `<span class="badge px-3 py-2" style="background-color:#FFC107; color:black;">${row.status}</span>`;
+                                break;
+                            case 'assigned':
+                                statusBadge =
+                                    `<span class="badge px-3 py-2" style="background-color:#17a2b8; color:black;">${row.status}</span>`;
+                                break;
+                            case 'accepted':
+                                statusBadge =
+                                    `<span class="badge px-3 py-2" style="background-color:#20c997; color:black;">${row.status}</span>`;
+                                break;
+                            case 'in_progress':
+                                statusBadge =
+                                    `<span class="badge px-3 py-2" style="background-color:#007bff; color:black;">In Progress</span>`;
+                                break;
+                            case 'completed':
+                                statusBadge =
+                                    `<span class="badge px-3 py-2" style="background-color:#28a745; color:black;">${row.status}</span>`;
+                                break;
+                            case 'cancelled':
+                                statusBadge =
+                                    `<span class="badge px-3 py-2" style="background-color:#dc3545; color:black;">${row.status}</span>`;
+                                break;
+                            default:
+                                statusBadge =
+                                    `<span class="badge px-3 py-2" style="background-color:#6c757d; color:black;">${row.status}</span>`;
+                        }
+
+
+                        let card = `
+                        <div class="col-md-6 col-lg-4 mb-3">
+                            <div class="card shadow-sm h-100">
+                                <div class="card-body d-flex flex-column">
+                                    <h6 class="fw-bold mb-2">${row.post_title}</h6>
+                                    <p class="text-muted mb-1"><i class="fas fa-user"></i> Provider: ${row.provider_name}</p>
+                                    <p class="text-muted mb-1"><i class="fas fa-user-tie"></i> Customer: ${row.customer_name}</p>
+                                    <p class="mb-1"><i class="fas fa-dollar-sign"></i> Bid: <span class="fw-bold">${row.price}</span></p>
+                                    <p class="mb-3"><i class="fas fa-flag"></i> Status: ${statusBadge}</p>
+                                    <div class="mt-auto">
+                                        ${row.action}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>`;
+                        bidsContainer.append(card);
+                    });
+                }
             });
 
             // Live search
@@ -224,13 +259,7 @@
                                 if (response.status) {
                                     Swal.fire("Updated!", response.message ||
                                         "Payment split updated.", "success");
-                                    if (window.jQuery && window.jQuery.fn && window.jQuery.fn.DataTable) {
-                                        if ($('#bidsTable').length) {
-                                            $('#bidsTable').DataTable().ajax.reload();
-                                        } else if ($('#datatable').length) {
-                                            $('#datatable').DataTable().ajax.reload();
-                                        }
-                                    }
+                                    $('#datatable').DataTable().ajax.reload();
                                 } else {
                                     Swal.fire("Error!", response.message ||
                                         "Unable to update.", "error");
@@ -287,12 +316,8 @@
                     .then(function (response) {
                         if (response && response.status) {
                             Swal.fire("Success", response.message || "Advance paid successfully.", "success");
-                            if (window.jQuery && window.jQuery.fn && window.jQuery.fn.DataTable) {
-                                if (window.jQuery('#bidsTable').length) {
-                                    window.jQuery('#bidsTable').DataTable().ajax.reload();
-                                } else if (window.jQuery('#datatable').length) {
-                                    window.jQuery('#datatable').DataTable().ajax.reload();
-                                }
+                            if (window.jQuery && window.jQuery.fn && window.jQuery.fn.DataTable && window.jQuery('#datatable').length) {
+                                window.jQuery('#datatable').DataTable().ajax.reload();
                             }
                         } else {
                             Swal.fire("Error", (response && response.message) ? response.message : "Unable to process.", "error");
@@ -330,13 +355,7 @@
                             success: function(response) {
                                 if (response.status) {
                                     Swal.fire("Accepted!", response.message, "success");
-                                    if (window.jQuery && window.jQuery.fn && window.jQuery.fn.DataTable) {
-                                        if ($('#bidsTable').length) {
-                                            $('#bidsTable').DataTable().ajax.reload();
-                                        } else if ($('#datatable').length) {
-                                            $('#datatable').DataTable().ajax.reload();
-                                        }
-                                    }
+                                    $('#datatable').DataTable().ajax.reload();
                                 } else {
                                     Swal.fire("Error!", response.message, "error");
                                 }
@@ -373,69 +392,7 @@
                         success: function(response) {
                             if (response && response.status) {
                                 Swal.fire('Updated', response.message || 'Status updated', 'success');
-                                if (window.jQuery && window.jQuery.fn && window.jQuery.fn.DataTable) {
-                                    if ($('#bidsTable').length) {
-                                        $('#bidsTable').DataTable().ajax.reload();
-                                    } else if ($('#datatable').length) {
-                                        $('#datatable').DataTable().ajax.reload();
-                                    }
-                                }
-                            } else {
-                                Swal.fire('Error', (response && response.message) ? response.message : 'Unable to update', 'error');
-                            }
-                        },
-                        error: function(xhr) {
-                            Swal.fire('Error', (xhr && xhr.responseJSON && xhr.responseJSON.message) ? xhr.responseJSON.message : 'Something went wrong', 'error');
-                        }
-                    });
-                });
-            });
-
-            // Provider: Hold with reason
-            $(document).on('click', '.holdBidBtn', function() {
-                const bidId = $(this).data('id');
-                Swal.fire({
-                    title: 'Put on Hold',
-                    input: 'textarea',
-                    inputLabel: 'Provide hold reason',
-                    inputPlaceholder: 'Type your reason here... (max 500 chars)',
-                    inputAttributes: {
-                        'aria-label': 'Hold reason'
-                    },
-                    showCancelButton: true,
-                    confirmButtonText: 'Submit',
-                    preConfirm: (value) => {
-                        if (!value || value.trim().length === 0) {
-                            Swal.showValidationMessage('Hold reason is required');
-                            return false;
-                        }
-                        if (value.length > 500) {
-                            Swal.showValidationMessage('Reason too long (max 500 chars)');
-                            return false;
-                        }
-                        return value;
-                    }
-                }).then((result) => {
-                    if (!result.isConfirmed) return;
-
-                    $.ajax({
-                        url: '{{ route('postjob.updateStatus', ':id') }}'.replace(':id', bidId),
-                        type: 'POST',
-                        data: {
-                            _token: '{{ csrf_token() }}',
-                            status: 'hold',
-                            hold_reason: result.value
-                        },
-                        success: function(response) {
-                            if (response && response.status) {
-                                Swal.fire('On Hold', response.message || 'Status updated to hold', 'success');
-                                if (window.jQuery && window.jQuery.fn && window.jQuery.fn.DataTable) {
-                                    if ($('#bidsTable').length) {
-                                        $('#bidsTable').DataTable().ajax.reload();
-                                    } else if ($('#datatable').length) {
-                                        $('#datatable').DataTable().ajax.reload();
-                                    }
-                                }
+                                $('#datatable').DataTable().ajax.reload();
                             } else {
                                 Swal.fire('Error', (response && response.message) ? response.message : 'Unable to update', 'error');
                             }
@@ -515,13 +472,7 @@
                                     Swal.fire("Saved!", response.message ||
                                         "Payment split set & work started.",
                                         "success");
-                                    if (window.jQuery && window.jQuery.fn && window.jQuery.fn.DataTable) {
-                                        if ($('#bidsTable').length) {
-                                            $('#bidsTable').DataTable().ajax.reload();
-                                        } else if ($('#datatable').length) {
-                                            $('#datatable').DataTable().ajax.reload();
-                                        }
-                                    }
+                                    $('#datatable').DataTable().ajax.reload();
                                 } else {
                                     Swal.fire("Error!", response.message ||
                                         "Unable to save.", "error");
