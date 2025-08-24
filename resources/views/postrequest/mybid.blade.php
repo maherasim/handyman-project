@@ -15,7 +15,6 @@
                                     <i class="fas fa-play"></i> Set Payment
                                 </button>
                             @endif
-
                             {{-- Customer sees Pay Advance --}}
                             @if (isset($advance_payment))
                                 @php
@@ -26,24 +25,27 @@
                                 @endphp
 
                                 <!-- Pay Advance -->
-                                 <button class="btn btn-success payAdvanceBtn"  
-                                data-post-id="{{ $advance_payment->id }}"
-                                data-amount="{{ $advanceAmount }}">
-                                <i class="fas fa-wallet"></i> 
-                                Pay Advance {{ $advanceAmount }} ({{ $advance_payment->advance_percent }}%)
-                            </button>
+                                <button class="btn btn-success payAdvanceBtn" data-post-id="{{ $advance_payment->id }}"
+                                    data-amount="{{ $advanceAmount }}">
+                                    <i class="fas fa-wallet"></i>
+                                    Pay Advance {{ $advanceAmount }} ({{ $advance_payment->advance_percent }}%)
+                                </button>
 
 
                                 <!-- Pay Remaining -->
-                              <button class="btn btn-info payRemainingBtn" 
-                        data-post-id="{{ $advance_payment->id }}" 
-                        data-advance="{{ $advance_payment->advance_percent }}" 
-                        data-remaining="{{ $advance_payment->remaining_percent }}">
-                        <i class="fas fa-credit-card"></i> 
-                        Pay Remaining {{ $remainingAmount }} ({{ $advance_payment->remaining_percent }}%)
-                    </button> 
+                                <button class="btn btn-info payRemainingBtn" data-post-id="{{ $advance_payment->id }}"
+                                    data-advance="{{ $advance_payment->advance_percent }}"
+                                    data-remaining="{{ $advance_payment->remaining_percent }}">
+                                    <i class="fas fa-credit-card"></i>
+                                    Pay Remaining {{ $remainingAmount }} ({{ $advance_payment->remaining_percent }}%)
+                                </button>
 
-                                
+                                <button class="btn btn-warning updateAdvanceBtn"
+                                    data-post-id="{{ $advance_payment->id }}"
+                                    data-advance="{{ $advance_payment->advance_percent }}"
+                                    data-remaining="{{ $advance_payment->remaining_percent }}">
+                                    <i class="fas fa-edit"></i> Alter Payment
+                                </button>
                             @endif
 
                         </div>
@@ -64,69 +66,10 @@
                     </div>
                 </div>
 
-                <div class="row" id="bidsContainer">
-       @forelse($bids as $bid)
-        @php
-            // Status Badge logic (moved from JS to PHP)
-            switch ($bid->status) {
-                case 'pending':
-                    $statusBadge = '<span class="badge px-3 py-2" style="background-color:#FFC107; color:black;">Pending</span>';
-                    break;
-                case 'assigned':
-                    $statusBadge = '<span class="badge px-3 py-2" style="background-color:#17a2b8; color:black;">Assigned</span>';
-                    break;
-                case 'accepted':
-                    $statusBadge = '<span class="badge px-3 py-2" style="background-color:#20c997; color:black;">Accepted</span>';
-                    break;
-                case 'in_progress':
-                    $statusBadge = '<span class="badge px-3 py-2" style="background-color:#007bff; color:black;">In Progress</span>';
-                    break;
-                case 'in_process':
-                    $statusBadge = '<span class="badge px-3 py-2" style="background-color:#0dcaf0; color:black;">In Process</span>';
-                    break;
-                case 'hold':
-                    $statusBadge = '<span class="badge px-3 py-2" style="background-color:#ffc107; color:black;">On Hold</span>';
-                    break;
-                case 'done':
-                    $statusBadge = '<span class="badge px-3 py-2" style="background-color:#28a745; color:black;">Done</span>';
-                    break;
-                case 'completed':
-                    $statusBadge = '<span class="badge px-3 py-2" style="background-color:#28a745; color:black;">Completed</span>';
-                    break;
-                case 'cancelled':
-                    $statusBadge = '<span class="badge px-3 py-2" style="background-color:#dc3545; color:black;">Cancelled</span>';
-                    break;
-                default:
-                    $statusBadge = '<span class="badge px-3 py-2" style="background-color:#6c757d; color:black;">'.ucfirst($bid->status).'</span>';
-            }
-
-            // Hold reason
-            $reasonHtml = '';
-            if (in_array($bid->status, ['hold','on_hold']) && $bid->hold_reason) {
-                $reasonHtml = '<p class="mb-3 text-warning"><i class="fas fa-comment-dots"></i> Reason: '.$bid->hold_reason.'</p>';
-            }
-        @endphp
-
-        <div class="col-md-6 col-lg-4 mb-3">
-            <div class="card shadow-sm h-100">
-                <div class="card-body d-flex flex-column">
-                    <h6 class="fw-bold mb-2">{{ $bid->postrequest->title ?? '' }}</h6>
-                    <p class="text-muted mb-1"><i class="fas fa-user"></i> Provider: {{ $bid->provider->display_name ?? 'N/A' }}</p>
-                    <p class="text-muted mb-1"><i class="fas fa-user-tie"></i> Customer: {{ $bid->customer->display_name ?? 'N/A' }}</p>
-                    <p class="mb-1"><i class="fas fa-dollar-sign"></i> Bid: <span class="fw-bold">{{ $bid->price }}</span></p>
-                    <p class="mb-1"><i class="fas fa-flag"></i> Status: {!! $statusBadge !!}</p>
-                    {!! $reasonHtml !!}
-
-                    <div class="mt-auto">
-                        {{-- Action buttons (copy from your bidshow "action" column logic) --}}
-                    </div>
+                <!-- Bids Container -->
+                <div id="bidsContainer" class="row">
+                    <!-- Cards will be loaded here dynamically from DataTable -->
                 </div>
-            </div>
-        </div>
-    @empty
-        <p class="text-muted">No bids found for this request.</p>
-    @endforelse
-</div>
 
             </div>
         </div>
@@ -149,10 +92,9 @@
                     url: '{{ route('bidsshowjson') }}',
                     type: "GET",
                     data: function(d) {
-                        d.search = { value: $('.dt-search').val() };
-                        @if(isset($id))
-                        d.post_request_id = {{ (int) $id }};
-                        @endif
+                        d.search = {
+                            value: $('.dt-search').val()
+                        }
                     }
                 },
                 columns: [{
@@ -208,18 +150,6 @@
                                 statusBadge =
                                     `<span class="badge px-3 py-2" style="background-color:#007bff; color:black;">In Progress</span>`;
                                 break;
-                            case 'in_process':
-                                statusBadge =
-                                    `<span class="badge px-3 py-2" style="background-color:#0dcaf0; color:black;">In Process</span>`;
-                                break;
-                            case 'hold':
-                                statusBadge =
-                                    `<span class="badge px-3 py-2" style="background-color:#ffc107; color:black;">On Hold</span>`;
-                                break;
-                            case 'done':
-                                statusBadge =
-                                    `<span class="badge px-3 py-2" style="background-color:#28a745; color:black;">Done</span>`;
-                                break;
                             case 'completed':
                                 statusBadge =
                                     `<span class="badge px-3 py-2" style="background-color:#28a745; color:black;">${row.status}</span>`;
@@ -234,10 +164,6 @@
                         }
 
 
-                        let reasonHtml = '';
-                        if ((row.status === 'hold' || row.status === 'on_hold') && row.hold_reason) {
-                            reasonHtml = `<p class="mb-3 text-warning"><i class="fas fa-comment-dots"></i> Reason: ${row.hold_reason}</p>`;
-                        }
                         let card = `
                         <div class="col-md-6 col-lg-4 mb-3">
                             <div class="card shadow-sm h-100">
@@ -246,8 +172,7 @@
                                     <p class="text-muted mb-1"><i class="fas fa-user"></i> Provider: ${row.provider_name}</p>
                                     <p class="text-muted mb-1"><i class="fas fa-user-tie"></i> Customer: ${row.customer_name}</p>
                                     <p class="mb-1"><i class="fas fa-dollar-sign"></i> Bid: <span class="fw-bold">${row.price}</span></p>
-                                    <p class="mb-1"><i class="fas fa-flag"></i> Status: ${statusBadge}</p>
-                                    ${reasonHtml}
+                                    <p class="mb-3"><i class="fas fa-flag"></i> Status: ${statusBadge}</p>
                                     <div class="mt-auto">
                                         ${row.action}
                                     </div>
@@ -354,7 +279,7 @@
             if (window.__payAdvanceBound) return;
             window.__payAdvanceBound = true;
 
-            document.addEventListener('click', function (evt) {
+            document.addEventListener('click', function(evt) {
                 const btn = evt.target && evt.target.closest && evt.target.closest('.payAdvanceBtn');
                 if (!btn) return;
 
@@ -364,7 +289,8 @@
 
                 Swal.fire({
                     title: "Confirm Advance Payment",
-                    text: providedAmount ? `Pay advance amount: ${providedAmount}. Proceed?` : "Are you sure you want to proceed with the advance payment?",
+                    text: providedAmount ? `Pay advance amount: ${providedAmount}. Proceed?` :
+                        "Are you sure you want to proceed with the advance payment?",
                     icon: "warning",
                     showCancelButton: true,
                     confirmButtonColor: "#28a745",
@@ -374,32 +300,42 @@
                 }).then((result) => {
                     if (!result.isConfirmed) return;
 
-                    const url = '{{ route("post-job-request.pay-advance", ":id") }}'.replace(':id', postId);
+                    const url = '{{ route('post-job-request.pay-advance', ':id') }}'.replace(':id',
+                        postId);
                     fetch(url, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-Requested-With': 'XMLHttpRequest',
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                        },
-                        body: JSON.stringify({ amount: providedAmount })
-                    })
-                    .then(function (res) { return res.json(); })
-                    .then(function (response) {
-                        if (response && response.status) {
-                            Swal.fire("Success", response.message || "Advance paid successfully.", "success");
-                            if (window.jQuery && window.jQuery.fn && window.jQuery.fn.DataTable && window.jQuery('#datatable').length) {
-                                window.jQuery('#datatable').DataTable().ajax.reload();
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-Requested-With': 'XMLHttpRequest',
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                            },
+                            body: JSON.stringify({
+                                amount: providedAmount
+                            })
+                        })
+                        .then(function(res) {
+                            return res.json();
+                        })
+                        .then(function(response) {
+                            if (response && response.status) {
+                                Swal.fire("Success", response.message ||
+                                    "Advance paid successfully.", "success");
+                                if (window.jQuery && window.jQuery.fn && window.jQuery.fn
+                                    .DataTable && window.jQuery('#datatable').length) {
+                                    window.jQuery('#datatable').DataTable().ajax.reload();
+                                }
+                            } else {
+                                Swal.fire("Error", (response && response.message) ? response
+                                    .message : "Unable to process.", "error");
                             }
-                        } else {
-                            Swal.fire("Error", (response && response.message) ? response.message : "Unable to process.", "error");
-                        }
-                    })
-                    .catch(function () {
-                        Swal.fire("Error", "Something went wrong!", "error");
-                    });
+                        })
+                        .catch(function() {
+                            Swal.fire("Error", "Something went wrong!", "error");
+                        });
                 });
-            }, { passive: true });
+            }, {
+                passive: true
+            });
         })();
     </script>
     <script>
@@ -437,92 +373,6 @@
                             }
                         });
                     }
-                });
-            });
-
-            // Unified status update (provider/user)
-            $(document).on('click', '.updateStatusBtn', function() {
-                const bidId = $(this).data('id');
-                const nextStatus = $(this).data('status');
-
-                Swal.fire({
-                    title: 'Confirm',
-                    text: 'Do you want to update status to ' + nextStatus.replace('_',' ') + '?',
-                    icon: 'question',
-                    showCancelButton: true,
-                    confirmButtonText: 'Yes, update',
-                }).then((result) => {
-                    if (!result.isConfirmed) return;
-
-                    $.ajax({
-                        url: '{{ route('postjob.updateStatus', ':id') }}'.replace(':id', bidId),
-                        type: 'POST',
-                        data: {
-                            _token: '{{ csrf_token() }}',
-                            status: nextStatus
-                        },
-                        success: function(response) {
-                            if (response && response.status) {
-                                Swal.fire('Updated', response.message || 'Status updated', 'success');
-                                $('#datatable').DataTable().ajax.reload();
-                            } else {
-                                Swal.fire('Error', (response && response.message) ? response.message : 'Unable to update', 'error');
-                            }
-                        },
-                        error: function(xhr) {
-                            Swal.fire('Error', (xhr && xhr.responseJSON && xhr.responseJSON.message) ? xhr.responseJSON.message : 'Something went wrong', 'error');
-                        }
-                    });
-                });
-            });
-
-            // Provider: Hold with reason
-            $(document).on('click', '.holdBidBtn', function() {
-                const bidId = $(this).data('id');
-                Swal.fire({
-                    title: 'Put on Hold',
-                    input: 'textarea',
-                    inputLabel: 'Provide hold reason',
-                    inputPlaceholder: 'Type your reason here... (max 500 chars)',
-                    inputAttributes: {
-                        'aria-label': 'Hold reason'
-                    },
-                    showCancelButton: true,
-                    confirmButtonText: 'Submit',
-                    preConfirm: (value) => {
-                        if (!value || value.trim().length === 0) {
-                            Swal.showValidationMessage('Hold reason is required');
-                            return false;
-                        }
-                        if (value.length > 500) {
-                            Swal.showValidationMessage('Reason too long (max 500 chars)');
-                            return false;
-                        }
-                        return value;
-                    }
-                }).then((result) => {
-                    if (!result.isConfirmed) return;
-
-                    $.ajax({
-                        url: '{{ route('postjob.updateStatus', ':id') }}'.replace(':id', bidId),
-                        type: 'POST',
-                        data: {
-                            _token: '{{ csrf_token() }}',
-                            status: 'hold',
-                            hold_reason: result.value
-                        },
-                        success: function(response) {
-                            if (response && response.status) {
-                                Swal.fire('On Hold', response.message || 'Status updated to hold', 'success');
-                                $('#datatable').DataTable().ajax.reload();
-                            } else {
-                                Swal.fire('Error', (response && response.message) ? response.message : 'Unable to update', 'error');
-                            }
-                        },
-                        error: function(xhr) {
-                            Swal.fire('Error', (xhr && xhr.responseJSON && xhr.responseJSON.message) ? xhr.responseJSON.message : 'Something went wrong', 'error');
-                        }
-                    });
                 });
             });
 
@@ -595,7 +445,9 @@
                                         "Payment split set & work started.",
                                         "success");
                                     $('#datatable').DataTable().ajax.reload();
-} else {
+                                    ble().ajax.reload();
+                                    x.reload();
+                                } else {
                                     Swal.fire("Error!", response.message ||
                                         "Unable to save.", "error");
                                 }
@@ -609,7 +461,5 @@
                 });
             });
         });
-    
-
     </script>
 </x-master-layout>

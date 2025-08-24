@@ -61,7 +61,7 @@ $advance_payment = PostJobBid::where('customer_id', $auth_user->id)
     $pageTitle = trans('messages.list_form_title', ['form' => trans('messages.postbid')]);
     $assets = ['datatable'];
 
-    return view('postrequest.view', compact(
+    return view('postrequest.mybid', compact(
         'pageTitle', 'auth_user', 'assets', 'postJobBids', 'assignedPost','advance_payment'));
 }
 
