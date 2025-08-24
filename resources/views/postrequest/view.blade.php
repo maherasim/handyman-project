@@ -238,6 +238,33 @@
                         if ((row.status === 'hold' || row.status === 'on_hold') && row.hold_reason) {
                             reasonHtml = `<p class="mb-3 text-warning"><i class="fas fa-comment-dots"></i> Reason: ${row.hold_reason}</p>`;
                         }
+                        let actionHtml = '';
+                        const AUTH_USER_ID = {{ auth()->id() }};
+                        const AUTH_USER_TYPE = @json(auth()->user()->user_type);
+                        try {
+                            if (AUTH_USER_TYPE === 'user') {
+                                if (row.status !== 'accepted') {
+                                    actionHtml += `<button class="btn btn-sm btn-success acceptBid" data-id="${row.id}">Accept</button> `;
+                                }
+                                if (String(row.customer_id) === String(AUTH_USER_ID) && (row.status === 'in_progress' || row.status === 'in_process')) {
+                                    actionHtml += `<button class="btn btn-sm btn-info updateStatusBtn" data-id="${row.id}" data-status="in_process">Let's Start Work</button> `;
+                                }
+                            }
+                            if (AUTH_USER_TYPE === 'provider' && String(row.provider_id) === String(AUTH_USER_ID)) {
+                                if (row.status === 'advance_paid') {
+                                    actionHtml += `<button class="btn btn-sm btn-primary updateStatusBtn" data-id="${row.id}" data-status="in_progress">Start Work</button> `;
+                                }
+                                if (["in_progress","in_process","hold"].includes(row.status)) {
+                                    actionHtml += `<button class="btn btn-sm btn-warning holdBidBtn" data-id="${row.id}">Hold</button> `;
+                                    actionHtml += `<button class="btn btn-sm btn-success updateStatusBtn" data-id="${row.id}" data-status="done">Done</button> `;
+                                }
+                            }
+                        } catch (e) {}
+
+                        if (!actionHtml && row.status === 'accepted') {
+                            actionHtml = '<span class="badge bg-success">Accepted</span>';
+                        }
+
                         let card = `
                         <div class="col-md-6 col-lg-4 mb-3">
                             <div class="card shadow-sm h-100">
@@ -249,7 +276,7 @@
                                     <p class="mb-1"><i class="fas fa-flag"></i> Status: ${statusBadge}</p>
                                     ${reasonHtml}
                                     <div class="mt-auto">
-                                        ${row.action}
+                                        ${actionHtml}
                                     </div>
                                 </div>
                             </div>

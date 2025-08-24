@@ -164,6 +164,37 @@
                         }
 
 
+                        let actionHtml = '';
+                        const AUTH_USER_ID = {{ auth()->id() }};
+                        const AUTH_USER_TYPE = @json(auth()->user()->user_type);
+                        try {
+                            if (AUTH_USER_TYPE === 'user') {
+                                if (row.status !== 'accepted') {
+                                    actionHtml += `<button class="btn btn-sm btn-success acceptBid" data-id="${row.id}">Accept</button> `;
+                                }
+                                if (String(row.customer_id) === String(AUTH_USER_ID) && (row.status === 'in_progress' || row.status === 'in_process')) {
+                                    actionHtml += `<button class="btn btn-sm btn-info updateStatusBtn" data-id="${row.id}" data-status="in_process">Let's Start Work</button> `;
+                                }
+                            }
+                            if (AUTH_USER_TYPE === 'provider' && String(row.provider_id) === String(AUTH_USER_ID)) {
+                                if (row.status === 'advance_paid') {
+                                    actionHtml += `<button class="btn btn-sm btn-primary updateStatusBtn" data-id="${row.id}" data-status="in_progress">Start Work</button> `;
+                                }
+                                 if (row.status === 'hold') {
+                                    actionHtml += `<button class="btn btn-sm btn-primary updateStatusBtn" data-id="${row.id}" data-status="in_process">Resume Work</button> `;
+                                }
+                                if (["in_progress","in_process","hold"].includes(row.status)) {
+                                    actionHtml += `<button class="btn btn-sm btn-warning holdBidBtn" data-id="${row.id}">Hold</button> `;
+                                    actionHtml += `<button class="btn btn-sm btn-success updateStatusBtn" data-id="${row.id}" data-status="done">Done</button> `;
+                                }
+                                
+                            }
+                        } catch (e) {}
+
+                        if (!actionHtml && row.status === 'accepted') {
+                            actionHtml = '<span class="badge bg-success">Accepted</span>';
+                        }
+
                         let card = `
                         <div class="col-md-6 col-lg-4 mb-3">
                             <div class="card shadow-sm h-100">
@@ -174,7 +205,7 @@
                                     <p class="mb-1"><i class="fas fa-dollar-sign"></i> Bid: <span class="fw-bold">${row.price}</span></p>
                                     <p class="mb-3"><i class="fas fa-flag"></i> Status: ${statusBadge}</p>
                                     <div class="mt-auto">
-                                        ${row.action}
+                                        ${actionHtml}
                                     </div>
                                 </div>
                             </div>
@@ -376,6 +407,92 @@
                 });
             });
 
+            // Provider: Hold with reason
+            $(document).on('click', '.holdBidBtn', function() {
+                const bidId = $(this).data('id');
+                Swal.fire({
+                    title: 'Put on Hold',
+                    input: 'textarea',
+                    inputLabel: 'Provide hold reason',
+                    inputPlaceholder: 'Type your reason here... (max 500 chars)',
+                    inputAttributes: {
+                        'aria-label': 'Hold reason'
+                    },
+                    showCancelButton: true,
+                    confirmButtonText: 'Submit',
+                    preConfirm: (value) => {
+                        if (!value || value.trim().length === 0) {
+                            Swal.showValidationMessage('Hold reason is required');
+                            return false;
+                        }
+                        if (value.length > 500) {
+                            Swal.showValidationMessage('Reason too long (max 500 chars)');
+                            return false;
+                        }
+                        return value;
+                    }
+                }).then((result) => {
+                    if (!result.isConfirmed) return;
+
+                    $.ajax({
+                        url: '{{ route('postjob.updateStatus', ':id') }}'.replace(':id', bidId),
+                        type: 'POST',
+                        data: {
+                            _token: '{{ csrf_token() }}',
+                            status: 'hold',
+                            hold_reason: result.value
+                        },
+                        success: function(response) {
+                            if (response && response.status) {
+                                Swal.fire('On Hold', response.message || 'Status updated to hold', 'success');
+                                $('#datatable').DataTable().ajax.reload();
+                            } else {
+                                Swal.fire('Error', (response && response.message) ? response.message : 'Unable to update', 'error');
+                            }
+                        },
+                        error: function(xhr) {
+                            Swal.fire('Error', (xhr && xhr.responseJSON && xhr.responseJSON.message) ? xhr.responseJSON.message : 'Something went wrong', 'error');
+                        }
+                    });
+                });
+            });
+
+            // Update status (both provider and user as per data-status)
+            $(document).on('click', '.updateStatusBtn', function() {
+                const bidId = $(this).data('id');
+                const nextStatus = $(this).data('status');
+
+                Swal.fire({
+                    title: 'Confirm',
+                    text: 'Do you want to update status to ' + String(nextStatus).replace('_',' ') + '?',
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes, update',
+                }).then((result) => {
+                    if (!result.isConfirmed) return;
+
+                    $.ajax({
+                        url: '{{ route('postjob.updateStatus', ':id') }}'.replace(':id', bidId),
+                        type: 'POST',
+                        data: {
+                            _token: '{{ csrf_token() }}',
+                            status: nextStatus
+                        },
+                        success: function(response) {
+                            if (response && response.status) {
+                                Swal.fire('Updated', response.message || 'Status updated', 'success');
+                                $('#datatable').DataTable().ajax.reload();
+                            } else {
+                                Swal.fire('Error', (response && response.message) ? response.message : 'Unable to update', 'error');
+                            }
+                        },
+                        error: function(xhr) {
+                            Swal.fire('Error', (xhr && xhr.responseJSON && xhr.responseJSON.message) ? xhr.responseJSON.message : 'Something went wrong', 'error');
+                        }
+                    });
+                });
+            });
+
             // Start Work with Payment Split
             $(document).on('click', '.startWorkBtn', function() {
                 const postId = $(this).data('post-id');
@@ -445,8 +562,6 @@
                                         "Payment split set & work started.",
                                         "success");
                                     $('#datatable').DataTable().ajax.reload();
-                                    ble().ajax.reload();
-                                    x.reload();
                                 } else {
                                     Swal.fire("Error!", response.message ||
                                         "Unable to save.", "error");
