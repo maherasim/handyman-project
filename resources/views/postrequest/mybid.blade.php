@@ -171,7 +171,7 @@
                             
                             if (AUTH_USER_TYPE === 'provider' && String(row.provider_id) === String(AUTH_USER_ID)) {
                                  if (row.status == 'accepted') {
-                                    actionHtml += `<button class="btn btn-sm btn-success acceptBid" data-id="${row.id}">Split the payment</button> `;
+                                    actionHtml += `<button class="btn btn-sm btn-primary startWorkBtn" data-post-id="${row.id}"><i class="fas fa-sliders-h"></i> Split Payment</button> `;
                                 }
                                 if (row.status === 'advance_paid') {
                                     actionHtml += `<button class="btn btn-sm btn-primary updateStatusBtn" data-id="${row.id}" data-status="in_progress">Start Work</button> `;
