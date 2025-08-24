@@ -43,12 +43,7 @@
                         Pay Remaining {{ $remainingAmount }} ({{ $advance_payment->remaining_percent }}%)
                     </button> 
 
-                                {{-- <button class="btn btn-warning updateAdvanceBtn"
-                                    data-post-id="{{ $advance_payment->id }}"
-                                    data-advance="{{ $advance_payment->advance_percent }}"
-                                    data-remaining="{{ $advance_payment->remaining_percent }}">
-                                    <i class="fas fa-edit"></i> Alter Payment
-                                </button> --}}
+                                
                             @endif
 
                         </div>
@@ -70,8 +65,33 @@
                 </div>
 
                 <!-- Bids Container -->
-                <div id="bidsContainer" class="row">
-                    <!-- Cards will be loaded here dynamically from DataTable -->
+                <div id="bidsContaineras" class="row">
+                   <div class="row">
+    @forelse($bids as $bid)
+        <div class="col-md-6 col-lg-4 mb-3">
+            <div class="card shadow-sm h-100">
+                <div class="card-body d-flex flex-column">
+                    <h6 class="fw-bold mb-2">{{ $bid->postrequest->title ?? 'N/A' }}</h6>
+                    <p class="text-muted mb-1"><i class="fas fa-user"></i> Provider: {{ $bid->provider->display_name ?? 'N/A' }}</p>
+                    <p class="text-muted mb-1"><i class="fas fa-user-tie"></i> Customer: {{ $bid->customer->display_name ?? 'N/A' }}</p>
+                    <p class="mb-1"><i class="fas fa-dollar-sign"></i> Bid: <span class="fw-bold">{{ $bid->price }}</span></p>
+                    <p class="mb-1"><i class="fas fa-flag"></i> Status: {{ ucfirst($bid->status) }}</p>
+
+                    @if($bid->status === 'hold' && $bid->hold_reason)
+                        <p class="text-warning"><i class="fas fa-comment-dots"></i> Reason: {{ $bid->hold_reason }}</p>
+                    @endif
+
+                    <div class="mt-auto">
+                        {{-- action buttons logic (copy from your bidshow) --}}
+                    </div>
+                </div>
+            </div>
+        </div>
+    @empty
+        <p class="text-muted">No bids found for this request.</p>
+    @endforelse
+</div>
+
                 </div>
 
             </div>

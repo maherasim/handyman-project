@@ -622,22 +622,36 @@ public function index_data(DataTables $datatable, Request $request)
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
-    {
-        dd($id);
-        
-        $pageTitle = trans('messages.list_form_title',['form' => trans('messages.postbid')] );
-        $auth_user = authSession();
-        $assets = ['datatable'];
-        $jobpost = null;
-        if ($auth_user->user_type === 'user') {
-            $jobpost = PostJobRequest::where('customer_id', $auth_user->id)
-                ->whereIn('status', ['assigned','in_progress'])
-                ->latest()
-                ->first();
-        }
-        return view('postrequest.view', compact('pageTitle', 'auth_user', 'assets','id'));
+public function show($id) 
+{
+    $pageTitle = trans('messages.list_form_title', [
+        'form' => trans('messages.postbid')
+    ]);
+
+    $auth_user = authSession();
+    $assets = []; // you don’t need DataTable if loading directly
+
+    // Build query
+    $query = PostJobBid::with([
+        'provider:id,display_name',
+        'customer:id,display_name',
+        'postrequest:id,title,customer_id,status,provider_id,remaining_percent'
+    ])->where('post_request_id', $id);
+
+    // Restrict by user type
+    if ($auth_user->user_type === 'provider') {
+        $query->where('provider_id', $auth_user->id);
+    } elseif ($auth_user->user_type === 'user') {
+        $query->whereHas('postrequest', function ($q) use ($auth_user) {
+            $q->where('customer_id', $auth_user->id);
+        });
     }
+
+    $bids = $query->get();
+
+    return view('postrequest.view', compact('pageTitle', 'auth_user', 'assets', 'id', 'bids'));
+}
+
 
     // public function postrequest_index_data(DataTables $datatable,$id)
     // {
