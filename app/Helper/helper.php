@@ -2029,7 +2029,7 @@ function getstripepayments($data){
         ]);
     } catch (\Exception $e) {
         $message = $e->getMessage();
-dd( $message,$data['currency_code']);
+ 
         $checkout_session = [
             'message' => $message,
             'status' => false,
