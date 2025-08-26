@@ -2006,7 +2006,7 @@ function getstripepayments($data){
         }else{
             $total_amount = $data['total_amount'];
         }
-dd( $total_amount);
+//dd( $total_amount);
         $stripe = new \Stripe\StripeClient($stripe_secret);
         $checkout_session = $stripe->checkout->sessions->create([
 
