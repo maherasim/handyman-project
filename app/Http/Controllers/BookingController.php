@@ -1159,7 +1159,6 @@ public function bookingAssigned(Request $request)
         $data = $request->all();
 
         $checkout_session = getstripepayments($data);
-dd($checkout_session);
         if (isset($checkout_session['message'])) {
 
             return comman_custom_response($checkout_session);

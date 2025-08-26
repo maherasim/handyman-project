@@ -2002,11 +2002,12 @@ function getstripepayments($data){
 
     try {
         if ($data['type'] == 'full_payment'){
-            $total_amount = $booking->total_amount - $booking->advance_paid_amount;
+            $total_amount = $booking->total_amount - ($booking->advance_paid_amount ?? 0);
         }else{
             $total_amount = $data['total_amount'];
         }
-//dd( $total_amount);
+        // Normalize to integer minor units
+        $unit_amount = stripe_unit_amount_from_decimal($total_amount, $data['currency_code']);
         $stripe = new \Stripe\StripeClient($stripe_secret);
         $checkout_session = $stripe->checkout->sessions->create([
 
@@ -2020,7 +2021,7 @@ function getstripepayments($data){
                         'product_data' => [
                             'name' => $booking->service->name,
                         ],
-                        'unit_amount' => $total_amount * 100,
+                        'unit_amount' => $unit_amount,
                     ],
                     'quantity' => 1,
                 ],
@@ -2029,7 +2030,6 @@ function getstripepayments($data){
         ]);
     } catch (\Exception $e) {
         $message = $e->getMessage();
-dd( $message,$data['currency_code']);
         $checkout_session = [
             'message' => $message,
             'status' => false,
@@ -2077,7 +2077,7 @@ function addWalletAmount($data){
                 [
                     'price_data' => [
                         'currency' => $data['currency_code'],
-                        'unit_amount' => $data['amount'] * 100, // Amount in cents
+                        'unit_amount' => stripe_unit_amount_from_decimal($data['amount'], $data['currency_code']), // Amount in minor units
                         'product_data' => [
                             'name' => 'Wallet Top-Up', // Change this if needed
                         ],
@@ -2200,3 +2200,20 @@ function formatString($input)
             // Replace underscores with spaces, capitalize each word, and remove spaces
             return ucfirst(str_replace('_', ' ', $input));
         }
+
+function stripe_unit_amount_from_decimal($amountDecimal, $currencyCode){
+    // Stripe expects integer minor units. Some currencies are zero-decimal.
+    $currency = strtoupper($currencyCode);
+    $zeroDecimalCurrencies = [
+        'BIF','CLP','DJF','GNF','JPY','KMF','KRW','MGA','PYG','RWF','UGX','VND','VUV','XAF','XOF','XPF'
+    ];
+
+    if (in_array($currency, $zeroDecimalCurrencies, true)) {
+        // Round to nearest whole
+        return (int) round((float) $amountDecimal);
+    }
+
+    // Default 2-decimal currencies
+    // Avoid float precision: multiply then round to int
+    return (int) round(((float) $amountDecimal) * 100);
+}
