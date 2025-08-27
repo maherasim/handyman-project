@@ -150,11 +150,23 @@
                                 statusBadge =
                                     `<span class="badge px-3 py-2" style="background-color:#007bff; color:black;">In Progress</span>`;
                                 break;
+                            case 'in_process':
+                                statusBadge =
+                                    `<span class=\"badge px-3 py-2\" style=\"background-color:#0dcaf0; color:black;\">In Process</span>`;
+                                break;
+                            case 'hold':
+                                statusBadge =
+                                    `<span class=\"badge px-3 py-2\" style=\"background-color:#ffc107; color:black;\">On Hold</span>`;
+                                break;
+                            case 'done':
+                                statusBadge =
+                                    `<span class=\"badge px-3 py-2\" style=\"background-color:#28a745; color:black;\">Done</span>`;
+                                break;
                             case 'completed':
                                 statusBadge =
                                     `<span class="badge px-3 py-2" style="background-color:#28a745; color:black;">${row.status}</span>`;
                                 break;
-                            case 'Cancelled':
+                            case 'cancelled':
                                 statusBadge =
                                     `<span class="badge px-3 py-2" style="background-color:#dc3545; color:black;">${row.status}</span>`;
                                 break;
