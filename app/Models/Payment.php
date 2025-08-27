@@ -30,7 +30,7 @@ class Payment extends Model
     return $this->hasMany(CommissionEarning::class, 'booking_id', 'booking_id');
 }
  public function postJobRequest(){
-        return $this->belongsTo(PostJobRequest::class, 'post_job_request_id', 'id')->withTrashed();
+        return $this->belongsTo(PostJobRequest::class, 'post_job_request_id', 'id');
     }
 public function handymanEarning()
 {
