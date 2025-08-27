@@ -246,9 +246,7 @@
                                 if (row.status == 'requested') {
                                     actionHtml += `<button class="btn btn-sm btn-success acceptBid" data-id="${row.id} data-status="accepted" ">Accept</button> `;
                                 }
-                                 if (row.status == 'accepted') {
-                                    actionHtml += `<button class="btn btn-sm btn-success acceptBid" data-id="${row.id} data-status="Cancelled" ">Cancel</button> `;
-                                }
+                               
                                  if (row.status === 'advance_payment' && String(row.customer_id) === String(AUTH_USER_ID)) {
                                     var advPct = (typeof row.advance_percent !== 'undefined' && row.advance_percent !== null) ? parseFloat(row.advance_percent) : null;
                                     var amount = (advPct !== null && !isNaN(advPct)) ? (parseFloat(row.price) * advPct / 100) : null;
@@ -261,6 +259,9 @@
                                 }
                              if (String(row.customer_id) === String(AUTH_USER_ID) && row.status === 'done') {
                                     actionHtml += `<button class="btn btn-sm btn-info updateStatusBtn" data-id="${row.id}" data-status="confirm_done">Confirm Work Done</button> `;
+                                }
+                                  if (String(row.customer_id) === String(AUTH_USER_ID) && row.status === 'accepted') {
+                                    actionHtml += `<button class="btn btn-sm btn-info updateStatusBtn" data-id="${row.id}" data-status="Cancelled">Cancel</button> `;
                                 }
                                   if (String(row.customer_id) === String(AUTH_USER_ID) && row.status === 'completed') {
                                     var remPct = (typeof row.remaining_percent !== 'undefined' && row.remaining_percent !== null) ? parseFloat(row.remaining_percent) : null;
