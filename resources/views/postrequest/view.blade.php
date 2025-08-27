@@ -111,6 +111,12 @@
             <div class="card shadow-sm h-100">
                 <div class="card-body d-flex flex-column">
                     <h6 class="fw-bold mb-2">{{ $bid->postrequest->title ?? '' }}</h6>
+                    <p class="text-muted mb-1"><i class="fas fa-map-marker-alt"></i> Location: {{ optional($bid->postrequest->city)->name ?? '-' }}, {{ optional($bid->postrequest->country)->name ?? '-' }}</p>
+                    <p class="text-muted mb-1"><i class="fas fa-briefcase"></i> Job Type: {{ $bid->postrequest->type ?? '-' }}</p>
+                    <p class="text-muted mb-1"><i class="far fa-calendar-check"></i> Start: <span class="fw-bold">{{ $bid->postrequest->start_date ?? '-' }}</span></p>
+                    <p class="text-muted mb-1"><i class="far fa-calendar-times"></i> End: <span class="fw-bold">{{ $bid->postrequest->end_date ?? '-' }}</span></p>
+                    <p class="text-muted mb-1"><i class="fas fa-wallet"></i> Total Budget: <span class="fw-bold">{{ $bid->postrequest->total_budget ?? '-' }}</span></p>
+                    <p class="text-muted mb-1"><i class="fas fa-users"></i> Applications: <span class="fw-bold">{{ ($bid->postrequest && $bid->postrequest->postBidList) ? $bid->postrequest->postBidList->count() : 0 }}</span></p>
                     <p class="text-muted mb-1"><i class="fas fa-user"></i> Provider: {{ $bid->provider->display_name ?? 'N/A' }}</p>
                     <p class="text-muted mb-1"><i class="fas fa-user-tie"></i> Customer: {{ $bid->customer->display_name ?? 'N/A' }}</p>
                     <p class="mb-1"><i class="fas fa-dollar-sign"></i> Bid: <span class="fw-bold">{{ $bid->price }}</span></p>
@@ -224,7 +230,7 @@
                                 statusBadge =
                                     `<span class="badge px-3 py-2" style="background-color:#28a745; color:black;">${row.status}</span>`;
                                 break;
-                            case 'Cancelled':
+                            case 'cancelled':
                                 statusBadge =
                                     `<span class="badge px-3 py-2" style="background-color:#dc3545; color:black;">${row.status}</span>`;
                                 break;
@@ -244,7 +250,7 @@
                         try {
                             if (AUTH_USER_TYPE === 'user') {
                                 if (row.status == 'requested') {
-                                    actionHtml += `<button class="btn btn-sm btn-success acceptBid" data-id="${row.id} data-status="accepted" ">Accept</button> `;
+                                    actionHtml += `<button class=\"btn btn-sm btn-success acceptBid\" data-id=\"${row.id}\" data-status=\"accepted\">Accept</button> `;
                                 }
                                
                                  if (row.status === 'advance_payment' && String(row.customer_id) === String(AUTH_USER_ID)) {
@@ -261,7 +267,7 @@
                                     actionHtml += `<button class="btn btn-sm btn-info updateStatusBtn" data-id="${row.id}" data-status="confirm_done">Confirm Work Done</button> `;
                                 }
                                   if (String(row.customer_id) === String(AUTH_USER_ID) && row.status === 'accepted') {
-                                    actionHtml += `<button class="btn btn-sm btn-info updateStatusBtn" data-id="${row.id}" data-status="Cancelled">Cancel</button> `;
+                                    actionHtml += `<button class=\"btn btn-sm btn-info updateStatusBtn\" data-id=\"${row.id}\" data-status=\"cancelled\">Cancel</button> `;
                                 }
                                   if (String(row.customer_id) === String(AUTH_USER_ID) && row.status === 'completed') {
                                     var remPct = (typeof row.remaining_percent !== 'undefined' && row.remaining_percent !== null) ? parseFloat(row.remaining_percent) : null;
@@ -284,6 +290,12 @@
                             <div class="card shadow-sm h-100">
                                 <div class="card-body d-flex flex-column">
                                     <h6 class="fw-bold mb-2">${row.post_title}</h6>
+                                    <p class="text-muted mb-1"><i class="fas fa-map-marker-alt"></i> Location: ${row.city ?? '-'}, ${row.country ?? '-'}</p>
+                                    <p class="text-muted mb-1"><i class="fas fa-briefcase"></i> Job Type: ${row.job_type ?? '-'}</p>
+                                    <p class="text-muted mb-1"><i class="far fa-calendar-check"></i> Start: <span class="fw-bold">${row.start_date ?? '-'}</span></p>
+                                    <p class="text-muted mb-1"><i class="far fa-calendar-times"></i> End: <span class="fw-bold">${row.end_date ?? '-'}</span></p>
+                                    <p class="text-muted mb-1"><i class="fas fa-wallet"></i> Total Budget: <span class="fw-bold">${row.total_budget ?? '-'}</span></p>
+                                    <p class="text-muted mb-1"><i class="fas fa-users"></i> Applications: <span class="fw-bold">${row.applications ?? 0}</span></p>
                                     <p class="text-muted mb-1"><i class="fas fa-user"></i> Provider: ${row.provider_name}</p>
                                     <p class="text-muted mb-1"><i class="fas fa-user-tie"></i> Customer: ${row.customer_name}</p>
                                     <p class="mb-1"><i class="fas fa-dollar-sign"></i> Bid: <span class="fw-bold">${row.price}</span></p>
