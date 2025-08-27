@@ -312,13 +312,17 @@ public function cash_index_data(DataTables $datatable, Request $request)
             })
          ->editColumn('id', function($query) {
     $booking = optional($query->booking);
-    return $booking->id
-        ? "<a class='btn-link btn-link-hover' href=" . route('booking.show', $booking->id) . ">#" . $booking->id . "</a>"
-        : '-';
+    if ($booking && $booking->id) {
+        return "<a class='btn-link btn-link-hover' href=" . route('booking.show', $booking->id) . ">#" . $booking->id . "</a>";
+    }
+    $postTitle = optional($query->postJobRequest)->title;
+    return $postTitle ? e($postTitle) : '-';
 })
 
         ->orderColumn('id', function($query, $order) {
-            $query->orderBy('payments.booking_id', $order);  
+            $query->leftJoin('post_job_requests', 'post_job_requests.id', '=', 'payments.post_job_request_id')
+                  ->orderBy('payments.booking_id', $order)
+                  ->orderBy('post_job_requests.title', $order);
         })
         ->editColumn('booking_id', function($query) {
             if(!empty($query->booking->bookingPackage)){
@@ -327,18 +331,27 @@ public function cash_index_data(DataTables $datatable, Request $request)
             else{
                 $service_name = optional(optional($query->booking)->service)->name." (".__('messages.service').")";
             }
- 
-            return ($query->customer_id != null &&isset($query->booking->service)) ? $service_name :'-';
+            if ($query->booking && $query->booking->service) {
+                return $service_name;
+            }
+            return optional($query->postJobRequest)->title ?: '-';
         })
         ->filterColumn('booking_id',function($query,$keyword){
-            $query->whereHas('booking.service',function ($q) use($keyword){
-                $q->where('name','like','%'.$keyword.'%');
+            $query->where(function($sub) use($keyword){
+                $sub->whereHas('booking.service',function ($q) use($keyword){
+                        $q->where('name','like','%'.$keyword.'%');
+                    })
+                    ->orWhereHas('postJobRequest', function($q) use($keyword){
+                        $q->where('title','like','%'.$keyword+'%');
+                    });
             });
         })
         ->orderColumn('booking_id', function ($query, $order) {
-            $query->join('bookings', 'bookings.id', '=', 'payments.booking_id')  
-                  ->join('services', 'services.id', '=', 'bookings.service_id')  
-                  ->orderBy('services.name', $order);  
+            $query->leftJoin('bookings', 'bookings.id', '=', 'payments.booking_id')  
+                  ->leftJoin('services', 'services.id', '=', 'bookings.service_id')  
+                  ->leftJoin('post_job_requests','post_job_requests.id','=','payments.post_job_request_id')
+                  ->orderBy('services.name', $order)
+                  ->orderBy('post_job_requests.title', $order);  
         })
         ->editColumn('customer_id', function ($payment) {
             return view('payment.user', compact('payment'));
