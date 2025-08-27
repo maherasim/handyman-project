@@ -531,7 +531,7 @@
                     html: `
                         <div class="text-start">
                             <label class="form-label fw-bold">Title</label>
-                            <input type="text" id="ec_title" class="form-control" placeholder="e.g., Materials" />
+                            <input type="text" id="ec_title" class="form-control" placeholder="e.g., Title" />
                         </div>
                         <div class="mt-2 text-start">
                             <label class="form-label fw-bold">Amount</label>
