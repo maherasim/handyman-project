@@ -183,7 +183,8 @@
                                     actionHtml += `<button class="btn btn-sm btn-primary updateStatusBtn" data-id="${row.id}" data-status="in_process">Resume Work</button> `;
                                 }
                                  if (row.status === 'confirm_done') {
-                                    actionHtml += `<button class="btn btn-sm btn-primary updateStatusBtn" data-id="${row.id}" data-status="completed">Completed</button> `;
+                                    actionHtml += `<button class=\"btn btn-sm btn-primary updateStatusBtn\" data-id=\"${row.id}\" data-status=\"completed\">Completed</button> `;
+                                    actionHtml += `<button class=\"btn btn-sm btn-outline-secondary extraChargesBtn\" data-id=\"${row.id}\"><i class=\"fas fa-plus\"></i> Extra Charges</button> `;
                                 }
                                 
                               if (row.status === "in_process") {
@@ -513,6 +514,74 @@
                                 $('#datatable').DataTable().ajax.reload();
                             } else {
                                 Swal.fire('Error', (response && response.message) ? response.message : 'Unable to update', 'error');
+                            }
+                        },
+                        error: function(xhr) {
+                            Swal.fire('Error', (xhr && xhr.responseJSON && xhr.responseJSON.message) ? xhr.responseJSON.message : 'Something went wrong', 'error');
+                        }
+                    });
+                });
+            });
+
+            // Extra Charges: prompt for title, amount, quantity and update bid price
+            $(document).on('click', '.extraChargesBtn', function() {
+                const bidId = $(this).data('id');
+                Swal.fire({
+                    title: 'Add Extra Charges',
+                    html: `
+                        <div class="text-start">
+                            <label class="form-label fw-bold">Title</label>
+                            <input type="text" id="ec_title" class="form-control" placeholder="e.g., Materials" />
+                        </div>
+                        <div class="mt-2 text-start">
+                            <label class="form-label fw-bold">Amount</label>
+                            <input type="number" id="ec_amount" class="form-control" step="0.01" min="0.01" placeholder="e.g., 20" />
+                        </div>
+                        <div class="mt-2 text-start">
+                            <label class="form-label fw-bold">Quantity (optional)</label>
+                            <input type="number" id="ec_qty" class="form-control" step="1" min="1" placeholder="1" />
+                        </div>
+                    `,
+                    focusConfirm: false,
+                    showCancelButton: true,
+                    confirmButtonText: 'Add',
+                    preConfirm: () => {
+                        const title = document.getElementById('ec_title').value.trim();
+                        const amount = parseFloat(document.getElementById('ec_amount').value);
+                        const qtyRaw = document.getElementById('ec_qty').value;
+                        const quantity = qtyRaw ? parseInt(qtyRaw, 10) : 1;
+                        if (!title) {
+                            Swal.showValidationMessage('Title is required');
+                            return false;
+                        }
+                        if (!amount || amount <= 0) {
+                            Swal.showValidationMessage('Enter a valid amount > 0');
+                            return false;
+                        }
+                        if (quantity && quantity < 1) {
+                            Swal.showValidationMessage('Quantity must be at least 1');
+                            return false;
+                        }
+                        return { title, amount, quantity };
+                    }
+                }).then((result) => {
+                    if (!result.isConfirmed) return;
+                    const { title, amount, quantity } = result.value;
+                    $.ajax({
+                        url: '{{ route('postjob.addExtraCharges', ':id') }}'.replace(':id', bidId),
+                        type: 'POST',
+                        data: {
+                            _token: '{{ csrf_token() }}',
+                            title: title,
+                            amount: amount,
+                            quantity: quantity
+                        },
+                        success: function(response) {
+                            if (response && response.status) {
+                                Swal.fire('Added', response.message || 'Extra charges added', 'success');
+                                $('#datatable').DataTable().ajax.reload();
+                            } else {
+                                Swal.fire('Error', (response && response.message) ? response.message : 'Unable to add charges', 'error');
                             }
                         },
                         error: function(xhr) {

@@ -373,6 +373,32 @@ public function updateBidStatus(Request $request, $id)
         $bid->hold_reason = $request->input('hold_reason');
     }
 
+    /**
+     * Add extra charges to a bid: price += amount * quantity
+     */
+    public function addExtraCharges(Request $request, $id)
+    {
+        $request->validate([
+            'title'    => 'required|string|max:255',
+            'amount'   => 'required|numeric|min:0.01',
+            'quantity' => 'nullable|integer|min:1'
+        ]);
+
+        $bid = PostJobBid::findOrFail($id);
+
+        $quantity = (int)($request->input('quantity') ?? 1);
+        $increment = ((float)$request->input('amount')) * max(1, $quantity);
+
+        $bid->price = ((float)$bid->price) + $increment;
+        $bid->save();
+
+        return response()->json([
+            'status'  => true,
+            'message' => 'Extra charges added successfully',
+            'price'   => $bid->price,
+        ]);
+    }
+
     $bid->save();
 
     try {
