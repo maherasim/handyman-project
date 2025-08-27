@@ -2195,6 +2195,7 @@ function dbConnectionStatus(): bool
         return false;
     }
 }
+
 function formatString($input)
         {
             // Replace underscores with spaces, capitalize each word, and remove spaces
