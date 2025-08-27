@@ -201,6 +201,11 @@
                             <div class="card shadow-sm h-100">
                                 <div class="card-body d-flex flex-column">
                                     <h6 class="fw-bold mb-2">${row.post_title}</h6>
+                                    <p class="text-muted mb-1"><i class="fas fa-map-marker-alt"></i> Location: ${row.city ?? '-'}, ${row.country ?? '-'}</p>
+                                    <p class="text-muted mb-1"><i class="fas fa-briefcase"></i> Job Type: ${row.job_type ?? '-'}</p>
+                                    <p class="text-muted mb-1"><i class="far fa-calendar"></i> Dates: ${(row.start_date ?? '-')} - ${(row.end_date ?? '-')}</p>
+                                    <p class="text-muted mb-1"><i class="fas fa-wallet"></i> Total Budget: <span class="fw-bold">${row.total_budget ?? '-'}</span></p>
+                                    <p class="text-muted mb-1"><i class="fas fa-users"></i> Applications: <span class="fw-bold">${row.applications ?? 0}</span></p>
                                     <p class="text-muted mb-1"><i class="fas fa-user"></i> Provider: ${row.provider_name}</p>
                                     <p class="text-muted mb-1"><i class="fas fa-user-tie"></i> Customer: ${row.customer_name}</p>
                                     <p class="mb-1"><i class="fas fa-dollar-sign"></i> Bid: <span class="fw-bold">${row.price}</span></p>
