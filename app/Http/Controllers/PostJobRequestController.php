@@ -144,6 +144,21 @@ public function bidshow(Request $request)
         })
         ->addColumn('status', fn($bid) => $bid->status ?? 'N/A')
         ->addColumn('hold_reason', fn($bid) => $bid->hold_reason ?? null)
+        ->addColumn('has_advance_paid', function($bid) {
+            // Determine if an advance payment (customer side) was completed for this bid
+            // Payments are stored with post_job_request_id referencing the PostJobBid id
+            $payments = Payment::where('post_job_request_id', $bid->id)
+                ->where('payment_status', 'completed')
+                ->get();
+
+            foreach ($payments as $payment) {
+                $details = json_decode($payment->other_transaction_detail, true);
+                if (is_array($details) && isset($details['type']) && $details['type'] === 'advance') {
+                    return true;
+                }
+            }
+            return false;
+        })
         ->addColumn('action', function($bid) use ($auth_user) {
             $post = $bid->postrequest;
 

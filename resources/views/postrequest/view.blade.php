@@ -338,7 +338,7 @@
                                   if (String(row.customer_id) === String(AUTH_USER_ID) && row.status === 'accepted') {
                                     actionHtml += `<button class=\"btn btn-sm btn-info updateStatusBtn\" data-id=\"${row.id}\" data-status=\"cancelled\">Cancel</button> `;
                                 }
-                                  if (String(row.customer_id) === String(AUTH_USER_ID) && row.status === 'completed') {
+                                  if (String(row.customer_id) === String(AUTH_USER_ID) && row.status === 'completed' && !row.has_advance_paid) {
                                     var remPct = (typeof row.remaining_percent !== 'undefined' && row.remaining_percent !== null) ? parseFloat(row.remaining_percent) : null;
                                     var amountRem = (remPct !== null && !isNaN(remPct)) ? (parseFloat(row.price) * remPct / 100) : null;
                                     var labelRem = amountRem !== null ? ` ${amountRem.toFixed(2)} (${remPct}%)` : '';
