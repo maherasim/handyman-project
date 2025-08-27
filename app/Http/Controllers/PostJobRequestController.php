@@ -188,127 +188,133 @@ public function bidshow(Request $request)
 public function payAdvance(Request $request, $id)
 {
     $user = auth()->user();
-    $bid  = PostJobBid::findOrFail($id);
+    $post = PostJobBid::findOrFail($id);
 
-    $type = $request->input('type', 'advance'); // 'advance' or 'remaining'
+    // Determine advance amount
     $requestedAmount = $request->input('amount');
+    $advanceAmount = empty(trim((string)$requestedAmount))
+        ? ($post->price * $post->advance_percent / 100)
+        : (float) $requestedAmount;
 
-    // Compute target amount
-    if ($type === 'remaining') {
-        // If amount provided, use it; otherwise compute from remaining_percent
-        $amount = empty(trim((string)$requestedAmount))
-            ? ($bid->price * max(0, (float)$bid->remaining_percent) / 100.0)
-            : (float) $requestedAmount;
-    } else {
-        $amount = empty(trim((string)$requestedAmount))
-            ? ($bid->price * max(0, (float)$bid->advance_percent) / 100.0)
-            : (float) $requestedAmount;
-    }
-
-    if ($amount <= 0) {
-        return response()->json(['status' => false, 'message' => 'Invalid amount'], 422);
+    if ($advanceAmount <= 0) {
+        return response()->json(['status' => false, 'message' => 'Invalid advance amount'], 422);
     }
 
     // Check wallet balance
     $wallet = Wallet::where('user_id', $user->id)->first();
-    if (!$wallet || $wallet->amount < $amount) {
+    if (!$wallet || $wallet->amount < $advanceAmount) {
         return response()->json(['status' => false, 'message' => 'Insufficient wallet balance'], 400);
     }
 
     DB::beginTransaction();
     try {
-        $prefix = $type === 'remaining' ? 'REM-' : 'ADV-';
-        $txnId  = uniqid($prefix);
+        // Create one transaction ID for both debit & credit
+        $txnId = uniqid("ADV-");
 
-        // 1) Debit customer wallet
-        $wallet->decrement('amount', $amount);
+        /*
+        |--------------------------------------------------------------------------
+        | Debit from Customer Wallet
+        |--------------------------------------------------------------------------
+        */
+        $wallet->decrement('amount', $advanceAmount);
+
+        // Wallet history (customer)
         WalletHistory::create([
-            'datetime'         => now(),
-            'user_id'          => $user->id,
-            'activity_type'    => 'debit',
-            'activity_message' => ($type === 'remaining' ? 'Remaining' : 'Advance') . " payment for Bid #{$bid->id}",
-            'activity_data'    => json_encode([
-                'amount'  => $amount,
+            'datetime'        => now(),
+            'user_id'         => $user->id,
+            'activity_type'   => 'debit',
+            'activity_message'=> "Advance payment for Bid #{$post->id}",
+            'activity_data'   => json_encode([
+                'amount'  => $advanceAmount,
                 'balance' => $wallet->amount,
             ]),
         ]);
 
-        // 2) Payment record (customer)
+        // Payment entry (customer)
         Payment::create([
             'customer_id'             => $user->id,
-            'booking_id'              => null,
+            'booking_id'              => null, 
             'datetime'                => now(),
-            'post_job_request_id'     => $bid->post_request_id,
+            'post_job_request_id'     => $post->id,
             'discount'                => 0,
-            'total_amount'            => $amount,
+            'total_amount'            => $advanceAmount,
             'payment_type'            => 'wallet',
             'txn_id'                  => $txnId,
-            'payment_status'          => $type === 'remaining' ? 'remaining_paid' : 'advance_paid',
+            'payment_status'          => 'completed',
             'other_transaction_detail'=> json_encode([
-                'type'     => $type,
-                'bid_id'   => $bid->id,
-                'provider' => $bid->provider_id,
+                'type'     => 'advance',
+                'bid_id'   => $post->id,
+                'provider' => $post->provider_id,
             ]),
         ]);
 
-        // 3) Update bid status
-        $bid->status = $type === 'remaining' ? 'completed' : 'advance_paid';
-        $bid->save();
+        // Update post status
+        $post->status = 'advance_paid';
+        $post->save();
 
-        // 4) Calculate commission and credit provider
+        /*
+        |--------------------------------------------------------------------------
+        | Commission + Provider Payout
+        |--------------------------------------------------------------------------
+        */
         $adminCommissionSetting = Setting::getValueByKey('admin_commission_percentage', 'site-setup');
         $adminCommissionPercent = is_object($adminCommissionSetting) && isset($adminCommissionSetting->value)
             ? (float) $adminCommissionSetting->value
-            : 10.0;
-        $adminCommissionAmount = ($amount * $adminCommissionPercent) / 100.0;
-        $providerPayoutAmount  = max(0, $amount - $adminCommissionAmount);
+            : 10;
+
+        $adminCommissionAmount = ($advanceAmount * $adminCommissionPercent) / 100.0;
+        $providerPayoutAmount  = max(0, $advanceAmount - $adminCommissionAmount);
 
         if ($providerPayoutAmount > 0) {
-            $providerWallet = Wallet::firstOrCreate(['user_id' => $bid->provider_id]);
+            $providerWallet = Wallet::firstOrCreate(['user_id' => $post->provider_id]);
             $providerWallet->increment('amount', $providerPayoutAmount);
 
             // Wallet history (provider)
             WalletHistory::create([
-                'datetime'         => now(),
-                'user_id'          => $bid->provider_id,
-                'activity_type'    => 'credit',
-                'activity_message' => ($type === 'remaining' ? 'Remaining' : 'Advance') . " payout for Bid #{$bid->id}",
-                'activity_data'    => json_encode([
+                'datetime'        => now(),
+                'user_id'         => $post->provider_id,
+                'activity_type'   => 'credit',
+                'activity_message'=> "Advance received for Bid #{$post->id}",
+                'activity_data'   => json_encode([
                     'amount'  => $providerPayoutAmount,
                     'balance' => $providerWallet->amount,
                 ]),
             ]);
 
-            // Payment record (provider)
+            // Payment entry (provider)
             Payment::create([
-                'customer_id'             => $bid->provider_id,
-                'booking_id'              => null,
+                'customer_id'             => $post->provider_id,
+                'booking_id'              => null, 
                 'datetime'                => now(),
-                'post_job_request_id'     => $bid->post_request_id,
+                'post_job_request_id'     => $post->id,
                 'discount'                => 0,
                 'total_amount'            => $providerPayoutAmount,
                 'payment_type'            => 'wallet',
-                'txn_id'                  => $txnId,
-                'payment_status'          => $type === 'remaining' ? 'remaining_paid' : 'advance_paid',
+                'txn_id'                  => $txnId, // same txnId links debit & credit
+                'payment_status'          => 'completed',
                 'other_transaction_detail'=> json_encode([
-                    'type'     => $type === 'remaining' ? 'remaining_payout' : 'advance_payout',
-                    'bid_id'   => $bid->id,
+                    'type'     => 'advance_payout',
+                    'bid_id'   => $post->id,
                     'customer' => $user->id,
                 ]),
             ]);
 
-            // Provider payout record
+            // Save provider payout record
             ProviderPayout::create([
-                'provider_id'    => $bid->provider_id,
+                'provider_id'    => $post->provider_id,
                 'amount'         => $providerPayoutAmount,
                 'payment_method' => 'wallet',
                 'paid_date'      => now(),
-                'status'         => $type === 'remaining' ? 'remaining paid' : 'advance paid',
-                'description'    => ($type === 'remaining' ? 'Remaining' : 'Advance') . " payout for Bid #{$bid->id}",
+                'status'         => 'advance paid',
+                'description'    => "Advance payout for Bid #{$post->id}",
             ]);
         }
 
-        // 5) Commission Earning records
+        /*
+        |--------------------------------------------------------------------------
+        | Commission Records
+        |--------------------------------------------------------------------------
+        */
         if ($adminCommissionAmount > 0) {
             CommissionEarning::create([
                 'user_type'         => 'admin',
@@ -317,10 +323,11 @@ public function payAdvance(Request $request, $id)
                 'commission_status' => 'paid',
             ]);
         }
+
         if ($providerPayoutAmount > 0) {
             CommissionEarning::create([
                 'user_type'         => 'provider',
-                'employee_id'       => $bid->provider_id,
+                'employee_id'       => $post->provider_id,
                 'commission_amount' => $providerPayoutAmount,
                 'commission_status' => 'paid',
             ]);
@@ -329,14 +336,17 @@ public function payAdvance(Request $request, $id)
         DB::commit();
 
         return response()->json([
-            'status'  => true,
-            'message' => ($type === 'remaining' ? 'Remaining' : 'Advance') . " payment of €{$amount} successful",
+            'status' => true,
+            'message' => "Advance payment of €{$advanceAmount} successful",
             'balance' => $wallet->amount,
-            'new_status' => $bid->status,
         ]);
     } catch (\Exception $e) {
         DB::rollBack();
-        return response()->json(['status' => false, 'message' => 'Payment failed', 'error' => $e->getMessage()], 500);
+        return response()->json([
+            'status'  => false,
+            'message' => 'Payment failed',
+            'error'   => $e->getMessage()
+        ], 500);
     }
 }
 
@@ -363,6 +373,7 @@ public function updateBidStatus(Request $request, $id)
         $bid->hold_reason = $request->input('hold_reason');
     }
 
+    
     $bid->save();
 
     try {
@@ -379,6 +390,9 @@ public function updateBidStatus(Request $request, $id)
         'message' => 'Status updated successfully',
     ]);
 }
+
+
+
 
 /**
  * Add extra charges to a bid: price += amount * quantity
@@ -397,19 +411,14 @@ public function addExtraCharges(Request $request, $id)
     $increment = ((float)$request->input('amount')) * max(1, $quantity);
 
     $bid->price = ((float)$bid->price) + $increment;
-    $bid->status = 'completed';
     $bid->save();
 
     return response()->json([
         'status'  => true,
         'message' => 'Extra charges added successfully',
         'price'   => $bid->price,
-        'new_status' => $bid->status,
     ]);
 }
-
-
-
 
 public function setAdvance(Request $request, $id)
 {

@@ -123,6 +123,40 @@
                     <p class="mb-1"><i class="fas fa-flag"></i> Status: {!! $statusBadge !!}</p>
                     {!! $reasonHtml !!}
 
+                    @if($bid->status === 'advance_payment' && isset($bid->advance_percent, $bid->remaining_percent))
+                        @php
+                            $advPct = (float) ($bid->advance_percent ?? 0);
+                            $remPct = (float) ($bid->remaining_percent ?? 0);
+                            $price  = (float) ($bid->price ?? 0);
+                            $advAmount = number_format(($price * $advPct) / 100, 2);
+                            $remAmount = number_format(($price * $remPct) / 100, 2);
+                        @endphp
+                        <div class="mt-2">
+                            <h6 class="fw-bold">Price Breakdown</h6>
+                            <table class="table table-sm mb-2">
+                                <thead>
+                                    <tr>
+                                        <th>Type</th>
+                                        <th>Percent</th>
+                                        <th>Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Advance</td>
+                                        <td>{{ $advPct }}%</td>
+                                        <td>{{ $advAmount }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Remaining</td>
+                                        <td>{{ $remPct }}%</td>
+                                        <td>{{ $remAmount }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    @endif
+
                     <div class="mt-auto">
                         {{-- Action buttons (copy from your bidshow "action" column logic) --}}
                     </div>
@@ -244,6 +278,41 @@
                         if ((row.status === 'hold' || row.status === 'on_hold') && row.hold_reason) {
                             reasonHtml = `<p class="mb-3 text-warning"><i class="fas fa-comment-dots"></i> Reason: ${row.hold_reason}</p>`;
                         }
+                        let priceTableHtml = '';
+                        if (row.status === 'advance_payment') {
+                            var advPct = (typeof row.advance_percent !== 'undefined' && row.advance_percent !== null) ? parseFloat(row.advance_percent) : null;
+                            var remPct = (typeof row.remaining_percent !== 'undefined' && row.remaining_percent !== null) ? parseFloat(row.remaining_percent) : null;
+                            var price = (typeof row.price !== 'undefined' && row.price !== null) ? parseFloat(row.price) : null;
+                            if (price !== null && !isNaN(price) && advPct !== null && remPct !== null) {
+                                var advAmount = (price * advPct / 100).toFixed(2);
+                                var remAmount = (price * remPct / 100).toFixed(2);
+                                priceTableHtml = `
+                                    <div class="mt-2">
+                                        <h6 class="fw-bold">Price Breakdown</h6>
+                                        <table class="table table-sm mb-2">
+                                            <thead>
+                                                <tr>
+                                                    <th>Type</th>
+                                                    <th>Percent</th>
+                                                    <th>Amount</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>Advance</td>
+                                                    <td>${advPct}%</td>
+                                                    <td>${advAmount}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Remaining</td>
+                                                    <td>${remPct}%</td>
+                                                    <td>${remAmount}</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>`;
+                            }
+                        }
                         let actionHtml = '';
                         const AUTH_USER_ID = {{ auth()->id() }};
                         const AUTH_USER_TYPE = @json(auth()->user()->user_type);
@@ -301,6 +370,7 @@
                                     <p class="mb-1"><i class="fas fa-dollar-sign"></i> Bid: <span class="fw-bold">${row.price}</span></p>
                                     <p class="mb-1"><i class="fas fa-flag"></i> Status: ${statusBadge}</p>
                                     ${reasonHtml}
+                                    ${priceTableHtml}
                                     <div class="mt-auto">
                                         ${actionHtml}
                                     </div>
