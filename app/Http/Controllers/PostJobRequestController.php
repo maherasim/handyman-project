@@ -148,7 +148,7 @@ public function bidshow(Request $request)
             // Determine if an advance payment (customer side) was completed for this bid
             // Payments are stored with post_job_request_id referencing the PostJobBid id
             $payments = Payment::where('post_job_request_id', $bid->id)
-                ->where('payment_status', 'completed')
+                ->where('payment_status', 'remaining_paid')
                 ->get();
 
             foreach ($payments as $payment) {
