@@ -407,12 +407,14 @@ public function addExtraCharges(Request $request, $id)
     $increment = ((float)$request->input('amount')) * max(1, $quantity);
 
     $bid->price = ((float)$bid->price) + $increment;
+    $bid->status = 'completed';
     $bid->save();
 
     return response()->json([
         'status'  => true,
         'message' => 'Extra charges added successfully',
         'price'   => $bid->price,
+        'new_status' => $bid->status,
     ]);
 }
 
