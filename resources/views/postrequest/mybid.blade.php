@@ -154,7 +154,7 @@
                                 statusBadge =
                                     `<span class="badge px-3 py-2" style="background-color:#28a745; color:black;">${row.status}</span>`;
                                 break;
-                            case 'cancelled':
+                            case 'Cancelled':
                                 statusBadge =
                                     `<span class="badge px-3 py-2" style="background-color:#dc3545; color:black;">${row.status}</span>`;
                                 break;
