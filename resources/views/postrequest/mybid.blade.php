@@ -470,11 +470,30 @@
             // Update status (both provider and user as per data-status)
             $(document).on('click', '.updateStatusBtn', function() {
                 const bidId = $(this).data('id');
-                const nextStatus = $(this).data('status');
+                let nextStatus = $(this).data('status');
+
+                // Fallback: infer status from button text when not provided
+                if (!nextStatus) {
+                    const btnText = ($(this).text() || '').trim().toLowerCase();
+                    if (btnText.includes('cancel')) nextStatus = 'cancelled';
+                    else if (btnText.includes('resume')) nextStatus = 'in_process';
+                    else if (btnText.includes('start')) nextStatus = 'in_progress';
+                    else if (btnText.includes('done')) nextStatus = 'done';
+                    else if (btnText.includes('complete')) nextStatus = 'completed';
+                }
+
+                const label = (typeof nextStatus === 'string' && nextStatus)
+                    ? String(nextStatus).replace('_', ' ')
+                    : (($(this).data('label')) || ($(this).text() || '').trim() || 'this action');
+
+                if (!nextStatus) {
+                    Swal.fire('Error', 'Unable to determine next status.', 'error');
+                    return;
+                }
 
                 Swal.fire({
                     title: 'Confirm',
-                    text: 'Do you want to update status to ' + String(nextStatus).replace('_',' ') + '?',
+                    text: 'Do you want to update status to ' + label + '?',
                     icon: 'question',
                     showCancelButton: true,
                     confirmButtonText: 'Yes, update',
