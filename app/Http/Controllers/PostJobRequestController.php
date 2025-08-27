@@ -87,7 +87,12 @@ public function bidshow(Request $request)
     $query = PostJobBid::query()->with([
         'provider:id,display_name',
         'customer:id,display_name',
-        'postrequest:id,title,customer_id,status,provider_id,remaining_percent'
+        // Include required PostJobRequest fields for card details
+        'postrequest:id,title,customer_id,status,provider_id,remaining_percent,type,start_date,end_date,total_budget,city_id,country_id',
+        // Eager-load location and bids for counts
+        'postrequest.city:id,name',
+        'postrequest.country:id,name',
+        'postrequest.postBidList:id,post_request_id',
     ]);
 
     if ($auth_user->user_type === 'provider') {
@@ -108,6 +113,33 @@ public function bidshow(Request $request)
         ->addColumn('provider_name', fn($bid) => $bid->provider->display_name ?? 'N/A')
         ->addColumn('customer_name', fn($bid) => $bid->customer->display_name ?? 'N/A')
         ->addColumn('post_title', fn($bid) => $bid->postrequest->title ?? 'N/A')
+        // Extra fields for cards
+        ->addColumn('city', function($bid){
+            $post = $bid->postrequest;
+            return ($post && $post->city) ? ($post->city->name ?? 'N/A') : 'N/A';
+        })
+        ->addColumn('country', function($bid){
+            $post = $bid->postrequest;
+            return ($post && $post->country) ? ($post->country->name ?? 'N/A') : 'N/A';
+        })
+        ->addColumn('job_type', function($bid){
+            return $bid->postrequest->type ?? null;
+        })
+        ->addColumn('start_date', function($bid){
+            return $bid->postrequest->start_date ?? null;
+        })
+        ->addColumn('end_date', function($bid){
+            return $bid->postrequest->end_date ?? null;
+        })
+        ->addColumn('total_budget', function($bid){
+            return $bid->postrequest->total_budget ?? null;
+        })
+        ->addColumn('applications', function($bid){
+            $post = $bid->postrequest;
+            if (!$post) { return 0; }
+            // Use eager-loaded collection to avoid N+1
+            return isset($post->postBidList) ? $post->postBidList->count() : $post->postBidList()->count();
+        })
         ->addColumn('status', fn($bid) => $bid->status ?? 'N/A')
         ->addColumn('hold_reason', fn($bid) => $bid->hold_reason ?? null)
         ->addColumn('action', function($bid) use ($auth_user) {
