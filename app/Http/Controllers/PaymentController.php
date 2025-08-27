@@ -386,6 +386,9 @@ public function cash_index_data(DataTables $datatable, Request $request)
         ->editColumn('total_amount', function($query) {
             return getPriceFormat($query->total_amount);
         })
+        ->addColumn('post_job', function($query){
+            return optional($query->postJobRequest)->title ?: '-';
+        })
         ->addColumn('action', function($payment){
             return view('payment.action',compact('payment'))->render();
         })

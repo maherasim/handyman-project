@@ -116,6 +116,7 @@
                     { data: 'updated_at', name: 'updated_at', title: "{{ __('product.lbl_update_at') }}", orderable: true, visible: false },
                     { data: 'id', name: 'id', title: "{{ __('messages.id') }}" },
                     { data: 'booking_id', name: 'booking_id', title: "{{ __('messages.service') }}" },
+                    { data: 'post_job', name: 'post_job', title: "Post Job" },
                     { data: 'customer_id', name: 'customer_id', title: "{{ __('messages.user') }}" },
                     { data: 'payment_type', name: 'payment_type', title: "{{ __('messages.payment_type') }}" },
                     { data: 'payment_status', name: 'payment_status', title: "{{ __('messages.status') }}" },
