@@ -47,8 +47,8 @@ class PostJobRequestController extends Controller
         ->where('id', $id)
         ->where('status', 'accepted')
         ->firstOrFail();
-
-    return view('post-job-bid.show', compact('bid'));
+ 
+    return view('postrequest.show', compact('bid'));
 }
 
  public function bidshowindex()
