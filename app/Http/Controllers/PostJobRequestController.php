@@ -41,12 +41,16 @@ class PostJobRequestController extends Controller
         return view('postrequest.index', compact('pageTitle','auth_user','assets','filter'));
 
     }
-    public function showbid($id)
+public function showbid($postRequestId)
 {
-    
-  $bid = PostJobBid::find($id);
+    // Fetch the bid that belongs to this request and has status 'accepted'
+    $bid = PostJobBid::with('request')
+        ->where('post_request_id', $postRequestId)
+        ->where('status', 'accepted')
+        ->firstOrFail();
 
- dd( $bid );
+    dd($bid); // Now you will get the correct bid
+
     return view('postrequest.show', compact('bid'));
 }
 
