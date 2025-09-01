@@ -235,76 +235,64 @@
   
         var authToken = "{{ auth()->user()->createToken('auth_token')->plainTextToken }}";
   
-        function submitBid() {
-            var bidAmount = $('#bidAmount').val();
-            var postRequestId = $(".postrequestid").val();
-            // var bidDuration = $('#bidDuration').val() ?? null;
-            if (bidAmount && postRequestId) {
-                $('#bidModal').modal('hide');
+        function submitBid() { 
+    var bidAmount = $('#bidAmount').val();
+    var postRequestId = $(".postrequestid").val();
+
+    clearErrorMessages();
+
+    if (!bidAmount) {
+        displayErrorMessage('Bid Amount is required.', 'bidAmountError');
+        return;
+    }
+
+    $.ajax({
+        url: 'api/save-bid',
+        type: 'POST',
+        dataType: 'json',
+        headers: {
+            'Authorization': `Bearer ${authToken}`
+        },
+        data: {
+            post_request_id: postRequestId,
+            price: bidAmount,
+        },
+        success: function(response) {
+            $('#bidModal').modal('hide');
+
+            if (response.hasBid) {
+                // User already bid
+                $('#datatable').DataTable().ajax.reload();
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Notice',
+                    text: 'You have already placed a bid on this post.',
+                });
+            } else {
+                // Successful bid
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success!',
+                    text: 'Your bid has been submitted successfully.',
+                    timer: 2000,
+                    showConfirmButton: false
+                }).then(() => {
+                    // Reload the page or refresh the table
+                    window.location.reload();
+                });
             }
-  
-            clearErrorMessages();
-  
-            if (!bidAmount) {
-                displayErrorMessage('Bid Amount is required.', 'bidAmountError');
-                return;
-            }
-  
-            // if (!bidDuration) {
-            //     displayErrorMessage('Bid Duration is required.', 'bidDurationError');
-            //     return;
-            // }
-            $.ajax({
-                url: 'api/save-bid',
-                type: 'POST',
-                dataType: 'json',
-                headers: {
-                    'Authorization': `Bearer ${authToken}`
-                },
-                data: {
-                    post_request_id: postRequestId,
-                    price: bidAmount,
-                    // duration: bidDuration,
-                    // Add any other data you need to pass to the controller
-                },
-                success: function(response) {
-                    // console.log("success", response);
-                    $('#bidModal').modal('hide');
-                    if (response.hasBid) {
-                        // Display a message indicating that the user has already bid
-                        $('#datatable').DataTable().ajax.reload();
-                        alert('You have already placed a bid on this post.');
-                    } else {
-                        // Proceed with submitting the bid
-                        // $.ajax({
-                        //     url: 'api/save-bid',
-                        //     type: 'POST',
-                        //     dataType: 'json',
-                        //     headers: {
-                        //         'Authorization': `Bearer ${authToken}`
-                        //     },
-                        //     data: {
-                        //         post_request_id: postRequestId,
-                        //         price: bidAmount,
-                        //     },
-                        //     success: function (response) {
-                        //         $('#datatable').DataTable().ajax.reload();
-                        //         $('#bidModal').modal('hide');
-                        //     },
-                        //     error: function (error) {
-                        //         console.error('Error:', error);
-                        //     }
-                        // });
-                    }
-                },
-                error: function(error) {
-                    console.error('Error:', error);
-                    // console.log('HTTP Status Code:', error.status);
-                    // console.log('Error Response:', error.responseText);
-                }
+        },
+        error: function(error) {
+            console.error('Error:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Something went wrong while submitting your bid.',
             });
         }
-  
+    });
+}
+
         function openBidModal(postRequestId, authUserId) {
             $('.postrequestid').val(postRequestId);
   
