@@ -26,24 +26,22 @@
                                 @endphp
 
                                 <!-- Pay Advance -->
-                                 <button class="btn btn-success payAdvanceBtn"  
-                                data-post-id="{{ $advance_payment->id }}"
-                                data-amount="{{ $advanceAmount }}">
-                                <i class="fas fa-wallet"></i> 
-                                Pay Advance {{ $advanceAmount }} ({{ $advance_payment->advance_percent }}%)
-                            </button>
+                                <button class="btn btn-success payAdvanceBtn" data-post-id="{{ $advance_payment->id }}"
+                                    data-amount="{{ $advanceAmount }}">
+                                    <i class="fas fa-wallet"></i>
+                                    Pay Advance {{ $advanceAmount }} ({{ $advance_payment->advance_percent }}%)
+                                </button>
 
 
                                 <!-- Pay Remaining -->
-                              <button class="btn btn-info payRemainingBtn" 
-                        data-post-id="{{ $advance_payment->id }}" 
-                        data-advance="{{ $advance_payment->advance_percent }}" 
-                        data-remaining="{{ $advance_payment->remaining_percent }}">
-                        <i class="fas fa-credit-card"></i> 
-                        Pay Remaining {{ $remainingAmount }} ({{ $advance_payment->remaining_percent }}%)
-                    </button> 
+                                <button class="btn btn-info payRemainingBtn" data-post-id="{{ $advance_payment->id }}"
+                                    data-advance="{{ $advance_payment->advance_percent }}"
+                                    data-remaining="{{ $advance_payment->remaining_percent }}">
+                                    <i class="fas fa-credit-card"></i>
+                                    Pay Remaining {{ $remainingAmount }} ({{ $advance_payment->remaining_percent }}%)
+                                </button>
 
-                                
+
                             @endif
 
                         </div>
@@ -65,108 +63,134 @@
                 </div>
 
                 <div class="row" id="bidsContainer">
-       @forelse($bids as $bid)
-        @php
-            // Status Badge logic (moved from JS to PHP)
-            switch ($bid->status) {
-                case 'pending':
-                    $statusBadge = '<span class="badge px-3 py-2" style="background-color:#FFC107; color:black;">Pending</span>';
-                    break;
-                case 'assigned':
-                    $statusBadge = '<span class="badge px-3 py-2" style="background-color:#17a2b8; color:black;">Assigned</span>';
-                    break;
-                case 'accepted':
-                    $statusBadge = '<span class="badge px-3 py-2" style="background-color:#20c997; color:black;">Accepted</span>';
-                    break;
-                case 'in_progress':
-                    $statusBadge = '<span class="badge px-3 py-2" style="background-color:#007bff; color:black;">In Progress</span>';
-                    break;
-                case 'in_process':
-                    $statusBadge = '<span class="badge px-3 py-2" style="background-color:#0dcaf0; color:black;">In Process</span>';
-                    break;
-                case 'hold':
-                    $statusBadge = '<span class="badge px-3 py-2" style="background-color:#ffc107; color:black;">On Hold</span>';
-                    break;
-                case 'done':
-                    $statusBadge = '<span class="badge px-3 py-2" style="background-color:#28a745; color:black;">Done</span>';
-                    break;
-                case 'completed':
-                    $statusBadge = '<span class="badge px-3 py-2" style="background-color:#28a745; color:black;">Completed</span>';
-                    break;
-                case 'cancelled':
-                    $statusBadge = '<span class="badge px-3 py-2" style="background-color:#dc3545; color:black;">Cancelled</span>';
-                    break;
-                default:
-                    $statusBadge = '<span class="badge px-3 py-2" style="background-color:#6c757d; color:black;">'.ucfirst($bid->status).'</span>';
-            }
-
-            // Hold reason
-            $reasonHtml = '';
-            if (in_array($bid->status, ['hold','on_hold']) && $bid->hold_reason) {
-                $reasonHtml = '<p class="mb-3 text-warning"><i class="fas fa-comment-dots"></i> Reason: '.$bid->hold_reason.'</p>';
-            }
-        @endphp
-
-        <div class="col-md-6 col-lg-4 mb-3">
-            <div class="card shadow-sm h-100">
-                <div class="card-body d-flex flex-column">
-                    <h6 class="fw-bold mb-2">{{ $bid->postrequest->title ?? '' }}</h6>
-                    <p class="text-muted mb-1"><i class="fas fa-map-marker-alt"></i> Location: {{ optional($bid->postrequest->city)->name ?? '-' }}, {{ optional($bid->postrequest->country)->name ?? '-' }}</p>
-                    <p class="text-muted mb-1"><i class="fas fa-briefcase"></i> Job Type: {{ $bid->postrequest->type ?? '-' }}</p>
-                    <p class="text-muted mb-1"><i class="far fa-calendar-check"></i> Start: <span class="fw-bold">{{ $bid->postrequest->start_date ?? '-' }}</span></p>
-                    <p class="text-muted mb-1"><i class="far fa-calendar-times"></i> End: <span class="fw-bold">{{ $bid->postrequest->end_date ?? '-' }}</span></p>
-                    <p class="text-muted mb-1"><i class="fas fa-wallet"></i> Total Budget: <span class="fw-bold">{{ $bid->postrequest->total_budget ?? '-' }}</span></p>
-                    <p class="text-muted mb-1"><i class="fas fa-users"></i> Applications: <span class="fw-bold">{{ ($bid->postrequest && $bid->postrequest->postBidList) ? $bid->postrequest->postBidList->count() : 0 }}</span></p>
-                    <p class="text-muted mb-1"><i class="fas fa-user"></i> Provider: {{ $bid->provider->display_name ?? 'N/A' }}</p>
-                    <p class="text-muted mb-1"><i class="fas fa-user-tie"></i> Customer: {{ $bid->customer->display_name ?? 'N/A' }}</p>
-                    <p class="mb-1"><i class="fas fa-dollar-sign"></i> Bid: <span class="fw-bold">{{ $bid->price }}</span></p>
-                    <p class="mb-1"><i class="fas fa-flag"></i> Status: {!! $statusBadge !!}</p>
-                    {!! $reasonHtml !!}
-
-                    @if($bid->status === 'advance_payment' && isset($bid->advance_percent, $bid->remaining_percent))
+                    @forelse($bids as $bid)
                         @php
-                            $advPct = (float) ($bid->advance_percent ?? 0);
-                            $remPct = (float) ($bid->remaining_percent ?? 0);
-                            $price  = (float) ($bid->price ?? 0);
-                            $advAmount = number_format(($price * $advPct) / 100, 2);
-                            $remAmount = number_format(($price * $remPct) / 100, 2);
-                        @endphp
-                        <div class="mt-2">
-                            <h6 class="fw-bold">Price Breakdown</h6>
-                            <table class="table table-sm mb-2">
-                                <thead>
-                                    <tr>
-                                        <th>Type</th>
-                                        <th>Percent</th>
-                                        <th>Amount</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>Advance</td>
-                                        <td>{{ $advPct }}%</td>
-                                        <td>{{ $advAmount }}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Remaining</td>
-                                        <td>{{ $remPct }}%</td>
-                                        <td>{{ $remAmount }}</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    @endif
+                            // Status Badge logic (moved from JS to PHP)
+                            switch ($bid->status) {
+                                case 'pending':
+                                    $statusBadge =
+                                        '<span class="badge px-3 py-2" style="background-color:#FFC107; color:black;">Pending</span>';
+                                    break;
+                                case 'assigned':
+                                    $statusBadge =
+                                        '<span class="badge px-3 py-2" style="background-color:#17a2b8; color:black;">Assigned</span>';
+                                    break;
+                                case 'accepted':
+                                    $statusBadge =
+                                        '<span class="badge px-3 py-2" style="background-color:#20c997; color:black;">Accepted</span>';
+                                    break;
+                                case 'in_progress':
+                                    $statusBadge =
+                                        '<span class="badge px-3 py-2" style="background-color:#007bff; color:black;">In Progress</span>';
+                                    break;
+                                case 'in_process':
+                                    $statusBadge =
+                                        '<span class="badge px-3 py-2" style="background-color:#0dcaf0; color:black;">In Process</span>';
+                                    break;
+                                case 'hold':
+                                    $statusBadge =
+                                        '<span class="badge px-3 py-2" style="background-color:#ffc107; color:black;">On Hold</span>';
+                                    break;
+                                case 'done':
+                                    $statusBadge =
+                                        '<span class="badge px-3 py-2" style="background-color:#28a745; color:black;">Done</span>';
+                                    break;
+                                case 'completed':
+                                    $statusBadge =
+                                        '<span class="badge px-3 py-2" style="background-color:#28a745; color:black;">Completed</span>';
+                                    break;
+                                case 'cancelled':
+                                    $statusBadge =
+                                        '<span class="badge px-3 py-2" style="background-color:#dc3545; color:black;">Cancelled</span>';
+                                    break;
+                                default:
+                                    $statusBadge =
+                                        '<span class="badge px-3 py-2" style="background-color:#6c757d; color:black;">' .
+                                        ucfirst($bid->status) .
+                                        '</span>';
+                            }
 
-                    <div class="mt-auto">
-                        {{-- Action buttons (copy from your bidshow "action" column logic) --}}
-                    </div>
+                            // Hold reason
+                            $reasonHtml = '';
+                            if (in_array($bid->status, ['hold', 'on_hold']) && $bid->hold_reason) {
+                                $reasonHtml =
+                                    '<p class="mb-3 text-warning"><i class="fas fa-comment-dots"></i> Reason: ' .
+                                    $bid->hold_reason .
+                                    '</p>';
+                            }
+                        @endphp
+
+                        <div class="col-md-6 col-lg-4 mb-3">
+                            <div class="card shadow-sm h-100">
+                                <div class="card-body d-flex flex-column">
+                                    <h6 class="fw-bold mb-2">{{ $bid->postrequest->title ?? '' }}</h6>
+                                    <p class="text-muted mb-1"><i class="fas fa-map-marker-alt"></i> Location:
+                                        {{ optional($bid->postrequest->city)->name ?? '-' }},
+                                        {{ optional($bid->postrequest->country)->name ?? '-' }}</p>
+                                    <p class="text-muted mb-1"><i class="fas fa-briefcase"></i> Job Type:
+                                        {{ $bid->postrequest->type ?? '-' }}</p>
+                                    <p class="text-muted mb-1"><i class="far fa-calendar-check"></i> Start: <span
+                                            class="fw-bold">{{ $bid->postrequest->start_date ?? '-' }}</span></p>
+                                    <p class="text-muted mb-1"><i class="far fa-calendar-times"></i> End: <span
+                                            class="fw-bold">{{ $bid->postrequest->end_date ?? '-' }}</span></p>
+                                    <p class="text-muted mb-1"><i class="fas fa-wallet"></i> Total Budget: <span
+                                            class="fw-bold">{{ $bid->postrequest->total_budget ?? '-' }}</span></p>
+                                    <p class="text-muted mb-1"><i class="fas fa-users"></i> Applications: <span
+                                            class="fw-bold">{{ $bid->postrequest && $bid->postrequest->postBidList ? $bid->postrequest->postBidList->count() : 0 }}</span>
+                                    </p>
+                                    <p class="text-muted mb-1"><i class="fas fa-user"></i> Provider:
+                                        {{ $bid->provider->display_name ?? 'N/A' }}</p>
+                                    <p class="text-muted mb-1"><i class="fas fa-user-tie"></i> Customer:
+                                        {{ $bid->customer->display_name ?? 'N/A' }}</p>
+                                    <p class="mb-1"><i class="fas fa-dollar-sign"></i> Bid: <span
+                                            class="fw-bold">{{ $bid->price }}</span></p>
+                                    <p class="mb-1"><i class="fas fa-flag"></i> Status: {!! $statusBadge !!}</p>
+                                    {!! $reasonHtml !!}
+
+                                    @if ($bid->status === 'advance_payment' && isset($bid->advance_percent, $bid->remaining_percent))
+                                        @php
+                                            $advPct = (float) ($bid->advance_percent ?? 0);
+                                            $remPct = (float) ($bid->remaining_percent ?? 0);
+                                            $price = (float) ($bid->price ?? 0);
+                                            $advAmount = number_format(($price * $advPct) / 100, 2);
+                                            $remAmount = number_format(($price * $remPct) / 100, 2);
+                                        @endphp
+                                        <div class="mt-2">
+                                            <h6 class="fw-bold">Price Breakdown</h6>
+                                            <table class="table table-sm mb-2">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Type</th>
+                                                        <th>Percent</th>
+                                                        <th>Amount</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                        <td>Advance</td>
+                                                        <td>{{ $advPct }}%</td>
+                                                        <td>{{ $advAmount }}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Remaining</td>
+                                                        <td>{{ $remPct }}%</td>
+                                                        <td>{{ $remAmount }}</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    @endif
+
+                                    <div class="mt-auto">
+                                        {{-- Action buttons (copy from your bidshow "action" column logic) --}}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    @empty
+                        <p class="text-muted">No bids found for this request.</p>
+                    @endforelse
                 </div>
-            </div>
-        </div>
-    @empty
-        <p class="text-muted">No bids found for this request.</p>
-    @endforelse
-</div>
 
             </div>
         </div>
@@ -189,9 +213,11 @@
                     url: '{{ route('bidsshowjson') }}',
                     type: "GET",
                     data: function(d) {
-                        d.search = { value: $('.dt-search').val() };
-                        @if(isset($id))
-                        d.post_request_id = {{ (int) $id }};
+                        d.search = {
+                            value: $('.dt-search').val()
+                        };
+                        @if (isset($id))
+                            d.post_request_id = {{ (int) $id }};
                         @endif
                     }
                 },
@@ -275,15 +301,23 @@
 
 
                         let reasonHtml = '';
-                        if ((row.status === 'hold' || row.status === 'on_hold') && row.hold_reason) {
-                            reasonHtml = `<p class="mb-3 text-warning"><i class="fas fa-comment-dots"></i> Reason: ${row.hold_reason}</p>`;
+                        if ((row.status === 'hold' || row.status === 'on_hold') && row
+                            .hold_reason) {
+                            reasonHtml =
+                                `<p class="mb-3 text-warning"><i class="fas fa-comment-dots"></i> Reason: ${row.hold_reason}</p>`;
                         }
                         let priceTableHtml = '';
                         if (row.status === 'advance_payment') {
-                            var advPct = (typeof row.advance_percent !== 'undefined' && row.advance_percent !== null) ? parseFloat(row.advance_percent) : null;
-                            var remPct = (typeof row.remaining_percent !== 'undefined' && row.remaining_percent !== null) ? parseFloat(row.remaining_percent) : null;
-                            var price = (typeof row.price !== 'undefined' && row.price !== null) ? parseFloat(row.price) : null;
-                            if (price !== null && !isNaN(price) && advPct !== null && remPct !== null) {
+                            var advPct = (typeof row.advance_percent !== 'undefined' && row
+                                    .advance_percent !== null) ? parseFloat(row
+                                .advance_percent) : null;
+                            var remPct = (typeof row.remaining_percent !== 'undefined' && row
+                                .remaining_percent !== null) ? parseFloat(row
+                                .remaining_percent) : null;
+                            var price = (typeof row.price !== 'undefined' && row.price !==
+                                null) ? parseFloat(row.price) : null;
+                            if (price !== null && !isNaN(price) && advPct !== null && remPct !==
+                                null) {
                                 var advAmount = (price * advPct / 100).toFixed(2);
                                 var remAmount = (price * remPct / 100).toFixed(2);
                                 priceTableHtml = `
@@ -319,35 +353,56 @@
                         try {
                             if (AUTH_USER_TYPE === 'user') {
                                 if (row.status == 'requested') {
-                                    actionHtml += `<button class=\"btn btn-sm btn-success acceptBid\" data-id=\"${row.id}\" data-status=\"accepted\">Accept</button> `;
+                                    actionHtml +=
+                                        `<button class=\"btn btn-sm btn-success acceptBid\" data-id=\"${row.id}\" data-status=\"accepted\">Accept</button> `;
                                 }
-                               
-                                 if (row.status === 'advance_payment' && String(row.customer_id) === String(AUTH_USER_ID)) {
-                                    var advPct = (typeof row.advance_percent !== 'undefined' && row.advance_percent !== null) ? parseFloat(row.advance_percent) : null;
-                                    var amount = (advPct !== null && !isNaN(advPct)) ? (parseFloat(row.price) * advPct / 100) : null;
-                                    var labelSuffix = amount !== null ? ` ${amount.toFixed(2)} (${advPct}%)` : '';
-                                    var amountAttr = amount !== null ? ` data-amount="${amount}"` : '';
-                                    actionHtml += `<button class="btn btn-sm btn-success payAdvanceBtn" data-post-id="${row.id}"${amountAttr}><i class="fas fa-wallet"></i> Pay Advance${labelSuffix}</button> `;
+
+                                if (row.status === 'advance_payment' && String(row
+                                    .customer_id) === String(AUTH_USER_ID)) {
+                                    var advPct = (typeof row.advance_percent !== 'undefined' &&
+                                        row.advance_percent !== null) ? parseFloat(row
+                                        .advance_percent) : null;
+                                    var amount = (advPct !== null && !isNaN(advPct)) ? (
+                                        parseFloat(row.price) * advPct / 100) : null;
+                                    var labelSuffix = amount !== null ?
+                                        ` ${amount.toFixed(2)} (${advPct}%)` : '';
+                                    var amountAttr = amount !== null ?
+                                        ` data-amount="${amount}"` : '';
+                                    actionHtml +=
+                                        `<button class="btn btn-sm btn-success payAdvanceBtn" data-post-id="${row.id}"${amountAttr}><i class="fas fa-wallet"></i> Pay Advance${labelSuffix}</button> `;
                                 }
-                              if (String(row.customer_id) === String(AUTH_USER_ID) && row.status === 'in_progress') {
-                                    actionHtml += `<button class="btn btn-sm btn-info updateStatusBtn" data-id="${row.id}" data-status="in_process">Let's Start Work</button> `;
+                                if (String(row.customer_id) === String(AUTH_USER_ID) && row
+                                    .status === 'in_progress') {
+                                    actionHtml +=
+                                        `<button class="btn btn-sm btn-info updateStatusBtn" data-id="${row.id}" data-status="in_process">Let's Start Work</button> `;
                                 }
-                             if (String(row.customer_id) === String(AUTH_USER_ID) && row.status === 'done') {
-                                    actionHtml += `<button class="btn btn-sm btn-info updateStatusBtn" data-id="${row.id}" data-status="confirm_done">Confirm Work Done</button> `;
+                                if (String(row.customer_id) === String(AUTH_USER_ID) && row
+                                    .status === 'done') {
+                                    actionHtml +=
+                                        `<button class="btn btn-sm btn-info updateStatusBtn" data-id="${row.id}" data-status="confirm_done">Confirm Work Done</button> `;
                                 }
-                                  if (String(row.customer_id) === String(AUTH_USER_ID) && row.status === 'accepted') {
-                                    actionHtml += `<button class=\"btn btn-sm btn-info updateStatusBtn\" data-id=\"${row.id}\" data-status=\"cancelled\">Cancel</button> `;
+                                if (String(row.customer_id) === String(AUTH_USER_ID) && row
+                                    .status === 'accepted') {
+                                    actionHtml +=
+                                        `<button class=\"btn btn-sm btn-info updateStatusBtn\" data-id=\"${row.id}\" data-status=\"cancelled\">Cancel</button> `;
                                 }
-                                  if (String(row.customer_id) === String(AUTH_USER_ID) && row.status === 'completed' && !row.has_advance_paid) {
-                                    var remPct = (typeof row.remaining_percent !== 'undefined' && row.remaining_percent !== null) ? parseFloat(row.remaining_percent) : null;
-                                    var amountRem = (remPct !== null && !isNaN(remPct)) ? (parseFloat(row.price) * remPct / 100) : null;
-                                    var labelRem = amountRem !== null ? ` ${amountRem.toFixed(2)} (${remPct}%)` : '';
-                                    var amountAttrRem = amountRem !== null ? ` data-amount="${amountRem}"` : '';
-                                    actionHtml += `<button class="btn btn-sm btn-primary payRemainingBtn" data-post-id="${row.id}"${amountAttrRem}><i class="fas fa-credit-card"></i> Pay Remaining${labelRem}</button> `;
+                                if (String(row.customer_id) === String(AUTH_USER_ID) && row
+                                    .status === 'completed' && !row.has_advance_paid) {
+                                    var remPct = (typeof row.remaining_percent !==
+                                            'undefined' && row.remaining_percent !== null) ?
+                                        parseFloat(row.remaining_percent) : null;
+                                    var amountRem = (remPct !== null && !isNaN(remPct)) ? (
+                                        parseFloat(row.price) * remPct / 100) : null;
+                                    var labelRem = amountRem !== null ?
+                                        ` ${amountRem.toFixed(2)} (${remPct}%)` : '';
+                                    var amountAttrRem = amountRem !== null ?
+                                        ` data-amount="${amountRem}"` : '';
+                                    actionHtml +=
+                                        `<button class="btn btn-sm btn-primary payRemainingBtn" data-post-id="${row.id}"${amountAttrRem}><i class="fas fa-credit-card"></i> Pay Remaining${labelRem}</button> `;
                                 }
 
                             }
-                            
+
                         } catch (e) {}
 
                         if (!actionHtml && row.status === 'accepted') {
@@ -477,8 +532,9 @@
             if (window.__payAdvanceBound) return;
             window.__payAdvanceBound = true;
 
-            document.addEventListener('click', function (evt) {
-                const btn = evt.target && evt.target.closest && (evt.target.closest('.payAdvanceBtn') || evt.target.closest('.payRemainingBtn'));
+            document.addEventListener('click', function(evt) {
+                const btn = evt.target && evt.target.closest && (evt.target.closest('.payAdvanceBtn') || evt
+                    .target.closest('.payRemainingBtn'));
                 if (!btn) return;
 
                 const postId = btn.getAttribute('data-post-id');
@@ -488,7 +544,10 @@
 
                 Swal.fire({
                     title: isRemaining ? "Confirm Remaining Payment" : "Confirm Advance Payment",
-                    text: providedAmount ? `${isRemaining ? 'Pay remaining amount' : 'Pay advance amount'}: ${providedAmount}. Proceed?` : (isRemaining ? "Proceed to pay remaining amount?" : "Are you sure you want to proceed with the advance payment?"),
+                    text: providedAmount ?
+                        `${isRemaining ? 'Pay remaining amount' : 'Pay advance amount'}: ${providedAmount}. Proceed?` :
+                        (isRemaining ? "Proceed to pay remaining amount?" :
+                            "Are you sure you want to proceed with the advance payment?"),
                     icon: "warning",
                     showCancelButton: true,
                     confirmButtonColor: "#28a745",
@@ -498,32 +557,44 @@
                 }).then((result) => {
                     if (!result.isConfirmed) return;
 
-                    const url = '{{ route("post-job-request.pay-advance", ":id") }}'.replace(':id', postId);
+                    const url = '{{ route('post-job-request.pay-advance', ':id') }}'.replace(':id',
+                        postId);
                     fetch(url, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-Requested-With': 'XMLHttpRequest',
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                        },
-                        body: JSON.stringify({ amount: providedAmount, type: isRemaining ? 'remaining' : 'advance' })
-                    })
-                    .then(function (res) { return res.json(); })
-                    .then(function (response) {
-                        if (response && response.status) {
-                            Swal.fire("Success", response.message || (isRemaining ? "Remaining paid successfully." : "Advance paid successfully."), "success");
-                            if (window.jQuery && window.jQuery.fn && window.jQuery.fn.DataTable && window.jQuery('#datatable').length) {
-                                window.jQuery('#datatable').DataTable().ajax.reload();
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-Requested-With': 'XMLHttpRequest',
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                            },
+                            body: JSON.stringify({
+                                amount: providedAmount,
+                                type: isRemaining ? 'remaining' : 'advance'
+                            })
+                        })
+                        .then(function(res) {
+                            return res.json();
+                        })
+                        .then(function(response) {
+                            if (response && response.status) {
+                                Swal.fire("Success", response.message || (isRemaining ?
+                                    "Remaining paid successfully." :
+                                    "Advance paid successfully."), "success");
+                                if (window.jQuery && window.jQuery.fn && window.jQuery.fn
+                                    .DataTable && window.jQuery('#datatable').length) {
+                                    window.jQuery('#datatable').DataTable().ajax.reload();
+                                }
+                            } else {
+                                Swal.fire("Error", (response && response.message) ? response
+                                    .message : "Unable to process.", "error");
                             }
-                        } else {
-                            Swal.fire("Error", (response && response.message) ? response.message : "Unable to process.", "error");
-                        }
-                    })
-                    .catch(function () {
-                        Swal.fire("Error", "Something went wrong!", "error");
-                    });
+                        })
+                        .catch(function() {
+                            Swal.fire("Error", "Something went wrong!", "error");
+                        });
                 });
-            }, { passive: true });
+            }, {
+                passive: true
+            });
         })();
     </script>
     <script>
@@ -571,7 +642,7 @@
 
                 Swal.fire({
                     title: 'Confirm',
-                    text: 'Do you want to update status to ' + nextStatus.replace('_',' ') + '?',
+                    text: 'Do you want to update status to ' + nextStatus.replace('_', ' ') + '?',
                     icon: 'question',
                     showCancelButton: true,
                     confirmButtonText: 'Yes, update',
@@ -579,7 +650,8 @@
                     if (!result.isConfirmed) return;
 
                     $.ajax({
-                        url: '{{ route('postjob.updateStatus', ':id') }}'.replace(':id', bidId),
+                        url: '{{ route('postjob.updateStatus', ':id') }}'.replace(':id',
+                            bidId),
                         type: 'POST',
                         data: {
                             _token: '{{ csrf_token() }}',
@@ -587,14 +659,18 @@
                         },
                         success: function(response) {
                             if (response && response.status) {
-                                Swal.fire('Updated', response.message || 'Status updated', 'success');
+                                Swal.fire('Updated', response.message ||
+                                    'Status updated', 'success');
                                 $('#datatable').DataTable().ajax.reload();
                             } else {
-                                Swal.fire('Error', (response && response.message) ? response.message : 'Unable to update', 'error');
+                                Swal.fire('Error', (response && response.message) ?
+                                    response.message : 'Unable to update', 'error');
                             }
                         },
                         error: function(xhr) {
-                            Swal.fire('Error', (xhr && xhr.responseJSON && xhr.responseJSON.message) ? xhr.responseJSON.message : 'Something went wrong', 'error');
+                            Swal.fire('Error', (xhr && xhr.responseJSON && xhr
+                                    .responseJSON.message) ? xhr.responseJSON
+                                .message : 'Something went wrong', 'error');
                         }
                     });
                 });
@@ -628,7 +704,8 @@
                     if (!result.isConfirmed) return;
 
                     $.ajax({
-                        url: '{{ route('postjob.updateStatus', ':id') }}'.replace(':id', bidId),
+                        url: '{{ route('postjob.updateStatus', ':id') }}'.replace(':id',
+                            bidId),
                         type: 'POST',
                         data: {
                             _token: '{{ csrf_token() }}',
@@ -637,14 +714,18 @@
                         },
                         success: function(response) {
                             if (response && response.status) {
-                                Swal.fire('On Hold', response.message || 'Status updated to hold', 'success');
+                                Swal.fire('On Hold', response.message ||
+                                    'Status updated to hold', 'success');
                                 $('#datatable').DataTable().ajax.reload();
                             } else {
-                                Swal.fire('Error', (response && response.message) ? response.message : 'Unable to update', 'error');
+                                Swal.fire('Error', (response && response.message) ?
+                                    response.message : 'Unable to update', 'error');
                             }
                         },
                         error: function(xhr) {
-                            Swal.fire('Error', (xhr && xhr.responseJSON && xhr.responseJSON.message) ? xhr.responseJSON.message : 'Something went wrong', 'error');
+                            Swal.fire('Error', (xhr && xhr.responseJSON && xhr
+                                    .responseJSON.message) ? xhr.responseJSON
+                                .message : 'Something went wrong', 'error');
                         }
                     });
                 });
@@ -719,7 +800,7 @@
                                         "Payment split set & work started.",
                                         "success");
                                     $('#datatable').DataTable().ajax.reload();
-} else {
+                                } else {
                                     Swal.fire("Error!", response.message ||
                                         "Unable to save.", "error");
                                 }
@@ -733,7 +814,5 @@
                 });
             });
         });
-    
-
     </script>
 </x-master-layout>

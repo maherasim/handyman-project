@@ -6,39 +6,39 @@
     @endphp
 
     {{-- Provider Actions --}}
-    @if($auth_user->user_type === 'provider' && $auth_user->id == $bid->provider_id)
-        @if($bid->status === 'accepted')
-            <button class="btn btn-primary">Start Work</button>
-            <button class="btn btn-success">Cancel</button>
-        @elseif($bid->status === 'advance_paid')
-            <button class="btn btn-primary">Start Work</button>
-        @elseif($bid->status === 'in_process')
-            <button class="btn btn-warning">Hold</button>
-            <button class="btn btn-success">Done</button>
-        @elseif($bid->status === 'hold')
-            <button class="btn btn-primary">Resume Work</button>
-        @elseif($bid->status === 'confirm_done')
-            <button class="btn btn-primary">Completed</button>
-            <button class="btn btn-outline-secondary">Extra Charges</button>
-        @endif
+@if($auth_user->user_type === 'provider' && $auth_user->id == $bid->provider_id)
+    @if($bid->status === 'accepted')
+        <button class="btn btn-primary updateStatusBtn" data-id="{{ $bid->id }}" data-status="in_process">Start Work</button>
+        <button class="btn btn-success updateStatusBtn" data-id="{{ $bid->id }}" data-status="cancelled">Cancel</button>
+    @elseif($bid->status === 'advance_paid')
+        <button class="btn btn-primary updateStatusBtn" data-id="{{ $bid->id }}" data-status="in_process">Start Work</button>
+    @elseif($bid->status === 'in_process')
+        <button class="btn btn-warning holdBidBtn" data-id="{{ $bid->id }}">Hold</button>
+        <button class="btn btn-success updateStatusBtn" data-id="{{ $bid->id }}" data-status="done">Done</button>
+    @elseif($bid->status === 'hold')
+        <button class="btn btn-primary updateStatusBtn" data-id="{{ $bid->id }}" data-status="in_process">Resume Work</button>
+    @elseif($bid->status === 'confirm_done')
+        <button class="btn btn-primary updateStatusBtn" data-id="{{ $bid->id }}" data-status="completed">Completed</button>
+        <button class="btn btn-outline-secondary">Extra Charges</button>
     @endif
+@endif
 
     {{-- Customer Actions --}}
-    @if($auth_user->user_type === 'user' && $auth_user->id == $bid->customer_id)
-        @if($bid->status === 'requested')
-            <button class="btn btn-success">Accept</button>
-        @elseif($bid->status === 'in_progress')
-            <button class="btn btn-info">Let's Start Work</button>
-        @elseif($bid->status === 'done')
-            <button class="btn btn-info">Confirm Work Done</button>
-        @elseif($bid->status === 'accepted')
-            <button class="btn btn-info">Cancel</button>
-        @elseif($bid->status === 'completed' && !$bid->has_advance_paid)
-            <button class="btn btn-primary">Pay Remaining</button>
-        @elseif($bid->status === 'advance_payment')
-            <button class="btn btn-success">Pay Advance</button>
-        @endif
+   @if($auth_user->user_type === 'user' && $auth_user->id == $bid->customer_id)
+    @if($bid->status === 'requested')
+        <button class="btn btn-success acceptBid" data-id="{{ $bid->id }}">Accept</button>
+    @elseif($bid->status === 'in_progress')
+        <button class="btn btn-info updateStatusBtn" data-id="{{ $bid->id }}" data-status="in_process">Let's Start Work</button>
+    @elseif($bid->status === 'done')
+        <button class="btn btn-info updateStatusBtn" data-id="{{ $bid->id }}" data-status="confirm_done">Confirm Work Done</button>
+    @elseif($bid->status === 'accepted')
+        <button class="btn btn-info updateStatusBtn" data-id="{{ $bid->id }}" data-status="cancelled">Cancel</button>
+    @elseif($bid->status === 'completed' && !$bid->has_advance_paid)
+        <button class="btn btn-primary payRemainingBtn" data-post-id="{{ $bid->id }}" data-amount="{{ $bid->remaining_amount ?? 0 }}">Pay Remaining</button>
+    @elseif($bid->status === 'advance_payment')
+        <button class="btn btn-success payAdvanceBtn" data-post-id="{{ $bid->id }}" data-amount="{{ $bid->advance_amount ?? 0 }}">Pay Advance</button>
     @endif
+@endif
 
 </div>
 
@@ -189,4 +189,134 @@
         box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.15) !important;
     }
 </style>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+
+    // Accept Bid
+    document.querySelectorAll('.acceptBid').forEach(btn => {
+        btn.addEventListener('click', function() {
+            let bidId = this.dataset.id;
+            Swal.fire({
+                title: "Are you sure?",
+                text: "Do you want to accept this bid?",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#28a745",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Yes, accept it!"
+            }).then(result => {
+                if (!result.isConfirmed) return;
+                fetch(`/bids/accept/${bidId}`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Content-Type': 'application/json'
+                    }
+                }).then(res => res.json())
+                  .then(response => {
+                      Swal.fire(response.status ? "Accepted!" : "Error!", response.message, response.status ? "success" : "error")
+                      .then(() => location.reload());
+                  }).catch(() => Swal.fire("Error!", "Something went wrong!", "error"));
+            });
+        });
+    });
+
+    // Update Status Button
+    document.querySelectorAll('.updateStatusBtn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const bidId = this.dataset.id;
+            const nextStatus = this.dataset.status;
+            Swal.fire({
+                title: 'Confirm',
+                text: 'Do you want to update status to ' + nextStatus.replace('_',' ') + '?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, update',
+            }).then(result => {
+                if (!result.isConfirmed) return;
+                fetch(`{{ route('postjob.updateStatus', ':id') }}`.replace(':id', bidId), {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ status: nextStatus })
+                })
+                .then(res => res.json())
+                .then(response => {
+                    Swal.fire(response.status ? 'Updated' : 'Error', response.message || 'Status updated', response.status ? 'success' : 'error')
+                    .then(() => location.reload());
+                }).catch(() => Swal.fire('Error', 'Something went wrong', 'error'));
+            });
+        });
+    });
+
+    // Pay Advance / Remaining
+    document.querySelectorAll('.payAdvanceBtn, .payRemainingBtn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const postId = this.dataset.postId;
+            const amount = this.dataset.amount;
+            const isRemaining = btn.classList.contains('payRemainingBtn');
+            Swal.fire({
+                title: isRemaining ? "Confirm Remaining Payment" : "Confirm Advance Payment",
+                text: amount ? `Pay amount: ${amount}. Proceed?` : "Proceed?",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#28a745",
+                cancelButtonColor: "#d33",
+                confirmButtonText: isRemaining ? "Yes, pay remaining" : "Yes, pay advance"
+            }).then(result => {
+                if (!result.isConfirmed) return;
+                fetch(`{{ route('post-job-request.pay-advance', ':id') }}`.replace(':id', postId), {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ amount: amount, type: isRemaining ? 'remaining' : 'advance' })
+                }).then(res => res.json())
+                  .then(response => {
+                      Swal.fire(response.status ? "Success" : "Error", response.message, response.status ? "success" : "error")
+                      .then(() => location.reload());
+                  }).catch(() => Swal.fire("Error", "Something went wrong!", "error"));
+            });
+        });
+    });
+
+    // Hold Bid Button
+    document.querySelectorAll('.holdBidBtn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const bidId = this.dataset.id;
+            Swal.fire({
+                title: 'Put on Hold',
+                input: 'textarea',
+                inputLabel: 'Provide hold reason',
+                inputPlaceholder: 'Type your reason here... (max 500 chars)',
+                inputAttributes: { 'aria-label': 'Hold reason' },
+                showCancelButton: true,
+                confirmButtonText: 'Submit',
+                preConfirm: value => {
+                    if (!value || value.trim().length === 0) Swal.showValidationMessage('Hold reason is required');
+                    else if (value.length > 500) Swal.showValidationMessage('Reason too long (max 500 chars)');
+                    else return value;
+                }
+            }).then(result => {
+                if (!result.isConfirmed) return;
+                fetch(`{{ route('postjob.updateStatus', ':id') }}`.replace(':id', bidId), {
+                    method: 'POST',
+                    headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status: 'hold', hold_reason: result.value })
+                })
+                .then(res => res.json())
+                .then(response => Swal.fire(response.status ? 'On Hold' : 'Error', response.message, response.status ? 'success' : 'error')
+                      .then(() => location.reload()))
+                .catch(() => Swal.fire('Error', 'Something went wrong!', 'error'));
+            });
+        });
+    });
+
+});
+</script>
+
 </x-master-layout>
