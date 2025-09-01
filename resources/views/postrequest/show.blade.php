@@ -1,5 +1,5 @@
 <x-master-layout>
-    <div class="d-flex flex-wrap gap-2">
+    <div class="d-flex justify-content-center flex-wrap gap-2">
 
     @php
         $auth_user = auth()->user();
