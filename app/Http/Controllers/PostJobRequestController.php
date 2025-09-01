@@ -46,7 +46,7 @@ public function showbid($postRequestId)
     // Fetch the bid that belongs to this request and has status 'accepted'
     $bid = PostJobBid::with('request')
         ->where('post_request_id', $postRequestId)
-        ->where('status', 'accepted')
+         
         ->firstOrFail();
 
     dd($bid); // Now you will get the correct bid
