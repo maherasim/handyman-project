@@ -186,16 +186,16 @@
                         searchable: false,
                     },
                   {
-    data: 'title',
-    name: 'title',
-    title: "{{ __('messages.title') }}",
-    render: function(data, type, row) {
-        if (row.status === 'accepted') {
-            return `<a href="{{ url('post-job-bid') }}/${row.id}" class="job-bid-link">${data}</a>`;
-        }
-        return data;
-    }
-},
+                    data: 'title',
+                    name: 'title',
+                    title: "{{ __('messages.title') }}",
+                    render: function(data, type, row) {
+                        if (row.status === 'accepted') {
+                            return `<a href="{{ url('post-job-bid') }}/${row.id}" class="job-bid-link">${data}</a>`;
+                        }
+                        return data;
+                    }
+                },
 
 
                     @if (auth()->user()->user_type == 'provider')
