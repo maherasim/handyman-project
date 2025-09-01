@@ -45,10 +45,16 @@
         <button class="btn btn-info updateStatusBtn" data-id="{{ $bid->id }}" data-status="confirm_done">Confirm Work Done</button>
     @elseif($bid->status === 'accepted')
         <button class="btn btn-info updateStatusBtn" data-id="{{ $bid->id }}" data-status="cancelled">Cancel</button>
-    @elseif($bid->status === 'completed' && !$bid->has_advance_paid)
-        <button class="btn btn-primary payRemainingBtn" data-post-id="{{ $bid->id }}" data-amount="{{ $bid->remaining_amount ?? 0 }}">Pay Remaining</button>
-    @elseif($bid->status === 'Advance Payment Pending')
-        <button class="btn btn-success payAdvanceBtn" data-post-id="{{ $bid->id }}" data-amount="{{ $bid->advance_amount ?? 0 }}">Pay Advance</button>
+      @if($bid->status === 'Advance Payment Pending')
+            @php
+                $advPct = $bid->advance_percent ?? 0;
+                $advAmount = ($bid->price * $advPct / 100);
+            @endphp
+            <button class="btn btn-success payAdvanceBtn" 
+                    data-post-id="{{ $bid->id }}" 
+                    data-amount="{{ $advAmount }}">
+                <i class="fas fa-wallet"></i> Pay Advance {{ number_format($advAmount,2) }} ({{ $advPct }}%)
+            </button>
     @endif
 @endif
 
