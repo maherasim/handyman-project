@@ -255,31 +255,36 @@
                         $total = $bid->price ?? 0;
                         $advPct = $bid->advance_percent ?? 0;
                         $advAmount = ($total * $advPct / 100);
-                        $extraCharges = $bid->extraCharges->sum(fn($c) => $c->amount * $c->quantity); // assuming relation
+
+                        // extra_charges stored in column
+                        $extraCharges = $bid->extra_charges ?? 0;
+
                         $subTotal = $total + $extraCharges;
                         $remaining = $subTotal - $advAmount;
                     @endphp
-                    <table class="table table-sm table-borderless mb-0">
-                        <tr>
-                            <th>Base Price:</th>
-                            <td class="text-end">{{ number_format($total, 2) }}</td>
-                        </tr>
-                        <tr>
-                            <th>Advance ({{ $advPct }}%):</th>
-                            <td class="text-end text-success">-{{ number_format($advAmount, 2) }}</td>
-                        </tr>
-                        <tr>
-                            <th>Extra Charges:</th>
-                            <td class="text-end text-danger">{{ number_format($extraCharges, 2) }}</td>
-                        </tr>
-                        <tr class="border-top">
-                            <th>Sub Total:</th>
-                            <td class="text-end fw-bold">{{ number_format($subTotal, 2) }}</td>
-                        </tr>
-                        <tr>
-                            <th>Remaining:</th>
-                            <td class="text-end fw-bold text-primary">{{ number_format($remaining, 2) }}</td>
-                        </tr>
+                      <table class="table table-sm">
+                        <tbody>
+                            <tr>
+                                <td>Bid Amount</td>
+                                <td class="text-end">{{ number_format($total, 2) }}</td>
+                            </tr>
+                            <tr>
+                                <td>Advance Payment ({{ $advPct }}%)</td>
+                                <td class="text-end">{{ number_format($advAmount, 2) }}</td>
+                            </tr>
+                            <tr>
+                                <td>Extra Charges</td>
+                                <td class="text-end">{{ number_format($extraCharges, 2) }}</td>
+                            </tr>
+                            <tr class="fw-bold">
+                                <td>Subtotal</td>
+                                <td class="text-end">{{ number_format($subTotal, 2) }}</td>
+                            </tr>
+                            <tr class="fw-bold">
+                                <td>Remaining Amount</td>
+                                <td class="text-end">{{ number_format($remaining, 2) }}</td>
+                            </tr>
+                        </tbody>
                     </table>
                 </div>
             </div>
