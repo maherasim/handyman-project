@@ -36,28 +36,40 @@
 @endif
 
     {{-- Customer Actions --}}
-   @if($auth_user->user_type === 'user' && $auth_user->id == $bid->customer_id)
+@if($auth_user->user_type === 'user' && $auth_user->id == $bid->customer_id)
+
     @if($bid->status === 'requested')
         <button class="btn btn-success acceptBid" data-id="{{ $bid->id }}">Accept</button>
+
     @elseif($bid->status === 'in_progress')
-        <button class="btn btn-info updateStatusBtn" data-id="{{ $bid->id }}" data-status="in_process">Let's Start Work</button>
+        <button class="btn btn-info updateStatusBtn" data-id="{{ $bid->id }}" data-status="in_process">
+            Let's Start Work
+        </button>
+
     @elseif($bid->status === 'done')
-        <button class="btn btn-info updateStatusBtn" data-id="{{ $bid->id }}" data-status="confirm_done">Confirm Work Done</button>
+        <button class="btn btn-info updateStatusBtn" data-id="{{ $bid->id }}" data-status="confirm_done">
+            Confirm Work Done
+        </button>
+
     @elseif($bid->status === 'accepted')
-        <button class="btn btn-info updateStatusBtn" data-id="{{ $bid->id }}" data-status="cancelled">Cancel</button>
-      @if($bid->status === 'Advance_Payment_Pending')
-            @php
-                $advPct = $bid->advance_percent ?? 0;
-                $advAmount = ($bid->price * $advPct / 100);
-            @endphp
-            <button class="btn btn-success payAdvanceBtn" 
-                    data-post-id="{{ $bid->id }}" 
-                    data-amount="{{ $advAmount }}">
-                <i class="fas fa-wallet"></i> Pay Advance {{ number_format($advAmount,2) }} ({{ $advPct }}%)
-            </button>
+        <button class="btn btn-info updateStatusBtn" data-id="{{ $bid->id }}" data-status="cancelled">
+            Cancel
+        </button>
+
+    @elseif($bid->status === 'Advance_Payment_Pending')
+        @php
+            $advPct = $bid->advance_percent ?? 0;
+            $advAmount = ($bid->price * $advPct / 100);
+        @endphp
+        <button class="btn btn-success payAdvanceBtn" 
+                data-post-id="{{ $bid->id }}" 
+                data-amount="{{ $advAmount }}">
+            <i class="fas fa-wallet"></i> Pay Advance {{ number_format($advAmount,2) }} ({{ $advPct }}%)
+        </button>
     @endif
-     @endif
+
 @endif
+
 
 </div>
 
