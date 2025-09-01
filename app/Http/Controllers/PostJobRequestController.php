@@ -43,16 +43,21 @@ class PostJobRequestController extends Controller
     }
 public function showbid($postRequestId)
 {
-    // Fetch the bid that belongs to this request and has status 'accepted'
-    $bid = PostJobBid::with('request')
-        ->where('post_request_id', $postRequestId)
-         
-        ->firstOrFail();
-
-   
+    $bid = PostJobBid::with([
+        'provider:id,display_name',
+        'customer:id,display_name',
+        'postrequest:id,title,customer_id,status,provider_id,remaining_percent,type,start_date,end_date,total_budget,city_id,country_id',
+        'postrequest.city:id,name',
+        'postrequest.country:id,name',
+        'postrequest.postBidList:id,post_request_id',
+    ])
+    ->where('post_request_id', $postRequestId)
+    ->where('status', 'accepted')
+    ->firstOrFail();
 
     return view('postrequest.show', compact('bid'));
 }
+
 
  public function bidshowindex()
 {
