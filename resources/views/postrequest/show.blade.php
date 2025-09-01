@@ -258,7 +258,7 @@
                 
                         // extra_charges and quantity stored in columns
                         $extraChargeUnit = $bid->extra_charges ?? 0;
-                        $extraChargeQty = $bid->extra_charges_quantity ?? 1; // default 1 if null
+                        $extraChargeQty = $bid->quantity ?? 1; // default 1 if null
                 
                         $extraChargesTotal = $extraChargeUnit * $extraChargeQty;
                 
