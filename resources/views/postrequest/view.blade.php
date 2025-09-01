@@ -25,6 +25,7 @@
 
     {{-- Customer Actions --}}
     @if($auth_user->user_type === 'user')
+    @dd("in_progress");
         @if($bid->status === 'requested')
             <button class="btn btn-success">Accept</button>
         @elseif($bid->status === 'in_progress')
