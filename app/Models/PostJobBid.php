@@ -22,6 +22,11 @@ class PostJobBid extends Model
     public function provider(){
         return $this->belongsTo(User::class,'provider_id', 'id')->withTrashed();
     }
+    public function request()
+{
+    return $this->belongsTo(PostJobRequest::class, 'post_request_id');
+}
+
     public function customer(){
         return $this->belongsTo(User::class, 'customer_id', 'id')->withTrashed();
     }
