@@ -49,7 +49,7 @@ public function showbid($postRequestId)
          
         ->firstOrFail();
 
-    dd($bid); // Now you will get the correct bid
+   
 
     return view('postrequest.show', compact('bid'));
 }
