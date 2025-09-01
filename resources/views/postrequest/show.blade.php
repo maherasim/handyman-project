@@ -24,11 +24,11 @@
         <button class="btn btn-success updateStatusBtn" data-id="{{ $bid->id }}" data-status="cancelled">Cancel</button>
     @elseif($bid->status === 'advance_paid')
         <button class="btn btn-primary updateStatusBtn" data-id="{{ $bid->id }}" data-status="in_process">Start Work</button>
-    @elseif($bid->status === 'in_process')
+    @elseif($bid->status === 'in_progress')
         <button class="btn btn-warning holdBidBtn" data-id="{{ $bid->id }}">Hold</button>
         <button class="btn btn-success updateStatusBtn" data-id="{{ $bid->id }}" data-status="done">Done</button>
     @elseif($bid->status === 'hold')
-        <button class="btn btn-primary updateStatusBtn" data-id="{{ $bid->id }}" data-status="in_process">Resume Work</button>
+        <button class="btn btn-primary updateStatusBtn" data-id="{{ $bid->id }}" data-status="in_progress">Resume Work</button>
     @elseif($bid->status === 'confirm_done')
         <button class="btn btn-primary updateStatusBtn" data-id="{{ $bid->id }}" data-status="completed">Completed</button>
         <button class="btn btn-outline-secondary">Extra Charges</button>
