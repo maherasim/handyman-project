@@ -552,9 +552,9 @@ public function index_data(DataTables $datatable, Request $request)
     $filter = $request->filter;
 
     // Exclude entries where the provider has already bid
-    $query->whereDoesntHave('postBidList', function($postBidList){
-        $postBidList->where('provider_id', auth()->id());
-    });
+    // $query->whereDoesntHave('postBidList', function($postBidList){
+    //     $postBidList->where('provider_id', auth()->id());
+    // });
 
     if (isset($filter)) {
         if (isset($filter['column_status'])) {
