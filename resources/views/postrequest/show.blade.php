@@ -40,9 +40,9 @@
 
     @if($bid->status === 'requested')
         <button class="btn btn-success acceptBid" data-id="{{ $bid->id }}">Accept</button>
-
-    @elseif($bid->status === 'in_progress')
-        <button class="btn btn-info updateStatusBtn" data-id="{{ $bid->id }}" data-status="in_process">
+        
+    @elseif($bid->status === 'in_process')
+        <button class="btn btn-info updateStatusBtn" data-id="{{ $bid->id }}" data-status="in_progress">
             Let's Start Work
         </button>
 
