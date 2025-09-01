@@ -7,8 +7,8 @@
 
     {{-- Provider Actions --}}
 @if($auth_user->user_type === 'provider' && $auth_user->id == $bid->provider_id)
+
     @if($bid->status === 'accepted')
-         @if($bid->status === 'accepted')
         <button class="btn btn-primary startWorkBtn" 
                 data-post-id="{{ $bid->id }}"
                 data-advance="{{ $bid->advance_percent ?? 0 }}"
@@ -20,20 +20,36 @@
                 data-status="cancelled">
             Cancel
         </button>
-    @endif
-        <button class="btn btn-success updateStatusBtn" data-id="{{ $bid->id }}" data-status="cancelled">Cancel</button>
+
     @elseif($bid->status === 'advance_paid')
-        <button class="btn btn-primary updateStatusBtn" data-id="{{ $bid->id }}" data-status="in_process">Start Work</button>
+        <button class="btn btn-primary updateStatusBtn" data-id="{{ $bid->id }}" data-status="in_process">
+            Start Work
+        </button>
+
     @elseif($bid->status === 'in_progress')
-        <button class="btn btn-warning holdBidBtn" data-id="{{ $bid->id }}">Hold</button>
-        <button class="btn btn-success updateStatusBtn" data-id="{{ $bid->id }}" data-status="done">Done</button>
+        <button class="btn btn-warning holdBidBtn" data-id="{{ $bid->id }}">
+            Hold
+        </button>
+        <button class="btn btn-success updateStatusBtn" data-id="{{ $bid->id }}" data-status="done">
+            Done
+        </button>
+
     @elseif($bid->status === 'hold')
-        <button class="btn btn-primary updateStatusBtn" data-id="{{ $bid->id }}" data-status="in_progress">Resume Work</button>
+        <button class="btn btn-primary updateStatusBtn" data-id="{{ $bid->id }}" data-status="in_progress">
+            Resume Work
+        </button>
+
     @elseif($bid->status === 'confirm_done')
-        <button class="btn btn-primary updateStatusBtn" data-id="{{ $bid->id }}" data-status="completed">Completed</button>
-        <button class="btn btn-outline-secondary">Extra Charges</button>
+        <button class="btn btn-primary updateStatusBtn" data-id="{{ $bid->id }}" data-status="completed">
+            Completed
+        </button>
+        <button class="btn btn-outline-secondary extraChargesBtn" data-id="{{ $bid->id }}">
+            <i class="fas fa-plus"></i> Extra Charges
+        </button>
     @endif
+
 @endif
+
 {{-- Customer Actions --}}
 @if($auth_user->user_type === 'user' && $auth_user->id == $bid->customer_id)
 
@@ -357,6 +373,76 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     });
+    $(document).on('click', '.extraChargesBtn', function() {
+    const bidId = $(this).data('id');
+    Swal.fire({
+        title: 'Add Extra Charges',
+        html: `
+            <div class="text-start">
+                <label class="form-label fw-bold">Title</label>
+                <input type="text" id="ec_title" class="form-control" placeholder="e.g., Title" />
+            </div>
+            <div class="mt-2 text-start">
+                <label class="form-label fw-bold">Amount</label>
+                <input type="number" id="ec_amount" class="form-control" step="0.01" min="0.01" placeholder="e.g., 20" />
+            </div>
+            <div class="mt-2 text-start">
+                <label class="form-label fw-bold">Quantity (optional)</label>
+                <input type="number" id="ec_qty" class="form-control" step="1" min="1" placeholder="1" />
+            </div>
+        `,
+        focusConfirm: false,
+        showCancelButton: true,
+        confirmButtonText: 'Add',
+        preConfirm: () => {
+            const title = document.getElementById('ec_title').value.trim();
+            const amount = parseFloat(document.getElementById('ec_amount').value);
+            const qtyRaw = document.getElementById('ec_qty').value;
+            const quantity = qtyRaw ? parseInt(qtyRaw, 10) : 1;
+
+            if (!title) {
+                Swal.showValidationMessage('Title is required');
+                return false;
+            }
+            if (!amount || amount <= 0) {
+                Swal.showValidationMessage('Enter a valid amount > 0');
+                return false;
+            }
+            if (quantity && quantity < 1) {
+                Swal.showValidationMessage('Quantity must be at least 1');
+                return false;
+            }
+
+            return { title, amount, quantity };
+        }
+    }).then((result) => {
+        if (!result.isConfirmed) return;
+        const { title, amount, quantity } = result.value;
+
+        $.ajax({
+            url: '{{ route('postjob.addExtraCharges', ':id') }}'.replace(':id', bidId),
+            type: 'POST',
+            data: {
+                _token: '{{ csrf_token() }}',
+                title: title,
+                amount: amount,
+                quantity: quantity
+            },
+            success: function(response) {
+                if (response && response.status) {
+                    Swal.fire('Added', response.message || 'Extra charges added', 'success');
+                    $('#datatable').DataTable().ajax.reload();
+                } else {
+                    Swal.fire('Error', (response && response.message) ? response.message : 'Unable to add charges', 'error');
+                }
+            },
+            error: function(xhr) {
+                Swal.fire('Error', (xhr && xhr.responseJSON && xhr.responseJSON.message) ? xhr.responseJSON.message : 'Something went wrong', 'error');
+            }
+        });
+    });
+});
+
 
 });
 </script>
