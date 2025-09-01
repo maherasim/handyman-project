@@ -43,6 +43,7 @@ class PostJobRequestController extends Controller
     }
     public function showbid($id)
 {
+    dd($id);
     $bid = PostJobBid::with('request')
         ->where('id', $id)
        
