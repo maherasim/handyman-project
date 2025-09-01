@@ -45,7 +45,7 @@ class PostJobRequestController extends Controller
 {
     $bid = PostJobBid::with('request')
         ->where('id', $id)
-        ->where('status', 'accepted')
+       
         ->firstOrFail();
  
     return view('postrequest.show', compact('bid'));
