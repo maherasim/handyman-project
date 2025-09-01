@@ -1,6 +1,4 @@
-@extends('layouts.app')
-
-@section('content')
+<x-master-layout>
 <div class="container">
     <div class="row" id="bidsContainer">
         <div class="col-md-6 col-lg-4 mb-3">
@@ -63,4 +61,5 @@
         </div>
     </div>
 </div>
-@endsection
+  </x-master-layout>
+  
