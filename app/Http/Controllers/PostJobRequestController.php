@@ -43,12 +43,9 @@ class PostJobRequestController extends Controller
     }
     public function showbid($id)
 {
-    dd($id);
-    $bid = PostJobBid::with('request')
-        ->where('id', $id)
-       
-        ->firstOrFail();
- 
+    
+    $bid = PostJobBid::with('request')->where('id', $id)->firstOrFail();
+ dd( $bid );
     return view('postrequest.show', compact('bid'));
 }
 
