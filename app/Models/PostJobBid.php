@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Models;
-
+use App\Models\PostJobRequest;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -19,13 +19,14 @@ class PostJobBid extends Model
         'price' => 'double',
     ];
 
-    public function provider(){
-        return $this->belongsTo(User::class,'provider_id', 'id')->withTrashed();
-    }
-    public function request()
+        public function request()
 {
     return $this->belongsTo(PostJobRequest::class, 'post_request_id');
 }
+    public function provider(){
+        return $this->belongsTo(User::class,'provider_id', 'id')->withTrashed();
+    }
+
 
     public function customer(){
         return $this->belongsTo(User::class, 'customer_id', 'id')->withTrashed();
