@@ -924,7 +924,7 @@ public function startWork(Request $request, $id)
     // Update advance, remaining, and status
     $post->advance_percent = $request->input('advance_percent');
     $post->remaining_percent = $request->input('remaining_percent');
-    $post->status = 'advance_payment';
+    $post->status = 'Advance Payment Pending';
     $post->save();
 
     // Optionally notify the user

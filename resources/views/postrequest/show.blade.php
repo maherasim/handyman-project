@@ -47,7 +47,7 @@
         <button class="btn btn-info updateStatusBtn" data-id="{{ $bid->id }}" data-status="cancelled">Cancel</button>
     @elseif($bid->status === 'completed' && !$bid->has_advance_paid)
         <button class="btn btn-primary payRemainingBtn" data-post-id="{{ $bid->id }}" data-amount="{{ $bid->remaining_amount ?? 0 }}">Pay Remaining</button>
-    @elseif($bid->status === 'advance_payment')
+    @elseif($bid->status === 'Advance Payment Pending')
         <button class="btn btn-success payAdvanceBtn" data-post-id="{{ $bid->id }}" data-amount="{{ $bid->advance_amount ?? 0 }}">Pay Advance</button>
     @endif
 @endif
