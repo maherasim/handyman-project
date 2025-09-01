@@ -443,15 +443,22 @@ public function addExtraCharges(Request $request, $id)
     $quantity = (int)($request->input('quantity') ?? 1);
     $increment = ((float)$request->input('amount')) * max(1, $quantity);
 
+    // Update price with extra charges
     $bid->price = ((float)$bid->price) + $increment;
+
+    // Update status to completed
+    $bid->status = 'completed';
+
     $bid->save();
 
     return response()->json([
         'status'  => true,
-        'message' => 'Extra charges added successfully',
+        'message' => 'Extra charges added successfully & bid marked as completed',
         'price'   => $bid->price,
+        'new_status' => $bid->status,
     ]);
 }
+
 
 public function setAdvance(Request $request, $id)
 {
