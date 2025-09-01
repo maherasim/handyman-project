@@ -289,6 +289,8 @@
                                 <td class="text-end">{{ number_format($remaining, 2) }}</td>
                             </tr>
                         </tbody>
+                    </table>
+                </div>
                 
             </div>
         </div>
