@@ -81,7 +81,16 @@
                 data-amount="{{ $advAmount }}">
             <i class="fas fa-wallet"></i> Pay Advance {{ number_format($advAmount,2) }} ({{ $advPct }}%)
         </button>
-
+        @elseif($bid->status === 'completed' && !$bid->has_advance_paid)
+        @php
+            $remPct = $bid->remaining_percent ?? 100;
+            $remAmount = ($bid->price * $remPct / 100);
+        @endphp
+        <button class="btn btn-primary payRemainingBtn" 
+                data-post-id="{{ $bid->id }}" 
+                data-amount="{{ $remAmount }}">
+            <i class="fas fa-credit-card"></i> Pay Remaining {{ number_format($remAmount,2) }} ({{ $remPct }}%)
+        </button>
     @elseif($bid->status === 'hold')
         <div class="alert alert-warning d-flex align-items-start shadow-sm border rounded p-3 mt-2">
             <i class="fas fa-exclamation-triangle fa-lg me-2 text-danger"></i>
