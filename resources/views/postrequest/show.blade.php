@@ -255,14 +255,18 @@
                         $total = $bid->price ?? 0;
                         $advPct = $bid->advance_percent ?? 0;
                         $advAmount = ($total * $advPct / 100);
-
-                        // extra_charges stored in column
-                        $extraCharges = $bid->extra_charges ?? 0;
-
-                        $subTotal = $total + $extraCharges;
+                
+                        // extra_charges and quantity stored in columns
+                        $extraChargeUnit = $bid->extra_charges ?? 0;
+                        $extraChargeQty = $bid->extra_charges_quantity ?? 1; // default 1 if null
+                
+                        $extraChargesTotal = $extraChargeUnit * $extraChargeQty;
+                
+                        $subTotal = $total + $extraChargesTotal;
                         $remaining = $subTotal - $advAmount;
                     @endphp
-                      <table class="table table-sm">
+                
+                    <table class="table table-sm">
                         <tbody>
                             <tr>
                                 <td>Bid Amount</td>
@@ -273,8 +277,8 @@
                                 <td class="text-end">{{ number_format($advAmount, 2) }}</td>
                             </tr>
                             <tr>
-                                <td>Extra Charges</td>
-                                <td class="text-end">{{ number_format($extraCharges, 2) }}</td>
+                                <td>Extra Charges ({{ $extraChargeQty }} × {{ number_format($extraChargeUnit, 2) }})</td>
+                                <td class="text-end">{{ number_format($extraChargesTotal, 2) }}</td>
                             </tr>
                             <tr class="fw-bold">
                                 <td>Subtotal</td>
@@ -285,8 +289,7 @@
                                 <td class="text-end">{{ number_format($remaining, 2) }}</td>
                             </tr>
                         </tbody>
-                    </table>
-                </div>
+                
             </div>
         </div>
 
