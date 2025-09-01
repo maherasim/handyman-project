@@ -430,7 +430,7 @@ public function updateBidStatus(Request $request, $id)
 /**
  * Add extra charges to a bid: price += amount * quantity
  */
-public function addExtraCharges(Request $request, $id)
+public function addExtraCharges(Request $request, $id) 
 {
     $request->validate([
         'title'    => 'required|string|max:255',
@@ -441,10 +441,11 @@ public function addExtraCharges(Request $request, $id)
     $bid = PostJobBid::findOrFail($id);
 
     $quantity = (int)($request->input('quantity') ?? 1);
-    $increment = ((float)$request->input('amount')) * max(1, $quantity);
+    $extraAmount = (float)$request->input('amount'); // Do NOT multiply by quantity
 
-    // Update price with extra charges
-    $bid->price = ((float)$bid->price) + $increment;
+    // Store extra charges and quantity in separate columns
+    $bid->extra_charges = $extraAmount;
+    $bid->quantity = $quantity;
 
     // Update status to completed
     $bid->status = 'completed';
@@ -452,12 +453,15 @@ public function addExtraCharges(Request $request, $id)
     $bid->save();
 
     return response()->json([
-        'status'  => true,
-        'message' => 'Extra charges added successfully & bid marked as completed',
-        'price'   => $bid->price,
-        'new_status' => $bid->status,
+        'status'        => true,
+        'message'       => 'Extra charges added successfully & bid marked as completed',
+        'extra_charges' => $bid->extra_charges,
+        'quantity'      => $bid->quantity,
+        'new_status'    => $bid->status,
     ]);
 }
+
+
 
 
 public function setAdvance(Request $request, $id)
