@@ -56,6 +56,7 @@
                 <i class="fas fa-wallet"></i> Pay Advance {{ number_format($advAmount,2) }} ({{ $advPct }}%)
             </button>
     @endif
+     @endif
 @endif
 
 </div>
