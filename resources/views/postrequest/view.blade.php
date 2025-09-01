@@ -24,7 +24,7 @@
     @endif
 
     {{-- Customer Actions --}}
-    @if($auth_user->user_type === 'user' && $auth_user->id == $bid->customer_id)
+    @if($auth_user->user_type === 'user')
         @if($bid->status === 'requested')
             <button class="btn btn-success">Accept</button>
         @elseif($bid->status === 'in_progress')
