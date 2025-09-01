@@ -34,8 +34,7 @@
         <button class="btn btn-outline-secondary">Extra Charges</button>
     @endif
 @endif
-
-    {{-- Customer Actions --}}
+{{-- Customer Actions --}}
 @if($auth_user->user_type === 'user' && $auth_user->id == $bid->customer_id)
 
     @if($bid->status === 'requested')
@@ -66,9 +65,21 @@
                 data-amount="{{ $advAmount }}">
             <i class="fas fa-wallet"></i> Pay Advance {{ number_format($advAmount,2) }} ({{ $advPct }}%)
         </button>
+
+    @elseif($bid->status === 'hold')
+        <div class="alert alert-warning d-flex align-items-start shadow-sm border rounded p-3 mt-2">
+            <i class="fas fa-exclamation-triangle fa-lg me-2 text-danger"></i>
+            <div>
+                <h6 class="fw-bold mb-1">This bid is currently on hold</h6>
+                <p class="mb-0 text-muted">
+                    Reason: <span class="fw-bold">{{ $bid->hold_reason ?? 'No reason provided' }}</span>
+                </p>
+            </div>
+        </div>
     @endif
 
 @endif
+
 
 
 </div>
