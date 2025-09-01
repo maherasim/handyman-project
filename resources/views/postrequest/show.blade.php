@@ -1,65 +1,129 @@
 <x-master-layout>
 <div class="container">
-    <div class="row" id="bidsContainer">
+    <div class="row">
+
+        <!-- Title Card -->
         <div class="col-md-6 col-lg-4 mb-3">
             <div class="card shadow-sm h-100">
-                <div class="card-body d-flex flex-column">
-                    <h6 class="fw-bold mb-2">{{ $bid->postrequest->title ?? $bid->title }}</h6>
-
-                    <p class="text-muted mb-1"><i class="fas fa-map-marker-alt"></i>
-                        Location: {{ $bid->postrequest->city->name ?? '-' }}, {{ $bid->postrequest->country->name ?? '-' }}
-                    </p>
-
-                    <p class="text-muted mb-1"><i class="fas fa-briefcase"></i>
-                        Job Type: {{ $bid->postrequest->type ?? '-' }}
-                    </p>
-
-                    <p class="text-muted mb-1"><i class="far fa-calendar-check"></i>
-                        Start: <span class="fw-bold">{{ $bid->postrequest->start_date ?? '-' }}</span>
-                    </p>
-
-                    <p class="text-muted mb-1"><i class="far fa-calendar-times"></i>
-                        End: <span class="fw-bold">{{ $bid->postrequest->end_date ?? '-' }}</span>
-                    </p>
-
-                    <p class="text-muted mb-1"><i class="fas fa-wallet"></i>
-                        Total Budget: <span class="fw-bold">{{ $bid->postrequest->total_budget ?? '-' }}</span>
-                    </p>
-
-                    <p class="text-muted mb-1"><i class="fas fa-users"></i>
-                        Applications: {{ $bid->postrequest->postBidList->count() ?? 0 }}
-                    </p>
-
-                    <p class="text-muted mb-1"><i class="fas fa-user"></i> Provider: {{ $bid->provider->display_name ?? '-' }}</p>
-                    <p class="text-muted mb-1"><i class="fas fa-user-tie"></i> Customer: {{ $bid->customer->display_name ?? '-' }}</p>
-                    <p class="mb-1"><i class="fas fa-dollar-sign"></i> Bid: <span class="fw-bold">{{ $bid->price }}</span></p>
-
-                    <p class="mb-3"><i class="fas fa-flag"></i>
-                        Status:
-                        @switch($bid->status)
-                            @case('pending')
-                                <span class="badge px-3 py-2" style="background-color:#FFC107; color:black;">{{ $bid->status }}</span>
-                                @break
-                            @case('accepted')
-                                <span class="badge px-3 py-2" style="background-color:#20c997; color:black;">{{ $bid->status }}</span>
-                                @break
-                            @case('in_progress')
-                                <span class="badge px-3 py-2" style="background-color:#007bff; color:black;">In Progress</span>
-                                @break
-                            @default
-                                <span class="badge px-3 py-2" style="background-color:#6c757d; color:black;">{{ $bid->status }}</span>
-                        @endswitch
-                    </p>
-
-                    <div class="mt-auto">
-                        @if($bid->status === 'accepted')
-                            <span class="badge bg-success">Accepted</span>
-                        @endif
-                    </div>
+                <div class="card-body">
+                    <h6 class="fw-bold mb-2">Title</h6>
+                    <p>{{ $bid->postrequest->title ?? $bid->title }}</p>
                 </div>
             </div>
         </div>
+
+        <!-- Location Card -->
+        <div class="col-md-6 col-lg-4 mb-3">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h6 class="fw-bold mb-2">Location</h6>
+                    <p>{{ $bid->postrequest->city->name ?? '-' }}, {{ $bid->postrequest->country->name ?? '-' }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Job Type Card -->
+        <div class="col-md-6 col-lg-4 mb-3">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h6 class="fw-bold mb-2">Job Type</h6>
+                    <p>{{ $bid->postrequest->type ?? '-' }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Start Date Card -->
+        <div class="col-md-6 col-lg-4 mb-3">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h6 class="fw-bold mb-2">Start Date</h6>
+                    <p>{{ $bid->postrequest->start_date ?? '-' }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- End Date Card -->
+        <div class="col-md-6 col-lg-4 mb-3">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h6 class="fw-bold mb-2">End Date</h6>
+                    <p>{{ $bid->postrequest->end_date ?? '-' }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Budget Card -->
+        <div class="col-md-6 col-lg-4 mb-3">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h6 class="fw-bold mb-2">Total Budget</h6>
+                    <p>{{ $bid->postrequest->total_budget ?? '-' }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Applications Card -->
+        <div class="col-md-6 col-lg-4 mb-3">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h6 class="fw-bold mb-2">Applications</h6>
+                    <p>{{ $bid->postrequest->postBidList->count() ?? 0 }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Provider Card -->
+        <div class="col-md-6 col-lg-4 mb-3">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h6 class="fw-bold mb-2">Provider</h6>
+                    <p>{{ $bid->provider->display_name ?? '-' }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Customer Card -->
+        <div class="col-md-6 col-lg-4 mb-3">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h6 class="fw-bold mb-2">Customer</h6>
+                    <p>{{ $bid->customer->display_name ?? '-' }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bid Price Card -->
+        <div class="col-md-6 col-lg-4 mb-3">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h6 class="fw-bold mb-2">Bid</h6>
+                    <p>{{ $bid->price }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Status Card -->
+        <div class="col-md-6 col-lg-4 mb-3">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h6 class="fw-bold mb-2">Status</h6>
+                    @switch($bid->status)
+                        @case('pending')
+                            <span class="badge px-3 py-2" style="background-color:#FFC107; color:black;">{{ $bid->status }}</span>
+                            @break
+                        @case('accepted')
+                            <span class="badge px-3 py-2" style="background-color:#20c997; color:black;">{{ $bid->status }}</span>
+                            @break
+                        @case('in_progress')
+                            <span class="badge px-3 py-2" style="background-color:#007bff; color:black;">In Progress</span>
+                            @break
+                        @default
+                            <span class="badge px-3 py-2" style="background-color:#6c757d; color:black;">{{ $bid->status }}</span>
+                    @endswitch
+                </div>
+            </div>
+        </div>
+
     </div>
 </div>
-  </x-master-layout>
-  
+</x-master-layout>
