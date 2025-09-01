@@ -1,4 +1,47 @@
 <x-master-layout>
+    <div class="d-flex flex-wrap gap-2">
+
+    @php
+        $auth_user = auth()->user();
+    @endphp
+
+    {{-- Provider Actions --}}
+    @if($auth_user->user_type === 'provider' && $auth_user->id == $bid->provider_id)
+        @if($bid->status === 'accepted')
+            <button class="btn btn-primary">Start Work</button>
+            <button class="btn btn-success">Cancel</button>
+        @elseif($bid->status === 'advance_paid')
+            <button class="btn btn-primary">Start Work</button>
+        @elseif($bid->status === 'in_process')
+            <button class="btn btn-warning">Hold</button>
+            <button class="btn btn-success">Done</button>
+        @elseif($bid->status === 'hold')
+            <button class="btn btn-primary">Resume Work</button>
+        @elseif($bid->status === 'confirm_done')
+            <button class="btn btn-primary">Completed</button>
+            <button class="btn btn-outline-secondary">Extra Charges</button>
+        @endif
+    @endif
+
+    {{-- Customer Actions --}}
+    @if($auth_user->user_type === 'user' && $auth_user->id == $bid->customer_id)
+        @if($bid->status === 'requested')
+            <button class="btn btn-success">Accept</button>
+        @elseif($bid->status === 'in_progress')
+            <button class="btn btn-info">Let's Start Work</button>
+        @elseif($bid->status === 'done')
+            <button class="btn btn-info">Confirm Work Done</button>
+        @elseif($bid->status === 'accepted')
+            <button class="btn btn-info">Cancel</button>
+        @elseif($bid->status === 'completed' && !$bid->has_advance_paid)
+            <button class="btn btn-primary">Pay Remaining</button>
+        @elseif($bid->status === 'advance_payment')
+            <button class="btn btn-success">Pay Advance</button>
+        @endif
+    @endif
+
+</div>
+
 <div class="container py-4">
     <div class="row g-3">
 
