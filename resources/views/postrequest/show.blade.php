@@ -8,7 +8,19 @@
     {{-- Provider Actions --}}
 @if($auth_user->user_type === 'provider' && $auth_user->id == $bid->provider_id)
     @if($bid->status === 'accepted')
-        <button class="btn btn-primary updateStatusBtn" data-id="{{ $bid->id }}" data-status="in_process">Start Work</button>
+         @if($bid->status === 'accepted')
+        <button class="btn btn-primary startWorkBtn" 
+                data-post-id="{{ $bid->id }}"
+                data-advance="{{ $bid->advance_percent ?? 0 }}"
+                data-remaining="{{ $bid->remaining_percent ?? 0 }}">
+            <i class="fas fa-sliders-h"></i> Split Payment
+        </button>
+        <button class="btn btn-success updateStatusBtn" 
+                data-id="{{ $bid->id }}" 
+                data-status="cancelled">
+            Cancel
+        </button>
+    @endif
         <button class="btn btn-success updateStatusBtn" data-id="{{ $bid->id }}" data-status="cancelled">Cancel</button>
     @elseif($bid->status === 'advance_paid')
         <button class="btn btn-primary updateStatusBtn" data-id="{{ $bid->id }}" data-status="in_process">Start Work</button>
@@ -312,6 +324,78 @@ document.addEventListener('DOMContentLoaded', function() {
                 .then(response => Swal.fire(response.status ? 'On Hold' : 'Error', response.message, response.status ? 'success' : 'error')
                       .then(() => location.reload()))
                 .catch(() => Swal.fire('Error', 'Something went wrong!', 'error'));
+            });
+        });
+    });
+
+});
+</script>
+  <script>
+document.addEventListener('DOMContentLoaded', function() {
+
+    // Split Payment for Provider
+    document.querySelectorAll('.startWorkBtn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const postId = this.dataset.postId;
+            const currentAdvance = this.dataset.advance || 0;
+            const currentRemaining = this.dataset.remaining || 100 - currentAdvance;
+
+            Swal.fire({
+                title: "Update Payment Split",
+                html: `
+                    <div class="mb-3 text-start">
+                        <label class="form-label fw-bold">Advance Percentage</label>
+                        <input type="number" id="advanceInput" class="form-control" value="${currentAdvance}" min="0" max="100" />
+                    </div>
+                    <div class="text-start">
+                        <label class="form-label fw-bold">Remaining Percentage</label>
+                        <input type="number" id="remainingInput" class="form-control" value="${currentRemaining}" readonly />
+                    </div>
+                `,
+                focusConfirm: false,
+                showCancelButton: true,
+                confirmButtonText: "Update",
+                didOpen: () => {
+                    const advanceInput = document.getElementById('advanceInput');
+                    const remainingInput = document.getElementById('remainingInput');
+                    advanceInput.addEventListener('input', function() {
+                        let val = parseInt(this.value) || 0;
+                        if (val > 100) val = 100;
+                        remainingInput.value = 100 - val;
+                    });
+                },
+                preConfirm: () => {
+                    const advance = parseInt(document.getElementById('advanceInput').value);
+                    const remaining = parseInt(document.getElementById('remainingInput').value);
+                    if (advance < 0 || advance > 100) {
+                        Swal.showValidationMessage("Please enter a valid advance percentage (0-100)");
+                        return false;
+                    }
+                    return { advance, remaining };
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const { advance, remaining } = result.value;
+                    fetch('{{ route("adjustpayment.start-work", ":id") }}'.replace(':id', postId), {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            advance_percent: advance,
+                            remaining_percent: remaining
+                        })
+                    }).then(res => res.json())
+                      .then(response => {
+                          if (response.status) {
+                              Swal.fire("Updated!", response.message || "Payment split updated.", "success")
+                                   .then(() => location.reload());
+                          } else {
+                              Swal.fire("Error!", response.message || "Unable to update.", "error");
+                          }
+                      }).catch(() => Swal.fire("Error!", "Something went wrong!", "error"));
+                }
             });
         });
     });
