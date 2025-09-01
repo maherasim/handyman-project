@@ -3,6 +3,7 @@
 
     @php
         $auth_user = auth()->user();
+        dd($auth_user);
     @endphp
 
     {{-- Provider Actions --}}
