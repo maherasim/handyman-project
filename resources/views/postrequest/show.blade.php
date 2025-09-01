@@ -45,7 +45,7 @@
         <button class="btn btn-info updateStatusBtn" data-id="{{ $bid->id }}" data-status="confirm_done">Confirm Work Done</button>
     @elseif($bid->status === 'accepted')
         <button class="btn btn-info updateStatusBtn" data-id="{{ $bid->id }}" data-status="cancelled">Cancel</button>
-      @if($bid->status === 'Advance Payment Pending')
+      @if($bid->status === 'Advance_Payment_Pending')
             @php
                 $advPct = $bid->advance_percent ?? 0;
                 $advAmount = ($bid->price * $advPct / 100);
