@@ -52,7 +52,7 @@ public function showbid($postRequestId)
         'postrequest.postBidList:id,post_request_id',
     ])
     ->where('post_request_id', $postRequestId)
-    ->where('status', 'accepted')
+    
     ->firstOrFail();
 
     return view('postrequest.show', compact('bid'));
