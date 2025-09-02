@@ -400,7 +400,7 @@ public function updateBidStatus(Request $request, $id)
 
     // Assuming postjob_id exists in PostJobBid
     $postjob = PostJobRequest::findOrFail($bid->post_request_id);
-dd($postjob);
+//dd($postjob);
     // Update bid status
     $bid->status = $request->input('status');
 
