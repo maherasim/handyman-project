@@ -253,6 +253,9 @@
                 ],
                 drawCallback: function(settings) {
                     bidsContainer.empty();
+                    // Define auth context before using it below
+                    const AUTH_USER_ID = {{ auth()->id() }};
+                    const AUTH_USER_TYPE = @json(auth()->user()->user_type);
                     let data = this.api().rows({
                         page: 'current'
                     }).data();
@@ -351,8 +354,6 @@
                             }
                         }
                         let actionHtml = '';
-                        const AUTH_USER_ID = {{ auth()->id() }};
-                        const AUTH_USER_TYPE = @json(auth()->user()->user_type);
                         try {
                             if (AUTH_USER_TYPE === 'user') {
                                 if (row.status == 'requested') {
