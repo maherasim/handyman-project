@@ -51,7 +51,7 @@ public function showbid($postRequestId)
         'postrequest.country:id,name',
         'postrequest.postBidList:id,post_request_id',
     ])
-    ->where('post_request_id', $postRequestId)
+    ->where('post_request_id', $postRequestId)->where('status', 'accepted')
     
     ->firstOrFail();
 
