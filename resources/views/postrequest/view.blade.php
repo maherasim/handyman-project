@@ -6,17 +6,16 @@
                 <!-- Page Header -->
                 <div class="card card-block card-stretch mb-3">
                     <div class="card-body d-flex justify-content-between align-items-center">
-                        <h5 class="fw-bold mb-0">{{ $pageTitle }} </h5>
-
-                        <div class="d-flex gap-2"> {{-- buttons grouped together --}}
-                            {{-- Provider sees Set Payment --}}
-                            @if (isset($assignedPost) && auth()->id() === $assignedPost->provider_id)
-                                <button class="btn btn-primary startWorkBtn" data-post-id="{{ $assignedPost->id }}">
-                                    <i class="fas fa-play"></i> Set Payment
-                                </button>
+                        <h5 class="fw-bold mb-0">
+                            {{ $pageTitle }}
+                            @if(auth()->user()->user_type === 'provider')
+                                <span class="ms-3 text-muted" style="font-size: 0.9rem;">Average Bid: <strong>{{ number_format($averageBid, 2) }}</strong></span>
                             @endif
+                        </h5>
 
-                            {{-- Customer sees Pay Advance --}}
+                        @if(auth()->user()->user_type !== 'provider')
+                        <div class="d-flex gap-2"> {{-- buttons grouped together --}}
+                            {{-- Customer/Other roles UI remains intact --}}
                             @if (isset($advance_payment))
                                 @php
                                     $advanceAmount =
@@ -24,27 +23,20 @@
                                     $remainingAmount =
                                         ($advance_payment->price * $advance_payment->remaining_percent) / 100;
                                 @endphp
-
-                                <!-- Pay Advance -->
                                 <button class="btn btn-success payAdvanceBtn" data-post-id="{{ $advance_payment->id }}"
                                     data-amount="{{ $advanceAmount }}">
                                     <i class="fas fa-wallet"></i>
                                     Pay Advance {{ $advanceAmount }} ({{ $advance_payment->advance_percent }}%)
                                 </button>
-
-
-                                <!-- Pay Remaining -->
                                 <button class="btn btn-info payRemainingBtn" data-post-id="{{ $advance_payment->id }}"
                                     data-advance="{{ $advance_payment->advance_percent }}"
                                     data-remaining="{{ $advance_payment->remaining_percent }}">
                                     <i class="fas fa-credit-card"></i>
                                     Pay Remaining {{ $remainingAmount }} ({{ $advance_payment->remaining_percent }}%)
                                 </button>
-
-
                             @endif
-
                         </div>
+                        @endif
 
                     </div>
                 </div>
@@ -181,9 +173,11 @@
                                         </div>
                                     @endif
 
+                                    @if(auth()->user()->user_type !== 'provider')
                                     <div class="mt-auto">
-                                        {{-- Action buttons (copy from your bidshow "action" column logic) --}}
+                                        {{-- Non-provider roles may see actions here (left as-is intentionally) --}}
                                     </div>
+                                    @endif
                                 </div>
                             </div>
                         </div>

@@ -801,17 +801,16 @@ public function show($id)
     ])->where('post_request_id', $id);
 
     // Restrict by user type
-    if ($auth_user->user_type === 'provider') {
-        $query->where('provider_id', $auth_user->id);
-    } elseif ($auth_user->user_type === 'user') {
+    if ($auth_user->user_type === 'user') {
         $query->whereHas('postrequest', function ($q) use ($auth_user) {
             $q->where('customer_id', $auth_user->id);
         });
     }
 
     $bids = $query->get();
+    $averageBid = (float) ($bids->avg('price') ?? 0);
 
-    return view('postrequest.view', compact('pageTitle', 'auth_user', 'assets', 'id', 'bids'));
+    return view('postrequest.view', compact('pageTitle', 'auth_user', 'assets', 'id', 'bids', 'averageBid'));
 }
 
 
