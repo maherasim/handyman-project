@@ -71,7 +71,7 @@
             Cancel
         </button>
 
-    @elseif($bid->status === 'Advance_Payment_Pending')
+    @elseif($bid->status === 'Advance Payment Pending')
         @php
             $advPct = $bid->advance_percent ?? 0;
             $advAmount = ($bid->price * $advPct / 100);
