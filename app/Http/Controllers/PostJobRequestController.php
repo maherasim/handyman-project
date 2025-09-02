@@ -116,7 +116,10 @@ public function bidshow(Request $request)
     ]);
 
     if ($auth_user->user_type === 'provider') {
-        $query->where('provider_id', $auth_user->id);
+        // If viewing a specific post, show all bids for that post (don't restrict to own bid)
+        if (!$request->filled('post_request_id')) {
+            $query->where('provider_id', $auth_user->id);
+        }
     } elseif ($auth_user->user_type === 'user') {
         // Users see all their posts (don't filter by status here)
         $query->whereHas('postrequest', fn($q) => $q->where('customer_id', $auth_user->id));

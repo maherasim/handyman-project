@@ -303,7 +303,7 @@
                                 `<p class="mb-3 text-warning"><i class="fas fa-comment-dots"></i> Reason: ${row.hold_reason}</p>`;
                         }
                         let priceTableHtml = '';
-                        if (row.status === 'advance_payment') {
+                        if (AUTH_USER_TYPE !== 'provider' && row.status === 'advance_payment') {
                             var advPct = (typeof row.advance_percent !== 'undefined' && row
                                     .advance_percent !== null) ? parseFloat(row
                                 .advance_percent) : null;
@@ -401,8 +401,12 @@
 
                         } catch (e) {}
 
-                        if (!actionHtml && row.status === 'accepted') {
-                            actionHtml = '<span class="badge bg-success">Accepted</span>';
+                        if (AUTH_USER_TYPE !== 'provider') {
+                            if (!actionHtml && row.status === 'accepted') {
+                                actionHtml = '<span class="badge bg-success">Accepted</span>';
+                            }
+                        } else {
+                            actionHtml = '';
                         }
 
                         let card = `
@@ -419,11 +423,11 @@
                                     <p class="text-muted mb-1"><i class="fas fa-user"></i> Provider: ${row.provider_name}</p>
                                     <p class="text-muted mb-1"><i class="fas fa-user-tie"></i> Customer: ${row.customer_name}</p>
                                     <p class="mb-1"><i class="fas fa-dollar-sign"></i> Bid: <span class="fw-bold">${row.price}</span></p>
-                                    <p class="mb-1"><i class="fas fa-flag"></i> Status: ${statusBadge}</p>
+                                    ${AUTH_USER_TYPE !== 'provider' ? `<p class=\"mb-1\"><i class=\"fas fa-flag\"></i> Status: ${statusBadge}</p>` : ''}
                                     ${reasonHtml}
                                     ${priceTableHtml}
                                     <div class="mt-auto">
-                                        ${actionHtml}
+                                        ${AUTH_USER_TYPE !== 'provider' ? actionHtml : ''}
                                     </div>
                                 </div>
                             </div>
