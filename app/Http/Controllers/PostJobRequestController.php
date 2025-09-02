@@ -391,6 +391,7 @@ public function payAdvance(Request $request, $id)
  */ 
 public function updateBidStatus(Request $request, $id)
 {
+    dd($id);
     $request->validate([
         'status' => 'required|string',
         'hold_reason' => 'nullable|string|max:500'
