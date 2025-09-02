@@ -143,12 +143,38 @@
                         orderable: false,
                         searchable: false,
                     },
+                    // {
+                    //     data: 'title',
+                    //     name: 'title',
+                    //     title: "{{ __('messages.title') }}",
+                    //     render: function(data, type, row) {
+                    //         const isProvider = "{{ auth()->user()->user_type }}" === 'provider';
+                    //         const jobUrl = `{{ url('post-job-bid') }}/${row.id}`;
+
+                    //         // If status is 'cancelled' or 'requested', don't make it a link
+                    //         if (row.status === 'cancelled' || row.status === 'requested') {
+                    //             return data;
+                    //         }
+
+                    //         // For providers: link only if THEIR bid is accepted
+                    //         if (isProvider) {
+                    //             if (row.accepted_for_current_provider === true || row
+                    //                 .accepted_for_current_provider === 1) {
+                    //                 return `<a href="${jobUrl}" class="job-bid-link">${data}</a>`;
+                    //             }
+                    //             return data;
+                    //         } else {
+                    //             // For non-providers: link for all statuses except 'cancelled' and 'requested'
+                    //             return `<a href="${jobUrl}" class="job-bid-link">${data}</a>`;
+                    //         }
+                    //     }
+
+                    // },
                     {
                         data: 'title',
                         name: 'title',
                         title: "{{ __('messages.title') }}",
                         render: function(data, type, row) {
-                            const isProvider = "{{ auth()->user()->user_type }}" === 'provider';
                             const jobUrl = `{{ url('post-job-bid') }}/${row.id}`;
 
                             // If status is 'cancelled' or 'requested', don't make it a link
@@ -156,17 +182,8 @@
                                 return data;
                             }
 
-                            // For providers: link only if THEIR bid is accepted
-                            if (isProvider) {
-                                if (row.accepted_for_current_provider === true || row
-                                    .accepted_for_current_provider === 1) {
-                                    return `<a href="${jobUrl}" class="job-bid-link">${data}</a>`;
-                                }
-                                return data;
-                            } else {
-                                // For non-providers: link for all statuses except 'cancelled' and 'requested'
-                                return `<a href="${jobUrl}" class="job-bid-link">${data}</a>`;
-                            }
+                            // For all other statuses, show clickable link
+                            return `<a href="${jobUrl}" class="job-bid-link">${data}</a>`;
                         }
 
                     },
