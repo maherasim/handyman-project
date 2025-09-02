@@ -283,7 +283,7 @@
                         $remaining = $remainingAmount;
                     @endphp
                 
-                    <table class="table table-sm">
+                    <table class="table table-sm table-hover price-table">
                         <tbody>
                             <tr>
                                 <td>Bid Amount</td>
@@ -329,6 +329,14 @@
         transform: translateY(-3px);
         transition: 0.3s;
         box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.15) !important;
+    }
+    .price-table tbody tr {
+        transition: background-color 0.2s ease, border-left-color 0.2s ease;
+        border-left: 3px solid transparent;
+    }
+    .price-table tbody tr:hover {
+        background-color: #f8f9fa;
+        border-left-color: #0d6efd; /* primary accent */
     }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
