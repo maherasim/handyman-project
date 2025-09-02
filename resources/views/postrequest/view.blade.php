@@ -42,7 +42,8 @@
                 </div>
 
 
-                <!-- Search Bar -->
+                @if(auth()->user()->user_type !== 'provider')
+                <!-- Search Bar (non-provider only) -->
                 <div class="card mb-3">
                     <div class="card-body">
                         <div class="d-flex justify-content-end">
@@ -53,8 +54,10 @@
                         </div>
                     </div>
                 </div>
+                @endif
 
-                <div class="row" id="bidsContainer">
+                @if(auth()->user()->user_type === 'provider')
+                <div class="row">
                     @forelse($bids as $bid)
                         @php
                             // Status Badge logic (moved from JS to PHP)
@@ -187,11 +190,15 @@
                         <p class="text-muted">No bids found for this request.</p>
                     @endforelse
                 </div>
+                @else
+                <div class="row" id="bidsContainer"></div>
+                @endif
 
             </div>
         </div>
     </div>
 
+    @if(auth()->user()->user_type !== 'provider')
     <!-- Hidden DataTable -->
     <table id="datatable" class="d-none"></table>
 
@@ -815,4 +822,5 @@
             });
         });
     </script>
+    @endif
 </x-master-layout>
