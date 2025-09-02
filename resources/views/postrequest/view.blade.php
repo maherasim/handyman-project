@@ -136,10 +136,12 @@
                                         {{ $bid->customer->display_name ?? 'N/A' }}</p>
                                     <p class="mb-1"><i class="fas fa-dollar-sign"></i> Bid: <span
                                             class="fw-bold">{{ $bid->price }}</span></p>
-                                    <p class="mb-1"><i class="fas fa-flag"></i> Status: {!! $statusBadge !!}</p>
-                                    {!! $reasonHtml !!}
+                                    @if(auth()->user()->user_type !== 'provider')
+                                        <p class="mb-1"><i class="fas fa-flag"></i> Status: {!! $statusBadge !!}</p>
+                                        {!! $reasonHtml !!}
+                                    @endif
 
-                                    @if ($bid->status === 'advance_payment' && isset($bid->advance_percent, $bid->remaining_percent))
+                                    @if (auth()->user()->user_type !== 'provider' && $bid->status === 'advance_payment' && isset($bid->advance_percent, $bid->remaining_percent))
                                         @php
                                             $advPct = (float) ($bid->advance_percent ?? 0);
                                             $remPct = (float) ($bid->remaining_percent ?? 0);
