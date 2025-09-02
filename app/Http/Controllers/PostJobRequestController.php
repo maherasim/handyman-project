@@ -55,7 +55,7 @@ public function showbid($postRequestId)
     
     ->firstOrFail();
 
-    return view('postrequest.show', compact('bid'));
+    return view('postrequest.show', compact('bid')); 
 }
 
 
