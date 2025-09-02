@@ -17,10 +17,13 @@ $auth_user= authSession();
 <a class="" href="{{ route('post-job-request.show', $post_job->id) }}" title="{{ __('messages.view_form_title',['form'=>  __('messages.postjob') ]) }}"><i class="far fa-eye text-secondary me-2"></i></a>
 
 @if(auth()->user()->hasAnyRole(['provider']))
+    @php
+        $providerHasBid = $post_job->postBidList()->where('provider_id', auth()->id())->exists();
+    @endphp
     @if($post_job->status != 'assigned')
         <button class="btn btn-success btn-sm bid-button mr-1" style="font-size: 14px; padding: 5px 10px;" type="button" onclick="openBidModal({{ $post_job->id }}, {{ auth()->user()->id }})">
             <i class="fas fa-gavel"></i>
-            BID
+            {{ $providerHasBid ? 'Update Bid' : 'BID' }}
         </button>
     @else
         <button class="btn btn-primary btn-sm start-work-button" style="font-size: 14px; padding: 5px 10px;" type="button" data-post-id="{{ $post_job->id }}">
