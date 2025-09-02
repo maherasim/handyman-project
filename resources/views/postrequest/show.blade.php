@@ -16,11 +16,13 @@
         // Remaining = subtotal - advance
         $remainingAmount = $subTotal - $advAmount;
         // Country-based tax
-        $countryId = optional(optional($bid->postrequest)->country)->id ?? ($bid->postrequest->country_id ?? null);
+        $countryId = $bid->postrequest->country_id ?? null;
         $taxRate = 0;
+        $taxTitle = '';
         if ($countryId) {
-            $taxModel = \App\Models\Tax::where('country_id', $countryId)->first();
+            $taxModel = \App\Models\Tax::find($countryId);
             $taxRate = $taxModel->value ?? 0;
+            $taxTitle = $taxModel->title ?? '';
         }
 
         // Tax is applied on subtotal (price + extra charges), aligned with booking
@@ -300,7 +302,7 @@
                                 <td class="text-end">€{{ number_format($subTotal, 2) }}</td>
                             </tr>
                             <tr>
-                                <td>Tax ({{ number_format($taxRate, 2) }}%)</td>
+                                <td>Tax ({{ number_format($taxRate, 0) }}%) {{ $taxTitle }}</td>
                                 <td class="text-end">€{{ number_format($taxAmount, 2) }}</td>
                             </tr>
                             <tr class="fw-bold">
