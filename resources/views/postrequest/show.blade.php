@@ -137,7 +137,7 @@
             <div class="row g-3">
 
                 <!-- Title Card -->
-                <div class="col-md-6">
+                <div class="col-md-4">
                     <div class="card border-primary shadow-sm h-100 hover-shadow">
                         <div class="card-body text-center">
                             <i class="fas fa-heading fa-2x text-primary mb-2"></i>
@@ -148,7 +148,7 @@
                 </div>
 
                 <!-- Location Card -->
-                <div class="col-md-6">
+                <div class="col-md-4">
                     <div class="card border-success shadow-sm h-100 hover-shadow">
                         <div class="card-body text-center">
                             <i class="fas fa-map-marker-alt fa-2x text-success mb-2"></i>
@@ -162,7 +162,7 @@
                 </div>
 
                 <!-- Job Type -->
-                <div class="col-md-6">
+                <div class="col-md-4">
                     <div class="card border-warning shadow-sm h-100 hover-shadow">
                         <div class="card-body text-center">
                             <i class="fas fa-briefcase fa-2x text-warning mb-2"></i>
@@ -173,7 +173,7 @@
                 </div>
 
                 <!-- Start Date -->
-                <div class="col-md-6">
+                <div class="col-md-4">
                     <div class="card border-info shadow-sm h-100 hover-shadow">
                         <div class="card-body text-center">
                             <i class="far fa-calendar-check fa-2x text-info mb-2"></i>
@@ -184,7 +184,7 @@
                 </div>
 
                 <!-- End Date -->
-                <div class="col-md-6">
+                <div class="col-md-4">
                     <div class="card border-danger shadow-sm h-100 hover-shadow">
                         <div class="card-body text-center">
                             <i class="far fa-calendar-times fa-2x text-danger mb-2"></i>
@@ -195,7 +195,7 @@
                 </div>
 
                 <!-- Total Budget -->
-                <div class="col-md-6">
+                <div class="col-md-4">
                     <div class="card border-secondary shadow-sm h-100 hover-shadow">
                         <div class="card-body text-center">
                             <i class="fas fa-wallet fa-2x text-secondary mb-2"></i>
@@ -206,7 +206,7 @@
                 </div>
 
                 <!-- Applications -->
-                <div class="col-md-6">
+                <div class="col-md-4">
                     <div class="card border-dark shadow-sm h-100 hover-shadow">
                         <div class="card-body text-center">
                             <i class="fas fa-users fa-2x text-dark mb-2"></i>
@@ -217,7 +217,7 @@
                 </div>
 
                 <!-- Provider -->
-                <div class="col-md-6">
+                <div class="col-md-4">
                     <div class="card border-primary shadow-sm h-100 hover-shadow">
                         <div class="card-body text-center">
                             <i class="fas fa-user fa-2x text-primary mb-2"></i>
@@ -228,7 +228,7 @@
                 </div>
 
                 <!-- Customer -->
-                <div class="col-md-6">
+                <div class="col-md-4">
                     <div class="card border-success shadow-sm h-100 hover-shadow">
                         <div class="card-body text-center">
                             <i class="fas fa-user-tie fa-2x text-success mb-2"></i>
@@ -239,7 +239,7 @@
                 </div>
 
                 <!-- Status -->
-                <div class="col-md-6">
+                <div class="col-md-4">
                     <div class="card border-info shadow-sm h-100 hover-shadow">
                         <div class="card-body text-center">
                             <i class="fas fa-flag fa-2x text-info mb-2"></i>
