@@ -614,7 +614,7 @@
             <!-- Order information section  -->
             <div class="row">
                 <div class="col-md-4">
-                    <div class="card">
+                    <div class="card soft-shadow hover-lift role-card role-customer">
                         <div class="card-body">
                             <div class="d-flex align-items-start gap-3">
                                 <div class="flex-shrink-0">
@@ -629,7 +629,7 @@
                                     @endif
                                 </div>
                                 <div class="flex-grow-1">
-                                    <p class="mb-1 text-primary">{{ __('messages.customer') }}</p>
+                                    <p class="mb-1 text-primary d-flex align-items-center"><i class="ri-user-line role-icon me-1"></i> {{ __('messages.customer') }}</p>
                                     <h5 class="mb-2">{{ optional($bookingdata->customer)->display_name ?? '-' }}
                                     </h5>
                                 </div>
@@ -659,7 +659,7 @@
                 </div>
                 <!-- Provider Information -->
                 <div class="col-md-4">
-                    <div class="card">
+                    <div class="card soft-shadow hover-lift role-card role-provider">
                         <div class="card-body">
                             <div class="d-flex align-items-start gap-3">
                                 <div class="flex-shrink-0">
@@ -674,7 +674,7 @@
                                     @endif
                                 </div>
                                 <div class="flex-grow-1">
-                                    <p class="mb-1 text-primary">{{ __('messages.provider') }}</p>
+                                    <p class="mb-1 text-primary d-flex align-items-center"><i class="ri-briefcase-line role-icon me-1"></i> {{ __('messages.provider') }}</p>
                                     <h5 class="mb-2">{{ optional($bookingdata->provider)->display_name ?? '-' }}
                                     </h5>
                                 </div>
@@ -703,7 +703,7 @@
                 </div>
                 <!-- Handyman Information -->
                 <div class="col-md-4">
-                    <div class="card">
+                    <div class="card soft-shadow hover-lift role-card role-handyman">
                         @if (count($bookingdata->handymanAdded) > 0)
                             @foreach ($bookingdata->handymanAdded as $booking)
                                 <div class="card-body">
@@ -720,7 +720,7 @@
                                             @endif
                                         </div>
                                         <div class="flex-grow-1">
-                                            <p class="mb-1 text-primary">{{ __('messages.handyman') }}</p>
+                                            <p class="mb-1 text-primary d-flex align-items-center"><i class="ri-tools-line role-icon me-1"></i> {{ __('messages.handyman') }}</p>
                                             <h5 class="mb-2 ">
                                                 {{ optional($booking->handyman)->display_name ?? '-' }}
                                             </h5>
@@ -1550,6 +1550,16 @@
 		transform: translateY(-4px);
 		box-shadow: 0 12px 24px rgba(0,0,0,0.12);
 	}
+	.role-card {
+		border-left: 4px solid transparent;
+	}
+	.role-card .role-icon { font-size: 18px; }
+	.role-customer { border-left-color: #3b82f6; }
+	.role-provider { border-left-color: #16a34a; }
+	.role-handyman { border-left-color: #f59e0b; }
+	.role-customer .role-icon { color: #3b82f6; }
+	.role-provider .role-icon { color: #16a34a; }
+	.role-handyman .role-icon { color: #f59e0b; }
 	.booking-info-container .card-body p.fz-12,
 	.booking-info-container .card-body .opacity-75 {
 		opacity: 0.75 !important;
