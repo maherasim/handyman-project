@@ -391,7 +391,6 @@ public function payAdvance(Request $request, $id)
  */ 
 public function updateBidStatus(Request $request, $id)
 {
-    dd($id);
     $request->validate([
         'status' => 'required|string',
         'hold_reason' => 'nullable|string|max:500'
@@ -400,8 +399,8 @@ public function updateBidStatus(Request $request, $id)
     $bid = PostJobBid::findOrFail($id);
 
     // Assuming postjob_id exists in PostJobBid
-    $postjob = PostJobRequest::findOrFail($id);
-
+    $postjob = PostJobRequest::findOrFail($bid->postjob_id);
+dd($postjob);
     // Update bid status
     $bid->status = $request->input('status');
 
