@@ -6,25 +6,27 @@
     </head>
     <div class="container-fluid">
         <div class="row">
-          @if (session('success'))
-      <div class="alert alert-success">
-          {{ session('success') }}
-      </div>
-  @endif
-  
+            @if (session('success'))
+                <div class="alert alert-success">
+                    {{ session('success') }}
+                </div>
+            @endif
+
             <div class="col-lg-12">
                 <div class="card card-block card-stretch">
                     <div class="card-body p-0">
                         <div class="d-flex justify-content-between align-items-center p-3 flex-wrap gap-3">
                             <h5 class="font-weight-bold">{{ $pageTitle ?? trans('messages.list') }}</h5>
-                            @if (auth()->user()->user_type == 'user' || auth()->user()->user_type == 'admin') 
-                            <a href="{{ route('post-job-request.create') }}" class="float-right mr-1 btn btn-sm btn-primary">
-                                <i class="fa fa-plus-circle"></i> {{ trans('messages.add_form_title', ['form' => trans(' Post Request')]) }}
-                            </a>
-                        @endif
-                        
+                            @if (auth()->user()->user_type == 'user' || auth()->user()->user_type == 'admin')
+                                <a href="{{ route('post-job-request.create') }}"
+                                    class="float-right mr-1 btn btn-sm btn-primary">
+                                    <i class="fa fa-plus-circle"></i>
+                                    {{ trans('messages.add_form_title', ['form' => trans(' Post Request')]) }}
+                                </a>
+                            @endif
+
                         </div>
-  
+
                     </div>
                 </div>
             </div>
@@ -44,7 +46,7 @@
                                 <!-- <option value="change-status">{{ __('messages.status') }}</option> -->
                                 <option value="delete">{{ __('messages.delete') }}</option>
                             </select>
-  
+
                             <div class="select-status d-none quick-action-field" id="change-status-action"
                                 style="width:100%">
                                 <select name="status" class="form-control select2" id="status" style="width:100%">
@@ -59,7 +61,7 @@
                                 data-message='{{ __('Do you want to perform this action?') }}'
                                 disabled>{{ __('messages.apply') }}</button>
                     </div>
-  
+
                     </form>
                 </div>
                 <div class="d-flex justify-content-end">
@@ -76,10 +78,10 @@
                             aria-describedby="addon-wrapping" aria-controls="dataTableBuilder">
                     </div>
                 </div>
-  
+
                 <div class="table-responsive">
                     <table id="datatable" class="table table-striped border">
-  
+
                     </table>
                 </div>
             </div>
@@ -102,7 +104,7 @@
                     <input type="number" id="bidAmount" name="bidAmount" class="form-control" required>
                     <div id="bidAmountError"></div>
                 </div>
-              
+
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                     <button type="button" class="btn btn-primary bid-button-submit" onclick="submitBid()">Submit
@@ -114,7 +116,7 @@
     <script></script>
     <script>
         document.addEventListener('DOMContentLoaded', (event) => {
-  
+
             window.renderedDataTable = $('#datatable').DataTable({
                 processing: true,
                 serverSide: true,
@@ -141,42 +143,48 @@
                         orderable: false,
                         searchable: false,
                     },
-                  {
-                    data: 'title',
-                    name: 'title',
-                    title: "{{ __('messages.title') }}",
-                    render: function(data, type, row) {
-                        // For providers: link only if THEIR bid is accepted
-                        const isProvider = "{{ auth()->user()->user_type }}" === 'provider';
-                        if (isProvider) {
-                            if (row.accepted_for_current_provider === true || row.accepted_for_current_provider === 1) {
-                                return `<a href="{{ url('post-job-bid') }}/${row.id}" class="job-bid-link">${data}</a>`;
+                    {
+                        data: 'title',
+                        name: 'title',
+                        title: "{{ __('messages.title') }}",
+                        render: function(data, type, row) {
+                            const isProvider = "{{ auth()->user()->user_type }}" === 'provider';
+                            const jobUrl = `{{ url('post-job-bid') }}/${row.id}`;
+
+                            // If status is 'cancelled' or 'requested', don't make it a link
+                            if (row.status === 'cancelled' || row.status === 'requested') {
+                                return data;
                             }
-                            return data;
-                        } else {
-                            if (row.status === 'accepted') {
-                                return `<a href="{{ url('post-job-bid') }}/${row.id}" class="job-bid-link">${data}</a>`;
+
+                            // For providers: link only if THEIR bid is accepted
+                            if (isProvider) {
+                                if (row.accepted_for_current_provider === true || row
+                                    .accepted_for_current_provider === 1) {
+                                    return `<a href="${jobUrl}" class="job-bid-link">${data}</a>`;
+                                }
+                                return data;
+                            } else {
+                                // For non-providers: link for all statuses except 'cancelled' and 'requested'
+                                return `<a href="${jobUrl}" class="job-bid-link">${data}</a>`;
                             }
-                            return data;
                         }
-                    }
-                },
-                {
-                    data: 'accepted_for_current_provider',
-                    name: 'accepted_for_current_provider',
-                    visible: false,
-                    searchable: false
-                },
+
+                    },
+                    {
+                        data: 'accepted_for_current_provider',
+                        name: 'accepted_for_current_provider',
+                        visible: false,
+                        searchable: false
+                    },
 
 
                     @if (auth()->user()->user_type == 'provider')
-                    {
-                        data: 'provider_id',
-                        name: 'provider_id',
-                        title: "{{ __('messages.provider') }}"
-                    },
-                    @endif
-                    {
+                        {
+                            data: 'provider_id',
+                            name: 'provider_id',
+                            title: "{{ __('messages.provider') }}"
+                        },
+                    @endif {
                         data: 'customer_id',
                         name: 'customer_id',
                         title: "{{ __('messages.customer') }}"
@@ -198,80 +206,80 @@
                         searchable: false,
                         title: "{{ __('messages.action') }}"
                     }
-  
+
                 ]
-  
+
             });
         });
-  
+
         var authToken = "{{ auth()->user()->createToken('auth_token')->plainTextToken }}";
-  
-        function submitBid() { 
-    var bidAmount = $('#bidAmount').val();
-    var postRequestId = $(".postrequestid").val();
-    var bidId = $(".bidid").val();
 
-    clearErrorMessages();
+        function submitBid() {
+            var bidAmount = $('#bidAmount').val();
+            var postRequestId = $(".postrequestid").val();
+            var bidId = $(".bidid").val();
 
-    if (!bidAmount) {
-        displayErrorMessage('Bid Amount is required.', 'bidAmountError');
-        return;
-    }
+            clearErrorMessages();
 
-    $.ajax({
-        url: 'api/save-bid',
-        type: 'POST',
-        dataType: 'json',
-        headers: {
-            'Authorization': `Bearer ${authToken}`
-        },
-        data: {
-            post_request_id: postRequestId,
-            price: bidAmount,
-            id: bidId
-        },
-        success: function(response) {
-            $('#bidModal').modal('hide');
-
-            if (response.hasBid) {
-                // User already bid
-                $('#datatable').DataTable().ajax.reload();
-                Swal.fire({
-                    icon: 'info',
-                    title: 'Notice',
-                    text: 'You have already placed a bid on this post.',
-                });
-            } else {
-                // Successful bid
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Success!',
-                    text: 'Your bid has been submitted successfully.',
-                    timer: 2000,
-                    showConfirmButton: false
-                }).then(() => {
-                    // Reload the page or refresh the table
-                    window.location.reload();
-                });
+            if (!bidAmount) {
+                displayErrorMessage('Bid Amount is required.', 'bidAmountError');
+                return;
             }
-        },
-        error: function(error) {
-            console.error('Error:', error);
-            Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: 'Something went wrong while submitting your bid.',
+
+            $.ajax({
+                url: 'api/save-bid',
+                type: 'POST',
+                dataType: 'json',
+                headers: {
+                    'Authorization': `Bearer ${authToken}`
+                },
+                data: {
+                    post_request_id: postRequestId,
+                    price: bidAmount,
+                    id: bidId
+                },
+                success: function(response) {
+                    $('#bidModal').modal('hide');
+
+                    if (response.hasBid) {
+                        // User already bid
+                        $('#datatable').DataTable().ajax.reload();
+                        Swal.fire({
+                            icon: 'info',
+                            title: 'Notice',
+                            text: 'You have already placed a bid on this post.',
+                        });
+                    } else {
+                        // Successful bid
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success!',
+                            text: 'Your bid has been submitted successfully.',
+                            timer: 2000,
+                            showConfirmButton: false
+                        }).then(() => {
+                            // Reload the page or refresh the table
+                            window.location.reload();
+                        });
+                    }
+                },
+                error: function(error) {
+                    console.error('Error:', error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Something went wrong while submitting your bid.',
+                    });
+                }
             });
         }
-    });
-}
 
         function openBidModal(postRequestId, authUserId) {
             $('.postrequestid').val(postRequestId);
-  
+
             // Store the postRequestId in the modal for later use
             $('#bidModal').data('post-request-id', postRequestId);
-  
+
             // Make an AJAX call here
             $.ajax({
                 url: 'api/get-post-job-bid-data',
@@ -303,12 +311,12 @@
                     console.error('Error:', error);
                 }
             });
-  
+
             // Open the modal manually
             $('#bidModal').modal('show');
         }
-  
-  
+
+
         $('#bidModal').on('hide.bs.modal', function() {
             // Clear the stored postRequestId and bid amount when the modal is closed
             $(this).removeData('post-request-id');
@@ -317,27 +325,27 @@
             $('.bidid').val('');
             $('.bid-button-submit').prop('disabled', false).text('Submit Bid');
         });
-  
+
         function displayErrorMessage(message, elementId) {
             var errorMessageElement = document.createElement('div');
             errorMessageElement.innerHTML = message;
             errorMessageElement.className = 'text-danger';
             document.getElementById(elementId).appendChild(errorMessageElement);
         }
-  
+
         function clearErrorMessages() {
             document.getElementById('bidAmountError').innerHTML = '';
             // document.getElementById('bidDurationError').innerHTML = '';
         }
-  
-  
-  
+
+
+
         function resetQuickAction() {
             const actionValue = $('#quick-action-type').val();
             console.log(actionValue)
             if (actionValue != '') {
                 $('#quick-action-apply').removeAttr('disabled');
-  
+
                 if (actionValue == 'change-status') {
                     $('.quick-action-field').addClass('d-none');
                     $('#change-status-action').removeClass('d-none');
@@ -349,20 +357,20 @@
                 $('.quick-action-field').addClass('d-none');
             }
         }
-  
+
         $('#quick-action-type').change(function() {
             resetQuickAction()
         });
-  
+
         $(document).on('update_quick_action', function() {
-  
+
         })
-  
+
         $(document).on('click', '[data-ajax="true"]', function(e) {
             e.preventDefault();
             const button = $(this);
             const confirmation = button.data('confirmation');
-  
+
             if (confirmation === 'true') {
                 const message = button.data('message');
                 if (confirm(message)) {
@@ -380,5 +388,4 @@
         });
     </script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
-  </x-master-layout>
-  
+</x-master-layout>
