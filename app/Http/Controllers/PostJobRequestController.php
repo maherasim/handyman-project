@@ -51,7 +51,7 @@ public function showbid($postRequestId)
         'postrequest.country:id,name',
         'postrequest.postBidList:id,post_request_id',
     ])
-    ->where('post_request_id', $postRequestId)->where('status', 'accepted')
+    ->where('post_request_id', $postRequestId)->where('status', '!=', 'cancelled')
     
     ->firstOrFail();
 
@@ -401,9 +401,9 @@ public function updateBidStatus(Request $request, $id)
 
     $bid = PostJobBid::findOrFail($id);
 
-    // Assuming postjob_id exists in PostJobBid
+    // Assuming post_request_id exists in PostJobBid
     $postjob = PostJobRequest::findOrFail($bid->post_request_id);
-//dd($postjob);
+
     // Update bid status
     $bid->status = $request->input('status');
 
@@ -413,8 +413,12 @@ public function updateBidStatus(Request $request, $id)
     }
     $bid->save();
 
-    // Update postjob status as well
-    $postjob->status = $request->input('status');
+    // Update postjob status
+    if ($bid->status === 'cancelled') {
+        $postjob->status = 'requested'; // special case
+    } else {
+        $postjob->status = $bid->status;
+    }
     $postjob->save();
 
     try {
@@ -431,6 +435,7 @@ public function updateBidStatus(Request $request, $id)
         'message' => 'Status updated successfully',
     ]);
 }
+
 
 
 
