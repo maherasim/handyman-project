@@ -130,7 +130,7 @@
         </tr>
     </tbody>
 </table>
-<div class="container-fluid">
+<div class="container-fluid booking-info-container">
     <div class="row">
         <div class="col-md-8">
             <div class="card">
@@ -448,7 +448,7 @@
                         <!-- Main Content Row -->
                         <div class="row ">
                             <div class="col-md-4 ">
-                                <div class="card h-100">
+                                <div class="card h-100 soft-shadow hover-lift">
                                     <div class="card-body">
                                         <p class="opacity-75 fz-12">{{ __('messages.book_placed') }}</p>
                                         <p class="mb-0">
@@ -460,7 +460,7 @@
 
 
                             <div class="col-md-4">
-                                <div class="card h-100">
+                                <div class="card h-100 soft-shadow hover-lift">
                                     <div class="card-body">
                                         <p class="opacity-75 fz-12">{{ __('messages.booking_status') }}</p>
                                         <p class="mb-0 text-primary" id="booking_status__span">
@@ -469,7 +469,7 @@
                                 </div>
                             </div>
                             <div class="col-md-4">
-                                <div class="card h-100">
+                                <div class="card h-100 soft-shadow hover-lift">
                                     <div class="card-body">
                                         <p class="opacity-75 fz-12">{{ __('Location') }}</p>
                                         <p class="mb-0 text-primary">
@@ -481,7 +481,7 @@
                             </div>
                             @hasanyrole(['user', 'provider', 'admin'])
                                 <div class="col-md-4">
-                                    <div class="card h-100">
+                                    <div class="card h-100 soft-shadow hover-lift">
                                         <div class="card-body">
                                             <p class="opacity-75 fz-12">{{ __('messages.total_amount') }}</p>
                                             <p class="mb-0 text-primary">
@@ -492,7 +492,7 @@
                                 </div>
                             @endhasanyrole
                             <div class="col-md-4">
-                                <div class="card h-100">
+                                <div class="card h-100 soft-shadow hover-lift">
                                     <div class="card-body">
                                         <p class="opacity-75 fz-12">{{ __('messages.payment_method') }}</p>
                                         <p class="mb-0 text-primary">
@@ -505,7 +505,7 @@
                                     (isset($payment) && $payment->payment_type === 'bank_transfer' && $payment->status == 1) ||
                                         (isset($payment) && $payment->payment_type !== 'bank_transfer'))
                                     <div class="col-md-4">
-                                        <div class="card h-65 border-0 shadow"
+                                        <div class="card h-65 border-0 soft-shadow hover-lift"
                                             style="background: linear-gradient(135deg, #f7c59f, #ff9a9e); color: #fff;">
                                             <div class="card-body">
                                                 <p class="mb-1 fw-bold text-uppercase" style="opacity: 0.9;">
@@ -521,7 +521,7 @@
                             @endhasanyrole
 
                             <div class="col-md-4">
-                                <div class="card h-100">
+                                <div class="card h-100 soft-shadow hover-lift">
                                     <div class="card-body">
                                         <p class="opacity-75 fz-12">{{ __('Booking Slots') }}</p>
                                         @foreach ($bookingdata->slots as $slot)
@@ -533,7 +533,7 @@
                                 </div>
                             </div>
                            <div class="col-md-4">  
-    <div class="card h-100">
+    <div class="card h-100 soft-shadow hover-lift">
         @php
             // If booking is cancelled, override payment status
             if (isset($bookingdata) && $bookingdata->status === 'cancelled') {
@@ -579,7 +579,7 @@
                             
 
                         <div class="col-md-4">
-                                <div class="card h-100">
+                                <div class="card h-100 soft-shadow hover-lift">
                                     <div class="card-body">
                                         <p class="opacity-75 fz-12">{{ __('Working Address') }}</p>
                                         <p class="mb-0 text-primary" id="booking_status__span">
@@ -596,7 +596,7 @@
                             <!-- Add Cancellation Reason Card -->
                             @if ($bookingdata->status === 'cancelled')
                                 <div class="col-md-4">
-                                    <div class="card h-100">
+                                    <div class="card h-100 soft-shadow hover-lift">
                                         <div class="card-body">
                                             <p class="opacity-75 fz-12">{{ __('landingpage.cancel_reason') }}</p>
                                             <p class="mb-0 text-danger">
@@ -1539,3 +1539,24 @@
 
     });
 </script>
+<style>
+	.soft-shadow {
+		box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+		transition: transform 0.25s ease, box-shadow 0.25s ease;
+		border-radius: 12px;
+		border: 1px solid rgba(0,0,0,0.04);
+	}
+	.hover-lift:hover {
+		transform: translateY(-4px);
+		box-shadow: 0 12px 24px rgba(0,0,0,0.12);
+	}
+	.booking-info-container .card-body p.fz-12,
+	.booking-info-container .card-body .opacity-75 {
+		opacity: 0.75 !important;
+		font-size: 12px !important;
+		margin-bottom: 6px;
+	}
+	.booking-info-container .card-body .text-primary {
+		font-weight: 600;
+	}
+</style>
