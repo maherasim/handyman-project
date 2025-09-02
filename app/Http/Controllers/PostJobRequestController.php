@@ -569,6 +569,15 @@ public function index_data(DataTables $datatable, Request $request)
         ->editColumn('title', function($query) {
             return $query->title;
         })
+        ->addColumn('accepted_for_current_provider', function ($row) {
+            if (auth()->user()->user_type === 'provider') {
+                return $row->postBidList()
+                    ->where('provider_id', auth()->id())
+                    ->where('status', 'accepted')
+                    ->exists();
+            }
+            return false;
+        })
         ->editColumn('provider_id', function ($query){
             return view('postrequest.provider', compact('query'));
         })

@@ -146,11 +146,26 @@
                     name: 'title',
                     title: "{{ __('messages.title') }}",
                     render: function(data, type, row) {
-                        if (row.status === 'accepted') {
-                            return `<a href="{{ url('post-job-bid') }}/${row.id}" class="job-bid-link">${data}</a>`;
+                        // For providers: link only if THEIR bid is accepted
+                        const isProvider = "{{ auth()->user()->user_type }}" === 'provider';
+                        if (isProvider) {
+                            if (row.accepted_for_current_provider === true || row.accepted_for_current_provider === 1) {
+                                return `<a href="{{ url('post-job-bid') }}/${row.id}" class="job-bid-link">${data}</a>`;
+                            }
+                            return data;
+                        } else {
+                            if (row.status === 'accepted') {
+                                return `<a href="{{ url('post-job-bid') }}/${row.id}" class="job-bid-link">${data}</a>`;
+                            }
+                            return data;
                         }
-                        return data;
                     }
+                },
+                {
+                    data: 'accepted_for_current_provider',
+                    name: 'accepted_for_current_provider',
+                    visible: false,
+                    searchable: false
                 },
 
 
