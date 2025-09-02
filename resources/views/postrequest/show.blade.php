@@ -3,6 +3,18 @@
 
     @php
         $auth_user = auth()->user();
+        // Unified price breakdown used across table and buttons
+        $total = (float)($bid->price ?? 0);
+        $advPct = (float)($bid->advance_percent ?? 0);
+        $extraChargeUnit = (float)($bid->extra_charges ?? 0);
+        $extraChargeQty = (int)($bid->quantity ?? 1);
+        $extraChargesTotal = $extraChargeUnit * $extraChargeQty;
+        // Advance is calculated on original total (as per current logic)
+        $advAmount = ($total * $advPct / 100);
+        // Subtotal includes extra charges
+        $subTotal = $total + $extraChargesTotal;
+        // Remaining = subtotal - advance
+        $remainingAmount = $subTotal - $advAmount;
     @endphp
 
     {{-- Provider Actions --}}
@@ -72,24 +84,16 @@
         </button>
 
     @elseif($bid->status === 'Advance Payment Pending')
-        @php
-            $advPct = $bid->advance_percent ?? 0;
-            $advAmount = ($bid->price * $advPct / 100);
-        @endphp
         <button class="btn btn-success payAdvanceBtn" 
                 data-post-id="{{ $bid->id }}" 
                 data-amount="{{ $advAmount }}">
             <i class="fas fa-wallet"></i> Pay Advance {{ number_format($advAmount,2) }} ({{ $advPct }}%)
         </button>
         @elseif($bid->status === 'completed' && !$bid->has_advance_paid)
-        @php
-            $remPct = $bid->remaining_percent ?? 100;
-            $remAmount = ($bid->price * $remPct / 100);
-        @endphp
         <button class="btn btn-primary payRemainingBtn" 
                 data-post-id="{{ $bid->id }}" 
-                data-amount="{{ $remAmount }}">
-            <i class="fas fa-credit-card"></i> Pay Remaining {{ number_format($remAmount,2) }} ({{ $remPct }}%)
+                data-amount="{{ $remainingAmount }}">
+            <i class="fas fa-credit-card"></i> Pay Remaining {{ number_format($remainingAmount,2) }}
         </button>
     @elseif($bid->status === 'hold')
         <div class="alert alert-warning d-flex align-items-start shadow-sm border rounded p-3 mt-2">
@@ -252,18 +256,15 @@
                 </div>
                 <div class="card-body">
                     @php
-                        $total = $bid->price ?? 0;
-                        $advPct = $bid->advance_percent ?? 0;
-                        $advAmount = ($total * $advPct / 100);
-                
-                        // extra_charges and quantity stored in columns
-                        $extraChargeUnit = $bid->extra_charges ?? 0;
-                        $extraChargeQty = $bid->quantity ?? 1; // default 1 if null
-                
-                        $extraChargesTotal = $extraChargeUnit * $extraChargeQty;
-                
-                        $subTotal = $total + $extraChargesTotal;
-                        $remaining = $subTotal - $advAmount;
+                        // Use the unified variables defined at top to ensure consistency
+                        $total = $total;
+                        $advPct = $advPct;
+                        $advAmount = $advAmount;
+                        $extraChargeUnit = $extraChargeUnit;
+                        $extraChargeQty = $extraChargeQty;
+                        $extraChargesTotal = $extraChargesTotal;
+                        $subTotal = $subTotal;
+                        $remaining = $remainingAmount;
                     @endphp
                 
                     <table class="table table-sm">
