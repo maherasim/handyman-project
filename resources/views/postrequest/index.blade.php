@@ -96,6 +96,7 @@
                     </button>
                 </div>
                 <input type="hidden" class="postrequestid">
+                <input type="hidden" class="bidid">
                 <div class="modal-body">
                     <label for="bidAmount">Bid Amount:</label>
                     <input type="number" id="bidAmount" name="bidAmount" class="form-control" required>
@@ -110,52 +111,7 @@
             </div>
         </div>
     </div>
-    <script>
-      function submitBid() {
-      var bidAmount = $('#bidAmount').val();
-      var postRequestId = $(".postrequestid").val();
-      
-      clearErrorMessages();
-  
-      if (!bidAmount) {
-          displayErrorMessage('Bid Amount is required.', 'bidAmountError');
-          return;
-      }
-  
-      $.ajax({
-          url: 'api/save-bid',
-          type: 'POST',
-          dataType: 'json',
-          headers: {
-              'Authorization': `Bearer ${authToken}`
-          },
-          data: {
-              post_request_id: postRequestId,
-              price: bidAmount,
-          },
-          success: function(response) {
-              $('#bidModal').modal('hide');
-              if (response.hasBid) {
-                  // Hide the bid button for the specific post job
-                  // Assuming you have a way to find the corresponding button, e.g., using postRequestId
-                  $(`button[onclick="openBidModal(${postRequestId}, ${auth()->user()->id})"]`).hide();
-  
-                  // Optionally, reload the DataTable to refresh the view
-                  $('#datatable').DataTable().ajax.reload();
-                  alert('You have already placed a bid on this post.');
-              } else {
-                  // Optionally handle the case when a new bid is placed
-                  $(`button[onclick="openBidModal(${postRequestId}, ${auth()->user()->id})"]`).hide();
-                  alert('Your bid has been successfully placed!');
-              }
-          },
-          error: function(error) {
-              console.error('Error:', error);
-          }
-      });
-  }
-  
-    </script>
+    <script></script>
     <script>
         document.addEventListener('DOMContentLoaded', (event) => {
   
@@ -238,6 +194,7 @@
         function submitBid() { 
     var bidAmount = $('#bidAmount').val();
     var postRequestId = $(".postrequestid").val();
+    var bidId = $(".bidid").val();
 
     clearErrorMessages();
 
@@ -256,6 +213,7 @@
         data: {
             post_request_id: postRequestId,
             price: bidAmount,
+            id: bidId
         },
         success: function(response) {
             $('#bidModal').modal('hide');
@@ -314,14 +272,16 @@
                 success: function(response) {
                     // Handle the response data
                     console.log(response.price);
-                    if (response.price != undefined) {
+                    if (response && response.price != undefined) {
                         $('#bidAmount').val(response.price);
-                        $('#bidAmount').prop('disabled', true);
-                        $('.bid-button-submit').prop('disabled', true);
+                        $('.bidid').val(response.id || '');
+                        $('#bidAmount').prop('disabled', false);
+                        $('.bid-button-submit').prop('disabled', false).text('Update Bid');
                     } else {
                         $('#bidAmount').val('');
+                        $('.bidid').val('');
                         $('#bidAmount').prop('disabled', false);
-                        $('.bid-button-submit').prop('disabled', false);
+                        $('.bid-button-submit').prop('disabled', false).text('Submit Bid');
                     }
                 },
                 error: function(error) {
@@ -339,6 +299,8 @@
             $(this).removeData('post-request-id');
             $('#bidAmount').val('');
             $('#bidAmount').prop('disabled', false);
+            $('.bidid').val('');
+            $('.bid-button-submit').prop('disabled', false).text('Submit Bid');
         });
   
         function displayErrorMessage(message, elementId) {
