@@ -353,16 +353,10 @@
                         try {
                             if (AUTH_USER_TYPE === 'user') {
                                 if (row.status == 'requested') {
-                                    if (row.status == 'requested') {
-                                actionHtml += `
-                                    <button class="btn btn-sm btn-success updateStatusBtn" 
-                                            data-id="${row.id}" 
-                                            data-status="accepted" 
-                                            data-confirm="Do you want to accept this bid?">
-                                        Accept
-                                    </button>
-                                `;
+                                    actionHtml +=
+                                        `<button class=\"btn btn-sm btn-success updateStatusBtn\" data-id=\"${row.id}\" data-status=\"accepted\">Accept</button> `;
                                 }
+
                                 if (row.status === 'advance_payment' && String(row
                                     .customer_id) === String(AUTH_USER_ID)) {
                                     var advPct = (typeof row.advance_percent !== 'undefined' &&
