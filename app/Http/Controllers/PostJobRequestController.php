@@ -388,7 +388,7 @@ public function payAdvance(Request $request, $id)
  * Unified status update API for PostJobBid.
  * Allows provider to move advance_paid -> in_progress, and
  * allows user to confirm in_progress idempotently.
- */
+ */ 
 public function updateBidStatus(Request $request, $id)
 {
     $request->validate([
@@ -398,16 +398,21 @@ public function updateBidStatus(Request $request, $id)
 
     $bid = PostJobBid::findOrFail($id);
 
-    // Set new status
+    // Assuming postjob_id exists in PostJobBid
+    $postjob = PostJobRequest::findOrFail($id);
+
+    // Update bid status
     $bid->status = $request->input('status');
 
     // If hold → save reason
     if ($bid->status === 'hold' && $request->filled('hold_reason')) {
         $bid->hold_reason = $request->input('hold_reason');
     }
-
-    
     $bid->save();
+
+    // Update postjob status as well
+    $postjob->status = $request->input('status');
+    $postjob->save();
 
     try {
         $this->sendNotification([
@@ -423,6 +428,7 @@ public function updateBidStatus(Request $request, $id)
         'message' => 'Status updated successfully',
     ]);
 }
+
 
 
 
