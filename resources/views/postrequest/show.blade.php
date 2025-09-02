@@ -375,10 +375,12 @@ document.addEventListener('DOMContentLoaded', function() {
         btn.addEventListener('click', function() {
             const postId = this.dataset.postId;
             const amount = this.dataset.amount;
+            const amountNum = parseFloat(amount);
+            const formattedAmount = isFinite(amountNum) ? amountNum.toFixed(2) : amount;
             const isRemaining = btn.classList.contains('payRemainingBtn');
             Swal.fire({
                 title: isRemaining ? "Confirm Remaining Payment" : "Confirm Advance Payment",
-                text: amount ? `Pay amount: ${amount}. Proceed?` : "Proceed?",
+                text: amount ? `Pay amount: ${formattedAmount}. Proceed?` : "Proceed?",
                 icon: "warning",
                 showCancelButton: true,
                 confirmButtonColor: "#28a745",
