@@ -15,6 +15,20 @@
         $subTotal = $total + $extraChargesTotal;
         // Remaining = subtotal - advance
         $remainingAmount = $subTotal - $advAmount;
+        // Country-based tax
+        $countryId = optional(optional($bid->postrequest)->country)->id ?? ($bid->postrequest->country_id ?? null);
+        $taxRate = 0;
+        if ($countryId) {
+            $taxModel = \App\Models\Tax::where('country_id', $countryId)->first();
+            $taxRate = $taxModel->value ?? 0;
+        }
+
+        // Tax is applied on subtotal (price + extra charges), aligned with booking
+        $taxAmount = ($subTotal * $taxRate) / 100;
+        $grandTotal = $subTotal + $taxAmount;
+
+        // Recompute remaining to include tax
+        $remainingAmount = $grandTotal - $advAmount;
     @endphp
 
     {{-- Provider Actions --}}
@@ -271,23 +285,31 @@
                         <tbody>
                             <tr>
                                 <td>Bid Amount</td>
-                                <td class="text-end">{{ number_format($total, 2) }}</td>
+                                <td class="text-end">€{{ number_format($total, 2) }}</td>
                             </tr>
                             <tr>
                                 <td>Advance Payment ({{ $advPct }}%)</td>
-                                <td class="text-end">{{ number_format($advAmount, 2) }}</td>
+                                <td class="text-end">€{{ number_format($advAmount, 2) }}</td>
                             </tr>
                             <tr>
                                 <td>Extra Charges ({{ $extraChargeQty }} × {{ number_format($extraChargeUnit, 2) }})</td>
-                                <td class="text-end">{{ number_format($extraChargesTotal, 2) }}</td>
+                                <td class="text-end">€{{ number_format($extraChargesTotal, 2) }}</td>
                             </tr>
                             <tr class="fw-bold">
                                 <td>Subtotal</td>
-                                <td class="text-end">{{ number_format($subTotal, 2) }}</td>
+                                <td class="text-end">€{{ number_format($subTotal, 2) }}</td>
+                            </tr>
+                            <tr>
+                                <td>Tax ({{ number_format($taxRate, 2) }}%)</td>
+                                <td class="text-end">€{{ number_format($taxAmount, 2) }}</td>
+                            </tr>
+                            <tr class="fw-bold">
+                                <td>Grand Total</td>
+                                <td class="text-end">€{{ number_format($grandTotal, 2) }}</td>
                             </tr>
                             <tr class="fw-bold">
                                 <td>Remaining Amount</td>
-                                <td class="text-end">{{ number_format($remaining, 2) }}</td>
+                                <td class="text-end">€{{ number_format($remaining, 2) }}</td>
                             </tr>
                         </tbody>
                     </table>
