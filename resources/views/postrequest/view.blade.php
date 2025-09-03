@@ -102,10 +102,9 @@
                     { data: 'provider', name: 'provider' },
                     { data: 'why_choose_me', name: 'why_choose_me', orderable:false, searchable:false,
                         render: function(data, type, row){
-                            const hasContent = (typeof data === 'string' && data.trim() !== '');
-                            const preview = hasContent ? '<i class="far fa-eye"></i> View' : '-';
                             const safeId = row.id;
-                            return hasContent ? `<button type="button" class="btn btn-sm btn-outline-primary viewWhyBtn" data-bid-id="${safeId}" data-why="${encodeURIComponent(data)}">${preview}</button>` : '-';
+                            const payload = (typeof data === 'string') ? data : '';
+                            return `<button type=\"button\" class=\"btn btn-sm btn-outline-primary viewWhyBtn\" data-bid-id=\"${safeId}\" data-why=\"${encodeURIComponent(payload)}\" title=\"View\"><i class=\"far fa-eye\"></i></button>`;
                         }
                     },
                     { data: 'bid_amount', name: 'bid_amount' },
