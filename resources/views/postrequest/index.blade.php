@@ -108,8 +108,8 @@
           <div id="bidAmountError"></div>
           
           <!-- Why Choose Me -->
-          <label for="whyChooseMe" class="mt-3">Why Choose Me:</label>
-          <textarea id="whyChooseMe" name="why_choose_me" class="form-control summernote"></textarea>
+          <label for="why_choose_me" class="mt-3">Why Choose Me:</label>
+          <textarea id="why_choose_me" name="why_choose_me" class="form-control summernote"></textarea>
           
         </div>
         
@@ -126,7 +126,7 @@
       var bidAmount = $('#bidAmount').val();
       var postRequestId = $(".postrequestid").val();
       var bidId = $('#bidId').val();
-      var whyChooseMe = $('#why_choose_me').val(); // Get Summernote content
+      var why_choose_me = $('#why_choose_me').val(); // Get Summernote content
       
       clearErrorMessages();
   
