@@ -466,13 +466,7 @@
       });
     });
   
-    function submitBid() {
-      let bidAmount = $('#bidAmount').val();
-      let whyChooseMe = $('#whyChooseMe').val();
-      console.log("Bid Amount:", bidAmount);
-      console.log("Why Choose Me:", whyChooseMe);
-      // Add your AJAX or form submission logic here
-    }
+    
   </script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
   </x-master-layout>
