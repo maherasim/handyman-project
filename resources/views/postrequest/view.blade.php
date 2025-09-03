@@ -56,403 +56,53 @@
                 </div>
                 @endif
 
-                @if(auth()->user()->user_type === 'provider')
-                <div class="row">
-                    @forelse($bids as $bid)
-                        @php
-                            // Status Badge logic (moved from JS to PHP)
-                            switch ($bid->status) {
-                                case 'pending':
-                                    $statusBadge =
-                                        '<span class="badge px-3 py-2" style="background-color:#FFC107; color:black;">Pending</span>';
-                                    break;
-                                case 'assigned':
-                                    $statusBadge =
-                                        '<span class="badge px-3 py-2" style="background-color:#17a2b8; color:black;">Assigned</span>';
-                                    break;
-                                case 'accepted':
-                                    $statusBadge =
-                                        '<span class="badge px-3 py-2" style="background-color:#20c997; color:black;">Accepted</span>';
-                                    break;
-                                case 'in_progress':
-                                    $statusBadge =
-                                        '<span class="badge px-3 py-2" style="background-color:#007bff; color:black;">In Progress</span>';
-                                    break;
-                                case 'in_process':
-                                    $statusBadge =
-                                        '<span class="badge px-3 py-2" style="background-color:#0dcaf0; color:black;">In Process</span>';
-                                    break;
-                                case 'hold':
-                                    $statusBadge =
-                                        '<span class="badge px-3 py-2" style="background-color:#ffc107; color:black;">On Hold</span>';
-                                    break;
-                                case 'done':
-                                    $statusBadge =
-                                        '<span class="badge px-3 py-2" style="background-color:#28a745; color:black;">Done</span>';
-                                    break;
-                                case 'completed':
-                                    $statusBadge =
-                                        '<span class="badge px-3 py-2" style="background-color:#28a745; color:black;">Completed</span>';
-                                    break;
-                                case 'cancelled':
-                                    $statusBadge =
-                                        '<span class="badge px-3 py-2" style="background-color:#dc3545; color:black;">Cancelled</span>';
-                                    break;
-                                default:
-                                    $statusBadge =
-                                        '<span class="badge px-3 py-2" style="background-color:#6c757d; color:black;">' .
-                                        ucfirst($bid->status) .
-                                        '</span>';
-                            }
-
-                            // Hold reason
-                            $reasonHtml = '';
-                            if (in_array($bid->status, ['hold', 'on_hold']) && $bid->hold_reason) {
-                                $reasonHtml =
-                                    '<p class="mb-3 text-warning"><i class="fas fa-comment-dots"></i> Reason: ' .
-                                    $bid->hold_reason .
-                                    '</p>';
-                            }
-                        @endphp
-
-                        <div class="col-md-6 col-lg-4 mb-3">
-                            <div class="card shadow-sm h-100">
-                                <div class="card-body d-flex flex-column">
-                                    <h6 class="fw-bold mb-2">{{ $bid->postrequest->title ?? '' }}</h6>
-                                    <p class="text-muted mb-1"><i class="fas fa-map-marker-alt"></i> Location:
-                                        {{ optional($bid->postrequest->city)->name ?? '-' }},
-                                        {{ optional($bid->postrequest->country)->name ?? '-' }}</p>
-                                    <p class="text-muted mb-1"><i class="fas fa-briefcase"></i> Job Type:
-                                        {{ $bid->postrequest->type ?? '-' }}</p>
-                                    <p class="text-muted mb-1"><i class="far fa-calendar-check"></i> Start: <span
-                                            class="fw-bold">{{ $bid->postrequest->start_date ?? '-' }}</span></p>
-                                    <p class="text-muted mb-1"><i class="far fa-calendar-times"></i> End: <span
-                                            class="fw-bold">{{ $bid->postrequest->end_date ?? '-' }}</span></p>
-                                    <p class="text-muted mb-1"><i class="fas fa-wallet"></i> Total Budget: <span
-                                            class="fw-bold">{{ $bid->postrequest->total_budget ?? '-' }}</span></p>
-                                    <p class="text-muted mb-1"><i class="fas fa-users"></i> Applications: <span
-                                            class="fw-bold">{{ $bid->postrequest && $bid->postrequest->postBidList ? $bid->postrequest->postBidList->count() : 0 }}</span>
-                                    </p>
-                                    <p class="text-muted mb-1"><i class="fas fa-user"></i> Provider:
-                                        {{ $bid->provider->display_name ?? 'N/A' }}</p>
-                                    <p class="text-muted mb-1"><i class="fas fa-user-tie"></i> Customer:
-                                        {{ $bid->customer->display_name ?? 'N/A' }}</p>
-                                    <p class="mb-1"><i class="fas fa-dollar-sign"></i> Bid: <span
-                                            class="fw-bold">{{ $bid->price }}</span></p>
-                                    @if(auth()->user()->user_type !== 'provider')
-                                        <p class="mb-1"><i class="fas fa-flag"></i> Status: {!! $statusBadge !!}</p>
-                                        {!! $reasonHtml !!}
-                                    @endif
-
-                                    @if (auth()->user()->user_type !== 'provider' && $bid->status === 'advance_payment' && isset($bid->advance_percent, $bid->remaining_percent))
-                                        @php
-                                            $advPct = (float) ($bid->advance_percent ?? 0);
-                                            $remPct = (float) ($bid->remaining_percent ?? 0);
-                                            $price = (float) ($bid->price ?? 0);
-                                            $advAmount = number_format(($price * $advPct) / 100, 2);
-                                            $remAmount = number_format(($price * $remPct) / 100, 2);
-                                        @endphp
-                                        <div class="mt-2">
-                                            <h6 class="fw-bold">Price Breakdown</h6>
-                                            <table class="table table-sm mb-2">
-                                                <thead>
-                                                    <tr>
-                                                        <th>Type</th>
-                                                        <th>Percent</th>
-                                                        <th>Amount</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <tr>
-                                                        <td>Advance</td>
-                                                        <td>{{ $advPct }}%</td>
-                                                        <td>{{ $advAmount }}</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>Remaining</td>
-                                                        <td>{{ $remPct }}%</td>
-                                                        <td>{{ $remAmount }}</td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    @endif
-
-                                    @if(auth()->user()->user_type !== 'provider')
-                                    <div class="mt-auto">
-                                        {{-- Non-provider roles may see actions here (left as-is intentionally) --}}
-                                    </div>
-                                    @endif
-                                </div>
-                            </div>
-                        </div>
-                    @empty
-                        <p class="text-muted">No bids found for this request.</p>
-                    @endforelse
+                <div class="table-responsive">
+                    <table id="postBidsTable" class="table table-striped table-bordered w-100">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Title</th>
+                                <th>Posted at</th>
+                                <th>Max. Budget</th>
+                                <th>Start Date</th>
+                                <th>End Date</th>
+                                <th>Provider</th>
+                                <th>Bid Amount</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
                 </div>
-                @else
-                <div class="row" id="bidsContainer"></div>
-                @endif
 
             </div>
         </div>
     </div>
 
-    @if(auth()->user()->user_type !== 'provider')
-    <!-- Hidden DataTable -->
-    <table id="datatable" class="d-none"></table>
-
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            let bidsContainer = $("#bidsContainer");
-
-            let table = $('#datatable').DataTable({
+        document.addEventListener('DOMContentLoaded', function() {
+            const table = $('#postBidsTable').DataTable({
                 processing: true,
                 serverSide: true,
                 searching: false,
                 paging: true,
-                pageLength: 6,
+                pageLength: 10,
                 ajax: {
-                    url: '{{ route('bidsshowjson') }}',
-                    type: "GET",
-                    data: function(d) {
-                        d.search = {
-                            value: $('.dt-search').val()
-                        };
-                        @if (isset($id))
-                            d.post_request_id = {{ (int) $id }};
-                        @endif
-                    }
+                    url: @json(route('postrequest.index_data', $id)),
+                    type: 'GET'
                 },
-                columns: [{
-                        data: 'post_title',
-                        name: 'post_title'
-                    },
-                    {
-                        data: 'provider_name',
-                        name: 'provider_name'
-                    },
-                    {
-                        data: 'customer_name',
-                        name: 'customer_name'
-                    },
-                    {
-                        data: 'price',
-                        name: 'price'
-                    },
-                    {
-                        data: 'status',
-                        name: 'status'
-                    },
-                    {
-                        data: 'action',
-                        name: 'action',
-                        orderable: false,
-                        searchable: false
-                    }
-                ],
-                drawCallback: function(settings) {
-                    bidsContainer.empty();
-                    // Define auth context before using it below
-                    const AUTH_USER_ID = {{ auth()->id() }};
-                    const AUTH_USER_TYPE = @json(auth()->user()->user_type);
-                    let data = this.api().rows({
-                        page: 'current'
-                    }).data();
-
-                    data.each(function(row) {
-                        // Status Badge
-                        let statusBadge = '';
-                        switch (row.status) {
-                            case 'pending':
-                                statusBadge =
-                                    `<span class="badge px-3 py-2" style="background-color:#FFC107; color:black;">${row.status}</span>`;
-                                break;
-                            case 'assigned':
-                                statusBadge =
-                                    `<span class="badge px-3 py-2" style="background-color:#17a2b8; color:black;">${row.status}</span>`;
-                                break;
-                            case 'accepted':
-                                statusBadge =
-                                    `<span class="badge px-3 py-2" style="background-color:#20c997; color:black;">${row.status}</span>`;
-                                break;
-                            case 'in_progress':
-                                statusBadge =
-                                    `<span class="badge px-3 py-2" style="background-color:#007bff; color:black;">In Progress</span>`;
-                                break;
-                            case 'in_process':
-                                statusBadge =
-                                    `<span class="badge px-3 py-2" style="background-color:#0dcaf0; color:black;">In Process</span>`;
-                                break;
-                            case 'hold':
-                                statusBadge =
-                                    `<span class="badge px-3 py-2" style="background-color:#ffc107; color:black;">On Hold</span>`;
-                                break;
-                            case 'done':
-                                statusBadge =
-                                    `<span class="badge px-3 py-2" style="background-color:#28a745; color:black;">Done</span>`;
-                                break;
-                            case 'completed':
-                                statusBadge =
-                                    `<span class="badge px-3 py-2" style="background-color:#28a745; color:black;">${row.status}</span>`;
-                                break;
-                            case 'cancelled':
-                                statusBadge =
-                                    `<span class="badge px-3 py-2" style="background-color:#dc3545; color:black;">${row.status}</span>`;
-                                break;
-                            default:
-                                statusBadge =
-                                    `<span class="badge px-3 py-2" style="background-color:#6c757d; color:black;">${row.status}</span>`;
-                        }
-
-
-                        let reasonHtml = '';
-                        if ((row.status === 'hold' || row.status === 'on_hold') && row
-                            .hold_reason) {
-                            reasonHtml =
-                                `<p class="mb-3 text-warning"><i class="fas fa-comment-dots"></i> Reason: ${row.hold_reason}</p>`;
-                        }
-                        let priceTableHtml = '';
-                        if (AUTH_USER_TYPE !== 'provider' && row.status === 'advance_payment') {
-                            var advPct = (typeof row.advance_percent !== 'undefined' && row
-                                    .advance_percent !== null) ? parseFloat(row
-                                .advance_percent) : null;
-                            var remPct = (typeof row.remaining_percent !== 'undefined' && row
-                                .remaining_percent !== null) ? parseFloat(row
-                                .remaining_percent) : null;
-                            var price = (typeof row.price !== 'undefined' && row.price !==
-                                null) ? parseFloat(row.price) : null;
-                            if (price !== null && !isNaN(price) && advPct !== null && remPct !==
-                                null) {
-                                var advAmount = (price * advPct / 100).toFixed(2);
-                                var remAmount = (price * remPct / 100).toFixed(2);
-                                priceTableHtml = `
-                                    <div class="mt-2">
-                                        <h6 class="fw-bold">Price Breakdown</h6>
-                                        <table class="table table-sm mb-2">
-                                            <thead>
-                                                <tr>
-                                                    <th>Type</th>
-                                                    <th>Percent</th>
-                                                    <th>Amount</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr>
-                                                    <td>Advance</td>
-                                                    <td>${advPct}%</td>
-                                                    <td>${advAmount}</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>Remaining</td>
-                                                    <td>${remPct}%</td>
-                                                    <td>${remAmount}</td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>`;
-                            }
-                        }
-                        let actionHtml = '';
-                        try {
-                            if (AUTH_USER_TYPE === 'user') {
-                                if (row.status == 'requested') {
-                                    actionHtml +=
-                                        `<button class=\"btn btn-sm btn-success updateStatusBtn\" data-id=\"${row.id}\" data-status=\"accepted\">Accept</button> `;
-                                }
-
-                                if (row.status === 'advance_payment' && String(row
-                                    .customer_id) === String(AUTH_USER_ID)) {
-                                    var advPct = (typeof row.advance_percent !== 'undefined' &&
-                                        row.advance_percent !== null) ? parseFloat(row
-                                        .advance_percent) : null;
-                                    var amount = (advPct !== null && !isNaN(advPct)) ? (
-                                        parseFloat(row.price) * advPct / 100) : null;
-                                    var labelSuffix = amount !== null ?
-                                        ` ${amount.toFixed(2)} (${advPct}%)` : '';
-                                    var amountAttr = amount !== null ?
-                                        ` data-amount="${amount}"` : '';
-                                    actionHtml +=
-                                        `<button class="btn btn-sm btn-success payAdvanceBtn" data-post-id="${row.id}"${amountAttr}><i class="fas fa-wallet"></i> Pay Advance${labelSuffix}</button> `;
-                                }
-                                if (String(row.customer_id) === String(AUTH_USER_ID) && row
-                                    .status === 'in_progress') {
-                                    actionHtml +=
-                                        `<button class="btn btn-sm btn-info updateStatusBtn" data-id="${row.id}" data-status="in_process">Let's Start Work</button> `;
-                                }
-                                if (String(row.customer_id) === String(AUTH_USER_ID) && row
-                                    .status === 'done') {
-                                    actionHtml +=
-                                        `<button class="btn btn-sm btn-info updateStatusBtn" data-id="${row.id}" data-status="confirm_done">Confirm Work Done</button> `;
-                                }
-                                if (String(row.customer_id) === String(AUTH_USER_ID) && row
-                                    .status === 'accepted') {
-                                    actionHtml +=
-                                        `<button class=\"btn btn-sm btn-info updateStatusBtn\" data-id=\"${row.id}\" data-status=\"cancelled\">Cancel</button> `;
-                                }
-                                if (String(row.customer_id) === String(AUTH_USER_ID) && row
-                                    .status === 'completed' && !row.has_advance_paid) {
-                                    var remPct = (typeof row.remaining_percent !==
-                                            'undefined' && row.remaining_percent !== null) ?
-                                        parseFloat(row.remaining_percent) : null;
-                                    var amountRem = (remPct !== null && !isNaN(remPct)) ? (
-                                        parseFloat(row.price) * remPct / 100) : null;
-                                    var labelRem = amountRem !== null ?
-                                        ` ${amountRem.toFixed(2)} (${remPct}%)` : '';
-                                    var amountAttrRem = amountRem !== null ?
-                                        ` data-amount="${amountRem}"` : '';
-                                    actionHtml +=
-                                        `<button class="btn btn-sm btn-primary payRemainingBtn" data-post-id="${row.id}"${amountAttrRem}><i class="fas fa-credit-card"></i> Pay Remaining${labelRem}</button> `;
-                                }
-
-                            }
-
-                        } catch (e) {}
-
-                        if (AUTH_USER_TYPE !== 'provider') {
-                            if (!actionHtml && row.status === 'accepted') {
-                                actionHtml = '<span class="badge bg-success">Accepted</span>';
-                            }
-                        } else {
-                            actionHtml = '';
-                        }
-
-                        let card = `
-                        <div class="col-md-6 col-lg-4 mb-3">
-                            <div class="card shadow-sm h-100">
-                                <div class="card-body d-flex flex-column">
-                                    <h6 class="fw-bold mb-2">${row.post_title}</h6>
-                                    <p class="text-muted mb-1"><i class="fas fa-map-marker-alt"></i> Location: ${row.city ?? '-'}, ${row.country ?? '-'}</p>
-                                    <p class="text-muted mb-1"><i class="fas fa-briefcase"></i> Job Type: ${row.job_type ?? '-'}</p>
-                                    <p class="text-muted mb-1"><i class="far fa-calendar-check"></i> Start: <span class="fw-bold">${row.start_date ?? '-'}</span></p>
-                                    <p class="text-muted mb-1"><i class="far fa-calendar-times"></i> End: <span class="fw-bold">${row.end_date ?? '-'}</span></p>
-                                    <p class="text-muted mb-1"><i class="fas fa-wallet"></i> Total Budget: <span class="fw-bold">${row.total_budget ?? '-'}</span></p>
-                                    <p class="text-muted mb-1"><i class="fas fa-users"></i> Applications: <span class="fw-bold">${row.applications ?? 0}</span></p>
-                                    <p class="text-muted mb-1"><i class="fas fa-user"></i> Provider: ${row.provider_name}</p>
-                                    <p class="text-muted mb-1"><i class="fas fa-user-tie"></i> Customer: ${row.customer_name}</p>
-                                    <p class="mb-1"><i class="fas fa-dollar-sign"></i> Bid: <span class="fw-bold">${row.price}</span></p>
-                                    ${AUTH_USER_TYPE !== 'provider' ? `<p class=\"mb-1\"><i class=\"fas fa-flag\"></i> Status: ${statusBadge}</p>` : ''}
-                                    ${reasonHtml}
-                                    ${priceTableHtml}
-                                    <div class="mt-auto">
-                                        ${AUTH_USER_TYPE !== 'provider' ? actionHtml : ''}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>`;
-                        bidsContainer.append(card);
-                    });
-                }
+                columns: [
+                    { data: 'id', name: 'id' },
+                    { data: 'title', name: 'title' },
+                    { data: 'created_at', name: 'created_at' },
+                    { data: 'total_budget', name: 'total_budget' },
+                    { data: 'start_date', name: 'start_date' },
+                    { data: 'end_date', name: 'end_date' },
+                    { data: 'provider', name: 'provider' },
+                    { data: 'bid_amount', name: 'bid_amount' },
+                    { data: 'action', name: 'action', orderable: false, searchable: false }
+                ]
             });
-
-            // Live search
-            $('.dt-search').on('keyup', function() {
-                table.ajax.reload();
-            });
-        });
-    </script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
 
             // Event delegation for dynamically loaded buttons
             $(document).on('click', '.updateAdvanceBtn', function() {

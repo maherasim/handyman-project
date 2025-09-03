@@ -900,22 +900,46 @@ class PostJobRequestController extends Controller
         }
 
         return $datatable->eloquent($query)
-            ->editColumn('post_request_id', function ($post_job_bid) {
-                return ($post_job_bid->post_request_id != null && isset($post_job_bid->postrequest)) ? $post_job_bid->postrequest->title : '-';
+            // ID column
+            ->addColumn('id', function ($bid) {
+                return $bid->id;
             })
-            ->editColumn('provider_id', function ($post_job_bid) {
-                return ($post_job_bid->provider_id != null && isset($post_job_bid->provider)) ? $post_job_bid->provider->display_name : '-';
+            // Title column
+            ->addColumn('title', function ($bid) {
+                return optional($bid->postrequest)->title ?? '-';
             })
-            ->editColumn('customer_id', function ($post_job_bid) {
-                return ($post_job_bid->customer_id != null && isset($post_job_bid->customer)) ? $post_job_bid->customer->display_name : '-';
+            // Posted at
+            ->addColumn('created_at', function ($bid) {
+                return $bid->created_at ? $bid->created_at->format('Y-m-d') : '-';
             })
-            ->editColumn('price', function ($post_job) {
-                return getPriceFormat($post_job->price);
+            // Max. Budget (from post request total_budget)
+            ->addColumn('total_budget', function ($bid) {
+                $budget = optional($bid->postrequest)->total_budget;
+                return $budget !== null ? getPriceFormat($budget) : '-';
             })
-            ->editColumn('duration', function ($post_job_bid) {
-                return ($post_job_bid->duration != null) ? $post_job_bid->duration . ' hours' : '-';
+            // Start Date / End Date
+            ->addColumn('start_date', function ($bid) {
+                return optional($bid->postrequest)->start_date ?? '-';
+            })
+            ->addColumn('end_date', function ($bid) {
+                return optional($bid->postrequest)->end_date ?? '-';
+            })
+            // Provider name
+            ->addColumn('provider', function ($bid) {
+                return optional($bid->provider)->display_name ?? '-';
+            })
+            // Bid Amount
+            ->addColumn('bid_amount', function ($bid) {
+                return getPriceFormat($bid->price);
+            })
+            // Action: View Job
+            ->addColumn('action', function ($bid) {
+                $jobId = $bid->post_request_id;
+                $url = route('post-job-bid.show', ['id' => $jobId]);
+                return '<a href="' . $url . '" class="btn btn-sm btn-outline-primary"><i class="far fa-eye"></i> View Job</a>';
             })
             ->addIndexColumn()
+            ->rawColumns(['action'])
             ->toJson();
     }
 
