@@ -109,7 +109,7 @@
           
           <!-- Why Choose Me -->
           <label for="whyChooseMe" class="mt-3">Why Choose Me:</label>
-          <textarea id="whyChooseMe" name="whyChooseMe" class="form-control summernote"></textarea>
+          <textarea id="whyChooseMe" name="why_choose_me" class="form-control summernote"></textarea>
           
         </div>
         
