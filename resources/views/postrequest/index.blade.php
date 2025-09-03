@@ -96,6 +96,7 @@
                     </button>
                 </div>
                 <input type="hidden" class="postrequestid">
+                <input type="hidden" id="bidId" name="bidId" value="">
                 <div class="modal-body">
                     <label for="bidAmount">Bid Amount:</label>
                     <input type="number" id="bidAmount" name="bidAmount" class="form-control" required>
@@ -104,57 +105,54 @@
               
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary bid-button-submit" onclick="submitBid()">Submit
-                        Bid</button>
+                    <button type="button" class="btn btn-primary bid-button-submit" onclick="submitBid()">Submit Bid</button>
                 </div>
             </div>
         </div>
     </div>
     <script>
       function submitBid() {
-      var bidAmount = $('#bidAmount').val();
-      var postRequestId = $(".postrequestid").val();
-      
-      clearErrorMessages();
-  
-      if (!bidAmount) {
-          displayErrorMessage('Bid Amount is required.', 'bidAmountError');
-          return;
+        var bidAmount = $('#bidAmount').val();
+        var postRequestId = $(".postrequestid").val();
+        var bidId = $('#bidId').val();
+        clearErrorMessages();
+        if (!bidAmount) {
+            displayErrorMessage('Bid Amount is required.', 'bidAmountError');
+            return;
+        }
+        $.ajax({
+            url: 'api/save-bid',
+            type: 'POST',
+            dataType: 'json',
+            headers: {
+                'Authorization': `Bearer ${authToken}`
+            },
+            data: {
+                id: bidId,
+                post_request_id: postRequestId,
+                price: bidAmount,
+            },
+            success: function(response) {
+                $('#bidModal').modal('hide');
+                $('#datatable').DataTable().ajax.reload();
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success!',
+                    text: response && response.message ? response.message : 'Your bid has been saved.',
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+            },
+            error: function(error) {
+                console.error('Error:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Something went wrong while submitting your bid.',
+                });
+            }
+        });
       }
-  
-      $.ajax({
-          url: 'api/save-bid',
-          type: 'POST',
-          dataType: 'json',
-          headers: {
-              'Authorization': `Bearer ${authToken}`
-          },
-          data: {
-              post_request_id: postRequestId,
-              price: bidAmount,
-          },
-          success: function(response) {
-              $('#bidModal').modal('hide');
-              if (response.hasBid) {
-                  // Hide the bid button for the specific post job
-                  // Assuming you have a way to find the corresponding button, e.g., using postRequestId
-                  $(`button[onclick="openBidModal(${postRequestId}, ${auth()->user()->id})"]`).hide();
-  
-                  // Optionally, reload the DataTable to refresh the view
-                  $('#datatable').DataTable().ajax.reload();
-                  alert('You have already placed a bid on this post.');
-              } else {
-                  // Optionally handle the case when a new bid is placed
-                  $(`button[onclick="openBidModal(${postRequestId}, ${auth()->user()->id})"]`).hide();
-                  alert('Your bid has been successfully placed!');
-              }
-          },
-          error: function(error) {
-              console.error('Error:', error);
-          }
-      });
-  }
-  
     </script>
     <script>
         document.addEventListener('DOMContentLoaded', (event) => {
@@ -209,6 +207,11 @@
                         data: 'customer_id',
                         name: 'customer_id',
                         title: "{{ __('messages.customer') }}"
+                    },
+                    {
+                        data: 'applicants',
+                        name: 'applicants',
+                        title: "Applicants"
                     },
                     {
                         data: 'status',
@@ -312,16 +315,19 @@
                     post_request_id: postRequestId,
                 },
                 success: function(response) {
-                    // Handle the response data
-                    console.log(response.price);
-                    if (response.price != undefined) {
+                    // Populate form for update or create
+                    if (response && response.price !== undefined) {
+                        $('#bidId').val(response.id || '');
                         $('#bidAmount').val(response.price);
-                        $('#bidAmount').prop('disabled', true);
-                        $('.bid-button-submit').prop('disabled', true);
+                        $('#bidAmount').prop('disabled', false);
+                        $('.bid-button-submit').prop('disabled', false).text('Update Bid');
+                        $('#bidModalLabel').text('Update Bid');
                     } else {
+                        $('#bidId').val('');
                         $('#bidAmount').val('');
                         $('#bidAmount').prop('disabled', false);
-                        $('.bid-button-submit').prop('disabled', false);
+                        $('.bid-button-submit').prop('disabled', false).text('Submit Bid');
+                        $('#bidModalLabel').text('Place Bid');
                     }
                 },
                 error: function(error) {
@@ -339,6 +345,9 @@
             $(this).removeData('post-request-id');
             $('#bidAmount').val('');
             $('#bidAmount').prop('disabled', false);
+            $('#bidId').val('');
+            $('.bid-button-submit').text('Submit Bid');
+            $('#bidModalLabel').text('Place Bid');
         });
   
         function displayErrorMessage(message, elementId) {

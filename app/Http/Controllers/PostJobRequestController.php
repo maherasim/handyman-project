@@ -562,6 +562,9 @@ public function index_data(DataTables $datatable, Request $request)
         }
     }
 
+    // Count applicants (bids) per job request efficiently
+    $query->withCount(['postBidList as applicants']);
+
     return $datatable->eloquent($query)
         ->addColumn('check', function ($row) {
             return '<input type="checkbox" class="form-check-input select-table-row"  id="datatable-row-'.$row->id.'"  name="datatable_ids[]" value="'.$row->id.'" onclick="dataTableRowCheck('.$row->id.')">';
@@ -587,6 +590,9 @@ public function index_data(DataTables $datatable, Request $request)
         })
         ->editColumn('price', function ($query){
             return getPriceFormat($query->price);
+        })
+        ->addColumn('applicants', function ($query) {
+            return (int) ($query->applicants ?? 0);
         })
         ->editColumn('status', function ($query){
             $status = $query->status;
