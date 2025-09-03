@@ -289,7 +289,7 @@ class PostJobRequestController extends Controller
                     ? '<span class="badge badge-success">Accepted</span>'
                     : '-';
             })
-            ->rawColumns(['action'])
+            ->rawColumns(['status','action'])
             ->toJson();
     }
     public function payAdvance(Request $request, $id)
