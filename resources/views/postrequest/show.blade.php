@@ -15,6 +15,22 @@
         $subTotal = $total + $extraChargesTotal;
         // Remaining = subtotal - advance
         $remainingAmount = $subTotal - $advAmount;
+        // Country-based tax
+        $countryId = $bid->postrequest->country_id ?? null;
+        $taxRate = 0;
+        $taxTitle = '';
+        if ($countryId) {
+            $taxModel = \App\Models\Tax::find($countryId);
+            $taxRate = $taxModel->value ?? 0;
+            $taxTitle = $taxModel->title ?? '';
+        }
+
+        // Tax is applied on subtotal (price + extra charges), aligned with booking
+        $taxAmount = ($subTotal * $taxRate) / 100;
+        $grandTotal = $subTotal + $taxAmount;
+
+        // Recompute remaining to include tax
+        $remainingAmount = $grandTotal - $advAmount;
     @endphp
 
     {{-- Provider Actions --}}
@@ -121,7 +137,7 @@
             <div class="row g-3">
 
                 <!-- Title Card -->
-                <div class="col-md-6">
+                <div class="col-md-4">
                     <div class="card border-primary shadow-sm h-100 hover-shadow">
                         <div class="card-body text-center">
                             <i class="fas fa-heading fa-2x text-primary mb-2"></i>
@@ -132,7 +148,7 @@
                 </div>
 
                 <!-- Location Card -->
-                <div class="col-md-6">
+                <div class="col-md-4">
                     <div class="card border-success shadow-sm h-100 hover-shadow">
                         <div class="card-body text-center">
                             <i class="fas fa-map-marker-alt fa-2x text-success mb-2"></i>
@@ -146,7 +162,7 @@
                 </div>
 
                 <!-- Job Type -->
-                <div class="col-md-6">
+                <div class="col-md-4">
                     <div class="card border-warning shadow-sm h-100 hover-shadow">
                         <div class="card-body text-center">
                             <i class="fas fa-briefcase fa-2x text-warning mb-2"></i>
@@ -157,7 +173,7 @@
                 </div>
 
                 <!-- Start Date -->
-                <div class="col-md-6">
+                <div class="col-md-4">
                     <div class="card border-info shadow-sm h-100 hover-shadow">
                         <div class="card-body text-center">
                             <i class="far fa-calendar-check fa-2x text-info mb-2"></i>
@@ -168,7 +184,7 @@
                 </div>
 
                 <!-- End Date -->
-                <div class="col-md-6">
+                <div class="col-md-4">
                     <div class="card border-danger shadow-sm h-100 hover-shadow">
                         <div class="card-body text-center">
                             <i class="far fa-calendar-times fa-2x text-danger mb-2"></i>
@@ -179,7 +195,7 @@
                 </div>
 
                 <!-- Total Budget -->
-                <div class="col-md-6">
+                <div class="col-md-4">
                     <div class="card border-secondary shadow-sm h-100 hover-shadow">
                         <div class="card-body text-center">
                             <i class="fas fa-wallet fa-2x text-secondary mb-2"></i>
@@ -190,7 +206,7 @@
                 </div>
 
                 <!-- Applications -->
-                <div class="col-md-6">
+                <div class="col-md-4">
                     <div class="card border-dark shadow-sm h-100 hover-shadow">
                         <div class="card-body text-center">
                             <i class="fas fa-users fa-2x text-dark mb-2"></i>
@@ -201,7 +217,7 @@
                 </div>
 
                 <!-- Provider -->
-                <div class="col-md-6">
+                <div class="col-md-4">
                     <div class="card border-primary shadow-sm h-100 hover-shadow">
                         <div class="card-body text-center">
                             <i class="fas fa-user fa-2x text-primary mb-2"></i>
@@ -212,7 +228,7 @@
                 </div>
 
                 <!-- Customer -->
-                <div class="col-md-6">
+                <div class="col-md-4">
                     <div class="card border-success shadow-sm h-100 hover-shadow">
                         <div class="card-body text-center">
                             <i class="fas fa-user-tie fa-2x text-success mb-2"></i>
@@ -223,7 +239,7 @@
                 </div>
 
                 <!-- Status -->
-                <div class="col-md-6">
+                <div class="col-md-4">
                     <div class="card border-info shadow-sm h-100 hover-shadow">
                         <div class="card-body text-center">
                             <i class="fas fa-flag fa-2x text-info mb-2"></i>
@@ -267,27 +283,35 @@
                         $remaining = $remainingAmount;
                     @endphp
                 
-                    <table class="table table-sm">
+                    <table class="table table-sm table-hover price-table">
                         <tbody>
                             <tr>
                                 <td>Bid Amount</td>
-                                <td class="text-end">{{ number_format($total, 2) }}</td>
+                                <td class="text-end">€{{ number_format($total, 2) }}</td>
                             </tr>
                             <tr>
                                 <td>Advance Payment ({{ $advPct }}%)</td>
-                                <td class="text-end">{{ number_format($advAmount, 2) }}</td>
+                                <td class="text-end">€{{ number_format($advAmount, 2) }}</td>
                             </tr>
                             <tr>
                                 <td>Extra Charges ({{ $extraChargeQty }} × {{ number_format($extraChargeUnit, 2) }})</td>
-                                <td class="text-end">{{ number_format($extraChargesTotal, 2) }}</td>
+                                <td class="text-end">€{{ number_format($extraChargesTotal, 2) }}</td>
                             </tr>
                             <tr class="fw-bold">
                                 <td>Subtotal</td>
-                                <td class="text-end">{{ number_format($subTotal, 2) }}</td>
+                                <td class="text-end">€{{ number_format($subTotal, 2) }}</td>
+                            </tr>
+                            <tr>
+                                <td>Tax ({{ number_format($taxRate, 0) }}%) {{ $taxTitle }}</td>
+                                <td class="text-end">€{{ number_format($taxAmount, 2) }}</td>
+                            </tr>
+                            <tr class="fw-bold">
+                                <td>Grand Total</td>
+                                <td class="text-end">€{{ number_format($grandTotal, 2) }}</td>
                             </tr>
                             <tr class="fw-bold">
                                 <td>Remaining Amount</td>
-                                <td class="text-end">{{ number_format($remaining, 2) }}</td>
+                                <td class="text-end">€{{ number_format($remaining, 2) }}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -305,6 +329,14 @@
         transform: translateY(-3px);
         transition: 0.3s;
         box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.15) !important;
+    }
+    .price-table tbody tr {
+        transition: background-color 0.2s ease, border-left-color 0.2s ease;
+        border-left: 3px solid transparent;
+    }
+    .price-table tbody tr:hover {
+        background-color: #f8f9fa;
+        border-left-color: #0d6efd; /* primary accent */
     }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
