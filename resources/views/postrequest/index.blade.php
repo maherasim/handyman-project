@@ -332,7 +332,7 @@
                             showConfirmButton: false
                         }).then(() => {
                             // Reload the page or refresh the table
-                            $('#datatable').DataTable().ajax.reload();
+                            window.location.reload();
                         });
                     }
                 },
