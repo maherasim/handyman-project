@@ -52,12 +52,12 @@
                                     <option value="0">{{ __('messages.inactive') }}</option>
                                 </select>
                             </div>
-                            <button id="quick-action-apply" class="btn btn-primary" data-ajax="true"
+                            {{-- <button id="quick-action-apply" class="btn btn-primary" data-ajax="true"
                                 data--submit="{{ route('post-job.bulk-action') }}" data-datatable="reload"
                                 data-confirmation='true' data-title="{{ __('post-job', ['form' => __('post-job')]) }}"
                                 title="{{ __('post-job', ['form' => __('post-job')]) }}"
                                 data-message='{{ __('Do you want to perform this action?') }}'
-                                disabled>{{ __('messages.apply') }}</button>
+                                disabled>{{ __('messages.apply') }}</button> --}}
                     </div>
   
                     </form>
