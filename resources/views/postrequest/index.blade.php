@@ -96,7 +96,7 @@
                     </button>
                 </div>
                 <input type="hidden" class="postrequestid">
-                <input type="hidden" class="bidid">
+                <input type="hidden" id="bidId" name="bidId" value="">
                 <div class="modal-body">
                     <label for="bidAmount">Bid Amount:</label>
                     <input type="number" id="bidAmount" name="bidAmount" class="form-control" required>
@@ -105,13 +105,55 @@
               
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary bid-button-submit" onclick="submitBid()">Submit
-                        Bid</button>
+                    <button type="button" class="btn btn-primary bid-button-submit" onclick="submitBid()">Submit Bid</button>
                 </div>
             </div>
         </div>
     </div>
-    <script></script>
+    <script>
+      function submitBid() {
+        var bidAmount = $('#bidAmount').val();
+        var postRequestId = $(".postrequestid").val();
+        var bidId = $('#bidId').val();
+        clearErrorMessages();
+        if (!bidAmount) {
+            displayErrorMessage('Bid Amount is required.', 'bidAmountError');
+            return;
+        }
+        $.ajax({
+            url: 'api/save-bid',
+            type: 'POST',
+            dataType: 'json',
+            headers: {
+                'Authorization': `Bearer ${authToken}`
+            },
+            data: {
+                id: bidId,
+                post_request_id: postRequestId,
+                price: bidAmount,
+            },
+            success: function(response) {
+                $('#bidModal').modal('hide');
+                $('#datatable').DataTable().ajax.reload();
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success!',
+                    text: response && response.message ? response.message : 'Your bid has been saved.',
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+            },
+            error: function(error) {
+                console.error('Error:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Something went wrong while submitting your bid.',
+                });
+            }
+        });
+      }
+    </script>
     <script>
         document.addEventListener('DOMContentLoaded', (event) => {
   
@@ -184,6 +226,11 @@
                     },
                     @endif
                     {
+                        data: 'applicants',
+                        name: 'applicants',
+                        title: "Applicants"
+                    },
+                    {
                         data: 'status',
                         name: 'status',
                         title: "{{ __('messages.status') }}"
@@ -211,7 +258,7 @@
         function submitBid() { 
     var bidAmount = $('#bidAmount').val();
     var postRequestId = $(".postrequestid").val();
-    var bidId = $(".bidid").val();
+    var bidId = $('#bidId').val();
 
     clearErrorMessages();
 
@@ -287,18 +334,19 @@
                     post_request_id: postRequestId,
                 },
                 success: function(response) {
-                    // Handle the response data
-                    console.log(response.price);
-                    if (response && response.price != undefined) {
+                    // Populate form for update or create
+                    if (response && response.price !== undefined) {
+                        $('#bidId').val(response.id || '');
                         $('#bidAmount').val(response.price);
-                        $('.bidid').val(response.id || '');
                         $('#bidAmount').prop('disabled', false);
                         $('.bid-button-submit').prop('disabled', false).text('Update Bid');
+                        $('#bidModalLabel').text('Update Bid');
                     } else {
+                        $('#bidId').val('');
                         $('#bidAmount').val('');
-                        $('.bidid').val('');
                         $('#bidAmount').prop('disabled', false);
                         $('.bid-button-submit').prop('disabled', false).text('Submit Bid');
+                        $('#bidModalLabel').text('Place Bid');
                     }
                 },
                 error: function(error) {
@@ -316,8 +364,9 @@
             $(this).removeData('post-request-id');
             $('#bidAmount').val('');
             $('#bidAmount').prop('disabled', false);
-            $('.bidid').val('');
-            $('.bid-button-submit').prop('disabled', false).text('Submit Bid');
+            $('#bidId').val('');
+            $('.bid-button-submit').text('Submit Bid');
+            $('#bidModalLabel').text('Place Bid');
         });
   
         function displayErrorMessage(message, elementId) {

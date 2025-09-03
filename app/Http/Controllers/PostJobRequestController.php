@@ -589,7 +589,6 @@ class PostJobRequestController extends Controller
         ]);
     }
 
-
     public function index_data(DataTables $datatable, Request $request)
     {
         $query = PostJobRequest::query();
@@ -599,19 +598,13 @@ class PostJobRequestController extends Controller
             $query->where('customer_id', auth()->id());
         }
 
-
         $filter = $request->filter;
-
-        // Exclude entries where the provider has already bid
-        // $query->whereDoesntHave('postBidList', function($postBidList){
-        //     $postBidList->where('provider_id', auth()->id());
-        // });
-
-        if (isset($filter)) {
-            if (isset($filter['column_status'])) {
-                $query->where('status', $filter['column_status']);
-            }
+        if (isset($filter) && isset($filter['column_status'])) {
+            $query->where('status', $filter['column_status']);
         }
+
+        // Count applicants (bids) per job request efficiently
+        $query->withCount(['postBidList as applicants']);
 
         return $datatable->eloquent($query)
             ->addColumn('check', function ($row) {
@@ -619,6 +612,9 @@ class PostJobRequestController extends Controller
             })
             ->editColumn('title', function ($query) {
                 return $query->title;
+            })
+            ->addColumn('applicants', function ($query) {
+                return (int) ($query->applicants ?? 0);
             })
             ->addColumn('accepted_for_current_provider', function ($row) {
                 if (auth()->user()->user_type === 'provider') {

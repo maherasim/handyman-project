@@ -18,12 +18,12 @@ $auth_user= authSession();
 
 @if(auth()->user()->hasAnyRole(['provider']))
     @php
-        $providerHasBid = $post_job->postBidList()->where('provider_id', auth()->id())->exists();
+        $hasProviderBid = $post_job->postBidList()->where('provider_id', auth()->id())->exists();
     @endphp
     @if($post_job->status != 'assigned')
         <button class="btn btn-success btn-sm bid-button mr-1" style="font-size: 14px; padding: 5px 10px;" type="button" onclick="openBidModal({{ $post_job->id }}, {{ auth()->user()->id }})">
             <i class="fas fa-gavel"></i>
-            {{ $providerHasBid ? 'Update Bid' : 'BID' }}
+            {{ $hasProviderBid ? 'Update Bid' : 'BID' }}
         </button>
     @else
         <button class="btn btn-primary btn-sm start-work-button" style="font-size: 14px; padding: 5px 10px;" type="button" data-post-id="{{ $post_job->id }}">
