@@ -113,6 +113,7 @@
                     <!-- Why Choose Me -->
                     <label for="why_choose_me" class="mt-3">Why Choose Me:</label>
                     <textarea id="why_choose_me" name="why_choose_me" class="form-control summernote"></textarea>
+                    <div id="whyChooseMeError" class="text-danger small"></div> <!-- ✅ Added error container -->
 
                 </div>
 
@@ -124,7 +125,7 @@
             </div>
         </div>
     </div>
- 
+
 
     <script>
         document.addEventListener('DOMContentLoaded', (event) => {
@@ -231,7 +232,7 @@
 
         function submitBid() {
             var bidAmount = $('#bidAmount').val();
-            var why_choose_me = $('#why_choose_me').summernote('code'); // ✅ Use Summernote API
+            var why_choose_me = $('#why_choose_me').summernote('code'); // ✅ Get HTML
             var postRequestId = $(".postrequestid").val();
             var bidId = $('#bidId').val();
 
@@ -242,7 +243,9 @@
                 return;
             }
 
-            if (!why_choose_me) {
+            // ✅ Strip HTML and check for empty text
+            var plainText = $($.parseHTML(why_choose_me)).text().trim();
+            if (!plainText) {
                 displayErrorMessage('Why Choose Me is required.', 'whyChooseMeError');
                 return;
             }
@@ -257,14 +260,13 @@
                 data: {
                     post_request_id: postRequestId,
                     price: bidAmount,
-                    why_choose_me: why_choose_me,
+                    why_choose_me: why_choose_me, // keep HTML for formatting
                     id: bidId
                 },
                 success: function(response) {
                     $('#bidModal').modal('hide');
 
                     if (response.hasBid) {
-                        // User already bid
                         $('#datatable').DataTable().ajax.reload();
                         Swal.fire({
                             icon: 'info',
@@ -272,7 +274,6 @@
                             text: 'You have already placed a bid on this post.',
                         });
                     } else {
-                        // Successful bid
                         Swal.fire({
                             icon: 'success',
                             title: 'Success!',
@@ -280,7 +281,6 @@
                             timer: 2000,
                             showConfirmButton: false
                         }).then(() => {
-                            // Reload the page or refresh the table
                             window.location.reload();
                         });
                     }
@@ -295,6 +295,7 @@
                 }
             });
         }
+
 
         function openBidModal(postRequestId, authUserId) {
             $('.postrequestid').val(postRequestId);
@@ -412,29 +413,29 @@
         });
     </script>
 
-   <!-- jQuery -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-<!-- Bootstrap 4 (CSS + JS) -->
-<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+    <!-- Bootstrap 4 (CSS + JS) -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
 
-<!-- Summernote (CSS + JS) -->
-<link href="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.20/summernote-bs4.min.css" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.20/summernote-bs4.min.js"></script>
-<script>
-    $(document).ready(function() {
-      $('#why_choose_me').summernote({
-        height: 150,   // editor height
-        toolbar: [
-          ['style', ['bold', 'italic', 'underline', 'clear']],
-          ['para', ['ul', 'ol', 'paragraph']],
-          ['insert', ['link']],
-          ['view', ['codeview']]
-        ]
-      });
-    });
-  </script>
-  
+    <!-- Summernote (CSS + JS) -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.20/summernote-bs4.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.20/summernote-bs4.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#why_choose_me').summernote({
+                height: 150, // editor height
+                toolbar: [
+                    ['style', ['bold', 'italic', 'underline', 'clear']],
+                    ['para', ['ul', 'ol', 'paragraph']],
+                    ['insert', ['link']],
+                    ['view', ['codeview']]
+                ]
+            });
+        });
+    </script>
+
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 </x-master-layout>
