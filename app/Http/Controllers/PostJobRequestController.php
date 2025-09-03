@@ -645,9 +645,10 @@ class PostJobRequestController extends Controller
                     ->join('users as customers', 'customers.id', '=', 'post_job_requests.customer_id')
                     ->orderBy('customers.display_name', $order);
             })
-            ->editColumn('price', function ($query) {
-                return getPriceFormat($query->price);
+            ->editColumn('total_budget', function ($query) {
+                return getPriceFormat($query->total_budget);
             })
+            
             ->editColumn('created_at', function ($row) {
                 return $row->created_at ? $row->created_at->format('Y-m-d') : '';
             })

@@ -179,9 +179,9 @@
                         title: "{{ __('messages.status') }}"
                     },
                     {
-                        data: 'price',
-                        name: 'price',
-                        title: "{{ __('messages.price') }}"
+                        data: 'total_budget',
+                        name: 'total_budget',
+                        title: "{{ __('Max Budget') }}"
                     },
                     {
                         data: 'action',
