@@ -121,51 +121,56 @@
     </div>
   </div>
   
+  <script> 
+    function submitBid() {
+      var bidAmount = $('#bidAmount').val();
+      var postRequestId = $(".postrequestid").val();
+      var bidId = $('#bidId').val();
+      var whyChooseMe = $('#whyChooseMe').val(); // Get Summernote content
+      
+      clearErrorMessages();
   
-    <script>
-      function submitBid() {
-        var bidAmount = $('#bidAmount').val();
-        var postRequestId = $(".postrequestid").val();
-        var bidId = $('#bidId').val();
-        clearErrorMessages();
-        if (!bidAmount) {
-            displayErrorMessage('Bid Amount is required.', 'bidAmountError');
-            return;
-        }
-        $.ajax({
-            url: 'api/save-bid',
-            type: 'POST',
-            dataType: 'json',
-            headers: {
-                'Authorization': `Bearer ${authToken}`
-            },
-            data: {
-                id: bidId,
-                post_request_id: postRequestId,
-                price: bidAmount,
-            },
-            success: function(response) {
-                $('#bidModal').modal('hide');
-                $('#datatable').DataTable().ajax.reload();
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Success!',
-                    text: response && response.message ? response.message : 'Your bid has been saved.',
-                    timer: 2000,
-                    showConfirmButton: false
-                });
-            },
-            error: function(error) {
-                console.error('Error:', error);
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'Something went wrong while submitting your bid.',
-                });
-            }
-        });
+      if (!bidAmount) {
+          displayErrorMessage('Bid Amount is required.', 'bidAmountError');
+          return;
       }
-    </script>
+  
+      $.ajax({
+          url: 'api/save-bid',
+          type: 'POST',
+          dataType: 'json',
+          headers: {
+              'Authorization': `Bearer ${authToken}`
+          },
+          data: {
+              id: bidId,
+              post_request_id: postRequestId,
+              price: bidAmount,
+              why_choose_me: whyChooseMe  // Pass to backend
+          },
+          success: function(response) {
+              $('#bidModal').modal('hide');
+              $('#datatable').DataTable().ajax.reload();
+              Swal.fire({
+                  icon: 'success',
+                  title: 'Success!',
+                  text: response && response.message ? response.message : 'Your bid has been saved.',
+                  timer: 2000,
+                  showConfirmButton: false
+              });
+          },
+          error: function(error) {
+              console.error('Error:', error);
+              Swal.fire({
+                  icon: 'error',
+                  title: 'Error',
+                  text: 'Something went wrong while submitting your bid.',
+              });
+          }
+      });
+    }
+  </script>
+  
     <script>
         document.addEventListener('DOMContentLoaded', (event) => {
   
