@@ -85,31 +85,43 @@
             </div>
         </div>
     </div>
-    <div class="modal fade" id="bidModal" tabindex="-1" role="dialog" aria-labelledby="bidModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="bidModalLabel">Place Bid</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <input type="hidden" class="postrequestid">
-                <input type="hidden" id="bidId" name="bidId" value="">
-                <div class="modal-body">
-                    <label for="bidAmount">Bid Amount:</label>
-                    <input type="number" id="bidAmount" name="bidAmount" class="form-control" required>
-                    <div id="bidAmountError"></div>
-                </div>
-              
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary bid-button-submit" onclick="submitBid()">Submit Bid</button>
-                </div>
-            </div>
+<!-- Modal -->
+<div class="modal fade" id="bidModal" tabindex="-1" role="dialog" aria-labelledby="bidModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        
+        <div class="modal-header">
+          <h5 class="modal-title" id="bidModalLabel">Place Bid</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
         </div>
+        
+        <input type="hidden" class="postrequestid">
+        <input type="hidden" id="bidId" name="bidId" value="">
+        
+        <div class="modal-body">
+          
+          <!-- Bid Amount -->
+          <label for="bidAmount">Bid Amount:</label>
+          <input type="number" id="bidAmount" name="bidAmount" class="form-control" required>
+          <div id="bidAmountError"></div>
+          
+          <!-- Why Choose Me -->
+          <label for="whyChooseMe" class="mt-3">Why Choose Me:</label>
+          <textarea id="whyChooseMe" name="whyChooseMe" class="form-control summernote"></textarea>
+          
+        </div>
+        
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary bid-button-submit" onclick="submitBid()">Submit Bid</button>
+        </div>
+      </div>
     </div>
+  </div>
+  
+  
     <script>
       function submitBid() {
         var bidAmount = $('#bidAmount').val();
@@ -431,6 +443,32 @@
             }
         });
     </script>
+    
+  <!-- Summernote (Text Editor) -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.20/summernote-bs4.min.css" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.20/summernote-bs4.min.js"></script>
+  
+  <script>
+    $(document).ready(function() {
+      $('.summernote').summernote({
+        height: 150,   // Set editor height
+        toolbar: [
+          ['style', ['bold', 'italic', 'underline', 'clear']],
+          ['para', ['ul', 'ol', 'paragraph']],
+          ['insert', ['link']],
+          ['view', ['codeview']]
+        ]
+      });
+    });
+  
+    function submitBid() {
+      let bidAmount = $('#bidAmount').val();
+      let whyChooseMe = $('#whyChooseMe').val();
+      console.log("Bid Amount:", bidAmount);
+      console.log("Why Choose Me:", whyChooseMe);
+      // Add your AJAX or form submission logic here
+    }
+  </script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
   </x-master-layout>
   

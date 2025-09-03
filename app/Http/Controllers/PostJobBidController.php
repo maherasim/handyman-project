@@ -120,6 +120,7 @@ public function apiIndex(Request $request)
              'post_request_id' => 'required|integer|exists:post_job_requests,id',
              'provider_id' => 'nullable|integer',
              'price' => 'required|numeric',
+             'why_choose_me' => 'required|string',
              'duration' => 'nullable|string',
              'status' => 'nullable|string',
          ]);
