@@ -114,7 +114,7 @@
 
                     <!-- Why Choose Me -->
                     <label for="why_choose_me" class="mt-3">Why Choose Me:</label>
-                    <textarea id="why_choose_me" name="why_choose_me" class="form-control summernote"></textarea>
+                    <textarea id="why_choose_me" name="why_choose_me" class="form-control"></textarea>
                     <div id="whyChooseMeError"></div>
 
                 </div>
@@ -425,36 +425,7 @@
             }
         });
     </script>
-
-    <!-- Summernote (Text Editor) -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.20/summernote-bs4.min.css" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.20/summernote-bs4.min.js"></script>
-
-    <script>
-        $(document).ready(function() {
-            function initializeWhyChooseMeEditor() {
-                if ($.fn.summernote && !$('#why_choose_me').next('.note-editor').length) {
-                    $('#why_choose_me').summernote({
-                        height: 150,
-                        toolbar: [
-                            ['style', ['bold', 'italic', 'underline', 'clear']],
-                            ['para', ['ul', 'ol', 'paragraph']],
-                            ['insert', ['link']],
-                            ['view', ['codeview']]
-                        ]
-                    });
-                }
-            }
-
-            // Initialize on modal show
-            $('#bidModal').on('shown.bs.modal', function () {
-                initializeWhyChooseMeEditor();
-            });
-
-            // Fallback: if modal is shown programmatically and event timing misses
-            window.initializeWhyChooseMeEditor = initializeWhyChooseMeEditor;
-        });
-    </script>
+ 
 
       <script>
         tinymce.init({
