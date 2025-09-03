@@ -280,65 +280,7 @@
 
         var authToken = "{{ auth()->user()->createToken('auth_token')->plainTextToken }}";
 
-        function submitBid() {
-            var bidAmount = $('#bidAmount').val();
-            var postRequestId = $(".postrequestid").val();
-            var bidId = $('#bidId').val();
-
-            clearErrorMessages();
-
-            if (!bidAmount) {
-                displayErrorMessage('Bid Amount is required.', 'bidAmountError');
-                return;
-            }
-
-            $.ajax({
-                url: 'api/save-bid',
-                type: 'POST',
-                dataType: 'json',
-                headers: {
-                    'Authorization': `Bearer ${authToken}`
-                },
-                data: {
-                    post_request_id: postRequestId,
-                    price: bidAmount,
-                    id: bidId
-                },
-                success: function(response) {
-                    $('#bidModal').modal('hide');
-
-                    if (response.hasBid) {
-                        // User already bid
-                        $('#datatable').DataTable().ajax.reload();
-                        Swal.fire({
-                            icon: 'info',
-                            title: 'Notice',
-                            text: 'You have already placed a bid on this post.',
-                        });
-                    } else {
-                        // Successful bid
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Success!',
-                            text: 'Your bid has been submitted successfully.',
-                            timer: 2000,
-                            showConfirmButton: false
-                        }).then(() => {
-                            // Reload the page or refresh the table
-                            window.location.reload();
-                        });
-                    }
-                },
-                error: function(error) {
-                    console.error('Error:', error);
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: 'Something went wrong while submitting your bid.',
-                    });
-                }
-            });
-        }
+        
 
         function openBidModal(postRequestId, authUserId) {
             $('.postrequestid').val(postRequestId);
