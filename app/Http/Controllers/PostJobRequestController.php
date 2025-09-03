@@ -138,6 +138,7 @@ class PostJobRequestController extends Controller
 
         return DataTables::of($postJobBids)
             ->addIndexColumn()
+            ->addColumn('id', fn($bid) => $bid->id)
             ->addColumn('provider_name', fn($bid) => $bid->provider->display_name ?? 'N/A')
             ->addColumn('customer_name', fn($bid) => $bid->customer->display_name ?? 'N/A')
             ->addColumn('post_title', fn($bid) => $bid->postrequest->title ?? 'N/A')
@@ -169,6 +170,9 @@ class PostJobRequestController extends Controller
                 }
                 // Use eager-loaded collection to avoid N+1
                 return isset($post->postBidList) ? $post->postBidList->count() : $post->postBidList()->count();
+            })
+            ->addColumn('created_at', function ($bid) {
+                return $bid->created_at ? $bid->created_at->format('Y-m-d') : null;
             })
             ->addColumn('status', fn($bid) => $bid->status ?? 'N/A')
             ->addColumn('hold_reason', fn($bid) => $bid->hold_reason ?? null)
