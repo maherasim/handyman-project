@@ -160,19 +160,19 @@
                     searchable: false
                 },
 
-
-                    @if (auth()->user()->user_type == 'provider')
-                    {
-                        data: 'provider_id',
-                        name: 'provider_id',
-                        title: "{{ __('messages.provider') }}"
+                   {
+                        data: 'created_at',
+                        name: 'created_at',
+                        title: "{{ __('Published At') }}"
                     },
-                    @endif
+                     
+                    @if (auth()->user()->user_type == 'provider')
                     {
                         data: 'customer_id',
                         name: 'customer_id',
                         title: "{{ __('messages.customer') }}"
                     },
+                    @endif
                     {
                         data: 'status',
                         name: 'status',
