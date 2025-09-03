@@ -706,7 +706,10 @@ class PostJobRequestController extends Controller
                     ->orderBy('customers.display_name', $order);
             })
             ->editColumn('total_budget', function ($query) {
-                return getPriceFormat($query->total_budget);
+                $amount = getPriceFormat($query->total_budget);
+                $type = strtolower((string)($query->price_type ?? $query->job_price ?? 'fixed'));
+                $label = $type === 'hourly' ? 'hourly' : ($type === 'daily' ? 'daily' : ($type === 'fixed' ? 'fixed' : $type));
+                return trim($amount . ' ' . $label);
             })
             ->editColumn('start_date', function ($query) {
                 return $query->start_date ? $query->start_date->format('Y-m-d') : '';
@@ -972,10 +975,17 @@ class PostJobRequestController extends Controller
             ->addColumn('created_at', function ($bid) {
                 return $bid->created_at ? $bid->created_at->format('Y-m-d') : '-';
             })
-            // Max. Budget (from post request total_budget)
+            // Max. Budget (from post request total_budget) with price_type suffix
             ->addColumn('total_budget', function ($bid) {
-                $budget = optional($bid->postrequest)->total_budget;
-                return $budget !== null ? getPriceFormat($budget) : '-';
+                $post = $bid->postrequest;
+                if (!$post) {
+                    return '-';
+                }
+                $budget = $post->total_budget;
+                $amount = $budget !== null ? getPriceFormat($budget) : '-';
+                $type = strtolower((string)($post->price_type ?? $post->job_price ?? 'fixed'));
+                $label = $type === 'hourly' ? 'hourly' : ($type === 'daily' ? 'daily' : ($type === 'fixed' ? 'fixed' : $type));
+                return trim($amount . ' ' . $label);
             })
             // Start Date / End Date
             ->addColumn('start_date', function ($bid) {
@@ -988,9 +998,13 @@ class PostJobRequestController extends Controller
             ->addColumn('provider', function ($bid) {
                 return optional($bid->provider)->display_name ?? '-';
             })
-            // Bid Amount
+            // Bid Amount with price_type suffix (from post request)
             ->addColumn('bid_amount', function ($bid) {
-                return getPriceFormat($bid->price);
+                $amount = getPriceFormat($bid->price);
+                $post = $bid->postrequest;
+                $type = $post ? strtolower((string)($post->price_type ?? $post->job_price ?? 'fixed')) : 'fixed';
+                $label = $type === 'hourly' ? 'hourly' : ($type === 'daily' ? 'daily' : ($type === 'fixed' ? 'fixed' : $type));
+                return trim($amount . ' ' . $label);
             })
             // Action: View Job
             ->addColumn('action', function ($bid) {
