@@ -473,5 +473,4 @@
             });
         });
     </script>
-    @endif
 </x-master-layout>
