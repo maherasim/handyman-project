@@ -23,6 +23,66 @@ use Illuminate\Support\Facades\Log;
 class PostJobRequestController extends Controller
 {
     use NotificationTrait;
+    
+    private function formatStatusBadge(?string $status): string
+    {
+        $status = (string) ($status ?? '');
+        $label = $status;
+        $class = 'badge bg-secondary';
+
+        switch (strtolower($status)) {
+            case 'requested':
+                $label = 'Requested';
+                $class = 'badge text-primary bg-primary-subtle';
+                break;
+            case 'accepted':
+                $label = 'Accepted';
+                $class = 'badge bg-success';
+                break;
+            case 'in_progress':
+                $label = 'IN progress';
+                $class = 'badge bg-primary';
+                break;
+            case 'in_process':
+                $label = 'IN process';
+                $class = 'badge bg-info';
+                break;
+            case 'advance_payment':
+                $label = 'Advance Payment';
+                $class = 'badge bg-warning text-dark';
+                break;
+            case 'advance_paid':
+                $label = 'Advance Paid';
+                $class = 'badge bg-success';
+                break;
+            case 'assigned':
+                $label = 'Assigned';
+                $class = 'badge bg-info';
+                break;
+            case 'hold':
+            case 'on_hold':
+                $label = 'On Hold';
+                $class = 'badge bg-warning text-dark';
+                break;
+            case 'done':
+                $label = 'Done';
+                $class = 'badge bg-success';
+                break;
+            case 'completed':
+                $label = 'Completed';
+                $class = 'badge bg-success';
+                break;
+            case 'cancelled':
+                $label = 'Cancelled';
+                $class = 'badge bg-danger';
+                break;
+            default:
+                $label = ucfirst(str_replace('_', ' ', $status));
+                $class = 'badge bg-secondary';
+        }
+
+        return '<span class="' . $class . '">' . e($label) . '</span>';
+    }
     /**
      * Display a listing of the resource.
      *
@@ -174,7 +234,7 @@ class PostJobRequestController extends Controller
             ->addColumn('created_at', function ($bid) {
                 return $bid->created_at ? $bid->created_at->format('Y-m-d') : null;
             })
-            ->addColumn('status', fn($bid) => $bid->status ?? 'N/A')
+            ->addColumn('status', fn($bid) => $this->formatStatusBadge($bid->status ?? ''))
             ->addColumn('hold_reason', fn($bid) => $bid->hold_reason ?? null)
             ->addColumn('has_advance_paid', function ($bid) {
                 // Determine if an advance payment (customer side) was completed for this bid
@@ -659,11 +719,7 @@ class PostJobRequestController extends Controller
                 return $row->created_at ? $row->created_at->format('Y-m-d') : '';
             })
             ->editColumn('status', function ($query) {
-                $status = $query->status;
-                if ($status == 'requested') {
-                    $status = '<span class="badge text-primary bg-primary-subtle">' . __('messages.requested') . '</span>';
-                }
-                return $status;
+                return $this->formatStatusBadge($query->status);
             })
             ->addColumn('action', function ($post_job) {
                 return view('postrequest.action', compact('post_job'))->render();

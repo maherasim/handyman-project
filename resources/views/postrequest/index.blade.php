@@ -233,7 +233,8 @@
                     {
                         data: 'status',
                         name: 'status',
-                        title: "{{ __('messages.status') }}"
+                        title: "{{ __('messages.status') }}",
+                        render: function(data){ return data; }
                     },
                     {
                         data: 'total_budget',

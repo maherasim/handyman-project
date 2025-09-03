@@ -115,7 +115,7 @@
                     { data: 'end_date', name: 'end_date' },
                     { data: 'customer_name', name: 'customer_name' },
                     { data: 'price', name: 'price' },
-                    { data: 'status', name: 'status' }
+                    { data: 'status', name: 'status', render: function(data){ return data; } }
                 ]
             });
 
