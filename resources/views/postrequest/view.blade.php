@@ -67,6 +67,7 @@
                                 <th>Start Date</th>
                                 <th>End Date</th>
                                 <th>Provider</th>
+                                <th>Why Choose Me</th>
                                 <th>Bid Amount</th>
                                 <th>Action</th>
                             </tr>
@@ -99,6 +100,14 @@
                     { data: 'start_date', name: 'start_date' },
                     { data: 'end_date', name: 'end_date' },
                     { data: 'provider', name: 'provider' },
+                    { data: 'why_choose_me', name: 'why_choose_me', orderable:false, searchable:false,
+                        render: function(data, type, row){
+                            const hasContent = (typeof data === 'string' && data.trim() !== '');
+                            const preview = hasContent ? '<i class="far fa-eye"></i> View' : '-';
+                            const safeId = row.id;
+                            return hasContent ? `<button type="button" class="btn btn-sm btn-outline-primary viewWhyBtn" data-bid-id="${safeId}" data-why="${encodeURIComponent(data)}">${preview}</button>` : '-';
+                        }
+                    },
                     { data: 'bid_amount', name: 'bid_amount' },
                     { data: 'action', name: 'action', orderable: false, searchable: false }
                 ]
@@ -181,6 +190,41 @@
                 });
             });
 
+        });
+    </script>
+    
+    <!-- Why Choose Me Modal -->
+    <div class="modal fade" id="whyChooseMeModal" tabindex="-1" aria-labelledby="whyChooseMeLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content shadow-lg">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="whyChooseMeLabel">Why Choose Me</h5>
+                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="p-2" id="whyChooseMeContent"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function(){
+            $(document).on('click', '.viewWhyBtn', function(){
+                const raw = $(this).data('why');
+                const html = raw ? decodeURIComponent(String(raw)) : '';
+                $('#whyChooseMeContent').html(html || '<em>No content provided.</em>');
+                $('#whyChooseMeModal').modal('show');
+            });
+            // Clear modal on hide
+            $('#whyChooseMeModal').on('hidden.bs.modal', function(){
+                $('#whyChooseMeContent').html('');
+            });
         });
     </script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

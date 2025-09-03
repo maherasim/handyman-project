@@ -998,6 +998,10 @@ class PostJobRequestController extends Controller
             ->addColumn('provider', function ($bid) {
                 return optional($bid->provider)->display_name ?? '-';
             })
+            // Why Choose Me (raw HTML content for modal display)
+            ->addColumn('why_choose_me', function ($bid) {
+                return (string) ($bid->why_choose_me ?? '');
+            })
             // Bid Amount with price_type suffix (from post request)
             ->addColumn('bid_amount', function ($bid) {
                 $amount = getPriceFormat($bid->price);
