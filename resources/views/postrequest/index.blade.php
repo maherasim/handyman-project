@@ -38,12 +38,12 @@
                         <form action="{{ route('post-job.bulk-action') }}" id="quick-action-form"
                             class="form-disabled d-flex gap-3 align-items-center">
                             @csrf
-                            <select name="action_type" class="form-control select2" id="quick-action-type"
+                            {{-- <select name="action_type" class="form-control select2" id="quick-action-type"
                                 style="width:100%" disabled>
                                 <option value="">{{ __('messages.no_action') }}</option>
                                 <!-- <option value="change-status">{{ __('messages.status') }}</option> -->
                                 <option value="delete">{{ __('messages.delete') }}</option>
-                            </select>
+                            </select> --}}
   
                             <div class="select-status d-none quick-action-field" id="change-status-action"
                                 style="width:100%">
