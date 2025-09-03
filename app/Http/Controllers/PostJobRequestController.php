@@ -654,6 +654,7 @@ class PostJobRequestController extends Controller
             ->editColumn('end_date', function ($query) {
                 return $query->end_date ? $query->end_date->format('Y-m-d') : '';
             })
+            
             ->editColumn('created_at', function ($row) {
                 return $row->created_at ? $row->created_at->format('Y-m-d') : '';
             })

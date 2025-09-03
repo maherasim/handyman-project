@@ -21,6 +21,8 @@ class PostJobRequest extends Model
         'total_budget' => 'double',
         'job_price' => 'string',
         'price_type' => 'string',
+        'start_date' => 'datetime',
+        'end_date' => 'datetime',
         'image' => 'string',
         'images' => 'array',
         'travel_required' => 'boolean',
