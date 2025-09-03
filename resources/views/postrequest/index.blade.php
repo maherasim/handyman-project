@@ -126,7 +126,7 @@
       var bidAmount = $('#bidAmount').val();
       var postRequestId = $(".postrequestid").val();
       var bidId = $('#bidId').val();
-      var whyChooseMe = $('#whyChooseMe').val(); // Get Summernote content
+      var whyChooseMe = $('#why_choose_me').val(); // Get Summernote content
       
       clearErrorMessages();
   
@@ -146,7 +146,7 @@
               id: bidId,
               post_request_id: postRequestId,
               price: bidAmount,
-              why_choose_me: whyChooseMe  // Pass to backend
+              why_choose_me: why_choose_me  // Pass to backend
           },
           success: function(response) {
               $('#bidModal').modal('hide');
