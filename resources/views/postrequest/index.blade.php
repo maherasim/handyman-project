@@ -177,7 +177,7 @@
                     {
                         data: 'created_at',
                         name: 'created_at',
-                        title: "{{ __('Published At') }}"
+                        title: "{{ __('Posted At') }}"
                     },
                     {
                         data: 'start_date',
@@ -199,7 +199,7 @@
                     @endif {
                         data: 'applicants',
                         name: 'applicants',
-                        title: "Applicants"
+                        title: "{{ __('Proposal') }}"
                     },
                     {
                         data: 'status',
