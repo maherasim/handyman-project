@@ -113,6 +113,7 @@
                     <!-- Why Choose Me -->
                     <label for="why_choose_me" class="mt-3">Why Choose Me:</label>
                     <textarea id="why_choose_me" name="why_choose_me" class="form-control summernote"></textarea>
+                    <div id="whyChooseMeError"></div>
 
                 </div>
 
@@ -231,7 +232,12 @@
 
         function submitBid() {
             var bidAmount = $('#bidAmount').val();
-            var why_choose_me = $('#why_choose_me').summernote('code'); // ✅ Use Summernote API
+            var why_choose_me;
+            if ($.fn.summernote && $('#why_choose_me').next('.note-editor').length) {
+                why_choose_me = $('#why_choose_me').summernote('code');
+            } else {
+                why_choose_me = $('#why_choose_me').val();
+            }
             var postRequestId = $(".postrequestid").val();
             var bidId = $('#bidId').val();
 
@@ -242,7 +248,7 @@
                 return;
             }
 
-            if (!why_choose_me) {
+            if (!why_choose_me || (typeof why_choose_me === 'string' && why_choose_me.replace(/<[^>]*>/g, '').trim() === '')) {
                 displayErrorMessage('Why Choose Me is required.', 'whyChooseMeError');
                 return;
             }
@@ -252,7 +258,8 @@
                 type: 'POST',
                 dataType: 'json',
                 headers: {
-                    'Authorization': `Bearer ${authToken}`
+                    'Authorization': `Bearer ${authToken}`,
+                    'Accept': 'application/json'
                 },
                 data: {
                     post_request_id: postRequestId,
@@ -348,6 +355,11 @@
             $('#bidId').val('');
             $('.bid-button-submit').text('Submit Bid');
             $('#bidModalLabel').text('Place Bid');
+            if ($.fn.summernote && $('#why_choose_me').next('.note-editor').length) {
+                $('#why_choose_me').summernote('destroy');
+            }
+            $('#why_choose_me').val('');
+            $('#whyChooseMeError').html('');
         });
 
         function displayErrorMessage(message, elementId) {
@@ -418,14 +430,19 @@
 
     <script>
         $(document).ready(function() {
-            $('.summernote').summernote({
-                height: 150, // Set editor height
-                toolbar: [
-                    ['style', ['bold', 'italic', 'underline', 'clear']],
-                    ['para', ['ul', 'ol', 'paragraph']],
-                    ['insert', ['link']],
-                    ['view', ['codeview']]
-                ]
+            // Initialize Summernote when modal is shown to ensure it's bound correctly
+            $('#bidModal').on('shown.bs.modal', function () {
+                if ($.fn.summernote && !$('#why_choose_me').next('.note-editor').length) {
+                    $('#why_choose_me').summernote({
+                        height: 150,
+                        toolbar: [
+                            ['style', ['bold', 'italic', 'underline', 'clear']],
+                            ['para', ['ul', 'ol', 'paragraph']],
+                            ['insert', ['link']],
+                            ['view', ['codeview']]
+                        ]
+                    });
+                }
             });
         });
     </script>
