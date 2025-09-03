@@ -648,7 +648,12 @@ class PostJobRequestController extends Controller
             ->editColumn('total_budget', function ($query) {
                 return getPriceFormat($query->total_budget);
             })
-            
+            ->editColumn('start_date', function ($query) {
+                return $query->start_date ? $query->start_date->format('Y-m-d') : '';
+            })
+            ->editColumn('end_date', function ($query) {
+                return $query->end_date ? $query->end_date->format('Y-m-d') : '';
+            })
             ->editColumn('created_at', function ($row) {
                 return $row->created_at ? $row->created_at->format('Y-m-d') : '';
             })

@@ -165,6 +165,16 @@
                         name: 'created_at',
                         title: "{{ __('Published At') }}"
                     },
+                    {
+                        data: 'start_date',
+                        name: 'start_date',
+                        title: "{{ __('Start Date') }}"
+                    },
+                    {
+                        data: 'end_date',
+                        name: 'end_date',
+                        title: "{{ __('End Date') }}"
+                    },
                      
                     @if (auth()->user()->user_type == 'provider')
                     {
