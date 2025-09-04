@@ -333,50 +333,51 @@
                             $remaining = $grandTotal - $advAmount;
                         @endphp
             
-                        <table class="table table-sm table-hover price-table">
-                            <tbody>
-                                <tr>
-                                    <td>Rate (Unit Price)</td>
-                                    <td class="text-end">€{{ number_format($unitPrice, 2) }}</td>
-                                </tr>
-                                <tr>
-                                    <td>Quantity (Packages / Hours / Days)</td>
-                                    <td class="text-end">{{ $quantity }}</td>
-                                </tr>
-                                <tr>
-                                    <td>Total Amount</td>
-                                    <td class="text-end">€{{ number_format($totalAmount, 2) }}</td>
-                                </tr>
-                                <tr class="fw-bold">
-                                    <td>Net Amount (Total - Tax)</td>
-                                    <td class="text-end">€{{ number_format($netAmount, 2) }}</td>
-                                </tr>
-                                <tr>
-                                    <td>Advance Payment ({{ $advPct }}%)</td>
-                                    <td class="text-end">€{{ number_format($advAmount, 2) }}</td>
-                                </tr>
-                                <tr>
-                                    <td>Extra Charges ({{ $extraChargeQty }} × {{ number_format($extraChargeUnit, 2) }})</td>
-                                    <td class="text-end">€{{ number_format($extraChargesTotal, 2) }}</td>
-                                </tr>
-                                <tr class="fw-bold">
-                                    <td>Subtotal</td>
-                                    <td class="text-end">€{{ number_format($subTotal, 2) }}</td>
-                                </tr>
-                                <tr>
-                                    <td>Tax ({{ number_format($taxRate, 0) }}%) {{ $taxTitle }}</td>
-                                    <td class="text-end">€{{ number_format($taxAmount, 2) }}</td>
-                                </tr>
-                                <tr class="fw-bold">
-                                    <td>Grand Total</td>
-                                    <td class="text-end">€{{ number_format($grandTotal, 2) }}</td>
-                                </tr>
-                                <tr class="fw-bold">
-                                    <td>Remaining Amount</td>
-                                    <td class="text-end">€{{ number_format($remaining, 2) }}</td>
-                                </tr>
-                            </tbody>
-                        </table>
+            <table class="table table-sm table-hover price-table">
+                <tbody>
+                    <tr>
+                        <td>Rate (Unit Price)</td>
+                        <td class="text-end">€{{ number_format($unitPrice, 2) }}</td>
+                    </tr>
+                    <tr>
+                        <td>Quantity (Packages / Hours / Days)</td>
+                        <td class="text-end">{{ $quantity }}</td>
+                    </tr>
+                    <tr>
+                        <td>Total Amount</td>
+                        <td class="text-end">€{{ number_format($totalAmount, 2) }}</td>
+                    </tr>
+                    <tr class="fw-bold">
+                        <td>Net Amount (Total - Tax)</td>
+                        <td class="text-end">€{{ number_format($netAmount, 2) }}</td>
+                    </tr>
+                    <tr>
+                        <td>Extra Charges ({{ $extraChargeQty }} × {{ number_format($extraChargeUnit, 2) }})</td>
+                        <td class="text-end">€{{ number_format($extraChargesTotal, 2) }}</td>
+                    </tr>
+                    <tr class="fw-bold">
+                        <td>Subtotal</td>
+                        <td class="text-end">€{{ number_format($subTotal, 2) }}</td>
+                    </tr>
+                    <tr>
+                        <td>Tax ({{ number_format($taxRate, 0) }}%) {{ $taxTitle }}</td>
+                        <td class="text-end">€{{ number_format($taxAmount, 2) }}</td>
+                    </tr>
+                    <tr class="fw-bold">
+                        <td>Grand Total</td>
+                        <td class="text-end">€{{ number_format($grandTotal, 2) }}</td>
+                    </tr>
+                    <tr>
+                        <td>Advance Payment ({{ $advPct }}%)</td>
+                        <td class="text-end">€{{ number_format($advAmount, 2) }}</td>
+                    </tr>
+                    <tr class="fw-bold">
+                        <td>Remaining Amount</td>
+                        <td class="text-end">€{{ number_format($remaining, 2) }}</td>
+                    </tr>
+                </tbody>
+            </table>
+            
                     </div>
                 </div>
             </div>
