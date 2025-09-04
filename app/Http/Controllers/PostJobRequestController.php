@@ -105,7 +105,7 @@ class PostJobRequestController extends Controller
         $bid = PostJobBid::with([
             'provider:id,display_name',
             'customer:id,display_name',
-            'postrequest:id,title,customer_id,status,provider_id,remaining_percent,type,start_date,end_date,total_budget,city_id,country_id',
+            'postrequest:id,title,customer_id,status,provider_id,remaining_percent,type,start_date,end_date,total_budget,city_id,country_id,job_price',
             'postrequest.city:id,name',
             'postrequest.country:id,name',
             'postrequest.postBidList:id,post_request_id',
@@ -677,25 +677,6 @@ class PostJobRequestController extends Controller
             ->editColumn('title', function ($query) {
                 return $query->title;
             })
-            // expose raw status and provider access rule for gating title link
-            ->addColumn('status_key', function ($row) {
-                return (string) ($row->status ?? '');
-            })
-            ->addColumn('provider_can_access', function ($row) {
-                if (auth()->user()->user_type !== 'provider') {
-                    return true;
-                }
-                // provider can access only if they have a bid on this post with non-null status and not rejected/cancelled
-                $myBid = $row->postBidList()
-                    ->where('provider_id', auth()->id())
-                    ->latest('id')
-                    ->first(['status']);
-                if (!$myBid) {
-                    return false;
-                }
-                $allowed = in_array(strtolower((string)$myBid->status), ['accepted','in_progress','in_process','hold','done','completed','advance_paid','remaining_paid']);
-                return $allowed;
-            })
             ->addColumn('applicants', function ($query) {
                 return (int) ($query->applicants ?? 0);
             })
@@ -926,7 +907,7 @@ class PostJobRequestController extends Controller
             'provider:id,display_name',
             'customer:id,display_name',
             // Include additional PostJobRequest fields and relations for the card
-            'postrequest',
+            'postrequest:id,title,customer_id,status,provider_id,remaining_percent,type,start_date,end_date,total_budget,city_id,country_id',
             'postrequest.city:id,name',
             'postrequest.country:id,name',
             'postrequest.postBidList:id,post_request_id',
