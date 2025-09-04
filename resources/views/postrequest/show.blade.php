@@ -292,12 +292,25 @@
                         $subTotal = $subTotal;
                         $remaining = $remainingAmount;
                     @endphp
-                
+                @php
+                    $quantity = $bid->price_type == 'hourly' ? $bid->hourly_rate : $bid->price_type == 'daily' ? $bid->price_type :$bid->price_type == 'fixed' ? 1 : $bid->quantity;
+                    $quantity = (int)$quantity;
+                    @if($bid->price_type == 'hourly')
+                        $quantity =$bid->total_hours;
+                    @elseif ($bid->price_type == 'daily')
+                        $quantity =$bid->total_days;
+                    @endif
+                    $quantity = (int)$quantity;
+                @endphp
                     <table class="table table-sm table-hover price-table">
                         <tbody>
                             <tr>
-                                <td>Bid Amount</td>
+                                <td>Rate (Unit Price)</td>
                                 <td class="text-end">€{{ number_format($total, 2) }}</td>
+                            </tr>
+                            <tr>
+                                <td>Quantity(Nbr of packages,Hours,Daily) </td>
+                                <td class="text-end">€{{ $quantity }}</td>
                             </tr>
                             <tr>
                                 <td>Advance Payment ({{ $advPct }}%)</td>
