@@ -281,7 +281,7 @@
                             $extraChargesTotal = $extraChargesTotal;
                             $subTotal          = $subTotal;
                             $remaining         = $remainingAmount;
-            
+                            $unitPrice = (float) ($bid->price ?? 0);
                             // Determine quantity
                             if ($bid->price_type == 'hourly') {
                                 $quantity = $bid->total_hours ?? $bid->hourly_rate ?? 1;
@@ -294,6 +294,7 @@
                             }
             
                             $quantity = (int) $quantity;
+                            $totalAmount = $unitPrice * $quantity;
                         @endphp
             
                         <table class="table table-sm table-hover price-table">
@@ -305,6 +306,10 @@
                                 <tr>
                                     <td>Quantity (Packages / Hours / Days)</td>
                                     <td class="text-end">{{ $quantity }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Total Amount
+                                    <td class="text-end">€{{ number_format($totalAmount, 2) }}</td></td>
                                 </tr>
                                 <tr>
                                     <td>Advance Payment ({{ $advPct }}%)</td>
