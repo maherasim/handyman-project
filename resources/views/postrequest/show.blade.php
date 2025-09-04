@@ -163,7 +163,7 @@
                             <div class="card-body text-center">
                                 <i class="fas fa-dollar-sign fa-2x text-warning mb-2"></i>
                                 <h6 class="fw-bold mb-1">Price Type</h6>
-                                <p class="mb-0">{{ $bid->postrequest->price_type ?? '-' }}</p>
+                                <p class="mb-0">{{ $bid->postrequest->job_price ?? '-' }}</p>
                             </div>
                         </div>
                     </div>
