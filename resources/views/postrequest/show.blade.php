@@ -158,7 +158,7 @@
                             </div>
                         </div>
                     </div>
-                    @dd($bid->postrequest);
+                    @dd($bid->postrequest->job_price);
                     <div class="col-md-4">
                         <div class="card border-warning shadow-sm h-100 hover-shadow">
                             <div class="card-body text-center">
