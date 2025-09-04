@@ -677,6 +677,25 @@ class PostJobRequestController extends Controller
             ->editColumn('title', function ($query) {
                 return $query->title;
             })
+            // expose raw status and provider access rule for gating title link
+            ->addColumn('status_key', function ($row) {
+                return (string) ($row->status ?? '');
+            })
+            ->addColumn('provider_can_access', function ($row) {
+                if (auth()->user()->user_type !== 'provider') {
+                    return true;
+                }
+                // provider can access only if they have a bid on this post with non-null status and not rejected/cancelled
+                $myBid = $row->postBidList()
+                    ->where('provider_id', auth()->id())
+                    ->latest('id')
+                    ->first(['status']);
+                if (!$myBid) {
+                    return false;
+                }
+                $allowed = in_array(strtolower((string)$myBid->status), ['accepted','in_progress','in_process','hold','done','completed','advance_paid','remaining_paid']);
+                return $allowed;
+            })
             ->addColumn('applicants', function ($query) {
                 return (int) ($query->applicants ?? 0);
             })

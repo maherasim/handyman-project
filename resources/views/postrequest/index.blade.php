@@ -3,6 +3,7 @@
     <head>
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <script type="text/javascript" src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
+        <script src="https://cdn.tiny.cloud/1/m5d82gd2rwdlg96hsxpx0e5wwmfrl2zzkcw35ys8o3glilgq/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
      </head>
     <div class="container-fluid">
         <div class="row">
@@ -112,7 +113,7 @@
 
                     <!-- Why Choose Me -->
                     <label for="why_choose_me" class="mt-3">Why Choose Me:</label>
-                    <textarea id="why_choose_me" name="why_choose_me" class="form-control summernote"></textarea>
+                    <textarea id="why_choose_me" name="why_choose_me" class="form-control"></textarea>
                     <div id="whyChooseMeError"></div>
 
                 </div>
@@ -162,9 +163,27 @@
                         title: "{{ __('messages.title') }}",
                         render: function(data, type, row) {
                             const nonClickable = ['requested', 'cancelled'];
-                            if (nonClickable.includes(String(row.status).toLowerCase())) {
+                            const statusKey = String(row.status_key || row.status || '').toLowerCase();
+                            const isProvider = {{ auth()->user()->user_type == 'provider' ? 'true' : 'false' }};
+                            const providerCan = Boolean(row.provider_can_access);
+
+<<<<<<< HEAD
+                            if (nonClickable.includes(statusKey)) {
                                 return data;
                             }
+                            if (isProvider && !providerCan) {
+=======
+                            // Rule 1: For provider and user: requested/cancelled => not clickable
+                            if (nonClickable.includes(statusKey)) {
+>>>>>>> f9563e05 (Post request index: gate title link by status (requested/cancelled off) and provider_can_access; expose status_key/provider_can_access in index_data)
+                                return data;
+                            }
+
+                            // Rule 2: For provider only => clickable only if provider_can_access
+                            if (isProvider && !providerCan) {
+                                return data;
+                            }
+
                             return `<a href="{{ url('post-job-bid') }}/${row.id}" class="job-bid-link">${data}</a>`;
                         }
                     },
@@ -233,8 +252,8 @@
         function submitBid() {
             var bidAmount = $('#bidAmount').val();
             var why_choose_me;
-            if ($.fn.summernote && $('#why_choose_me').next('.note-editor').length) {
-                why_choose_me = $('#why_choose_me').summernote('code');
+            if (window.tinymce && tinymce.get('why_choose_me')) {
+                why_choose_me = tinymce.get('why_choose_me').getContent();
             } else {
                 why_choose_me = $('#why_choose_me').val();
             }
@@ -355,8 +374,8 @@
             $('#bidId').val('');
             $('.bid-button-submit').text('Submit Bid');
             $('#bidModalLabel').text('Place Bid');
-            if ($.fn.summernote && $('#why_choose_me').next('.note-editor').length) {
-                $('#why_choose_me').summernote('destroy');
+            if (window.tinymce && tinymce.get('why_choose_me')) {
+                tinymce.get('why_choose_me').remove();
             }
             $('#why_choose_me').val('');
             $('#whyChooseMeError').html('');
@@ -424,35 +443,26 @@
         });
     </script>
 
-    <!-- Summernote (Text Editor) -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.20/summernote-bs4.min.css" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.20/summernote-bs4.min.js"></script>
-
     <script>
         $(document).ready(function() {
-            function initializeWhyChooseMeEditor() {
-                if ($.fn.summernote && !$('#why_choose_me').next('.note-editor').length) {
-                    $('#why_choose_me').summernote({
-                        height: 150,
-                        toolbar: [
-                            ['style', ['bold', 'italic', 'underline', 'clear']],
-                            ['para', ['ul', 'ol', 'paragraph']],
-                            ['insert', ['link']],
-                            ['view', ['codeview']]
-                        ]
+            function initTinyWhy() {
+                if (window.tinymce && !tinymce.get('why_choose_me')) {
+                    tinymce.init({
+                        selector: '#why_choose_me',
+                        height: 180,
+                        menubar: false,
+                        plugins: 'lists link image preview code',
+                        toolbar: 'formatselect | bold italic underline | bullist numlist | link image | code | removeformat',
                     });
                 }
             }
-
-            // Initialize on modal show
-            $('#bidModal').on('shown.bs.modal', function () {
-                initializeWhyChooseMeEditor();
+            $('#bidModal').on('shown.bs.modal', function(){
+                initTinyWhy();
             });
-
-            // Fallback: if modal is shown programmatically and event timing misses
-            window.initializeWhyChooseMeEditor = initializeWhyChooseMeEditor;
+            window.initTinyWhy = initTinyWhy;
         });
     </script>
-    
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 </x-master-layout>
