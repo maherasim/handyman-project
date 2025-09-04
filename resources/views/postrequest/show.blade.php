@@ -158,6 +158,15 @@
                             </div>
                         </div>
                     </div>
+                    <div class="col-md-4">
+                        <div class="card border-warning shadow-sm h-100 hover-shadow">
+                            <div class="card-body text-center">
+                                <i class="fas fa-dollar-sign fa-2x text-warning mb-2"></i>
+                                <h6 class="fw-bold mb-1">Price Type</h6>
+                                <p class="mb-0">{{ $bid->postrequest->price_type ?? '-' }}</p>
+                            </div>
+                        </div>
+                    </div>
 
                     <!-- Start Date -->
                     <div class="col-md-4">
