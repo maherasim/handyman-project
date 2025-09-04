@@ -926,7 +926,7 @@ class PostJobRequestController extends Controller
             'provider:id,display_name',
             'customer:id,display_name',
             // Include additional PostJobRequest fields and relations for the card
-            'postrequest:id,title,customer_id,status,provider_id,remaining_percent,type,start_date,end_date,total_budget,city_id,country_id',
+            'postrequest:id,title,customer_id,status,provider_id,remaining_percent,type,start_date,end_date,total_budget,city_id,country_id,price_type',
             'postrequest.city:id,name',
             'postrequest.country:id,name',
             'postrequest.postBidList:id,post_request_id',
