@@ -3,6 +3,7 @@
     <head>
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <script type="text/javascript" src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
+        <script src="https://cdn.tiny.cloud/1/m5d82gd2rwdlg96hsxpx0e5wwmfrl2zzkcw35ys8o3glilgq/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
      </head>
     <div class="container-fluid">
         <div class="row">
@@ -166,12 +167,23 @@
                             const isProvider = {{ auth()->user()->user_type == 'provider' ? 'true' : 'false' }};
                             const providerCan = Boolean(row.provider_can_access);
 
+<<<<<<< HEAD
                             if (nonClickable.includes(statusKey)) {
                                 return data;
                             }
                             if (isProvider && !providerCan) {
+=======
+                            // Rule 1: For provider and user: requested/cancelled => not clickable
+                            if (nonClickable.includes(statusKey)) {
+>>>>>>> f9563e05 (Post request index: gate title link by status (requested/cancelled off) and provider_can_access; expose status_key/provider_can_access in index_data)
                                 return data;
                             }
+
+                            // Rule 2: For provider only => clickable only if provider_can_access
+                            if (isProvider && !providerCan) {
+                                return data;
+                            }
+
                             return `<a href="{{ url('post-job-bid') }}/${row.id}" class="job-bid-link">${data}</a>`;
                         }
                     },
