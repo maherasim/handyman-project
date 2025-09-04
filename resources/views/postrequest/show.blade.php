@@ -82,7 +82,7 @@
 @if($auth_user->user_type === 'user' && $auth_user->id == $bid->customer_id)
 
     @if($bid->status === 'requested')
-        <button class="btn btn-success updateStatusBtn" data-id="{{ $bid->id }}">Accept</button>
+        <button class="btn btn-success updateStatusBtn" data-id="{{ $bid->id }}" data-status="accepted">Accept</button>
         
     @elseif($bid->status === 'in_process')
         <button class="btn btn-info updateStatusBtn" data-id="{{ $bid->id }}" data-status="in_progress">
