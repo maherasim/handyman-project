@@ -643,5 +643,15 @@ function calculateDays() {
                 });
             }
         </script>
+         <script>
+            if (window.tinymce) {
+                tinymce.init({
+                    selector: '#working_address',
+                    plugins: 'lists link image preview',
+                    toolbar: 'undo redo | bold italic | bullist numlist | link image preview',
+                    menubar: false
+                });
+            }
+        </script>
     @endsection
 </x-master-layout>
