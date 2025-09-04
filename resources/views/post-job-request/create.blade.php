@@ -244,6 +244,11 @@
                                     <textarea name="description" id="description" class="form-control textarea" rows="3"
                                         placeholder="{{ __('messages.description') }}">{{ old('description', $postJob->description) }}</textarea>
                                 </div>
+                                <div class="form-group col-md-6">
+                                    <label for="working_address">{{ __('Working Address') }}</label>
+                                    <textarea name="working_address" id="working_address" class="form-control textarea" rows="3"
+                                        placeholder="{{ __('Working Address') }}">{{ old('working_address', $postJob->working_address) }}</textarea>
+                                </div>
 
                                 <div class="form-group col-md-6">
                                     <label for="requirement">{{ __('Skills & Requirements') }} <span
