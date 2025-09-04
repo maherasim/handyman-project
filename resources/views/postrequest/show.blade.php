@@ -292,16 +292,27 @@
                         $subTotal = $subTotal;
                         $remaining = $remainingAmount;
                     @endphp
-                @php
-                    $quantity = $bid->price_type == 'hourly' ? $bid->hourly_rate : $bid->price_type == 'daily' ? $bid->price_type :$bid->price_type == 'fixed' ? 1 : $bid->quantity;
-                    $quantity = (int)$quantity;
-                    @if($bid->price_type == 'hourly')
-                        $quantity =$bid->total_hours;
-                    @elseif ($bid->price_type == 'daily')
-                        $quantity =$bid->total_days;
-                    @endif
-                    $quantity = (int)$quantity;
-                @endphp
+               @php
+               if ($bid->price_type == 'hourly') {
+                   $quantity = $bid->hourly_rate;
+               } elseif ($bid->price_type == 'daily') {
+                   $quantity = $bid->daily_rate ?? 1; // adjust if you have daily_rate, otherwise replace with correct field
+               } elseif ($bid->price_type == 'fixed') {
+                   $quantity = 1;
+               } else {
+                   $quantity = $bid->quantity;
+               }
+           
+               // Override with totals if available
+               if ($bid->price_type == 'hourly') {
+                   $quantity = $bid->total_hours;
+               } elseif ($bid->price_type == 'daily') {
+                   $quantity = $bid->total_days;
+               }
+           
+               $quantity = (int) $quantity;
+           @endphp
+           
                     <table class="table table-sm table-hover price-table">
                         <tbody>
                             <tr>
