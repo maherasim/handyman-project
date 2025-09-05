@@ -11,6 +11,9 @@
         @else
             $extraChargeQty = 1;
         @endif
+            @if (!isset($extraChargeQty))
+                $extraChargeQty = 1;
+            @endif
             $extraChargesTotal = $extraChargeUnit * $extraChargeQty;
             // Advance is calculated on original total (as per current logic)
             $advAmount = ($total * $advPct) / 100;
