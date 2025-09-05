@@ -483,7 +483,7 @@
                 });
             });
 
-            // Pay Advance / Remaining
+            // Pay Advance / Remaining with Wallet or Stripe choice
             document.querySelectorAll('.payAdvanceBtn, .payRemainingBtn').forEach(btn => {
                 btn.addEventListener('click', function() {
                     const postId = this.dataset.postId;
@@ -491,39 +491,67 @@
                     const amountNum = parseFloat(amount);
                     const formattedAmount = isFinite(amountNum) ? amountNum.toFixed(2) : amount;
                     const isRemaining = btn.classList.contains('payRemainingBtn');
+
                     Swal.fire({
-                        title: isRemaining ? "Confirm Remaining Payment" :
-                            "Confirm Advance Payment",
-                        text: amount ? `Pay amount: ${formattedAmount}. Proceed?` :
-                            "Proceed?",
-                        icon: "warning",
+                        title: isRemaining ? 'Pay Remaining' : 'Pay Advance',
+                        html: `
+                            <div class="text-start">
+                                <p class="mb-2">Amount: <strong>${formattedAmount}</strong></p>
+                                <label class="form-label fw-bold">Choose Payment Method</label>
+                                <div class="d-grid gap-2">
+                                    <button class="btn btn-outline-primary" id="walletPayBtn"><i class="fas fa-wallet me-1"></i> Wallet</button>
+                                    <button class="btn btn-outline-dark" id="stripePayBtn"><i class="fab fa-cc-stripe me-1"></i> Stripe</button>
+                                </div>
+                            </div>
+                        `,
+                        showConfirmButton: false,
                         showCancelButton: true,
-                        confirmButtonColor: "#28a745",
-                        cancelButtonColor: "#d33",
-                        confirmButtonText: isRemaining ? "Yes, pay remaining" :
-                            "Yes, pay advance"
-                    }).then(result => {
-                        if (!result.isConfirmed) return;
-                        fetch(`{{ route('post-job-request.pay-advance', ':id') }}`.replace(
-                                ':id', postId), {
-                                method: 'POST',
-                                headers: {
-                                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                                    'Content-Type': 'application/json'
-                                },
-                                body: JSON.stringify({
-                                    amount: amount,
-                                    type: isRemaining ? 'remaining' : 'advance'
-                                })
-                            }).then(res => res.json())
-                            .then(response => {
-                                Swal.fire(response.status ? "Success" : "Error",
-                                        response.message, response.status ? "success" :
-                                        "error")
-                                    .then(() => location.reload());
-                            }).catch(() => Swal.fire("Error", "Something went wrong!",
-                                "error"));
-                    });
+                    }).then(() => {});
+
+                    // Delegate handlers after modal shown
+                    setTimeout(() => {
+                        const walletBtn = document.getElementById('walletPayBtn');
+                        const stripeBtn = document.getElementById('stripePayBtn');
+
+                        if (walletBtn) {
+                            walletBtn.addEventListener('click', () => {
+                                Swal.close();
+                                fetch(`{{ route('post-job-request.pay-advance', ':id') }}`.replace(':id', postId), {
+                                    method: 'POST',
+                                    headers: {
+                                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                        'Content-Type': 'application/json'
+                                    },
+                                    body: JSON.stringify({ amount: amount, type: isRemaining ? 'remaining' : 'advance' })
+                                }).then(res => res.json())
+                                  .then(response => {
+                                      Swal.fire(response.status ? 'Success' : 'Error', response.message, response.status ? 'success' : 'error')
+                                          .then(() => location.reload());
+                                  }).catch(() => Swal.fire('Error', 'Something went wrong!', 'error'));
+                            });
+                        }
+
+                        if (stripeBtn) {
+                            stripeBtn.addEventListener('click', () => {
+                                Swal.close();
+                                fetch(`{{ route('postjob.stripe.create', ':id') }}`.replace(':id', postId), {
+                                    method: 'POST',
+                                    headers: {
+                                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                        'Content-Type': 'application/json'
+                                    },
+                                    body: JSON.stringify({ amount: amount, type: isRemaining ? 'remaining' : 'advance' })
+                                }).then(res => res.json())
+                                  .then(session => {
+                                      if (session && session.status && session.url) {
+                                          window.location.href = session.url;
+                                      } else {
+                                          Swal.fire('Error', session.message || 'Unable to initiate Stripe payment', 'error');
+                                      }
+                                  }).catch(() => Swal.fire('Error', 'Something went wrong!', 'error'));
+                            });
+                        }
+                    }, 50);
                 });
             });
 
@@ -747,5 +775,4 @@
 
         });
     </script>
-
-</x-master-layout>
+ 

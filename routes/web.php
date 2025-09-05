@@ -476,7 +476,8 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
     });
     Route::post('adjustpayment/{id}/set-advance', [PostJobRequestController::class, 'startWork'])->name('adjustpayment.start-work');
     Route::get('/post-job-bid/{id}', [PostJobRequestController::class, 'showbid'])->name('post-job-bid.show');
-
+    Route::post('postjob/stripe/create/{id}', [PostJobRequestController::class, 'createPostJobStripePayment'])->name('postjob.stripe.create');
+    Route::get('postjob/save-stripe-payment/{id}', [PostJobRequestController::class, 'savePostJobStripePayment'])->name('postjob.stripe.save');
     Route::post('pay-advance/{id}', [PostJobRequestController::class, 'payAdvance'])->name('post-job-request.pay-advance');
     Route::post('/post-job-request/{id}/status', [PostJobRequestController::class, 'updateBidStatus'])->name('postjob.updateStatus');
 

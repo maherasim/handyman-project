@@ -8,6 +8,8 @@ use Yajra\DataTables\DataTables;
 use App\Models\Service;
 use App\Models\WalletHistory;
 use App\Models\Payment;
+use App\Models\Country;
+
 use App\Models\SubCategory;
 use App\Models\Wallet;
 use App\Models\Setting;
@@ -577,6 +579,182 @@ class PostJobRequestController extends Controller
     }
 
 
+    public function createPostJobStripePayment(Request $request, $id)
+    {
+        $bid = PostJobBid::findOrFail($id);
+        $user = auth()->user();
+        if ((int)$user->id !== (int)$bid->customer_id) {
+            return response()->json(['status' => false, 'message' => 'Unauthorized'], 403);
+        }
+    
+        $type = strtolower((string)$request->input('type', 'advance'));
+        $requestedAmount = (float)$request->input('amount');
+    
+        $total = (float)($bid->price ?? 0);
+        $extraChargeUnit = (float)($bid->extra_charges ?? 0);
+        $extraChargeQty = (int)($bid->quantity ?? 1);
+        $extraChargesTotal = $extraChargeUnit * $extraChargeQty;
+        $advPct = (float)($bid->advance_percent ?? 0);
+    
+        $computedAdvanceAmount = ($total * $advPct / 100);
+        $subTotal = $total + $extraChargesTotal;
+        $computedRemainingAmount = $subTotal - $computedAdvanceAmount;
+    
+        if ($type === 'remaining') {
+            $payAmount = $computedRemainingAmount;
+            $metaType = 'remaining';
+        } else {
+            $payAmount = empty(trim((string)$requestedAmount)) ? $computedAdvanceAmount : (float)$requestedAmount;
+            $metaType = 'advance';
+        }
+        if ($payAmount <= 0) {
+            return response()->json(['status' => false, 'message' => 'Invalid amount'], 422);
+        }
+    
+        $sitesetup = Setting::where('type', 'site-setup')->where('key', 'site-setup')->first();
+        $sitesetupdata = $sitesetup ? json_decode($sitesetup->value, true) : null;
+        $country_id = $sitesetupdata['default_currency'] ?? null;
+        $country = Country::find($country_id);
+        $currencyCode = $country ? $country->currency_code : 'USD';
+    
+        $payment = Payment::create([
+            'customer_id'             => $user->id,
+            'booking_id'              => null,
+            'datetime'                => now(),
+            'post_job_request_id'     => $bid->id,
+            'discount'                => 0,
+            'total_amount'            => $payAmount,
+            'payment_type'            => 'stripe',
+            'payment_status'          => 'pending',
+            'other_transaction_detail' => json_encode(['type' => $metaType]),
+        ]);
+    
+        $baseURL = env('APP_URL');
+        try {
+            $payment_geteway_value = getPaymentMethodkey('stripe');
+            $stripe_secret = $payment_geteway_value['stripe_key'] ?? null;
+            if (!$stripe_secret) {
+                return response()->json(['status' => false, 'message' => 'Stripe not configured'], 500);
+            }
+            $stripe = new \Stripe\StripeClient($stripe_secret);
+            $session = $stripe->checkout->sessions->create([
+                'success_url' => $baseURL . '/postjob/save-stripe-payment/' . $bid->id . '?type=' . $metaType,
+                'payment_method_types' => ['card'],
+                'billing_address_collection' => 'required',
+                'line_items' => [[
+                    'price_data' => [
+                        'currency' => $currencyCode,
+                        'product_data' => [
+                            'name' => 'Post Job Bid #' . $bid->id . ' ' . ucfirst($metaType) . ' Payment',
+                        ],
+                        'unit_amount' => stripe_unit_amount_from_decimal($payAmount, $currencyCode),
+                    ],
+                    'quantity' => 1,
+                ]],
+                'mode' => 'payment',
+            ]);
+    
+            $payment->other_transaction_detail = $session->id;
+            $payment->save();
+    
+            return response()->json(['status' => true, 'id' => $session->id, 'url' => $session->url]);
+        } catch (\Exception $e) {
+            return response()->json(['status' => false, 'message' => $e->getMessage()], 500);
+        }
+    }
+    
+    public function savePostJobStripePayment(Request $request, $id)
+    {
+        $type = strtolower((string)$request->query('type', 'advance'));
+        $bid = PostJobBid::findOrFail($id);
+    
+        $payment = Payment::where('post_job_request_id', $bid->id)
+            ->where('payment_type', 'stripe')
+            ->latest('id')
+            ->first();
+    
+        if (!$payment) {
+            return redirect()->route('post-job-bid.show', ['id' => $bid->post_request_id]);
+        }
+    
+        $sessionId = $payment->other_transaction_detail;
+        try {
+            $session = getstripePaymnetId($sessionId, 'stripe');
+        } catch (\Exception $e) {
+            return redirect()->route('post-job-bid.show', ['id' => $bid->post_request_id])
+                ->withErrors('Stripe verification failed: ' . $e->getMessage());
+        }
+    
+        if (!empty($session['payment_intent']) && ($session['payment_status'] ?? '') === 'paid') {
+            $payment->txn_id = $session['payment_intent'];
+            $payment->payment_status = 'completed';
+            $payment->save();
+    
+            $adminCommissionSetting = Setting::getValueByKey('admin_commission_percentage', 'site-setup');
+            $adminCommissionPercent = is_object($adminCommissionSetting) && isset($adminCommissionSetting->value)
+                ? (float) $adminCommissionSetting->value
+                : 10;
+    
+            $payAmount = (float)$payment->total_amount;
+            $adminCommissionAmount = ($payAmount * $adminCommissionPercent) / 100.0;
+            $providerPayoutAmount  = max(0, $payAmount - $adminCommissionAmount);
+    
+            if ($providerPayoutAmount > 0) {
+                $providerWallet = Wallet::firstOrCreate(['user_id' => $bid->provider_id]);
+                $providerWallet->increment('amount', $providerPayoutAmount);
+    
+                WalletHistory::create([
+                    'datetime'        => now(),
+                    'user_id'         => $bid->provider_id,
+                    'activity_type'   => 'credit',
+                    'activity_message' => ($type === 'remaining' ? 'Remaining' : 'Advance') . ' received for Bid #' . $bid->id,
+                    'activity_data'   => json_encode([
+                        'amount'  => $providerPayoutAmount,
+                        'balance' => $providerWallet->amount,
+                    ]),
+                ]);
+    
+                Payment::create([
+                    'customer_id'             => $bid->provider_id,
+                    'booking_id'              => null,
+                    'datetime'                => now(),
+                    'post_job_request_id'     => $bid->id,
+                    'discount'                => 0,
+                    'total_amount'            => $providerPayoutAmount,
+                    'payment_type'            => 'wallet',
+                    'txn_id'                  => $payment->txn_id,
+                    'payment_status'          => 'completed',
+                    'other_transaction_detail' => json_encode([
+                        'type'     => $type . '_payout',
+                        'bid_id'   => $bid->id,
+                        'customer' => $payment->customer_id,
+                    ]),
+                ]);
+            }
+    
+            if ($adminCommissionAmount > 0) {
+                CommissionEarning::create([
+                    'user_type'         => 'admin',
+                    'employee_id'       => 1,
+                    'commission_amount' => $adminCommissionAmount,
+                    'commission_status' => 'paid',
+                ]);
+            }
+            if ($providerPayoutAmount > 0) {
+                CommissionEarning::create([
+                    'user_type'         => 'provider',
+                    'employee_id'       => $bid->provider_id,
+                    'commission_amount' => $providerPayoutAmount,
+                    'commission_status' => 'paid',
+                ]);
+            }
+    
+            $bid->status = ($type === 'remaining') ? 'remaining_paid' : 'advance_paid';
+            $bid->save();
+        }
+    
+        return redirect()->route('post-job-bid.show', ['id' => $bid->post_request_id]);
+    }
 
 
     public function setAdvance(Request $request, $id)
