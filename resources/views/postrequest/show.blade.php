@@ -191,7 +191,11 @@
                         </div>
                     </div>
 
-                    <!-- Working Address -->
+                 @php
+                      $excludedStatuses = ['cancelled', 'split_payment', 'accepted','requested'];
+
+                 @endphp
+                  @if(!in_array($bid->status,$excludedStatuses))
                     <div class="col-md-4">
                         <div class="card border-secondary shadow-sm h-100 hover-shadow">
                             <div class="card-body text-center">
@@ -201,6 +205,7 @@
                             </div>
                         </div>
                     </div>
+                @endif
                     <!-- Total Budget -->
                     <div class="col-md-4">
                         <div class="card border-secondary shadow-sm h-100 hover-shadow">
