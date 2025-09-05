@@ -118,12 +118,9 @@
 
     <div class="container py-4">
         <div class="row g-4">
-
-            <!-- LEFT SIDE: Cards -->
             <div class="col-lg-8">
                 <div class="row g-3">
 
-                    <!-- Title Card -->
                     <div class="col-md-4">
                         <div class="card border-primary shadow-sm h-100 hover-shadow">
                             <div class="card-body text-center">
@@ -134,7 +131,6 @@
                         </div>
                     </div>
 
-                    <!-- Location Card -->
                     <div class="col-md-4">
                         <div class="card border-success shadow-sm h-100 hover-shadow">
                             <div class="card-body text-center">
@@ -148,7 +144,6 @@
                         </div>
                     </div>
 
-                    <!-- Job Type -->
                     <div class="col-md-4">
                         <div class="card border-warning shadow-sm h-100 hover-shadow">
                             <div class="card-body text-center">
@@ -169,7 +164,6 @@
                         </div>
                     </div>
 
-                    <!-- Start Date -->
                     <div class="col-md-4">
                         <div class="card border-info shadow-sm h-100 hover-shadow">
                             <div class="card-body text-center">
@@ -180,7 +174,6 @@
                         </div>
                     </div>
 
-                    <!-- End Date -->
                     <div class="col-md-4">
                         <div class="card border-danger shadow-sm h-100 hover-shadow">
                             <div class="card-body text-center">
@@ -193,7 +186,6 @@
 
                  @php
                       $excludedStatuses = ['cancelled', 'split_payment', 'accepted','requested'];
-
                  @endphp
                   @if(!in_array($bid->status,$excludedStatuses))
                     <div class="col-md-4">
@@ -206,7 +198,7 @@
                         </div>
                     </div>
                 @endif
-                    <!-- Total Budget -->
+
                     <div class="col-md-4">
                         <div class="card border-secondary shadow-sm h-100 hover-shadow">
                             <div class="card-body text-center">
@@ -217,7 +209,6 @@
                         </div>
                     </div>
 
-                    <!-- Applications -->
                     <div class="col-md-4">
                         <div class="card border-dark shadow-sm h-100 hover-shadow">
                             <div class="card-body text-center">
@@ -228,7 +219,6 @@
                         </div>
                     </div>
 
-                    <!-- Provider -->
                     <div class="col-md-4">
                         <div class="card border-primary shadow-sm h-100 hover-shadow">
                             <div class="card-body text-center">
@@ -239,7 +229,6 @@
                         </div>
                     </div>
 
-                    <!-- Customer -->
                     <div class="col-md-4">
                         <div class="card border-success shadow-sm h-100 hover-shadow">
                             <div class="card-body text-center">
@@ -250,7 +239,6 @@
                         </div>
                     </div>
 
-                    <!-- Status -->
                     <div class="col-md-4">
                         <div class="card border-info shadow-sm h-100 hover-shadow">
                             <div class="card-body text-center">
@@ -279,7 +267,6 @@
                 </div>
             </div>
 
-            <!-- RIGHT SIDE: Price Breakdown -->
             <div class="col-lg-4">
                 <div class="card shadow-sm border-0">
                     <div class="card-header bg-primary text-white fw-bold">
@@ -287,36 +274,27 @@
                     </div>
                     <div class="card-body">
                         @php
-                            // Keep safe defaults
                             $unitPrice         = (float) ($bid->price ?? 0);
                             $advPct            = (float) ($bid->advance_percent ?? 0);
                             $extraChargeUnit   = (float) ($bid->extra_charges ?? 0);
                             $extraChargeQty    = (int) ($bid->quantity ?? 1);
                             $extraChargesTotal = $extraChargeUnit * $extraChargeQty;
-            
-                            // Determine quantity
+
                             if ($bid->price_type == 'hourly') {
                                 $quantity = $bid->total_hours ?? $bid->hourly_rate ?? 1;
                             } elseif ($bid->price_type == 'daily') {
                                 $quantity = $bid->total_days ?? $bid->daily_rate ?? 1;
                             } elseif ($bid->price_type == 'fixed') {
-                                $quantity = 1; // always 1 for fixed
+                                $quantity = 1;
                             } else {
                                 $quantity = $bid->quantity ?? 1;
                             }
-            
+
                             $quantity = (int) $quantity;
-            
-                            // Total = unit price × quantity
                             $totalAmount = $unitPrice * $quantity;
-            
-                            // Advance is on total
                             $advAmount = ($totalAmount * $advPct) / 100;
-            
-                            // Subtotal (total + extras)
                             $subTotal = $totalAmount + $extraChargesTotal;
-            
-                            // Tax
+
                             $countryId = $bid->postrequest->country_id ?? null;
                             $taxRate = 0;
                             $taxTitle = '';
@@ -325,19 +303,13 @@
                                 $taxRate  = $taxModel->value ?? 0;
                                 $taxTitle = $taxModel->title ?? '';
                             }
-            
+
                             $taxAmount = ($subTotal * $taxRate) / 100;
-            
-                            // Grand total
                             $grandTotal = $subTotal + $taxAmount;
-            
-                            // Net Amount = total - tax
                             $netAmount = $totalAmount - $taxAmount;
-            
-                            // Remaining
                             $remaining = $grandTotal - $advAmount;
                         @endphp
-            
+
             <table class="table table-sm table-hover price-table">
                 <tbody>
                     <tr>
@@ -391,30 +363,24 @@
         </div>
     </div>
 
-    <!-- Optional CSS for hover effect -->
     <style>
         .hover-shadow:hover {
             transform: translateY(-3px);
             transition: 0.3s;
             box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
         }
-
         .price-table tbody tr {
             transition: background-color 0.2s ease, border-left-color 0.2s ease;
             border-left: 3px solid transparent;
         }
-
         .price-table tbody tr:hover {
             background-color: #f8f9fa;
             border-left-color: #0d6efd;
-            /* primary accent */
         }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-
-            // Accept Bid
             document.querySelectorAll('.acceptBid').forEach(btn => {
                 btn.addEventListener('click', function() {
                     let bidId = this.dataset.id;
@@ -446,7 +412,6 @@
                 });
             });
 
-            // Update Status Button
             document.querySelectorAll('.updateStatusBtn').forEach(btn => {
                 btn.addEventListener('click', function() {
                     const bidId = this.dataset.id;
@@ -483,7 +448,6 @@
                 });
             });
 
-            // Pay Advance / Remaining with Wallet or Stripe choice
             document.querySelectorAll('.payAdvanceBtn, .payRemainingBtn').forEach(btn => {
                 btn.addEventListener('click', function() {
                     const postId = this.dataset.postId;
@@ -508,7 +472,6 @@
                         showCancelButton: true,
                     }).then(() => {});
 
-                    // Delegate handlers after modal shown
                     setTimeout(() => {
                         const walletBtn = document.getElementById('walletPayBtn');
                         const stripeBtn = document.getElementById('stripePayBtn');
@@ -555,7 +518,6 @@
                 });
             });
 
-            // Hold Bid Button
             document.querySelectorAll('.holdBidBtn').forEach(btn => {
                 btn.addEventListener('click', function() {
                     const bidId = this.dataset.id;
@@ -600,6 +562,7 @@
                     });
                 });
             });
+
             $(document).on('click', '.extraChargesBtn', function() {
                 const bidId = $(this).data('id');
                 Swal.fire({
@@ -684,13 +647,10 @@
                 });
             });
 
-
         });
     </script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-
-            // Split Payment for Provider
             document.querySelectorAll('.startWorkBtn').forEach(btn => {
                 btn.addEventListener('click', function() {
                     const postId = this.dataset.postId;
@@ -713,10 +673,8 @@
                         showCancelButton: true,
                         confirmButtonText: "Update",
                         didOpen: () => {
-                            const advanceInput = document.getElementById(
-                            'advanceInput');
-                            const remainingInput = document.getElementById(
-                                'remainingInput');
+                            const advanceInput = document.getElementById('advanceInput');
+                            const remainingInput = document.getElementById('remainingInput');
                             advanceInput.addEventListener('input', function() {
                                 let val = parseInt(this.value) || 0;
                                 if (val > 100) val = 100;
@@ -724,55 +682,40 @@
                             });
                         },
                         preConfirm: () => {
-                            const advance = parseInt(document.getElementById(
-                                'advanceInput').value);
-                            const remaining = parseInt(document.getElementById(
-                                'remainingInput').value);
+                            const advance = parseInt(document.getElementById('advanceInput').value);
+                            const remaining = parseInt(document.getElementById('remainingInput').value);
                             if (advance < 0 || advance > 100) {
-                                Swal.showValidationMessage(
-                                    "Please enter a valid advance percentage (0-100)"
-                                    );
+                                Swal.showValidationMessage("Please enter a valid advance percentage (0-100)");
                                 return false;
                             }
-                            return {
-                                advance,
-                                remaining
-                            };
+                            return { advance, remaining };
                         }
                     }).then((result) => {
                         if (result.isConfirmed) {
-                            const {
-                                advance,
-                                remaining
-                            } = result.value;
-                            fetch('{{ route('adjustpayment.start-work', ':id') }}'.replace(
-                                    ':id', postId), {
-                                    method: 'POST',
-                                    headers: {
-                                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                                        'Content-Type': 'application/json'
-                                    },
-                                    body: JSON.stringify({
-                                        advance_percent: advance,
-                                        remaining_percent: remaining
-                                    })
-                                }).then(res => res.json())
-                                .then(response => {
-                                    if (response.status) {
-                                        Swal.fire("Updated!", response.message ||
-                                                "Payment split updated.", "success")
-                                            .then(() => location.reload());
-                                    } else {
-                                        Swal.fire("Error!", response.message ||
-                                            "Unable to update.", "error");
-                                    }
-                                }).catch(() => Swal.fire("Error!", "Something went wrong!",
-                                    "error"));
+                            const { advance, remaining } = result.value;
+                            fetch('{{ route('adjustpayment.start-work', ':id') }}'.replace(':id', postId), {
+                                method: 'POST',
+                                headers: {
+                                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({
+                                    advance_percent: advance,
+                                    remaining_percent: remaining
+                                })
+                            }).then(res => res.json())
+                              .then(response => {
+                                  if (response.status) {
+                                      Swal.fire("Updated!", response.message || "Payment split updated.", "success")
+                                           .then(() => location.reload());
+                                  } else {
+                                      Swal.fire("Error!", response.message || "Unable to update.", "error");
+                                  }
+                              }).catch(() => Swal.fire("Error!", "Something went wrong!", "error"));
                         }
                     });
                 });
             });
-
         });
     </script>
- 
+</x-master-layout>
