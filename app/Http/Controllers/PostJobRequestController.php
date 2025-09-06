@@ -672,6 +672,7 @@ class PostJobRequestController extends Controller
     
     public function savePostJobStripePayment(Request $request, $id)
     {
+        dd($request->all(), $id);
         $type = strtolower((string)$request->query('type', 'advance')); // advance or remaining
         $bid  = PostJobBid::findOrFail($id);
     
