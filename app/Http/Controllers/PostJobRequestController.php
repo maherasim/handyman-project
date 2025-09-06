@@ -902,62 +902,91 @@ class PostJobRequestController extends Controller
     ];
     return response()->json($payload);
 }
-
+ 
 public function createPostJobBankTransfer(Request $request, $id)
 {
-    dd($id);
     $bid = PostJobBid::findOrFail($id);
     $user = auth()->user();
+
+    // Check authorization
     if ((int)$user->id !== (int)$bid->customer_id) {
         return response()->json(['status' => false, 'message' => 'Unauthorized'], 403);
     }
 
-    $type = strtolower((string)$request->input('type', 'advance'));
-    $requestedAmount = (float)$request->input('amount');
-
-    // Compute amounts like wallet/stripe
-    $total = (float)($bid->price ?? 0);
-    $extraChargeUnit = (float)($bid->extra_charges ?? 0);
-    $extraChargeQty = (int)($bid->quantity ?? 1);
-    $extraChargesTotal = $extraChargeUnit * $extraChargeQty;
-    $advPct = (float)($bid->advance_percent ?? 0);
-    $computedAdvanceAmount = ($total * $advPct / 100);
-    $subTotal = $total + $extraChargesTotal;
-    $computedRemainingAmount = $subTotal - $computedAdvanceAmount;
-
-    $payAmount = $type === 'remaining'
-        ? $computedRemainingAmount
-        : (empty(trim((string)$requestedAmount)) ? $computedAdvanceAmount : (float)$requestedAmount);
+    $payAmount = (float)$request->input('amount', 0);
+    $type = strtolower((string)$request->input('type', 'advance')); // advance or remaining
 
     if ($payAmount <= 0) {
         return response()->json(['status' => false, 'message' => 'Invalid amount'], 422);
     }
 
-    // Create a pending Payment record for manual bank transfer
-    Payment::create([
-        'customer_id'             => $user->id,
-        'booking_id'              => null,
-        'datetime'                => now(),
-        'post_job_request_id'     => $bid->id,
-        'discount'                => 0,
-        'total_amount'            => number_format($payAmount, 2, '.', ''),
-        'payment_type'            => 'bank_transfer',         // identifies bank/manual transfer
-        'payment_status'          => 'pending',      // pending until admin/provider verifies
+    // Calculate admin commission and provider earning
+    $admin_commission_percentage = 10; // fixed 10%
+    $admin_commission_amount = ($payAmount * $admin_commission_percentage) / 100;
+    $provider_earning = $payAmount - $admin_commission_amount;
+
+    // Create Payment record with type
+    $payment = Payment::create([
+        'customer_id' => $user->id,
+        'booking_id' => null,
+        'post_job_request_id' => $bid->id,
+        'datetime' => now(),
+        'discount' => 0,
+        'total_amount' => number_format($payAmount, 2, '.', ''),
+        'payment_type' => 'bank_transfer',
+        'payment_status' => 'pending',
+        'status' => $type, // store whether it's advance or remaining
         'other_transaction_detail' => json_encode([
-            'type' => $type,
             'note' => 'User reported bank transfer; awaiting verification',
+            'admin_commission' => $admin_commission_amount,
+            'provider_earning' => $provider_earning,
         ]),
     ]);
 
-    // You can optionally set a temporary bid status flag, but keeping business flow unchanged is safer:
-    // $bid->status = $type === 'advance' ? 'advance_payment' : $bid->status;
-    // $bid->save();
+    // Save commission earnings (pending)
+    $admin_user_id = User::where('user_type', 'admin')->first()->id;
+    $provider_id = $bid->provider_id;
+
+    CommissionEarning::create([
+        'post_job_request_id' => $bid->id,
+        'user_type' => 'admin',
+        'employee_id' => $admin_user_id,
+        'commission_amount' => $admin_commission_amount,
+        'commission_status' => 'pending',
+    ]);
+
+    CommissionEarning::create([
+        'post_job_request_id' => $bid->id,
+        'user_type' => 'provider',
+        'employee_id' => $provider_id,
+        'commission_amount' => $provider_earning,
+        'commission_status' => 'pending',
+    ]);
+    ProviderPayout::create([
+        'provider_id' => $provider_id,
+        'amount' => $provider_earning,
+        'payment_method' => 'Bank Transfer',
+        'paid_date' => Carbon::now(),
+        'status' => 'paid', // you can set 'pending' if you want to verify first
+        'booking_id' => null, // Not a normal booking
+        'post_job_request_id' => $bid->id,
+        'payment_gateway' => 'Bank Transfer',
+    ]);
 
     return response()->json([
         'status' => true,
         'message' => 'Bank transfer recorded. We will verify your payment shortly.',
+        'payment_id' => $payment->id,
+        'admin_commission' => $admin_commission_amount,
+        'provider_earning' => $provider_earning,
+        'payment_type' => $type,
     ]);
 }
+
+
+
+
+
     public function postJobPayPalSuccess(Request $request, $id)
     {
         $token = $request->query('token');

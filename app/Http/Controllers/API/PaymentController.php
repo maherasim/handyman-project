@@ -31,274 +31,274 @@ class PaymentController extends Controller
     use NotificationTrait;
     use EarningTrait;
 
- 
-public function savePayment(Request $request)
-{
-    $data = $request->all();
-    $data['datetime'] = isset($request->datetime) ? date('Y-m-d H:i:s', strtotime($request->datetime)) : date('Y-m-d H:i:s');
 
-    $booking = Booking::find($request->booking_id);
-    $result = Payment::create($data);
+    public function savePayment(Request $request)
+    {
+        $data = $request->all();
+        $data['datetime'] = isset($request->datetime) ? date('Y-m-d H:i:s', strtotime($request->datetime)) : date('Y-m-d H:i:s');
 
-    if (!$booking || !$result) {
-        return comman_message_response(__('messages.booking_not_found'), 404);
-    }
+        $booking = Booking::find($request->booking_id);
+        $result = Payment::create($data);
 
-    $isAdvance = $result->payment_status == 'advanced_paid';
-    $isRemaining = $result->payment_status == 'paid';
-
-    $admin_commission_percentage = Setting::getValueByKey('admin_commission_percentage', 'site-setup')->value ?? 10;
-    $admin_user_id = User::where('user_type', 'admin')->value('id');
-
-    if ($isAdvance) {
-        $advance_paid_amount = $request->advance_paid_amount;
-        $booking->advance_paid_amount = $advance_paid_amount;
-        $booking->update();
-
-        $admin_commission_amount = ($advance_paid_amount * $admin_commission_percentage) / 100;
-        $provider_earning = $advance_paid_amount - $admin_commission_amount;
-
-        // Credit only admin on advance; hold provider share until final payment to avoid later clawbacks
-        Wallet::firstOrCreate(['user_id' => $admin_user_id])->increment('amount', $admin_commission_amount);
-
-        CommissionEarning::create([
-            'booking_id' => $booking->id,
-            'user_type' => 'admin',
-            'employee_id' => $admin_user_id,
-            'commission_amount' => $admin_commission_amount,
-            'commission_status' => 'paid',
-        ]);
-    }
-
-    if ($isRemaining) {
-        $booking->status = 'completed';
-        $booking->update();
-
-        $advance_paid = $booking->advance_paid_amount ?? 0;
-        $total_amount = $booking->total_amount;
-        $remaining_amount = $total_amount - $advance_paid;
-        $result->total_amount = $remaining_amount;
-        $result->save();
-
-        // Compute totals across the whole booking
-        $total_admin_commission = ($total_amount * $admin_commission_percentage) / 100;
-        $provider_total_earning = $total_amount - $total_admin_commission;
-        $remaining_admin_commission = ($remaining_amount > 0)
-            ? ($remaining_amount * $admin_commission_percentage) / 100
-            : 0;
-
-        // Calculate handyman payouts from provider_total_earning
-        $handymen = BookingHandymanMapping::where('booking_id', $booking->id)->pluck('handyman_id');
-        $handyman_payouts = [];
-        $total_handyman_share = 0;
-        foreach ($handymen as $handyman_id) {
-            $handyman = User::find($handyman_id);
-            if (!$handyman || $handyman->handyman_commission === null) {
-                continue;
-            }
-            // Clamp each handyman commission between 1% and 85%
-            $commission_percent = max(1, min(85, $handyman->handyman_commission));
-            $handyman_total_share = ($provider_total_earning * $commission_percent) / 100;
-            $total_handyman_share += $handyman_total_share;
-            $handyman_payouts[] = [
-                'handyman_id' => $handyman_id,
-                'amount' => $handyman_total_share,
-            ];
+        if (!$booking || !$result) {
+            return comman_message_response(__('messages.booking_not_found'), 404);
         }
 
-        // Final provider earning = provider_total_earning - sum(handymen)
-        $provider_final_earning = $provider_total_earning - $total_handyman_share;
-        if ($provider_final_earning < 0) {
-            // Guard rail: never pay negative. If business rules allow, you can scale down handymen instead.
-            $provider_final_earning = 0;
-        }
+        $isAdvance = $result->payment_status == 'advanced_paid';
+        $isRemaining = $result->payment_status == 'paid';
 
-        // Pay handymen now
-        foreach ($handyman_payouts as $payout) {
-            Wallet::firstOrCreate(['user_id' => $payout['handyman_id']])->increment('amount', $payout['amount']);
+        $admin_commission_percentage = Setting::getValueByKey('admin_commission_percentage', 'site-setup')->value ?? 10;
+        $admin_user_id = User::where('user_type', 'admin')->value('id');
 
-            HandymanPayout::create([
-                'handyman_id' => $payout['handyman_id'],
-                'booking_id' => $booking->id,
-                'amount' => $payout['amount'],
-                'status' => 'paid',
-                'paid_date' => Carbon::now(),
-                'payment_method' => 'wallet',
-                'payment_gateway' => 'wallet',
-            ]);
+        if ($isAdvance) {
+            $advance_paid_amount = $request->advance_paid_amount;
+            $booking->advance_paid_amount = $advance_paid_amount;
+            $booking->update();
 
-            CommissionEarning::create([
-                'booking_id' => $booking->id,
-                'user_type' => 'handyman',
-                'employee_id' => $payout['handyman_id'],
-                'commission_amount' => $payout['amount'],
-                'commission_status' => 'paid',
-            ]);
-        }
+            $admin_commission_amount = ($advance_paid_amount * $admin_commission_percentage) / 100;
+            $provider_earning = $advance_paid_amount - $admin_commission_amount;
 
-        // Pay remaining admin commission only for the remaining payment now
-        if ($remaining_admin_commission > 0) {
-            Wallet::firstOrCreate(['user_id' => $admin_user_id])->increment('amount', $remaining_admin_commission);
+            // Credit only admin on advance; hold provider share until final payment to avoid later clawbacks
+            Wallet::firstOrCreate(['user_id' => $admin_user_id])->increment('amount', $admin_commission_amount);
 
             CommissionEarning::create([
                 'booking_id' => $booking->id,
                 'user_type' => 'admin',
                 'employee_id' => $admin_user_id,
-                'commission_amount' => $remaining_admin_commission,
+                'commission_amount' => $admin_commission_amount,
                 'commission_status' => 'paid',
             ]);
         }
 
-        // Pay provider the final net amount once (advance was held)
-        Wallet::firstOrCreate(['user_id' => $booking->provider_id])->increment('amount', $provider_final_earning);
+        if ($isRemaining) {
+            $booking->status = 'completed';
+            $booking->update();
 
-        ProviderPayout::create([
-            'provider_id' => $booking->provider_id,
-            'amount' => $provider_final_earning,
-            'payment_method' => 'wallet',
-            'paid_date' => Carbon::now(),
-            'status' => 'paid',
-            'booking_id' => $booking->id,
-            'payment_gateway' => 'wallet',
-        ]);
+            $advance_paid = $booking->advance_paid_amount ?? 0;
+            $total_amount = $booking->total_amount;
+            $remaining_amount = $total_amount - $advance_paid;
+            $result->total_amount = $remaining_amount;
+            $result->save();
 
-        CommissionEarning::create([
-            'booking_id' => $booking->id,
-            'user_type' => 'provider',
-            'employee_id' => $booking->provider_id,
-            'commission_amount' => $provider_final_earning,
-            'commission_status' => 'paid',
-        ]);
+            // Compute totals across the whole booking
+            $total_admin_commission = ($total_amount * $admin_commission_percentage) / 100;
+            $provider_total_earning = $total_amount - $total_admin_commission;
+            $remaining_admin_commission = ($remaining_amount > 0)
+                ? ($remaining_amount * $admin_commission_percentage) / 100
+                : 0;
 
-        // Mark all commissions as paid (keeps previous admin advance record consistent)
-        CommissionEarning::where('booking_id', $booking->id)->update(['commission_status' => 'paid']);
-    }
+            // Calculate handyman payouts from provider_total_earning
+            $handymen = BookingHandymanMapping::where('booking_id', $booking->id)->pluck('handyman_id');
+            $handyman_payouts = [];
+            $total_handyman_share = 0;
+            foreach ($handymen as $handyman_id) {
+                $handyman = User::find($handyman_id);
+                if (!$handyman || $handyman->handyman_commission === null) {
+                    continue;
+                }
+                // Clamp each handyman commission between 1% and 85%
+                $commission_percent = max(1, min(85, $handyman->handyman_commission));
+                $handyman_total_share = ($provider_total_earning * $commission_percent) / 100;
+                $total_handyman_share += $handyman_total_share;
+                $handyman_payouts[] = [
+                    'handyman_id' => $handyman_id,
+                    'amount' => $handyman_total_share,
+                ];
+            }
 
-    // Always create new PaymentHistory entry
-    $firstHandymanId = optional($booking->handymanAdded->first())->handyman_id;
-    $assignedUserData = User::find($firstHandymanId);
+            // Final provider earning = provider_total_earning - sum(handymen)
+            $provider_final_earning = $provider_total_earning - $total_handyman_share;
+            if ($provider_final_earning < 0) {
+                // Guard rail: never pay negative. If business rules allow, you can scale down handymen instead.
+                $provider_final_earning = 0;
+            }
 
-    if ($firstHandymanId && $assignedUserData->user_type == 'provider') {
-        $payment_history = [
-            'payment_id' => $result->id,
-            'booking_id' => $result->booking_id,
-            'parent_id' => $result->booking_id,
-            'action' => config('constant.PAYMENT_HISTORY_ACTION.CUSTOMER_SEND_PROVIDER'),
-            'status' => config('constant.PAYMENT_HISTORY_STATUS.PENDING_PROVIDER'),
-            'sender_id' => $request->customer_id,
-            'receiver_id' => $firstHandymanId,
-            'datetime' => $request->datetime,
-            'total_amount' => ($result->payment_status == 'paid')
-                ? ($booking->total_amount - ($booking->advance_paid_amount ?? 0))
-                : $request->total_amount,
-            'txn_id' => $request->txn_id,
-            'type' => $request->payment_type,
-            'text' => __('messages.payment_transfer', [
-                'from' => get_user_name($request->customer_id),
-                'to' => get_user_name($firstHandymanId),
-                'amount' => getPriceFormat((float)$request->total_amount),
-            ]),
-        ];
+            // Pay handymen now
+            foreach ($handyman_payouts as $payout) {
+                Wallet::firstOrCreate(['user_id' => $payout['handyman_id']])->increment('amount', $payout['amount']);
 
-        $res = PaymentHistory::create($payment_history);
-        $res->parent_id = $res->id;
-        $res->save();
-    }
+                HandymanPayout::create([
+                    'handyman_id' => $payout['handyman_id'],
+                    'booking_id' => $booking->id,
+                    'amount' => $payout['amount'],
+                    'status' => 'paid',
+                    'paid_date' => Carbon::now(),
+                    'payment_method' => 'wallet',
+                    'payment_gateway' => 'wallet',
+                ]);
 
-    // Assign payment ID to booking
-    $booking->payment_id = $result->id;
-    $booking->update();
+                CommissionEarning::create([
+                    'booking_id' => $booking->id,
+                    'user_type' => 'handyman',
+                    'employee_id' => $payout['handyman_id'],
+                    'commission_amount' => $payout['amount'],
+                    'commission_status' => 'paid',
+                ]);
+            }
 
-    // Deduct from customer wallet if used
-    if ($request->payment_type == 'wallet') {
-        $wallet = Wallet::where('user_id', $booking->customer_id)->first();
-        if ($wallet && $wallet->amount >= $request->total_amount) {
-            $wallet->amount -= $request->total_amount;
-            $wallet->save();
+            // Pay remaining admin commission only for the remaining payment now
+            if ($remaining_admin_commission > 0) {
+                Wallet::firstOrCreate(['user_id' => $admin_user_id])->increment('amount', $remaining_admin_commission);
 
-            $service = Service::find($booking->service_id);
-            $this->sendNotification([
-                'activity_type' => 'paid_with_wallet',
-                'wallet' => $wallet,
-                'booking_id' => $request->booking_id,
-                'booking_amount' => $request->total_amount,
-                'service_name' => $service->name ?? '',
+                CommissionEarning::create([
+                    'booking_id' => $booking->id,
+                    'user_type' => 'admin',
+                    'employee_id' => $admin_user_id,
+                    'commission_amount' => $remaining_admin_commission,
+                    'commission_status' => 'paid',
+                ]);
+            }
+
+            // Pay provider the final net amount once (advance was held)
+            Wallet::firstOrCreate(['user_id' => $booking->provider_id])->increment('amount', $provider_final_earning);
+
+            ProviderPayout::create([
+                'provider_id' => $booking->provider_id,
+                'amount' => $provider_final_earning,
+                'payment_method' => 'wallet',
+                'paid_date' => Carbon::now(),
+                'status' => 'paid',
+                'booking_id' => $booking->id,
+                'payment_gateway' => 'wallet',
             ]);
-        } else {
-            return comman_message_response(__('messages.wallent_balance_error'), 400);
+
+            CommissionEarning::create([
+                'booking_id' => $booking->id,
+                'user_type' => 'provider',
+                'employee_id' => $booking->provider_id,
+                'commission_amount' => $provider_final_earning,
+                'commission_status' => 'paid',
+            ]);
+
+            // Mark all commissions as paid (keeps previous admin advance record consistent)
+            CommissionEarning::where('booking_id', $booking->id)->update(['commission_status' => 'paid']);
         }
+
+        // Always create new PaymentHistory entry
+        $firstHandymanId = optional($booking->handymanAdded->first())->handyman_id;
+        $assignedUserData = User::find($firstHandymanId);
+
+        if ($firstHandymanId && $assignedUserData->user_type == 'provider') {
+            $payment_history = [
+                'payment_id' => $result->id,
+                'booking_id' => $result->booking_id,
+                'parent_id' => $result->booking_id,
+                'action' => config('constant.PAYMENT_HISTORY_ACTION.CUSTOMER_SEND_PROVIDER'),
+                'status' => config('constant.PAYMENT_HISTORY_STATUS.PENDING_PROVIDER'),
+                'sender_id' => $request->customer_id,
+                'receiver_id' => $firstHandymanId,
+                'datetime' => $request->datetime,
+                'total_amount' => ($result->payment_status == 'paid')
+                    ? ($booking->total_amount - ($booking->advance_paid_amount ?? 0))
+                    : $request->total_amount,
+                'txn_id' => $request->txn_id,
+                'type' => $request->payment_type,
+                'text' => __('messages.payment_transfer', [
+                    'from' => get_user_name($request->customer_id),
+                    'to' => get_user_name($firstHandymanId),
+                    'amount' => getPriceFormat((float)$request->total_amount),
+                ]),
+            ];
+
+            $res = PaymentHistory::create($payment_history);
+            $res->parent_id = $res->id;
+            $res->save();
+        }
+
+        // Assign payment ID to booking
+        $booking->payment_id = $result->id;
+        $booking->update();
+
+        // Deduct from customer wallet if used
+        if ($request->payment_type == 'wallet') {
+            $wallet = Wallet::where('user_id', $booking->customer_id)->first();
+            if ($wallet && $wallet->amount >= $request->total_amount) {
+                $wallet->amount -= $request->total_amount;
+                $wallet->save();
+
+                $service = Service::find($booking->service_id);
+                $this->sendNotification([
+                    'activity_type' => 'paid_with_wallet',
+                    'wallet' => $wallet,
+                    'booking_id' => $request->booking_id,
+                    'booking_amount' => $request->total_amount,
+                    'service_name' => $service->name ?? '',
+                ]);
+            } else {
+                return comman_message_response(__('messages.wallent_balance_error'), 400);
+            }
+        }
+
+        // Send payment status notification
+        $this->sendNotification([
+            'activity_type' => 'payment_message_status',
+            'payment_status' => $data['payment_status'],
+            'booking_id' => $booking->id,
+            'booking' => $booking,
+            'booking_amount' => $request->total_amount,
+        ]);
+
+        if ($result->payment_status == 'failed') {
+            return comman_message_response(__('messages.payment_failed'), 400);
+        }
+
+        return comman_message_response(__('messages.payment_completed'), 200);
     }
 
-    // Send payment status notification
-    $this->sendNotification([
-        'activity_type' => 'payment_message_status',
-        'payment_status' => $data['payment_status'],
-        'booking_id' => $booking->id,
-        'booking' => $booking,
-        'booking_amount' => $request->total_amount,
-    ]);
 
-    if ($result->payment_status == 'failed') {
-        return comman_message_response(__('messages.payment_failed'), 400);
-    }
+    public function getpaymentall(Request $request)
+    {
+        $query = Payment::query()
+            ->with(['booking.service', 'booking.bookingPackage', 'customer']) // Eager load customer
+            ->myPayment()
+            ->where(function ($q) {
+                $q->where('payment_type', '!=', 'bank_transfer')
+                    ->orWhere(function ($sub) {
+                        $sub->where('payment_type', 'bank_transfer')
+                            ->where('status', 1);
+                    });
+            });
 
-    return comman_message_response(__('messages.payment_completed'), 200);
-}
+        // Apply filters
+        $filter = $request->filter;
+        if (isset($filter['column_status'])) {
+            $query->where('payment_status', $filter['column_status']);
+        }
 
+        // Admin check (not strictly needed here)
+        if (auth()->user()->hasAnyRole(['admin'])) {
+            $query->newQuery(); // optional
+        }
 
-public function getpaymentall(Request $request)
-{
-    $query = Payment::query()
-        ->with(['booking.service', 'booking.bookingPackage', 'customer']) // Eager load customer
-        ->myPayment()
-        ->where(function ($q) {
-            $q->where('payment_type', '!=', 'bank_transfer')
-              ->orWhere(function ($sub) {
-                  $sub->where('payment_type', 'bank_transfer')
-                      ->where('status', 1);
-              });
+        // Get paginated results
+        $payments = $query->paginate(10);
+
+        // Transform each payment entry
+        $payments->getCollection()->transform(function ($payment) {
+            $booking = $payment->booking;
+
+            // Replace booking_id with service or service package name
+            if ($booking) {
+                if (!empty($booking->bookingPackage)) {
+                    $payment->booking_id = optional($booking->bookingPackage)->name . " (" . __('messages.service_package') . ")";
+                } else {
+                    $payment->booking_id = optional($booking->service)->name . " (" . __('messages.service') . ")";
+                }
+            } else {
+                $payment->booking_id = '-';
+            }
+
+            // Replace customer_id with customer name
+            $payment->customer_id = optional($payment->customer)->name ?? '-';
+
+            return $payment;
         });
 
-    // Apply filters
-    $filter = $request->filter;
-    if (isset($filter['column_status'])) {
-        $query->where('payment_status', $filter['column_status']);
+        return response()->json([
+            'status' => true,
+            'data' => $payments
+        ]);
     }
-
-    // Admin check (not strictly needed here)
-    if (auth()->user()->hasAnyRole(['admin'])) {
-        $query->newQuery(); // optional
-    }
-
-    // Get paginated results
-    $payments = $query->paginate(10);
-
-    // Transform each payment entry
-    $payments->getCollection()->transform(function ($payment) {
-        $booking = $payment->booking;
-
-        // Replace booking_id with service or service package name
-        if ($booking) {
-            if (!empty($booking->bookingPackage)) {
-                $payment->booking_id = optional($booking->bookingPackage)->name . " (" . __('messages.service_package') . ")";
-            } else {
-                $payment->booking_id = optional($booking->service)->name . " (" . __('messages.service') . ")";
-            }
-        } else {
-            $payment->booking_id = '-';
-        }
-
-        // Replace customer_id with customer name
-        $payment->customer_id = optional($payment->customer)->name ?? '-';
-
-        return $payment;
-    });
-
-    return response()->json([
-        'status' => true,
-        'data' => $payments
-    ]);
-}
 
 
 
@@ -306,13 +306,13 @@ public function getpaymentall(Request $request)
     public function saveBankTransferPayment(Request $request)
     {
         $data = $request->all();
-        $data['datetime'] = isset($request->datetime) ? date('Y-m-d H:i:s',strtotime($request->datetime)) : date('Y-m-d H:i:s');
+        $data['datetime'] = isset($request->datetime) ? date('Y-m-d H:i:s', strtotime($request->datetime)) : date('Y-m-d H:i:s');
         $data['status'] = 0;
         $result = Payment::create($data);
         $booking = Booking::find($request->booking_id);
-        if(!empty($result) && $result->payment_status == 'advanced_paid'){
+        if (!empty($result) && $result->payment_status == 'advanced_paid') {
             $booking->advance_paid_amount  = $request->total_amount;
-//            $booking->status  = 'pending';
+            //            $booking->status  = 'pending';
 
             $booking->update();
 
@@ -448,7 +448,7 @@ public function getpaymentall(Request $request)
 
         $firstHandymanId = optional($booking->handymanAdded->first())->handyman_id;
         $assignedUserData = User::find($firstHandymanId);
-        if($firstHandymanId != null && $assignedUserData->user_type == 'provider'){
+        if ($firstHandymanId != null && $assignedUserData->user_type == 'provider') {
             $payment_history = [
                 'payment_id' => $result->id,
                 'booking_id' => $result->booking_id,
@@ -458,12 +458,12 @@ public function getpaymentall(Request $request)
                 'sender_id' => $request->customer_id,
                 'receiver_id' => $firstHandymanId,
                 'datetime' => $request->datetime,
-               'total_amount' => ($result->payment_status == 'paid')
-                ? ($booking->total_amount - ($booking->advance_paid_amount ?? 0))
-                : $request->total_amount,
+                'total_amount' => ($result->payment_status == 'paid')
+                    ? ($booking->total_amount - ($booking->advance_paid_amount ?? 0))
+                    : $request->total_amount,
 
                 'txn_id' => $request->txn_id,
-                'type' => $request->payment_type, 
+                'type' => $request->payment_type,
                 'text' => __('messages.payment_transfer', [
                     'from' => get_user_name($request->customer_id),
                     'to' => get_user_name($firstHandymanId),
@@ -479,35 +479,34 @@ public function getpaymentall(Request $request)
             $res->parent_id = $res->id;
             $res->update();
         }
-        $service_id = Booking::where('id',$request->booking_id)->pluck('service_id');
-        $service = Service::where('id',$service_id)->first();
+        $service_id = Booking::where('id', $request->booking_id)->pluck('service_id');
+        $service = Service::where('id', $service_id)->first();
         $booking->payment_id = $result->id;
         $booking->update();
 
-        if($booking->status == 'completed' && $result->payment_status=='paid'){
-            CommissionEarning::where('booking_id',$booking->id)->update(['commission_status'=>'paid']);
+        if ($booking->status == 'completed' && $result->payment_status == 'paid') {
+            CommissionEarning::where('booking_id', $booking->id)->update(['commission_status' => 'paid']);
         }
         $status_code = 200;
 
         $message = __('messages.payment_completed');
         $activity_data = [
             'activity_type' => 'payment_message_status',
-            'payment_status'=>  $data['payment_status'],
+            'payment_status' =>  $data['payment_status'],
             'booking_id' => $booking->id,
             'booking' => $booking,
             'booking_amount' => $request->total_amount,
         ];
         $this->sendNotification($activity_data);
 
-        if($result->payment_status == 'failed')
-        {
+        if ($result->payment_status == 'failed') {
             $status_code = 400;
         }
 
         $result->update();
 
-        return comman_message_response($message,$status_code);
- }
+        return comman_message_response($message, $status_code);
+    }
 
 
 
@@ -516,26 +515,26 @@ public function getpaymentall(Request $request)
     public function paymentList(Request $request)
     {
         $payment = Payment::myPayment()->with('booking');
-        if($request->has('booking_id') && !empty($request->booking_id)){
-            $payment->where('booking_id',$request->booking_id);
+        if ($request->has('booking_id') && !empty($request->booking_id)) {
+            $payment->where('booking_id', $request->booking_id);
         }
-        if($request->has('payment_type') && !empty($request->payment_type)){
+        if ($request->has('payment_type') && !empty($request->payment_type)) {
 
-            if($request->payment_type == 'cash'){
-                $payment->where('payment_type',$request->payment_type);
+            if ($request->payment_type == 'cash') {
+                $payment->where('payment_type', $request->payment_type);
             }
         }
         $per_page = config('constant.PER_PAGE_LIMIT');
-        if( $request->has('per_page') && !empty($request->per_page)){
-            if(is_numeric($request->per_page)){
+        if ($request->has('per_page') && !empty($request->per_page)) {
+            if (is_numeric($request->per_page)) {
                 $per_page = $request->per_page;
             }
-            if($request->per_page === 'all' ){
+            if ($request->per_page === 'all') {
                 $per_page = $payment->count();
             }
         }
 
-        $payment = $payment->orderBy('id','desc')->paginate($per_page);
+        $payment = $payment->orderBy('id', 'desc')->paginate($per_page);
         $items = PaymentResource::collection($payment);
 
         $response = [
@@ -555,60 +554,67 @@ public function getpaymentall(Request $request)
         return comman_custom_response($response);
     }
 
-    public function transferPayment(Request $request){
-        $sitesetup = Setting::where('type','site-setup')->where('key', 'site-setup')->first();
+    public function transferPayment(Request $request)
+    {
+        $sitesetup = Setting::where('type', 'site-setup')->where('key', 'site-setup')->first();
         $admin = json_decode($sitesetup->value);
         $data = $request->all();
         $auth_user = authSession();
         $user_id = $auth_user->id;
 
 
-        date_default_timezone_set( $admin->time_zone ?? 'UTC');
+        date_default_timezone_set($admin->time_zone ?? 'UTC');
         $data['datetime'] = date('Y-m-d H:i:s');
 
-        if($data['action'] == config('constant.PAYMENT_HISTORY_ACTION.HANDYMAN_SEND_PROVIDER')){
-            $data['text'] = __('messages.payment_transfer',
-            ['from' => get_user_name($data['sender_id']),'to' => get_user_name($data['receiver_id']),'amount' => getPriceFormat((float)$data['total_amount']) ]);
+        if ($data['action'] == config('constant.PAYMENT_HISTORY_ACTION.HANDYMAN_SEND_PROVIDER')) {
+            $data['text'] = __(
+                'messages.payment_transfer',
+                ['from' => get_user_name($data['sender_id']), 'to' => get_user_name($data['receiver_id']), 'amount' => getPriceFormat((float)$data['total_amount'])]
+            );
         }
-        if($data['action'] == config('constant.PAYMENT_HISTORY_ACTION.PROVIDER_APPROVED_CASH')){
-            $data['text'] = __('messages.cash_approved',['amount' => getPriceFormat((float)$data['total_amount']),'name' => get_user_name($data['receiver_id']) ]);
+        if ($data['action'] == config('constant.PAYMENT_HISTORY_ACTION.PROVIDER_APPROVED_CASH')) {
+            $data['text'] = __('messages.cash_approved', ['amount' => getPriceFormat((float)$data['total_amount']), 'name' => get_user_name($data['receiver_id'])]);
         }
-        if($data['action'] == config('constant.PAYMENT_HISTORY_ACTION.PROVIDER_SEND_ADMIN')){
-            $data['text'] =  __('messages.payment_transfer',['from' => get_user_name($data['sender_id']),'to' => get_user_name(admin_id()),
-            'amount' => getPriceFormat((float)$data['total_amount']) ]);
+        if ($data['action'] == config('constant.PAYMENT_HISTORY_ACTION.PROVIDER_SEND_ADMIN')) {
+            $data['text'] =  __('messages.payment_transfer', [
+                'from' => get_user_name($data['sender_id']),
+                'to' => get_user_name(admin_id()),
+                'amount' => getPriceFormat((float)$data['total_amount'])
+            ]);
         }
         $result = \App\Models\PaymentHistory::create($data);
 
-        if($data['action'] == 'provider_approved_cash' && $data['status'] == 'approved_by_provider' ){
+        if ($data['action'] == 'provider_approved_cash' && $data['status'] == 'approved_by_provider') {
 
             $bookingdata = Booking::find($request->booking_id);
-            $paymentdata = Payment::where('booking_id',$bookingdata->id)->first();
-            if($bookingdata->payment_id != null){
+            $paymentdata = Payment::where('booking_id', $bookingdata->id)->first();
+            if ($bookingdata->payment_id != null) {
                 $payment_status = 'pending_by_admin';
                 $paymentdata->update(['payment_status' => $payment_status]);
             }
         }
         $message = trans('messages.transfer');
-        if($request->is('api/*')) {
+        if ($request->is('api/*')) {
             return comman_message_response($message);
-		}
+        }
     }
 
-    public function paymentHistory(Request $request){
+    public function paymentHistory(Request $request)
+    {
         $booking_id = $request->booking_id;
-        $payment = PaymentHistory::where('booking_id',$booking_id);
+        $payment = PaymentHistory::where('booking_id', $booking_id);
 
         $per_page = config('constant.PER_PAGE_LIMIT');
-        if( $request->has('per_page') && !empty($request->per_page)){
-            if(is_numeric($request->per_page)){
+        if ($request->has('per_page') && !empty($request->per_page)) {
+            if (is_numeric($request->per_page)) {
                 $per_page = $request->per_page;
             }
-            if($request->per_page === 'all' ){
+            if ($request->per_page === 'all') {
                 $per_page = $payment->count();
             }
         }
 
-        $payment = $payment->orderBy('id','desc')->paginate($per_page);
+        $payment = $payment->orderBy('id', 'desc')->paginate($per_page);
         $items = PaymentHistoryResource::collection($payment);
 
         $response = [
@@ -626,24 +632,24 @@ public function getpaymentall(Request $request)
         ];
 
         return comman_custom_response($response);
-
     }
 
-    public function getCashPaymentHistory(Request $request){
+    public function getCashPaymentHistory(Request $request)
+    {
         $payment_id = $request->payment_id;
-        $payment = PaymentHistory::where('payment_id',$payment_id)->with('booking');
+        $payment = PaymentHistory::where('payment_id', $payment_id)->with('booking');
 
         $per_page = config('constant.PER_PAGE_LIMIT');
-        if( $request->has('per_page') && !empty($request->per_page)){
-            if(is_numeric($request->per_page)){
+        if ($request->has('per_page') && !empty($request->per_page)) {
+            if (is_numeric($request->per_page)) {
                 $per_page = $request->per_page;
             }
-            if($request->per_page === 'all' ){
+            if ($request->per_page === 'all') {
                 $per_page = $payment->count();
             }
         }
 
-        $payment = $payment->orderBy('id','desc')->paginate($per_page);
+        $payment = $payment->orderBy('id', 'desc')->paginate($per_page);
         $items = GetCashPaymentHistoryResource::collection($payment);
 
         $response = [
@@ -661,17 +667,17 @@ public function getpaymentall(Request $request)
         ];
 
         return comman_custom_response($response);
-
     }
 
 
-    public function paymentDetail(Request $request){
+    public function paymentDetail(Request $request)
+    {
         $auth_user = authSession();
         $user_id = $auth_user->id;
 
         $get_all_payments = PaymentHistory::query();
-        if(!empty($request->status)){
-            $get_all_payments = $get_all_payments->where('status',$request->status);
+        if (!empty($request->status)) {
+            $get_all_payments = $get_all_payments->where('status', $request->status);
         }
 
         $user = auth()->user();
@@ -683,7 +689,7 @@ public function getpaymentall(Request $request)
                 'approved_by_handyman' => ['action' => 'handyman_approved_cash', 'column' => 'receiver_id'],
                 'pending_by_provider'  => ['action' => 'handyman_send_provider', 'column' => 'sender_id'],
                 'approved_by_provider' => ['action' => 'provider_approved_cash', 'column' => 'sender_id'],
-                'default'              => ['actions' => ['handyman_approved_cash', 'handyman_send_provider', 'provider_approved_cash', 'admin_approved_cash','provider_send_admin']],
+                'default'              => ['actions' => ['handyman_approved_cash', 'handyman_send_provider', 'provider_approved_cash', 'admin_approved_cash', 'provider_send_admin']],
             ],
             'provider' => [
                 'pending_by_admin'     => ['action' => 'provider_send_admin', 'column' => 'sender_id'],
@@ -699,12 +705,12 @@ public function getpaymentall(Request $request)
             if (!empty($status) && isset($roleActionMap[$role][$status])) {
                 $actionData = $roleActionMap[$role][$status];
                 $get_all_payments = $get_all_payments->where('action', $actionData['action'])
-                                                    ->where($actionData['column'], $user_id)
-                                                    ->orderBy('id', 'desc');
+                    ->where($actionData['column'], $user_id)
+                    ->orderBy('id', 'desc');
             } else {
                 // Apply the default case for both roles
                 $get_all_payments = $get_all_payments->whereIn('action', $roleActionMap[$role]['default']['actions'])
-                    ->where(function($query) use ($user_id) {
+                    ->where(function ($query) use ($user_id) {
                         $query->where('receiver_id', $user_id)
                             ->orWhere('sender_id', $user_id);
                     })
@@ -716,24 +722,24 @@ public function getpaymentall(Request $request)
 
         $get_all_payments = $get_all_payments->whereIn('id', function ($query) {
             $query->select(DB::raw('MAX(id)'))
-                  ->from('payment_histories')
-                  ->groupBy('booking_id');
+                ->from('payment_histories')
+                ->groupBy('booking_id');
         });
 
 
         $per_page = config('constant.PER_PAGE_LIMIT');
-        if( $request->has('per_page') && !empty($request->per_page)){
-            if(is_numeric($request->per_page)){
+        if ($request->has('per_page') && !empty($request->per_page)) {
+            if (is_numeric($request->per_page)) {
                 $per_page = $request->per_page;
             }
-            if($request->per_page === 'all' ){
+            if ($request->per_page === 'all') {
                 $per_page = $get_all_payments->count();
             }
         }
 
 
         // apply date filter
-        if(!empty($request->from) && !empty($request->to)){
+        if (!empty($request->from) && !empty($request->to)) {
             $get_all_payments = $get_all_payments->whereDate('datetime', '>=', $request->from)->whereDate('datetime', '<=',  $request->to);
         }
 
@@ -754,16 +760,16 @@ public function getpaymentall(Request $request)
         $payment = Payment::where('payment_type', 'cash');
 
         $per_page = config('constant.PER_PAGE_LIMIT');
-        if( $request->has('per_page') && !empty($request->per_page)){
-            if(is_numeric($request->per_page)){
+        if ($request->has('per_page') && !empty($request->per_page)) {
+            if (is_numeric($request->per_page)) {
                 $per_page = $request->per_page;
             }
-            if($request->per_page === 'all' ){
+            if ($request->per_page === 'all') {
                 $per_page = $payment->count();
             }
         }
 
-        $payment = $payment->orderBy('id','desc')->paginate($per_page);
+        $payment = $payment->orderBy('id', 'desc')->paginate($per_page);
         $items = PaymentResource::collection($payment);
 
         $response = [
@@ -783,8 +789,9 @@ public function getpaymentall(Request $request)
         return comman_custom_response($response);
     }
 
-    public function paymentGateways(Request $request){
-        $payment = PaymentGateway::where('status',1)->where('type', '!=', 'razorPayX')->get();
+    public function paymentGateways(Request $request)
+    {
+        $payment = PaymentGateway::where('status', 1)->where('type', '!=', 'razorPayX')->get();
         if ($request->has('is_add_wallet') && $request->is_add_wallet == true) {
             $walletEntry = new \stdClass();
             $walletEntry->id = null; // Or assign a unique identifier if needed
