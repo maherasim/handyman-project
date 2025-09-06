@@ -543,7 +543,7 @@
                   title: 'Bank Transfer',
                   html: infoHtml,
                   showCancelButton: true,
-                  confirmButtonText: 'I have transferred',
+                  confirmButtonText: 'Proceed',
               }).then(result => {
                   if (!result.isConfirmed) return;
                   // 3) Create pending bank transfer record
