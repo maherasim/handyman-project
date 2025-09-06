@@ -643,6 +643,7 @@ $query = Payment::query()
 
     public function cashApprove($id){
 
+        dd($id);
         $sitesetup = Setting::where('type','site-setup')->where('key', 'site-setup')->first();
         $admin = json_decode($sitesetup->value);
         $paymentdata = Payment::where('id',$id)->first();
