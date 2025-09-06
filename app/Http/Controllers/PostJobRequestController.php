@@ -14,13 +14,12 @@ use PayPalCheckoutSdk\Orders\OrdersCreateRequest;
 use App\Models\WalletHistory;
 use App\Models\Payment;
 use App\Models\Country;
-
+use App\Models\PaymentHistory;
 use App\Models\SubCategory;
 use App\Models\Wallet;
 use App\Models\Setting;
 use DB;
 use Carbon\Carbon;
-
 use App\Models\ProviderPayout;
 use App\Models\CommissionEarning;
 use App\Models\PostJobBid;
@@ -972,7 +971,28 @@ public function createPostJobBankTransfer(Request $request, $id)
         'post_job_request_id' => $bid->id,
         'payment_gateway' => 'Bank Transfer',
     ]);
-
+    PaymentHistory::create([
+        'payment_id' => $payment->id,
+        'booking_id' => null,
+        'parent_id' => $payment->id,
+        'action' => 'customer_send_provider', // action name
+        'status' => 'pending', // pending verification
+        'sender_id' => $user->id,
+        'receiver_id' => $provider_id,
+        'datetime' => now(),
+        'total_amount' => $payAmount,
+        'txn_id' => null,
+        'type' => 'bank_transfer',
+        'text' => __('messages.payment_transfer', [
+            'from' => get_user_name($user->id),
+            'to' => get_user_name($provider_id),
+            'amount' => number_format($provider_earning, 2)
+        ]),
+        'other_transaction_detail' => json_encode([
+            'admin_commission' => $admin_commission_amount,
+            'provider_earning' => $provider_earning,
+        ]),
+    ]);
     return response()->json([
         'status' => true,
         'message' => 'Bank transfer recorded. We will verify your payment shortly.',
