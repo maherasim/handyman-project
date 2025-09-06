@@ -465,6 +465,7 @@
                                 <div class="d-grid gap-2">
                                     <button class="btn btn-outline-primary" id="walletPayBtn"><i class="fas fa-wallet me-1"></i> Wallet</button>
                                     <button class="btn btn-outline-dark" id="stripePayBtn"><i class="fab fa-cc-stripe me-1"></i> Stripe</button>
+                                    <button class="btn btn-outline-primary" id="paypalPayBtn"><i class="fab fa-paypal me-1"></i> PayPal</button>
                                 </div>
                             </div>
                         `,
@@ -475,7 +476,7 @@
                     setTimeout(() => {
                         const walletBtn = document.getElementById('walletPayBtn');
                         const stripeBtn = document.getElementById('stripePayBtn');
-
+                        const paypalBtn = document.getElementById('paypalPayBtn');
                         if (walletBtn) {
                             walletBtn.addEventListener('click', () => {
                                 Swal.close();
@@ -510,6 +511,26 @@
                                           window.location.href = session.url;
                                       } else {
                                           Swal.fire('Error', session.message || 'Unable to initiate Stripe payment', 'error');
+                                      }
+                                  }).catch(() => Swal.fire('Error', 'Something went wrong!', 'error'));
+                            });
+                        }
+                        if (paypalBtn) {
+                            paypalBtn.addEventListener('click', () => {
+                                Swal.close();
+                                fetch(`{{ route('postjob.paypal.create', ':id') }}`.replace(':id', postId), {
+                                    method: 'POST',
+                                    headers: {
+                                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                        'Content-Type': 'application/json'
+                                    },
+                                    body: JSON.stringify({ amount: amount, type: isRemaining ? 'remaining' : 'advance' })
+                                }).then(res => res.json())
+                                  .then(data => {
+                                      if (data && data.url) {
+                                          window.location.href = data.url; // PayPal approval page
+                                      } else {
+                                          Swal.fire('Error', data.error || 'Unable to initiate PayPal payment', 'error');
                                       }
                                   }).catch(() => Swal.fire('Error', 'Something went wrong!', 'error'));
                             });
