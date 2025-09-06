@@ -17,6 +17,7 @@ use App\Models\Country;
 use App\Models\PaymentHistory;
 use App\Models\SubCategory;
 use App\Models\Wallet;
+use App\Models\User;
 use App\Models\Setting;
 use DB;
 use Carbon\Carbon;
