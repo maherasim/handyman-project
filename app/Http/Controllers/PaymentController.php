@@ -537,7 +537,7 @@ $query = Payment::query()
     /* bulck action method */
     public function bulk_action(Request $request)
     {
-        dd($request->al());
+       
         $ids = explode(',', $request->rowIds);
 
         $actionType = $request->action_type;
