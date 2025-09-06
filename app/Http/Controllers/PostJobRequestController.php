@@ -996,8 +996,14 @@ public function createPostJobBankTransfer(Request $request, $id)
             'provider_earning' => $provider_earning,
         ]),
     ]);
-    $bid->status = 'advance_paid';
+    if ($type === 'advance') {
+        $bid->status = 'advance_paid';
+    } elseif ($type === 'remaining') {
+        $bid->status = 'remaining_paid';
+    }
+    
     $bid->save();
+    
     return response()->json([
         'status' => true,
         'message' => 'Bank transfer processed. We will verify your payment shortly.',
@@ -1197,7 +1203,7 @@ public function createPostJobBankTransfer(Request $request, $id)
                 if (auth()->user()->user_type === 'provider') {
                     return $row->postBidList()
                         ->where('provider_id', auth()->id())
-                        ->where('status', 'accepted')
+                       ->where('status', '!=', 'requested')
                         ->exists();
                 }
                 return false;

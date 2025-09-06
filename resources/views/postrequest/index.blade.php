@@ -165,7 +165,7 @@
                             const nonClickable = ['requested', 'cancelled'];
                             const statusKey = String(row.status_key || row.status || '').toLowerCase();
                             const isProvider = {{ auth()->user()->user_type == 'provider' ? 'true' : 'false' }};
-                            const providerCan = Boolean(row.provider_can_access);
+                            const providerCan = Boolean(row.accepted_for_current_provider);
 
                             // Rule 1: For provider and user: requested/cancelled => not clickable
                             if (nonClickable.includes(statusKey)) {
