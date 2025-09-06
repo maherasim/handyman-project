@@ -612,7 +612,7 @@
                                                                 .status ?
                                                                 'Transfer recorded' :
                                                                 'Unable to record transfer'
-                                                                ),
+                                                            ),
                                                             response
                                                             .status ?
                                                             'success' :
@@ -620,15 +620,15 @@
                                                         .then(() =>
                                                             location
                                                             .reload()
-                                                            );
+                                                        );
                                                 }).catch(() => Swal
                                                     .fire('Error',
                                                         'Something went wrong!',
                                                         'error'));
                                         });
                                     }).catch(() => Swal.fire('Error',
-                                            'Unable to fetch bank details', 'error'
-                                            ));
+                                        'Unable to fetch bank details', 'error'
+                                    ));
                             });
                         }
                         if (paypalBtn) {
@@ -650,7 +650,7 @@
                                     .then(data => {
                                         if (data && data.url) {
                                             window.location.href = data
-                                            .url; // PayPal approval page
+                                                .url; // PayPal approval page
                                         } else {
                                             Swal.fire('Error', data.error ||
                                                 'Unable to initiate PayPal payment',
@@ -820,7 +820,7 @@
                         confirmButtonText: "Update",
                         didOpen: () => {
                             const advanceInput = document.getElementById(
-                            'advanceInput');
+                                'advanceInput');
                             const remainingInput = document.getElementById(
                                 'remainingInput');
                             advanceInput.addEventListener('input', function() {
@@ -837,7 +837,7 @@
                             if (advance < 0 || advance > 100) {
                                 Swal.showValidationMessage(
                                     "Please enter a valid advance percentage (0-100)"
-                                    );
+                                );
                                 return false;
                             }
                             return {
