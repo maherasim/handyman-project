@@ -117,17 +117,21 @@ class EarningController extends Controller
                 })
 
                 ->editColumn('admin_earning', function ($row) {
-                    // Fetch all commission entries for this provider, user_type 'provider'
-                    $commissionEntries = CommissionEarning::where('employee_id', $row->id)
+                    // Get all booking IDs linked to this provider
+                    $bookingIds = CommissionEarning::where('employee_id', $row->id)
                         ->where('user_type', 'provider')
-                        ->pluck('id'); // we just need ids to find related admin commissions
+                        ->pluck('booking_id');
                 
-                    // Fetch all admin commission related to these entries
-                    $totalAdminEarning = CommissionEarning::whereIn('related_commission_id', $commissionEntries) // optional if you have a link
-                        ->where('user_type', 'admin')
+                    // Include admin commissions:
+                    // - linked to provider's booking_ids
+                    // - or without any booking_id
+                    $totalAdminEarning = CommissionEarning::where('user_type', 'admin')
                         ->whereIn('commission_status', ['paid', 'unpaid'])
+                        ->where(function ($query) use ($bookingIds) {
+                            $query->whereIn('booking_id', $bookingIds)
+                                  ->orWhereNull('booking_id'); // include entries without booking
+                        })
                         ->sum('commission_amount');
-                
                     return getPriceFormat($totalAdminEarning);
                 })
 
