@@ -563,9 +563,7 @@
   <div><strong>BIC/Swift:</strong> NORDSDE71XXX</div>
   
   <h6 class="mt-3">Instructions</h6>
-  <div class="small">
-    Mention your <strong>Booking ID #{{ $post->id }}</strong> in the transfer reference.
-  </div>
+ 
   <div class="small mt-1">
     Send Proof of Payment (screenshot or PDF Document) to: 
     <a href="mailto:billing@frobster.com">billing@frobster.com</a>
