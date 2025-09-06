@@ -548,11 +548,11 @@ $query = Payment::query()
                     'status' => $request->status,
                     'payment_status' => 'Verified',
                 ]);
-    dd($ids);
+    
                 // 2. Update CommissionEarning table
                $data= CommissionEarning::whereIn('payment_id', $ids)
                     ->update(['commission_status' => 'paid']);
-    dd(  $data);
+   
                 // 3. Update ProviderPayout table
                 ProviderPayout::whereIn('payment_id', $ids)
                     ->update(['status' => 'paid']);
