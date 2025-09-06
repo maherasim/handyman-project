@@ -885,6 +885,78 @@ class PostJobRequestController extends Controller
         }
     }
     
+    public function getPostJobBankDetails($id)
+{
+    $bid = PostJobBid::findOrFail($id);
+    // Prefer provider's active bank; fallback to a simple structure
+    $bank = Bank::where('provider_id', $bid->provider_id)->where('status', 1)->latest('id')->first();
+    $payload = [
+        'bank' => [
+            'bank_name'   => $bank->bank_name ?? null,
+            'holder_name' => $bank->account_holder_name ?? $bank->holder_name ?? null,
+            'account_no'  => $bank->account_no ?? null,
+            'iban'        => $bank->iban ?? null,
+            'swift_code'  => $bank->swift_code ?? null,
+            'city_code'   => $bank->city_code ?? null,
+        ],
+    ];
+    return response()->json($payload);
+}
+
+public function createPostJobBankTransfer(Request $request, $id)
+{
+    $bid = PostJobBid::findOrFail($id);
+    $user = auth()->user();
+    if ((int)$user->id !== (int)$bid->customer_id) {
+        return response()->json(['status' => false, 'message' => 'Unauthorized'], 403);
+    }
+
+    $type = strtolower((string)$request->input('type', 'advance'));
+    $requestedAmount = (float)$request->input('amount');
+
+    // Compute amounts like wallet/stripe
+    $total = (float)($bid->price ?? 0);
+    $extraChargeUnit = (float)($bid->extra_charges ?? 0);
+    $extraChargeQty = (int)($bid->quantity ?? 1);
+    $extraChargesTotal = $extraChargeUnit * $extraChargeQty;
+    $advPct = (float)($bid->advance_percent ?? 0);
+    $computedAdvanceAmount = ($total * $advPct / 100);
+    $subTotal = $total + $extraChargesTotal;
+    $computedRemainingAmount = $subTotal - $computedAdvanceAmount;
+
+    $payAmount = $type === 'remaining'
+        ? $computedRemainingAmount
+        : (empty(trim((string)$requestedAmount)) ? $computedAdvanceAmount : (float)$requestedAmount);
+
+    if ($payAmount <= 0) {
+        return response()->json(['status' => false, 'message' => 'Invalid amount'], 422);
+    }
+
+    // Create a pending Payment record for manual bank transfer
+    Payment::create([
+        'customer_id'             => $user->id,
+        'booking_id'              => null,
+        'datetime'                => now(),
+        'post_job_request_id'     => $bid->id,
+        'discount'                => 0,
+        'total_amount'            => number_format($payAmount, 2, '.', ''),
+        'payment_type'            => 'bank',         // identifies bank/manual transfer
+        'payment_status'          => 'pending',      // pending until admin/provider verifies
+        'other_transaction_detail' => json_encode([
+            'type' => $type,
+            'note' => 'User reported bank transfer; awaiting verification',
+        ]),
+    ]);
+
+    // You can optionally set a temporary bid status flag, but keeping business flow unchanged is safer:
+    // $bid->status = $type === 'advance' ? 'advance_payment' : $bid->status;
+    // $bid->save();
+
+    return response()->json([
+        'status' => true,
+        'message' => 'Bank transfer recorded. We will verify your payment shortly.',
+    ]);
+}
     public function postJobPayPalSuccess(Request $request, $id)
     {
         $token = $request->query('token');

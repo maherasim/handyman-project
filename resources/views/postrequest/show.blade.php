@@ -466,6 +466,7 @@
                                     <button class="btn btn-outline-primary" id="walletPayBtn"><i class="fas fa-wallet me-1"></i> Wallet</button>
                                     <button class="btn btn-outline-dark" id="stripePayBtn"><i class="fab fa-cc-stripe me-1"></i> Stripe</button>
                                     <button class="btn btn-outline-primary" id="paypalPayBtn"><i class="fab fa-paypal me-1"></i> PayPal</button>
+                                     <button class="btn btn-outline-secondary" id="bankPayBtn"><i class="la la-university me-1"></i> Bank Transfer</button>
                                 </div>
                             </div>
                         `,
@@ -477,6 +478,7 @@
                         const walletBtn = document.getElementById('walletPayBtn');
                         const stripeBtn = document.getElementById('stripePayBtn');
                         const paypalBtn = document.getElementById('paypalPayBtn');
+                        const bankBtn = document.getElementById('bankPayBtn');
                         if (walletBtn) {
                             walletBtn.addEventListener('click', () => {
                                 Swal.close();
@@ -515,6 +517,52 @@
                                   }).catch(() => Swal.fire('Error', 'Something went wrong!', 'error'));
                             });
                         }
+                        if (bankBtn) {
+    bankBtn.addEventListener('click', () => {
+        // 1) Fetch provider bank details
+        fetch(`{{ route('postjob.bank.details', ':id') }}`.replace(':id', postId), {
+            method: 'GET',
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        }).then(res => res.json())
+          .then(data => {
+              const d = data || {};
+              const bank = d.bank || {};
+              const infoHtml = `
+                  <div class="text-start">
+                      <h6 class="mb-2">Bank Details</h6>
+                      <div><strong>Bank Name:</strong> ${bank.bank_name || '-'}</div>
+                      <div><strong>Account Holder:</strong> ${bank.holder_name || '-'}</div>
+                      <div><strong>Account No/IBAN:</strong> ${bank.account_no || bank.iban || '-'}</div>
+                      <div><strong>City/Branch Code:</strong> ${bank.city_code || '-'}</div>
+                      <div><strong>SWIFT/BIC:</strong> ${bank.swift_code || '-'}</div>
+                      <div class="mt-2 small text-muted">Please transfer exactly <strong>${formattedAmount}</strong> and include your Bid ID #${postId} in the reference.</div>
+                  </div>
+              `;
+              // 2) Show popup with details and confirm
+              Swal.fire({
+                  title: 'Bank Transfer',
+                  html: infoHtml,
+                  showCancelButton: true,
+                  confirmButtonText: 'I have transferred',
+              }).then(result => {
+                  if (!result.isConfirmed) return;
+                  // 3) Create pending bank transfer record
+                  fetch(`{{ route('postjob.bank.transfer', ':id') }}`.replace(':id', postId), {
+                      method: 'POST',
+                      headers: {
+                          'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                          'Content-Type': 'application/json'
+                      },
+                      body: JSON.stringify({ amount: amount, type: isRemaining ? 'remaining' : 'advance' })
+                  }).then(res => res.json())
+                    .then(response => {
+                        Swal.fire(response.status ? 'Recorded' : 'Error', response.message || (response.status ? 'Transfer recorded' : 'Unable to record transfer'), response.status ? 'success' : 'error')
+                            .then(() => location.reload());
+                    }).catch(() => Swal.fire('Error', 'Something went wrong!', 'error'));
+              });
+          }).catch(() => Swal.fire('Error', 'Unable to fetch bank details', 'error'));
+    });
+}
                         if (paypalBtn) {
                             paypalBtn.addEventListener('click', () => {
                                 Swal.close();
