@@ -564,7 +564,7 @@
   
   <h6 class="mt-3">Instructions</h6>
   <div class="small">
-    Mention your <strong>Booking ID #3</strong> in the transfer reference.
+    Mention your <strong>Booking ID #{{ $post->id }}</strong> in the transfer reference.
   </div>
   <div class="small mt-1">
     Send Proof of Payment (screenshot or PDF Document) to: 

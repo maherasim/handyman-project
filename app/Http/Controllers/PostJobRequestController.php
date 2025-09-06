@@ -620,7 +620,7 @@ class PostJobRequestController extends Controller
         $sitesetupdata = $sitesetup ? json_decode($sitesetup->value, true) : null;
         $country_id = $sitesetupdata['default_currency'] ?? null;
         $country = Country::find($country_id);
-        $currencyCode = $country ? $country->currency_code : 'USD';
+        $currencyCode = $country ? $country->currency_code : 'EURO';
     
         $payment = Payment::create([
             'customer_id'             => $user->id,
@@ -670,7 +670,7 @@ class PostJobRequestController extends Controller
     
     public function savePostJobStripePayment(Request $request, $id)
     {
-        $type = strtolower((string)$request->query('type', 'advance'));
+        $type = strtolower((string)$request->query('type', 'advance')); // advance or remaining
         $bid = PostJobBid::findOrFail($id);
     
         $payment = Payment::where('post_job_request_id', $bid->id)
@@ -691,10 +691,13 @@ class PostJobRequestController extends Controller
         }
     
         if (!empty($session['payment_intent']) && ($session['payment_status'] ?? '') === 'paid') {
+            // Update main payment
             $payment->txn_id = $session['payment_intent'];
             $payment->payment_status = 'completed';
+            $payment->status = $type; // advance or remaining
             $payment->save();
     
+            // Commission setup
             $adminCommissionSetting = Setting::getValueByKey('admin_commission_percentage', 'site-setup');
             $adminCommissionPercent = is_object($adminCommissionSetting) && isset($adminCommissionSetting->value)
                 ? (float) $adminCommissionSetting->value
@@ -702,64 +705,85 @@ class PostJobRequestController extends Controller
     
             $payAmount = (float)$payment->total_amount;
             $adminCommissionAmount = ($payAmount * $adminCommissionPercent) / 100.0;
-            $providerPayoutAmount  = max(0, $payAmount - $adminCommissionAmount);
+            $providerEarningAmount  = max(0, $payAmount - $adminCommissionAmount);
     
-            if ($providerPayoutAmount > 0) {
-                $providerWallet = Wallet::firstOrCreate(['user_id' => $bid->provider_id]);
-                $providerWallet->increment('amount', $providerPayoutAmount);
+            $adminUser = User::where('user_type', 'admin')->first();
+            $providerId = $bid->provider_id;
     
-                WalletHistory::create([
-                    'datetime'        => now(),
-                    'user_id'         => $bid->provider_id,
-                    'activity_type'   => 'credit',
-                    'activity_message' => ($type === 'remaining' ? 'Remaining' : 'Advance') . ' received for Bid #' . $bid->id,
-                    'activity_data'   => json_encode([
-                        'amount'  => $providerPayoutAmount,
-                        'balance' => $providerWallet->amount,
-                    ]),
-                ]);
-    
-                Payment::create([
-                    'customer_id'             => $bid->provider_id,
-                    'booking_id'              => null,
-                    'datetime'                => now(),
-                    'post_job_request_id'     => $bid->id,
-                    'discount'                => 0,
-                    'total_amount'            => $providerPayoutAmount,
-                    'payment_type'            => 'wallet',
-                    'txn_id'                  => $payment->txn_id,
-                    'payment_status'          => 'completed',
-                    'other_transaction_detail' => json_encode([
-                        'type'     => $type . '_payout',
-                        'bid_id'   => $bid->id,
-                        'customer' => $payment->customer_id,
-                    ]),
-                ]);
-            }
-    
+            // Save commissions
             if ($adminCommissionAmount > 0) {
                 CommissionEarning::create([
-                    'user_type'         => 'admin',
-                    'employee_id'       => 1,
-                    'commission_amount' => $adminCommissionAmount,
-                    'commission_status' => 'paid',
-                ]);
-            }
-            if ($providerPayoutAmount > 0) {
-                CommissionEarning::create([
-                    'user_type'         => 'provider',
-                    'employee_id'       => $bid->provider_id,
-                    'commission_amount' => $providerPayoutAmount,
-                    'commission_status' => 'paid',
+                    'post_job_request_id' => $bid->id,
+                    'user_type'           => 'admin',
+                    'employee_id'         => $adminUser?->id ?? 1,
+                    'commission_amount'   => $adminCommissionAmount,
+                    'commission_status'   => 'paid',
+                    'payment_id'          => $payment->id,
                 ]);
             }
     
-            $bid->status = ($type === 'remaining') ? 'remaining_paid' : 'advance_paid';
+            if ($providerEarningAmount > 0) {
+                CommissionEarning::create([
+                    'post_job_request_id' => $bid->id,
+                    'user_type'           => 'provider',
+                    'employee_id'         => $providerId,
+                    'commission_amount'   => $providerEarningAmount,
+                    'commission_status'   => 'paid',
+                    'payment_id'          => $payment->id,
+                ]);
+            }
+    
+            // Provider payout record
+            if ($providerEarningAmount > 0) {
+                ProviderPayout::create([
+                    'provider_id'        => $providerId,
+                    'amount'             => $providerEarningAmount,
+                    'payment_method'     => 'Stripe',
+                    'paid_date'          => now(),
+                    'status'             => 'paid',
+                    'booking_id'         => null,
+                    'post_job_request_id'=> $bid->id,
+                    'payment_gateway'    => 'Stripe',
+                ]);
+            }
+    
+            // Payment history
+            PaymentHistory::create([
+                'payment_id'  => $payment->id,
+                'booking_id'  => null,
+                'parent_id'   => $payment->id,
+                'action'      => 'customer_send_provider',
+                'status'      => 'completed',
+                'sender_id'   => $payment->customer_id,
+                'receiver_id' => $providerId,
+                'datetime'    => now(),
+                'total_amount'=> $payAmount,
+                'txn_id'      => $payment->txn_id,
+                'type'        => 'stripe',
+                'text'        => __('messages.payment_transfer', [
+                    'from'   => get_user_name($payment->customer_id),
+                    'to'     => get_user_name($providerId),
+                    'amount' => number_format($providerEarningAmount, 2)
+                ]),
+                'other_transaction_detail' => json_encode([
+                    'admin_commission'  => $adminCommissionAmount,
+                    'provider_earning'  => $providerEarningAmount,
+                ]),
+            ]);
+    
+            // Update PostJobBid status
+            if ($type === 'advance') {
+                $bid->status = 'advance_paid';
+            } elseif ($type === 'remaining') {
+                $bid->status = 'remaining_paid';
+            }
             $bid->save();
         }
     
-        return redirect()->route('post-job-bid.show', ['id' => $bid->post_request_id]);
+        return redirect()->route('post-job-bid.show', ['id' => $bid->post_request_id])
+            ->with('success', 'Stripe payment processed successfully. Commission and payouts recorded.');
     }
+    
 
 
     public function setAdvance(Request $request, $id)
