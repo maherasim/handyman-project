@@ -586,6 +586,7 @@ class PostJobRequestController extends Controller
 
     public function createPostJobStripePayment(Request $request, $id)
     {
+        dd('riaz');
         $bid = PostJobBid::findOrFail($id);
         $user = auth()->user();
         if ((int)$user->id !== (int)$bid->customer_id) {
@@ -670,6 +671,7 @@ class PostJobRequestController extends Controller
     
     public function savePostJobStripePayment(Request $request, $id)
     {
+        dd('asim');
         $type = strtolower((string)$request->query('type', 'advance')); // advance or remaining
         $bid = PostJobBid::findOrFail($id);
     
