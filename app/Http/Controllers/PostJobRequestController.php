@@ -586,7 +586,8 @@ class PostJobRequestController extends Controller
 
     public function createPostJobStripePayment(Request $request, $id)
     {
-        dd('riaz');
+        
+        //dd('riaz');
         $bid = PostJobBid::findOrFail($id);
         $user = auth()->user();
         if ((int)$user->id !== (int)$bid->customer_id) {
