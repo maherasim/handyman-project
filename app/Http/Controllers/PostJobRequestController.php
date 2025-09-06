@@ -905,7 +905,7 @@ class PostJobRequestController extends Controller
 
 public function createPostJobBankTransfer(Request $request, $id)
 {
-    dd($request->all());
+    dd($id);
     $bid = PostJobBid::findOrFail($id);
     $user = auth()->user();
     if ((int)$user->id !== (int)$bid->customer_id) {
