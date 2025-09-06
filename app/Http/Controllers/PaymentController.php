@@ -545,7 +545,7 @@ $query = Payment::query()
         $message = 'Bulk Action Updated';
         switch ($actionType) {
             case 'change-status':
-                $branches = Payment::whereIn('id', $ids)->update(['status' => $request->status]);
+                $branches = Payment::whereIn('id', $ids)->update(['status' => $request->status,'payment_status' => 'Verified']);
                 $message = 'Bulk Payment Status Updated';
                 break;
 
