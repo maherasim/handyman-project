@@ -1000,7 +1000,7 @@ public function createPostJobBankTransfer(Request $request, $id)
     $bid->save();
     return response()->json([
         'status' => true,
-        'message' => 'Bank transfer recorded. Advance payment status updated.',
+        'message' => 'Bank transfer processed. We will verify your payment shortly.',
         'payment_id' => $payment->id,
         'admin_commission' => $admin_commission_amount,
         'provider_earning' => $provider_earning,
