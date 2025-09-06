@@ -91,7 +91,8 @@
             @elseif($bid->status === 'Advance Payment Pending')
                 <button class="btn btn-success payAdvanceBtn" data-post-id="{{ $bid->id }}"
                     data-amount="{{ $advAmount }}">
-                    <i class="fas fa-wallet"></i> Pay Advance {{ number_format($advAmount, 2) }} ({{ $advPct }}%)
+                    <i class="fas fa-wallet"></i> Pay Advance {{ number_format($advAmount, 2) }}
+                    ({{ $advPct }}%)
                 </button>
             @elseif($bid->status === 'completed' && !$bid->has_advance_paid)
                 <button class="btn btn-primary payRemainingBtn" data-post-id="{{ $bid->id }}"
@@ -153,7 +154,7 @@
                             </div>
                         </div>
                     </div>
-                     
+
                     <div class="col-md-4">
                         <div class="card border-warning shadow-sm h-100 hover-shadow">
                             <div class="card-body text-center">
@@ -184,20 +185,20 @@
                         </div>
                     </div>
 
-                 @php
-                      $excludedStatuses = ['cancelled', 'split_payment', 'accepted','requested'];
-                 @endphp
-                  @if(!in_array($bid->status,$excludedStatuses))
-                    <div class="col-md-4">
-                        <div class="card border-secondary shadow-sm h-100 hover-shadow">
-                            <div class="card-body text-center">
-                                <i class="fas fa-map-marker-alt fa-2x text-secondary mb-2"></i>
-                                <h6 class="fw-bold mb-1">Working Address</h6>
-                                <p class="mb-0">{{ $bid->postrequest->working_address ?? '-' }}</p>
+                    @php
+                        $excludedStatuses = ['cancelled', 'split_payment', 'accepted', 'requested'];
+                    @endphp
+                    @if (!in_array($bid->status, $excludedStatuses))
+                        <div class="col-md-4">
+                            <div class="card border-secondary shadow-sm h-100 hover-shadow">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-map-marker-alt fa-2x text-secondary mb-2"></i>
+                                    <h6 class="fw-bold mb-1">Working Address</h6>
+                                    <p class="mb-0">{{ $bid->postrequest->working_address ?? '-' }}</p>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                @endif
+                    @endif
 
                     <div class="col-md-4">
                         <div class="card border-secondary shadow-sm h-100 hover-shadow">
@@ -274,16 +275,16 @@
                     </div>
                     <div class="card-body">
                         @php
-                            $unitPrice         = (float) ($bid->price ?? 0);
-                            $advPct            = (float) ($bid->advance_percent ?? 0);
-                            $extraChargeUnit   = (float) ($bid->extra_charges ?? 0);
-                            $extraChargeQty    = (int) ($bid->quantity ?? 1);
+                            $unitPrice = (float) ($bid->price ?? 0);
+                            $advPct = (float) ($bid->advance_percent ?? 0);
+                            $extraChargeUnit = (float) ($bid->extra_charges ?? 0);
+                            $extraChargeQty = (int) ($bid->quantity ?? 1);
                             $extraChargesTotal = $extraChargeUnit * $extraChargeQty;
 
                             if ($bid->price_type == 'hourly') {
-                                $quantity = $bid->total_hours ?? $bid->hourly_rate ?? 1;
+                                $quantity = $bid->total_hours ?? ($bid->hourly_rate ?? 1);
                             } elseif ($bid->price_type == 'daily') {
-                                $quantity = $bid->total_days ?? $bid->daily_rate ?? 1;
+                                $quantity = $bid->total_days ?? ($bid->daily_rate ?? 1);
                             } elseif ($bid->price_type == 'fixed') {
                                 $quantity = 1;
                             } else {
@@ -300,7 +301,7 @@
                             $taxTitle = '';
                             if ($countryId) {
                                 $taxModel = \App\Models\Tax::find($countryId);
-                                $taxRate  = $taxModel->value ?? 0;
+                                $taxRate = $taxModel->value ?? 0;
                                 $taxTitle = $taxModel->title ?? '';
                             }
 
@@ -310,55 +311,56 @@
                             $remaining = $grandTotal - $advAmount;
                         @endphp
 
-            <table class="table table-sm table-hover price-table">
-                <tbody>
-                    <tr>
-                        <td>Rate (Unit Price)</td>
-                        <td class="text-end">€{{ number_format($unitPrice, 2) }}</td>
-                    </tr>
-                    <tr>
-                        <td>Quantity (Packages / Hours / Days)</td>
-                        <td class="text-end">{{ $quantity }}</td>
-                    </tr>
-                    <tr>
-                        <td>Total Amount</td>
-                        <td class="text-end">€{{ number_format($totalAmount, 2) }}</td>
-                    </tr>
-                    <tr class="fw-bold">
-                        <td>Net Amount (Total - Tax)</td>
-                        <td class="text-end">€{{ number_format($netAmount, 2) }}</td>
-                    </tr>
-                    <tr>
-                        <td>Extra Charges ({{ $extraChargeQty }} × {{ number_format($extraChargeUnit, 2) }})</td>
-                        <td class="text-end">€{{ number_format($extraChargesTotal, 2) }}</td>
-                    </tr>
-                    <tr class="fw-bold">
-                        <td>Subtotal</td>
-                        <td class="text-end">€{{ number_format($subTotal, 2) }}</td>
-                    </tr>
-                    <tr>
-                        <td>Tax ({{ number_format($taxRate, 0) }}%) {{ $taxTitle }}</td>
-                        <td class="text-end">€{{ number_format($taxAmount, 2) }}</td>
-                    </tr>
-                    <tr class="fw-bold">
-                        <td>Grand Total</td>
-                        <td class="text-end">€{{ number_format($grandTotal, 2) }}</td>
-                    </tr>
-                    <tr>
-                        <td>Advance Payment ({{ $advPct }}%)</td>
-                        <td class="text-end">€{{ number_format($advAmount, 2) }}</td>
-                    </tr>
-                    <tr class="fw-bold">
-                        <td>Remaining Amount</td>
-                        <td class="text-end">€{{ number_format($remaining, 2) }}</td>
-                    </tr>
-                </tbody>
-            </table>
-            
+                        <table class="table table-sm table-hover price-table">
+                            <tbody>
+                                <tr>
+                                    <td>Rate (Unit Price)</td>
+                                    <td class="text-end">€{{ number_format($unitPrice, 2) }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Quantity (Packages / Hours / Days)</td>
+                                    <td class="text-end">{{ $quantity }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Total Amount</td>
+                                    <td class="text-end">€{{ number_format($totalAmount, 2) }}</td>
+                                </tr>
+                                <tr class="fw-bold">
+                                    <td>Net Amount (Total - Tax)</td>
+                                    <td class="text-end">€{{ number_format($netAmount, 2) }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Extra Charges ({{ $extraChargeQty }} ×
+                                        {{ number_format($extraChargeUnit, 2) }})</td>
+                                    <td class="text-end">€{{ number_format($extraChargesTotal, 2) }}</td>
+                                </tr>
+                                <tr class="fw-bold">
+                                    <td>Subtotal</td>
+                                    <td class="text-end">€{{ number_format($subTotal, 2) }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Tax ({{ number_format($taxRate, 0) }}%) {{ $taxTitle }}</td>
+                                    <td class="text-end">€{{ number_format($taxAmount, 2) }}</td>
+                                </tr>
+                                <tr class="fw-bold">
+                                    <td>Grand Total</td>
+                                    <td class="text-end">€{{ number_format($grandTotal, 2) }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Advance Payment ({{ $advPct }}%)</td>
+                                    <td class="text-end">€{{ number_format($advAmount, 2) }}</td>
+                                </tr>
+                                <tr class="fw-bold">
+                                    <td>Remaining Amount</td>
+                                    <td class="text-end">€{{ number_format($remaining, 2) }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+
                     </div>
                 </div>
             </div>
-            
+
 
         </div>
     </div>
@@ -369,10 +371,12 @@
             transition: 0.3s;
             box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
         }
+
         .price-table tbody tr {
             transition: background-color 0.2s ease, border-left-color 0.2s ease;
             border-left: 3px solid transparent;
         }
+
         .price-table tbody tr:hover {
             background-color: #f8f9fa;
             border-left-color: #0d6efd;
@@ -482,105 +486,178 @@
                         if (walletBtn) {
                             walletBtn.addEventListener('click', () => {
                                 Swal.close();
-                                fetch(`{{ route('post-job-request.pay-advance', ':id') }}`.replace(':id', postId), {
-                                    method: 'POST',
-                                    headers: {
-                                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                                        'Content-Type': 'application/json'
-                                    },
-                                    body: JSON.stringify({ amount: amount, type: isRemaining ? 'remaining' : 'advance' })
-                                }).then(res => res.json())
-                                  .then(response => {
-                                      Swal.fire(response.status ? 'Success' : 'Error', response.message, response.status ? 'success' : 'error')
-                                          .then(() => location.reload());
-                                  }).catch(() => Swal.fire('Error', 'Something went wrong!', 'error'));
+                                fetch(`{{ route('post-job-request.pay-advance', ':id') }}`
+                                        .replace(':id', postId), {
+                                            method: 'POST',
+                                            headers: {
+                                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                                'Content-Type': 'application/json'
+                                            },
+                                            body: JSON.stringify({
+                                                amount: amount,
+                                                type: isRemaining ?
+                                                    'remaining' : 'advance'
+                                            })
+                                        }).then(res => res.json())
+                                    .then(response => {
+                                        Swal.fire(response.status ? 'Success' :
+                                                'Error', response.message,
+                                                response.status ? 'success' :
+                                                'error')
+                                            .then(() => location.reload());
+                                    }).catch(() => Swal.fire('Error',
+                                        'Something went wrong!', 'error'));
                             });
                         }
 
                         if (stripeBtn) {
                             stripeBtn.addEventListener('click', () => {
                                 Swal.close();
-                                fetch(`{{ route('postjob.stripe.create', ':id') }}`.replace(':id', postId), {
-                                    method: 'POST',
-                                    headers: {
-                                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                                        'Content-Type': 'application/json'
-                                    },
-                                    body: JSON.stringify({ amount: amount, type: isRemaining ? 'remaining' : 'advance' })
-                                }).then(res => res.json())
-                                  .then(session => {
-                                      if (session && session.status && session.url) {
-                                          window.location.href = session.url;
-                                      } else {
-                                          Swal.fire('Error', session.message || 'Unable to initiate Stripe payment', 'error');
-                                      }
-                                  }).catch(() => Swal.fire('Error', 'Something went wrong!', 'error'));
+                                fetch(`{{ route('postjob.stripe.create', ':id') }}`
+                                        .replace(':id', postId), {
+                                            method: 'POST',
+                                            headers: {
+                                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                                'Content-Type': 'application/json'
+                                            },
+                                            body: JSON.stringify({
+                                                amount: amount,
+                                                type: isRemaining ?
+                                                    'remaining' : 'advance'
+                                            })
+                                        }).then(res => res.json())
+                                    .then(session => {
+                                        if (session && session.status && session
+                                            .url) {
+                                            window.location.href = session.url;
+                                        } else {
+                                            Swal.fire('Error', session
+                                                .message ||
+                                                'Unable to initiate Stripe payment',
+                                                'error');
+                                        }
+                                    }).catch(() => Swal.fire('Error',
+                                        'Something went wrong!', 'error'));
                             });
                         }
                         if (bankBtn) {
-    bankBtn.addEventListener('click', () => {
-        // 1) Fetch provider bank details
-        fetch(`{{ route('postjob.bank.details', ':id') }}`.replace(':id', postId), {
-            method: 'GET',
-            headers: { 'X-Requested-With': 'XMLHttpRequest' }
-        }).then(res => res.json())
-          .then(data => {
-              const d = data || {};
-              const bank = d.bank || {};
-              const infoHtml = `
-                  <div class="text-start">
-                      <h6 class="mb-2">Bank Details</h6>
-                      <div><strong>Bank Name:</strong> ${bank.bank_name || '-'}</div>
-                      <div><strong>Account Holder:</strong> ${bank.holder_name || '-'}</div>
-                      <div><strong>Account No/IBAN:</strong> ${bank.account_no || bank.iban || '-'}</div>
-                      <div><strong>City/Branch Code:</strong> ${bank.city_code || '-'}</div>
-                      <div><strong>SWIFT/BIC:</strong> ${bank.swift_code || '-'}</div>
-                      <div class="mt-2 small text-muted">Please transfer exactly <strong>${formattedAmount}</strong> and include your Bid ID #${postId} in the reference.</div>
-                  </div>
+                            bankBtn.addEventListener('click', () => {
+                                // 1) Fetch provider bank details
+                                fetch(`{{ route('postjob.bank.details', ':id') }}`
+                                        .replace(':id', postId), {
+                                            method: 'GET',
+                                            headers: {
+                                                'X-Requested-With': 'XMLHttpRequest'
+                                            }
+                                        }).then(res => res.json())
+                                    .then(data => {
+                                        const d = data || {};
+                                        const bank = d.bank || {};
+                                        const infoHtml = `
+                 <div class="text-start">
+  <h6 class="mb-2">Bank Information</h6>
+  <div><strong>Bank Name:</strong> Norisbank</div>
+  <div><strong>Country:</strong> Germany</div>
+  <div><strong>Account Number:</strong> 4776167</div>
+  <div><strong>IBAN:</strong> DE57760260000477616700</div>
+  <div><strong>BIC/Swift:</strong> NORDSDE71XXX</div>
+  
+  <h6 class="mt-3">Instructions</h6>
+  <div class="small">
+    Mention your <strong>Booking ID #3</strong> in the transfer reference.
+  </div>
+  <div class="small mt-1">
+    Send Proof of Payment (screenshot or PDF Document) to: 
+    <a href="mailto:billing@frobster.com">billing@frobster.com</a>
+  </div>
+</div>
+
               `;
-              // 2) Show popup with details and confirm
-              Swal.fire({
-                  title: 'Bank Transfer',
-                  html: infoHtml,
-                  showCancelButton: true,
-                  confirmButtonText: 'Proceed',
-              }).then(result => {
-                  if (!result.isConfirmed) return;
-                  // 3) Create pending bank transfer record
-                  fetch(`{{ route('postjob.bank.transfer', ':id') }}`.replace(':id', postId), {
-                      method: 'POST',
-                      headers: {
-                          'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                          'Content-Type': 'application/json'
-                      },
-                      body: JSON.stringify({ amount: amount, type: isRemaining ? 'remaining' : 'advance' })
-                  }).then(res => res.json())
-                    .then(response => {
-                        Swal.fire(response.status ? 'Recorded' : 'Error', response.message || (response.status ? 'Transfer recorded' : 'Unable to record transfer'), response.status ? 'success' : 'error')
-                            .then(() => location.reload());
-                    }).catch(() => Swal.fire('Error', 'Something went wrong!', 'error'));
-              });
-          }).catch(() => Swal.fire('Error', 'Unable to fetch bank details', 'error'));
-    });
-}
+                                        // 2) Show popup with details and confirm
+                                        Swal.fire({
+                                            title: 'Bank Transfer',
+                                            html: infoHtml,
+                                            showCancelButton: true,
+                                            confirmButtonText: 'Proceed',
+                                        }).then(result => {
+                                            if (!result.isConfirmed)
+                                                return;
+                                            // 3) Create pending bank transfer record
+                                            fetch(`{{ route('postjob.bank.transfer', ':id') }}`
+                                                    .replace(':id',
+                                                        postId), {
+                                                        method: 'POST',
+                                                        headers: {
+                                                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                                            'Content-Type': 'application/json'
+                                                        },
+                                                        body: JSON
+                                                            .stringify({
+                                                                amount: amount,
+                                                                type: isRemaining ?
+                                                                    'remaining' :
+                                                                    'advance'
+                                                            })
+                                                    }).then(res => res
+                                                    .json())
+                                                .then(response => {
+                                                    Swal.fire(
+                                                            response
+                                                            .status ?
+                                                            'Recorded' :
+                                                            'Error',
+                                                            response
+                                                            .message ||
+                                                            (response
+                                                                .status ?
+                                                                'Transfer recorded' :
+                                                                'Unable to record transfer'
+                                                                ),
+                                                            response
+                                                            .status ?
+                                                            'success' :
+                                                            'error')
+                                                        .then(() =>
+                                                            location
+                                                            .reload()
+                                                            );
+                                                }).catch(() => Swal
+                                                    .fire('Error',
+                                                        'Something went wrong!',
+                                                        'error'));
+                                        });
+                                    }).catch(() => Swal.fire('Error',
+                                            'Unable to fetch bank details', 'error'
+                                            ));
+                            });
+                        }
                         if (paypalBtn) {
                             paypalBtn.addEventListener('click', () => {
                                 Swal.close();
-                                fetch(`{{ route('postjob.paypal.create', ':id') }}`.replace(':id', postId), {
-                                    method: 'POST',
-                                    headers: {
-                                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                                        'Content-Type': 'application/json'
-                                    },
-                                    body: JSON.stringify({ amount: amount, type: isRemaining ? 'remaining' : 'advance' })
-                                }).then(res => res.json())
-                                  .then(data => {
-                                      if (data && data.url) {
-                                          window.location.href = data.url; // PayPal approval page
-                                      } else {
-                                          Swal.fire('Error', data.error || 'Unable to initiate PayPal payment', 'error');
-                                      }
-                                  }).catch(() => Swal.fire('Error', 'Something went wrong!', 'error'));
+                                fetch(`{{ route('postjob.paypal.create', ':id') }}`
+                                        .replace(':id', postId), {
+                                            method: 'POST',
+                                            headers: {
+                                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                                'Content-Type': 'application/json'
+                                            },
+                                            body: JSON.stringify({
+                                                amount: amount,
+                                                type: isRemaining ?
+                                                    'remaining' : 'advance'
+                                            })
+                                        }).then(res => res.json())
+                                    .then(data => {
+                                        if (data && data.url) {
+                                            window.location.href = data
+                                            .url; // PayPal approval page
+                                        } else {
+                                            Swal.fire('Error', data.error ||
+                                                'Unable to initiate PayPal payment',
+                                                'error');
+                                        }
+                                    }).catch(() => Swal.fire('Error',
+                                        'Something went wrong!', 'error'));
                             });
                         }
                     }, 50);
@@ -742,8 +819,10 @@
                         showCancelButton: true,
                         confirmButtonText: "Update",
                         didOpen: () => {
-                            const advanceInput = document.getElementById('advanceInput');
-                            const remainingInput = document.getElementById('remainingInput');
+                            const advanceInput = document.getElementById(
+                            'advanceInput');
+                            const remainingInput = document.getElementById(
+                                'remainingInput');
                             advanceInput.addEventListener('input', function() {
                                 let val = parseInt(this.value) || 0;
                                 if (val > 100) val = 100;
@@ -751,36 +830,50 @@
                             });
                         },
                         preConfirm: () => {
-                            const advance = parseInt(document.getElementById('advanceInput').value);
-                            const remaining = parseInt(document.getElementById('remainingInput').value);
+                            const advance = parseInt(document.getElementById(
+                                'advanceInput').value);
+                            const remaining = parseInt(document.getElementById(
+                                'remainingInput').value);
                             if (advance < 0 || advance > 100) {
-                                Swal.showValidationMessage("Please enter a valid advance percentage (0-100)");
+                                Swal.showValidationMessage(
+                                    "Please enter a valid advance percentage (0-100)"
+                                    );
                                 return false;
                             }
-                            return { advance, remaining };
+                            return {
+                                advance,
+                                remaining
+                            };
                         }
                     }).then((result) => {
                         if (result.isConfirmed) {
-                            const { advance, remaining } = result.value;
-                            fetch('{{ route('adjustpayment.start-work', ':id') }}'.replace(':id', postId), {
-                                method: 'POST',
-                                headers: {
-                                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                                    'Content-Type': 'application/json'
-                                },
-                                body: JSON.stringify({
-                                    advance_percent: advance,
-                                    remaining_percent: remaining
-                                })
-                            }).then(res => res.json())
-                              .then(response => {
-                                  if (response.status) {
-                                      Swal.fire("Updated!", response.message || "Payment split updated.", "success")
-                                           .then(() => location.reload());
-                                  } else {
-                                      Swal.fire("Error!", response.message || "Unable to update.", "error");
-                                  }
-                              }).catch(() => Swal.fire("Error!", "Something went wrong!", "error"));
+                            const {
+                                advance,
+                                remaining
+                            } = result.value;
+                            fetch('{{ route('adjustpayment.start-work', ':id') }}'.replace(
+                                    ':id', postId), {
+                                    method: 'POST',
+                                    headers: {
+                                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                        'Content-Type': 'application/json'
+                                    },
+                                    body: JSON.stringify({
+                                        advance_percent: advance,
+                                        remaining_percent: remaining
+                                    })
+                                }).then(res => res.json())
+                                .then(response => {
+                                    if (response.status) {
+                                        Swal.fire("Updated!", response.message ||
+                                                "Payment split updated.", "success")
+                                            .then(() => location.reload());
+                                    } else {
+                                        Swal.fire("Error!", response.message ||
+                                            "Unable to update.", "error");
+                                    }
+                                }).catch(() => Swal.fire("Error!", "Something went wrong!",
+                                    "error"));
                         }
                     });
                 });
