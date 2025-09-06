@@ -905,6 +905,7 @@ class PostJobRequestController extends Controller
 
 public function createPostJobBankTransfer(Request $request, $id)
 {
+    dd($request->all());
     $bid = PostJobBid::findOrFail($id);
     $user = auth()->user();
     if ((int)$user->id !== (int)$bid->customer_id) {
@@ -940,7 +941,7 @@ public function createPostJobBankTransfer(Request $request, $id)
         'post_job_request_id'     => $bid->id,
         'discount'                => 0,
         'total_amount'            => number_format($payAmount, 2, '.', ''),
-        'payment_type'            => 'bank',         // identifies bank/manual transfer
+        'payment_type'            => 'bank_transfer',         // identifies bank/manual transfer
         'payment_status'          => 'pending',      // pending until admin/provider verifies
         'other_transaction_detail' => json_encode([
             'type' => $type,
