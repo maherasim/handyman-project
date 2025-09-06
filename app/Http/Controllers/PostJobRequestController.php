@@ -672,21 +672,15 @@ class PostJobRequestController extends Controller
     
     public function savePostJobStripePayment(Request $request, $id)
     {
-        dd($request->all(), $id);
         $type = strtolower((string)$request->query('type', 'advance')); // advance or remaining
         $bid  = PostJobBid::findOrFail($id);
     
-        // Find the original stripe payment (pending)
-        $payment = Payment::where('post_job_request_id', $bid->id)
-            ->where('payment_type', 'stripe')
-            ->latest('id')
-            ->first();
-    
-        if (!$payment) {
-            return redirect()->route('post-job-bid.show', ['id' => $bid->post_request_id]);
+        // Get sessionId directly from Stripe (passed via query or store in success_url)
+        $sessionId = $request->query('session_id'); 
+        if (!$sessionId) {
+            return redirect()->route('post-job-bid.show', ['id' => $bid->post_request_id])
+                ->withErrors('Missing Stripe session ID.');
         }
-    
-        $sessionId = $payment->other_transaction_detail;
     
         try {
             $session = getstripePaymnetId($sessionId, 'stripe');
@@ -697,28 +691,23 @@ class PostJobRequestController extends Controller
     
         if (!empty($session['payment_intent']) && ($session['payment_status'] ?? '') === 'paid') {
     
-            // Mark original payment as completed
-            $payment->txn_id = $session['payment_intent'];
-            $payment->payment_status = 'completed';
-            $payment->status = $type; // advance or remaining
-            $payment->save();
-    
             // Commission setup
             $adminCommissionSetting = Setting::getValueByKey('admin_commission_percentage', 'site-setup');
             $adminCommissionPercent = is_object($adminCommissionSetting) && isset($adminCommissionSetting->value)
                 ? (float) $adminCommissionSetting->value
                 : 10;
     
-            $payAmount = (float)$payment->total_amount;
+            $payAmount = (float)($session['amount_total'] / 100); // Stripe returns in cents
             $adminCommissionAmount = ($payAmount * $adminCommissionPercent) / 100.0;
             $providerEarningAmount  = max(0, $payAmount - $adminCommissionAmount);
     
             $adminUser  = User::where('user_type', 'admin')->first();
             $providerId = $bid->provider_id;
+            $customerId = auth()->id();
     
-            // ✅ Create a new "finalized" payment entry
+            // ✅ Always create a new Payment entry
             $finalPayment = Payment::create([
-                'customer_id'             => $payment->customer_id,
+                'customer_id'             => $customerId,
                 'booking_id'              => null,
                 'post_job_request_id'     => $bid->id,
                 'datetime'                => now(),
@@ -776,7 +765,7 @@ class PostJobRequestController extends Controller
             PaymentHistory::create([
                 'payment_id'  => $finalPayment->id,
                 'booking_id'  => null,
-                'parent_id'   => $payment->id, // link back to original
+                'parent_id'   => null,
                 'action'      => 'customer_send_provider',
                 'status'      => 'completed',
                 'sender_id'   => $finalPayment->customer_id,
