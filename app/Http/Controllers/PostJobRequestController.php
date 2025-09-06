@@ -953,6 +953,7 @@ public function createPostJobBankTransfer(Request $request, $id)
         'employee_id' => $admin_user_id,
         'commission_amount' => $admin_commission_amount,
         'commission_status' => 'pending',
+        'payment_id' => $payment->id,
     ]);
 
     CommissionEarning::create([
@@ -961,6 +962,7 @@ public function createPostJobBankTransfer(Request $request, $id)
         'employee_id' => $provider_id,
         'commission_amount' => $provider_earning,
         'commission_status' => 'pending',
+        'payment_id' => $payment->id,
     ]);
     ProviderPayout::create([
         'provider_id' => $provider_id,

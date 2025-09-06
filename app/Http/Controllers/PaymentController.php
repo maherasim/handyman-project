@@ -535,32 +535,48 @@ $query = Payment::query()
 
 
     /* bulck action method */
-    public function bulk_action(Request $request)
+    public function bulk_action(Request $request) 
     {
-       
         $ids = explode(',', $request->rowIds);
-
         $actionType = $request->action_type;
-
         $message = 'Bulk Action Updated';
+    
         switch ($actionType) {
             case 'change-status':
-                $branches = Payment::whereIn('id', $ids)->update(['status' => $request->status,'payment_status' => 'Verified']);
+                // 1. Update Payment table
+                Payment::whereIn('id', $ids)->update([
+                    'status' => $request->status,
+                    'payment_status' => 'Verified',
+                ]);
+    dd($ids);
+                // 2. Update CommissionEarning table
+               $data= CommissionEarning::whereIn('payment_id', $ids)
+                    ->update(['commission_status' => 'paid']);
+    dd(  $data);
+                // 3. Update ProviderPayout table
+                ProviderPayout::whereIn('payment_id', $ids)
+                    ->update(['status' => 'paid']);
+    
                 $message = 'Bulk Payment Status Updated';
                 break;
-
+    
             case 'delete':
                 Payment::whereIn('id', $ids)->delete();
+    
+                // Optionally, delete related CommissionEarning and ProviderPayout entries
+                CommissionEarning::whereIn('payment_id', $ids)->delete();
+                ProviderPayout::whereIn('payment_id', $ids)->delete();
+    
                 $message = 'Bulk Payment Deleted';
                 break;
-
+    
             default:
                 return response()->json(['status' => false, 'message' => 'Action Invalid']);
-                break;
         }
-
+    
         return response()->json(['status' => true, 'message' => $message]);
     }
+    
 
     /**
      * Show the form for creating a new resource.
