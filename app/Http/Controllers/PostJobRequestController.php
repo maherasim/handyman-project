@@ -30,7 +30,7 @@ use Illuminate\Support\Facades\Log;
 class PostJobRequestController extends Controller
 {
     use NotificationTrait;
-    
+
     private function formatStatusBadge(?string $status): string
     {
         $status = (string) ($status ?? '');
@@ -126,7 +126,7 @@ class PostJobRequestController extends Controller
 
 
     public function bidshowindex()
-    {   
+    {
 
         $auth_user = authSession();
 
@@ -296,7 +296,7 @@ class PostJobRequestController extends Controller
                     ? '<span class="badge badge-success">Accepted</span>'
                     : '-';
             })
-            ->rawColumns(['status','action'])
+            ->rawColumns(['status', 'action'])
             ->toJson();
     }
     public function payAdvance(Request $request, $id)
@@ -586,27 +586,27 @@ class PostJobRequestController extends Controller
 
     public function createPostJobStripePayment(Request $request, $id)
     {
-        
+
         //dd('riaz');
         $bid = PostJobBid::findOrFail($id);
         $user = auth()->user();
         if ((int)$user->id !== (int)$bid->customer_id) {
             return response()->json(['status' => false, 'message' => 'Unauthorized'], 403);
         }
-    
+
         $type = strtolower((string)$request->input('type', 'advance'));
         $requestedAmount = (float)$request->input('amount');
-    
+
         $total = (float)($bid->price ?? 0);
         $extraChargeUnit = (float)($bid->extra_charges ?? 0);
         $extraChargeQty = (int)($bid->quantity ?? 1);
         $extraChargesTotal = $extraChargeUnit * $extraChargeQty;
         $advPct = (float)($bid->advance_percent ?? 0);
-    
+
         $computedAdvanceAmount = ($total * $advPct / 100);
         $subTotal = $total + $extraChargesTotal;
         $computedRemainingAmount = $subTotal - $computedAdvanceAmount;
-    
+
         if ($type === 'remaining') {
             $payAmount = $computedRemainingAmount;
             $metaType = 'remaining';
@@ -617,14 +617,14 @@ class PostJobRequestController extends Controller
         if ($payAmount <= 0) {
             return response()->json(['status' => false, 'message' => 'Invalid amount'], 422);
         }
-    
+
         $sitesetup = Setting::where('type', 'site-setup')->where('key', 'site-setup')->first();
         $sitesetupdata = $sitesetup ? json_decode($sitesetup->value, true) : null;
         $country_id = $sitesetupdata['default_currency'] ?? null;
         $country = Country::find($country_id);
         $currencyCode = $country ? $country->currency_code : 'EURO';
-    
-       
+
+
         $baseURL = env('APP_URL');
         try {
             $payment_geteway_value = getPaymentMethodkey('stripe');
@@ -635,8 +635,8 @@ class PostJobRequestController extends Controller
             $stripe = new \Stripe\StripeClient($stripe_secret);
             $session = $stripe->checkout->sessions->create([
                 'success_url' => $baseURL . '/postjob/save-stripe-payment/' . $bid->id .
-                                '?type=' . $metaType .
-                                '&session_id={CHECKOUT_SESSION_ID}', // <-- add this
+                    '?type=' . $metaType .
+                    '&session_id={CHECKOUT_SESSION_ID}', // <-- add this
                 'cancel_url'  => $baseURL . '/postjob/bid/' . $bid->id,
                 'payment_method_types' => ['card'],
                 'billing_address_collection' => 'required',
@@ -652,28 +652,28 @@ class PostJobRequestController extends Controller
                 ]],
                 'mode' => 'payment',
             ]);
-            
-    
-          
-    
+
+
+
+
             return response()->json(['status' => true, 'id' => $session->id, 'url' => $session->url]);
         } catch (\Exception $e) {
             return response()->json(['status' => false, 'message' => $e->getMessage()], 500);
         }
     }
-    
+
     public function savePostJobStripePayment(Request $request, $id)
     {
         $type      = strtolower((string)$request->query('type', 'advance')); // advance | remaining
         $sessionId = $request->query('session_id'); // ✅ comes from Stripe success_url
-    
+
         if (!$sessionId) {
             return redirect()->route('post-job-bid.show', ['id' => $id])
                 ->withErrors('Missing Stripe session ID.');
         }
-    
+
         $bid = PostJobBid::findOrFail($id);
-    
+
         // 🔹 Verify session with Stripe
         try {
             $session = getstripePaymnetId($sessionId, 'stripe');
@@ -681,24 +681,24 @@ class PostJobRequestController extends Controller
             return redirect()->route('post-job-bid.show', ['id' => $bid->post_request_id])
                 ->withErrors('Stripe verification failed: ' . $e->getMessage());
         }
-    
+
         if (!empty($session['payment_intent']) && ($session['payment_status'] ?? '') === 'paid') {
-    
+
             $txnId     = $session['payment_intent'];
             $payAmount = (float)($session['amount_total'] / 100); // Stripe returns amount in cents
-    
+
             // 🔹 Commission setup
             $adminCommissionSetting = Setting::getValueByKey('admin_commission_percentage', 'site-setup');
             $adminCommissionPercent = is_object($adminCommissionSetting) && isset($adminCommissionSetting->value)
                 ? (float) $adminCommissionSetting->value
                 : 10;
-    
+
             $adminCommissionAmount = ($payAmount * $adminCommissionPercent) / 100.0;
             $providerEarningAmount = max(0, $payAmount - $adminCommissionAmount);
-    
+
             $adminUser  = User::where('user_type', 'admin')->first();
             $providerId = $bid->provider_id;
-    
+
             // 🔹 Create finalized payment entry
             $finalPayment = Payment::create([
                 'customer_id'             => auth()->id(),
@@ -711,13 +711,13 @@ class PostJobRequestController extends Controller
                 'payment_status'          => 'completed',
                 'status'                  => $type, // advance or remaining
                 'txn_id'                  => $txnId,
-                'other_transaction_detail'=> json_encode([
+                'other_transaction_detail' => json_encode([
                     'session_id'       => $sessionId,
                     'admin_commission' => $adminCommissionAmount,
                     'provider_earning' => $providerEarningAmount,
                 ]),
             ]);
-    
+
             // 🔹 Commission earnings
             if ($adminCommissionAmount > 0) {
                 CommissionEarning::create([
@@ -729,7 +729,7 @@ class PostJobRequestController extends Controller
                     'payment_id'          => $finalPayment->id,
                 ]);
             }
-    
+
             if ($providerEarningAmount > 0) {
                 CommissionEarning::create([
                     'post_job_request_id' => $bid->id,
@@ -740,7 +740,7 @@ class PostJobRequestController extends Controller
                     'payment_id'          => $finalPayment->id,
                 ]);
             }
-    
+
             // 🔹 Provider payout
             if ($providerEarningAmount > 0) {
                 ProviderPayout::create([
@@ -754,7 +754,7 @@ class PostJobRequestController extends Controller
                     'payment_gateway'     => 'Stripe',
                 ]);
             }
-    
+
             // 🔹 Payment history
             PaymentHistory::create([
                 'payment_id'  => $finalPayment->id,
@@ -765,7 +765,7 @@ class PostJobRequestController extends Controller
                 'sender_id'   => $finalPayment->customer_id,
                 'receiver_id' => $providerId,
                 'datetime'    => now(),
-                'total_amount'=> $payAmount,
+                'total_amount' => $payAmount,
                 'txn_id'      => $finalPayment->txn_id,
                 'type'        => 'stripe',
                 'text'        => __('messages.payment_transfer', [
@@ -778,20 +778,20 @@ class PostJobRequestController extends Controller
                     'provider_earning' => $providerEarningAmount,
                 ]),
             ]);
-    
+
             // 🔹 Update PostJobBid status
             $bid->status = ($type === 'advance') ? 'advance_paid' : 'remaining_paid';
             $bid->save();
-    
+
             return redirect()->route('post-job-bid.show', ['id' => $bid->post_request_id])
                 ->with('success', 'Stripe payment processed successfully. Commission and payouts recorded.');
         }
-    
+
         return redirect()->route('post-job-bid.show', ['id' => $bid->post_request_id])
             ->withErrors('Stripe payment not completed.');
     }
-    
-    
+
+
 
 
     public function setAdvance(Request $request, $id)
@@ -825,6 +825,7 @@ class PostJobRequestController extends Controller
             'message' => 'Advance terms saved successfully. Awaiting customer payment.'
         ]);
     }
+
     public function createPostJobPayPalPayment(Request $request, $id)
     {
         $bid = PostJobBid::findOrFail($id);
@@ -834,42 +835,27 @@ class PostJobRequestController extends Controller
         }
     
         $type = strtolower((string)$request->input('type', 'advance'));
-        $requestedAmount = (float)$request->input('amount');
     
-        // Compute amounts like wallet/stripe
+        // Compute amount
         $total = (float)($bid->price ?? 0);
         $extraChargeUnit = (float)($bid->extra_charges ?? 0);
         $extraChargeQty = (int)($bid->quantity ?? 1);
         $extraChargesTotal = $extraChargeUnit * $extraChargeQty;
         $advPct = (float)($bid->advance_percent ?? 0);
-        $computedAdvanceAmount = ($total * $advPct / 100);
-        $subTotal = $total + $extraChargesTotal;
+    
+        $computedAdvanceAmount   = ($total * $advPct / 100);
+        $subTotal                = $total + $extraChargesTotal;
         $computedRemainingAmount = $subTotal - $computedAdvanceAmount;
     
-        $payAmount = $type === 'remaining'
-            ? $computedRemainingAmount
-            : (empty(trim((string)$requestedAmount)) ? $computedAdvanceAmount : (float)$requestedAmount);
+        $payAmount = $type === 'remaining' ? $computedRemainingAmount : $computedAdvanceAmount;
     
         if ($payAmount <= 0) {
             return response()->json(['status' => false, 'error' => 'Invalid amount'], 422);
         }
     
-        // Create pending Payment for tracking
-        $payment = Payment::create([
-            'customer_id'             => $user->id,
-            'booking_id'              => null,
-            'datetime'                => now(),
-            'post_job_request_id'     => $bid->id,
-            'discount'                => 0,
-            'total_amount'            => number_format($payAmount, 2, '.', ''),
-            'payment_type'            => 'paypal',
-            'payment_status'          => 'pending',
-            'other_transaction_detail' => json_encode(['type' => $type]),
-        ]);
-    
-        // Build PayPal client (same pattern as PayPalController)
-        $clientId = 'Afyzu7BkzUMiiK6kdB0QutzIh3cSZTcCFZjko7Fl1boR_jhW034YWoyVUBnsSmu1ZbX5bdIY0HA49SY6';
-        $clientSecret = 'EET9cnIPbSWpA6c96cqJOSI9c-feQ512YQEZXSatXCcehOJU7G9eoxnPrNoikb-lFaCt0oOTAciZ26Ka';
+        // Build PayPal client
+        $clientId = env('PAYPAL_CLIENT_ID');
+        $clientSecret = env('PAYPAL_CLIENT_SECRET');
         $mode = env('PAYPAL_MODE', 'sandbox');
         $environment = $mode === 'live'
             ? new ProductionEnvironment($clientId, $clientSecret)
@@ -884,7 +870,7 @@ class PostJobRequestController extends Controller
             'intent' => 'CAPTURE',
             'purchase_units' => [[
                 'amount' => [
-                    'currency_code' => 'USD', // adjust if you support other currencies here
+                    'currency_code' => 'USD',
                     'value' => number_format($payAmount, 2, '.', '')
                 ],
                 'description' => 'Payment for Post Job Bid #' . $bid->id . ' (' . $type . ')'
@@ -902,149 +888,281 @@ class PostJobRequestController extends Controller
             $response = $client->execute($order);
             $approvalLink = collect($response->result->links)->firstWhere('rel', 'approve')->href ?? null;
     
-            // Store order id on payment for traceability
-            if (!empty($response->result->id)) {
-                $payment->other_transaction_detail = json_encode([
-                    'type' => $type,
-                    'order_id' => $response->result->id
-                ]);
-                $payment->save();
-            }
-    
             return response()->json(['url' => $approvalLink]);
         } catch (\Exception $e) {
             return response()->json(['status' => false, 'error' => 'PayPal Create Payment Error: ' . $e->getMessage()], 500);
         }
     }
     
+    public function postJobPayPalSuccess(Request $request, $id)
+    {
+        $token = $request->query('token');
+        $type  = strtolower((string)$request->query('type', 'advance'));
+        $bid   = PostJobBid::findOrFail($id);
+    
+        if (!$token) {
+            return redirect()->route('post-job-bid.show', ['id' => $bid->post_request_id])
+                ->with('error', 'Missing PayPal token');
+        }
+    
+        // Build PayPal client
+        $clientId     = env('PAYPAL_CLIENT_ID');
+        $clientSecret = env('PAYPAL_CLIENT_SECRET');
+        $mode         = env('PAYPAL_MODE', 'sandbox');
+        $environment  = $mode === 'live'
+            ? new ProductionEnvironment($clientId, $clientSecret)
+            : new SandboxEnvironment($clientId, $clientSecret);
+        $client = new PayPalHttpClient($environment);
+    
+        $captureRequest = new OrdersCaptureRequest($token);
+        $captureRequest->prefer('return=representation');
+    
+        try {
+            $response = $client->execute($captureRequest);
+    
+            if (!in_array($response->statusCode, [200, 201])) {
+                return redirect()->route('post-job-bid.show', ['id' => $bid->post_request_id])
+                    ->with('error', 'Payment not completed');
+            }
+    
+            $txnId = $response->result->purchase_units[0]->payments->captures[0]->id ?? null;
+            $payAmount = (float)($response->result->purchase_units[0]->amount->value ?? 0);
+    
+            if ($payAmount <= 0) {
+                return redirect()->route('post-job-bid.show', ['id' => $bid->post_request_id])
+                    ->with('error', 'Invalid payment amount');
+            }
+    
+            // 🔹 Retrieve the existing pending Payment
+            $payment = Payment::where('post_job_request_id', $bid->id)
+                ->where('payment_type', 'paypal')
+                ->where('payment_status', 'pending')
+                ->latest('id')
+                ->firstOrFail();
+    
+            // Update Payment with capture details
+            $payment->payment_status = 'completed';
+            $payment->txn_id = $txnId;
+    
+            // Compute admin commission and provider payout
+            $adminCommissionPercent = (float)(Setting::getValueByKey('admin_commission_percentage', 'site-setup')->value ?? 10);
+            $adminCommissionAmount  = ($payAmount * $adminCommissionPercent) / 100;
+            $providerAmount         = max(0, $payAmount - $adminCommissionAmount);
+    
+            $payment->other_transaction_detail = json_encode([
+                'type' => $type,
+                'order_id' => $token,
+                'admin_commission' => $adminCommissionAmount,
+                'provider_amount' => $providerAmount,
+            ]);
+            $payment->save();
+    
+            $adminUser  = User::where('user_type', 'admin')->first();
+            $providerId = $bid->provider_id;
+    
+            // 🔹 Record CommissionEarning
+            if ($adminCommissionAmount > 0) {
+                CommissionEarning::create([
+                    'post_job_request_id' => $bid->id,
+                    'user_type'           => 'admin',
+                    'employee_id'         => $adminUser?->id ?? 1,
+                    'commission_amount'   => $adminCommissionAmount,
+                    'commission_status'   => 'paid',
+                    'payment_id'          => $payment->id,
+                ]);
+            }
+    
+            if ($providerAmount > 0) {
+                CommissionEarning::create([
+                    'post_job_request_id' => $bid->id,
+                    'user_type'           => 'provider',
+                    'employee_id'         => $providerId,
+                    'commission_amount'   => $providerAmount,
+                    'commission_status'   => 'paid',
+                    'payment_id'          => $payment->id,
+                ]);
+    
+                // 🔹 Record Provider Payout
+                ProviderPayout::create([
+                    'provider_id'         => $providerId,
+                    'amount'              => $providerAmount,
+                    'payment_method'      => 'PayPal',
+                    'paid_date'           => now(),
+                    'status'              => 'paid',
+                    'booking_id'          => null,
+                    'post_job_request_id' => $bid->id,
+                    'payment_gateway'     => 'PayPal',
+                ]);
+    
+                // 🔹 Record PaymentHistory
+                PaymentHistory::create([
+                    'payment_id'  => $payment->id,
+                    'booking_id'  => null,
+                    'parent_id'   => null,
+                    'action'      => 'customer_send_provider',
+                    'status'      => 'completed',
+                    'sender_id'   => $bid->customer_id,
+                    'receiver_id' => $providerId,
+                    'datetime'    => now(),
+                    'total_amount'=> $providerAmount,
+                    'txn_id'      => $txnId,
+                    'type'        => 'paypal',
+                    'text'        => __('messages.payment_transfer', [
+                        'from'   => get_user_name($bid->customer_id),
+                        'to'     => get_user_name($providerId),
+                        'amount' => number_format($providerAmount, 2),
+                    ]),
+                    'other_transaction_detail' => json_encode([
+                        'admin_commission' => $adminCommissionAmount,
+                        'provider_amount'  => $providerAmount,
+                    ]),
+                ]);
+            }
+    
+            // 🔹 Update bid status
+            $bid->status = ($type === 'remaining') ? 'remaining_paid' : 'advance_paid';
+            $bid->save();
+    
+            return redirect()->route('post-job-bid.show', ['id' => $bid->post_request_id])
+                ->with('success', 'PayPal payment completed and payout recorded.');
+    
+        } catch (\Exception $e) {
+            \Log::error('PayPal capture error: ' . $e->getMessage());
+            return redirect()->route('post-job-bid.show', ['id' => $bid->post_request_id])
+                ->with('error', 'Payment failed: ' . $e->getMessage());
+        }
+    }
+    
+
+
     public function getPostJobBankDetails($id)
-{
-    $bid = PostJobBid::findOrFail($id);
-    // Prefer provider's active bank; fallback to a simple structure
-    $bank = Bank::where('provider_id', $bid->provider_id)->where('status', 1)->latest('id')->first();
-    $payload = [
-        'bank' => [
-            'bank_name'   => $bank->bank_name ?? null,
-            'holder_name' => $bank->account_holder_name ?? $bank->holder_name ?? null,
-            'account_no'  => $bank->account_no ?? null,
-            'iban'        => $bank->iban ?? null,
-            'swift_code'  => $bank->swift_code ?? null,
-            'city_code'   => $bank->city_code ?? null,
-        ],
-    ];
-    return response()->json($payload);
-}
- 
-public function createPostJobBankTransfer(Request $request, $id)
-{
-    $bid = PostJobBid::findOrFail($id);
-    $user = auth()->user();
-
-    // Check authorization
-    if ((int)$user->id !== (int)$bid->customer_id) {
-        return response()->json(['status' => false, 'message' => 'Unauthorized'], 403);
+    {
+        $bid = PostJobBid::findOrFail($id);
+        // Prefer provider's active bank; fallback to a simple structure
+        $bank = Bank::where('provider_id', $bid->provider_id)->where('status', 1)->latest('id')->first();
+        $payload = [
+            'bank' => [
+                'bank_name'   => $bank->bank_name ?? null,
+                'holder_name' => $bank->account_holder_name ?? $bank->holder_name ?? null,
+                'account_no'  => $bank->account_no ?? null,
+                'iban'        => $bank->iban ?? null,
+                'swift_code'  => $bank->swift_code ?? null,
+                'city_code'   => $bank->city_code ?? null,
+            ],
+        ];
+        return response()->json($payload);
     }
 
-    $payAmount = (float)$request->input('amount', 0);
-    $type = strtolower((string)$request->input('type', 'advance')); // advance or remaining
+    public function createPostJobBankTransfer(Request $request, $id)
+    {
+        $bid = PostJobBid::findOrFail($id);
+        $user = auth()->user();
 
-    if ($payAmount <= 0) {
-        return response()->json(['status' => false, 'message' => 'Invalid amount'], 422);
-    }
+        // Check authorization
+        if ((int)$user->id !== (int)$bid->customer_id) {
+            return response()->json(['status' => false, 'message' => 'Unauthorized'], 403);
+        }
 
-    // Calculate admin commission and provider earning
-    $admin_commission_percentage = 10; // fixed 10%
-    $admin_commission_amount = ($payAmount * $admin_commission_percentage) / 100;
-    $provider_earning = $payAmount - $admin_commission_amount;
+        $payAmount = (float)$request->input('amount', 0);
+        $type = strtolower((string)$request->input('type', 'advance')); // advance or remaining
 
-    // Create Payment record with type
-    $payment = Payment::create([
-        'customer_id' => $user->id,
-        'booking_id' => null,
-        'post_job_request_id' => $bid->id,
-        'datetime' => now(),
-        'discount' => 0,
-        'total_amount' => number_format($payAmount, 2, '.', ''),
-        'payment_type' => 'bank_transfer',
-        'payment_status' => 'pending',
-        'status' => $type, // store whether it's advance or remaining
-        'other_transaction_detail' => json_encode([
-            'note' => 'User reported bank transfer; awaiting verification',
+        if ($payAmount <= 0) {
+            return response()->json(['status' => false, 'message' => 'Invalid amount'], 422);
+        }
+
+        // Calculate admin commission and provider earning
+        $admin_commission_percentage = 10; // fixed 10%
+        $admin_commission_amount = ($payAmount * $admin_commission_percentage) / 100;
+        $provider_earning = $payAmount - $admin_commission_amount;
+
+        // Create Payment record with type
+        $payment = Payment::create([
+            'customer_id' => $user->id,
+            'booking_id' => null,
+            'post_job_request_id' => $bid->id,
+            'datetime' => now(),
+            'discount' => 0,
+            'total_amount' => number_format($payAmount, 2, '.', ''),
+            'payment_type' => 'bank_transfer',
+            'payment_status' => 'pending',
+            'status' => $type, // store whether it's advance or remaining
+            'other_transaction_detail' => json_encode([
+                'note' => 'User reported bank transfer; awaiting verification',
+                'admin_commission' => $admin_commission_amount,
+                'provider_earning' => $provider_earning,
+            ]),
+        ]);
+
+        // Save commission earnings (pending)
+        $admin_user_id = User::where('user_type', 'admin')->first()->id;
+        $provider_id = $bid->provider_id;
+
+        CommissionEarning::create([
+            'post_job_request_id' => $bid->id,
+            'user_type' => 'admin',
+            'employee_id' => $admin_user_id,
+            'commission_amount' => $admin_commission_amount,
+            'commission_status' => 'pending',
+            'payment_id' => $payment->id,
+        ]);
+
+        CommissionEarning::create([
+            'post_job_request_id' => $bid->id,
+            'user_type' => 'provider',
+            'employee_id' => $provider_id,
+            'commission_amount' => $provider_earning,
+            'commission_status' => 'pending',
+            'payment_id' => $payment->id,
+        ]);
+        ProviderPayout::create([
+            'provider_id' => $provider_id,
+            'amount' => $provider_earning,
+            'payment_method' => 'Bank Transfer',
+            'paid_date' => Carbon::now(),
+            'status' => 'paid', // you can set 'pending' if you want to verify first
+            'booking_id' => null, // Not a normal booking
+            'post_job_request_id' => $bid->id,
+            'payment_gateway' => 'Bank Transfer',
+        ]);
+        PaymentHistory::create([
+            'payment_id' => $payment->id,
+            'booking_id' => null,
+            'parent_id' => $payment->id,
+            'action' => 'customer_send_provider', // action name
+            'status' => 'pending', // pending verification
+            'sender_id' => $user->id,
+            'receiver_id' => $provider_id,
+            'datetime' => now(),
+            'total_amount' => $payAmount,
+            'txn_id' => null,
+            'type' => 'bank_transfer',
+            'text' => __('messages.payment_transfer', [
+                'from' => get_user_name($user->id),
+                'to' => get_user_name($provider_id),
+                'amount' => number_format($provider_earning, 2)
+            ]),
+            'other_transaction_detail' => json_encode([
+                'admin_commission' => $admin_commission_amount,
+                'provider_earning' => $provider_earning,
+            ]),
+        ]);
+        if ($type === 'advance') {
+            $bid->status = 'advance_paid';
+        } elseif ($type === 'remaining') {
+            $bid->status = 'remaining_paid';
+        }
+
+        $bid->save();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Bank transfer processed. We will verify your payment shortly.',
+            'payment_id' => $payment->id,
             'admin_commission' => $admin_commission_amount,
             'provider_earning' => $provider_earning,
-        ]),
-    ]);
-
-    // Save commission earnings (pending)
-    $admin_user_id = User::where('user_type', 'admin')->first()->id;
-    $provider_id = $bid->provider_id;
-
-    CommissionEarning::create([
-        'post_job_request_id' => $bid->id,
-        'user_type' => 'admin',
-        'employee_id' => $admin_user_id,
-        'commission_amount' => $admin_commission_amount,
-        'commission_status' => 'pending',
-        'payment_id' => $payment->id,
-    ]);
-
-    CommissionEarning::create([
-        'post_job_request_id' => $bid->id,
-        'user_type' => 'provider',
-        'employee_id' => $provider_id,
-        'commission_amount' => $provider_earning,
-        'commission_status' => 'pending',
-        'payment_id' => $payment->id,
-    ]);
-    ProviderPayout::create([
-        'provider_id' => $provider_id,
-        'amount' => $provider_earning,
-        'payment_method' => 'Bank Transfer',
-        'paid_date' => Carbon::now(),
-        'status' => 'paid', // you can set 'pending' if you want to verify first
-        'booking_id' => null, // Not a normal booking
-        'post_job_request_id' => $bid->id,
-        'payment_gateway' => 'Bank Transfer',
-    ]);
-    PaymentHistory::create([
-        'payment_id' => $payment->id,
-        'booking_id' => null,
-        'parent_id' => $payment->id,
-        'action' => 'customer_send_provider', // action name
-        'status' => 'pending', // pending verification
-        'sender_id' => $user->id,
-        'receiver_id' => $provider_id,
-        'datetime' => now(),
-        'total_amount' => $payAmount,
-        'txn_id' => null,
-        'type' => 'bank_transfer',
-        'text' => __('messages.payment_transfer', [
-            'from' => get_user_name($user->id),
-            'to' => get_user_name($provider_id),
-            'amount' => number_format($provider_earning, 2)
-        ]),
-        'other_transaction_detail' => json_encode([
-            'admin_commission' => $admin_commission_amount,
-            'provider_earning' => $provider_earning,
-        ]),
-    ]);
-    if ($type === 'advance') {
-        $bid->status = 'advance_paid';
-    } elseif ($type === 'remaining') {
-        $bid->status = 'remaining_paid';
+            'payment_type' => $type,
+        ]);
     }
-    
-    $bid->save();
-    
-    return response()->json([
-        'status' => true,
-        'message' => 'Bank transfer processed. We will verify your payment shortly.',
-        'payment_id' => $payment->id,
-        'admin_commission' => $admin_commission_amount,
-        'provider_earning' => $provider_earning,
-        'payment_type' => $type,
-    ]);
-}
 
 
 
@@ -1055,11 +1173,11 @@ public function createPostJobBankTransfer(Request $request, $id)
         $token = $request->query('token');
         $type = strtolower((string)$request->query('type', 'advance'));
         $bid = PostJobBid::findOrFail($id);
-    
+
         if (!$token) {
             return redirect()->route('post-job-bid.show', ['id' => $bid->post_request_id])->with('error', 'Missing PayPal token');
         }
-    
+
         // Build PayPal client (same as above)
         $clientId = 'Afyzu7BkzUMiiK6kdB0QutzIh3cSZTcCFZjko7Fl1boR_jhW034YWoyVUBnsSmu1ZbX5bdIY0HA49SY6';
         $clientSecret = 'EET9cnIPbSWpA6c96cqJOSI9c-feQ512YQEZXSatXCcehOJU7G9eoxnPrNoikb-lFaCt0oOTAciZ26Ka';
@@ -1068,44 +1186,44 @@ public function createPostJobBankTransfer(Request $request, $id)
             ? new ProductionEnvironment($clientId, $clientSecret)
             : new SandboxEnvironment($clientId, $clientSecret);
         $client = new PayPalHttpClient($environment);
-    
+
         $captureRequest = new OrdersCaptureRequest($token);
         $captureRequest->prefer('return=representation');
-    
+
         try {
             $response = $client->execute($captureRequest);
             if (!in_array($response->statusCode, [200, 201])) {
                 return redirect()->route('post-job-bid.show', ['id' => $bid->post_request_id])->with('error', 'Payment not completed');
             }
-    
+
             $payment = Payment::where('post_job_request_id', $bid->id)
                 ->where('payment_type', 'paypal')
                 ->latest('id')
                 ->first();
-    
+
             if (!$payment) {
                 return redirect()->route('post-job-bid.show', ['id' => $bid->post_request_id])->with('error', 'Payment not found');
             }
-    
+
             // Mark payment complete and set txn id
             $payment->payment_status = 'completed';
             $payment->txn_id = $response->result->purchase_units[0]->payments->captures[0]->id ?? null;
             $payment->save();
-    
+
             // Commission + provider payout (same as Stripe flow)
             $adminCommissionSetting = Setting::getValueByKey('admin_commission_percentage', 'site-setup');
             $adminCommissionPercent = is_object($adminCommissionSetting) && isset($adminCommissionSetting->value)
                 ? (float) $adminCommissionSetting->value
                 : 10;
-    
+
             $payAmount = (float)$payment->total_amount;
             $adminCommissionAmount = ($payAmount * $adminCommissionPercent) / 100.0;
             $providerPayoutAmount  = max(0, $payAmount - $adminCommissionAmount);
-    
+
             if ($providerPayoutAmount > 0) {
                 $providerWallet = Wallet::firstOrCreate(['user_id' => $bid->provider_id]);
                 $providerWallet->increment('amount', $providerPayoutAmount);
-    
+
                 WalletHistory::create([
                     'datetime'        => now(),
                     'user_id'         => $bid->provider_id,
@@ -1116,7 +1234,7 @@ public function createPostJobBankTransfer(Request $request, $id)
                         'balance' => $providerWallet->amount,
                     ]),
                 ]);
-    
+
                 Payment::create([
                     'customer_id'             => $bid->provider_id,
                     'booking_id'              => null,
@@ -1134,7 +1252,7 @@ public function createPostJobBankTransfer(Request $request, $id)
                     ]),
                 ]);
             }
-    
+
             if ($adminCommissionAmount > 0) {
                 CommissionEarning::create([
                     'user_type'         => 'admin',
@@ -1151,11 +1269,11 @@ public function createPostJobBankTransfer(Request $request, $id)
                     'commission_status' => 'paid',
                 ]);
             }
-    
+
             // Update bid status
             $bid->status = ($type === 'remaining') ? 'remaining_paid' : 'advance_paid';
             $bid->save();
-    
+
             return redirect()->route('post-job-bid.show', ['id' => $bid->post_request_id])->with('success', 'Payment completed');
         } catch (\Exception $e) {
             \Log::error('PayPal capture error: ' . $e->getMessage());
@@ -1235,7 +1353,7 @@ public function createPostJobBankTransfer(Request $request, $id)
                 if (auth()->user()->user_type === 'provider') {
                     return $row->postBidList()
                         ->where('provider_id', auth()->id())
-                       ->where('status', '!=', 'requested')
+                        ->where('status', '!=', 'requested')
                         ->exists();
                 }
                 return false;
@@ -1268,7 +1386,7 @@ public function createPostJobBankTransfer(Request $request, $id)
             ->editColumn('end_date', function ($query) {
                 return $query->end_date ? $query->end_date->format('Y-m-d') : '';
             })
-            
+
             ->editColumn('created_at', function ($row) {
                 return $row->created_at ? $row->created_at->format('Y-m-d') : '';
             })
