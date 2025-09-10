@@ -516,7 +516,7 @@
 </svg>
 ',
             )
-            ->nickname('payment')
+            ->nickname('Services Payment')
             ->data('permission', 'payment list');
             if(auth()->user()->user_type == 'user' || auth()->user()->user_type == 'provider'){
 $menu->add('<span>'.__('Wallet Balance').'</span><span class="custom-tooltip"><span class="tooltip-text">'.__('messages.messages.custom_job').'</span></span>', ['route' => 'wallet.index'])
