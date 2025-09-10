@@ -13,6 +13,7 @@ use PayPalCheckoutSdk\Orders\OrdersCaptureRequest;
 use PayPalCheckoutSdk\Orders\OrdersCreateRequest;
 use App\Models\WalletHistory;
 use App\Models\Payment;
+use App\Models\Bank;
 use App\Models\PaymentPostJObHistory;
 use App\Models\PaymentPostJOb;
 use App\Models\Country;
@@ -693,7 +694,7 @@ class PostJobRequestController extends Controller
             // 🔹 Create finalized payment entry
             $finalPayment = PaymentPostJOb::create([
                 'customer_id'             => auth()->id(),
-                'post_job_request_id'     => $bid->id,
+                'post_job_bid_request_id' => $bid->id,
                 'datetime'                => now(),
                 'discount'                => 0,
                 'total_amount'            => number_format($payAmount, 2, '.', ''),
@@ -924,7 +925,7 @@ class PostJobRequestController extends Controller
             }
     
             // 🔹 Retrieve the existing pending Payment
-            $payment = Payment::where('post_job_request_id', $bid->id)
+            $payment = PaymentPostJOb::where('post_job_bid_request_id', $bid->id)
                 ->where('payment_type', 'paypal')
                 ->where('payment_status', 'pending')
                 ->latest('id')
@@ -1069,7 +1070,7 @@ class PostJobRequestController extends Controller
         $payment = PaymentPostJOb::create([
             'customer_id' => $user->id,
         
-            'post_job_request_id' => $bid->id,
+            'post_job_bid_request_id' => $bid->id,
             'datetime' => now(),
             'discount' => 0,
             'total_amount' => number_format($payAmount, 2, '.', ''),
