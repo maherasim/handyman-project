@@ -91,7 +91,7 @@ class PaymentController extends Controller
     public function postjobcash_index_data(DataTables $datatable, Request $request)
     {
         $query = PaymentPostJOb::query()->myPayment()
-            ->where('payment_type', 'bank_transfer');
+            ->where('payment_type', 'bank_transfer')->where('status',0);
 
         if (!$request->order) {
             $query->orderBy('created_at', 'DESC');
