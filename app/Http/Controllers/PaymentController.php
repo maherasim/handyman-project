@@ -57,7 +57,7 @@ class PaymentController extends Controller
     {
         $pageTitle = __('messages.list_form_title', ['form' => __('messages.cash_history')]);
         $assets = ['datatable'];
-        return view('paymentjobrequest.cash', compact('pageTitle', 'assets', 'id'));
+        return view('paymentjobrequest.cash', compact('pageTitle', 'assets'));
     }
 
     public function postjobcash_index_data(DataTables $datatable, Request $request)
