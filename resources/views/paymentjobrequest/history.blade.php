@@ -77,7 +77,7 @@
                     // },
                     {
                         data: 'sender_id',
-                        name: 'customer_id',
+                        name: 'sender_id',
                         title: "{{ __('messages.sender') }}",
                         orderable: false,
                     },
