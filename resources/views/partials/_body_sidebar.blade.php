@@ -626,7 +626,7 @@ $menu->add('<span>'.__('Favourit Provider').'</span><span class="custom-tooltip"
 <path d="M5.25 6C5.09121 6.93686 4.64494 7.80113 3.97304 8.47304C3.30113 9.14494 2.43686 9.59121 1.5 9.75" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
 </g><defs><clipPath id="clip0_1544_3669"><rect width="24" height="24" fill="white"/></clipPath></defs></svg>',
             )
-            ->nickname('cash_history')
+            ->nickname('Services Cash Payment')
             ->data('permission', 'payment list');
 
         $menu
