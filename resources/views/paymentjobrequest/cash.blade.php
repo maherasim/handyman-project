@@ -41,7 +41,7 @@
                                 </div>
 
                                 <button id="quick-action-apply" class="btn btn-primary" data-ajax="true"
-                                    data--submit="{{ route('payment.bulk-action') }}" data-datatable="reload"
+                                    data--submit="{{ route('paymentjobrequest.cash.approve') }}" data-datatable="reload"
                                     data-confirmation='true'
                                     data-title="{{ __('cash payment list', ['form' => __('cash payment list')]) }}"
                                     title="{{ __('cash payment list', ['form' => __('cash payment list')]) }}"

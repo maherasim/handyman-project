@@ -46,7 +46,21 @@ class PaymentController extends Controller
         $assets = ['datatable'];
         return view('paymenthistory.index', compact('pageTitle', 'assets', 'auth_user', 'id'));
     }
+    public function postjobcashApprove($id)
+    {
+        $payment = PaymentPostJOb::findOrFail($id);
+        $payment->payment_status = '1'; // 'payment_status' => 'Verified',
+        $payment->payment_status = 'Verified'; // 'payment_status' => 'Verified',
+        $payment->save();
+        $data = CommissionEarning::whereIn('payment_id', $id)
+        ->update(['commission_status' => 'paid']);
 
+        // 3. Update ProviderPayout table
+        ProviderPayout::whereIn('payment_id', $id)
+            ->update(['status' => 'paid']);
+
+        return redirect()->back()->with('success', __('messages.approved_successfully'));
+    }
     public function paymentjobrequest()
     {
         $pageTitle = __('messages.list_form_title', ['form' => __('messages.job_requests')]);
@@ -113,6 +127,9 @@ class PaymentController extends Controller
                 $datetime = json_decode($sitesetup->value);
                 $date = date("$datetime->date_format $datetime->time_format", strtotime($query->datetime));
                 return $date;
+            })
+            ->addColumn('action', function ($payment) {
+                return view('paymentjobrequest.action', compact('payment'))->render();
             })
             ->editColumn('history', function ($query) {
                 return '<a href="' . route('paymentjobrequest.history', $query->id) . '" class="btn btn-primary btn-sm">' . __('messages.view') . '</a>';
