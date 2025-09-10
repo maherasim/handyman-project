@@ -501,7 +501,7 @@
         $menu
             ->add(
                 '<span>' .
-                    __('messages.payments') .
+                    __('Services Payment') .
                     '</span><span class="custom-tooltip"><span class="tooltip-text">' .
                     __('Services Payment') .
                     '</span></span>',
@@ -610,7 +610,7 @@ $menu->add('<span>'.__('Favourit Provider').'</span><span class="custom-tooltip"
         $menu
             ->add(
                 '<span>' .
-                    __('messages.cash_payments') .
+                    __('Services Cash Payment') .
                     '</span><span class="custom-tooltip"><span class="tooltip-text">' .
                     __('Services Cash Payment') .
                     '</span></span>',
