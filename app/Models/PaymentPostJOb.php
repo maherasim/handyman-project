@@ -34,13 +34,11 @@ class PaymentPostJOb extends Model
         }
     
         if($user->hasRole('provider')) {
-            return $query->where(function($q) use($user) {
-                $q->whereHas('postJobRequest', function($sub) use($user) {
-                    $sub->where('customer_id', $user->id);
-                })
-                ->orWhere('payment_post_jobs.customer_id', $user->id); // ✅ include provider’s own payments
+            return $query->whereHas('postJobRequest', function($q) use($user) {
+                $q->where('provider_id', '=', $user->id);
             });
         }
+
     
         if($user->hasRole('user')) {
             return $query->where('payment_post_jobs.customer_id', $user->id);
