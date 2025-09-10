@@ -128,11 +128,7 @@
                             name: 'id',
                             title: "{{ __('messages.id') }}"
                         },
-                        {
-                            data: 'post_job_request_id',
-                            name: 'post_job_request_id',
-                            title: "{{ __('post Job Request') }}"
-                        },
+                        
                         {
                             data: 'post_job',
                             name: 'post_job',
