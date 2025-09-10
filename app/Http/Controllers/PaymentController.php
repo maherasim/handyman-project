@@ -151,7 +151,8 @@ class PaymentController extends Controller
 
     public function paymentjobrequest_history_data(DataTables $datatable, $id)
     {
-        $query = PaymentPostJobHistory::where('payment_post_job_id', $id);
+        $query = PaymentPostJobHistory::where('payment_id', $id);
+        
 
         if (auth()->user()->hasAnyRole(['admin'])) {
             $query->newQuery();
