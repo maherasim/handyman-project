@@ -48,6 +48,7 @@ class PaymentController extends Controller
     }
     public function postjobcashApprove(Request $request)
     {
+        dd($request->all());
         $ids = $request->input('rowIds', []);
     
         if (empty($ids)) {
