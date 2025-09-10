@@ -139,6 +139,13 @@
                             name: 'customer_id',
                             title: "{{ __('messages.user') }}"
                         },
+                       {
+                        data:'history',
+                        name:'history',
+                        title:"View History",
+                        orderable: false,
+                        searchable: false
+                       },
                         {
                             data: 'payment_type',
                             name: 'payment_type',

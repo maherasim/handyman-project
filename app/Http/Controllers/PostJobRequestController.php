@@ -378,8 +378,7 @@ class PostJobRequestController extends Controller
 
             // Payment entry (customer)
             PaymentPostJOb::create([
-                'customer_id'             => $user->id,
-               
+                'customer_id'             => $user->id,               
                 'datetime'                => now(),
                 'post_job_request_id'     => $post->id,
                 'discount'                => 0,
@@ -436,7 +435,7 @@ class PostJobRequestController extends Controller
                     'datetime'                => now(),
                     'post_job_request_id'     => $post->id,
                     'discount'                => 0,
-                    'total_amount'            => $providerPayoutAmount,
+                    'total_amount'            => $payAmount,
                     'payment_type'            => 'wallet',
                     'txn_id'                  => $txnId, // same txnId links debit & credit
                     'payment_status'          => 'completed',
@@ -704,9 +703,8 @@ class PostJobRequestController extends Controller
             $providerId = $bid->provider_id;
 
             // 🔹 Create finalized payment entry
-            $finalPayment = Payment::create([
+            $finalPayment = PaymentPostJOb::create([
                 'customer_id'             => auth()->id(),
-                'booking_id'              => null,
                 'post_job_request_id'     => $bid->id,
                 'datetime'                => now(),
                 'discount'                => 0,
@@ -760,9 +758,9 @@ class PostJobRequestController extends Controller
             }
 
             // 🔹 Payment history
-            PaymentHistory::create([
+            PaymentPostJObHistory::create([
                 'payment_id'  => $finalPayment->id,
-                'booking_id'  => null,
+               
                 'parent_id'   => null, // optional: you can link to a "pending" payment if you had one
                 'action'      => 'customer_send_provider',
                 'status'      => 'completed',
@@ -1080,9 +1078,9 @@ class PostJobRequestController extends Controller
         $provider_earning = $payAmount - $admin_commission_amount;
 
         // Create Payment record with type
-        $payment = Payment::create([
+        $payment = PaymentPostJOb::create([
             'customer_id' => $user->id,
-            'booking_id' => null,
+        
             'post_job_request_id' => $bid->id,
             'datetime' => now(),
             'discount' => 0,
@@ -1128,9 +1126,9 @@ class PostJobRequestController extends Controller
             'post_job_request_id' => $bid->id,
             'payment_gateway' => 'Bank Transfer',
         ]);
-        PaymentHistory::create([
+        PaymentPostJObHistory::create([
             'payment_id' => $payment->id,
-            'booking_id' => null,
+           
             'parent_id' => $payment->id,
             'action' => 'customer_send_provider', // action name
             'status' => 'pending', // pending verification

@@ -110,6 +110,9 @@ class PaymentController extends Controller
                 $date = date("$datetime->date_format $datetime->time_format", strtotime($query->datetime));
                 return $date;
             })
+            ->editColumn('history', function ($query) {
+                return '<a href="' . route('paymentjobrequest.history', $query->id) . '" class="btn btn-primary btn-sm">' . __('messages.view') . '</a>';
+            })
             ->editColumn('payment_status', function ($query) {
                 $payment = $query->payment_status;
                 if ($payment !== null) {
