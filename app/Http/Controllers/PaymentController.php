@@ -173,6 +173,9 @@ class PaymentController extends Controller
                     $q->where('display_name', 'like', '%' . $keyword . '%');
                 });
             })
+            ->editColumn('text', function ($query) {
+                return $query->text;
+            })
             ->editColumn('datetime', function ($query) {
                 $sitesetup = Setting::where('type', 'site-setup')->where('key', 'site-setup')->first();
                 $datetime = json_decode($sitesetup->value);
