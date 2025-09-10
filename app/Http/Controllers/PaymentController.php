@@ -46,21 +46,21 @@ class PaymentController extends Controller
         $assets = ['datatable'];
         return view('paymenthistory.index', compact('pageTitle', 'assets', 'auth_user', 'id'));
     }
-    public function postjobcashApprove($id)
+    public function postjobcashApprove(Request $request)
     {
-        $payment = PaymentPostJOb::findOrFail($id);
-        $payment->status = '1'; // 'payment_status' => 'Verified',
-        $payment->payment_status = 'Verified'; // 'payment_status' => 'Verified',
-        $payment->save();
-        $data = CommissionEarning::whereIn('payment_id', $id)
-        ->update(['commission_status' => 'paid']);
-
-        // 3. Update ProviderPayout table
-        ProviderPayout::whereIn('payment_id', $id)
-            ->update(['status' => 'paid']);
-
-        return redirect()->route('paymentjobrequest.cash.index')->with('success', __('messages.approved_successfully'));
+        $ids = $request->input('rowIds', []);
+    
+        if (empty($ids)) {
+            return redirect()->back()->with('error', __('messages.no_records_selected'));
+        }
+    
+        PaymentPostJOb::whereIn('id', $ids)->update(['payment_status' => 'Verified']);
+        CommissionEarning::whereIn('payment_id', $ids)->update(['commission_status' => 'paid']);
+        ProviderPayout::whereIn('payment_id', $ids)->update(['status' => 'paid']);
+    
+        return redirect()->back()->with('success', __('messages.approved_successfully'));
     }
+    
     public function paymentjobrequest()
     {
         $pageTitle = __('messages.list_form_title', ['form' => __('messages.job_requests')]);
