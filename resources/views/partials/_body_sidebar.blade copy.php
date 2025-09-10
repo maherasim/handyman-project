@@ -322,7 +322,7 @@ $menu->add('<span>'.__('messages.tax').'</span><span class="custom-tooltip"><spa
 ->data('permission', 'tax list');
 
 
-$menu->add('<span>'.__('messages.payment').'</span><span class="custom-tooltip"><span class="tooltip-text">'.__('messages.payment').'</span></span>', ['route' => 'payment.index'])
+$menu->add('<span>'.__('messages.payment').'</span><span class="custom-tooltip"><span class="tooltip-text">'.__('payments Services').'</span></span>', ['route' => 'payment.index'])
 ->prepend('<svg width="15" height="15" class="sidebar-menu-icon" viewBox="0 0 16 12" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path d="M14 0H2C1.1675 0 0.5075 0.6675 0.5075 1.5L0.5 10.5C0.5 11.3325 1.1675 12 2 12H14C14.8325 12 15.5 11.3325 15.5 10.5V1.5C15.5 0.6675 14.8325 0 14 0ZM14 10.5H2V6H14V10.5ZM14 3H2V1.5H14V3Z" fill="#6C757D" />
 </svg>
@@ -330,7 +330,7 @@ $menu->add('<span>'.__('messages.payment').'</span><span class="custom-tooltip">
 ->nickname('payment')
 ->data('permission', 'payment list');
 
-$menu->add('<span>'.__('messages.cash_payment').'</span><span class="custom-tooltip"><span class="tooltip-text">'.__('messages.cash_payment').'</span></span>', ['route' => 'cash.list'])
+$menu->add('<span>'.__('messages.cash_payment').'</span><span class="custom-tooltip"><span class="tooltip-text">'.__('Cash Paymeent Services').'</span></span>', ['route' => 'cash.list'])
 ->prepend('<svg width="15" height="15" class="sidebar-menu-icon" viewBox="0 0 16 12" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path d="M14 0H2C1.1675 0 0.5075 0.6675 0.5075 1.5L0.5 10.5C0.5 11.3325 1.1675 12 2 12H14C14.8325 12 15.5 11.3325 15.5 10.5V1.5C15.5 0.6675 14.8325 0 14 0ZM14 10.5H2V6H14V10.5ZM14 3H2V1.5H14V3Z" fill="currentColor" />
 </svg>
@@ -604,7 +604,7 @@ return checkMenuRoleAndPermission($item);
     <div class="data-scrollbar" data-scroll="1">
         <div class="user-profile">
             <div class="avatar">
-            <img class="avatar-50 rounded-circle bg-light" alt="user-icon" src="{{ getSingleMedia(auth()->user(),'profile_image', null) }}">
+                <img class="avatar-50 rounded-circle bg-light" alt="user-icon" src="{{ getSingleMedia(auth()->user(),'profile_image', null) }}">
             </div>
             <div class="user-info">
                 <h5 class="user-email">{{auth()->user()->email}}</h5>
