@@ -9,7 +9,7 @@ use App\Models\Payment;
 use App\Models\Setting;
 use App\Models\Wallet;
 use App\Models\PaymentPostJOb;
-use App\Models\PaymentPostJobHistory;
+use App\Models\PaymentPostJObHistory;
 
 use App\Models\PostJobBid;
 use App\Models\ProviderPayout;
