@@ -8,6 +8,8 @@ use App\Models\PaymentHistory;
 use App\Models\Payment;
 use App\Models\Setting;
 use App\Models\Wallet;
+use App\Models\PaymentPostJOb;
+
 use App\Models\PostJobBid;
 use App\Models\ProviderPayout;
 use App\Models\User;
@@ -52,7 +54,7 @@ class PaymentController extends Controller
 
     public function paymentjobrequest_index_data(DataTables $datatable,Request $request)
     {
-      $query = Payment::query()->myPayment()
+      $query = PaymentPostJOb::query()->myPayment()
     ->where(function ($q) {
         $q->where('payment_type', '!=', 'bank_transfer')
           ->orWhere(function ($sub) {
