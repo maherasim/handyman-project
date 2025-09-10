@@ -245,6 +245,8 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
 
     Route::post('save-payment', [App\Http\Controllers\API\PaymentController::class, 'savePayment'])->name('payment.save');
     Route::get('save-stripe-payment/{id}', [App\Http\Controllers\BookingController::class, 'saveStripePayment']);
+    Route::get('paymentjobrequest', [PaymentController::class, 'paymentjobrequest'])->name('paymentjobrequest');
+    Route::get('paymentjobrequest-index-data', [PaymentController::class, 'paymentjobrequest_index_data'])->name('paymentjobrequest.index_data');
 
 
 

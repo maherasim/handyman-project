@@ -44,6 +44,104 @@ class PaymentController extends Controller
         return view('paymenthistory.index', compact('pageTitle','assets','auth_user','id'));
     }
 
+    public function paymentjobrequest(){
+        $pageTitle = __('messages.list_form_title',['form' => __('messages.job_requests')] );
+        $assets = ['datatable'];
+        return view('paymentjobrequest.index', compact('pageTitle','assets'));
+    }
+
+    public function paymentjobrequest_index_data(DataTables $datatable,Request $request)
+    {
+      $query = Payment::query()->myPayment()
+    ->where(function ($q) {
+        $q->where('payment_type', '!=', 'bank_transfer')
+          ->orWhere(function ($sub) {
+              $sub->where('payment_type', 'bank_transfer')->where('status', 1);
+          });
+    });
+ 
+        // if (!$request->order) { 
+        //     $query->orderBy('created_at', 'DESC');
+        // } 
+        $filter = $request->filter;
+
+        if (isset($filter)) {
+            if (isset($filter['column_status'])) {
+                $query->where('payment_status', $filter['column_status']);
+            }
+        }
+        if (auth()->user()->hasAnyRole(['admin'])) {
+            $query->newQuery();
+        }
+
+        return $datatable->eloquent($query)
+            ->addColumn('check', function ($row) {
+                return '<input type="checkbox" class="form-check-input select-table-row"  id="datatable-row-'.$row->id.'"  name="datatable_ids[]" value="'.$row->id.'" onclick="dataTableRowCheck('.$row->id.')">';
+            })
+         ->editColumn('id', function($query) {
+    $booking = optional($query->booking);
+    if ($booking && $booking->id) {
+        return "<a class='btn-link btn-link-hover' href=" . route('booking.show', $booking->id) . ">#" . $booking->id . "</a>";
+    }
+    $postTitle = optional($query->postJobRequest)->title;
+    return $postTitle ? e($postTitle) : '-';
+})
+
+        ->orderColumn('id', function($query, $order) {
+            $query->leftJoin('post_job_requests', 'post_job_requests.id', '=', 'payments.post_job_request_id')
+                  ->orderBy('payments.booking_id', $order)
+                  ->orderBy('post_job_requests.title', $order);
+        })
+         
+        ->editColumn('customer_id', function ($payment) {
+            return view('payment.user', compact('payment'));
+        })
+        ->filterColumn('customer_id',function($query,$keyword){
+            $query->whereHas('customer',function ($q) use($keyword){
+                $q->where('display_name','like','%'.$keyword.'%');
+            });
+        })
+        ->orderColumn('customer_id', function ($query, $order) {
+            $query->select('payments.*')
+                  ->join('users as customers', 'customers.id', '=', 'payments.customer_id')
+                  ->orderBy('customers.display_name', $order);   
+        })
+        ->editColumn('datetime' , function ($query){
+            $sitesetup = Setting::where('type','site-setup')->where('key', 'site-setup')->first();
+            $datetime = json_decode($sitesetup->value);
+            $date = date("$datetime->date_format $datetime->time_format", strtotime($query->datetime));
+            return $date;
+        })
+        ->editColumn('payment_status', function($query) {
+            $payment = $query->payment_status;
+            if($payment !== null){
+                $payment_status = '<span class="text-center text-white badge bg-primary">'.str_replace('_'," ",ucfirst($payment)).'</span>';
+            }else{
+                $payment_status = '<span class="text-center d-block">-</span>';
+            }
+            return $payment_status;
+        })
+
+
+        ->editColumn('total_amount', function($query) {
+            return getPriceFormat($query->total_amount);
+        })
+        ->addColumn('post_job', function($query){
+            return optional($query->postJobRequest)->title ?: '-';
+        })
+        ->addColumn('action', function($payment){
+            return view('payment.action',compact('payment'))->render();
+        })
+        ->addIndexColumn()
+        ->rawColumns(['action','check','payment_status','id'])
+            ->toJson();
+    }
+
+
+
+
+
+
 public function paymenthistory_index_data(DataTables $datatable, $id)
 {
     $query = PaymentHistory::where('payment_id', $id);

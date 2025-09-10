@@ -61,6 +61,7 @@
     'site_name' => 'Site Name',
     'category' => 'Category',
     'service' => 'Service',
+    'post_job_request' => 'Post Job Request',
     'price' => 'Price',
     'appointment' => 'Appointment',
     'date' => 'Date',
