@@ -60,6 +60,7 @@ class PaymentController extends Controller
     //dd($payment);
     $payment->payment_status = 'Verified';
     $payment->status = $request->status;
+    dd( $payment->status);
     $payment->save();
 
     // Update CommissionEarning
