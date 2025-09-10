@@ -124,8 +124,8 @@
                             visible: false
                         },
                         {
-                            data: 'post_job_request_id',
-                            name: 'post_job_request_id',
+                            data: 'post_job_bid_request_id',
+                            name: 'post_job_bid_request_id',
                             title: "{{ __('messages.id') }}"
                         },
                        

@@ -9,7 +9,7 @@ class PaymentPostJOb extends Model
 {
     use HasFactory,SoftDeletes;
     protected $table = 'payment_post_jobs';
-    protected $fillable = [ 'customer_id', 'datetime', 'post_job_request_id', 'discount', 'total_amount', 'payment_type', 'txn_id', 'payment_status', 'other_transaction_detail' ];
+    protected $fillable = [ 'customer_id', 'datetime', 'post_job_bid_request_id', 'discount', 'total_amount', 'payment_type', 'txn_id', 'payment_status', 'other_transaction_detail' ];
 
     protected $casts = [
         'post_job_request_id'    => 'integer',
@@ -21,6 +21,10 @@ class PaymentPostJOb extends Model
     public function postJobRequest(){
         return $this->belongsTo(PostJobRequest::class, 'post_job_request_id', 'id');
     }
+    public function postJobRequestBid(){
+        return $this->belongsTo(PostJobBid::class, 'post_request_id', 'id');
+    }
+
 
     public function customer(){
         return $this->belongsTo(User::class, 'customer_id', 'id');
@@ -35,6 +39,8 @@ class PaymentPostJOb extends Model
     
         if($user->hasRole('provider')) {
             return $query->whereHas('postJobRequest', function($q) use($user) {
+                $q->where('provider_id', '=', $user->id);
+            })->orWhereHas('postJobRequestBid', function($q) use($user) {
                 $q->where('provider_id', '=', $user->id);
             });
         }

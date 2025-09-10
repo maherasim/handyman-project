@@ -380,7 +380,7 @@ class PostJobRequestController extends Controller
           $payment=  PaymentPostJOb::create([
                 'customer_id'             => $user->id,               
                 'datetime'                => now(),
-                'post_job_request_id'     => $post->id,
+                'post_job_bid_request_id'     => $post->id,
                 'discount'                => 0,
                 'total_amount'            => $payAmount,
                 'payment_type'            => 'wallet',
@@ -431,21 +431,7 @@ class PostJobRequestController extends Controller
                 ]);
 
                 // Payment entry (provider)
-                PaymentPostJOb::create([
-                    'customer_id'             => $post->provider_id,
-                    'datetime'                => now(),
-                    'post_job_request_id'     => $post->id,
-                    'discount'                => 0,
-                    'total_amount'            => $payAmount,
-                    'payment_type'            => 'wallet',
-                    'txn_id'                  => $txnId, // same txnId links debit & credit
-                    'payment_status'          => 'completed',
-                    'other_transaction_detail' => json_encode([
-                        'type'     => $paymentMetaType . '_payout',
-                        'bid_id'   => $post->id,
-                        'customer' => $user->id,
-                    ]),
-                ]);
+                
 
                 // Save provider payout record
                 ProviderPayout::create([
