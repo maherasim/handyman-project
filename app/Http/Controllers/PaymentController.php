@@ -48,9 +48,9 @@ class PaymentController extends Controller
     }
     public function postjobcashApprove(Request $request)
 {
-    dd($request->all());
+    //dd($request->all());
     $id = $request->input('rowIds'); // this will be a single string/int
-
+dd( $id );
     if (empty($id)) {
         return redirect()->back()->with('error', __('messages.no_records_selected'));
     }
