@@ -100,7 +100,7 @@ class WalletController extends Controller
     public function cash_index_data(DataTables $datatable,Request $request)
     {
          $query = Payment::query()->myPayment()->where('payment_type', 'wallet');
-       
+        
        dd($query );
         $filter = $request->filter;
 
