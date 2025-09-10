@@ -134,7 +134,9 @@ class PaymentController extends Controller
             //     return view('payment.action', compact('payment'))->render();
             // })
             ->addIndexColumn()
-            ->rawColumns(['action', 'check', 'payment_status', 'id'])
+            ->rawColumns(['action', 'check', 'payment_status', 'id', 'history'])
+
+           
             ->toJson();
     }
 
@@ -146,7 +148,44 @@ class PaymentController extends Controller
     }
 
 
+    public function paymentjobrequest_history_data(DataTables $datatable, $id)
+    {
+        $query = PaymentPostJob::where('id', $id);
 
+        if (auth()->user()->hasAnyRole(['admin'])) {
+            $query->newQuery();
+        }
+
+        return $datatable->eloquent($query)
+            ->editColumn('customer_id', function ($payment) {
+                return ($payment->customer != null && isset($payment->customer)) ? $payment->customer->display_name : '-';
+            })
+            ->filterColumn('customer_id', function ($query, $keyword) {
+                $query->whereHas('customer', function ($q) use ($keyword) {
+                    $q->where('display_name', 'like', '%' . $keyword . '%');
+                });
+            })
+            ->editColumn('receiver_id', function ($payment) {
+                return ($payment->receiver != null && isset($payment->receiver)) ? $payment->receiver->display_name : '-';
+            })
+            ->filterColumn('receiver_id', function ($query, $keyword) {
+                $query->whereHas('receiver', function ($q) use ($keyword) {
+                    $q->where('display_name', 'like', '%' . $keyword . '%');
+                });
+            })
+            ->editColumn('datetime', function ($query) {
+                $sitesetup = Setting::where('type', 'site-setup')->where('key', 'site-setup')->first();
+                $datetime = json_decode($sitesetup->value);
+                return date("$datetime->date_format $datetime->time_format", strtotime($query->datetime));
+            })
+            ->addColumn('created_at', function ($payment) {
+                $sitesetup = Setting::where('type', 'site-setup')->where('key', 'site-setup')->first();
+                $datetime = json_decode($sitesetup->value);
+                return date("$datetime->date_format $datetime->time_format", strtotime($payment->created_at));
+            })
+            ->addIndexColumn()
+            ->toJson();
+    }
 
     public function paymenthistory_index_data(DataTables $datatable, $id)
     {

@@ -119,7 +119,7 @@
                         @endif {
                             data: 'updated_at',
                             name: 'updated_at',
-                            title: "{{ __('product.lbl_update_at') }}",
+                            title: "{{ __('messages.update_at') }}",
                             orderable: true,
                             visible: false
                         },

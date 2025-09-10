@@ -248,6 +248,7 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
     Route::get('paymentjobrequest', [PaymentController::class, 'paymentjobrequest'])->name('paymentjobrequest');
     Route::get('paymentjobrequest-index-data', [PaymentController::class, 'paymentjobrequest_index_data'])->name('paymentjobrequest.index_data');
     Route::get('paymentjobrequest/history/{id}', [PaymentController::class, 'paymentjobrequest_history'])->name('paymentjobrequest.history');
+    Route::get('paymentjobrequest/history_data/{id}', [PaymentController::class, 'paymentjobrequest_history_data'])->name('paymentjobrequest.history_data');
 
 
 
