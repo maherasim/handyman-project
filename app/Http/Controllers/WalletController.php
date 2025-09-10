@@ -25,7 +25,7 @@ class WalletController extends Controller
      */
     public function index(Request $request)
     {
-        dd($request->all());
+         dd($request->all());
         $filter = [
             'status' => $request->status,
         ];
