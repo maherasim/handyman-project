@@ -179,7 +179,7 @@
                         processing: "{{ __('messages.processing') }}"
                     }
                 });
-          
+          @endif    
         });
 
         // Quick action reset
