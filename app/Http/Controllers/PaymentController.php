@@ -87,9 +87,9 @@ class PaymentController extends Controller
                 return $postTitle ? e($postTitle) : '-';
             })
             ->orderColumn('id', function ($query, $order) {
-                $query->leftJoin('post_job_requests', 'post_job_requests.id', '=', 'payment_post_jobs.post_job_bid_request_id')
+                $query->leftJoin('post_job_bid_requests', 'post_job_bid_requests.id', '=', 'payment_post_jobs.post_job_bid_request_id')
                     ->orderBy('payment_post_jobs.id', $order)
-                    ->orderBy('post_job_requests.title', $order);
+                    ->orderBy('post_job_bid_requests.title', $order);
             })
 
             ->editColumn('customer_id', function ($payment) {
