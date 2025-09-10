@@ -34,12 +34,12 @@
                                 </select>
 
 
-                                <button id="quick-action-apply" class="btn btn-primary" data-ajax="true"
+                                {{-- <button id="quick-action-apply" class="btn btn-primary" data-ajax="true"
                                     data--submit="{{ route('payment.bulk-action') }}" data-datatable="reload"
                                     data-confirmation='true' data-title="{{ __('payment', ['form' => __('payment')]) }}"
                                     title="{{ __('payment', ['form' => __('payment')]) }}"
                                     data-message='{{ __('Do you want to perform this action?') }}'
-                                    disabled>{{ __('messages.apply') }}</button>
+                                    disabled>{{ __('messages.apply') }}</button> --}}
                             @endif
                     </div>
 
