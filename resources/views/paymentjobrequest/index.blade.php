@@ -124,11 +124,11 @@
                             visible: false
                         },
                         {
-                            data: 'id',
-                            name: 'id',
+                            data: 'Post_job_request_id',
+                            name: 'Post_job_request_id',
                             title: "{{ __('messages.id') }}"
                         },
-                        
+                       
                         {
                             data: 'post_job',
                             name: 'post_job',
