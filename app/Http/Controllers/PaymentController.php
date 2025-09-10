@@ -80,20 +80,15 @@ class PaymentController extends Controller
             ->addColumn('check', function ($row) {
                 return '<input type="checkbox" class="form-check-input select-table-row"  id="datatable-row-'.$row->id.'"  name="datatable_ids[]" value="'.$row->id.'" onclick="dataTableRowCheck('.$row->id.')">';
             })
-         ->editColumn('id', function($query) {
-    $booking = optional($query->booking);
-    if ($booking && $booking->id) {
-        return "<a class='btn-link btn-link-hover' href=" . route('booking.show', $booking->id) . ">#" . $booking->id . "</a>";
-    }
-    $postTitle = optional($query->postJobRequest)->title;
-    return $postTitle ? e($postTitle) : '-';
-})
-
-        ->orderColumn('id', function($query, $order) {
-            $query->leftJoin('post_job_requests', 'post_job_requests.id', '=', 'payments.post_job_request_id')
-                  ->orderBy('payments.booking_id', $order)
-                  ->orderBy('post_job_requests.title', $order);
-        })
+            ->editColumn('id', function ($query) {
+                $postTitle = optional($query->postJobRequest)->title;
+                return $postTitle ? e($postTitle) : '-';
+            })
+            ->orderColumn('id', function($query, $order) {
+                $query->leftJoin('post_job_requests', 'post_job_requests.id', '=', 'payment_post_jobs.post_job_request_id')
+                      ->orderBy('payment_post_jobs.booking_id', $order)
+                      ->orderBy('post_job_requests.title', $order);
+            })
          
         ->editColumn('customer_id', function ($payment) {
             return view('payment.user', compact('payment'));
