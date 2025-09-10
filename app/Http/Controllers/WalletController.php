@@ -101,7 +101,7 @@ class WalletController extends Controller
     {
          $query = Payment::query()->myPayment()->where('payment_type', 'wallet');
        
-       // dd($query );
+        dd($query );
         $filter = $request->filter;
 
         if (isset($filter)) {
