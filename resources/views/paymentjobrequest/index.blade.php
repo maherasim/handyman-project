@@ -132,7 +132,7 @@
                         {
                             data: 'post_job',
                             name: 'post_job',
-                            title: "Post Job"
+                            title: "Post Job Request"
                         },
                         {
                             data: 'customer_id',
