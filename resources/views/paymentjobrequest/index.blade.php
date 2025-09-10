@@ -158,7 +158,7 @@
                             data: 'total_amount',
                             name: 'total_amount',
                             title: "{{ __('messages.total_paid_amount') }}"
-                        },
+                        }
                         // @if (auth()->user()->hasRole('admin'))
                         //     {
                         //         data: 'action',
