@@ -377,7 +377,7 @@ class PostJobRequestController extends Controller
             ]);
 
             // Payment entry (customer)
-            PaymentPostJOb::create([
+          $payment=  PaymentPostJOb::create([
                 'customer_id'             => $user->id,               
                 'datetime'                => now(),
                 'post_job_request_id'     => $post->id,
@@ -417,6 +417,7 @@ class PostJobRequestController extends Controller
                 // Wallet history (provider)
                 PaymentPostJObHistory::create([
                     'datetime'        => now(),
+                    'payment_id'      => $payment->id,
                     'receiver_id'     => $post->provider_id,
                     'sender_id'       => $user->id,
                     'action'          => 'credit',
@@ -449,6 +450,7 @@ class PostJobRequestController extends Controller
                 // Save provider payout record
                 ProviderPayout::create([
                     'provider_id'    => $post->provider_id,
+                    
                     'amount'         => $providerPayoutAmount,
                     'payment_method' => 'wallet',
                     'paid_date'      => now(),
