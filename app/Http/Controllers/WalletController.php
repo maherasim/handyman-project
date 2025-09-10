@@ -26,7 +26,7 @@ class WalletController extends Controller
     public function index(Request $request)
     {
          dd($request->all());
-        $filter = [
+        $filter = [ 
             'status' => $request->status,
         ];
         $pageTitle = __('messages.list_form_title',["form" => __('messages.wallet')] );
