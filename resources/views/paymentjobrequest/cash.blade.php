@@ -128,46 +128,48 @@
                         visible: false,
                     },
                     {
-                        data: 'id',
-                        name: 'id',
-                        title: "{{ __('messages.id') }}"
-                    },
-                    {
-                        data: 'booking_id',
-                        name: 'booking_id',
-                        title: "{{ __('messages.service') }}"
-                    },
-                    {
-                        data: 'customer_id',
-                        name: 'customer_id',
-                        title: "{{ __('messages.user') }}",
-                        orderable: false,
-                    },
-                    {
-                        data: 'datetime',
-                        name: 'datetime',
-                        title: "{{ __('messages.datetime') }}"
-                    },
-                    {
-                        data: 'history',
-                        name: 'history',
-                        title: "{{ __('messages.history') }}",
+                            data: 'post_job_bid_request_id',
+                            name: 'post_job_bid_request_id',
+                            title: "{{ __('messages.id') }}"
+                        },
+                       
+                        {
+                            data: 'post_job',
+                            name: 'post_job',
+                            title: "Post Job Request"
+                        },
+                        {
+                            data: 'customer_id',
+                            name: 'customer_id',
+                            title: "{{ __('messages.user') }}"
+                        },
+                       {
+                        data:'history',
+                        name:'history',
+                        title:"View History",
                         orderable: false,
                         searchable: false
-                    },
-                    {
-                        data: 'status',
-                        name: 'status',
-                        title: "{{ __('messages.status') }}",
-                        orderable: false,
-                        searchable: false,
-                    },
-
-                    {
-                        data: 'total_amount',
-                        name: 'total_amount',
-                        title: "{{ __('messages.price') }}"
-                    },
+                       },
+                        {
+                            data: 'payment_type',
+                            name: 'payment_type',
+                            title: "{{ __('messages.payment_type') }}"
+                        },
+                        {
+                            data: 'payment_status',
+                            name: 'payment_status',
+                            title: "{{ __('messages.status') }}"
+                        },
+                        {
+                            data: 'datetime',
+                            name: 'datetime',
+                            title: "{{ __('messages.datetime') }}"
+                        },
+                        {
+                            data: 'total_amount',
+                            name: 'total_amount',
+                            title: "{{ __('messages.total_paid_amount') }}"
+                        },
                     @if (auth()->user()->hasAnyRole(['admin']))
                         {
                             data: 'action',
