@@ -50,13 +50,14 @@ class PaymentController extends Controller
 {
     //dd($request->all());
     $id = $request->input('rowIds'); // this will be a single string/int
-dd( $id );
+//dd( $id );
     if (empty($id)) {
         return redirect()->back()->with('error', __('messages.no_records_selected'));
     }
 
     // Update payment
     $payment = PaymentPostJOb::findOrFail($id);
+    dd($payment);
     $payment->payment_status = 'Verified';
     $payment->save();
 
