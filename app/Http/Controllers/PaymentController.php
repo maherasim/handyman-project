@@ -161,10 +161,10 @@ class PaymentController extends Controller
         }
 
         return $datatable->eloquent($query)
-            ->editColumn('customer_id', function ($payment) {
+            ->editColumn('sender_id', function ($payment) {
                 return ($payment->customer != null && isset($payment->customer)) ? $payment->customer->display_name : '-';
             })
-            ->filterColumn('customer_id', function ($query, $keyword) {
+            ->filterColumn('sender_id', function ($query, $keyword) {
                 $query->whereHas('customer', function ($q) use ($keyword) {
                     $q->where('display_name', 'like', '%' . $keyword . '%');
                 });

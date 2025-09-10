@@ -76,7 +76,7 @@
                     //     title: "{{ __('messages.user') }}"
                     // },
                     {
-                        data: 'customer_id',
+                        data: 'sender_id',
                         name: 'customer_id',
                         title: "{{ __('messages.sender') }}",
                         orderable: false,
