@@ -49,7 +49,7 @@ class PaymentController extends Controller
     public function postjobcashApprove($id)
     {
         $payment = PaymentPostJOb::findOrFail($id);
-        $payment->payment_status = '1'; // 'payment_status' => 'Verified',
+        $payment->status = '1'; // 'payment_status' => 'Verified',
         $payment->payment_status = 'Verified'; // 'payment_status' => 'Verified',
         $payment->save();
         $data = CommissionEarning::whereIn('payment_id', $id)
