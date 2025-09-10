@@ -57,8 +57,9 @@ class PaymentController extends Controller
 
     // Update payment
     $payment = PaymentPostJOb::findOrFail($id);
-    dd($payment);
+    //dd($payment);
     $payment->payment_status = 'Verified';
+    $payment->status = $request->status;
     $payment->save();
 
     // Update CommissionEarning
