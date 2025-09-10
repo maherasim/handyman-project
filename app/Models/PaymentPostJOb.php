@@ -28,23 +28,23 @@ class PaymentPostJOb extends Model
     public function scopeMyPayment($query)
     {
         $user = auth()->user();
+    
         if($user->hasAnyRole(['admin', 'demo_admin'])){
             return $query;
         }
-
+    
         if($user->hasRole('provider')) {
-            return $query->whereHas('postJobRequest', function($q) use($user) {
-                $q->where('customer_id', '=', $user->id);
+            return $query->where(function($q) use($user) {
+                $q->whereHas('postJobRequest', function($sub) use($user) {
+                    $sub->where('customer_id', $user->id);
+                })
+                ->orWhere('payment_post_jobs.customer_id', $user->id); // ✅ include provider’s own payments
             });
         }
-
+    
         if($user->hasRole('user')) {
             return $query->where('payment_post_jobs.customer_id', $user->id);
         }
-
-        
-
-        return $query;
-    
     }
+    
 }
