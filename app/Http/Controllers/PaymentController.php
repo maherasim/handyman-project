@@ -59,7 +59,7 @@ class PaymentController extends Controller
         ProviderPayout::whereIn('payment_id', $id)
             ->update(['status' => 'paid']);
 
-        return redirect()->back()->with('success', __('messages.approved_successfully'));
+        return redirect()->route('paymentjobrequest.cash.index')->with('success', __('messages.approved_successfully'));
     }
     public function paymentjobrequest()
     {
