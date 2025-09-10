@@ -503,7 +503,7 @@
                 '<span>' .
                     __('messages.payments') .
                     '</span><span class="custom-tooltip"><span class="tooltip-text">' .
-                    __('messages.payments') .
+                    __('Services Payment') .
                     '</span></span>',
                 ['route' => 'payment.index'],
             )
@@ -612,7 +612,7 @@ $menu->add('<span>'.__('Favourit Provider').'</span><span class="custom-tooltip"
                 '<span>' .
                     __('messages.cash_payments') .
                     '</span><span class="custom-tooltip"><span class="tooltip-text">' .
-                    __('messages.cash_payments') .
+                    __('Services Cash Payment') .
                     '</span></span>',
                 ['route' => 'cash.list'],
             )
