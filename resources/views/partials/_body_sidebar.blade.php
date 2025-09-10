@@ -659,9 +659,9 @@ $menu->add('<span>'.__('Favourit Provider').'</span><span class="custom-tooltip"
             $menu
             ->add(
                 '<span>' .
-                    __('Payment Job Request') .
+                    __('JobRequest Cash Payment') .
                     '</span><span class="custom-tooltip"><span class="tooltip-text">' .
-                    __('Payment Job Request') .
+                    __('JobRequest Cash Payment') .
                     '</span></span>',
                 ['route' => 'paymentjobrequest.cash.index'],
             )
