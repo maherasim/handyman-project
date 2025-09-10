@@ -249,6 +249,8 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
     Route::get('paymentjobrequest-index-data', [PaymentController::class, 'paymentjobrequest_index_data'])->name('paymentjobrequest.index_data');
     Route::get('paymentjobrequest/history/{id}', [PaymentController::class, 'paymentjobrequest_history'])->name('paymentjobrequest.history');
     Route::get('paymentjobrequest/history_data/{id}', [PaymentController::class, 'paymentjobrequest_history_data'])->name('paymentjobrequest.history_data');
+    Route::get('paymentjobrequest/cash-index-data', [PaymentController::class, 'postjobcashIndex'])->name('paymentjobrequest.cash.index');
+    Route::get('paymentjobrequest/cash/history/{id?}', [PaymentController::class, 'postjobcash_index_data'])->name('paymentjobrequest.cash.index_data');
 
 
 
@@ -489,7 +491,7 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
     Route::get('postjob/paypal-success/{id}', [PostJobRequestController::class, 'postJobPayPalSuccess'])->name('postjob.paypal.success');
     Route::get('postjob/paypal-cancel', [PostJobRequestController::class, 'postJobPayPalCancel'])->name('postjob.paypal.cancel');
     Route::get('postjob/bank-details/{id}', [PostJobRequestController::class, 'getPostJobBankDetails'])->name('postjob.bank.details');
-Route::post('postjob/bank-transfer/{id}', [PostJobRequestController::class, 'createPostJobBankTransfer'])->name('postjob.bank.transfer');
+    Route::post('postjob/bank-transfer/{id}', [PostJobRequestController::class, 'createPostJobBankTransfer'])->name('postjob.bank.transfer');
     Route::group(['middleware' => ['permission:servicepackage list']], function () {
         Route::resource('servicepackage', ServicePackageController::class);
         Route::get('servicepackage/list/{packageid?}', [ServiceController::class, 'index'])->name('servicepackage.service');
