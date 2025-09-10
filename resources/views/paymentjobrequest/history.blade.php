@@ -65,16 +65,8 @@
                         orderable: false,
                         searchable: false,
                     },
-                    // {
-                    //     data: 'booking_id',
-                    //     name: 'booking_id',
-                    //     title: "{{ __('messages.service') }}"
-                    // },
-                    // {
-                    //     data: 'customer_id',
-                    //     name: 'customer_id',
-                    //     title: "{{ __('messages.user') }}"
-                    // },
+                   
+                   
                     {
                         data: 'sender_id',
                         name: 'sender_id',
@@ -86,11 +78,7 @@
                         name: 'receiver_id',
                         title: "{{ __('messages.receiver') }}"
                     },
-                    // {
-                    //     data: 'datetime',
-                    //     name: 'datetime',
-                    //     title: "{{ __('messages.datetime') }}"
-                    // },
+                   
 
                     {
                         data: 'text',

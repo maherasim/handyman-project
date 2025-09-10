@@ -88,11 +88,11 @@ class PaymentController extends Controller
             })
             ->orderColumn('id', function ($query, $order) {
                 $query->leftJoin('post_job_bids', 'post_job_bids.id', '=', 'payment_post_jobs.post_job_bid_request_id')
-                      ->leftJoin('post_job_requests', 'post_job_requests.id', '=', 'post_job_bids.post_request_id')
-                      ->orderBy('payment_post_jobs.id', $order)
-                      ->orderBy('post_job_requests.title', $order);
+                    ->leftJoin('post_job_requests', 'post_job_requests.id', '=', 'post_job_bids.post_request_id')
+                    ->orderBy('payment_post_jobs.id', $order)
+                    ->orderBy('post_job_requests.title', $order);
             })
-            
+
 
             ->editColumn('customer_id', function ($payment) {
                 return view('payment.user', compact('payment'));
@@ -139,7 +139,7 @@ class PaymentController extends Controller
             ->addIndexColumn()
             ->rawColumns(['action', 'check', 'payment_status', 'id', 'history'])
 
-           
+
             ->toJson();
     }
 
@@ -154,7 +154,7 @@ class PaymentController extends Controller
     public function paymentjobrequest_history_data(DataTables $datatable, $id)
     {
         $query = PaymentPostJobHistory::where('payment_id', $id);
-        
+
 
         if (auth()->user()->hasAnyRole(['admin'])) {
             $query->newQuery();
@@ -162,13 +162,14 @@ class PaymentController extends Controller
 
         return $datatable->eloquent($query)
             ->editColumn('sender_id', function ($payment) {
-                return ($payment->customer != null && isset($payment->customer)) ? $payment->customer->display_name : '-';
+                return $payment->sender ? $payment->sender->display_name : '-';
             })
             ->filterColumn('sender_id', function ($query, $keyword) {
-                $query->whereHas('customer', function ($q) use ($keyword) {
+                $query->whereHas('sender', function ($q) use ($keyword) {
                     $q->where('display_name', 'like', '%' . $keyword . '%');
                 });
             })
+
             ->editColumn('receiver_id', function ($payment) {
                 return ($payment->receiver != null && isset($payment->receiver)) ? $payment->receiver->display_name : '-';
             })
