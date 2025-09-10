@@ -138,7 +138,12 @@ class PaymentController extends Controller
             ->toJson();
     }
 
-
+    public function paymentjobrequest_history($id)
+    {
+        $pageTitle = __('messages.list_form_title', ['form' => __('messages.job_requests')]);
+        $assets = ['datatable'];
+        return view('paymentjobrequest.history', compact('pageTitle', 'assets', 'id'));
+    }
 
 
 
