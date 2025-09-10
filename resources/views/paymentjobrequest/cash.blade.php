@@ -22,7 +22,7 @@
             <div class="row justify-content-between gy-3">
                 <div class="col-md-6 col-lg-4 col-xl-3">
                     <div class="col-md-12">
-                        <form action="{{ route('payment.bulk-action') }}" id="quick-action-form"
+                        <form action="{{ route('paymentjobrequest.cash.approve') }}" id="quick-action-form"
                             class="form-disabled d-flex gap-3 align-items-center">
                             @csrf
                             @if (auth()->user()->hasAnyRole(['admin']))
