@@ -100,8 +100,8 @@ class PaymentController extends Controller
                 });
             })
             ->orderColumn('customer_id', function ($query, $order) {
-                $query->select('payments.*')
-                    ->join('users as customers', 'customers.id', '=', 'payments.customer_id')
+                $query->select('payment_post_jobs.*')
+                    ->join('users as customers', 'customers.id', '=', 'payment_post_jobs.customer_id')
                     ->orderBy('customers.display_name', $order);
             })
             ->editColumn('datetime', function ($query) {

@@ -34,7 +34,7 @@ class PaymentPostJOb extends Model
 
         if($user->hasRole('provider')) {
             return $query->whereHas('postJobRequest', function($q) use($user) {
-                $q->where('provider_id', '=', $user->id);
+                $q->where('customer_id', '=', $user->id);
             });
         }
 
