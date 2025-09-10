@@ -13,6 +13,8 @@ use PayPalCheckoutSdk\Orders\OrdersCaptureRequest;
 use PayPalCheckoutSdk\Orders\OrdersCreateRequest;
 use App\Models\WalletHistory;
 use App\Models\Payment;
+use App\Models\PaymentPostJObHistory;
+use App\Models\PaymentPostJOb;
 use App\Models\Country;
 use App\Models\PaymentHistory;
 use App\Models\SubCategory;
@@ -375,9 +377,9 @@ class PostJobRequestController extends Controller
             ]);
 
             // Payment entry (customer)
-            Payment::create([
+            PaymentPostJOb::create([
                 'customer_id'             => $user->id,
-                'booking_id'              => null,
+               
                 'datetime'                => now(),
                 'post_job_request_id'     => $post->id,
                 'discount'                => 0,
@@ -414,21 +416,23 @@ class PostJobRequestController extends Controller
                 $providerWallet->increment('amount', $providerPayoutAmount);
 
                 // Wallet history (provider)
-                WalletHistory::create([
+                PaymentPostJObHistory::create([
                     'datetime'        => now(),
-                    'user_id'         => $post->provider_id,
-                    'activity_type'   => 'credit',
-                    'activity_message' => $providerActivity,
+                    'receiver_id'     => $post->provider_id,
+                    'sender_id'       => $user->id,
+                    'action'          => 'credit',
+                    'text'            => $providerActivity,
+                    'post_job_request_id' => $post->id,
                     'activity_data'   => json_encode([
                         'amount'  => $providerPayoutAmount,
                         'balance' => $providerWallet->amount,
                     ]),
+                    'status'          => 'completed',
                 ]);
 
                 // Payment entry (provider)
-                Payment::create([
+                PaymentPostJOb::create([
                     'customer_id'             => $post->provider_id,
-                    'booking_id'              => null,
                     'datetime'                => now(),
                     'post_job_request_id'     => $post->id,
                     'discount'                => 0,
