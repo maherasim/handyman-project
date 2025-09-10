@@ -10,9 +10,8 @@
                 <div class="card card-block card-stretch">
                     <div class="card-body p-0">
                         <div class="d-flex justify-content-between align-items-center p-3">
-                            <h5 class="fw-bold">Payment Job Request</h5>
+                            <h5 class="fw-bold">{{ $pageTitle ?? trans('messages.list') }}</h5>
                         </div>
-
                     </div>
                 </div>
             </div>
@@ -30,16 +29,24 @@
                                 <select name="action_type" class="form-control select2" id="quick-action-type"
                                     style="width:100%" disabled>
                                     <option value="">{{ __('messages.no_action') }}</option>
+                                    <option value="change-status">{{ __('messages.status') }}</option>
                                     <option value="delete">{{ __('messages.delete') }}</option>
                                 </select>
+                                <div class="select-status d-none quick-action-field" id="change-status-action"
+                                    style="width:100%">
+                                    <select name="status" class="form-control select2" id="status"
+                                        style="width:auto">
+                                        <option value="1" class="m-2">{{ __('messages.approvecash') }}</option>
+                                    </select>
+                                </div>
 
-
-                                {{-- <button id="quick-action-apply" class="btn btn-primary" data-ajax="true"
+                                <button id="quick-action-apply" class="btn btn-primary" data-ajax="true"
                                     data--submit="{{ route('payment.bulk-action') }}" data-datatable="reload"
-                                    data-confirmation='true' data-title="{{ __('payment', ['form' => __('payment')]) }}"
-                                    title="{{ __('payment', ['form' => __('payment')]) }}"
+                                    data-confirmation='true'
+                                    data-title="{{ __('cash payment list', ['form' => __('cash payment list')]) }}"
+                                    title="{{ __('cash payment list', ['form' => __('cash payment list')]) }}"
                                     data-message='{{ __('Do you want to perform this action?') }}'
-                                    disabled>{{ __('messages.apply') }}</button> --}}
+                                    disabled>{{ __('messages.apply') }}</button>
                             @endif
                     </div>
 
@@ -75,7 +82,6 @@
                         </div>
                     </div>
                 </div>
-
                 <div class="table-responsive">
                     <table id="datatable" class="table table-striped border">
                     </table>
@@ -84,109 +90,128 @@
         </div>
     </div>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', (event) => {
 
-            @if (auth()->user()->hasAnyRole(['provider', 'user', 'admin', 'demo_admin']))
-                // Init DataTable for Admin / Provider / User
-                $('#datatable').DataTable({
-                    processing: true,
-                    serverSide: true,
-                    autoWidth: false,
-                    responsive: true,
-                    dom: '<"row align-items-center"><"table-responsive my-3 mt-3 mb-2 pb-1" rt><"row align-items-center data_table_widgets" <"col-md-6" <"d-flex align-items-center flex-wrap gap-3" l i>><"col-md-6" p>><"clear">',
-                    ajax: {
-                        type: "GET",
-                        url: '{{ route('paymentjobrequest.cash.index_data') }}',
-                        data: function(d) {
-                            d.search = {
-                                value: $('.dt-search').val()
-                            };
-                            d.filter = {
-                                column_status: $('#column_status').val()
-                            };
+            window.renderedDataTable = $('#datatable').DataTable({
+                processing: true,
+                serverSide: true,
+                autoWidth: false,
+                responsive: true,
+                dom: '<"row align-items-center"><"table-responsive my-3 mt-3 mb-2 pb-1" rt><"row align-items-center data_table_widgets" <"col-md-6" <"d-flex align-items-center flex-wrap gap-3" l i>><"col-md-6" p>><"clear">',
+                ajax: {
+                    "type": "GET",
+                    "url": '{{ route('paymentjobrequest.cash.index_data') }}',
+                    "data": function(d) {
+                        d.search = {
+                            value: $('.dt-search').val()
+                        };
+                        d.filter = {
+                            column_status: $('#column_status').val()
                         }
                     },
-                    columns: [
-                        @if (auth()->user()->hasRole('admin'))
-                            {
-                                name: 'check',
-                                data: 'check',
-                                title: '<input type="checkbox" class="form-check-input" name="select_all_table" id="select-all-table" onclick="selectAllTable(this)">',
-                                exportable: false,
-                                orderable: false,
-                                searchable: false,
-                            },
-                        @endif {
-                            data: 'updated_at',
-                            name: 'updated_at',
-                            title: "{{ __('messages.update_at') }}",
-                            orderable: true,
-                            visible: false
-                        },
+                },
+                columns: [
+                    @if (auth()->user()->hasAnyRole(['admin']))
                         {
-                            data: 'post_job_bid_request_id',
-                            name: 'post_job_bid_request_id',
-                            title: "{{ __('messages.id') }}"
+                            name: 'check',
+                            data: 'check',
+                            title: '<input type="checkbox" class="form-check-input" name="select_all_table" id="select-all-table" onclick="selectAllTable(this)">',
+                            exportable: false,
+                            orderable: false,
+                            searchable: false,
                         },
-                       
-                        {
-                            data: 'post_job',
-                            name: 'post_job',
-                            title: "Post Job Request"
-                        },
-                        {
-                            data: 'customer_id',
-                            name: 'customer_id',
-                            title: "{{ __('messages.user') }}"
-                        },
-                       {
-                        data:'history',
-                        name:'history',
-                        title:"View History",
+                    @endif () {
+                        data: 'updated_at',
+                        name: 'updated_at',
+                        title: "{{ __('product.lbl_update_at') }}",
+                        orderable: true,
+                        visible: false,
+                    },
+                    {
+                        data: 'id',
+                        name: 'id',
+                        title: "{{ __('messages.id') }}"
+                    },
+                    {
+                        data: 'booking_id',
+                        name: 'booking_id',
+                        title: "{{ __('messages.service') }}"
+                    },
+                    {
+                        data: 'customer_id',
+                        name: 'customer_id',
+                        title: "{{ __('messages.user') }}",
+                        orderable: false,
+                    },
+                    {
+                        data: 'datetime',
+                        name: 'datetime',
+                        title: "{{ __('messages.datetime') }}"
+                    },
+                    {
+                        data: 'history',
+                        name: 'history',
+                        title: "{{ __('messages.history') }}",
                         orderable: false,
                         searchable: false
-                       },
+                    },
+                    {
+                        data: 'status',
+                        name: 'status',
+                        title: "{{ __('messages.status') }}",
+                        orderable: false,
+                        searchable: false,
+                    },
+
+                    {
+                        data: 'total_amount',
+                        name: 'total_amount',
+                        title: "{{ __('messages.price') }}"
+                    },
+                    @if (auth()->user()->hasAnyRole(['admin']))
                         {
-                            data: 'payment_type',
-                            name: 'payment_type',
-                            title: "{{ __('messages.payment_type') }}"
-                        },
-                        {
-                            data: 'payment_status',
-                            name: 'payment_status',
-                            title: "{{ __('messages.status') }}"
-                        },
-                        {
-                            data: 'datetime',
-                            name: 'datetime',
-                            title: "{{ __('messages.datetime') }}"
-                        },
-                        {
-                            data: 'total_amount',
-                            name: 'total_amount',
-                            title: "{{ __('messages.total_paid_amount') }}"
+                            data: 'action',
+                            name: 'action',
+                            orderable: false,
+                            searchable: false,
+                            title: "{{ __('messages.action') }}"
                         }
-                       
-                    ],
-                    order: [
-                        @if (auth()->user()->hasRole('admin'))
-                            [7, 'desc']
-                        @else
-                            [6, 'desc']
-                        @endif
-                    ],
-                    language: {
-                        processing: "{{ __('messages.processing') }}"
-                    }
-                });
-          @endif    
+                    @endif ()
+
+                ],
+                order: [
+                    @if (auth()->user()->hasAnyRole(['admin']))
+                        [5, 'desc']
+                    @else
+                        [4, 'desc']
+                    @endif
+                ],
+                language: {
+                    processing: "{{ __('messages.processing') }}" // Set your custom processing text
+                }
+
+            });
         });
 
-        // Quick action reset
+        $(document).ready(function() {
+            $('#statusSelect').change(function() {
+                var selectedValue = $(this).val();
+                var selectedOption = $('#statusSelect option:selected');
+                var route = selectedOption.data('route');
+
+                if (selectedValue === 'cash' && route) {
+                    window.location.href = route;
+                }
+                window.location.href = route;
+            });
+        });
+
         function resetQuickAction() {
             const actionValue = $('#quick-action-type').val();
+            console.log(actionValue)
             if (actionValue != '') {
                 $('#quick-action-apply').removeAttr('disabled');
+
                 if (actionValue == 'change-status') {
                     $('.quick-action-field').addClass('d-none');
                     $('#change-status-action').removeClass('d-none');
@@ -200,8 +225,12 @@
         }
 
         $('#quick-action-type').change(function() {
-            resetQuickAction();
+            resetQuickAction()
         });
+
+        $(document).on('update_quick_action', function() {
+
+        })
 
         $(document).on('click', '[data-ajax="true"]', function(e) {
             e.preventDefault();
@@ -224,7 +253,5 @@
             }
         });
     </script>
-
-
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 </x-master-layout>
