@@ -253,6 +253,9 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
     Route::get('paymentjobrequest/cash/history/{id?}', [PaymentController::class, 'postjobcash_index_data'])->name('paymentjobrequest.cash.index_data');
    // Route::get('paymentjobrequest/cash/approve', [PaymentController::class, 'postjobcashApprove'])->name('paymentjobrequest.cash.approve');
     Route::post('/paymentjobrequest/cash/approve', [PaymentController::class, 'postjobcashApprove'])->name('paymentjobrequest.cash.approve');
+    //wallet
+    Route::get('paymentjobrequest/wallet-index-data', [PaymentController::class, 'postjobwalletIndex'])->name('paymentjobrequest.wallet.index');
+    Route::get('paymentjobrequest/wallet-index-data', [PaymentController::class, 'postjobwallet_index_data'])->name('paymentjobrequest.wallet.index_data');
 
 
     Route::get('user-change-password', [CustomerController::class, 'getChangePassword'])->name('user.getchangepassword');

@@ -34,6 +34,17 @@ class WalletController extends Controller
         $walletBalance = Wallet::where('user_id', auth()->id())->value('amount') ?? 0;
         return view('wallet.index', compact('pageTitle','auth_user','assets','filter','walletBalance'));
     }
+    public function postjobindex(Request $request)
+    {
+        $filter = [
+            'status' => $request->status,
+        ];
+        $pageTitle = __('messages.list_form_title',["form" => __('messages.wallet')] );
+        $auth_user = authSession();
+        $assets = ['datatable'];
+        $walletBalance = Wallet::where('user_id', auth()->id())->value('amount') ?? 0;
+        return view('wallet.indexpostjob', compact('pageTitle','auth_user','assets','filter','walletBalance'));
+    }
     public function cashIndex($id)
     {
         $pageTitle = __('messages.list_form_title',['form' => __('messages.cash_history')] );
