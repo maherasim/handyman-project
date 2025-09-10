@@ -53,7 +53,7 @@ class PaymentController extends Controller
         $assets = ['datatable'];
         return view('paymentjobrequest.index', compact('pageTitle', 'assets'));
     }
-    public function postjobcashIndex($id)
+    public function postjobcashIndex()
     {
         $pageTitle = __('messages.list_form_title', ['form' => __('messages.cash_history')]);
         $assets = ['datatable'];
