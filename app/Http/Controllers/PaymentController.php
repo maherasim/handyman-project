@@ -62,7 +62,7 @@ class PaymentController extends Controller
     $payment->status = $request->status;
     
     $data=$payment->save();
-dd($data);
+ 
     // Update CommissionEarning
     CommissionEarning::where('payment_id', $id)
         ->update(['commission_status' => 'paid']);
@@ -71,7 +71,7 @@ dd($data);
     ProviderPayout::where('payment_id', $id)
         ->update(['status' => 'paid']);
 
-    return redirect()->back()->with('success', __('messages.approved_successfully'));
+    return redirect()->back()->with('success', __('Updated_successfully'));
 }
 
     
