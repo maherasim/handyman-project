@@ -33,22 +33,16 @@ class PaymentPostJOb extends Model
         }
 
         if($user->hasRole('provider')) {
-            return $query->whereHas('booking', function($q) use($user) {
+            return $query->whereHas('postJobRequest', function($q) use($user) {
                 $q->where('provider_id', '=', $user->id);
             });
         }
 
         if($user->hasRole('user')) {
-            return $query->where('payments.customer_id', $user->id);
+            return $query->where('payment_post_jobs.customer_id', $user->id);
         }
 
-        if($user->hasRole('handyman')) {
-            return $query->whereHas('booking',function ($q) use($user) {
-                $q->whereHas('handymanAdded',function($handyman) use($user){
-                    $handyman->where('handyman_id',$user->id);
-                });
-            });
-        }
+        
 
         return $query;
     
