@@ -158,16 +158,16 @@
                             data: 'total_amount',
                             name: 'total_amount',
                             title: "{{ __('messages.total_paid_amount') }}"
-                        }
-                        // @if (auth()->user()->hasRole('admin'))
-                        //     {
-                        //         data: 'action',
-                        //         name: 'action',
-                        //         orderable: false,
-                        //         searchable: false,
-                        //         title: "{{ __('messages.action') }}",
-                        //     }
-                        // @endif
+                        },
+                        @if (auth()->user()->hasRole('admin'))
+                            {
+                                data: 'action',
+                                name: 'action',
+                                orderable: false,
+                                searchable: false,
+                                title: "{{ __('messages.action') }}",
+                            }
+                        @endif
                     ],
                     order: [
                         @if (auth()->user()->hasRole('admin'))

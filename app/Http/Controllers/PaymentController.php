@@ -127,9 +127,9 @@ class PaymentController extends Controller
             ->addColumn('post_job', function ($query) {
                 return optional($query->postJobRequest)->title ?: '-';
             })
-            ->addColumn('action', function ($payment) {
-                return view('payment.action', compact('payment'))->render();
-            })
+            // ->addColumn('action', function ($payment) {
+            //     return view('payment.action', compact('payment'))->render();
+            // })
             ->addIndexColumn()
             ->rawColumns(['action', 'check', 'payment_status', 'id'])
             ->toJson();
