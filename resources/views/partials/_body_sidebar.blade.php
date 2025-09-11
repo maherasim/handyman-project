@@ -554,7 +554,7 @@ $menu->add('<span>'.__('Service Wallet Balance').'</span><span class="custom-too
 
         // Post Job Request Transactions heading (single line label)
         $menu
-            ->add('Post Job Request Transactions', [
+            ->add('Transactions Job Request', [
                 'class' => 'category-main',
             ])
             ->data('permission', ['payment list']);
