@@ -127,6 +127,23 @@ class PostJobRequestController extends Controller
         return view('postrequest.show', compact('bid'));
     }
 
+    /**
+     * Display a single bid details page by Bid ID.
+     */
+    public function showBidById($bidId)
+    {
+        $bid = PostJobBid::with([
+            'provider:id,display_name',
+            'customer:id,display_name',
+            'postrequest:id,title,customer_id,status,provider_id,remaining_percent,type,start_date,end_date,total_budget,city_id,country_id,job_price,working_address',
+            'postrequest.city:id,name',
+            'postrequest.country:id,name',
+            'postrequest.postBidList:id,post_request_id',
+        ])->findOrFail($bidId);
+
+        return view('postrequest.show', compact('bid'));
+    }
+
 
     public function bidshowindex()
     {
@@ -1670,10 +1687,10 @@ class PostJobRequestController extends Controller
                 $label = $type === 'hourly' ? 'hourly' : ($type === 'daily' ? 'daily' : ($type === 'fixed' ? 'fixed' : $type));
                 return trim($amount . ' ' . $label);
             })
-            // Action: View Job
+            // Action: View Job (go to the specific bid details)
             ->addColumn('action', function ($bid) {
-                $jobId = $bid->post_request_id;
-                $url = route('post-job-bid.show', ['id' => $jobId]);
+                $bidId = $bid->id;
+                $url = route('post-job-bid.showByBid', ['bidId' => $bidId]);
                 return '<a href="' . $url . '" class="btn btn-sm btn-outline-primary"><i class="far fa-eye"></i> View Job</a>';
             })
             ->addIndexColumn()
