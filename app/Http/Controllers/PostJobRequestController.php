@@ -112,17 +112,29 @@ class PostJobRequestController extends Controller
     }
     public function showbid($postRequestId)
     {
-        $bid = PostJobBid::with([
+        // Prefer the bid whose status matches the PostJobRequest status
+        $post = PostJobRequest::findOrFail($postRequestId);
+        $desiredStatus = (string) ($post->status ?? '');
+
+        $bidQuery = PostJobBid::with([
             'provider:id,display_name',
             'customer:id,display_name',
             'postrequest:id,title,customer_id,status,provider_id,remaining_percent,type,start_date,end_date,total_budget,city_id,country_id,job_price,working_address',
             'postrequest.city:id,name',
             'postrequest.country:id,name',
             'postrequest.postBidList:id,post_request_id',
-        ])
-            ->where('post_request_id', $postRequestId)->where('status', '!=', 'cancelled')
+        ])->where('post_request_id', $postRequestId);
 
-            ->firstOrFail();
+        // Try to get bid matching the post's current status
+        $bid = null;
+        if ($desiredStatus !== '') {
+            $bid = (clone $bidQuery)->where('status', $desiredStatus)->first();
+        }
+
+        // Fallback: any non-cancelled bid
+        if (!$bid) {
+            $bid = (clone $bidQuery)->where('status', '!=', 'cancelled')->firstOrFail();
+        }
 
         return view('postrequest.show', compact('bid'));
     }
