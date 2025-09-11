@@ -177,7 +177,7 @@
                                 return data;
                             }
 
-                            return `<a href="{{ url('post-job-bid/by-bid') }}/${row.id}" class="job-bid-link">${data}</a>`;
+                            return `<a href="{{ url('post-job-bid') }}/${row.id}" class="job-bid-link">${data}</a>`;
                         }
                     },
                     {

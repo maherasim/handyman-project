@@ -207,7 +207,7 @@ class PostJobRequestController extends Controller
     public function bidshow(Request $request)
     {
         $auth_user = authSession();
-
+ 
         $query = PostJobBid::query()->with([
             'provider:id,display_name',
             'customer:id,display_name',
