@@ -1360,7 +1360,10 @@ class PostJobRequestController extends Controller
             ->addColumn('accepted_for_current_provider', function ($row) {
                 if (auth()->user()->user_type === 'provider') {
                     return $row->postBidList()
-                        ->where('provider_id', auth()->id())
+                        ->whereHas('provider', function ($q) {
+                            $q->where('id', auth()->user()->id);
+                        })
+                        ->where('provider_id', auth()->user()->id)
                         ->where('status', '!=', 'requested')
                         ->exists();
                 }
