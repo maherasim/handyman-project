@@ -505,10 +505,10 @@
                     '</span><span class="custom-tooltip"><span class="tooltip-text">' .
                     __('Services Payment') .
                     '</span></span>',
-                ['route' => 'payment.index'],
+                ['route' => 'payment.index', 'class' => 'sidebar-layout'],
             )
             ->prepend(
-                '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                '<svg class="sidebar-menu-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M2 12C2 8.22876 2 6.34315 3.17157 5.17157C4.34315 4 6.22876 4 10 4H14C17.7712 4 19.6569 4 20.8284 5.17157C22 6.34315 22 8.22876 22 12C22 15.7712 22 17.6569 20.8284 18.8284C19.6569 20 17.7712 20 14 20H10C6.22876 20 4.34315 20 3.17157 18.8284C2 17.6569 2 15.7712 2 12Z" stroke="currentColor" stroke-width="1.5"/>
 <path d="M10 16H6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
 <path d="M14 16H12.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
@@ -527,10 +527,10 @@
                     '</span><span class="custom-tooltip"><span class="tooltip-text">' .
                     __('Service Cash Payment') .
                     '</span></span>',
-                ['route' => 'cash.list'],
+                ['route' => 'cash.list', 'class' => 'sidebar-layout'],
             )
             ->prepend(
-                '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                '<svg class="sidebar-menu-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
 <rect x="2" y="5" width="20" height="14" rx="2" stroke="currentColor" stroke-width="1.5"/>
 <circle cx="12" cy="12" r="2.5" stroke="currentColor" stroke-width="1.5"/>
 <path d="M4 9C5.10457 9 6 8.10457 6 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
@@ -540,8 +540,8 @@
             ->nickname('service_cash_payment')
             ->data('permission', 'payment list');
             if(auth()->user()->user_type == 'user' || auth()->user()->user_type == 'provider'){
-$menu->add('<span>'.__('Service Wallet Balance').'</span><span class="custom-tooltip"><span class="tooltip-text">'.__('Service Wallet Balance').'</span></span>', ['route' => 'wallet.index'])
-->prepend(' <svg class="mr-2" width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+$menu->add('<span>'.__('Service Wallet Balance').'</span><span class="custom-tooltip"><span class="tooltip-text">'.__('Service Wallet Balance').'</span></span>', ['route' => 'wallet.index', 'class' => 'sidebar-layout'])
+->prepend(' <svg class="sidebar-menu-icon mr-2" width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M3 7.5C3 6.11929 4.11929 5 5.5 5H16.5C17.8807 5 19 6.11929 19 7.5V9H6C4.34315 9 3 10.3431 3 12V7.5Z" stroke="currentColor" stroke-width="1.5"/>
 <rect x="3" y="9" width="18" height="10" rx="2.5" stroke="currentColor" stroke-width="1.5"/>
 <circle cx="16.5" cy="14" r="1.5" fill="currentColor"/>
@@ -552,9 +552,9 @@ $menu->add('<span>'.__('Service Wallet Balance').'</span><span class="custom-too
 
 }
 
-        // Post Job Request Transactions heading
+        // Post Job Request Transactions heading (single line label)
         $menu
-            ->add(__('messages.sidebar_form_title', ['form' => __('Post Job Request Transactions')]), [
+            ->add('Post Job Request Transactions', [
                 'class' => 'category-main',
             ])
             ->data('permission', ['payment list']);
@@ -567,10 +567,10 @@ $menu->add('<span>'.__('Service Wallet Balance').'</span><span class="custom-too
                     '</span><span class="custom-tooltip"><span class="tooltip-text">' .
                     __('Job Request Payment') .
                     '</span></span>',
-                ['route' => 'paymentjobrequest'],
+                ['route' => 'paymentjobrequest', 'class' => 'sidebar-layout'],
             )
             ->prepend(
-                '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                '<svg class="sidebar-menu-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
 <rect x="3" y="4" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.5"/>
 <path d="M3 9H21" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
 <path d="M8 13H12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
@@ -588,10 +588,10 @@ $menu->add('<span>'.__('Service Wallet Balance').'</span><span class="custom-too
                     '</span><span class="custom-tooltip"><span class="tooltip-text">' .
                     __('Job Request Cash Payment') .
                     '</span></span>',
-                ['route' => 'paymentjobrequest.cash.index'],
+                ['route' => 'paymentjobrequest.cash.index', 'class' => 'sidebar-layout'],
             )
             ->prepend(
-                '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                '<svg class="sidebar-menu-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
 <rect x="2" y="6" width="20" height="12" rx="2" stroke="currentColor" stroke-width="1.5"/>
 <path d="M6 12H10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
 <circle cx="16.5" cy="12" r="2" stroke="currentColor" stroke-width="1.5"/>
@@ -602,8 +602,8 @@ $menu->add('<span>'.__('Service Wallet Balance').'</span><span class="custom-too
 
 
 if(auth()->user()->user_type == 'user' || auth()->user()->user_type == 'provider'){
-$menu->add('<span>'.__('Job Request Wallet Balance').'</span><span class="custom-tooltip"><span class="tooltip-text">'.__('Job Request Wallet Balance').'</span></span>', ['route' => 'paymentjobrequest.wallet.index'])
-->prepend(' <svg class="mr-2" width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+$menu->add('<span>'.__('Job Request Wallet Balance').'</span><span class="custom-tooltip"><span class="tooltip-text">'.__('Job Request Wallet Balance').'</span></span>', ['route' => 'paymentjobrequest.wallet.index', 'class' => 'sidebar-layout'])
+->prepend(' <svg class="sidebar-menu-icon mr-2" width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M4 8.5C4 7.11929 5.11929 6 6.5 6H17.5C18.8807 6 20 7.11929 20 8.5V10H7C5.34315 10 4 11.3431 4 13V8.5Z" stroke="currentColor" stroke-width="1.5"/>
 <rect x="4" y="10" width="16" height="9" rx="2.5" stroke="currentColor" stroke-width="1.5"/>
 <path d="M15 14.5C15 13.6716 15.6716 13 16.5 13C17.3284 13 18 13.6716 18 14.5C18 15.3284 17.3284 16 16.5 16C15.6716 16 15 15.3284 15 14.5Z" fill="currentColor"/>
