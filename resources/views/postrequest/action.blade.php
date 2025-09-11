@@ -17,11 +17,13 @@ $auth_user = authSession();
         </a>
     @endif
 
-    {{-- View button (always visible) --}}
+    {{-- View button: visible only when status is requested --}}
+    @if(($post_job->status ?? null) === 'requested')
     <a class="" href="{{ route('post-job-request.show', $post_job->id) }}" 
        title="{{ __('messages.view_form_title',['form'=> __('messages.postjob') ]) }}">
         <i class="far fa-eye text-secondary me-2"></i>
     </a>
+    @endif
 
     {{-- Provider-specific actions --}}
     @if(auth()->user()->hasAnyRole(['provider']))
