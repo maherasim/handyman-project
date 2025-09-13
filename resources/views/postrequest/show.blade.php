@@ -283,7 +283,7 @@
 
                             if ($bid->price_type == 'hourly') {
                                 $quantity = $bid->postrequest->total_hours ?? ($bid->hourly_rate ?? 1);
-                             
+                             @dd($bid->postrequest);
                             } elseif ($bid->price_type == 'daily') {
                                 $quantity = $bid->postrequest->total_days ?? ($bid->daily_rate ?? 1);
                             } elseif ($bid->postrequest->price_type == 'fixed') {
@@ -293,7 +293,7 @@
                             }
 
                             $quantity = (int) $quantity;
-                            @dd($quantity);
+                         //   @dd($quantity);
                             $totalAmount = $unitPrice * $quantity;
                             $advAmount = ($totalAmount * $advPct) / 100;
                             $subTotal = $totalAmount + $extraChargesTotal;
