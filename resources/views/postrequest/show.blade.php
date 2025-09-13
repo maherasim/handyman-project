@@ -352,13 +352,14 @@
                                     <td>Tax ({{ number_format($taxRate, 0) }}%) {{ $taxTitle }}</td>
                                     <td class="text-end">€{{ number_format($taxAmount, 2) }}</td>
                                 </tr>
-                                <tr>
-                                    <td>Advance Payment ({{ $advPct }}%)</td>
-                                    <td class="text-end">€{{ number_format($advAmount, 2) }}</td>
-                                </tr>
+                               
                                 <tr class="fw-bold">
                                     <td>Grand Total</td>
                                     <td class="text-end">€{{ number_format($grandTotal, 2) }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Advance Payment ({{ $advPct }}%)</td>
+                                    <td class="text-end">€{{ number_format($advAmount, 2) }}</td>
                                 </tr>
                                 <tr class="fw-bold">
                                     <td>Remaining Amount</td>
