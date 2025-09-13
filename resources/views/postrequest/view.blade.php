@@ -216,13 +216,15 @@
         document.addEventListener('DOMContentLoaded', function(){
             $(document).on('click', '.viewWhyBtn', function(){
                 const raw = $(this).data('why');
-                const html = raw ? decodeURIComponent(String(raw)) : '';
-                $('#whyChooseMeContent').html(html || '<em>No content provided.</em>');
+                const text = raw ? decodeURIComponent(String(raw)) : '';
+                // Use .text() to strip HTML tags and display as plain text
+                $('#whyChooseMeContent').text(text || 'No content provided.');
                 $('#whyChooseMeModal').modal('show');
             });
+    
             // Clear modal on hide
             $('#whyChooseMeModal').on('hidden.bs.modal', function(){
-                $('#whyChooseMeContent').html('');
+                $('#whyChooseMeContent').text('');
             });
         });
     </script>
