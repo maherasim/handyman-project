@@ -283,6 +283,7 @@
 
                             if ($bid->price_type == 'hourly') {
                                 $quantity = $bid->total_hours ?? ($bid->hourly_rate ?? 1);
+                                dd($quantity);
                             } elseif ($bid->price_type == 'daily') {
                                 $quantity = $bid->total_days ?? ($bid->daily_rate ?? 1);
                             } elseif ($bid->price_type == 'fixed') {
