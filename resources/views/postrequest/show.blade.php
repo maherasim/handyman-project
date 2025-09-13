@@ -291,7 +291,7 @@
                                 $quantity = (float) ($bid->quantity ?? 1);
                             }
 
-dd($quantity);
+ 
                            // $quantity = (int) $quantity;
                        //@dd($quantity);
                             $totalAmount = $unitPrice * $quantity;
@@ -321,7 +321,7 @@ dd($quantity);
                               {{-- //  @dd($bid->postrequest); --}}
                                 <tr>
                                     <td>Quantity (Packages / Hours / Days)</td>
-                                    <td class="text-end">{{ $quantity }}</td>
+                                    <td class="text-end">{{ $bid->postrequest->total_hours }}</td>
                                 </tr>
                                 <tr>
                                     <td>Total Amount</td>
