@@ -282,13 +282,13 @@
                             $extraChargesTotal = $extraChargeUnit * $extraChargeQty;
 
                             if ($bid->price_type == 'hourly') {
-                                $quantity = $bid->postrequest->total_hours ?? $bid->quantity ?? 1;
+                                $quantity = $bid->postrequest->total_hours ?? $bid->postrequest->quantity ?? 1;
                             } elseif ($bid->price_type == 'daily') {
-                                $quantity = $bid->postrequest->total_days ?? $bid->quantity ?? 1;
+                                $quantity = $bid->postrequest->total_days ?? $bid->postrequest->quantity ?? 1;
                             } elseif ($bid->price_type == 'fixed') {
                                 $quantity = 1;
                             } else {
-                                $quantity = $bid->quantity ?? 1;
+                                $quantity = $bid->postrequest->quantity ?? 1;
                             }
 
                             // Allow decimals (don’t cast to int)
