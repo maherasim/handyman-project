@@ -312,6 +312,8 @@
                             $netAmount = $totalAmount - $taxAmount;
                             $remaining = $grandTotal - $advAmount;
                         @endphp
+                        @dd($bid->price_type, $bid->postrequest->total_hours, $quantity);
+
                          <table class="table table-sm table-hover price-table">
                             <tbody>
                                 <tr>
@@ -321,7 +323,7 @@
                               {{-- //  @dd($bid->postrequest); --}}
                                 <tr>
                                     <td>Quantity (Packages / Hours / Days)</td>
-                                    <td class="text-end">{{ $bid->postrequest->total_hours }}</td>
+                                    <td class="text-end">{{ $quantity }}</td>
                                 </tr>
                                 <tr>
                                     <td>Total Amount</td>
