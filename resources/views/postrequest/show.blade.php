@@ -318,6 +318,7 @@
                                     <td>Rate (Unit Price)</td>
                                     <td class="text-end">€{{ number_format($unitPrice, 2) }}</td>
                                 </tr>
+                                @dd($quantity);
                                 <tr>
                                     <td>Quantity (Packages / Hours / Days)</td>
                                     <td class="text-end">{{ $quantity }}</td>
