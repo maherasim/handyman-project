@@ -119,7 +119,7 @@ class PostJobRequestController extends Controller
         $bidQuery = PostJobBid::with([
             'provider:id,display_name',
             'customer:id,display_name',
-            'postrequest:id,title,customer_id,status,provider_id,remaining_percent,type,start_date,end_date,total_budget,city_id,country_id,job_price,working_address',
+            'postrequest:id,title,customer_id,status,provider_id,remaining_percent,type,start_date,end_date,total_budget,city_id,country_id,job_price,working_address','total_hours','total_days',
             'postrequest.city:id,name',
             'postrequest.country:id,name',
             'postrequest.postBidList:id,post_request_id',
