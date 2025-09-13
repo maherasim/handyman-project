@@ -1397,8 +1397,8 @@ class PostJobRequestController extends Controller
                     ->join('users as customers', 'customers.id', '=', 'post_job_requests.customer_id')
                     ->orderBy('customers.display_name', $order);
             })
-            ->editColumn('total_budget', function ($query) {
-                $amount = getPriceFormat($query->total_budget);
+            ->editColumn('price', function ($query) {
+                $amount = getPriceFormat($query->price);
                 $type = strtolower((string)($query->price_type ?? $query->job_price ?? 'fixed'));
                 $label = $type === 'hourly' ? 'hourly' : ($type === 'daily' ? 'daily' : ($type === 'fixed' ? 'fixed' : $type));
                 return trim($amount . ' ' . $label);
