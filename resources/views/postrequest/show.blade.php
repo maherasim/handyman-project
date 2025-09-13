@@ -292,7 +292,7 @@
                             }
 
 
-                            $quantity = (int) $quantity;
+                           // $quantity = (int) $quantity;
                        //@dd($quantity);
                             $totalAmount = $unitPrice * $quantity;
                             $advAmount = ($totalAmount * $advPct) / 100;
