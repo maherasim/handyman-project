@@ -283,7 +283,7 @@
 
                             if ($bid->price_type == 'hourly') {
                                 $quantity = $bid->postrequest->total_hours ?? ($bid->hourly_rate ?? 1);
-                             @dd($bid->postrequest);
+                            //  @dd($bid->postrequest);
                             } elseif ($bid->price_type == 'daily') {
                                 $quantity = $bid->postrequest->total_days ?? ($bid->daily_rate ?? 1);
                             } elseif ($bid->postrequest->price_type == 'fixed') {
@@ -319,7 +319,7 @@
                                     <td>Rate (Unit Price)</td>
                                     <td class="text-end">€{{ number_format($unitPrice, 2) }}</td>
                                 </tr>
-                                @dd($bid->postrequest);
+                              {{-- //  @dd($bid->postrequest); --}}
                                 <tr>
                                     <td>Quantity (Packages / Hours / Days)</td>
                                     <td class="text-end">{{ $quantity }}</td>
