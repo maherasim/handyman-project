@@ -343,13 +343,14 @@
                                     <td>Subtotal</td>
                                     <td class="text-end">€{{ number_format($subTotal, 2) }}</td>
                                 </tr>
-                                <tr>
-                                    <td>Tax ({{ number_format($taxRate, 0) }}%) {{ $taxTitle }}</td>
-                                    <td class="text-end">€{{ number_format($taxAmount, 2) }}</td>
-                                </tr>
+                               
                                 <tr class="fw-bold">
                                     <td>Net Amount (Subtotal - Tax)</td>
                                     <td class="text-end">€{{ number_format($netAmount, 2) }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Tax ({{ number_format($taxRate, 0) }}%) {{ $taxTitle }}</td>
+                                    <td class="text-end">€{{ number_format($taxAmount, 2) }}</td>
                                 </tr>
                                 <tr>
                                     <td>Advance Payment ({{ $advPct }}%)</td>
