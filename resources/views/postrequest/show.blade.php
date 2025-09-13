@@ -312,7 +312,7 @@
                             $netAmount = $totalAmount - $taxAmount;
                             $remaining = $grandTotal - $advAmount;
                         @endphp
- @dd($$bid->postrequest->total_hours);
+ @dd($bid->postrequest->total_hours);
                         <table class="table table-sm table-hover price-table">
                             <tbody>
                                 <tr>
