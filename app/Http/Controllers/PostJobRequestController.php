@@ -259,8 +259,8 @@ class PostJobRequestController extends Controller
             ->addColumn('end_date', function ($bid) {
                 return $bid->postrequest->end_date ?? null;
             })
-            ->addColumn('total_budget', function ($bid) {
-                return $bid->postrequest->total_budget ?? null;
+            ->addColumn('price', function ($bid) {
+                return $bid->postrequest->price ?? null;
             })
             ->addColumn('applications', function ($bid) {
                 $post = $bid->postrequest;

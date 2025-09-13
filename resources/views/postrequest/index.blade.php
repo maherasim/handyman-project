@@ -223,8 +223,8 @@
                         }
                     },
                     {
-                        data: 'total_budget',
-                        name: 'total_budget',
+                        data: 'price',
+                        name: 'price',
                         title: "{{ __('Max Budget') }}"
                     },
                     {
