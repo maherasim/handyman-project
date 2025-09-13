@@ -6,7 +6,7 @@ $auth_user = authSession();
 <div class="d-flex justify-content-end align-items-center">
 
     {{-- Delete button (only for admin or user roles) --}}
-    @if(auth()->user()->hasAnyRole(['admin','user']))
+    @if(auth()->user()->hasAnyRole(['admin']))
         <a class="me-2" href="javascript:void(0)" 
            data--submit="post-job-request{{ $post_job->id }}" 
            data--confirmation="true" 
