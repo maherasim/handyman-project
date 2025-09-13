@@ -211,14 +211,21 @@
             </div>
         </div>
     </div>
-
     <script>
         document.addEventListener('DOMContentLoaded', function(){
             $(document).on('click', '.viewWhyBtn', function(){
-                const raw = $(this).data('why');
-                const text = raw ? decodeURIComponent(String(raw)) : '';
-                // Use .text() to strip HTML tags and display as plain text
-                $('#whyChooseMeContent').text(text || 'No content provided.');
+                const raw = $(this).data('why') || '';
+                const decoded = decodeURIComponent(String(raw));
+    
+                // Decode HTML entities like &lt;p&gt; into <p>
+                const textarea = document.createElement("textarea");
+                textarea.innerHTML = decoded;
+                const unescaped = textarea.value;
+    
+                // Strip all tags, leaving only text
+                const cleanText = $('<div>').html(unescaped).text();
+    
+                $('#whyChooseMeContent').text(cleanText || 'No content provided.');
                 $('#whyChooseMeModal').modal('show');
             });
     
@@ -228,6 +235,7 @@
             });
         });
     </script>
+    
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         // Isolate Pay Advance binding without jQuery dependency
