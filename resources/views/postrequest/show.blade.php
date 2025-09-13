@@ -275,51 +275,52 @@
                     </div>
                     <div class="card-body">
                         @php
-                            // Base values
-                            $unitPrice = (float) ($bid->price ?? 0);
-                            $advPct = (float) ($bid->advance_percent ?? 0);
-                            $extraChargeUnit = (float) ($bid->extra_charges ?? 0);
-                            $extraChargeQty = (int) ($bid->quantity ?? 1);
-            
-                            // Determine quantity based on price type
-                            if ($bid->postrequest->price_type == 'hourly') {
-                                $quantity = (float) ($bid->postrequest->total_hours ?? 1);
-                            } elseif ($bid->postrequest->price_type == 'daily') {
-                                $quantity = (float) ($bid->postrequest->total_days ?? 1);
-                            } elseif ($bid->postrequest->price_type == 'fixed') {
-                                $quantity = 1;
-                            } else {
-                                $quantity = (float) ($bid->quantity ?? 1);
-                            }
-            
-                            // Calculations
-                            $totalAmount = $unitPrice * $quantity;
-                            $extraChargesTotal = $extraChargeUnit * $extraChargeQty;
-                            $subTotal = $totalAmount + $extraChargesTotal;
-            
-                            $advAmount = ($totalAmount * $advPct) / 100;
-            
-                            // Tax
-                            $countryId = $bid->postrequest->country_id ?? null;
-                            $taxRate = 0;
-                            $taxTitle = '';
-                            if ($countryId) {
-                                $taxModel = \App\Models\Tax::find($countryId);
-                                $taxRate = $taxModel->value ?? 0;
-                                $taxTitle = $taxModel->title ?? '';
-                            }
-            
-                            $taxAmount = ($subTotal * $taxRate) / 100;
-            
-                            // Net amount = subtotal - tax
-                            $netAmount = $subTotal - $taxAmount;
-            
-                            // Grand total = subtotal + tax
-                            $grandTotal = $subTotal + $taxAmount;
-            
-                            // Remaining = grand total - advance
-                            $remaining = $grandTotal - $advAmount;
-                        @endphp
+                        // Base values
+                        $unitPrice = (float) ($bid->price ?? 0);
+                        $advPct = (float) ($bid->advance_percent ?? 0);
+                        $extraChargeUnit = (float) ($bid->extra_charges ?? 0);
+                        $extraChargeQty = (int) ($bid->quantity ?? 1);
+                    
+                        // Determine quantity based on price type
+                        if ($bid->postrequest->price_type == 'hourly') {
+                            $quantity = (float) ($bid->postrequest->total_hours ?? 1);
+                        } elseif ($bid->postrequest->price_type == 'daily') {
+                            $quantity = (float) ($bid->postrequest->total_days ?? 1);
+                        } elseif ($bid->postrequest->price_type == 'fixed') {
+                            $quantity = 1;
+                        } else {
+                            $quantity = (float) ($bid->quantity ?? 1);
+                        }
+                    
+                        // Calculations
+                        $totalAmount = $unitPrice * $quantity;
+                        $extraChargesTotal = $extraChargeUnit * $extraChargeQty;
+                        $subTotal = $totalAmount + $extraChargesTotal;
+                    
+                        // Tax
+                        $countryId = $bid->postrequest->country_id ?? null;
+                        $taxRate = 0;
+                        $taxTitle = '';
+                        if ($countryId) {
+                            $taxModel = \App\Models\Tax::find($countryId);
+                            $taxRate = $taxModel->value ?? 0;
+                            $taxTitle = $taxModel->title ?? '';
+                        }
+                        $taxAmount = ($subTotal * $taxRate) / 100;
+                    
+                        // Net Amount = Subtotal - Tax
+                        $netAmount = $subTotal - $taxAmount;
+                    
+                        // Grand Total = Subtotal + Tax
+                        $grandTotal = $subTotal + $taxAmount;
+                    
+                        // Advance Payment calculated on Grand Total
+                        $advAmount = ($grandTotal * $advPct) / 100;
+                    
+                        // Remaining Amount = Grand Total - Advance Payment
+                        $remaining = $grandTotal - $advAmount;
+                    @endphp
+                    
             
                         <table class="table table-sm table-hover price-table">
                             <tbody>
