@@ -291,7 +291,7 @@
                                 $quantity = (float) ($bid->quantity ?? 1);
                             }
 
-
+dd($quantity);
                            // $quantity = (int) $quantity;
                        //@dd($quantity);
                             $totalAmount = $unitPrice * $quantity;
