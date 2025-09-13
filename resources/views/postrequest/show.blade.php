@@ -293,6 +293,7 @@
                             }
 
                             $quantity = (int) $quantity;
+                            @dd($quantity);
                             $totalAmount = $unitPrice * $quantity;
                             $advAmount = ($totalAmount * $advPct) / 100;
                             $subTotal = $totalAmount + $extraChargesTotal;
