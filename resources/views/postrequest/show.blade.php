@@ -282,15 +282,15 @@
                             $extraChargesTotal = $extraChargeUnit * $extraChargeQty;
 
                             if ($bid->price_type == 'hourly') {
-                                $quantity = $bid->postrequest->total_hours ?? ($bid->hourly_rate ?? 1);
-                          
+                                $quantity = (float) ($bid->postrequest->total_hours ?? 1);
                             } elseif ($bid->price_type == 'daily') {
-                                $quantity = $bid->postrequest->total_days ?? ($bid->daily_rate ?? 1);
-                            } elseif ($bid->postrequest->price_type == 'fixed') {
+                                $quantity = (float) ($bid->postrequest->total_days ?? 1);
+                            } elseif ($bid->price_type == 'fixed') {
                                 $quantity = 1;
                             } else {
-                                $quantity = $bid->quantity ?? 1;
+                                $quantity = (float) ($bid->quantity ?? 1);
                             }
+
 
                             $quantity = (int) $quantity;
                        //@dd($quantity);
@@ -312,8 +312,7 @@
                             $netAmount = $totalAmount - $taxAmount;
                             $remaining = $grandTotal - $advAmount;
                         @endphp
- @dd($bid->postrequest->total_hours);
-                        <table class="table table-sm table-hover price-table">
+                         <table class="table table-sm table-hover price-table">
                             <tbody>
                                 <tr>
                                     <td>Rate (Unit Price)</td>
