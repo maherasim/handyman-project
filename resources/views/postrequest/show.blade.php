@@ -275,12 +275,13 @@
                     </div>
                     <div class="card-body">
                         @php
+                            // Base values
                             $unitPrice = (float) ($bid->price ?? 0);
                             $advPct = (float) ($bid->advance_percent ?? 0);
                             $extraChargeUnit = (float) ($bid->extra_charges ?? 0);
                             $extraChargeQty = (int) ($bid->quantity ?? 1);
-                            $extraChargesTotal = $extraChargeUnit * $extraChargeQty;
-
+            
+                            // Determine quantity based on price type
                             if ($bid->postrequest->price_type == 'hourly') {
                                 $quantity = (float) ($bid->postrequest->total_hours ?? 1);
                             } elseif ($bid->postrequest->price_type == 'daily') {
@@ -290,14 +291,15 @@
                             } else {
                                 $quantity = (float) ($bid->quantity ?? 1);
                             }
-
- 
-                           // $quantity = (int) $quantity;
-                       //@dd($quantity);
+            
+                            // Calculations
                             $totalAmount = $unitPrice * $quantity;
-                            $advAmount = ($totalAmount * $advPct) / 100;
+                            $extraChargesTotal = $extraChargeUnit * $extraChargeQty;
                             $subTotal = $totalAmount + $extraChargesTotal;
-
+            
+                            $advAmount = ($totalAmount * $advPct) / 100;
+            
+                            // Tax
                             $countryId = $bid->postrequest->country_id ?? null;
                             $taxRate = 0;
                             $taxTitle = '';
@@ -306,21 +308,25 @@
                                 $taxRate = $taxModel->value ?? 0;
                                 $taxTitle = $taxModel->title ?? '';
                             }
-
+            
                             $taxAmount = ($subTotal * $taxRate) / 100;
+            
+                            // Net amount = subtotal - tax
+                            $netAmount = $subTotal - $taxAmount;
+            
+                            // Grand total = subtotal + tax
                             $grandTotal = $subTotal + $taxAmount;
-                            $netAmount = $totalAmount - $taxAmount;
+            
+                            // Remaining = grand total - advance
                             $remaining = $grandTotal - $advAmount;
                         @endphp
-                     {{-- ///  @dd($bid); --}}
-
-                         <table class="table table-sm table-hover price-table">
+            
+                        <table class="table table-sm table-hover price-table">
                             <tbody>
                                 <tr>
                                     <td>Rate (Unit Price)</td>
                                     <td class="text-end">€{{ number_format($unitPrice, 2) }}</td>
                                 </tr>
-                              {{-- //  @dd($bid->postrequest); --}}
                                 <tr>
                                     <td>Quantity (Packages / Hours / Days)</td>
                                     <td class="text-end">{{ $quantity }}</td>
@@ -329,13 +335,8 @@
                                     <td>Total Amount</td>
                                     <td class="text-end">€{{ number_format($totalAmount, 2) }}</td>
                                 </tr>
-                                <tr class="fw-bold">
-                                    <td>Net Amount (Total - Tax)</td>
-                                    <td class="text-end">€{{ number_format($netAmount, 2) }}</td>
-                                </tr>
                                 <tr>
-                                    <td>Extra Charges ({{ $extraChargeQty }} ×
-                                        {{ number_format($extraChargeUnit, 2) }})</td>
+                                    <td>Extra Charges ({{ $extraChargeQty }} × {{ number_format($extraChargeUnit, 2) }})</td>
                                     <td class="text-end">€{{ number_format($extraChargesTotal, 2) }}</td>
                                 </tr>
                                 <tr class="fw-bold">
@@ -347,12 +348,16 @@
                                     <td class="text-end">€{{ number_format($taxAmount, 2) }}</td>
                                 </tr>
                                 <tr class="fw-bold">
-                                    <td>Grand Total</td>
-                                    <td class="text-end">€{{ number_format($grandTotal, 2) }}</td>
+                                    <td>Net Amount (Subtotal - Tax)</td>
+                                    <td class="text-end">€{{ number_format($netAmount, 2) }}</td>
                                 </tr>
                                 <tr>
                                     <td>Advance Payment ({{ $advPct }}%)</td>
                                     <td class="text-end">€{{ number_format($advAmount, 2) }}</td>
+                                </tr>
+                                <tr class="fw-bold">
+                                    <td>Grand Total</td>
+                                    <td class="text-end">€{{ number_format($grandTotal, 2) }}</td>
                                 </tr>
                                 <tr class="fw-bold">
                                     <td>Remaining Amount</td>
@@ -360,11 +365,10 @@
                                 </tr>
                             </tbody>
                         </table>
-
                     </div>
                 </div>
             </div>
-
+            
 
         </div>
     </div>
