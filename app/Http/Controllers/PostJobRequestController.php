@@ -119,7 +119,7 @@ class PostJobRequestController extends Controller
         $bidQuery = PostJobBid::with([
             'provider:id,display_name',
             'customer:id,display_name',
-             'postrequest',
+            'postrequest',
             'postrequest.city:id,name',
             'postrequest.country:id,name',
             'postrequest.postBidList:id,post_request_id',
@@ -136,7 +136,7 @@ class PostJobRequestController extends Controller
         if (!$bid) {
             $bid = (clone $bidQuery)->where('status', '!=', 'cancelled')->firstOrFail();
         }
-
+dd($bid->postrequest);
         return view('postrequest.show', compact('bid'));
     }
 
