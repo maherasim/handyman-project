@@ -282,18 +282,20 @@
                             $extraChargesTotal = $extraChargeUnit * $extraChargeQty;
 
                             if ($bid->price_type == 'hourly') {
-                                $quantity = $bid->postrequest->total_hours ?? ($bid->hourly_rate ?? 1);
-                             
+                                $quantity = $bid->postrequest->total_hours ?? $bid->quantity ?? 1;
                             } elseif ($bid->price_type == 'daily') {
-                                $quantity = $bid->postrequest->total_days ?? ($bid->daily_rate ?? 1);
-                            } elseif ($bid->postrequest->price_type == 'fixed') {
+                                $quantity = $bid->postrequest->total_days ?? $bid->quantity ?? 1;
+                            } elseif ($bid->price_type == 'fixed') {
                                 $quantity = 1;
                             } else {
                                 $quantity = $bid->quantity ?? 1;
                             }
 
-                            $quantity = (int) $quantity;
+                            // Allow decimals (don’t cast to int)
+                            $quantity = (float) $quantity;
+
                             $totalAmount = $unitPrice * $quantity;
+
                             $advAmount = ($totalAmount * $advPct) / 100;
                             $subTotal = $totalAmount + $extraChargesTotal;
 
@@ -318,7 +320,7 @@
                                     <td>Rate (Unit Price)</td>
                                     <td class="text-end">€{{ number_format($unitPrice, 2) }}</td>
                                 </tr>
-                                @dd($quantity);
+                               
                                 <tr>
                                     <td>Quantity (Packages / Hours / Days)</td>
                                     <td class="text-end">{{ $quantity }}</td>
