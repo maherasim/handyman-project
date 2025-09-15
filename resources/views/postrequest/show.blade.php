@@ -291,7 +291,7 @@
                             } else {
                                 $quantity = (float) ($bid->quantity ?? 1);
                             }
-@dd($bid->postrequest->price_type);
+@dd($bid->postrequest);
                             // Calculations
                             $totalAmount = $unitPrice * $quantity;
                             $extraChargesTotal = $extraChargeUnit * $extraChargeQty;
