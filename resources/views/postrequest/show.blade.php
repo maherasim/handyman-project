@@ -33,7 +33,7 @@
             $remainingAmount = $grandTotal - $advAmount;
         @endphp --}}
         @php
-        // Base values
+         $auth_user = auth()->user();
         $unitPrice = (float) ($bid->price ?? 0);
         $advPct = (float) ($bid->advance_percent ?? 0);
         $extraChargeUnit = (float) ($bid->extra_charges ?? 0);
