@@ -47,7 +47,7 @@
 
             // Remaining Amount = Grand Total - Advance Payment
             $remaining = $subTotal - $advAmount;
-            @dd(  $remaining);
+         //   @dd(  $remaining);
         @endphp
 
         {{-- Provider Actions --}}
