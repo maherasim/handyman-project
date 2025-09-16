@@ -339,8 +339,8 @@
                                     <td class="text-end">€{{ number_format($advAmount, 2) }}</td>
                                 </tr>
                                 <tr class="fw-bold">
-                                    <td>Remaining Amount</td>
-                                    @dd($remaining);
+                                    <td>Remaining Amount as</td>
+                                   
                                     <td class="text-end">€{{ number_format($remaining, 2) }}</td>
                                 </tr>
                             </tbody>
