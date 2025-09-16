@@ -334,7 +334,7 @@ class PostJobRequestController extends Controller
     }
     public function payAdvance(Request $request, $id)
     {
-        dd($request->all());
+      //  dd($request->all());
         $user = auth()->user();
         $post = PostJobBid::findOrFail($id);
 
