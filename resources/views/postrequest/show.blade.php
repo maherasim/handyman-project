@@ -21,7 +21,7 @@
             $quantity = (float) ($bid->quantity ?? 1);
         }
         
-        // Base total amount
+        // Base total amount (original contract total)
         $totalAmount = $unitPrice * $quantity;
         
         // Extra charges total
@@ -44,8 +44,8 @@
         // Grand total = subtotal + tax
         $grandTotal = $subTotal + $taxAmount;
         
-        // Advance payment = grand total × advance %
-        $advAmount = ($grandTotal * $advPct) / 100;
+        // **Advance payment fixed on original total amount**
+        $advAmount = ($totalAmount * $advPct) / 100;
         
         // Remaining amount = grand total - advance payment
         $remaining = $grandTotal - $advAmount;
@@ -328,7 +328,7 @@
                                     <td class="text-end">€{{ number_format($grandTotal, 2) }}</td>
                                 </tr>
                                 <tr>
-                                    <td>Advance Payment ({{ $advPct }}%)</td>
+                                    <td>Advance Payment ({{ $advPct }}% of Original Total)</td>
                                     <td class="text-end">€{{ number_format($advAmount, 2) }}</td>
                                 </tr>
                                 <tr class="fw-bold">
