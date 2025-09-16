@@ -456,7 +456,7 @@ class PostJobRequestController extends Controller
                     'text'            => $providerActivity,
                     'post_job_request_id' => $post->id,
                     'activity_data'   => json_encode([
-                        'amount'  => $providerPayoutAmount,
+                        'amount'  => $payAmount,
                         'balance' => $providerWallet->amount,
                     ]),
                     'status'          => 'completed',
@@ -610,7 +610,7 @@ class PostJobRequestController extends Controller
     public function createPostJobStripePayment(Request $request, $id)
     {
 
-        //dd('riaz');
+      dd($request->all());
         $bid = PostJobBid::findOrFail($id);
         $user = auth()->user();
         if ((int)$user->id !== (int)$bid->customer_id) {
