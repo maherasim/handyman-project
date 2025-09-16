@@ -177,7 +177,7 @@
                         <div class="card border-warning shadow-sm h-100 hover-shadow">
                             <div class="card-body text-center">
                                 <i class="fas fa-dollar-sign fa-2x text-warning mb-2"></i>
-                                <h6 class="fw-bold mb-1">Price Type</h6>
+                                <h6 class="fw-bold mb-1">Rate Type</h6>
                                 <p class="mb-0">{{ $bid->postrequest->job_price ?? '-' }}</p>
                             </div>
                         </div>
@@ -237,7 +237,7 @@
                         <div class="card border-dark shadow-sm h-100 hover-shadow">
                             <div class="card-body text-center">
                                 <i class="fas fa-users fa-2x text-dark mb-2"></i>
-                                <h6 class="fw-bold mb-1">Applications</h6>
+                                <h6 class="fw-bold mb-1">Purposal</h6>
                                 <p class="mb-0">{{ $bid->postrequest->postBidList->count() ?? 0 }}</p>
                             </div>
                         </div>

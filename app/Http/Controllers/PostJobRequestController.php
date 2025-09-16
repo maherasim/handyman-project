@@ -703,18 +703,6 @@ class PostJobRequestController extends Controller
                 : 10;
 
             $adminCommissionAmount = ($payAmount * $adminCommissionPercent) / 100.0;
-            $providerEarningAmount = max(0, $payAmount - $adminCommissionAmount);
-
-            $adminUser  = User::where('user_type', 'admin')->first();
-            $providerId = $bid->provider_id;
-
-            // 🔹 Create finalized payment entry
-            $finalPayment = PaymentPostJOb::create([
-                'customer_id'             => auth()->id(),
-                'post_job_bid_request_id' => $bid->id,
-                'datetime'                => now(),
-                'discount'                => 0,
-                'total_amount'            => number_format($payAmount, 2, '.', ''),
                 'payment_type'            => 'stripe',
                 'payment_status'          => 'completed',
                 'status'                  => $type, // advance or remaining
@@ -835,28 +823,35 @@ class PostJobRequestController extends Controller
     }
     public function createPostJobPayPalPayment(Request $request, $id)
     {
-        $bid = PostJobBid::findOrFail($id);
-        $user = auth()->user();
+        try {
+            $bid = PostJobBid::findOrFail($id);
+            
+            // Check if user is authenticated
+            if (!auth()->check()) {
+                return response()->json(['status' => false, 'error' => 'User not authenticated'], 401);
+            }
+            
+            $user = auth()->user();
+            
+            // Check user authorization
+            if ((int)$user->id !== (int)$bid->customer_id) {
+                return response()->json(['status' => false, 'error' => 'Unauthorized access to this bid'], 403);
+            }
     
-        // Check user authorization
-        if ((int)$user->id !== (int)$bid->customer_id) {
-            return response()->json(['status' => false, 'error' => 'Unauthorized'], 403);
-        }
+            // Get payment type and amount directly from frontend
+            $type = strtolower((string)$request->input('type', 'advance')); // 'advance' or 'remaining'
+            $payAmount = (float)$request->input('amount'); // exact value from frontend
     
-        // Get payment type and amount directly from frontend
-        $type = strtolower((string)$request->input('type', 'advance')); // 'advance' or 'remaining'
-        $payAmount = (float)$request->input('amount'); // exact value from frontend
+            if ($payAmount <= 0) {
+                return response()->json(['status' => false, 'error' => 'Invalid amount'], 422);
+            }
     
-        if ($payAmount <= 0) {
-            return response()->json(['status' => false, 'error' => 'Invalid amount'], 422);
-        }
+            // Get PayPal credentials from settings (same as Stripe)
+            $paymentGatewayValue = getPaymentMethodkey('paypal');
     
-        // Get PayPal credentials from settings (same as Stripe)
-        $paymentGatewayValue = getPaymentMethodkey('paypal');
-    
-        $clientId = $paymentGatewayValue['paypal_client_id'] ?? null;
-        $clientSecret = $paymentGatewayValue['paypal_secret_key'] ?? null;
-        $mode = $paymentGatewayValue['mode'] ?? 'sandbox'; // optional if stored in DB
+            $clientId = $paymentGatewayValue['paypal_client_id'] ?? null;
+            $clientSecret = $paymentGatewayValue['paypal_secret_key'] ?? null;
+            $mode = $paymentGatewayValue['mode'] ?? 'sandbox'; // optional if stored in DB
     
         if (!$clientId || !$clientSecret) {
             return response()->json(['status' => false, 'error' => 'PayPal not configured'], 500);
