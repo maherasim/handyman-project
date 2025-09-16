@@ -47,7 +47,7 @@
 
             // Remaining Amount = Grand Total - Advance Payment
             $remaining = $subTotal - $advAmount;
-            //   @dd($remaining);
+         //   @dd(  $remaining);
         @endphp
 
         {{-- Provider Actions --}}
@@ -110,11 +110,12 @@
                     data-amount="{{ $advAmount }}">
                     <i class="fas fa-wallet"></i> Pay Advance {{ number_format($advAmount, 2) }}
                     ({{ $advPct }}%)
-                </button>
+                           </button>
             @elseif($bid->status === 'completed' && !$bid->has_advance_paid)
                 <button class="btn btn-primary payRemainingBtn" data-post-id="{{ $bid->id }}"
-                    data-amount="{{ number_format($remaining, 2, '.', '') }}">
-                    Pay Remaining
+                    data-amount="{{ $remaining }}">
+                  
+                    <i class="fas fa-credit-card"></i> Pay Remaining {{ number_format($remaining, 2) }}
                 </button>
             @elseif($bid->status === 'hold')
                 <div class="alert alert-warning d-flex align-items-start shadow-sm border rounded p-3 mt-2">
@@ -341,7 +342,7 @@
                                 </tr>
                                 <tr class="fw-bold">
                                     <td>Remaining Amount</td>
-
+                                   
                                     <td class="text-end">€{{ number_format($remaining, 2) }}</td>
                                 </tr>
                             </tbody>
@@ -446,8 +447,7 @@
                     const postId = this.dataset.postId;
                     const amount = this.dataset.amount;
                     const amountNum = parseFloat(amount);
-                    //const formattedAmount = isFinite(amountNum) ? amountNum.toFixed(2) : amount;
-                    const formattedAmount = amountNum.toFixed(2);
+                    const formattedAmount = isFinite(amountNum) ? amountNum.toFixed(2) : amount;
                     const isRemaining = btn.classList.contains('payRemainingBtn');
 
                     Swal.fire({
