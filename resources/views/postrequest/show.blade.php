@@ -205,15 +205,16 @@
                         $excludedStatuses = ['cancelled', 'split_payment', 'accepted', 'requested'];
                     @endphp
                     @if (!in_array($bid->status, $excludedStatuses))
-                        <div class="col-md-4">
-                            <div class="card border-secondary shadow-sm h-100 hover-shadow">
-                                <div class="card-body text-center">
-                                    <i class="fas fa-map-marker-alt fa-2x text-secondary mb-2"></i>
-                                    <h6 class="fw-bold mb-1">Working Address</h6>
-                                    <p class="mb-0">{{ $bid->postrequest->working_address ?? '-' }}</p>
-                                </div>
+                    <div class="col-md-4">
+                        <div class="card border-secondary shadow-sm h-100 hover-shadow">
+                            <div class="card-body text-center">
+                                <i class="fas fa-map-marker-alt fa-2x text-secondary mb-2"></i>
+                                <h6 class="fw-bold mb-1">Working Address</h6>
+                                <p class="mb-0">{{ strip_tags($bid->postrequest->working_address ?? '-') }}</p>
                             </div>
                         </div>
+                    </div>
+                    
                     @endif
 
                     <div class="col-md-4">
