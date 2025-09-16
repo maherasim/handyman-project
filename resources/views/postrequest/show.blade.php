@@ -126,7 +126,7 @@
                     </div>
                 </div>
             @endif
-@dd($remaining);
+
         @endif
 
 
