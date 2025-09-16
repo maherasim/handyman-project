@@ -96,7 +96,7 @@
                     { data: 'id', name: 'id' },
                     { data: 'title', name: 'title' },
                     { data: 'created_at', name: 'created_at' },
-                    { data: 'total_budget', name: 'total_budget' },
+                    { data: 'price', name: 'price' },
                     { data: 'start_date', name: 'start_date' },
                     { data: 'end_date', name: 'end_date' },
                     { data: 'provider', name: 'provider' },

@@ -1669,12 +1669,12 @@ class PostJobRequestController extends Controller
                 return $bid->created_at ? $bid->created_at->format('Y-m-d') : '-';
             })
             // Max. Budget (from post request total_budget) with price_type suffix
-            ->addColumn('total_budget', function ($bid) {
+            ->addColumn('price', function ($bid) {
                 $post = $bid->postrequest;
                 if (!$post) {
                     return '-';
                 }
-                $budget = $post->total_budget;
+                $budget = $post->price;
                 $amount = $budget !== null ? getPriceFormat($budget) : '-';
                 $type = strtolower((string)($post->price_type ?? $post->job_price ?? 'fixed'));
                 $label = $type === 'hourly' ? 'hourly' : ($type === 'daily' ? 'daily' : ($type === 'fixed' ? 'fixed' : $type));

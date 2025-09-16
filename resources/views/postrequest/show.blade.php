@@ -1,37 +1,7 @@
 <x-master-layout>
     <div class="d-flex justify-content-center flex-wrap gap-2">
 
-        {{-- @php
-            $auth_user = auth()->user();
-            // Unified price breakdown used across table and buttons
-            $total = (float) ($bid->price ?? 0);
-            $advPct = (float) ($bid->advance_percent ?? 0);
-            $extraChargeUnit = (float) ($bid->extra_charges ?? 0);
-            $extraChargeQty = (int) ($bid->quantity ?? 1);
-            $extraChargesTotal = $extraChargeUnit * $extraChargeQty;
-            // Advance is calculated on original total (as per current logic)
-            $advAmount = ($total * $advPct) / 100;
-            // Subtotal includes extra charges
-            $subTotal = $total + $extraChargesTotal;
-            // Remaining = subtotal - advance
-            $remainingAmount = $subTotal - $advAmount;
-            // Country-based tax
-            $countryId = $bid->postrequest->country_id ?? null;
-            $taxRate = 0;
-            $taxTitle = '';
-            if ($countryId) {
-                $taxModel = \App\Models\Tax::find($countryId);
-                $taxRate = $taxModel->value ?? 0;
-                $taxTitle = $taxModel->title ?? '';
-            }
-
-            // Tax is applied on subtotal (price + extra charges), aligned with booking
-            $taxAmount = ($subTotal * $taxRate) / 100;
-            $grandTotal = $subTotal + $taxAmount;
-
-            // Recompute remaining to include tax
-            $remainingAmount = $grandTotal - $advAmount;
-        @endphp --}}
+         
         @php
          $auth_user = auth()->user();
         $unitPrice = (float) ($bid->price ?? 0);
@@ -143,7 +113,7 @@
             @elseif($bid->status === 'completed' && !$bid->has_advance_paid)
                 <button class="btn btn-primary payRemainingBtn" data-post-id="{{ $bid->id }}"
                     data-amount="{{ $remaining }}">
-                    <i class="fas fa-credit-card"></i> Pay Remaining {{ number_format($remaining, 2) }}
+                    <i class="fas fa-credit-card"></i> Pay Remaining {{ number_format($remainingAmount, 2) }}
                 </button>
             @elseif($bid->status === 'hold')
                 <div class="alert alert-warning d-flex align-items-start shadow-sm border rounded p-3 mt-2">
