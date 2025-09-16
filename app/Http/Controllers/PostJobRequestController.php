@@ -649,6 +649,7 @@ class PostJobRequestController extends Controller
 
 
         $baseURL = env('APP_URL');
+        dd($baseURL);
         try {
             $payment_geteway_value = getPaymentMethodkey('stripe');
             $stripe_secret = $payment_geteway_value['stripe_key'] ?? null;
