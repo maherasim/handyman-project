@@ -834,32 +834,41 @@ class PostJobRequestController extends Controller
         ]);
     }
 
-    public function createPostJobPayPalPayment(Request $request, $id) 
+    public function createPostJobPayPalPayment(Request $request, $id)
     {
+       // dd($request->all());
         $bid = PostJobBid::findOrFail($id);
         $user = auth()->user();
-    
         if ((int)$user->id !== (int)$bid->customer_id) {
             return response()->json(['status' => false, 'error' => 'Unauthorized'], 403);
         }
     
-        // Get type and amount from frontend
-        $type = strtolower((string)$request->input('type', 'advance')); // 'advance' or 'remaining'
-        $payAmount = (float)$request->input('amount'); // take exact value from frontend
+        $type = strtolower((string)$request->input('type', 'advance'));
+    
+        // Compute amount
+        $total = (float)($bid->price ?? 0);
+        $extraChargeUnit = (float)($bid->extra_charges ?? 0);
+        $extraChargeQty = (int)($bid->quantity ?? 1);
+        $extraChargesTotal = $extraChargeUnit * $extraChargeQty;
+        $advPct = (float)($bid->advance_percent ?? 0);
+    
+        $computedAdvanceAmount   = ($total * $advPct / 100);
+        $subTotal                = $total + $extraChargesTotal;
+        $computedRemainingAmount = $subTotal - $computedAdvanceAmount;
+    
+        $payAmount = $type === 'remaining' ? $computedRemainingAmount : $computedAdvanceAmount;
     
         if ($payAmount <= 0) {
             return response()->json(['status' => false, 'error' => 'Invalid amount'], 422);
         }
     
-        // PayPal client setup
+        // Build PayPal client
         $clientId = env('PAYPAL_CLIENT_ID');
         $clientSecret = env('PAYPAL_CLIENT_SECRET');
         $mode = env('PAYPAL_MODE', 'sandbox');
-    
         $environment = $mode === 'live'
             ? new ProductionEnvironment($clientId, $clientSecret)
             : new SandboxEnvironment($clientId, $clientSecret);
-    
         $client = new PayPalHttpClient($environment);
     
         $baseURL = env('APP_URL');
@@ -870,7 +879,7 @@ class PostJobRequestController extends Controller
             'intent' => 'CAPTURE',
             'purchase_units' => [[
                 'amount' => [
-                    'currency_code' => 'USD', // adjust if you want dynamic currency
+                    'currency_code' => 'USD',
                     'value' => number_format($payAmount, 2, '.', '')
                 ],
                 'description' => 'Payment for Post Job Bid #' . $bid->id . ' (' . $type . ')'
@@ -893,7 +902,6 @@ class PostJobRequestController extends Controller
             return response()->json(['status' => false, 'error' => 'PayPal Create Payment Error: ' . $e->getMessage()], 500);
         }
     }
-    
     
     public function postJobPayPalSuccess(Request $request, $id)
     {
