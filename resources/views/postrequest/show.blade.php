@@ -113,7 +113,7 @@
                            </button>
             @elseif($bid->status === 'completed' && !$bid->has_advance_paid)
                 <button class="btn btn-primary payRemainingBtn" data-post-id="{{ $bid->id }}"
-                    data-amount="{{ $remaining }}">
+                    data-amount="{{ number_format($remaining, 2, '.', '') }}">
                   
                     <i class="fas fa-credit-card"></i> Pay Remaining {{ number_format($remaining, 2) }}
                 </button>
