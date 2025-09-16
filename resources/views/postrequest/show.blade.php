@@ -48,7 +48,7 @@
             // Remaining Amount = Grand Total - Advance Payment
             $remaining = $grandTotal - $advAmount;
         @endphp
-@dd( $remaining);
+
         {{-- Provider Actions --}}
         @if ($auth_user->user_type === 'provider' && $auth_user->id == $bid->provider_id)
 
@@ -109,7 +109,8 @@
                     data-amount="{{ $advAmount }}">
                     <i class="fas fa-wallet"></i> Pay Advance {{ number_format($advAmount, 2) }}
                     ({{ $advPct }}%)
-                </button>
+                    @dd( $remaining);
+                         </button>
             @elseif($bid->status === 'completed' && !$bid->has_advance_paid)
                 <button class="btn btn-primary payRemainingBtn" data-post-id="{{ $bid->id }}"
                     data-amount="{{ $remaining }}">
