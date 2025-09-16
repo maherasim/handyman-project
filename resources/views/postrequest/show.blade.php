@@ -43,7 +43,7 @@
             $grandTotal = $subTotal + $taxAmount;
 
             // Advance Payment calculated on Grand Total
-            $advAmount = ($subTotal * $advPct) / 100;
+            $advAmount = ($totalAmount * $advPct) / 100;
 
             // Remaining Amount = Grand Total - Advance Payment
             $remaining = $subTotal - $advAmount;
