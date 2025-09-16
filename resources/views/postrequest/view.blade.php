@@ -212,28 +212,27 @@
         </div>
     </div>
     <script>
-        document.addEventListener('DOMContentLoaded', function(){
-            $(document).on('click', '.viewWhyBtn', function(){
-                const raw = $(this).data('why') || '';
-                const decoded = decodeURIComponent(String(raw));
-    
-                // Decode HTML entities like &lt;p&gt; into <p>
-                const textarea = document.createElement("textarea");
-                textarea.innerHTML = decoded;
-                const unescaped = textarea.value;
-    
-                // Strip all tags, leaving only text
-                const cleanText = $('<div>').html(unescaped).text();
-    
-                $('#whyChooseMeContent').text(cleanText || 'No content provided.');
-                $('#whyChooseMeModal').modal('show');
-            });
-    
-            // Clear modal on hide
-            $('#whyChooseMeModal').on('hidden.bs.modal', function(){
-                $('#whyChooseMeContent').text('');
-            });
-        });
+       document.addEventListener('DOMContentLoaded', function(){
+    $(document).on('click', '.viewWhyBtn', function(){
+        const raw = $(this).data('why') || '';
+        const decoded = decodeURIComponent(String(raw));
+
+        // Decode HTML entities like &lt;p&gt; into <p>
+        const textarea = document.createElement("textarea");
+        textarea.innerHTML = decoded;
+        const unescaped = textarea.value;
+
+        // Insert HTML directly (keeps <p>, <br>, <strong>, etc.)
+        $('#whyChooseMeContent').html(unescaped || '<p>No content provided.</p>');
+        $('#whyChooseMeModal').modal('show');
+    });
+
+    // Clear modal on hide
+    $('#whyChooseMeModal').on('hidden.bs.modal', function(){
+        $('#whyChooseMeContent').html('');
+    });
+});
+
     </script>
     
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
