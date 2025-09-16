@@ -609,59 +609,46 @@ class PostJobRequestController extends Controller
 
     public function createPostJobStripePayment(Request $request, $id)
     {
-
-      dd($request->all());
         $bid = PostJobBid::findOrFail($id);
         $user = auth()->user();
+    
         if ((int)$user->id !== (int)$bid->customer_id) {
             return response()->json(['status' => false, 'message' => 'Unauthorized'], 403);
         }
-
-        $type = strtolower((string)$request->input('type', 'advance'));
-        $requestedAmount = (float)$request->input('amount');
-
-        $total = (float)($bid->price ?? 0);
-        $extraChargeUnit = (float)($bid->extra_charges ?? 0);
-        $extraChargeQty = (int)($bid->quantity ?? 1);
-        $extraChargesTotal = $extraChargeUnit * $extraChargeQty;
-        $advPct = (float)($bid->advance_percent ?? 0);
-
-        $computedAdvanceAmount = ($total * $advPct / 100);
-        $subTotal = $total + $extraChargesTotal;
-        $computedRemainingAmount = $subTotal - $computedAdvanceAmount;
-
-        if ($type === 'remaining') {
-            $payAmount = $computedRemainingAmount;
-            $metaType = 'remaining';
-        } else {
-            $payAmount = empty(trim((string)$requestedAmount)) ? $computedAdvanceAmount : (float)$requestedAmount;
-            $metaType = 'advance';
-        }
+    
+        // Get type and amount from request (frontend sends it)
+        $type = strtolower((string)$request->input('type', 'advance')); // 'advance' or 'remaining'
+        $payAmount = (float)$request->input('amount'); // take exact value from frontend
+    
         if ($payAmount <= 0) {
             return response()->json(['status' => false, 'message' => 'Invalid amount'], 422);
         }
-
+    
+        $metaType = $type;
+    
+        // Get Stripe settings
+        $payment_geteway_value = getPaymentMethodkey('stripe');
+        $stripe_secret = $payment_geteway_value['stripe_key'] ?? null;
+    
+        if (!$stripe_secret) {
+            return response()->json(['status' => false, 'message' => 'Stripe not configured'], 500);
+        }
+    
+        $stripe = new \Stripe\StripeClient($stripe_secret);
+    
         $sitesetup = Setting::where('type', 'site-setup')->where('key', 'site-setup')->first();
         $sitesetupdata = $sitesetup ? json_decode($sitesetup->value, true) : null;
         $country_id = $sitesetupdata['default_currency'] ?? null;
         $country = Country::find($country_id);
         $currencyCode = $country ? $country->currency_code : 'EURO';
-
-
+    
         $baseURL = env('APP_URL');
-        //dd($baseURL);
+    
         try {
-            $payment_geteway_value = getPaymentMethodkey('stripe');
-            $stripe_secret = $payment_geteway_value['stripe_key'] ?? null;
-            if (!$stripe_secret) {
-                return response()->json(['status' => false, 'message' => 'Stripe not configured'], 500);
-            }
-            $stripe = new \Stripe\StripeClient($stripe_secret);
             $session = $stripe->checkout->sessions->create([
                 'success_url' => $baseURL . '/postjob/save-stripe-payment/' . $bid->id .
-                    '?type=' . $metaType .
-                    '&session_id={CHECKOUT_SESSION_ID}', // <-- add this
-                'cancel_url'  => $baseURL . '/postjob/bid/' . $bid->id,
+                    '?type=' . $metaType . '&session_id={CHECKOUT_SESSION_ID}',
+                'cancel_url' => $baseURL . '/postjob/bid/' . $bid->id,
                 'payment_method_types' => ['card'],
                 'billing_address_collection' => 'required',
                 'line_items' => [[
@@ -676,15 +663,13 @@ class PostJobRequestController extends Controller
                 ]],
                 'mode' => 'payment',
             ]);
-
-
-
-
+    
             return response()->json(['status' => true, 'id' => $session->id, 'url' => $session->url]);
         } catch (\Exception $e) {
             return response()->json(['status' => false, 'message' => $e->getMessage()], 500);
         }
     }
+    
 
     public function savePostJobStripePayment(Request $request, $id)
     {
