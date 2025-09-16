@@ -221,7 +221,7 @@
                         <div class="card border-secondary shadow-sm h-100 hover-shadow">
                             <div class="card-body text-center">
                                 <i class="fas fa-wallet fa-2x text-secondary mb-2"></i>
-                                <h6 class="fw-bold mb-1">Total Budget</h6>
+                                <h6 class="fw-bold mb-1">Total Budget gv</h6>
                                 <p class="mb-0">
                                     {{ isset($bid->postrequest->total_budget) 
                                         ? number_format($bid->postrequest->total_budget, 2, '.', '') . ' €' 
