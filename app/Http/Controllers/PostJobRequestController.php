@@ -334,27 +334,28 @@ class PostJobRequestController extends Controller
     }
     public function payAdvance(Request $request, $id)
     {
-        dd($request->all());
         $user = auth()->user();
         $post = PostJobBid::findOrFail($id);
-
-        // Determine payment type and amount
+    
+        // Get payment type and amount from frontend
         $paymentType = strtolower((string)$request->input('type', 'advance'));
         $requestedAmount = (float)$request->input('amount');
-
-        // Compute unified amounts (includes extra charges)
-        $total = (float)($post->price ?? 0);
-        $extraChargeUnit = (float)($post->extra_charges ?? 0);
-        $extraChargeQty = (int)($post->quantity ?? 1);
-        $extraChargesTotal = $extraChargeUnit * $extraChargeQty;
-        $advPct = (float)($post->advance_percent ?? 0);
-        $computedAdvanceAmount = ($total * $advPct / 100);
-        $subTotal = $total + $extraChargesTotal;
-        $computedRemainingAmount = $subTotal - $computedAdvanceAmount;
-
-        // Select amount based on type
+    
+        // Validate payment type
+        if (!in_array($paymentType, ['advance', 'remaining'])) {
+            return response()->json(['status' => false, 'message' => 'Invalid payment type'], 422);
+        }
+    
+        // Validate amount
+        if ($requestedAmount <= 0) {
+            return response()->json(['status' => false, 'message' => 'Invalid amount'], 422);
+        }
+    
+        // Use frontend amount directly
+        $payAmount = $requestedAmount;
+    
+        // Prepare variables based on payment type
         if ($paymentType === 'remaining') {
-            $payAmount = $computedRemainingAmount;
             $txnPrefix = 'REM-';
             $customerActivity = "Remaining payment for Bid #{$post->id}";
             $providerActivity = "Remaining received for Bid #{$post->id}";
@@ -363,8 +364,7 @@ class PostJobRequestController extends Controller
             $newPostStatus = 'remaining_paid';
             $successMsg = "Remaining payment of €" . number_format($payAmount, 2) . " successful";
         } else {
-            // default to advance
-            $payAmount = empty(trim((string)$requestedAmount)) ? $computedAdvanceAmount : (float)$requestedAmount;
+            // Default to advance
             $txnPrefix = 'ADV-';
             $customerActivity = "Advance payment for Bid #{$post->id}";
             $providerActivity = "Advance received for Bid #{$post->id}";
@@ -373,102 +373,94 @@ class PostJobRequestController extends Controller
             $newPostStatus = 'advance_paid';
             $successMsg = "Advance payment of €" . number_format($payAmount, 2) . " successful";
         }
-
-        if ($payAmount <= 0) {
-            return response()->json(['status' => false, 'message' => 'Invalid amount'], 422);
-        }
-
+    
         // Check wallet balance
         $wallet = Wallet::where('user_id', $user->id)->first();
         if (!$wallet || $wallet->amount < $payAmount) {
             return response()->json(['status' => false, 'message' => 'Insufficient wallet balance'], 400);
         }
-
+    
         DB::beginTransaction();
         try {
             // Create one transaction ID for both debit & credit
             $txnId = uniqid($txnPrefix);
-
+    
             /*
-        |--------------------------------------------------------------------------
-        | Debit from Customer Wallet
-        |--------------------------------------------------------------------------
-        */
+            |--------------------------------------------------------------------------
+            | Debit from Customer Wallet
+            |--------------------------------------------------------------------------
+            */
             $wallet->decrement('amount', $payAmount);
-
+    
             // Wallet history (customer)
             WalletHistory::create([
-                'datetime'        => now(),
-                'user_id'         => $user->id,
-                'activity_type'   => 'debit',
+                'datetime'         => now(),
+                'user_id'          => $user->id,
+                'activity_type'    => 'debit',
                 'activity_message' => $customerActivity,
-                'activity_data'   => json_encode([
+                'activity_data'    => json_encode([
                     'amount'  => $payAmount,
                     'balance' => $wallet->amount,
                 ]),
             ]);
-
+    
             // Payment entry (customer)
-          $payment=  PaymentPostJOb::create([
-                'customer_id'             => $user->id,               
-                'datetime'                => now(),
-                'post_job_bid_request_id'     => $post->id,
-                'discount'                => 0,
-                'total_amount'            => $payAmount,
-                'payment_type'            => 'wallet',
-                'txn_id'                  => $txnId,
-                'payment_status'          => 'completed',
-                'other_transaction_detail' => json_encode([
+            $payment = PaymentPostJOb::create([
+                'customer_id'               => $user->id,
+                'datetime'                  => now(),
+                'post_job_bid_request_id'   => $post->id,
+                'discount'                  => 0,
+                'total_amount'              => $payAmount,
+                'payment_type'              => 'wallet',
+                'txn_id'                    => $txnId,
+                'payment_status'            => 'completed',
+                'other_transaction_detail'  => json_encode([
                     'type'     => $paymentMetaType,
                     'bid_id'   => $post->id,
                     'provider' => $post->provider_id,
                 ]),
             ]);
-
+    
             // Update post status
             $post->status = $newPostStatus;
             $post->save();
-
+    
             /*
-        |--------------------------------------------------------------------------
-        | Commission + Provider Payout
-        |--------------------------------------------------------------------------
-        */
+            |--------------------------------------------------------------------------
+            | Commission + Provider Payout
+            |--------------------------------------------------------------------------
+            */
             $adminCommissionSetting = Setting::getValueByKey('admin_commission_percentage', 'site-setup');
             $adminCommissionPercent = is_object($adminCommissionSetting) && isset($adminCommissionSetting->value)
                 ? (float) $adminCommissionSetting->value
                 : 10;
-
+    
             $adminCommissionAmount = ($payAmount * $adminCommissionPercent) / 100.0;
             $providerPayoutAmount  = max(0, $payAmount - $adminCommissionAmount);
-
+    
             if ($providerPayoutAmount > 0) {
                 $providerWallet = Wallet::firstOrCreate(['user_id' => $post->provider_id]);
                 $providerWallet->increment('amount', $providerPayoutAmount);
-
+    
                 // Wallet history (provider)
                 PaymentPostJObHistory::create([
-                    'datetime'        => now(),
-                    'payment_id'      => $payment->id,
-                    'receiver_id'     => $post->provider_id,
-                    'sender_id'       => $user->id,
-                    'action'          => 'credit',
-                    'text'            => $providerActivity,
+                    'datetime'          => now(),
+                    'payment_id'        => $payment->id,
+                    'receiver_id'       => $post->provider_id,
+                    'sender_id'         => $user->id,
+                    'action'            => 'credit',
+                    'text'              => $providerActivity,
                     'post_job_request_id' => $post->id,
-                    'activity_data'   => json_encode([
+                    'activity_data'     => json_encode([
                         'amount'  => $payAmount,
                         'balance' => $providerWallet->amount,
                     ]),
-                    'status'          => 'completed',
+                    'status'            => 'completed',
                 ]);
-
-                // Payment entry (provider)
-                
-
+    
                 // Save provider payout record
                 ProviderPayout::create([
                     'provider_id'    => $post->provider_id,
-                    
                     'amount'         => $providerPayoutAmount,
                     'payment_method' => 'wallet',
                     'paid_date'      => now(),
@@ -476,12 +468,12 @@ class PostJobRequestController extends Controller
                     'description'    => ucfirst($paymentMetaType) . " payout for Bid #{$post->id}",
                 ]);
             }
-
+    
             /*
-        |--------------------------------------------------------------------------
-        | Commission Records
-        |--------------------------------------------------------------------------
-        */
+            |--------------------------------------------------------------------------
+            | Commission Records
+            |--------------------------------------------------------------------------
+            */
             if ($adminCommissionAmount > 0) {
                 CommissionEarning::create([
                     'user_type'         => 'admin',
@@ -490,7 +482,7 @@ class PostJobRequestController extends Controller
                     'commission_status' => 'paid',
                 ]);
             }
-
+    
             if ($providerPayoutAmount > 0) {
                 CommissionEarning::create([
                     'user_type'         => 'provider',
@@ -499,11 +491,11 @@ class PostJobRequestController extends Controller
                     'commission_status' => 'paid',
                 ]);
             }
-
+    
             DB::commit();
-
+    
             return response()->json([
-                'status' => true,
+                'status'  => true,
                 'message' => $successMsg,
                 'balance' => $wallet->amount,
             ]);
@@ -516,7 +508,7 @@ class PostJobRequestController extends Controller
             ], 500);
         }
     }
-
+    
 
     /**
      * Unified status update API for PostJobBid.
