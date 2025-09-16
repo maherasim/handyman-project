@@ -838,51 +838,55 @@ class PostJobRequestController extends Controller
         $bid = PostJobBid::findOrFail($id);
         $user = auth()->user();
     
+        // Check user authorization
         if ((int)$user->id !== (int)$bid->customer_id) {
             return response()->json(['status' => false, 'error' => 'Unauthorized'], 403);
         }
     
-        // Get type and amount from frontend
+        // Get payment type and amount directly from frontend
         $type = strtolower((string)$request->input('type', 'advance')); // 'advance' or 'remaining'
-        $payAmount = (float)$request->input('amount'); // take exact value from frontend
+        $payAmount = (float)$request->input('amount'); // exact value from frontend
     
         if ($payAmount <= 0) {
             return response()->json(['status' => false, 'error' => 'Invalid amount'], 422);
         }
     
-        $metaType = $type;
-    
-        // Get PayPal settings dynamically (same as Stripe approach)
+        // Get PayPal credentials from settings (same as Stripe)
         $paymentGatewayValue = getPaymentMethodkey('paypal');
-        $clientId = $paymentGatewayValue['client_id'] ?? null;
-        $clientSecret = $paymentGatewayValue['secret'] ?? null;
-        $mode = $paymentGatewayValue['mode'] ?? 'sandbox';
+    
+        $clientId = $paymentGatewayValue['paypal_client_id'] ?? null;
+        $clientSecret = $paymentGatewayValue['paypal_secret_key'] ?? null;
+        $mode = $paymentGatewayValue['mode'] ?? 'sandbox'; // optional if stored in DB
     
         if (!$clientId || !$clientSecret) {
             return response()->json(['status' => false, 'error' => 'PayPal not configured'], 500);
         }
     
+        // Setup PayPal environment
         $environment = $mode === 'live'
-            ? new \PayPalCheckoutSdk\Core\ProductionEnvironment($clientId, $clientSecret)
-            : new \PayPalCheckoutSdk\Core\SandboxEnvironment($clientId, $clientSecret);
+            ? new ProductionEnvironment($clientId, $clientSecret)
+            : new SandboxEnvironment($clientId, $clientSecret);
     
-        $client = new \PayPalHttpClient($environment);
+        $client = new PayPalHttpClient($environment);
+    
+        // Base URL
         $baseURL = env('APP_URL');
     
-        $order = new \PayPalCheckoutSdk\Orders\OrdersCreateRequest();
+        // Create PayPal order
+        $order = new OrdersCreateRequest();
         $order->prefer('return=representation');
         $order->body = [
             'intent' => 'CAPTURE',
             'purchase_units' => [[
                 'amount' => [
-                    'currency_code' => 'USD',
+                    'currency_code' => 'USD', // you can change to site currency if needed
                     'value' => number_format($payAmount, 2, '.', '')
                 ],
-                'description' => 'Payment for Post Job Bid #' . $bid->id . ' (' . $metaType . ')'
+                'description' => 'Payment for Post Job Bid #' . $bid->id . ' (' . $type . ')'
             ]],
             'application_context' => [
-                'cancel_url' => route('paypal.cancel'),
-                'return_url' => $baseURL . '/postjob/paypal-success/' . $bid->id . '?type=' . $metaType,
+                'cancel_url' => $baseURL . '/postjob/bid/' . $bid->id,
+                'return_url' => $baseURL . '/postjob/paypal-success/' . $bid->id . '?type=' . $type,
                 'brand_name' => env('APP_NAME'),
                 'landing_page' => 'LOGIN',
                 'user_action' => 'PAY_NOW',
@@ -894,15 +898,14 @@ class PostJobRequestController extends Controller
             $approvalLink = collect($response->result->links)->firstWhere('rel', 'approve')->href ?? null;
     
             if (!$approvalLink) {
-                return response()->json(['status' => false, 'error' => 'Unable to get PayPal approval URL'], 500);
+                return response()->json(['status' => false, 'error' => 'Unable to get PayPal approval link'], 500);
             }
     
-            return response()->json(['url' => $approvalLink]);
+            return response()->json(['status' => true, 'url' => $approvalLink]);
         } catch (\Exception $e) {
             return response()->json(['status' => false, 'error' => 'PayPal Create Payment Error: ' . $e->getMessage()], 500);
         }
     }
-    
     
     
     public function postJobPayPalSuccess(Request $request, $id)
