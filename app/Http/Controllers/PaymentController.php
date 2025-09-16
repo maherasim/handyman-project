@@ -71,7 +71,8 @@ class PaymentController extends Controller
     ProviderPayout::where('payment_id', $id)
         ->update(['status' => 'paid']);
 
-    return redirect()->back()->with('success', __('Updated_successfully'));
+        return response()->json(['status' => true, 'message' => __('Updated_successfully')]);
+
 }
 
     
