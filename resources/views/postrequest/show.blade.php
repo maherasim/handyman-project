@@ -46,7 +46,7 @@
             $advAmount = ($totalAmount * $advPct) / 100;
 
             // Remaining Amount = Grand Total - Advance Payment
-            $remaining = $grandTotal - $advAmount;
+            $remaining = $subTotal - $advAmount;
             @dd(  $remaining);
         @endphp
 
