@@ -833,7 +833,6 @@ class PostJobRequestController extends Controller
             'message' => 'Advance terms saved successfully. Awaiting customer payment.'
         ]);
     }
-
     public function createPostJobPayPalPayment(Request $request, $id)
     {
         $bid = PostJobBid::findOrFail($id);
@@ -843,22 +842,21 @@ class PostJobRequestController extends Controller
             return response()->json(['status' => false, 'error' => 'Unauthorized'], 403);
         }
     
-        $type = strtolower((string)$request->input('type', 'advance'));
-        $requestedAmount = (float)$request->input('amount');
+        // Get type and amount from frontend
+        $type = strtolower((string)$request->input('type', 'advance')); // 'advance' or 'remaining'
+        $payAmount = (float)$request->input('amount'); // take exact value from frontend
     
-        // Use requested amount directly (do not recalc)
-        $payAmount = $requestedAmount;
         if ($payAmount <= 0) {
             return response()->json(['status' => false, 'error' => 'Invalid amount'], 422);
         }
     
-        // 🔹 Get PayPal credentials from settings
-        $paypalSettings = Setting::where('type', 'payment')->where('key', 'paypal')->first();
-        $paypalData = $paypalSettings ? json_decode($paypalSettings->value, true) : [];
+        $metaType = $type;
     
-        $clientId = $paypalData['client_id'] ?? null;
-        $clientSecret = $paypalData['secret'] ?? null;
-        $mode = $paypalData['mode'] ?? 'sandbox'; // sandbox or live
+        // Get PayPal settings dynamically (same as Stripe approach)
+        $paymentGatewayValue = getPaymentMethodkey('paypal');
+        $clientId = $paymentGatewayValue['client_id'] ?? null;
+        $clientSecret = $paymentGatewayValue['secret'] ?? null;
+        $mode = $paymentGatewayValue['mode'] ?? 'sandbox';
     
         if (!$clientId || !$clientSecret) {
             return response()->json(['status' => false, 'error' => 'PayPal not configured'], 500);
@@ -869,7 +867,6 @@ class PostJobRequestController extends Controller
             : new \PayPalCheckoutSdk\Core\SandboxEnvironment($clientId, $clientSecret);
     
         $client = new \PayPalHttpClient($environment);
-    
         $baseURL = env('APP_URL');
     
         $order = new \PayPalCheckoutSdk\Orders\OrdersCreateRequest();
@@ -881,11 +878,11 @@ class PostJobRequestController extends Controller
                     'currency_code' => 'USD',
                     'value' => number_format($payAmount, 2, '.', '')
                 ],
-                'description' => 'Payment for Post Job Bid #' . $bid->id . ' (' . $type . ')'
+                'description' => 'Payment for Post Job Bid #' . $bid->id . ' (' . $metaType . ')'
             ]],
             'application_context' => [
                 'cancel_url' => route('paypal.cancel'),
-                'return_url' => $baseURL . '/postjob/paypal-success/' . $bid->id . '?type=' . $type,
+                'return_url' => $baseURL . '/postjob/paypal-success/' . $bid->id . '?type=' . $metaType,
                 'brand_name' => env('APP_NAME'),
                 'landing_page' => 'LOGIN',
                 'user_action' => 'PAY_NOW',
@@ -905,6 +902,7 @@ class PostJobRequestController extends Controller
             return response()->json(['status' => false, 'error' => 'PayPal Create Payment Error: ' . $e->getMessage()], 500);
         }
     }
+    
     
     
     public function postJobPayPalSuccess(Request $request, $id)
