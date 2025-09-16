@@ -1,53 +1,53 @@
 <x-master-layout>
     <div class="d-flex justify-content-center flex-wrap gap-2">
 
-         
+
         @php
-         $auth_user = auth()->user();
-        $unitPrice = (float) ($bid->price ?? 0);
-        $advPct = (float) ($bid->advance_percent ?? 0);
-        $extraChargeUnit = (float) ($bid->extra_charges ?? 0);
-        $extraChargeQty = (int) ($bid->quantity ?? 1);
+            $auth_user = auth()->user();
+            $unitPrice = (float) ($bid->price ?? 0);
+            $advPct = (float) ($bid->advance_percent ?? 0);
+            $extraChargeUnit = (float) ($bid->extra_charges ?? 0);
+            $extraChargeQty = (int) ($bid->quantity ?? 1);
 
-        // Determine quantity based on price type
-        if ($bid->postrequest->price_type == 'hourly') {
-            $quantity = (float) ($bid->postrequest->total_hours ?? 1);
-        } elseif ($bid->postrequest->price_type == 'daily') {
-            $quantity = (float) ($bid->postrequest->total_days ?? 1);
-        } elseif ($bid->postrequest->price_type == 'fixed') {
-            $quantity = 1;
-        } else {
-            $quantity = (float) ($bid->quantity ?? 1);
-        }
+            // Determine quantity based on price type
+            if ($bid->postrequest->price_type == 'hourly') {
+                $quantity = (float) ($bid->postrequest->total_hours ?? 1);
+            } elseif ($bid->postrequest->price_type == 'daily') {
+                $quantity = (float) ($bid->postrequest->total_days ?? 1);
+            } elseif ($bid->postrequest->price_type == 'fixed') {
+                $quantity = 1;
+            } else {
+                $quantity = (float) ($bid->quantity ?? 1);
+            }
 
-        // Calculations
-        $totalAmount = $unitPrice * $quantity;
-        $extraChargesTotal = $extraChargeUnit * $extraChargeQty;
-        $subTotal = $totalAmount + $extraChargesTotal;
+            // Calculations
+            $totalAmount = $unitPrice * $quantity;
+            $extraChargesTotal = $extraChargeUnit * $extraChargeQty;
+            $subTotal = $totalAmount + $extraChargesTotal;
 
-        // Tax
-        $countryId = $bid->postrequest->country_id ?? null;
-        $taxRate = 0;
-        $taxTitle = '';
-        if ($countryId) {
-            $taxModel = \App\Models\Tax::find($countryId);
-            $taxRate = $taxModel->value ?? 0;
-            $taxTitle = $taxModel->title ?? '';
-        }
-        $taxAmount = ($subTotal * $taxRate) / 100;
+            // Tax
+            $countryId = $bid->postrequest->country_id ?? null;
+            $taxRate = 0;
+            $taxTitle = '';
+            if ($countryId) {
+                $taxModel = \App\Models\Tax::find($countryId);
+                $taxRate = $taxModel->value ?? 0;
+                $taxTitle = $taxModel->title ?? '';
+            }
+            $taxAmount = ($subTotal * $taxRate) / 100;
 
-        // Net Amount = Subtotal - Tax
-        $netAmount = $subTotal - $taxAmount;
+            // Net Amount = Subtotal - Tax
+            $netAmount = $subTotal - $taxAmount;
 
-        // Grand Total = Subtotal + Tax
-        $grandTotal = $subTotal + $taxAmount;
+            // Grand Total = Subtotal + Tax
+            $grandTotal = $subTotal + $taxAmount;
 
-        // Advance Payment calculated on Grand Total
-        $advAmount = ($subTotal * $advPct) / 100;
+            // Advance Payment calculated on Grand Total
+            $advAmount = ($subTotal * $advPct) / 100;
 
-        // Remaining Amount = Grand Total - Advance Payment
-        $remaining = $subTotal - $advAmount;
-    @endphp
+            // Remaining Amount = Grand Total - Advance Payment
+            $remaining = $subTotal - $advAmount;
+        @endphp
 
         {{-- Provider Actions --}}
         @if ($auth_user->user_type === 'provider' && $auth_user->id == $bid->provider_id)
@@ -205,33 +205,31 @@
                         $excludedStatuses = ['cancelled', 'split_payment', 'accepted', 'requested'];
                     @endphp
                     @if (!in_array($bid->status, $excludedStatuses))
+                        <div class="col-md-4">
+                            <div class="card border-secondary shadow-sm h-100 hover-shadow">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-map-marker-alt fa-2x text-secondary mb-2"></i>
+                                    <h6 class="fw-bold mb-1">Working Address</h6>
+                                    <p class="mb-0">{{ strip_tags($bid->postrequest->working_address ?? '-') }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
+
                     <div class="col-md-4">
                         <div class="card border-secondary shadow-sm h-100 hover-shadow">
                             <div class="card-body text-center">
-                                <i class="fas fa-map-marker-alt fa-2x text-secondary mb-2"></i>
-                                <h6 class="fw-bold mb-1">Working Address</h6>
-                                <p class="mb-0">{{ strip_tags($bid->postrequest->working_address ?? '-') }}</p>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    @endif
-
-                    <div class="col-md-4"> 
-                        <div class="card border-secondary shadow-sm h-100 hover-shadow">
-                            <div class="card-body text-center">
                                 <i class="fas fa-wallet fa-2x text-secondary mb-2"></i>
-                                <h6 class="fw-bold mb-1">Total Budget gv</h6>
+                                <h6 class="fw-bold mb-1">Total Budget</h6>
                                 <p class="mb-0">
-                                    {{ isset($bid->postrequest->total_budget) 
-                                        ? number_format($bid->postrequest->total_budget, 2, '.', '') . ' €' 
-                                        : '-' 
-                                    }}
+                                    {{ isset($bid->postrequest->total_budget)
+                                        ? number_format($bid->postrequest->total_budget, 2, '.', '') . ' €'
+                                        : '-' }}
                                 </p>
                             </div>
                         </div>
                     </div>
-                    
+
 
                     <div class="col-md-4">
                         <div class="card border-dark shadow-sm h-100 hover-shadow">
@@ -297,7 +295,7 @@
                         Price Breakdown
                     </div>
                     <div class="card-body">
-                      
+
 
                         <table class="table table-sm table-hover price-table">
                             <tbody>
@@ -763,14 +761,18 @@
                         success: function(response) {
                             if (response && response.status) {
                                 Swal.fire('Added', response.message ||
-                                    'Extra charges added', 'success');
-                                $('#datatable').DataTable().ajax.reload();
+                                        'Extra charges added', 'success')
+                                    .then(() => {
+                                        // Reload the whole page after user closes the alert
+                                        window.location.reload();
+                                    });
                             } else {
                                 Swal.fire('Error', (response && response.message) ?
                                     response.message : 'Unable to add charges',
                                     'error');
                             }
                         },
+
                         error: function(xhr) {
                             Swal.fire('Error', (xhr && xhr.responseJSON && xhr
                                     .responseJSON.message) ? xhr.responseJSON
