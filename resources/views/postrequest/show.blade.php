@@ -340,6 +340,7 @@
                                 </tr>
                                 <tr class="fw-bold">
                                     <td>Remaining Amount</td>
+                                    @dd($remaining);
                                     <td class="text-end">€{{ number_format($remaining, 2) }}</td>
                                 </tr>
                             </tbody>
