@@ -48,7 +48,7 @@
             // Remaining Amount = Grand Total - Advance Payment
             $remaining = $grandTotal - $advAmount;
         @endphp
-
+@dd( $remaining);
         {{-- Provider Actions --}}
         @if ($auth_user->user_type === 'provider' && $auth_user->id == $bid->provider_id)
 
