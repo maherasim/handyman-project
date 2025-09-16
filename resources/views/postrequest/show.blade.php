@@ -447,7 +447,8 @@
                     const postId = this.dataset.postId;
                     const amount = this.dataset.amount;
                     const amountNum = parseFloat(amount);
-                    const formattedAmount = isFinite(amountNum) ? amountNum.toFixed(2) : amount;
+                    const formattedAmount = amountNum.toFixed(2); // always 2 decimals
+
                     const isRemaining = btn.classList.contains('payRemainingBtn');
 
                     Swal.fire({
