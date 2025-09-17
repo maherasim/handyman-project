@@ -755,28 +755,23 @@ class PostJobRequestController extends Controller
             // 🔹 Payment history
             PaymentPostJObHistory::create([
                 'payment_id'  => $finalPayment->id,
-               
-                'parent_id'   => null, // optional: you can link to a "pending" payment if you had one
+                'parent_id'   => null,
                 'action'      => 'customer_send_provider',
                 'status'      => 'completed',
                 'sender_id'   => $finalPayment->customer_id,
                 'receiver_id' => $providerId,
                 'datetime'    => now(),
-                'total_amount' => $payAmount,
+                'total_amount' => round((float) $request->amount, 2), // ✅ ONLY amount paid
                 'txn_id'      => $finalPayment->txn_id,
                 'type'        => 'stripe',
                 'text'        => __('messages.payment_transfer', [
                     'from'   => get_user_name($finalPayment->customer_id),
                     'to'     => get_user_name($providerId),
-                  'amount' => round((float) $request->amount, 2), // ✅ safe and numeric
-
+                    'amount' => number_format((float) $request->amount, 2), // ✅ Just for display
                 ]),
-                'other_transaction_detail' => json_encode([
-                    'admin_commission' => $adminCommissionAmount,
-                    'provider_earning' => $providerEarningAmount,
-                ]),
+                'other_transaction_detail' => null, // Optional: or just skip commission info
             ]);
-
+            
             // 🔹 Update PostJobBid status
             $bid->status = ($type === 'advance') ? 'advance_paid' : 'remaining_paid';
             $bid->save();
