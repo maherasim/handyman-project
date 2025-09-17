@@ -1368,30 +1368,19 @@ class PostJobRequestController extends Controller
             ->addColumn('applicants', function ($query) {
                 return (int) ($query->applicants ?? 0);
             })
-            ->addColumn('accepted_for_current_provider', function ($row) {
+            ->addColumn('accepted_for_current_provider', function ($row) { 
                 if (auth()->user()->user_type === 'provider') {
                     return $row->postBidList()
                         ->whereHas('provider', function ($q) {
                             $q->where('id', auth()->user()->id);
                         })
                         ->where('provider_id', auth()->user()->id)
-                        ->addColumn('accepted_for_current_provider', function ($row) { 
-                            if (auth()->user()->user_type === 'provider') {
-                                return $row->postBidList()
-                                    ->whereHas('provider', function ($q) {
-                                        $q->where('id', auth()->user()->id);
-                                    })
-                                    ->where('provider_id', auth()->user()->id)
-                                    ->whereNotIn('status', ['requested', 'cancelled']) // ✅ FIXED LINE
-                                    ->exists();
-                            }
-                            return false;
-                        })
-                        
+                        ->whereNotIn('status', ['requested', 'cancelled']) // ✅ Excludes both
                         ->exists();
                 }
                 return false;
             })
+            
             ->editColumn('provider_id', function ($query) {
                 return view('postrequest.provider', compact('query'));
             })
