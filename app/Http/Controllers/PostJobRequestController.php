@@ -357,11 +357,11 @@ class PostJobRequestController extends Controller
     
         // Prepare variables based on payment type
         if ($paymentType === 'remaining') {
-            dd($payAmount,'remaing');
+           // dd($payAmount,'remaing');
             $txnPrefix = 'REM-';
-            $customerActivity = "Advance payment of €" . number_format($payAmount, 2) . " for Bid #{$post->id}";
+            $customerActivity = "Advance payment of €" . number_format($payAmount, 2) . " for Bid #{$post->id} has been paid";
 
-            $providerActivity = "Remaining received for Bid #{$post->id}";
+            $providerActivity = "Remaining received for Bid #{$post->id} has been paid";
             $paymentMetaType = 'remaining';
             $payoutStatus = 'remaining paid';
             $newPostStatus = 'remaining_paid';
@@ -369,9 +369,9 @@ class PostJobRequestController extends Controller
         } else {
            // dd($payAmount,'advance');
             $txnPrefix = 'ADV-';
-            $customerActivity = "Advance payment of €" . number_format($payAmount, 2) . " for Bid #{$post->id}";
+            $customerActivity = "Advance payment of €" . number_format($payAmount, 2) . " for Bid #{$post->id} has been paid";
 
-            $providerActivity = "Advance received for Bid #{$post->id}";
+            $providerActivity = "Advance received for Bid #{$post->id} has been paid";
             $paymentMetaType = 'advance';
             $payoutStatus = 'advance paid';
             $newPostStatus = 'advance_paid';
@@ -396,7 +396,7 @@ class PostJobRequestController extends Controller
             */
             $wallet->decrement('amount', $payAmount);
     
-          dd($customerActivity,'customerActivity');
+          //dd($customerActivity,'customerActivity');
             WalletHistory::create([
                 'datetime'         => now(),
                 'user_id'          => $user->id,
