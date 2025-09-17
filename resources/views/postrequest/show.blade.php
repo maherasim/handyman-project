@@ -803,7 +803,7 @@
     } catch (e){
       Swal.fire('Error', 'Unable to add extra charges', 'error');
     }
-  });
+ 
  
 
 
