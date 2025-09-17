@@ -79,14 +79,14 @@
             @elseif($bid->status === 'confirm_done')
                 <button class="btn btn-primary updateStatusBtn" data-id="{{ $bid->id }}" data-status="completed">
                     Completed
-                </button>
-                  @elseif($bid->status === 'remaining_paid')
-                  <a href="{{ route('postrequest.invoice', $bid->id) }}" class="btn btn-outline-secondary ms-2">
-                    <i class="fas fa-file-download"></i> Download Invoice (PDF)
-                </a>
+                </button>         
                 <button class="btn btn-outline-secondary extraChargesBtn" data-id="{{ $bid->id }}">
                     <i class="fas fa-plus"></i> Extra Charges
                 </button>
+          @elseif($bid->status === 'remaining_paid')
+                <a href="{{ route('postrequest.invoice', $bid->id) }}" class="btn btn-outline-secondary ms-2">
+                  <i class="fas fa-file-download"></i> Download Invoice (PDF)
+              </a>
             @endif
 
         @endif
