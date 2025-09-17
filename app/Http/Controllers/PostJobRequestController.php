@@ -687,7 +687,7 @@ class PostJobRequestController extends Controller
         if (!empty($session['payment_intent']) && ($session['payment_status'] ?? '') === 'paid') {
 
             $txnId     = $session['payment_intent'];
-            $payAmount = (float)($session['amount_total'] / 100); // Stripe returns amount in cents
+          $payAmount = (float) $request->amount; // Stripe returns amount in cents
 
             // 🔹 Commission setup
             $adminCommissionSetting = Setting::getValueByKey('admin_commission_percentage', 'site-setup');
@@ -768,7 +768,7 @@ class PostJobRequestController extends Controller
                 'text'        => __('messages.payment_transfer', [
                     'from'   => get_user_name($finalPayment->customer_id),
                     'to'     => get_user_name($providerId),
-                    'amount' => number_format($providerEarningAmount, 2),
+                    'amount' => number_format($payAmount, 2),
                 ]),
                 'other_transaction_detail' => json_encode([
                     'admin_commission' => $adminCommissionAmount,
