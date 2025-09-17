@@ -665,7 +665,7 @@ class PostJobRequestController extends Controller
 
     public function savePostJobStripePayment(Request $request, $id)
     {
-        dd($request->all());
+        //dd($request->all());
         $type      = strtolower((string)$request->query('type', 'advance')); // advance | remaining
         $sessionId = $request->query('session_id'); // ✅ comes from Stripe success_url
 
@@ -702,7 +702,7 @@ class PostJobRequestController extends Controller
             $finalPayment = PaymentPostJOb::create([
                 'customer_id' => $bid->customer_id,
                 'provider_id' => $bid->provider_id,
-                'post_job_request_id' => $bid->id,
+                'post_job_bid_request_id' => $bid->id,
                 'total_amount' => $payAmount,
                 'discount' => 0,
                 'payment_type' => 'stripe',
@@ -719,7 +719,7 @@ class PostJobRequestController extends Controller
             // 🔹 Commission earnings
             if ($adminCommissionAmount > 0) {
                 CommissionEarning::create([
-                    'post_job_request_id' => $bid->id,
+                    'post_job_bid_request_id' => $bid->id,
                     'user_type'           => 'admin',
                     'employee_id'         => $adminUser?->id ?? 1,
                     'commission_amount'   => $adminCommissionAmount,
@@ -730,7 +730,7 @@ class PostJobRequestController extends Controller
 
             if ($providerEarningAmount > 0) {
                 CommissionEarning::create([
-                    'post_job_request_id' => $bid->id,
+                    'post_job_bid_request_id' => $bid->id,
                     'user_type'           => 'provider',
                     'employee_id'         => $providerId,
                     'commission_amount'   => $providerEarningAmount,
