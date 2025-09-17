@@ -23,7 +23,7 @@ $auth_user = authSession();
 			$nonEditableStatuses = ['in_progress','in_process','done','completed'];
 		@endphp
 		@if(!in_array((string)($post_job->status ?? ''), $nonEditableStatuses)) --}}
-			<a class="me-2" href="{{ route('post-job-request.edit', $post_job->id) }}" 
+			<a class="me-2" href="{{ route('post-job-requestjob.edit', $post_job->id) }}" 
 			   title="{{ __('messages.update_form_title',['form'=> __('messages.post_job') ]) }}">
 				<i class="far fa-edit text-primary"></i>
 			</a>
