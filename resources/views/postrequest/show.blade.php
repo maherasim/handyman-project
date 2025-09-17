@@ -108,14 +108,14 @@
             @elseif($bid->status === 'Advance Payment Pending')
                 <button class="btn btn-success payAdvanceBtn" data-post-id="{{ $bid->id }}"
                     data-amount="{{ $advAmount }}">
-                    <i class="fas fa-wallet"></i> Pay Advance {{ number_format($advAmount, 2) }}
+                    <i class="fas fa-wallet"></i> Pay Advance €{{ number_format($advAmount, 2) }}
                     ({{ $advPct }}%)
                            </button>
             @elseif($bid->status === 'completed' && !$bid->has_advance_paid)
                 <button class="btn btn-primary payRemainingBtn" data-post-id="{{ $bid->id }}"
                     data-amount="{{ number_format($remaining, 2, '.', '') }}">
                   
-                    <i class="fas fa-credit-card"></i> Pay Remaining {{ number_format($remaining, 2) }}
+                    <i class="fas fa-credit-card"></i> Pay Remaining €{{ number_format($remaining, 2) }}
                 </button>
             @elseif($bid->status === 'hold')
                 <div class="alert alert-warning d-flex align-items-start shadow-sm border rounded p-3 mt-2">
@@ -455,7 +455,7 @@
                         title: isRemaining ? 'Pay Remaining' : 'Pay Advance',
                         html: `
                             <div class="text-start">
-                                <p class="mb-2">Amount: <strong>${formattedAmount}</strong></p>
+                                <p class="mb-2">Amount: <strong>€${formattedAmount}</strong></p>
                                 <label class="form-label fw-bold">Choose Payment Method</label>
                                 <div class="d-grid gap-2">
                                     <button class="btn btn-outline-primary" id="walletPayBtn"><i class="fas fa-wallet me-1"></i> Wallet</button>
