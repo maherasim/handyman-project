@@ -367,7 +367,7 @@ class PostJobRequestController extends Controller
             $newPostStatus = 'remaining_paid';
             $successMsg = "Remaining payment of €" . number_format($payAmount, 2) . " successful";
         } else {
-            dd($payAmount,'advance');
+           // dd($payAmount,'advance');
             $txnPrefix = 'ADV-';
             $customerActivity = "Advance payment of €" . number_format($payAmount, 2) . " for Bid #{$post->id}";
 
