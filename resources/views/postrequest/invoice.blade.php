@@ -41,28 +41,28 @@ $logoPath = public_path('assets/frobster logo.png');
 	// Inputs expected: $bid (App\Models\PostJobBid), optional $payment (PaymentPostJOb)
 	$unitPrice = (float) ($bid->price ?? 0);
 	$extraChargeUnit = (float) ($bid->extra_charges ?? 0);
-	$extraChargeQty = (int) ($bid->quantity ?? 1);
+	$extraChargeQty = (int) ($bid->quantity ?? 0); // show row even if 0
 
 	$priceType = strtolower((string)($bid->postrequest->price_type ?? $bid->postrequest->job_price ?? 'fixed'));
 	if ($priceType === 'hourly') {
-		$quantity = (float) ($bid->postrequest->total_hours ?? 1);
+		$quantity = (float) ($bid->postrequest->total_hours ?? 0);
 	} elseif ($priceType === 'daily') {
-		$quantity = (float) ($bid->postrequest->total_days ?? 1);
+		$quantity = (float) ($bid->postrequest->total_days ?? 0);
 	} else {
-		$quantity = 1;
+		$quantity = 1.0; // fixed = 1
 	}
 
 	$baseTotal = $unitPrice * $quantity;
 	$extraChargeTotal = $extraChargeUnit * $extraChargeQty;
 	$subTotal = $baseTotal + $extraChargeTotal;
 
+	$countryName = optional($bid->postrequest->country)->name ?? '';
 	$taxRate = 0;
 	$taxTitle = '';
-	$countryName = optional($bid->postrequest->country)->name ?? '';
 	$countryId = $bid->postrequest->country_id ?? null;
 	if ($countryId) {
 		$taxModel = \App\Models\Tax::find($countryId);
-		$taxRate = (float) ($taxModel->value ?? 0);
+		$taxRate  = (float) ($taxModel->value ?? 0);
 		$taxTitle = (string) ($taxModel->title ?? $countryName);
 	}
 	$taxAmount = ($subTotal * $taxRate) / 100;
@@ -73,7 +73,6 @@ $logoPath = public_path('assets/frobster logo.png');
 	$advancePaid = $advancePercent > 0 ? ($baseTotal * $advancePercent / 100.0) : 0;
 	$remainingAmount = $grandTotal - $advancePaid;
 
-	// Helpers
 	$fmt = function ($n) { return getPriceFormat((float)$n); };
 @endphp
 <body>
