@@ -396,7 +396,7 @@ class PostJobRequestController extends Controller
             */
             $wallet->decrement('amount', $payAmount);
     
-          dd($customerActivity,'customerActivity');
+          //dd($customerActivity,'customerActivity');
             WalletHistory::create([
                 'datetime'         => now(),
                 'user_id'          => $user->id,
