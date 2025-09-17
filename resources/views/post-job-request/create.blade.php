@@ -280,7 +280,7 @@
                             </div>
                             <div class="row mt-4">
                                 <div class="col-md-12 d-flex justify-content-end">
-                                    <button type="submit" class="btn btn-md btn-primary">{{ __('messages.save') }}</button>
+                                    <button type="submit" class="btn btn-md btn-primary">{{ __('messages.publish') }}</button>
                                 </div>
                             </div>
                         </form>

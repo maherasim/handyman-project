@@ -18,6 +18,7 @@
     'back' => 'Back',
     'close' => 'Close',
     'save' => 'Save',
+    'publish' => 'Publish',
     'notification' => 'Notification',
     'list_form_title' => ':form List',
     'pending_list_form_title' => 'Pending :form',
