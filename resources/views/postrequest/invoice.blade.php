@@ -5,25 +5,26 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<style type="text/css">
-		body { margin: 0; padding: 0; background: #ffffff; color: #222; font-family: DejaVu Sans, Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.5; }
-		.container { width: 100%; max-width: 900px; margin: 0 auto; padding: 24px; }
-		.card { border: 1px solid #e5e7eb; border-radius: 8px; }
-		.section { padding: 18px 18px; }
+		@page { margin: 12mm 10mm; }
+		body { margin: 0; padding: 0; background: #ffffff; color: #222; font-family: DejaVu Sans, Helvetica, Arial, sans-serif; font-size: 12px; line-height: 1.45; }
+		.container { width: 100%; max-width: 900px; margin: 0 auto; }
+		.card { border: 1px solid #e5e7eb; border-radius: 6px; }
+		.section { padding: 12px 14px; }
 		.border-b { border-bottom: 1px solid #e5e7eb; }
-		.mb-12 { margin-bottom: 12px; }
-		.mb-6 { margin-bottom: 6px; }
 		.text-right { text-align: right; }
 		.text-muted { color: #6b7280; }
 		.fw-bold { font-weight: 700; }
-		.title { font-size: 20px; font-weight: 700; }
+		.title { font-size: 18px; font-weight: 700; }
 		table { width: 100%; border-collapse: collapse; }
-		th, td { padding: 10px; border-bottom: 1px solid #e5e7eb; vertical-align: top; }
-		thead th { background: #fafafa; font-size: 12px; text-transform: uppercase; letter-spacing: .3px; }
-		.no-border td { border: 0; }
+		th, td { padding: 8px; border-bottom: 1px solid #e5e7eb; vertical-align: top; }
+		thead th { background: #fafafa; font-size: 11px; text-transform: uppercase; letter-spacing: .2px; }
+		.no-border td { border: 0; padding: 2px 0; }
+		.small { font-size: 11px; }
+		.compact td { padding: 6px 8px; }
 		.totals { width: 420px; margin-left: auto; border: 1px solid #e5e7eb; border-radius: 6px; }
 		.totals td { border-bottom: 1px solid #e5e7eb; }
-		.totals tr:last-child td { border-bottom: 0; font-weight: 700; font-size: 15px; }
-		.footer { margin-top: 16px; padding-top: 10px; border-top: 1px solid #e5e7eb; text-align: center; color: #6b7280; font-size: 12px; }
+		.totals tr:last-child td { border-bottom: 0; font-weight: 700; font-size: 13px; }
+		.logo { height: 40px; width: auto; }
 	</style>
 </head>
 <?php
@@ -41,7 +42,7 @@ $logoPath = public_path('assets/frobster logo.png');
 	// Inputs expected: $bid (App\Models\PostJobBid), optional $payment (PaymentPostJOb)
 	$unitPrice = (float) ($bid->price ?? 0);
 	$extraChargeUnit = (float) ($bid->extra_charges ?? 0);
-	$extraChargeQty = (int) ($bid->quantity ?? 0); // show row even if 0
+	$extraChargeQty = (int) ($bid->quantity ?? 0); // always show the row
 
 	$priceType = strtolower((string)($bid->postrequest->price_type ?? $bid->postrequest->job_price ?? 'fixed'));
 	if ($priceType === 'hourly') {
@@ -49,7 +50,7 @@ $logoPath = public_path('assets/frobster logo.png');
 	} elseif ($priceType === 'daily') {
 		$quantity = (float) ($bid->postrequest->total_days ?? 0);
 	} else {
-		$quantity = 1.0; // fixed = 1
+		$quantity = 1.0; // fixed
 	}
 
 	$baseTotal = $unitPrice * $quantity;
@@ -83,17 +84,17 @@ $logoPath = public_path('assets/frobster logo.png');
 				<tr>
 					<td style="width: 60%; border: 0;">
 						<div class="title">{{ __('Invoice') }}</div>
-						<div class="text-muted">{{ __('Invoice No:') }} #{{ $bid->id }}</div>
-						<div class="text-muted">{{ __('Currency:') }} {{ $bid->currency ?? 'EUR' }}</div>
-						<div class="text-muted">{{ __('Date Issued:') }} {{ optional($bid->created_at)->format('d M Y') }}</div>
+						<div class="text-muted small">{{ __('Invoice No:') }} #{{ $bid->id }}</div>
+						<div class="text-muted small">{{ __('Currency:') }} {{ $bid->currency ?? 'EUR' }}</div>
+						<div class="text-muted small">{{ __('Date Issued:') }} {{ optional($bid->created_at)->format('d M Y') }}</div>
 					</td>
 					<td class="text-right" style="width: 40%; border: 0;">
 						@if (file_exists($logoPath))
-							<img src="{{ $logoPath }}" alt="logo" style="height: 56px; width: auto;">
+							<img src="{{ $logoPath }}" alt="logo" class="logo">
 						@endif
-						<div class="text-muted">{{ $generaldata->inquriy_email ?? '' }}</div>
+						<div class="text-muted small">{{ $generaldata->inquriy_email ?? '' }}</div>
 						@if(!empty($generaldata->helpline_number))
-							<div class="text-muted">{{ $generaldata->helpline_number }}</div>
+							<div class="text-muted small">{{ $generaldata->helpline_number }}</div>
 						@endif
 					</td>
 				</tr>
@@ -104,28 +105,28 @@ $logoPath = public_path('assets/frobster logo.png');
 			<table class="no-border">
 				<tr>
 					<td style="width: 50%; border: 0;">
-						<div class="fw-bold mb-6">{{ __('Bill From') }}</div>
-						<div class="mb-6">{{ optional($bid->provider)->display_name ?? '-' }}</div>
-						<div class="text-muted">{{ optional($bid->provider)->address ?? '-' }}</div>
-						<div class="text-muted">{{ __('VAT Number:') }} {{ optional($bid->provider)->vat_number ?? '-' }}</div>
+						<div class="fw-bold">{{ __('Bill From') }}</div>
+						<div>{{ optional($bid->provider)->display_name ?? '-' }}</div>
+						<div class="text-muted small">{{ optional($bid->provider)->address ?? '-' }}</div>
+						<div class="text-muted small">{{ __('VAT Number:') }} {{ optional($bid->provider)->vat_number ?? '-' }}</div>
 					</td>
 					<td style="width: 50%; border: 0;">
-						<div class="fw-bold mb-6">{{ __('Bill To') }}</div>
-						<div class="mb-6">{{ optional($bid->customer)->display_name ?? '-' }}</div>
-						<div class="text-muted">{{ optional($bid->customer)->address ?? '-' }}</div>
+						<div class="fw-bold">{{ __('Bill To') }}</div>
+						<div>{{ optional($bid->customer)->display_name ?? '-' }}</div>
+						<div class="text-muted small">{{ optional($bid->customer)->address ?? '-' }}</div>
 					</td>
 				</tr>
 				<tr>
-					<td colspan="2" style="border: 0;">
-						<div class="fw-bold mb-6">{{ __('Job Request') }}</div>
-						<div class="text-muted">{{ optional($bid->postrequest)->title ?? '-' }}</div>
+					<td colspan="2" style="border: 0; padding-top: 6px;">
+						<div class="fw-bold">{{ __('Job Request') }}</div>
+						<div class="text-muted small">{{ optional($bid->postrequest)->title ?? '-' }}</div>
 					</td>
 				</tr>
 			</table>
 		</div>
 
 		<div class="section">
-			<table>
+			<table class="compact">
 				<thead>
 				<tr>
 					<th style="width: 60%">{{ __('Description') }}</th>
@@ -150,7 +151,7 @@ $logoPath = public_path('assets/frobster logo.png');
 				</tbody>
 			</table>
 
-			<table class="totals" cellspacing="0" cellpadding="0" style="margin-top: 16px;">
+			<table class="totals" cellspacing="0" cellpadding="0" style="margin-top: 12px;">
 				<tbody>
 				<tr>
 					<td>{{ __('Rate (Unit Price)') }}</td>
@@ -194,8 +195,6 @@ $logoPath = public_path('assets/frobster logo.png');
 				</tr>
 				</tbody>
 			</table>
-
-			<div class="footer">{{ $app->site_copyright ?? '' }}</div>
 		</div>
 	</div>
 </div>
