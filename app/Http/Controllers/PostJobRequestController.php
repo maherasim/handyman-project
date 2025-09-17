@@ -397,7 +397,7 @@ class PostJobRequestController extends Controller
             $wallet->decrement('amount', $payAmount);
     
           //dd($customerActivity,'customerActivity');
-            WalletHistory::create([
+           $data= WalletHistory::create([
                 'datetime'         => now(),
                 'user_id'          => $user->id,
                 'activity_type'    => 'debit',
@@ -407,7 +407,7 @@ class PostJobRequestController extends Controller
                     'balance' => $wallet->amount,
                 ]),
             ]);
-    
+    dd($data);
             // Payment entry (customer)
             $payment = PaymentPostJOb::create([
                 'customer_id'               => $user->id,
