@@ -1429,7 +1429,7 @@ class PostJobRequestController extends Controller
     {
         $auth_user = authSession();
         $postJob = PostJobRequest::findOrFail($id);
-    dd( $postJob);
+    //dd( $postJob);
         // Allow admin or the owner to edit
         if (!auth()->user()->hasAnyRole(['admin']) && (int)auth()->id() !== (int)$postJob->customer_id) {
             abort(403);
