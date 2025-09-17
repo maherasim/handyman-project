@@ -366,7 +366,8 @@ class PostJobRequestController extends Controller
         } else {
             // Default to advance
             $txnPrefix = 'ADV-';
-            $customerActivity = "Advance payment for Bid #{$post->id}";
+            $customerActivity = "Advance payment of €" . number_format($payAmount, 2) . " for Bid #{$post->id}";
+
             $providerActivity = "Advance received for Bid #{$post->id}";
             $paymentMetaType = 'advance';
             $payoutStatus = 'advance paid';
