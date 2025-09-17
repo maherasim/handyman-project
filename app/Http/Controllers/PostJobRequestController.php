@@ -698,7 +698,7 @@ class PostJobRequestController extends Controller
             $adminCommissionAmount = ($payAmount * $adminCommissionPercent) / 100.0;
             $providerEarningAmount = $payAmount - $adminCommissionAmount;
             
-            $finalPayment = Payment::create([
+            $finalPayment = PaymentPostJOb::create([
                 'customer_id' => $bid->customer_id,
                 'provider_id' => $bid->provider_id,
                 'post_job_request_id' => $bid->id,
