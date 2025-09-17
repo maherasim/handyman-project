@@ -665,6 +665,7 @@ class PostJobRequestController extends Controller
 
     public function savePostJobStripePayment(Request $request, $id)
     {
+        dd($request->all());
         $type      = strtolower((string)$request->query('type', 'advance')); // advance | remaining
         $sessionId = $request->query('session_id'); // ✅ comes from Stripe success_url
 
