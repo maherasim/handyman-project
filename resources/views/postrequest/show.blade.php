@@ -140,9 +140,7 @@
         @endif
 
 
-        <a href="{{ route('postrequest.invoice', $bid->id) }}" class="btn btn-outline-secondary ms-2">
-            <i class="fas fa-file-download"></i> Download Invoice (PDF)
-        </a>
+
     </div>
 
     <div class="container py-4">
