@@ -27,8 +27,8 @@ $auth_user = authSession();
 			   title="{{ __('messages.update_form_title',['form'=> __('messages.post_job') ]) }}">
 				<i class="far fa-edit text-primary"></i>
 			</a>
-		{{-- @endif
-	@endif --}}
+		 
+	@endif
 
 	{{-- View button: visible only when status is requested --}}
 	@if(($post_job->status ?? null) === 'requested')
