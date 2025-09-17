@@ -359,9 +359,9 @@ class PostJobRequestController extends Controller
         if ($paymentType === 'remaining') {
            // dd($payAmount,'remaing');
             $txnPrefix = 'REM-';
-            $customerActivity = "Advance payment of €" . number_format($payAmount, 2) . " for Bid #{$post->id} has been paid";
+            $customerActivity = "Remaining payment of €" . number_format($payAmount, 2) . " for Bid #{$post->id} has been paid";
 
-            $providerActivity = "Remaining received for Bid #{$post->id} has been paid";
+            $providerActivity = "Remaining payment of €" . number_format($payAmount, 2) . " for Bid #{$post->id} has been paid";
             $paymentMetaType = 'remaining';
             $payoutStatus = 'remaining paid';
             $newPostStatus = 'remaining_paid';
@@ -371,7 +371,7 @@ class PostJobRequestController extends Controller
             $txnPrefix = 'ADV-';
             $customerActivity = "Advance payment of €" . number_format($payAmount, 2) . " for Bid #{$post->id} has been paid";
 
-            $providerActivity = "Advance received for Bid #{$post->id} has been paid";
+            $providerActivity = "Advance payment of €" . number_format($payAmount, 2) . " for Bid #{$post->id} has been paid";
             $paymentMetaType = 'advance';
             $payoutStatus = 'advance paid';
             $newPostStatus = 'advance_paid';
