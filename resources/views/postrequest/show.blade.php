@@ -703,12 +703,14 @@
                 });
             });
 
-            $(document).on('click', '.extraChargesBtn', function() {
-  const bidId = $(this).data('id');
-  Swal.fire({
-    title: 'Add Extra Charges',
-    width: 700,
-    html: `
+            document.addEventListener('DOMContentLoaded', function() {
+                document.querySelectorAll('.extraChargesBtn').forEach(function(btn) {
+                    btn.addEventListener('click', function() {
+                        const bidId = this.dataset.id;
+                        Swal.fire({
+                            title: 'Add Extra Charges',
+                            width: 700,
+                            html: `
       <div class="text-start">
         <div class="d-flex justify-content-between align-items-center mb-2">
           <div class="fw-bold">Charges</div>
@@ -736,84 +738,101 @@
         </div>
       </div>
     `,
-    focusConfirm: false,
-    showCancelButton: true,
-    confirmButtonText: 'Add',
-    didOpen: () => {
-      const $wrap = $('#ec_wrapper');
-      function fmt(n){ const v = parseFloat(n||0); return v.toFixed(2); }
-      function recalcRow($row){
-        const amt = parseFloat($row.find('.ec_amount').val())||0;
-        const qty = parseInt($row.find('.ec_qty').val(),10)||0;
-        const total = amt*qty;
-        $row.find('.ec_total').text(fmt(total));
-        recalcOverall();
-      }
-      function recalcOverall(){
-        let sum = 0;
-        $wrap.find('.ec-row').each(function(){
-          const t = parseFloat($(this).find('.ec_total').text())||0;
-          sum += t;
-        });
-        $('#ec_overall_total').text(fmt(sum));
-      }
-      function addRow(){
-        const $row = $(`
-          <tr class="ec-row bg-light">
-            <td><input type="text" class="form-control form-control-sm ec_title" placeholder="e.g., Travel cost" /></td>
-            <td><input type="number" step="0.01" min="0.01" class="form-control form-control-sm text-end ec_amount" placeholder="0.00" /></td>
-            <td><input type="number" step="1" min="1" class="form-control form-control-sm text-end ec_qty" value="1" /></td>
-            <td class="text-end ec_total">0.00</td>
-            <td class="text-end"><button type="button" class="btn btn-sm btn-outline-danger ec_remove">&times;</button></td>
-          </tr>
-        `);
-        $wrap.append($row);
-        $row.on('input', '.ec_amount, .ec_qty', () => recalcRow($row));
-        $row.find('.ec_remove').on('click', function(){ $row.remove(); recalcOverall(); });
-      }
-      $('#ec_addRow').on('click', addRow);
-      addRow();
-    },
-    preConfirm: () => {
-      const items = [];
-      let hasError = false;
-      $('#ec_wrapper .ec-row').each(function(){
-        const title = $(this).find('.ec_title').val().trim();
-        const amount = parseFloat($(this).find('.ec_amount').val());
-        const qty = parseInt($(this).find('.ec_qty').val(),10);
-        if (!title || !amount || amount<=0 || !qty || qty<=0){ hasError = true; }
-        else { items.push({ title, amount, quantity: qty }); }
-      });
-      if (hasError || items.length === 0){
-        Swal.showValidationMessage('Each row must have a title, amount > 0 and qty > 0');
-        return false;
-      }
-      return items;
-    }
-  }).then(async (result) => {
-    if (!result.isConfirmed) return;
-    const items = result.value;
-    try {
-      await $.ajax({
-        url: '{{ route('postjob.addExtraCharges', ':id') }}'.replace(':id', bidId),
-        type: 'POST',
-        data: { _token: '{{ csrf_token() }}', items: items }
-      });
-      Swal.fire('Added', 'Extra charges added successfully', 'success').then(() => window.location.reload());
-    } catch (e){
-      Swal.fire('Error', 'Unable to add extra charges', 'error');
-    }
- 
- 
+                            focusConfirm: false,
+                            showCancelButton: true,
+                            confirmButtonText: 'Add',
+                            didOpen: () => {
+                                const wrapper = document.getElementById('ec_wrapper');
+                                const overallEl = document.getElementById('ec_overall_total');
+                                const addRowBtn = document.getElementById('ec_addRow');
 
+                                const formatMoney = (n) => (parseFloat(n || 0).toFixed(2));
 
+                                const recalcOverall = () => {
+                                    let sum = 0;
+                                    wrapper.querySelectorAll('.ec-row').forEach(row => {
+                                        const t = parseFloat(row.querySelector('.ec_total').textContent) || 0;
+                                        sum += t;
+                                    });
+                                    overallEl.textContent = formatMoney(sum);
+                                };
 
+                                const recalcRow = (row) => {
+                                    const amt = parseFloat(row.querySelector('.ec_amount').value) || 0;
+                                    const qty = parseInt(row.querySelector('.ec_qty').value, 10) || 0;
+                                    const total = amt * qty;
+                                    row.querySelector('.ec_total').textContent = formatMoney(total);
+                                    recalcOverall();
+                                };
 
+                                const addRow = () => {
+                                    const row = document.createElement('tr');
+                                    row.className = 'ec-row bg-light';
+                                    row.innerHTML = `
+              <td><input type="text" class="form-control form-control-sm ec_title" placeholder="e.g., Travel cost" /></td>
+              <td><input type="number" step="0.01" min="0.01" class="form-control form-control-sm text-end ec_amount" placeholder="0.00" /></td>
+              <td><input type="number" step="1" min="1" class="form-control form-control-sm text-end ec_qty" value="1" /></td>
+              <td class="text-end ec_total">0.00</td>
+              <td class="text-end"><button type="button" class="btn btn-sm btn-outline-danger ec_remove">&times;</button></td>
+            `;
+                                    wrapper.appendChild(row);
 
+                                    row.querySelector('.ec_amount').addEventListener('input', () => recalcRow(row));
+                                    row.querySelector('.ec_qty').addEventListener('input', () => recalcRow(row));
+                                    row.querySelector('.ec_remove').addEventListener('click', () => {
+                                        row.remove();
+                                        recalcOverall();
+                                    });
+                                };
 
-
-
-        });
+                                if (addRowBtn) addRowBtn.addEventListener('click', addRow);
+                                addRow();
+                            },
+                            preConfirm: () => {
+                                const wrapper = document.getElementById('ec_wrapper');
+                                const items = [];
+                                let hasError = false;
+                                wrapper.querySelectorAll('.ec-row').forEach(row => {
+                                    const title = (row.querySelector('.ec_title').value || '').trim();
+                                    const amount = parseFloat(row.querySelector('.ec_amount').value);
+                                    const qty = parseInt(row.querySelector('.ec_qty').value, 10);
+                                    if (!title || !amount || amount <= 0 || !qty || qty <= 0) {
+                                        hasError = true;
+                                    } else {
+                                        items.push({ title, amount, quantity: qty });
+                                    }
+                                });
+                                if (hasError || items.length === 0) {
+                                    Swal.showValidationMessage('Each row must have a title, amount > 0 and qty > 0');
+                                    return false;
+                                }
+                                return items;
+                            }
+                        }).then(async (result) => {
+                            if (!result.isConfirmed) return;
+                            const items = result.value;
+                            try {
+                                const res = await fetch('{{ route('postjob.addExtraCharges', ':id') }}'.replace(':id', bidId), {
+                                    method: 'POST',
+                                    headers: {
+                                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                        'Content-Type': 'application/json'
+                                    },
+                                    body: JSON.stringify({ _token: '{{ csrf_token() }}', items })
+                                });
+                                const data = await res.json().catch(() => ({}));
+                                if (res.ok) {
+                                    Swal.fire('Added', 'Extra charges added successfully', 'success').then(() => window.location.reload());
+                                } else {
+                                    Swal.fire('Error', data.message || 'Unable to add extra charges', 'error');
+                                }
+                            } catch (e) {
+                                Swal.fire('Error', 'Unable to add extra charges', 'error');
+                            }
+                        });
+                    });
+                });
+            });
     </script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
