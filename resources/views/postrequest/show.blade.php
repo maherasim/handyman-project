@@ -80,6 +80,10 @@
                 <button class="btn btn-primary updateStatusBtn" data-id="{{ $bid->id }}" data-status="completed">
                     Completed
                 </button>
+                @elseif($bid->status === 'remaining_paid')
+                <button class="btn btn-info" data-id="{{ $bid->id }}" data-status="">
+                    Invoice Downlaod
+                </button>
                 <button class="btn btn-outline-secondary extraChargesBtn" data-id="{{ $bid->id }}">
                     <i class="fas fa-plus"></i> Extra Charges
                 </button>
@@ -104,6 +108,10 @@
             @elseif($bid->status === 'accepted')
                 <button class="btn btn-info updateStatusBtn" data-id="{{ $bid->id }}" data-status="cancelled">
                     Cancel
+                </button>
+                @elseif($bid->status === 'remaining_paid')
+                <button class="btn btn-info" data-id="{{ $bid->id }}" data-status="">
+                    Invoice Downlaod
                 </button>
             @elseif($bid->status === 'Advance Payment Pending')
                 <button class="btn btn-success payAdvanceBtn" data-post-id="{{ $bid->id }}"
