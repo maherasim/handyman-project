@@ -1,54 +1,53 @@
 <x-master-layout>
     <div class="d-flex justify-content-center flex-wrap gap-2">
-
-
         @php
-            $auth_user = auth()->user();
-            $unitPrice = (float) ($bid->price ?? 0);
-            $advPct = (float) ($bid->advance_percent ?? 0);
-            $extraChargeUnit = (float) ($bid->extra_charges ?? 0);
-            $extraChargeQty = (int) ($bid->quantity ?? 1);
-
-            // Determine quantity based on price type
-            if ($bid->postrequest->price_type == 'hourly') {
-                $quantity = (float) ($bid->postrequest->total_hours ?? 1);
-            } elseif ($bid->postrequest->price_type == 'daily') {
-                $quantity = (float) ($bid->postrequest->total_days ?? 1);
-            } elseif ($bid->postrequest->price_type == 'fixed') {
-                $quantity = 1;
-            } else {
-                $quantity = (float) ($bid->quantity ?? 1);
-            }
-
-            // Calculations
-            $totalAmount = $unitPrice * $quantity;
-            $extraChargesTotal = $extraChargeUnit * $extraChargeQty;
-            $subTotal = $totalAmount + $extraChargesTotal;
-
-            // Tax
-            $countryId = $bid->postrequest->country_id ?? null;
-            $taxRate = 0;
-            $taxTitle = '';
-            if ($countryId) {
-                $taxModel = \App\Models\Tax::find($countryId);
-                $taxRate = $taxModel->value ?? 0;
-                $taxTitle = $taxModel->title ?? '';
-            }
-            $taxAmount = ($subTotal * $taxRate) / 100;
-
-            // Net Amount = Subtotal - Tax
-            $netAmount = $subTotal - $taxAmount;
-
-            // Grand Total = Subtotal + Tax
-            $grandTotal = $subTotal + $taxAmount;
-
-            // Advance Payment calculated on Grand Total
-            $advAmount = ($totalAmount * $advPct) / 100;
-
-            // Remaining Amount = Grand Total - Advance Payment
-            $remaining = $subTotal - $advAmount;
-            //   @dd($remaining);
-        @endphp
+        $auth_user = auth()->user();
+    
+        $unitPrice = (float) ($bid->price ?? 0);
+        $advPct = (float) ($bid->advance_percent ?? 0);
+    
+        // Determine quantity based on price type
+        $priceType = strtolower((string) ($bid->postrequest->price_type ?? $bid->postrequest->job_price ?? 'fixed'));
+        if ($priceType === 'hourly') {
+            $quantity = (float) ($bid->postrequest->total_hours ?? 1);
+        } elseif ($priceType === 'daily') {
+            $quantity = (float) ($bid->postrequest->total_days ?? 1);
+        } else {
+            $quantity = 1.0;
+        }
+    
+        // Base amount and aggregated extra charges
+        $totalAmount = $unitPrice * $quantity;
+    
+        // New: aggregated extra charges from backend (sum of amount × qty across rows)
+        $extraChargesTotal = (float) ($bid->extra_charges ?? 0);
+        $extraChargeQty    = (int) ($bid->quantity ?? 0); // optional display
+    
+        // Subtotal = base + aggregated extras
+        $subTotal = $totalAmount + $extraChargesTotal;
+    
+        // Tax
+        $countryId = $bid->postrequest->country_id ?? null;
+        $taxRate = 0;
+        $taxTitle = '';
+        if ($countryId) {
+            $taxModel = \App\Models\Tax::find($countryId);
+            $taxRate = (float) ($taxModel->value ?? 0);
+            $taxTitle = (string) ($taxModel->title ?? '');
+        }
+        $taxAmount = ($subTotal * $taxRate) / 100;
+    
+        // Net Amount and Grand Total
+        $netAmount   = $subTotal - $taxAmount;
+        $grandTotal  = $subTotal + $taxAmount;
+    
+        // Advance Payment calculated on base total (matches your sample)
+        $advAmount = ($totalAmount * $advPct) / 100;
+    
+        // Remaining = Grand Total - Advance (matches your sample math)
+        $remaining = $grandTotal - $advAmount;
+    @endphp
+    
 
         {{-- Provider Actions --}}
         @if ($auth_user->user_type === 'provider' && $auth_user->id == $bid->provider_id)
@@ -322,8 +321,7 @@
                                     <td class="text-end">€{{ number_format($totalAmount, 2) }}</td>
                                 </tr>
                                 <tr>
-                                    <td>Extra Charges ({{ $extraChargeQty }} ×
-                                        {{ number_format($extraChargeUnit, 2) }})</td>
+                                    <td>Extra Charges</td>
                                     <td class="text-end">€{{ number_format($extraChargesTotal, 2) }}</td>
                                 </tr>
                                 <tr class="fw-bold">
@@ -342,7 +340,7 @@
 
                                 <tr class="fw-bold">
                                     <td>Grand Total</td>
-                                    <td class="text-end">€{{ number_format($subTotal, 2) }}</td>
+                                    <td class="text-end">€{{ number_format($grandTotal, 2) }}</td>
                                 </tr>
                                 <tr>
                                     <td>Advance Payment ({{ $advPct }}%)</td>
@@ -350,7 +348,6 @@
                                 </tr>
                                 <tr class="fw-bold">
                                     <td>Remaining Amount</td>
-
                                     <td class="text-end">€{{ number_format($remaining, 2) }}</td>
                                 </tr>
                             </tbody>
@@ -707,105 +704,107 @@
             });
 
             $(document).on('click', '.extraChargesBtn', function() {
-                const bidId = $(this).data('id');
-
-                Swal.fire({
-                    title: 'Add Extra Charges',
-                    html: `
-      <div id="ec_wrapper"></div>
-      <div class="d-flex justify-content-between mt-2">
-        <button type="button" class="btn btn-sm btn-outline-primary" id="ec_addRow"><i class="las la-plus"></i> Add More</button>
-        <small class="text-muted">Fill title, amount and qty for each row</small>
+  const bidId = $(this).data('id');
+  Swal.fire({
+    title: 'Add Extra Charges',
+    width: 700,
+    html: `
+      <div class="text-start">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <div class="fw-bold">Charges</div>
+          <button type="button" class="btn btn-sm btn-outline-primary" id="ec_addRow">
+            <i class="las la-plus"></i> Add Row
+          </button>
+        </div>
+        <div class="table-responsive">
+          <table class="table table-sm align-middle mb-2" style="border-collapse:separate;border-spacing:0 6px;">
+            <thead>
+              <tr>
+                <th style="width:50%">Title</th>
+                <th style="width:16%" class="text-end">Amount</th>
+                <th style="width:16%" class="text-end">Qty</th>
+                <th style="width:16%" class="text-end">Total</th>
+                <th style="width:2%"></th>
+              </tr>
+            </thead>
+            <tbody id="ec_wrapper"></tbody>
+          </table>
+        </div>
+        <div class="d-flex justify-content-end">
+          <div class="fw-bold me-2">Overall Total:</div>
+          <div id="ec_overall_total" class="fw-bold">0.00</div>
+        </div>
       </div>
     `,
-                    focusConfirm: false,
-                    showCancelButton: true,
-                    confirmButtonText: 'Add',
-                    didOpen: () => {
-                        const $wrap = $('#ec_wrapper');
-
-                        function addRow() {
-                            const row = $(`
-          <div class="ec-row border p-2 mb-2 rounded bg-light">
-            <div class="row g-2 align-items-end">
-              <div class="col-md-6">
-                <label class="form-label mb-0">Title</label>
-                <input type="text" class="form-control ec_title" placeholder="e.g., Travel cost" />
-              </div>
-              <div class="col-md-3">
-                <label class="form-label mb-0">Amount</label>
-                <input type="number" step="0.01" min="0.01" class="form-control ec_amount" placeholder="e.g., 34" />
-              </div>
-              <div class="col-md-2">
-                <label class="form-label mb-0">Qty</label>
-                <input type="number" step="1" min="1" value="1" class="form-control ec_qty" />
-              </div>
-              <div class="col-md-1 text-end">
-                <button type="button" class="btn btn-sm btn-outline-danger ec_remove">&times;</button>
-              </div>
-            </div>
-          </div>
+    focusConfirm: false,
+    showCancelButton: true,
+    confirmButtonText: 'Add',
+    didOpen: () => {
+      const $wrap = $('#ec_wrapper');
+      function fmt(n){ const v = parseFloat(n||0); return v.toFixed(2); }
+      function recalcRow($row){
+        const amt = parseFloat($row.find('.ec_amount').val())||0;
+        const qty = parseInt($row.find('.ec_qty').val(),10)||0;
+        const total = amt*qty;
+        $row.find('.ec_total').text(fmt(total));
+        recalcOverall();
+      }
+      function recalcOverall(){
+        let sum = 0;
+        $wrap.find('.ec-row').each(function(){
+          const t = parseFloat($(this).find('.ec_total').text())||0;
+          sum += t;
+        });
+        $('#ec_overall_total').text(fmt(sum));
+      }
+      function addRow(){
+        const $row = $(`
+          <tr class="ec-row bg-light">
+            <td><input type="text" class="form-control form-control-sm ec_title" placeholder="e.g., Travel cost" /></td>
+            <td><input type="number" step="0.01" min="0.01" class="form-control form-control-sm text-end ec_amount" placeholder="0.00" /></td>
+            <td><input type="number" step="1" min="1" class="form-control form-control-sm text-end ec_qty" value="1" /></td>
+            <td class="text-end ec_total">0.00</td>
+            <td class="text-end"><button type="button" class="btn btn-sm btn-outline-danger ec_remove">&times;</button></td>
+          </tr>
         `);
-                            $wrap.append(row);
-                        }
-
-                        $('#ec_addRow').on('click', addRow);
-                        addRow();
-                    },
-                    preConfirm: () => {
-                        const charges = [];
-                        $('#ec_wrapper .ec-row').each(function() {
-                            const title = $(this).find('.ec_title').val().trim();
-                            const amount = parseFloat($(this).find('.ec_amount').val());
-                            const qty = parseInt($(this).find('.ec_qty').val(), 10);
-                            if (title && amount > 0 && qty > 0) {
-                                charges.push({
-                                    title,
-                                    amount,
-                                    qty
-                                });
-                            }
-                        });
-                        if (charges.length === 0) {
-                            Swal.showValidationMessage('Add at least one valid extra charge');
-                            return false;
-                        }
-                        return charges;
-                    }
-                }).then(async (result) => {
-                    if (!result.isConfirmed) return;
-
-                    const charges = result.value;
-
-                    try {
-                        for (const ch of charges) {
-                            await $.ajax({
-                                url: '{{ route('postjob.addExtraCharges', ':id') }}'
-                                    .replace(':id', bidId),
-                                type: 'POST',
-                                data: {
-                                    _token: '{{ csrf_token() }}',
-                                    title: ch.title,
-                                    amount: ch.amount,
-                                    quantity: ch.qty
-                                }
-                            });
-                        }
-                        Swal.fire('Added', 'Extra charges added successfully', 'success').then(
-                        () => window.location.reload());
-                    } catch (e) {
-                        Swal.fire('Error', 'Unable to add extra charges', 'error');
-                    }
-                });
-
-                // Delegate remove row click
-                $(document).off('click.ec_remove').on('click.ec_remove', '.ec_remove', function() {
-                    $(this).closest('.ec-row').remove();
-                });
-            });
-
-
-
+        $wrap.append($row);
+        $row.on('input', '.ec_amount, .ec_qty', () => recalcRow($row));
+        $row.find('.ec_remove').on('click', function(){ $row.remove(); recalcOverall(); });
+      }
+      $('#ec_addRow').on('click', addRow);
+      addRow();
+    },
+    preConfirm: () => {
+      const items = [];
+      let hasError = false;
+      $('#ec_wrapper .ec-row').each(function(){
+        const title = $(this).find('.ec_title').val().trim();
+        const amount = parseFloat($(this).find('.ec_amount').val());
+        const qty = parseInt($(this).find('.ec_qty').val(),10);
+        if (!title || !amount || amount<=0 || !qty || qty<=0){ hasError = true; }
+        else { items.push({ title, amount, quantity: qty }); }
+      });
+      if (hasError || items.length === 0){
+        Swal.showValidationMessage('Each row must have a title, amount > 0 and qty > 0');
+        return false;
+      }
+      return items;
+    }
+  }).then(async (result) => {
+    if (!result.isConfirmed) return;
+    const items = result.value;
+    try {
+      await $.ajax({
+        url: '{{ route('postjob.addExtraCharges', ':id') }}'.replace(':id', bidId),
+        type: 'POST',
+        data: { _token: '{{ csrf_token() }}', items: items }
+      });
+      Swal.fire('Added', 'Extra charges added successfully', 'success').then(() => window.location.reload());
+    } catch (e){
+      Swal.fire('Error', 'Unable to add extra charges', 'error');
+    }
+  });
+ 
 
 
 

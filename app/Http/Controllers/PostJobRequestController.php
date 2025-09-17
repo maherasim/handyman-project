@@ -574,26 +574,56 @@ class PostJobRequestController extends Controller
      */
     public function addExtraCharges(Request $request, $id)
     {
+        // Support aggregated multi-item payload
+        if ($request->has('items') && is_array($request->input('items'))) {
+            $request->validate([
+                'items'            => 'required|array|min:1',
+                'items.*.title'    => 'required|string|max:255',
+                'items.*.amount'   => 'required|numeric|min:0.01',
+                'items.*.quantity' => 'required|integer|min:1',
+            ]);
+    
+            $items = $request->input('items');
+            $totalExtra = 0.0;
+            $totalQty   = 0;
+            foreach ($items as $line) {
+                $lineAmount = (float) ($line['amount'] ?? 0);
+                $lineQty    = (int) ($line['quantity'] ?? 0);
+                $totalExtra += $lineAmount * $lineQty;
+                $totalQty   += $lineQty;
+            }
+    
+            $bid = PostJobBid::findOrFail($id);
+            $bid->extra_charges = $totalExtra; // store summed charges
+            $bid->quantity      = $totalQty;   // store summed qty for reference
+            $bid->status        = 'completed';
+            $bid->save();
+    
+            return response()->json([
+                'status'        => true,
+                'message'       => 'Extra charges added successfully & bid marked as completed',
+                'extra_charges' => $bid->extra_charges,
+                'quantity'      => $bid->quantity,
+                'new_status'    => $bid->status,
+            ]);
+        }
+    
+        // Fallback: single-row compatibility
         $request->validate([
             'title'    => 'required|string|max:255',
             'amount'   => 'required|numeric|min:0.01',
             'quantity' => 'nullable|integer|min:1'
         ]);
-
+    
         $bid = PostJobBid::findOrFail($id);
-
-        $quantity = (int)($request->input('quantity') ?? 1);
-        $extraAmount = (float)$request->input('amount'); // Do NOT multiply by quantity
-
-        // Store extra charges and quantity in separate columns
+        $quantity    = (int)($request->input('quantity') ?? 1);
+        $extraAmount = (float)$request->input('amount');
+    
         $bid->extra_charges = $extraAmount;
-        $bid->quantity = $quantity;
-
-        // Update status to completed
-        $bid->status = 'completed';
-
+        $bid->quantity      = $quantity;
+        $bid->status        = 'completed';
         $bid->save();
-
+    
         return response()->json([
             'status'        => true,
             'message'       => 'Extra charges added successfully & bid marked as completed',
@@ -602,7 +632,6 @@ class PostJobRequestController extends Controller
             'new_status'    => $bid->status,
         ]);
     }
-
 
     public function createPostJobStripePayment(Request $request, $id)
     {
