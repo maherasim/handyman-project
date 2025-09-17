@@ -1425,7 +1425,7 @@ class PostJobRequestController extends Controller
             ->rawColumns(['title', 'action', 'status', 'check'])
             ->toJson();
     }
-    public function edit($id)
+    public function editpostjob($id)
     {
         $auth_user = authSession();
         $postJob = PostJobRequest::findOrFail($id);
