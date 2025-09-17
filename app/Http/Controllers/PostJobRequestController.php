@@ -334,7 +334,7 @@ class PostJobRequestController extends Controller
     }
     public function payAdvance(Request $request, $id)
     {
-        dd($request->all());
+        //dd($request->all());
         $user = auth()->user();
         $post = PostJobBid::findOrFail($id);
     
@@ -358,7 +358,8 @@ class PostJobRequestController extends Controller
         // Prepare variables based on payment type
         if ($paymentType === 'remaining') {
             $txnPrefix = 'REM-';
-            $customerActivity = "Remaining payment for Bid #{$post->id}";
+            $customerActivity = "Advance payment of €" . number_format($payAmount, 2) . " for Bid #{$post->id}";
+
             $providerActivity = "Remaining received for Bid #{$post->id}";
             $paymentMetaType = 'remaining';
             $payoutStatus = 'remaining paid';
