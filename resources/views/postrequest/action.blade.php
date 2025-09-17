@@ -19,15 +19,13 @@ $auth_user = authSession();
 
 	{{-- Edit button: allow owners (user/admin) to edit when not in-progress/completed --}}
 	@if(auth()->user()->hasAnyRole(['admin']) || (int)auth()->id() === (int)$post_job->customer_id)
-		{{-- @php
-			$nonEditableStatuses = ['in_progress','in_process','done','completed'];
-		@endphp
-		@if(!in_array((string)($post_job->status ?? ''), $nonEditableStatuses)) --}}
+	 
+		@if(($post_job->status ?? null) === 'requested')
 			<a class="me-2" href="{{ route('post-job-requestjob.edit', $post_job->id) }}" 
 			   title="{{ __('messages.update_form_title',['form'=> __('messages.post_job') ]) }}">
 				<i class="far fa-edit text-primary"></i>
 			</a>
-		 
+		 @endif
 	@endif
 
 	{{-- View button: visible only when status is requested --}}
