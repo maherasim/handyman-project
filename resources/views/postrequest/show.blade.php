@@ -47,7 +47,7 @@
 
             // Remaining Amount = Grand Total - Advance Payment
             $remaining = $subTotal - $advAmount;
-         //   @dd(  $remaining);
+            //   @dd($remaining);
         @endphp
 
         {{-- Provider Actions --}}
@@ -79,14 +79,14 @@
             @elseif($bid->status === 'confirm_done')
                 <button class="btn btn-primary updateStatusBtn" data-id="{{ $bid->id }}" data-status="completed">
                     Completed
-                </button>         
+                </button>
                 <button class="btn btn-outline-secondary extraChargesBtn" data-id="{{ $bid->id }}">
                     <i class="fas fa-plus"></i> Extra Charges
                 </button>
-          @elseif($bid->status === 'remaining_paid')
+            @elseif($bid->status === 'remaining_paid')
                 <a href="{{ route('postrequest.invoice', $bid->id) }}" class="btn btn-outline-success ms-2">
-                  <i class="fas fa-file-download"></i> Download Invoice
-              </a>
+                    <i class="fas fa-file-download"></i> Download Invoice
+                </a>
             @endif
 
         @endif
@@ -109,20 +109,20 @@
                 <button class="btn btn-info updateStatusBtn" data-id="{{ $bid->id }}" data-status="cancelled">
                     Cancel
                 </button>
-                @elseif($bid->status === 'remaining_paid')
+            @elseif($bid->status === 'remaining_paid')
                 <a href="{{ route('postrequest.invoice', $bid->id) }}" class="btn btn-outline-success ms-2">
-                    <i class="fas fa-file-download"></i> Download Invoice 
+                    <i class="fas fa-file-download"></i> Download Invoice
                 </a>
             @elseif($bid->status === 'Advance Payment Pending')
                 <button class="btn btn-success payAdvanceBtn" data-post-id="{{ $bid->id }}"
                     data-amount="{{ $advAmount }}">
                     <i class="fas fa-wallet"></i> Pay Advance €{{ number_format($advAmount, 2) }}
                     ({{ $advPct }}%)
-                           </button>
+                </button>
             @elseif($bid->status === 'completed' && !$bid->has_advance_paid)
                 <button class="btn btn-primary payRemainingBtn" data-post-id="{{ $bid->id }}"
                     data-amount="{{ number_format($remaining, 2, '.', '') }}">
-                  
+
                     <i class="fas fa-credit-card"></i> Pay Remaining €{{ number_format($remaining, 2) }}
                 </button>
             @elseif($bid->status === 'hold')
@@ -350,7 +350,7 @@
                                 </tr>
                                 <tr class="fw-bold">
                                     <td>Remaining Amount</td>
-                                   
+
                                     <td class="text-end">€{{ number_format($remaining, 2) }}</td>
                                 </tr>
                             </tbody>
@@ -708,91 +708,111 @@
 
             $(document).on('click', '.extraChargesBtn', function() {
                 const bidId = $(this).data('id');
+
                 Swal.fire({
                     title: 'Add Extra Charges',
                     html: `
-            <div class="text-start">
-                <label class="form-label fw-bold">Title</label>
-                <input type="text" id="ec_title" class="form-control" placeholder="e.g., Title" />
-            </div>
-            <div class="mt-2 text-start">
-                <label class="form-label fw-bold">Amount</label>
-                <input type="number" id="ec_amount" class="form-control" step="0.01" min="0.01" placeholder="e.g., 20" />
-            </div>
-            <div class="mt-2 text-start">
-                <label class="form-label fw-bold">Quantity (optional)</label>
-                <input type="number" id="ec_qty" class="form-control" step="1" min="1" placeholder="1" />
-            </div>
-        `,
+      <div id="ec_wrapper"></div>
+      <div class="d-flex justify-content-between mt-2">
+        <button type="button" class="btn btn-sm btn-outline-primary" id="ec_addRow"><i class="las la-plus"></i> Add More</button>
+        <small class="text-muted">Fill title, amount and qty for each row</small>
+      </div>
+    `,
                     focusConfirm: false,
                     showCancelButton: true,
                     confirmButtonText: 'Add',
+                    didOpen: () => {
+                        const $wrap = $('#ec_wrapper');
+
+                        function addRow() {
+                            const row = $(`
+          <div class="ec-row border p-2 mb-2 rounded bg-light">
+            <div class="row g-2 align-items-end">
+              <div class="col-md-6">
+                <label class="form-label mb-0">Title</label>
+                <input type="text" class="form-control ec_title" placeholder="e.g., Travel cost" />
+              </div>
+              <div class="col-md-3">
+                <label class="form-label mb-0">Amount</label>
+                <input type="number" step="0.01" min="0.01" class="form-control ec_amount" placeholder="e.g., 34" />
+              </div>
+              <div class="col-md-2">
+                <label class="form-label mb-0">Qty</label>
+                <input type="number" step="1" min="1" value="1" class="form-control ec_qty" />
+              </div>
+              <div class="col-md-1 text-end">
+                <button type="button" class="btn btn-sm btn-outline-danger ec_remove">&times;</button>
+              </div>
+            </div>
+          </div>
+        `);
+                            $wrap.append(row);
+                        }
+
+                        $('#ec_addRow').on('click', addRow);
+                        addRow();
+                    },
                     preConfirm: () => {
-                        const title = document.getElementById('ec_title').value.trim();
-                        const amount = parseFloat(document.getElementById('ec_amount').value);
-                        const qtyRaw = document.getElementById('ec_qty').value;
-                        const quantity = qtyRaw ? parseInt(qtyRaw, 10) : 1;
-
-                        if (!title) {
-                            Swal.showValidationMessage('Title is required');
-                            return false;
-                        }
-                        if (!amount || amount <= 0) {
-                            Swal.showValidationMessage('Enter a valid amount > 0');
-                            return false;
-                        }
-                        if (quantity && quantity < 1) {
-                            Swal.showValidationMessage('Quantity must be at least 1');
-                            return false;
-                        }
-
-                        return {
-                            title,
-                            amount,
-                            quantity
-                        };
-                    }
-                }).then((result) => {
-                    if (!result.isConfirmed) return;
-                    const {
-                        title,
-                        amount,
-                        quantity
-                    } = result.value;
-
-                    $.ajax({
-                        url: '{{ route('postjob.addExtraCharges', ':id') }}'.replace(':id',
-                            bidId),
-                        type: 'POST',
-                        data: {
-                            _token: '{{ csrf_token() }}',
-                            title: title,
-                            amount: amount,
-                            quantity: quantity
-                        },
-                        success: function(response) {
-                            if (response && response.status) {
-                                Swal.fire('Added', response.message ||
-                                        'Extra charges added', 'success')
-                                    .then(() => {
-                                        // Reload the whole page after user closes the alert
-                                        window.location.reload();
-                                    });
-                            } else {
-                                Swal.fire('Error', (response && response.message) ?
-                                    response.message : 'Unable to add charges',
-                                    'error');
+                        const charges = [];
+                        $('#ec_wrapper .ec-row').each(function() {
+                            const title = $(this).find('.ec_title').val().trim();
+                            const amount = parseFloat($(this).find('.ec_amount').val());
+                            const qty = parseInt($(this).find('.ec_qty').val(), 10);
+                            if (title && amount > 0 && qty > 0) {
+                                charges.push({
+                                    title,
+                                    amount,
+                                    qty
+                                });
                             }
-                        },
-
-                        error: function(xhr) {
-                            Swal.fire('Error', (xhr && xhr.responseJSON && xhr
-                                    .responseJSON.message) ? xhr.responseJSON
-                                .message : 'Something went wrong', 'error');
+                        });
+                        if (charges.length === 0) {
+                            Swal.showValidationMessage('Add at least one valid extra charge');
+                            return false;
                         }
-                    });
+                        return charges;
+                    }
+                }).then(async (result) => {
+                    if (!result.isConfirmed) return;
+
+                    const charges = result.value;
+
+                    try {
+                        for (const ch of charges) {
+                            await $.ajax({
+                                url: '{{ route('postjob.addExtraCharges', ':id') }}'
+                                    .replace(':id', bidId),
+                                type: 'POST',
+                                data: {
+                                    _token: '{{ csrf_token() }}',
+                                    title: ch.title,
+                                    amount: ch.amount,
+                                    quantity: ch.qty
+                                }
+                            });
+                        }
+                        Swal.fire('Added', 'Extra charges added successfully', 'success').then(
+                        () => window.location.reload());
+                    } catch (e) {
+                        Swal.fire('Error', 'Unable to add extra charges', 'error');
+                    }
+                });
+
+                // Delegate remove row click
+                $(document).off('click.ec_remove').on('click.ec_remove', '.ec_remove', function() {
+                    $(this).closest('.ec-row').remove();
                 });
             });
+
+
+
+
+
+
+
+
+
+
 
         });
     </script>
