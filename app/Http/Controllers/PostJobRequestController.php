@@ -768,7 +768,7 @@ class PostJobRequestController extends Controller
                 'text'        => __('messages.payment_transfer', [
                     'from'   => get_user_name($finalPayment->customer_id),
                     'to'     => get_user_name($providerId),
-                    'amount' => number_format((float) $request->amount, 2), // ✅ Just for display
+                    'amount' => number_format((float) $finalPayment->total_amount, 2), // ✅ Just for display
                 ]),
                 'other_transaction_detail' => null, // Optional: or just skip commission info
             ]);
