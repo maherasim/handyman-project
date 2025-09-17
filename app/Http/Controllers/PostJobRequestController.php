@@ -334,7 +334,7 @@ class PostJobRequestController extends Controller
     }
     public function payAdvance(Request $request, $id)
     {
-        dd($request->all());
+       // dd($request->all());
         $user = auth()->user();
         $post = PostJobBid::findOrFail($id);
     
@@ -367,7 +367,7 @@ class PostJobRequestController extends Controller
             $newPostStatus = 'remaining_paid';
             $successMsg = "Remaining payment of €" . number_format($payAmount, 2) . " successful";
         } else {
-            // Default to advance
+            dd($payAmount,'advance');
             $txnPrefix = 'ADV-';
             $customerActivity = "Advance payment of €" . number_format($payAmount, 2) . " for Bid #{$post->id}";
 
@@ -396,7 +396,7 @@ class PostJobRequestController extends Controller
             */
             $wallet->decrement('amount', $payAmount);
     
-            // Wallet history (customer)
+          dd($customerActivity,'customerActivity');
             WalletHistory::create([
                 'datetime'         => now(),
                 'user_id'          => $user->id,
