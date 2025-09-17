@@ -493,6 +493,7 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
     Route::post('pay-advance/{id}', [PostJobRequestController::class, 'payAdvance'])->name('post-job-request.pay-advance');
     Route::post('/post-job-request/{id}/status', [PostJobRequestController::class, 'updateBidStatus'])->name('postjob.updateStatus');
     Route::get('post-job-request/{id}/editjob', [PostJobRequestController::class, 'editpostjob'])->name('post-job-requestjob.edit');
+    Route::get('post-job-request/{id}/invoice', [PostJobRequestController::class, 'invoice'])->name('postrequest.invoice');
     Route::post('postjob/paypal/create/{id}', [PostJobRequestController::class, 'createPostJobPayPalPayment'])->name('postjob.paypal.create');
     Route::get('postjob/paypal-success/{id}', [PostJobRequestController::class, 'postJobPayPalSuccess'])->name('postjob.paypal.success');
     Route::get('postjob/paypal-cancel', [PostJobRequestController::class, 'postJobPayPalCancel'])->name('postjob.paypal.cancel');

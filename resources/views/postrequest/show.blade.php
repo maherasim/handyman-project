@@ -80,10 +80,10 @@
                 <button class="btn btn-primary updateStatusBtn" data-id="{{ $bid->id }}" data-status="completed">
                     Completed
                 </button>
-                @elseif($bid->status === 'remaining_paid')
-                <button class="btn btn-info" data-id="{{ $bid->id }}" data-status="">
-                    Invoice Downlaod
-                </button>
+                  @elseif($bid->status === 'remaining_paid')
+                  <a href="{{ route('postrequest.invoice', $bid->id) }}" class="btn btn-outline-secondary ms-2">
+                    <i class="fas fa-file-download"></i> Download Invoice (PDF)
+                </a>
                 <button class="btn btn-outline-secondary extraChargesBtn" data-id="{{ $bid->id }}">
                     <i class="fas fa-plus"></i> Extra Charges
                 </button>
@@ -110,9 +110,9 @@
                     Cancel
                 </button>
                 @elseif($bid->status === 'remaining_paid')
-                <button class="btn btn-info" data-id="{{ $bid->id }}" data-status="">
-                    Invoice Downlaod
-                </button>
+                <a href="{{ route('postrequest.invoice', $bid->id) }}" class="btn btn-outline-secondary ms-2">
+                    <i class="fas fa-file-download"></i> Download Invoice (PDF)
+                </a>
             @elseif($bid->status === 'Advance Payment Pending')
                 <button class="btn btn-success payAdvanceBtn" data-post-id="{{ $bid->id }}"
                     data-amount="{{ $advAmount }}">
@@ -140,7 +140,9 @@
         @endif
 
 
-
+        <a href="{{ route('postrequest.invoice', $bid->id) }}" class="btn btn-outline-secondary ms-2">
+            <i class="fas fa-file-download"></i> Download Invoice (PDF)
+        </a>
     </div>
 
     <div class="container py-4">
