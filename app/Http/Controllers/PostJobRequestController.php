@@ -1425,7 +1425,19 @@ class PostJobRequestController extends Controller
             ->rawColumns(['title', 'action', 'status', 'check'])
             ->toJson();
     }
-
+    public function edit($id)
+    {
+        $auth_user = authSession();
+        $postJob = PostJobRequest::findOrFail($id);
+    
+        // Allow admin or the owner to edit
+        if (!auth()->user()->hasAnyRole(['admin']) && (int)auth()->id() !== (int)$postJob->customer_id) {
+            abort(403);
+        }
+    
+        $pageTitle = __('messages.update_form_title', ['form' => __('messages.post_job')]);
+        return view('post-job-request.create', compact('postJob', 'pageTitle', 'auth_user'));
+    }
 
     /* bulck action method */
     public function bulk_action(Request $request)
