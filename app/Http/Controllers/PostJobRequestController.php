@@ -675,6 +675,10 @@ class PostJobRequestController extends Controller
 
         $bid = PostJobBid::findOrFail($id);
 
+        // Define commonly used ids
+        $adminUser  = User::where('user_type', 'admin')->first();
+        $providerId = $bid->provider_id;
+
         // 🔹 Verify session with Stripe
         try {
             $session = getstripePaymnetId($sessionId, 'stripe');
