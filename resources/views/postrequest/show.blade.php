@@ -84,8 +84,8 @@
                     <i class="fas fa-plus"></i> Extra Charges
                 </button>
           @elseif($bid->status === 'remaining_paid')
-                <a href="{{ route('postrequest.invoice', $bid->id) }}" class="btn btn-outline-secondary ms-2">
-                  <i class="fas fa-file-download"></i> Download Invoice (PDF)
+                <a href="{{ route('postrequest.invoice', $bid->id) }}" class="btn btn-outline-success ms-2">
+                  <i class="fas fa-file-download"></i> Download Invoice
               </a>
             @endif
 
