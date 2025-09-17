@@ -407,7 +407,7 @@ class PostJobRequestController extends Controller
                     'balance' => $wallet->amount,
                 ]),
             ]);
-    dd($data);
+   // dd($data);
             // Payment entry (customer)
             $payment = PaymentPostJOb::create([
                 'customer_id'               => $user->id,
