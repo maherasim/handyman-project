@@ -3,8 +3,9 @@
     <head>
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <script type="text/javascript" src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
-        <script src="https://cdn.tiny.cloud/1/m5d82gd2rwdlg96hsxpx0e5wwmfrl2zzkcw35ys8o3glilgq/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
-     </head>
+        <script src="https://cdn.tiny.cloud/1/m5d82gd2rwdlg96hsxpx0e5wwmfrl2zzkcw35ys8o3glilgq/tinymce/5/tinymce.min.js"
+            referrerpolicy="origin"></script>
+    </head>
     <div class="container-fluid">
         <div class="row">
             @if (session('success'))
@@ -126,7 +127,7 @@
             </div>
         </div>
     </div>
- 
+
 
     <script>
         document.addEventListener('DOMContentLoaded', (event) => {
@@ -163,8 +164,10 @@
                         title: "{{ __('messages.title') }}",
                         render: function(data, type, row) {
                             const nonClickable = ['requested', 'cancelled'];
-                            const statusKey = String(row.status_key || row.status || '').toLowerCase();
-                            const isProvider = {{ auth()->user()->user_type == 'provider' ? 'true' : 'false' }};
+                            const statusKey = String(row.status_key || row.status || '')
+                                .toLowerCase();
+                            const isProvider =
+                                {{ auth()->user()->user_type == 'provider' ? 'true' : 'false' }};
                             const providerCan = Boolean(row.accepted_for_current_provider);
 
                             // Rule 1: For provider and user: requested/cancelled => not clickable
@@ -260,7 +263,8 @@
                 return;
             }
 
-            if (!why_choose_me || (typeof why_choose_me === 'string' && why_choose_me.replace(/<[^>]*>/g, '').trim() === '')) {
+            if (!why_choose_me || (typeof why_choose_me === 'string' && why_choose_me.replace(/<[^>]*>/g, '').trim() ===
+                '')) {
                 displayErrorMessage('Why Choose Me is required.', 'whyChooseMeError');
                 return;
             }
@@ -316,47 +320,64 @@
         }
 
         function openBidModal(postRequestId, authUserId) {
-            $('.postrequestid').val(postRequestId);
+	$('.postrequestid').val(postRequestId);
 
-            // Store the postRequestId in the modal for later use
-            $('#bidModal').data('post-request-id', postRequestId);
+	// Store the postRequestId in the modal for later use
+	$('#bidModal').data('post-request-id', postRequestId);
 
-            // Make an AJAX call here
-            $.ajax({
-                url: 'api/get-post-job-bid-data',
-                type: 'GET',
-                dataType: 'json',
-                headers: {
-                    'Authorization': `Bearer ${authToken}`
-                },
-                data: {
-                    user_id: authUserId,
-                    post_request_id: postRequestId,
-                },
-                success: function(response) {
-                    // Populate form for update or create
-                    if (response && response.price !== undefined) {
-                        $('#bidId').val(response.id || '');
-                        $('#bidAmount').val(response.price);
-                        $('#bidAmount').prop('disabled', false);
-                        $('.bid-button-submit').prop('disabled', false).text('Update Bid');
-                        $('#bidModalLabel').text('Update Bid');
-                    } else {
-                        $('#bidId').val('');
-                        $('#bidAmount').val('');
-                        $('#bidAmount').prop('disabled', false);
-                        $('.bid-button-submit').prop('disabled', false).text('Submit Bid');
-                        $('#bidModalLabel').text('Place Bid');
-                    }
-                },
-                error: function(error) {
-                    console.error('Error:', error);
-                }
-            });
+	// Make an AJAX call here
+	$.ajax({
+		url: 'api/get-post-job-bid-data',
+		type: 'GET',
+		dataType: 'json',
+		headers: {
+			'Authorization': `Bearer ${authToken}`
+		},
+		data: {
+			user_id: authUserId,
+			post_request_id: postRequestId,
+		},
+		success: function(response) {
+			// Populate form for update or create
+			if (response && response.price !== undefined) {
+				$('#bidId').val(response.id || '');
+				$('#bidAmount').val(response.price);
+				$('#bidAmount').prop('disabled', false);
+				$('.bid-button-submit').prop('disabled', false).text('Update Bid');
+				$('#bidModalLabel').text('Update Bid');
+				// Set Why Choose Me content if available
+				if (typeof response.why_choose_me !== 'undefined' && response.why_choose_me !== null) {
+					var whyHtml = String(response.why_choose_me);
+					// If editor already initialized, set content directly
+					if (window.tinymce && tinymce.get('why_choose_me')) {
+						tinymce.get('why_choose_me').setContent(whyHtml);
+					} else {
+						// Set textarea value as fallback
+						$('#why_choose_me').val(whyHtml);
+						// After modal shows and TinyMCE initializes, set content
+						$('#bidModal').one('shown.bs.modal', function(){
+							if (window.tinymce && tinymce.get('why_choose_me')) {
+								tinymce.get('why_choose_me').setContent(whyHtml);
+							}
+						});
+					}
+				}
+			} else {
+				$('#bidId').val('');
+				$('#bidAmount').val('');
+				$('#bidAmount').prop('disabled', false);
+				$('.bid-button-submit').prop('disabled', false).text('Submit Bid');
+				$('#bidModalLabel').text('Place Bid');
+			}
+		},
+		error: function(error) {
+			console.error('Error:', error);
+		}
+	});
 
-            // Open the modal manually
-            $('#bidModal').modal('show');
-        }
+	// Open the modal manually
+	$('#bidModal').modal('show');
+}
 
 
         $('#bidModal').on('hide.bs.modal', function() {
@@ -449,7 +470,7 @@
                     });
                 }
             }
-            $('#bidModal').on('shown.bs.modal', function(){
+            $('#bidModal').on('shown.bs.modal', function() {
                 initTinyWhy();
             });
             window.initTinyWhy = initTinyWhy;
