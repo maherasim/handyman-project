@@ -15,7 +15,7 @@
             } elseif ($bid->postrequest->price_type == 'daily') {
               
                 $quantity = (float) ($bid->postrequest->total_days ?? 1);
-               // 
+                dd($bid->postrequest->total_days, $quantity );
             } elseif ($bid->postrequest->price_type == 'fixed') {
                 $quantity = 1;
             } else {
@@ -51,7 +51,7 @@
             $remaining = $subTotal - $advAmount;
             //   @dd($remaining);
         @endphp
-@dd($bid->postrequest->total_days, $quantity );
+
         {{-- Provider Actions --}}
         @if ($auth_user->user_type === 'provider' && $auth_user->id == $bid->provider_id)
 
