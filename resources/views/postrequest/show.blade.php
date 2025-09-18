@@ -315,10 +315,10 @@
                                     <td>Rate (Unit Price)</td>
                                     <td class="text-end">€{{ number_format($unitPrice, 2) }}</td>
                                 </tr>
-                              
+                                @dd($bid->postrequest->total_days, $quantity );
                                 <tr>
                                     <td>Quantity (Packages / Hours / Days)</td>
-                                    <td class="text-end">{{ $quantity }} </td>
+                                    <td class="text-end">{{ $quantity }}</td>
                                 </tr>
                                 <tr>
                                     <td>Total Amount</td>
