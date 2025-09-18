@@ -318,7 +318,7 @@
                               
                                 <tr>
                                     <td>Quantity (Packages / Hours / Days)</td>
-                                    <td class="text-end">{{ $quantity }}  @dd( $quantity );</td>
+                                    <td class="text-end">{{ $quantity }} </td>
                                 </tr>
                                 <tr>
                                     <td>Total Amount</td>
