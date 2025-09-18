@@ -262,7 +262,14 @@ class PostJobRequestController extends Controller
                 return $bid->postrequest->end_date ?? null;
             })
             ->addColumn('total_budget', function ($bid) {
-                return $bid->postrequest->total_budget ?? null;
+                $post = $bid->postrequest;
+                if (!$post) {
+                    return '-';
+                }
+                $amount = getPriceFormat((float) ($post->total_budget ?? 0));
+                $type = strtolower((string)($post->price_type ?? $post->job_price ?? 'fixed'));
+                $label = $type === 'hourly' ? 'hourly' : ($type === 'daily' ? 'daily' : ($type === 'fixed' ? 'fixed' : $type));
+                return trim($amount . ' ' . $label);
             })
             ->addColumn('applications', function ($bid) {
                 $post = $bid->postrequest;
@@ -274,6 +281,13 @@ class PostJobRequestController extends Controller
             })
             ->addColumn('created_at', function ($bid) {
                 return $bid->created_at ? $bid->created_at->format('Y-m-d') : null;
+            })
+            ->editColumn('price', function ($bid) {
+                $amount = getPriceFormat((float) ($bid->price ?? 0));
+                $post = $bid->postrequest;
+                $type = $post ? strtolower((string)($post->price_type ?? $post->job_price ?? 'fixed')) : 'fixed';
+                $label = $type === 'hourly' ? 'hourly' : ($type === 'daily' ? 'daily' : ($type === 'fixed' ? 'fixed' : $type));
+                return trim($amount . ' ' . $label);
             })
             ->addColumn('status', fn($bid) => $this->formatStatusBadge($bid->status ?? ''))
             ->addColumn('hold_reason', fn($bid) => $bid->hold_reason ?? null)
