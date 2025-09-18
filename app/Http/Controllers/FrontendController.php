@@ -456,19 +456,21 @@ class FrontendController extends Controller
         $apiRequest = new Request(['id' => $provider_id]);
         $providerData = $userController->userDetail($apiRequest);
         $providerData = json_decode($providerData->content(), true);
-        $why_choose_me = json_decode($providerData['data']['why_choose_me'], true);
-
+        $provider = is_array($providerData) && isset($providerData['data']) ? $providerData['data'] : null;
+        if (!$provider) {
+            return redirect()->route('frontend.index')->withErrors(__('messages.record_not_found'));
+        }
+        $why_choose_me = json_decode($provider['why_choose_me'] ?? '[]', true);
         $sitesetup = Setting::where('type', 'site-setup')->where('key', 'site-setup')->first();
         $datetime = json_decode($sitesetup->value);
 
-        $completed_services = Booking::where('provider_id', $providerData['data']['id'])
-            ->where('status', 'completed')
-            ->count();
-
-        $servicerating = Service::where('provider_id', $providerData['data']['id'])
+        $completed_services = Booking::where('provider_id', $provider['id'] ?? 0)
+        ->where('status', 'completed')
+        ->count();
+         
+        $servicerating = Service::where('provider_id', $provider['id'] ?? 0)
             ->with('serviceRating')
             ->get();
-
         $allRatings = $servicerating->flatMap(function ($service) {
             return $service->serviceRating->filter(function ($rating) {
                 return in_array($rating->rating, [4, 5]);
