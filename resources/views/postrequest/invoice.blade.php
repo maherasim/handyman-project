@@ -72,7 +72,7 @@ $logoPath = public_path('assets/frobster logo.png');
 
 	$advancePercent = (float) ($bid->advance_percent ?? 0);
 	$advancePaid = $advancePercent > 0 ? ($baseTotal * $advancePercent / 100.0) : 0;
-	$remainingAmount = $grandTotal - $advancePaid;
+	$remainingAmount = $subTotal - $advancePaid;
 
 	$fmt = function ($n) { return getPriceFormat((float)$n); };
 @endphp
@@ -183,7 +183,7 @@ $logoPath = public_path('assets/frobster logo.png');
 				</tr>
 				<tr>
 					<td>{{ __('Grand Total') }}</td>
-					<td class="text-right">{{ $fmt($grandTotal) }}</td>
+					<td class="text-right">{{ $fmt($subTotal) }}</td>
 				</tr>
 				<tr>
 					<td>{{ __('Advance Payment') }} ({{ number_format($advancePercent, 0) }}%)</td>
