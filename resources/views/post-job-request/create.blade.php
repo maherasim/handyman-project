@@ -537,6 +537,7 @@ function calculateDays() {
             $('#hidden_total_hours').val(0);
         }
     }
+    recalcBudget();
 }
 
            // Set initial min dates
