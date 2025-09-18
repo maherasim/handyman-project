@@ -12,8 +12,9 @@
             // Determine quantity based on price type
             if ($bid->postrequest->price_type == 'hourly') {
                 $quantity = (float) ($bid->postrequest->total_hours ?? 1);
-            } elseif ($bid->postrequest->price_type == 'daily') {
-              
+            } .
+            elseif ($bid->postrequest->price_type == 'daily') {
+              dd($bid->postrequest->price_type);
                 $quantity = (float) ($bid->postrequest->total_days ?? 1);
                // dd($bid->postrequest->total_days, $quantity );
             } elseif ($bid->postrequest->price_type == 'fixed') {

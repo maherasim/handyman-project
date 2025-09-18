@@ -137,7 +137,7 @@ class PostJobRequestController extends Controller
         if (!$bid) {
             $bid = (clone $bidQuery)->where('status', '!=', 'cancelled')->firstOrFail();
         }
- dd($bidQuery->postrequest);
+ 
         return view('postrequest.show', compact('bid'));
     }
 
