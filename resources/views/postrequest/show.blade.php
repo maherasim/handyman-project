@@ -13,7 +13,9 @@
             if ($bid->postrequest->price_type == 'hourly') {
                 $quantity = (float) ($bid->postrequest->total_hours ?? 1);
             } elseif ($bid->postrequest->price_type == 'daily') {
+              
                 $quantity = (float) ($bid->postrequest->total_days ?? 1);
+                dd($bid->postrequest->total_days, $quantity );
             } elseif ($bid->postrequest->price_type == 'fixed') {
                 $quantity = 1;
             } else {

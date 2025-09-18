@@ -19,6 +19,79 @@ class PostJobRequestController extends Controller
         $post_job_status = PostRequestStatus::orderBy('sequence')->get();
         return comman_custom_response($post_job_status);
     }
+    public function updateBidStatus(Request $request, $id)
+    {
+        $request->validate([
+            'status' => 'required|string',
+            'hold_reason' => 'nullable|string|max:500'
+        ]);
+
+        $bid = PostJobBid::findOrFail($id);
+
+        // Assuming post_request_id exists in PostJobBid
+        $postjob = PostJobRequest::findOrFail($bid->post_request_id);
+
+        // Update bid status
+        $bid->status = $request->input('status');
+
+        // If hold → save reason
+        if ($bid->status === 'hold' && $request->filled('hold_reason')) {
+            $bid->hold_reason = $request->input('hold_reason');
+        }
+        $bid->save();
+
+        // Update postjob status
+        if ($bid->status === 'cancelled') {
+            $postjob->status = 'requested'; // special case
+        } else {
+            $postjob->status = $bid->status;
+        }
+        $postjob->save();
+
+        try {
+            $this->sendNotification([
+                'activity_type' => 'update_booking_status',
+                'post_job' => $bid,
+            ]);
+        } catch (\Throwable $e) {
+            // silent fail for notifications
+        }
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Status updated successfully',
+        ]);
+    }
+    public function startWork(Request $request, $id)
+    {
+        // Find the bid
+        $post = PostJobBid::findOrFail($id);
+
+        // Ensure user is a provider
+
+
+
+        // Update advance, remaining, and status
+        $post->advance_percent = $request->input('advance_percent');
+        $post->remaining_percent = $request->input('remaining_percent');
+        $post->status = 'Advance Payment Pending';
+        $post->save();
+
+        // Optionally notify the user
+        try {
+            $this->sendNotification([
+                'activity_type' => 'update_booking_status',
+                'post_job' => $post,
+            ]);
+        } catch (\Throwable $e) {
+            // Silent fail
+        }
+
+        return response()->json([
+            'status' => true,
+            'message' => ' payment split updated successfully!'
+        ]);
+    }
     public function getPostRequestList(Request $request)
     {
         $user = auth()->user();

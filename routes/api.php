@@ -166,6 +166,15 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('save-bid',[  App\Http\Controllers\PostJobBidController::class, 'store' ]);
     Route::get('get-bid-list',[  API\PostJobBidController::class, 'getPostBidList' ]);
 
+    Route::post('/post-job-request/{id}/status', [API\PostJobRequestController::class, 'updateBidStatus'])->name('postjob.updateStatus');
+    Route::post('adjustpayment/{id}/split-advance', [API\PostJobRequestController::class, 'startWork']);
+
+    // payment
+    Route::post('paythrough/wallet/{id}', [App\Http\Controllers\PostJobRequestController::class, 'payAdvance'])->name('post-job-request.pay-advance');
+    Route::post('postjob/stripe/create/{id}', [App\Http\Controllers\PostJobRequestController::class, 'createPostJobStripePayment'])->name('postjob.stripe.create');
+    Route::post('postjob/paypal/create/{id}', [App\Http\Controllers\PostJobRequestController::class, 'createPostJobPayPalPayment'])->name('postjob.paypal.create');
+    Route::post('postjob/bank-transfer/{id}', [App\Http\Controllers\PostJobRequestController::class, 'createPostJobBankTransfer'])->name('postjob.bank.transfer');
+
 
     Route::get('get-post-job-bid-data',[  App\Http\Controllers\PostJobBidController::class, 'PostJobBidData' ]);
     Route::get('/job-requests/provider', [API\PostJobBidController::class, 'apiIndex']);
