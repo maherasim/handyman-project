@@ -101,8 +101,8 @@
                     $nextText = 'Payment completed. You can download the invoice.';
                     break;
                 case 'completed':
-                    $nextActor = null;
-                    $nextText = 'Job completed successfully.';
+                    $nextActor = 'user';
+                    $nextText = 'Job is completed — waiting for customer to pay remaining amount';
                     break;
                 case 'cancelled':
                     $nextActor = null;
