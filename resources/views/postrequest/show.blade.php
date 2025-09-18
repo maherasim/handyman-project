@@ -14,7 +14,7 @@
                 $quantity = (float) ($bid->postrequest->total_hours ?? 1);
             } 
             elseif ($bid->postrequest->price_type == 'daily') {
-              dd($bid->postrequest);
+             // dd($bid->postrequest);
                 $quantity = (float) ($bid->postrequest->total_days ?? 1);
                // dd($bid->postrequest->total_days, $quantity );
             } elseif ($bid->postrequest->price_type == 'fixed') {
