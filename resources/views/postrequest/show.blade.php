@@ -15,7 +15,7 @@
             } elseif ($bid->postrequest->price_type == 'daily') {
               
                 $quantity = (float) ($bid->postrequest->total_days ?? 1);
-                dd($bid->postrequest->total_days, $quantity );
+               // dd($bid->postrequest->total_days, $quantity );
             } elseif ($bid->postrequest->price_type == 'fixed') {
                 $quantity = 1;
             } else {
