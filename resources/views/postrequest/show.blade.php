@@ -53,6 +53,78 @@
             //   @dd($remaining);
         @endphp
 
+        {{-- Dynamic Next-Step Marquee --}}
+        @php
+            $status = (string) ($bid->status ?? '');
+            $nextActor = null; // 'provider' | 'user' | null
+            $nextText = null;
+
+            switch ($status) {
+                case 'requested':
+                    $nextActor = 'user';
+                    $nextText = 'Waiting for customer to accept the bid';
+                    break;
+                case 'accepted':
+                    $nextActor = 'provider';
+                    $nextText = 'Waiting for provider to split the payment';
+                    break;
+                case 'Advance Payment Pending':
+                    $nextActor = 'user';
+                    $nextText = 'Waiting for customer to pay the advance';
+                    break;
+                case 'advance_paid':
+                    $nextActor = 'provider';
+                    $nextText = 'Waiting for provider to start work';
+                    break;
+                case 'in_process':
+                    $nextActor = 'user';
+                    $nextText = "Waiting for customer to confirm 'Let's Start Work'";
+                    break;
+                case 'in_progress':
+                    $nextActor = 'provider';
+                    $nextText = 'Work in progress — waiting for provider to update or mark done';
+                    break;
+                case 'hold':
+                    $nextActor = 'provider';
+                    $nextText = 'Waiting for provider to resume work';
+                    break;
+                case 'done':
+                    $nextActor = 'user';
+                    $nextText = 'Waiting for customer to confirm work done';
+                    break;
+                case 'confirm_done':
+                    $nextActor = 'provider';
+                    $nextText = 'Waiting for provider to mark the bid as completed';
+                    break;
+                case 'remaining_paid':
+                    $nextActor = null;
+                    $nextText = 'Payment completed. You can download the invoice.';
+                    break;
+                case 'completed':
+                    $nextActor = null;
+                    $nextText = 'Job completed successfully.';
+                    break;
+                case 'cancelled':
+                    $nextActor = null;
+                    $nextText = 'This bid has been cancelled.';
+                    break;
+                default:
+                    $nextActor = null;
+                    $nextText = null;
+            }
+        @endphp
+
+        @if ($nextText)
+            <div class="w-100 px-3">
+                <div class="marquee-banner {{ $nextActor === 'provider' ? 'marquee-provider' : ($nextActor === 'user' ? 'marquee-user' : 'marquee-neutral') }}">
+                    <marquee behavior="scroll" direction="left" scrollamount="6">
+                        <i class="fas fa-info-circle me-2"></i>
+                        {{ $nextText }}
+                    </marquee>
+                </div>
+            </div>
+        @endif
+
         {{-- Provider Actions --}}
         @if ($auth_user->user_type === 'provider' && $auth_user->id == $bid->provider_id)
 
@@ -367,6 +439,28 @@
     </div>
 
     <style>
+        .marquee-banner {
+            border-radius: 6px;
+            padding: 8px 12px;
+            margin: 8px 0 4px 0;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+            border-left: 4px solid transparent;
+        }
+        .marquee-provider {
+            background: #fff8e1;
+            color: #7a5d00;
+            border-left-color: #ffc107;
+        }
+        .marquee-user {
+            background: #e7f1ff;
+            color: #084298;
+            border-left-color: #0d6efd;
+        }
+        .marquee-neutral {
+            background: #f1f1f1;
+            color: #333;
+            border-left-color: #6c757d;
+        }
         .hover-shadow:hover {
             transform: translateY(-3px);
             transition: 0.3s;
