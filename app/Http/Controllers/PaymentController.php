@@ -316,11 +316,9 @@ class PaymentController extends Controller
                     ->orderBy('customers.display_name', $order);
             })
             ->editColumn('datetime', function ($query) {
-                $sitesetup = Setting::where('type', 'site-setup')->where('key', 'site-setup')->first();
-                $datetime = json_decode($sitesetup->value);
-                $date = date("$datetime->date_format $datetime->time_format", strtotime($query->datetime));
-                return $date;
+                return $query->created_at ? $query->created_at->format('Y-m-d H:i') : '-';
             })
+            
             ->editColumn('history', function ($query) {
                 return '<a href="' . route('paymentjobrequest.history', $query->id) . '" class="btn btn-primary btn-sm">' . __('messages.view') . '</a>';
             })
