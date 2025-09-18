@@ -580,7 +580,9 @@ class FrontendController extends Controller
         $subtotal = $discount != 0 ? ($price - ($price * $discount / 100)) : $price;
 
 
-        $total_ratings = BookingRating::where('service_id', $serviceData['service_detail']['id'])->get();
+        // $total_ratings = BookingRating::where('service_id', $serviceData['service_detail']['id'])->get();
+        $serviceIdForRatings = (int)($serviceData['service_detail']['id'] ?? 0);
+        $total_ratings = $serviceIdForRatings > 0 ? BookingRating::where('service_id', $serviceIdForRatings)->get() : collect();
         return view('landing-page.ServiceDetail', compact('serviceData', 'favouriteService', 'date_time', 'completed_services', 'knownLanguageArray', 'subtotal', 'total_ratings', 'favouriteServiceData', 'userId'));
     }
 
