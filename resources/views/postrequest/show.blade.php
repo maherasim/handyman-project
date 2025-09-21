@@ -850,7 +850,7 @@
                     </div>
                 </div>
                 <button type="button" id="ec_add_row" class="btn btn-outline-primary btn-sm"><i class="la la-plus"></i> Add More</button>
-                <div class="mt-3 small text-muted">All added rows will be saved as line items.</div>
+                <div class="mt-3 small text-muted">Extra charges will be included in the final invoice.</div>
             </div>
         `,
                     didOpen: () => {
