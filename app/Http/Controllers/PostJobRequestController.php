@@ -28,6 +28,7 @@ use Carbon\Carbon;
 use App\Models\ProviderPayout;
 use App\Models\CommissionEarning;
 use App\Models\PostJobBid;
+use App\Models\PostJobExtraCharge;
 use App\Traits\NotificationTrait;
 use Illuminate\Support\Facades\Log;
 
@@ -124,6 +125,7 @@ class PostJobRequestController extends Controller
             'postrequest.city:id,name',
             'postrequest.country:id,name',
             'postrequest.postBidList:id,post_request_id',
+            'extraCharges',
         ])->where('post_request_id', $postRequestId);
         
 
@@ -153,6 +155,7 @@ class PostJobRequestController extends Controller
             'postrequest.city:id,name',
             'postrequest.country:id,name',
             'postrequest.postBidList:id,post_request_id',
+            'extraCharges',
         ])->findOrFail($bidId);
  
         return view('postrequest.show', compact('bid'));
@@ -600,14 +603,24 @@ class PostJobRequestController extends Controller
             $items = $request->input('items');
             $totalExtra = 0.0;
             $totalQty   = 0;
+            $bid = PostJobBid::findOrFail($id);
+            // reset existing lines to avoid duplication
+            $bid->extraCharges()->delete();
+
             foreach ($items as $line) {
                 $lineAmount = (float) ($line['amount'] ?? 0);
                 $lineQty    = (int) ($line['quantity'] ?? 0);
                 $totalExtra += $lineAmount * $lineQty;
                 $totalQty   += $lineQty;
+
+                PostJobExtraCharge::create([
+                    'post_job_bid_id' => $bid->id,
+                    'title'           => (string) $line['title'],
+                    'amount'          => $lineAmount,
+                    'quantity'        => $lineQty,
+                ]);
             }
     
-            $bid = PostJobBid::findOrFail($id);
             $bid->extra_charges = $totalExtra; // store summed charges
             $bid->quantity      = $totalQty;   // store summed qty for reference
             $bid->status        = 'completed';
@@ -633,6 +646,15 @@ class PostJobRequestController extends Controller
         $quantity    = (int)($request->input('quantity') ?? 1);
         $extraAmount = (float)$request->input('amount');
     
+        // Replace any existing lines with this single item
+        $bid->extraCharges()->delete();
+        PostJobExtraCharge::create([
+            'post_job_bid_id' => $bid->id,
+            'title'           => (string) $request->input('title'),
+            'amount'          => $extraAmount,
+            'quantity'        => $quantity,
+        ]);
+
         $bid->extra_charges = $extraAmount;
         $bid->quantity      = $quantity;
         $bid->status        = 'completed';

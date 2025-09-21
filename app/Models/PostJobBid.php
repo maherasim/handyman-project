@@ -48,4 +48,8 @@ class PostJobBid extends Model
     public function postrequest(){
         return $this->belongsTo(PostJobRequest::class,'post_request_id', 'id');
     }
+    public function extraCharges()
+    {
+        return $this->hasMany(PostJobExtraCharge::class, 'post_job_bid_id');
+    }
 }

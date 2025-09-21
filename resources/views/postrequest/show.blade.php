@@ -6,17 +6,13 @@
             $auth_user = auth()->user();
             $unitPrice = (float) ($bid->price ?? 0);
             $advPct = (float) ($bid->advance_percent ?? 0);
-            $extraChargeUnit = (float) ($bid->extra_charges ?? 0);
-            $extraChargeQty = (int) ($bid->quantity ?? 1);
 
             // Determine quantity based on price type
             if ($bid->postrequest->price_type == 'hourly') {
                 $quantity = (float) ($bid->postrequest->total_hours ?? 1);
             } 
             elseif ($bid->postrequest->price_type == 'daily') {
-             // dd($bid->postrequest);
                 $quantity = (float) ($bid->postrequest->total_days ?? 1);
-               // dd($bid->postrequest->total_days, $quantity );
             } elseif ($bid->postrequest->price_type == 'fixed') {
                 $quantity = 1;
             } else {
@@ -25,7 +21,26 @@
 
             // Calculations
             $totalAmount = $unitPrice * $quantity;
-            $extraChargesTotal = $extraChargeUnit * $extraChargeQty;
+
+            // Extra charges: prefer line items, fallback to single unit*qty
+            $hasExtraLines = ($bid->relationLoaded('extraCharges') && $bid->extraCharges && $bid->extraCharges->count() > 0);
+            $extraChargesCount = 0;
+            $extraChargesTotal = 0.0;
+            $extraChargeUnit = (float) ($bid->extra_charges ?? 0);
+            $extraChargeQty = (int) ($bid->quantity ?? 1);
+            if ($hasExtraLines) {
+                foreach ($bid->extraCharges as $ec) {
+                    $lineAmount = (float) ($ec->amount ?? 0);
+                    $lineQty = (int) ($ec->quantity ?? 0);
+                    $extraChargesTotal += ($lineAmount * $lineQty);
+                }
+                $extraChargesCount = $bid->extraCharges->count();
+                $extraChargeQty = (int) $bid->extraCharges->sum('quantity');
+            } else {
+                $extraChargesTotal = $extraChargeUnit * $extraChargeQty;
+                $extraChargesCount = $extraChargeQty > 0 ? 1 : 0;
+            }
+
             $subTotal = $totalAmount + $extraChargesTotal;
 
             // Tax
@@ -397,8 +412,13 @@
                                     <td class="text-end">€{{ number_format($totalAmount, 2) }}</td>
                                 </tr>
                                 <tr>
-                                    <td>Extra Charges ({{ $extraChargeQty }} ×
-                                        {{ number_format($extraChargeUnit, 2) }})</td>
+                                    <td>
+                                        @if($hasExtraLines)
+                                            Extra Charges ({{ $extraChargesCount }} items)
+                                        @else
+                                            Extra Charges ({{ $extraChargeQty }} × {{ number_format($extraChargeUnit, 2) }})
+                                        @endif
+                                    </td>
                                     <td class="text-end">€{{ number_format($extraChargesTotal, 2) }}</td>
                                 </tr>
                                 <tr class="fw-bold">
@@ -807,85 +827,111 @@
                 const bidId = $(this).data('id');
                 Swal.fire({
                     title: 'Add Extra Charges',
+                    width: 700,
                     html: `
             <div class="text-start">
-                <label class="form-label fw-bold">Title</label>
-                <input type="text" id="ec_title" class="form-control" placeholder="e.g., Title" />
-            </div>
-            <div class="mt-2 text-start">
-                <label class="form-label fw-bold">Amount</label>
-                <input type="number" id="ec_amount" class="form-control" step="0.01" min="0.01" placeholder="e.g., 20" />
-            </div>
-            <div class="mt-2 text-start">
-                <label class="form-label fw-bold">Quantity (optional)</label>
-                <input type="number" id="ec_qty" class="form-control" step="1" min="1" placeholder="1" />
+                <div id="ec_rows">
+                    <div class="row g-2 ec_row align-items-end mb-2">
+                        <div class="col-6">
+                            <label class="form-label fw-bold">Title</label>
+                            <input type="text" class="form-control ec_title" placeholder="e.g., Material" />
+                        </div>
+                        <div class="col-3">
+                            <label class="form-label fw-bold">Amount</label>
+                            <input type="number" class="form-control ec_amount" step="0.01" min="0.01" placeholder="20" />
+                        </div>
+                        <div class="col-2">
+                            <label class="form-label fw-bold">Qty</label>
+                            <input type="number" class="form-control ec_qty" step="1" min="1" value="1" />
+                        </div>
+                        <div class="col-1 text-end">
+                            <button type="button" class="btn btn-outline-danger btn-sm ec_remove" title="Remove"><i class="la la-times"></i></button>
+                        </div>
+                    </div>
+                </div>
+                <button type="button" id="ec_add_row" class="btn btn-outline-primary btn-sm"><i class="la la-plus"></i> Add Row</button>
+                <div class="mt-3 small text-muted">All added rows will be saved as line items.</div>
             </div>
         `,
+                    didOpen: () => {
+                        const container = document.getElementById('ec_rows');
+                        const addBtn = document.getElementById('ec_add_row');
+                        addBtn.addEventListener('click', () => {
+                            const row = document.createElement('div');
+                            row.className = 'row g-2 ec_row align-items-end mb-2';
+                            row.innerHTML = `
+                                <div class="col-6">
+                                    <input type="text" class="form-control ec_title" placeholder="e.g., Extra work" />
+                                </div>
+                                <div class="col-3">
+                                    <input type="number" class="form-control ec_amount" step="0.01" min="0.01" placeholder="10" />
+                                </div>
+                                <div class="col-2">
+                                    <input type="number" class="form-control ec_qty" step="1" min="1" value="1" />
+                                </div>
+                                <div class="col-1 text-end">
+                                    <button type="button" class="btn btn-outline-danger btn-sm ec_remove" title="Remove"><i class="la la-times"></i></button>
+                                </div>`;
+                            container.appendChild(row);
+                        });
+                        container.addEventListener('click', (e) => {
+                            if (e.target.closest('.ec_remove')) {
+                                const rows = container.querySelectorAll('.ec_row');
+                                if (rows.length > 1) e.target.closest('.ec_row').remove();
+                            }
+                        });
+                    },
                     focusConfirm: false,
                     showCancelButton: true,
-                    confirmButtonText: 'Add',
+                    confirmButtonText: 'Save',
                     preConfirm: () => {
-                        const title = document.getElementById('ec_title').value.trim();
-                        const amount = parseFloat(document.getElementById('ec_amount').value);
-                        const qtyRaw = document.getElementById('ec_qty').value;
-                        const quantity = qtyRaw ? parseInt(qtyRaw, 10) : 1;
-
-                        if (!title) {
-                            Swal.showValidationMessage('Title is required');
+                        const rows = Array.from(document.querySelectorAll('#ec_rows .ec_row'));
+                        const items = [];
+                        for (const r of rows) {
+                            const title = r.querySelector('.ec_title').value.trim();
+                            const amount = parseFloat(r.querySelector('.ec_amount').value);
+                            const qty = parseInt(r.querySelector('.ec_qty').value || '1', 10);
+                            if (!title) {
+                                Swal.showValidationMessage('Each row must have a title');
+                                return false;
+                            }
+                            if (!amount || amount <= 0) {
+                                Swal.showValidationMessage('Each row must have amount > 0');
+                                return false;
+                            }
+                            if (!qty || qty < 1) {
+                                Swal.showValidationMessage('Quantity must be at least 1');
+                                return false;
+                            }
+                            items.push({ title, amount, quantity: qty });
+                        }
+                        if (items.length === 0) {
+                            Swal.showValidationMessage('Add at least one row');
                             return false;
                         }
-                        if (!amount || amount <= 0) {
-                            Swal.showValidationMessage('Enter a valid amount > 0');
-                            return false;
-                        }
-                        if (quantity && quantity < 1) {
-                            Swal.showValidationMessage('Quantity must be at least 1');
-                            return false;
-                        }
-
-                        return {
-                            title,
-                            amount,
-                            quantity
-                        };
+                        return { items };
                     }
                 }).then((result) => {
                     if (!result.isConfirmed) return;
-                    const {
-                        title,
-                        amount,
-                        quantity
-                    } = result.value;
+                    const { items } = result.value;
 
                     $.ajax({
-                        url: '{{ route('postjob.addExtraCharges', ':id') }}'.replace(':id',
-                            bidId),
+                        url: '{{ route('postjob.addExtraCharges', ':id') }}'.replace(':id', bidId),
                         type: 'POST',
                         data: {
                             _token: '{{ csrf_token() }}',
-                            title: title,
-                            amount: amount,
-                            quantity: quantity
+                            items: items
                         },
                         success: function(response) {
                             if (response && response.status) {
-                                Swal.fire('Added', response.message ||
-                                        'Extra charges added', 'success')
-                                    .then(() => {
-                                        // Reload the whole page after user closes the alert
-                                        window.location.reload();
-                                    });
+                                Swal.fire('Saved', response.message || 'Extra charges saved', 'success')
+                                    .then(() => { window.location.reload(); });
                             } else {
-                                Swal.fire('Error', (response && response.message) ?
-                                    response.message : 'Unable to add charges',
-                                    'error');
+                                Swal.fire('Error', (response && response.message) ? response.message : 'Unable to save', 'error');
                             }
                         },
-
                         error: function(xhr) {
-                            Swal.fire('Error', (xhr && xhr.responseJSON && xhr
-                                    .responseJSON.message) ? xhr.responseJSON
-                                .message : 'Something went wrong', 'error');
+                            Swal.fire('Error', (xhr && xhr.responseJSON && xhr.responseJSON.message) ? xhr.responseJSON.message : 'Something went wrong', 'error');
                         }
                     });
                 });
