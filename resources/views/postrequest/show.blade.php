@@ -981,7 +981,8 @@
             const tbl = $('#extra-charges-table');
             if (tbl && tbl.length && $.fn.dataTable) {
                 tbl.DataTable({
-                    paging: true,
+                    paging: false,
+                    lengthChange: false,
                     searching: false,
                     info: false,
                     order: [],
