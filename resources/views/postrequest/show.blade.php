@@ -468,6 +468,40 @@
         </div>
     </div>
 
+    @if($bid->relationLoaded('extraCharges') && $bid->extraCharges && $bid->extraCharges->count() > 0)
+    <div class="row mt-3">
+        <div class="col-12">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-secondary text-white fw-bold">
+                    Extra Charges
+                </div>
+                <div class="card-body">
+                    <table id="extra-charges-table" class="table table-striped table-bordered table-sm align-middle">
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th class="text-end">Quantity</th>
+                                <th class="text-end">Unit Amount</th>
+                                <th class="text-end">Line Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($bid->extraCharges as $line)
+                                <tr>
+                                    <td>{{ $line->title }}</td>
+                                    <td class="text-end">{{ (int) ($line->quantity ?? 0) }}</td>
+                                    <td class="text-end">€{{ number_format((float) ($line->amount ?? 0), 2) }}</td>
+                                    <td class="text-end">€{{ number_format(((float) ($line->amount ?? 0)) * ((int) ($line->quantity ?? 0)), 2) }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    @endif
+
     <style>
         .marquee-banner {
             border-radius: 6px;
@@ -508,6 +542,8 @@
         }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             document.querySelectorAll('.acceptBid').forEach(btn => {
@@ -947,6 +983,22 @@
                 });
             });
 
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const tbl = $('#extra-charges-table');
+            if (tbl && tbl.length && $.fn.dataTable) {
+                tbl.DataTable({
+                    paging: true,
+                    searching: false,
+                    info: false,
+                    order: [],
+                    columnDefs: [
+                        { targets: [1,2,3], className: 'dt-body-right' }
+                    ]
+                });
+            }
         });
     </script>
     <script>
