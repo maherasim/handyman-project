@@ -246,11 +246,11 @@
                                         placeholder="{{ __('messages.description') }}">{{ old('description', $postJob->description) }}</textarea>
                                 </div>
                                 <div class="form-group col-md-3">
-                                    <label for="street_address">{{ __('Working Address - Street') }}</label>
+                                    <label for="street_address">{{ __('Street & House Nr.') }}</label>
                                     <input type="text" name="street_address" id="street_address" class="form-control" placeholder="{{ __('Street name') }}" value="{{ old('street_address', $postJob->street_address) }}">
                                 </div>
                                 <div class="form-group col-md-2">
-                                    <label for="house_number">{{ __('Working Address - House No.') }}</label>
+                                    <label for="house_number">{{ __('Pobox & City-Country.') }}</label>
                                     <input type="text" name="house_number" id="house_number" class="form-control" placeholder="{{ __('House/Unit No.') }}" value="{{ old('house_number', $postJob->house_number) }}">
                                 </div>
                                 <div class="form-group col-md-3">
