@@ -105,6 +105,11 @@ class EarningController extends Controller
                         ->distinct('post_job_bid_request_id')
                         ->count('post_job_bid_request_id');
 
+                    if ($bookingCount === 0 && $postJobCount > 0) {
+                        // Only Post Job Requests exist; show count without booking link
+                        return "<b><span class='text-primary text-nowrap px-1' title='Post Job Requests'>{$postJobCount}</span></b>";
+                    }
+
                     $totalBookings = $bookingCount + $postJobCount;
                     $row['total_bookings'] = $totalBookings;
 
