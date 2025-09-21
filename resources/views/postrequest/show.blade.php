@@ -459,7 +459,7 @@
         </div>
     </div>
 
-    @if($bid->relationLoaded('extraCharges') && $bid->extraCharges && $bid->extraCharges->count() > 0)
+    @if($bid->extraCharges && $bid->extraCharges->count() > 0)
     <div class="row mt-3">
         <div class="col-12">
             <div class="card shadow-sm border-0">
