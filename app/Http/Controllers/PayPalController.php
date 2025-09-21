@@ -29,9 +29,11 @@ class PayPalController extends Controller
 
     public function __construct()
     {
-        $clientId = 'Afyzu7BkzUMiiK6kdB0QutzIh3cSZTcCFZjko7Fl1boR_jhW034YWoyVUBnsSmu1ZbX5bdIY0HA49SY6';
-        $clientSecret = 'EET9cnIPbSWpA6c96cqJOSI9c-feQ512YQEZXSatXCcehOJU7G9eoxnPrNoikb-lFaCt0oOTAciZ26Ka';
-        $mode = env('PAYPAL_MODE', 'sandbox');
+        // Always read credentials from settings to avoid invalid_client
+        $paymentGatewayValue = getPaymentMethodkey('paypal');
+        $clientId = $paymentGatewayValue['paypal_client_id'] ?? env('PAYPAL_CLIENT_ID');
+        $clientSecret = $paymentGatewayValue['paypal_secret_key'] ?? env('PAYPAL_CLIENT_SECRET');
+        $mode = $paymentGatewayValue['mode'] ?? env('PAYPAL_MODE', 'sandbox');
 
         $environment = $mode === 'live'
             ? new ProductionEnvironment($clientId, $clientSecret)

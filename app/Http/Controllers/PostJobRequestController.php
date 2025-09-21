@@ -994,10 +994,17 @@ class PostJobRequestController extends Controller
                 ->with('error', 'Missing PayPal token');
         }
     
-        // Build PayPal client
-        $clientId     = env('PAYPAL_CLIENT_ID');
-        $clientSecret = env('PAYPAL_CLIENT_SECRET');
-        $mode         = env('PAYPAL_MODE', 'sandbox');
+        // Build PayPal client using configured settings (match create step)
+        $paymentGatewayValue = getPaymentMethodkey('paypal');
+        $clientId = $paymentGatewayValue['paypal_client_id'] ?? null;
+        $clientSecret = $paymentGatewayValue['paypal_secret_key'] ?? null;
+        $mode = $paymentGatewayValue['mode'] ?? 'sandbox';
+
+        if (!$clientId || !$clientSecret) {
+            return redirect()->route('post-job-bid.show', ['id' => $bid->post_request_id])
+                ->with('error', 'PayPal not configured');
+        }
+
         $environment  = $mode === 'live'
             ? new ProductionEnvironment($clientId, $clientSecret)
             : new SandboxEnvironment($clientId, $clientSecret);
@@ -1052,23 +1059,23 @@ class PostJobRequestController extends Controller
             // 🔹 Record CommissionEarning
             if ($adminCommissionAmount > 0) {
                 CommissionEarning::create([
-                    'post_job_request_id' => $bid->id,
-                    'user_type'           => 'admin',
-                    'employee_id'         => $adminUser?->id ?? 1,
-                    'commission_amount'   => $adminCommissionAmount,
-                    'commission_status'   => 'paid',
-                    'payment_id'          => $payment->id,
+                    'post_job_bid_request_id' => $bid->id,
+                    'user_type'               => 'admin',
+                    'employee_id'             => $adminUser?->id ?? 1,
+                    'commission_amount'       => $adminCommissionAmount,
+                    'commission_status'       => 'paid',
+                    'payment_id'              => $payment->id,
                 ]);
             }
     
             if ($providerAmount > 0) {
                 CommissionEarning::create([
-                    'post_job_request_id' => $bid->id,
-                    'user_type'           => 'provider',
-                    'employee_id'         => $providerId,
-                    'commission_amount'   => $providerAmount,
-                    'commission_status'   => 'paid',
-                    'payment_id'          => $payment->id,
+                    'post_job_bid_request_id' => $bid->id,
+                    'user_type'               => 'provider',
+                    'employee_id'             => $providerId,
+                    'commission_amount'       => $providerAmount,
+                    'commission_status'       => 'paid',
+                    'payment_id'              => $payment->id,
                 ]);
     
                 // 🔹 Record Provider Payout
