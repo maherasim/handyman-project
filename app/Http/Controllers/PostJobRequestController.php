@@ -944,7 +944,7 @@ class PostJobRequestController extends Controller
                 'intent' => 'CAPTURE',
                 'purchase_units' => [[
                     'amount' => [
-                        'currency_code' => 'EURO',
+                        'currency_code' => 'EUR',
                         'value' => number_format($payAmount, 2, '.', '')
                     ],
                     'description' => 'Payment for Post Job Bid #' . $bid->id . ' (' . $type . ')'
