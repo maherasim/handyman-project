@@ -1031,6 +1031,8 @@ class PostJobRequestController extends Controller
         // 🔹 Create New Payment Record
         $payment = PaymentPostJob::create([
             'post_job_bid_request_id' => $bid->id,
+            'customer_id' => $bid->customer_id,
+
             'payment_type'            => 'paypal',
             'payment_status'          => 'completed',
             'txn_id'                  => $txnId,
