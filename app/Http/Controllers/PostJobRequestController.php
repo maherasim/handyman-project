@@ -1032,11 +1032,10 @@ class PostJobRequestController extends Controller
         $payment = PaymentPostJob::create([
             'post_job_bid_request_id' => $bid->id,
             'customer_id' => $bid->customer_id,
-
             'payment_type'            => 'paypal',
             'payment_status'          => 'completed',
-            'txn_id'                  => $txnId,
-            'amount'                  => $payAmount,
+            'txn_id'                  => $txnId,            
+            'total_amount'              => $payAmount,
             'other_transaction_detail' => json_encode([
                 'type' => $type,
                 'order_id' => $token,
