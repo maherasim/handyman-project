@@ -310,17 +310,8 @@
                                 <div class="card-body text-center">
                                     <i class="fas fa-map-marker-alt fa-2x text-secondary mb-2"></i>
                                     <h6 class="fw-bold mb-1">Working Address</h6>
-                                    @php
-                                        $street = trim((string)($bid->postrequest->street_address ?? ''));
-                                        $house  = trim((string)($bid->postrequest->house_number ?? ''));
-                                        $legacy = trim((string)($bid->postrequest->working_address ?? ''));
-                                    @endphp
-                                    @if($street || $house)
-                                        <p class="mb-0">{{ $street }}</p>
-                                        <p class="mb-0">{{ $house }}</p>
-                                    @else
-                                        <p class="mb-0">{{ strip_tags($legacy ?: '-') }}</p>
-                                    @endif
+                                    <p class="mb-0">{{ $bid->postrequest->street_address ?? '-' }}</p>
+                                    <p class="mb-0">{{ $bid->postrequest->house_number ?? '-' }}</p>
                                 </div>
                             </div>
                         </div>
