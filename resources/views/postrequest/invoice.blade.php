@@ -41,8 +41,9 @@ $logoPath = public_path('assets/frobster logo.png');
 @php
 	// Inputs expected: $bid (App\Models\PostJobBid), optional $payment (PaymentPostJOb)
 	$unitPrice = (float) ($bid->price ?? 0);
-	$extraChargeUnit = (float) ($bid->extra_charges ?? 0);
-	$extraChargeQty = (int) ($bid->quantity ?? 0); // always show the row
+    $hasExtraLines = ($bid->relationLoaded('extraCharges') && $bid->extraCharges && $bid->extraCharges->count() > 0);
+    $extraChargeUnit = (float) ($bid->extra_charges ?? 0);
+    $extraChargeQty = (int) ($bid->quantity ?? 0);
 
 	$priceType = strtolower((string)($bid->postrequest->price_type ?? $bid->postrequest->job_price ?? 'fixed'));
 	if ($priceType === 'hourly') {
@@ -54,7 +55,17 @@ $logoPath = public_path('assets/frobster logo.png');
 	}
 
 	$baseTotal = $unitPrice * $quantity;
-	$extraChargeTotal = $extraChargeUnit * $extraChargeQty;
+    $extraChargeTotal = 0.0;
+    if ($hasExtraLines) {
+        foreach ($bid->extraCharges as $ec) {
+            $lineAmount = (float) ($ec->amount ?? 0);
+            $lineQty = (int) ($ec->quantity ?? 0);
+            $extraChargeTotal += ($lineAmount * $lineQty);
+        }
+        $extraChargeQty = (int) $bid->extraCharges->sum('quantity');
+    } else {
+        $extraChargeTotal = $extraChargeUnit * $extraChargeQty;
+    }
 	$subTotal = $baseTotal + $extraChargeTotal;
 
 	$countryName = optional($bid->postrequest->country)->name ?? '';
@@ -126,7 +137,7 @@ $logoPath = public_path('assets/frobster logo.png');
 		</div>
 
 		<div class="section">
-			<table class="compact">
+            <table class="compact">
 				<thead>
 				<tr>
 					<th style="width: 60%">{{ __('Description') }}</th>
@@ -136,18 +147,29 @@ $logoPath = public_path('assets/frobster logo.png');
 				</tr>
 				</thead>
 				<tbody>
-				<tr>
-					<td>{{ optional($bid->postrequest)->title ?? '-' }} ({{ strtoupper($priceType) }})</td>
-					<td class="text-right">{{ $quantity }}</td>
-					<td class="text-right">{{ $fmt($unitPrice) }}</td>
-					<td class="text-right">{{ $fmt($baseTotal) }}</td>
-				</tr>
-				<tr>
-					<td>{{ __('Extra Charges') }}</td>
-					<td class="text-right">{{ $extraChargeQty }}</td>
-					<td class="text-right">{{ $fmt($extraChargeUnit) }}</td>
-					<td class="text-right">{{ $fmt($extraChargeTotal) }}</td>
-				</tr>
+                <tr>
+                    <td>{{ optional($bid->postrequest)->title ?? '-' }} ({{ strtoupper($priceType) }})</td>
+                    <td class="text-right">{{ $quantity }}</td>
+                    <td class="text-right">{{ $fmt($unitPrice) }}</td>
+                    <td class="text-right">{{ $fmt($baseTotal) }}</td>
+                </tr>
+                @if($hasExtraLines)
+                    @foreach($bid->extraCharges as $line)
+                        <tr>
+                            <td>{{ $line->title }}</td>
+                            <td class="text-right">{{ (int)($line->quantity ?? 0) }}</td>
+                            <td class="text-right">{{ $fmt((float)($line->amount ?? 0)) }}</td>
+                            <td class="text-right">{{ $fmt(((float)($line->amount ?? 0)) * ((int)($line->quantity ?? 0))) }}</td>
+                        </tr>
+                    @endforeach
+                @else
+                    <tr>
+                        <td>{{ __('Extra Charges') }}</td>
+                        <td class="text-right">{{ $extraChargeQty }}</td>
+                        <td class="text-right">{{ $fmt($extraChargeUnit) }}</td>
+                        <td class="text-right">{{ $fmt($extraChargeTotal) }}</td>
+                    </tr>
+                @endif
 				</tbody>
 			</table>
 
@@ -165,10 +187,16 @@ $logoPath = public_path('assets/frobster logo.png');
 					<td>{{ __('Total Amount') }}</td>
 					<td class="text-right">{{ $fmt($baseTotal) }}</td>
 				</tr>
-				<tr>
-					<td>{{ __('Extra Charges') }} ({{ $extraChargeQty }} × {{ number_format($extraChargeUnit, 2) }})</td>
-					<td class="text-right">{{ $fmt($extraChargeTotal) }}</td>
-				</tr>
+                <tr>
+                    <td>
+                        @if($hasExtraLines)
+                            {{ __('Extra Charges (items)') }}
+                        @else
+                            {{ __('Extra Charges') }} ({{ $extraChargeQty }} × {{ number_format($extraChargeUnit, 2) }})
+                        @endif
+                    </td>
+                    <td class="text-right">{{ $fmt($extraChargeTotal) }}</td>
+                </tr>
 				<tr>
 					<td>{{ __('Subtotal') }}</td>
 					<td class="text-right">{{ $fmt($subTotal) }}</td>

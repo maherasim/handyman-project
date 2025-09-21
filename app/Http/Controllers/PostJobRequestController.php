@@ -1514,6 +1514,7 @@ class PostJobRequestController extends Controller
             'postrequest:id,title,price_type,job_price,total_days,total_hours,country_id,city_id',
             'postrequest.city:id,name',
             'postrequest.country:id,name',
+            'extraCharges',
         ])->findOrFail($id);
     
         // Optional: last payment (if you want to show context)
