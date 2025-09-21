@@ -12,12 +12,13 @@ class CommissionEarning extends Model
 
     protected $table = 'commission_earnings';
 
-    protected $fillable = ['employee_id','booking_id','commissions','user_type', 'commission_amount','commission_status', 'payment_date','payment_id'];
+    protected $fillable = ['employee_id','booking_id','commissions','user_type','post_job_bid_request_id', 'commission_amount','commission_status', 'payment_date','payment_id'];
 
     protected $casts = [
 
         'employee_id' => 'integer',
         'booking_id' => 'integer',
+        'post_job_bid_request_id' => 'integer',
         'commission_amount' => 'double',
         'payment_id' => 'integer',
     ];

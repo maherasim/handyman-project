@@ -499,6 +499,7 @@ class PostJobRequestController extends Controller
             if ($adminCommissionAmount > 0) {
                 CommissionEarning::create([
                     'user_type'         => 'admin',
+                    'post_job_bid_request_id'         => $post->id,
                     'employee_id'       => 1,
                     'commission_amount' => $adminCommissionAmount,
                     'commission_status' => 'paid',
@@ -508,6 +509,7 @@ class PostJobRequestController extends Controller
             if ($providerPayoutAmount > 0) {
                 CommissionEarning::create([
                     'user_type'         => 'provider',
+                    'post_job_bid_request_id'         => $post->id,
                     'employee_id'       => $post->provider_id,
                     'commission_amount' => $providerPayoutAmount,
                     'commission_status' => 'paid',
