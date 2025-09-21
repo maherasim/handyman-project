@@ -1208,7 +1208,7 @@ class PostJobRequestController extends Controller
             'amount' => $provider_earning,
             'payment_method' => 'Bank Transfer',
             'paid_date' => Carbon::now(),
-            'status' => 'paid', // you can set 'pending' if you want to verify first
+            'status' => 'pending', // you can set 'pending' if you want to verify first
             'booking_id' => null, // Not a normal booking
             'post_job_request_id' => $bid->id,
             'payment_gateway' => 'Bank Transfer',
