@@ -891,306 +891,249 @@ class PostJobRequestController extends Controller
             'message' => 'Advance terms saved successfully. Awaiting customer payment.'
         ]);
     }
-    public function postJobPayPalSuccess(Request $request, $id)
+    public function createPostJobPayPalPayment(Request $request, $id)
     {
-        $token = $request->query('token');
-        $type  = strtolower((string)$request->query('type', 'advance'));
-        $bid   = PostJobBid::findOrFail($id);
-    
-        if (!$token) {
-            return redirect()->route('post-job-bid.show', ['id' => $bid->post_request_id])
-                ->with('error', 'Missing PayPal token');
-        }
-    
-        // Build PayPal client using configured settings (match create step)
-        $paymentGatewayValue = getPaymentMethodkey('paypal');
-        $clientId = $paymentGatewayValue['paypal_client_id'] ?? null;
-        $clientSecret = $paymentGatewayValue['paypal_secret_key'] ?? null;
-        $mode = $paymentGatewayValue['mode'] ?? 'sandbox';
-    
-        if (!$clientId || !$clientSecret) {
-            return redirect()->route('post-job-bid.show', ['id' => $bid->post_request_id])
-                ->with('error', 'PayPal not configured');
-        }
-    
-        $environment  = $mode === 'live'
-            ? new ProductionEnvironment($clientId, $clientSecret)
-            : new SandboxEnvironment($clientId, $clientSecret);
-        $client = new PayPalHttpClient($environment);
-    
-        $captureRequest = new OrdersCaptureRequest($token);
-        $captureRequest->prefer('return=representation');
-    
         try {
-            $response = $client->execute($captureRequest);
-    
-            if (!in_array($response->statusCode, [200, 201])) {
-                return redirect()->route('post-job-bid.show', ['id' => $bid->post_request_id])
-                    ->with('error', 'Payment not completed');
+            $bid = PostJobBid::findOrFail($id);
+            
+            // Check if user is authenticated
+            if (!auth()->check()) {
+                return response()->json(['status' => false, 'error' => 'User not authenticated'], 401);
+            }
+            
+            $user = auth()->user();
+            
+            // Check user authorization
+            if ((int)$user->id !== (int)$bid->customer_id) {
+                return response()->json(['status' => false, 'error' => 'Unauthorized access to this bid'], 403);
             }
     
-            $txnId = $response->result->purchase_units[0]->payments->captures[0]->id ?? null;
-            $payAmount = (float)($response->result->purchase_units[0]->amount->value ?? 0);
+            // Get payment type and amount directly from frontend
+            $type = strtolower((string)$request->input('type', 'advance')); // 'advance' or 'remaining'
+            $payAmount = (float)$request->input('amount'); // exact value from frontend
     
             if ($payAmount <= 0) {
-                return redirect()->route('post-job-bid.show', ['id' => $bid->post_request_id])
-                    ->with('error', 'Invalid payment amount');
+                return response()->json(['status' => false, 'error' => 'Invalid amount'], 422);
             }
     
-            // 🔹 Create New Payment Record
-            $payment = PaymentPostJob::create([
+            // Get PayPal credentials from settings
+            $paymentGatewayValue = getPaymentMethodkey('paypal');
+    
+            $clientId = $paymentGatewayValue['paypal_client_id'] ?? null;
+            $clientSecret = $paymentGatewayValue['paypal_secret_key'] ?? null;
+            $mode = $paymentGatewayValue['mode'] ?? 'sandbox';
+    
+            if (!$clientId || !$clientSecret) {
+                return response()->json(['status' => false, 'error' => 'PayPal not configured'], 500);
+            }
+    
+            // Setup PayPal environment
+            $environment = $mode === 'live'
+                ? new ProductionEnvironment($clientId, $clientSecret)
+                : new SandboxEnvironment($clientId, $clientSecret);
+    
+            $client = new PayPalHttpClient($environment);
+    
+            // Base URL
+            $baseURL = env('APP_URL');
+    
+            // Create PayPal order
+            $order = new OrdersCreateRequest();
+            $order->prefer('return=representation');
+            $order->body = [
+                'intent' => 'CAPTURE',
+                'purchase_units' => [[
+                    'amount' => [
+                        'currency_code' => 'EUR',
+                        'value' => number_format($payAmount, 2, '.', '')
+                    ],
+                    'description' => 'Payment for Post Job Bid #' . $bid->id . ' (' . $type . ')'
+                ]],
+                'application_context' => [
+                    'cancel_url' => $baseURL . '/postjob/bid/' . $bid->id,
+                    'return_url' => $baseURL . '/postjob/paypal-success/' . $bid->id . '?type=' . $type,
+                    'brand_name' => env('APP_NAME'),
+                    'landing_page' => 'LOGIN',
+                    'user_action' => 'PAY_NOW',
+                ]
+            ];
+    
+            try {
+                $response = $client->execute($order);
+                $approvalLink = collect($response->result->links)->firstWhere('rel', 'approve')->href ?? null;
+    
+                if (!$approvalLink) {
+                    return response()->json(['status' => false, 'error' => 'Unable to get PayPal approval link'], 500);
+                }
+    
+                return response()->json(['status' => true, 'url' => $approvalLink]);
+            } catch (\Exception $e) {
+                return response()->json([
+                    'status' => false, 
+                    'error' => 'PayPal Create Payment Error: ' . $e->getMessage()
+                ], 500);
+            }
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'error' => 'An error occurred while processing your request',
+                'details' => config('app.debug') ? $e->getMessage() : null
+            ], 500);
+        }
+    }
+
+    public function postJobPayPalSuccess(Request $request, $id)
+{
+    $token = $request->query('token');
+    $type  = strtolower((string)$request->query('type', 'advance'));
+    $bid   = PostJobBid::findOrFail($id);
+
+    if (!$token) {
+        return redirect()->route('post-job-bid.show', ['id' => $bid->post_request_id])
+            ->with('error', 'Missing PayPal token');
+    }
+
+    // Build PayPal client using configured settings (match create step)
+    $paymentGatewayValue = getPaymentMethodkey('paypal');
+    $clientId = $paymentGatewayValue['paypal_client_id'] ?? null;
+    $clientSecret = $paymentGatewayValue['paypal_secret_key'] ?? null;
+    $mode = $paymentGatewayValue['mode'] ?? 'sandbox';
+
+    if (!$clientId || !$clientSecret) {
+        return redirect()->route('post-job-bid.show', ['id' => $bid->post_request_id])
+            ->with('error', 'PayPal not configured');
+    }
+
+    $environment  = $mode === 'live'
+        ? new ProductionEnvironment($clientId, $clientSecret)
+        : new SandboxEnvironment($clientId, $clientSecret);
+    $client = new PayPalHttpClient($environment);
+
+    $captureRequest = new OrdersCaptureRequest($token);
+    $captureRequest->prefer('return=representation');
+
+    try {
+        $response = $client->execute($captureRequest);
+
+        if (!in_array($response->statusCode, [200, 201])) {
+            return redirect()->route('post-job-bid.show', ['id' => $bid->post_request_id])
+                ->with('error', 'Payment not completed');
+        }
+
+        $txnId = $response->result->purchase_units[0]->payments->captures[0]->id ?? null;
+        $payAmount = (float)($response->result->purchase_units[0]->amount->value ?? 0);
+
+        if ($payAmount <= 0) {
+            return redirect()->route('post-job-bid.show', ['id' => $bid->post_request_id])
+                ->with('error', 'Invalid payment amount');
+        }
+
+        // 🔹 Create New Payment Record
+        $payment = PaymentPostJob::create([
+            'post_job_bid_request_id' => $bid->id,
+            'payment_type'            => 'paypal',
+            'payment_status'          => 'completed',
+            'txn_id'                  => $txnId,
+            'amount'                  => $payAmount,
+            'other_transaction_detail' => json_encode([
+                'type' => $type,
+                'order_id' => $token,
+                'admin_commission' => 0,  // Admin commission will be calculated later
+                'provider_amount' => 0,   // Provider amount will be calculated later
+            ])
+        ]);
+
+        // Compute admin commission and provider payout
+        $adminCommissionPercent = (float)(Setting::getValueByKey('admin_commission_percentage', 'site-setup')->value ?? 10);
+        $adminCommissionAmount  = ($payAmount * $adminCommissionPercent) / 100;
+        $providerAmount         = max(0, $payAmount - $adminCommissionAmount);
+
+        // Update the payment record with the commission details
+        $payment->other_transaction_detail = json_encode([
+            'type' => $type,
+            'order_id' => $token,
+            'admin_commission' => $adminCommissionAmount,
+            'provider_amount' => $providerAmount,
+        ]);
+        $payment->save();
+
+        $adminUser  = User::where('user_type', 'admin')->first();
+        $providerId = $bid->provider_id;
+
+        // 🔹 Record CommissionEarning for Admin
+        if ($adminCommissionAmount > 0) {
+            CommissionEarning::create([
                 'post_job_bid_request_id' => $bid->id,
-                'payment_type'            => 'paypal',
-                'payment_status'          => 'completed',
-                'txn_id'                  => $txnId,
-                'amount'                  => $payAmount,
+                'user_type'               => 'admin',
+                'employee_id'             => $adminUser?->id ?? 1,
+                'commission_amount'       => $adminCommissionAmount,
+                'commission_status'       => 'paid',
+                'payment_id'              => $payment->id,
+            ]);
+        }
+
+        // 🔹 Record CommissionEarning for Provider
+        if ($providerAmount > 0) {
+            CommissionEarning::create([
+                'post_job_bid_request_id' => $bid->id,
+                'user_type'               => 'provider',
+                'employee_id'             => $providerId,
+                'commission_amount'       => $providerAmount,
+                'commission_status'       => 'paid',
+                'payment_id'              => $payment->id,
+            ]);
+
+            // 🔹 Record Provider Payout
+            ProviderPayout::create([
+                'provider_id'         => $providerId,
+                'amount'              => $providerAmount,
+                'payment_method'      => 'PayPal',
+                'paid_date'           => now(),
+                'status'              => 'paid',
+                'booking_id'          => null,
+                'post_job_request_id' => $bid->id,
+                'payment_gateway'     => 'PayPal',
+            ]);
+
+            // 🔹 Record PaymentHistory
+            PaymentHistory::create([
+                'payment_id'  => $payment->id,
+                'booking_id'  => null,
+                'parent_id'   => null,
+                'action'      => 'customer_send_provider',
+                'status'      => 'completed',
+                'sender_id'   => $bid->customer_id,
+                'receiver_id' => $providerId,
+                'datetime'    => now(),
+                'total_amount'=> $providerAmount,
+                'txn_id'      => $txnId,
+                'type'        => 'paypal',
+                'text'        => __('messages.payment_transfer', [
+                    'from'   => get_user_name($bid->customer_id),
+                    'to'     => get_user_name($providerId),
+                    'amount' => number_format($providerAmount, 2),
+                ]),
                 'other_transaction_detail' => json_encode([
-                    'type' => $type,
-                    'order_id' => $token,
-                    'admin_commission' => 0,  // Admin commission will be calculated later
-                    'provider_amount' => 0,   // Provider amount will be calculated later
-                ])
+                    'admin_commission' => $adminCommissionAmount,
+                    'provider_amount'  => $providerAmount,
+                ]),
             ]);
-    
-            // Compute admin commission and provider payout
-            $adminCommissionPercent = (float)(Setting::getValueByKey('admin_commission_percentage', 'site-setup')->value ?? 10);
-            $adminCommissionAmount  = ($payAmount * $adminCommissionPercent) / 100;
-            $providerAmount         = max(0, $payAmount - $adminCommissionAmount);
-    
-            // Update the payment record with the commission details
-            $payment->other_transaction_detail = json_encode([
-                'type' => $type,
-                'order_id' => $token,
-                'admin_commission' => $adminCommissionAmount,
-                'provider_amount' => $providerAmount,
-            ]);
-            $payment->save();
-    
-            $adminUser  = User::where('user_type', 'admin')->first();
-            $providerId = $bid->provider_id;
-    
-            // 🔹 Record CommissionEarning for Admin
-            if ($adminCommissionAmount > 0) {
-                CommissionEarning::create([
-                    'post_job_bid_request_id' => $bid->id,
-                    'user_type'               => 'admin',
-                    'employee_id'             => $adminUser?->id ?? 1,
-                    'commission_amount'       => $adminCommissionAmount,
-                    'commission_status'       => 'paid',
-                    'payment_id'              => $payment->id,
-                ]);
-            }
-    
-            // 🔹 Record CommissionEarning for Provider
-            if ($providerAmount > 0) {
-                CommissionEarning::create([
-                    'post_job_bid_request_id' => $bid->id,
-                    'user_type'               => 'provider',
-                    'employee_id'             => $providerId,
-                    'commission_amount'       => $providerAmount,
-                    'commission_status'       => 'paid',
-                    'payment_id'              => $payment->id,
-                ]);
-    
-                // 🔹 Record Provider Payout
-                ProviderPayout::create([
-                    'provider_id'         => $providerId,
-                    'amount'              => $providerAmount,
-                    'payment_method'      => 'PayPal',
-                    'paid_date'           => now(),
-                    'status'              => 'paid',
-                    'booking_id'          => null,
-                    'post_job_request_id' => $bid->id,
-                    'payment_gateway'     => 'PayPal',
-                ]);
-    
-                // 🔹 Record PaymentHistory
-                PaymentHistory::create([
-                    'payment_id'  => $payment->id,
-                    'booking_id'  => null,
-                    'parent_id'   => null,
-                    'action'      => 'customer_send_provider',
-                    'status'      => 'completed',
-                    'sender_id'   => $bid->customer_id,
-                    'receiver_id' => $providerId,
-                    'datetime'    => now(),
-                    'total_amount'=> $providerAmount,
-                    'txn_id'      => $txnId,
-                    'type'        => 'paypal',
-                    'text'        => __('messages.payment_transfer', [
-                        'from'   => get_user_name($bid->customer_id),
-                        'to'     => get_user_name($providerId),
-                        'amount' => number_format($providerAmount, 2),
-                    ]),
-                    'other_transaction_detail' => json_encode([
-                        'admin_commission' => $adminCommissionAmount,
-                        'provider_amount'  => $providerAmount,
-                    ]),
-                ]);
-            }
-    
-            // 🔹 Update bid status
-            $bid->status = ($type === 'remaining') ? 'remaining_paid' : 'advance_paid';
-            $bid->save();
-    
-            return redirect()->route('post-job-bid.show', ['id' => $bid->post_request_id])
-                ->with('success', 'PayPal payment completed and payout recorded.');
-    
-        } catch (\Exception $e) {
-            \Log::error('PayPal capture error: ' . $e->getMessage());
-            return redirect()->route('post-job-bid.show', ['id' => $bid->post_request_id])
-                ->with('error', 'Payment failed: ' . $e->getMessage());
-        }
-    }
-    
-    
-    
-    public function postJobPayPalSuccess(Request $request, $id)
-    {
-        $token = $request->query('token');
-        $type  = strtolower((string)$request->query('type', 'advance'));
-        $bid   = PostJobBid::findOrFail($id);
-    
-        if (!$token) {
-            return redirect()->route('post-job-bid.show', ['id' => $bid->post_request_id])
-                ->with('error', 'Missing PayPal token');
-        }
-    
-        // Build PayPal client using configured settings (match create step)
-        $paymentGatewayValue = getPaymentMethodkey('paypal');
-        $clientId = $paymentGatewayValue['paypal_client_id'] ?? null;
-        $clientSecret = $paymentGatewayValue['paypal_secret_key'] ?? null;
-        $mode = $paymentGatewayValue['mode'] ?? 'sandbox';
-
-        if (!$clientId || !$clientSecret) {
-            return redirect()->route('post-job-bid.show', ['id' => $bid->post_request_id])
-                ->with('error', 'PayPal not configured');
         }
 
-        $environment  = $mode === 'live'
-            ? new ProductionEnvironment($clientId, $clientSecret)
-            : new SandboxEnvironment($clientId, $clientSecret);
-        $client = new PayPalHttpClient($environment);
-    
-        $captureRequest = new OrdersCaptureRequest($token);
-        $captureRequest->prefer('return=representation');
-    
-        try {
-            $response = $client->execute($captureRequest);
-    
-            if (!in_array($response->statusCode, [200, 201])) {
-                return redirect()->route('post-job-bid.show', ['id' => $bid->post_request_id])
-                    ->with('error', 'Payment not completed');
-            }
-    
-            $txnId = $response->result->purchase_units[0]->payments->captures[0]->id ?? null;
-            $payAmount = (float)($response->result->purchase_units[0]->amount->value ?? 0);
-    
-            if ($payAmount <= 0) {
-                return redirect()->route('post-job-bid.show', ['id' => $bid->post_request_id])
-                    ->with('error', 'Invalid payment amount');
-            }
-    
-            // 🔹 Retrieve the existing pending Payment
-            $payment = PaymentPostJOb::where('post_job_bid_request_id', $bid->id)
-                ->where('payment_type', 'paypal')
-                ->where('payment_status', 'pending')
-                ->latest('id')
-                ->firstOrFail();
-    
-            // Update Payment with capture details
-            $payment->payment_status = 'completed';
-            $payment->txn_id = $txnId;
-    
-            // Compute admin commission and provider payout
-            $adminCommissionPercent = (float)(Setting::getValueByKey('admin_commission_percentage', 'site-setup')->value ?? 10);
-            $adminCommissionAmount  = ($payAmount * $adminCommissionPercent) / 100;
-            $providerAmount         = max(0, $payAmount - $adminCommissionAmount);
-    
-            $payment->other_transaction_detail = json_encode([
-                'type' => $type,
-                'order_id' => $token,
-                'admin_commission' => $adminCommissionAmount,
-                'provider_amount' => $providerAmount,
-            ]);
-            $payment->save();
-    
-            $adminUser  = User::where('user_type', 'admin')->first();
-            $providerId = $bid->provider_id;
-    
-            // 🔹 Record CommissionEarning
-            if ($adminCommissionAmount > 0) {
-                CommissionEarning::create([
-                    'post_job_bid_request_id' => $bid->id,
-                    'user_type'               => 'admin',
-                    'employee_id'             => $adminUser?->id ?? 1,
-                    'commission_amount'       => $adminCommissionAmount,
-                    'commission_status'       => 'paid',
-                    'payment_id'              => $payment->id,
-                ]);
-            }
-    
-            if ($providerAmount > 0) {
-                CommissionEarning::create([
-                    'post_job_bid_request_id' => $bid->id,
-                    'user_type'               => 'provider',
-                    'employee_id'             => $providerId,
-                    'commission_amount'       => $providerAmount,
-                    'commission_status'       => 'paid',
-                    'payment_id'              => $payment->id,
-                ]);
-    
-                // 🔹 Record Provider Payout
-                ProviderPayout::create([
-                    'provider_id'         => $providerId,
-                    'amount'              => $providerAmount,
-                    'payment_method'      => 'PayPal',
-                    'paid_date'           => now(),
-                    'status'              => 'paid',
-                    'booking_id'          => null,
-                    'post_job_request_id' => $bid->id,
-                    'payment_gateway'     => 'PayPal',
-                ]);
-    
-                // 🔹 Record PaymentHistory
-                PaymentHistory::create([
-                    'payment_id'  => $payment->id,
-                    'booking_id'  => null,
-                    'parent_id'   => null,
-                    'action'      => 'customer_send_provider',
-                    'status'      => 'completed',
-                    'sender_id'   => $bid->customer_id,
-                    'receiver_id' => $providerId,
-                    'datetime'    => now(),
-                    'total_amount'=> $providerAmount,
-                    'txn_id'      => $txnId,
-                    'type'        => 'paypal',
-                    'text'        => __('messages.payment_transfer', [
-                        'from'   => get_user_name($bid->customer_id),
-                        'to'     => get_user_name($providerId),
-                        'amount' => number_format($providerAmount, 2),
-                    ]),
-                    'other_transaction_detail' => json_encode([
-                        'admin_commission' => $adminCommissionAmount,
-                        'provider_amount'  => $providerAmount,
-                    ]),
-                ]);
-            }
-    
-            // 🔹 Update bid status
-            $bid->status = ($type === 'remaining') ? 'remaining_paid' : 'advance_paid';
-            $bid->save();
-    
-            return redirect()->route('post-job-bid.show', ['id' => $bid->post_request_id])
-                ->with('success', 'PayPal payment completed and payout recorded.');
-    
-        } catch (\Exception $e) {
-            \Log::error('PayPal capture error: ' . $e->getMessage());
-            return redirect()->route('post-job-bid.show', ['id' => $bid->post_request_id])
-                ->with('error', 'Payment failed: ' . $e->getMessage());
-        }
+        // 🔹 Update bid status
+        $bid->status = ($type === 'remaining') ? 'remaining_paid' : 'advance_paid';
+        $bid->save();
+
+        return redirect()->route('post-job-bid.show', ['id' => $bid->post_request_id])
+            ->with('success', 'PayPal payment completed and payout recorded.');
+
+    } catch (\Exception $e) {
+        \Log::error('PayPal capture error: ' . $e->getMessage());
+        return redirect()->route('post-job-bid.show', ['id' => $bid->post_request_id])
+            ->with('error', 'Payment failed: ' . $e->getMessage());
     }
-    
+}
+
 
 
     public function getPostJobBankDetails($id)
