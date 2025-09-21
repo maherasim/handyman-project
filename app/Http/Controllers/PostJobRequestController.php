@@ -1097,7 +1097,7 @@ class PostJobRequestController extends Controller
             ]);
 
             // 🔹 Record PaymentHistory
-            PaymentHistory::create([
+            PaymentPostJObHistory::create([
                 'payment_id'  => $payment->id,
                 'booking_id'  => null,
                 'parent_id'   => null,
