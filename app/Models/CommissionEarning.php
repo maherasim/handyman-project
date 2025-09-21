@@ -28,6 +28,11 @@ class CommissionEarning extends Model
         return $this->belongsTo(Booking::class, 'booking_id');
     }
 
+    public function postJobBidRequest()
+    {
+        return $this->belongsTo(PostJobBid::class, 'post_job_bid_request_id');
+    }
+
     public function earning()
     {
         return $this->hasMany(ProviderPayout::class, 'provider_id');
