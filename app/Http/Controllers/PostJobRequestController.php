@@ -1106,13 +1106,13 @@ class PostJobRequestController extends Controller
                 'sender_id'   => $bid->customer_id,
                 'receiver_id' => $providerId,
                 'datetime'    => now(),
-                'total_amount'=> $providerAmount,
+                'total_amount'=> $payAmount,
                 'txn_id'      => $txnId,
                 'type'        => 'paypal',
                 'text'        => __('messages.payment_transfer', [
                     'from'   => get_user_name($bid->customer_id),
                     'to'     => get_user_name($providerId),
-                    'amount' => number_format($providerAmount, 2),
+                    'amount' => number_format($payAmount, 2),
                 ]),
                 'other_transaction_detail' => json_encode([
                     'admin_commission' => $adminCommissionAmount,
