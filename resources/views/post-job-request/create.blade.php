@@ -245,10 +245,17 @@
                                     <textarea name="description" id="description" class="form-control textarea" rows="3"
                                         placeholder="{{ __('messages.description') }}">{{ old('description', $postJob->description) }}</textarea>
                                 </div>
-                                <div class="form-group col-md-6">
-                                    <label for="working_address">{{ __('Working Address') }}</label>
-                                    <textarea name="working_address" id="working_address" class="form-control textarea" rows="3"
-                                        placeholder="{{ __('Working Address') }}">{{ old('working_address', $postJob->working_address) }}</textarea>
+                                <div class="form-group col-md-3">
+                                    <label for="street_address">{{ __('Working Address - Street') }}</label>
+                                    <input type="text" name="street_address" id="street_address" class="form-control" placeholder="{{ __('Street name') }}" value="{{ old('street_address', $postJob->street_address) }}">
+                                </div>
+                                <div class="form-group col-md-2">
+                                    <label for="house_number">{{ __('Working Address - House No.') }}</label>
+                                    <input type="text" name="house_number" id="house_number" class="form-control" placeholder="{{ __('House/Unit No.') }}" value="{{ old('house_number', $postJob->house_number) }}">
+                                </div>
+                                <div class="form-group col-md-3">
+                                    <label for="working_address">{{ __('Working Address (optional)') }}</label>
+                                    <textarea name="working_address" id="working_address" class="form-control textarea" rows="2" placeholder="{{ __('Full address (optional)') }}">{{ old('working_address', $postJob->working_address) }}</textarea>
                                 </div>
 
                                 <div class="form-group col-md-6">

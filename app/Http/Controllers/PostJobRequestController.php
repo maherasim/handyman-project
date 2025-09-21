@@ -1604,6 +1604,9 @@ class PostJobRequestController extends Controller
         ]);
 
         $data = $request->all();
+        // store new address parts if present
+        $data['street_address'] = $request->input('street_address');
+        $data['house_number'] = $request->input('house_number');
         $data['customer_id'] = $request->customer_id ?? auth()->user()->id;
 
         // Normalize price_type -> job_price for backward compatibility
@@ -1658,6 +1661,16 @@ class PostJobRequestController extends Controller
         // ✅ Handle pre-uploaded cover image string (edge case)
         if ($request->has('image') && is_string($request->image) && empty($data['image'])) {
             $data['image'] = $request->image;
+        }
+
+        // Compose legacy working_address from parts if not provided
+        if (empty($data['working_address'])) {
+            $street = trim((string)($data['street_address'] ?? ''));
+            $house  = trim((string)($data['house_number'] ?? ''));
+            $composite = trim($street . ' ' . $house);
+            if ($composite !== '') {
+                $data['working_address'] = $composite;
+            }
         }
 
         $result = PostJobRequest::updateOrCreate(['id' => $request->id], $data);
