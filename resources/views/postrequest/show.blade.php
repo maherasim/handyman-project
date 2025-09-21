@@ -473,7 +473,7 @@
                                 <th>Title</th>
                                 <th class="text-end">Quantity</th>
                                 <th class="text-end">Unit Amount</th>
-                                <th class="text-end">Line Total</th>
+                                <th class="text-end"> Total</th>
                             </tr>
                         </thead>
                         <tbody>
