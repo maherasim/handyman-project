@@ -26,25 +26,15 @@
                             <input type="hidden" name="id" value="{{ old('id', $postJob->id) }}">
 
                             <div class="row">
-                                <!-- Fields replaced with HTML -->
-                                <div class="form-group col-md-2">
-                                    <label for="title">{{ __('messages.title') }} <span
-                                            class="text-danger">*</span></label>
-                                    <input type="text" name="title" id="title" class="form-control"
-                                        placeholder="{{ __('messages.title') }}"
-                                        title="Please enter alphabetic characters and spaces only"
-                                        value="{{ old('title', $postJob->title) }}" required>
+                                <div class="form-group col-md-4">
+                                    <label for="title">{{ __('messages.title') }} <span class="text-danger">*</span></label>
+                                    <input type="text" name="title" id="title" class="form-control" placeholder="{{ __('messages.title') }}" title="Please enter alphabetic characters and spaces only" value="{{ old('title', $postJob->title) }}" required>
                                     <small class="help-block with-errors text-danger"></small>
                                 </div>
-
-                                <div class="form-group col-md-2">
-                                    <label for="country_id">{{ __('messages.country') }} <span
-                                            class="text-danger">*</span></label>
-                                    <select name="country_id" id="country_id" class="select2js form-group category"
-                                        required
-                                        data-placeholder="{{ __('messages.select_name', ['select' => __('messages.country')]) }}"
-                                        data-ajax--url="{{ route('ajax-list', ['type' => 'country']) }}">
-                                                                                @php $oldCountryId = old('country_id', optional($postJob->country)->id); @endphp
+                                <div class="form-group col-md-4">
+                                    <label for="country_id">{{ __('messages.country') }} <span class="text-danger">*</span></label>
+                                    <select name="country_id" id="country_id" class="select2js form-group category" required data-placeholder="{{ __('messages.select_name', ['select' => __('messages.country')]) }}" data-ajax--url="{{ route('ajax-list', ['type' => 'country']) }}">
+                                        @php $oldCountryId = old('country_id', optional($postJob->country)->id); @endphp
                                         @if($oldCountryId)
                                         <option value="{{ $oldCountryId }}" selected>
                                             {{ optional($postJob->country)->id == $oldCountryId ? optional($postJob->country)->name : '' }}
@@ -52,35 +42,23 @@
                                         @endif
                                     </select>
                                 </div>
-
-                                <div class="form-group col-md-2">
-                                    <label
-                                        for="state_id">{{ __('messages.select_name', ['select' => __('messages.state')]) }}
-                                        <span class="text-danger">*</span></label>
-                                    <select name="state_id" id="state_id" class="select2js form-group category"
-                                        required
-                                        data-placeholder="{{ __('messages.select_name', ['select' => __('messages.state')]) }}">
+                                <div class="form-group col-md-4">
+                                    <label for="state_id">{{ __('messages.select_name', ['select' => __('messages.state')]) }} <span class="text-danger">*</span></label>
+                                    <select name="state_id" id="state_id" class="select2js form-group category" required data-placeholder="{{ __('messages.select_name', ['select' => __('messages.state')]) }}">
                                         <!-- State options will be populated dynamically -->
                                     </select>
                                 </div>
-
-                                <div class="form-group col-md-2">
-                                    <label
-                                        for="city_id">{{ __('messages.select_name', ['select' => __('messages.city')]) }}
-                                        <span class="text-danger">*</span></label>
-                                    <select name="city_id" id="city_id" class="select2js form-group category" required
-                                        data-placeholder="{{ __('messages.select_name', ['select' => __('messages.city')]) }}">
+                            </div>
+                            <div class="row">
+                                <div class="form-group col-md-4">
+                                    <label for="city_id">{{ __('messages.select_name', ['select' => __('messages.city')]) }} <span class="text-danger">*</span></label>
+                                    <select name="city_id" id="city_id" class="select2js form-group category" required data-placeholder="{{ __('messages.select_name', ['select' => __('messages.city')]) }}">
                                         <!-- City options will be populated dynamically -->
                                     </select>
                                 </div>
-
-                                <div class="form-group col-md-2">
-                                    <label for="category_id">{{ __('messages.category') }} <span
-                                            class="text-danger">*</span></label>
-                                    <select name="category_id" id="category_id" class="select2js form-group category"
-                                        required
-                                        data-placeholder="{{ __('messages.select_name', ['select' => __('messages.category')]) }}"
-                                        data-ajax--url="{{ route('ajax-list', ['type' => 'category']) }}">
+                                <div class="form-group col-md-4">
+                                    <label for="category_id">{{ __('messages.category') }} <span class="text-danger">*</span></label>
+                                    <select name="category_id" id="category_id" class="select2js form-group category" required data-placeholder="{{ __('messages.select_name', ['select' => __('messages.category')]) }}" data-ajax--url="{{ route('ajax-list', ['type' => 'category']) }}">
                                         @php $oldCategoryId = old('category_id', optional($postJob->category)->id); @endphp
                                         @if($oldCategoryId)
                                         <option value="{{ $oldCategoryId }}" selected>
@@ -89,21 +67,15 @@
                                         @endif
                                     </select>
                                 </div>
-
-                                <div class="form-group col-md-2">
-                                    <label
-                                        for="subcategory_id">{{ __('messages.select_name', ['select' => __('messages.subcategory')]) }}
-                                        <span class="text-danger">*</span></label>
-                                    <select name="subcategory_id" id="subcategory_id"
-                                        class="select2js form-group subcategory_id" required
-                                        data-placeholder="{{ __('messages.select_name', ['select' => __('messages.subcategory')]) }}"></select>
+                                <div class="form-group col-md-4">
+                                    <label for="subcategory_id">{{ __('messages.select_name', ['select' => __('messages.subcategory')]) }} <span class="text-danger">*</span></label>
+                                    <select name="subcategory_id" id="subcategory_id" class="select2js form-group subcategory_id" required data-placeholder="{{ __('messages.select_name', ['select' => __('messages.subcategory')]) }}"></select>
                                 </div>
                             </div>
 
                             <div class="row">
-                                <div class="form-group col-md-2">
-                                    <label for="price_type">{{ __('Price Type') }} <span
-                                            class="text-danger">*</span></label>
+                                <div class="form-group col-md-4">
+                                    <label for="price_type">{{ __('Price Type') }} <span class="text-danger">*</span></label>
                                     <select name="price_type" id="price_type" class="form-control" required>
                                         @php $oldPriceType = old('price_type', $postJob->price_type ?? 'fixed'); @endphp
                                         <option value="fixed" {{ $oldPriceType == 'fixed' ? 'selected' : '' }}>{{ __('Fixed') }}</option>
@@ -111,8 +83,7 @@
                                         <option value="daily" {{ $oldPriceType == 'daily' ? 'selected' : '' }}>{{ __('Daily') }}</option>
                                     </select>
                                 </div>
-
-                                <div class="form-group col-md-2">
+                                <div class="form-group col-md-4">
                                     <label for="job_type">{{ __('Job Type') }} <span class="text-danger">*</span></label>
                                     <select name="type" id="type" class="form-control" required>
                                         <option value="onsite" {{ old('type', $postJob->type) == 'onsite' ? 'selected' : '' }}>{{ __('Onsite') }}</option>
@@ -120,47 +91,36 @@
                                         <option value="hybrid" {{ old('type', $postJob->type) == 'hybrid' ? 'selected' : '' }}>{{ __('Hybrid') }}</option>
                                     </select>
                                 </div>
-                                <div class="form-group col-md-3" id="price_div">
-                                    <label for="price">{{ __('messages.price') }} <span
-                                            class="text-danger">*</span></label>
-                                    <input type="number" name="price" id="price" class="form-control"
-                                        min="1" step="any" placeholder="{{ __('messages.price') }}"
-                                        required value="{{ old('price', $postJob->price) }}">
+                                <div class="form-group col-md-4" id="price_div">
+                                    <label for="price">{{ __('messages.price') }} <span class="text-danger">*</span></label>
+                                    <input type="number" name="price" id="price" class="form-control" min="1" step="any" placeholder="{{ __('messages.price') }}" required value="{{ old('price', $postJob->price) }}">
                                     <small class="help-block with-errors text-danger"></small>
                                 </div>
-
-                               
-
-                                <div class="form-group col-md-2">
-                                    <label for="start_date">{{ __('Start Date') }} <span
-                                            class="text-danger">*</span></label>
-                                    <input type="date" name="start_date" id="start_date" class="form-control"
-                                        required value="{{ old('start_date', optional($postJob->start_date)->format('Y-m-d')) }}">
+                            </div>
+                            <div class="row">
+                                <div class="form-group col-md-4">
+                                    <label for="start_date">{{ __('Start Date') }} <span class="text-danger">*</span></label>
+                                    <input type="date" name="start_date" id="start_date" class="form-control" required value="{{ old('start_date', optional($postJob->start_date)->format('Y-m-d')) }}">
                                     <small class="help-block with-errors text-danger"></small>
                                     <small id="start_date_error" class="text-danger" style="display:none;">{{ __('Start date must be before end date') }}</small>
                                 </div>
-
-                                <div class="form-group col-md-2">
-                                    <label for="end_date">{{ __('End Date') }} <span
-                                            class="text-danger">*</span></label>
-                                    <input type="date" name="end_date" id="end_date" class="form-control"
-                                        required value="{{ old('end_date', optional($postJob->end_date)->format('Y-m-d')) }}">
+                                <div class="form-group col-md-4">
+                                    <label for="end_date">{{ __('End Date') }} <span class="text-danger">*</span></label>
+                                    <input type="date" name="end_date" id="end_date" class="form-control" required value="{{ old('end_date', optional($postJob->end_date)->format('Y-m-d')) }}">
                                     <small class="help-block with-errors text-danger"></small>
                                 </div>
-
-
-                                                                <div class="form-group col-md-2">
+                                <div class="form-group col-md-4">
                                     <label for="total_day_div">{{ __('Total Days') }} <span class="text-danger">*</span></label>
                                     <div class="input-group">
                                         <span class="input-group-text">📅</span>
                                         <input type="number" name="total_day" id="total_day_div" class="form-control" min="1" step="any" placeholder="{{ __('total days') }}" required>
                                     </div>
                                 </div>
-
                                 <input type="hidden" name="total_days" id="hidden_total_days" value="{{ old('total_days', $postJob->total_days) }}">
                                 <input type="hidden" name="total_hours" id="hidden_total_hours" value="{{ old('total_hours', $postJob->total_hours) }}">
-
-                                <div class="form-group col-md-2">
+                            </div>
+                            <div class="row">
+                                <div class="form-group col-md-4">
                                     <label for="total_hours_div">{{ __('Total Hours') }} <span class="text-danger">*</span></label>
                                     <div class="input-group">
                                         <span class="input-group-text">⏱</span>
@@ -168,18 +128,12 @@
                                     </div>
                                     <small class="help-block with-errors text-danger"></small>
                                 </div>
-                                <div class="form-group col-md-3" id="total_budget_div">
-                                    <label for="total_budget">{{ __('Total Budget') }} <span
-                                            class="text-danger">*</span></label>
-                                    <input type="number" name="total_budget" id="total_budget" class="form-control"
-                                        min="0" step="any" placeholder="{{ __('Total Budget') }}"
-                                        value="{{ old('total_budget', $postJob->total_budget) }}" readonly>
+                                <div class="form-group col-md-4" id="total_budget_div">
+                                    <label for="total_budget">{{ __('Total Budget') }} <span class="text-danger">*</span></label>
+                                    <input type="number" name="total_budget" id="total_budget" class="form-control" min="0" step="any" placeholder="{{ __('Total Budget') }}" value="{{ old('total_budget', $postJob->total_budget) }}" readonly>
                                     <small class="help-block with-errors text-danger"></small>
                                 </div>
-                            </div>
-
-                            <div class="row">
-                                <div class="form-group col-md-2">
+                                <div class="form-group col-md-4">
                                     <label for="job_schedule">{{ __('Job Schedule') }} <span class="text-danger">*</span></label>
                                     <select name="job_schedule" id="job_schedule" class="form-control" required>
                                         @php $oldSchedule = old('job_schedule', $postJob->job_schedule); @endphp
@@ -190,30 +144,21 @@
                                         <option value="internship" {{ $oldSchedule == 'internship' ? 'selected' : '' }}>{{ __('Internship') }}</option>
                                     </select>
                                 </div>
+                            </div>
 
-                                <div class="form-group col-md-2">
+                            <div class="row">
+                                <div class="form-group col-md-4">
                                     <label for="remote_work_level">{{ __('Remote Work Level') }} <span class="text-danger">*</span></label>
                                     <select name="remote_work_level" id="remote_work_level" class="form-control" required>
                                         @php $oldRemote = old('remote_work_level', $postJob->remote_work_level); @endphp
-                                        <option value="onsite" {{ $oldRemote == 'onsite' ? 'selected' : '' }}>
-                                            {{ __('Onsite (100%)') }}
-                                        </option>
-                                        <option value="25_remote" {{ $oldRemote == '25_remote' ? 'selected' : '' }}>
-                                            {{ __('25% Remote') }}
-                                        </option>
-                                        <option value="50_remote" {{ $oldRemote == '50_remote' ? 'selected' : '' }}>
-                                            {{ __('50% Remote') }}
-                                        </option>
-                                        <option value="75_remote" {{ $oldRemote == '75_remote' ? 'selected' : '' }}>
-                                            {{ __('75% Remote') }}
-                                        </option>
-                                        <option value="100_remote" {{ $oldRemote == '100_remote' ? 'selected' : '' }}>
-                                            {{ __('100% Remote') }}
-                                        </option>
+                                        <option value="onsite" {{ $oldRemote == 'onsite' ? 'selected' : '' }}>{{ __('Onsite (100%)') }}</option>
+                                        <option value="25_remote" {{ $oldRemote == '25_remote' ? 'selected' : '' }}>{{ __('25% Remote') }}</option>
+                                        <option value="50_remote" {{ $oldRemote == '50_remote' ? 'selected' : '' }}>{{ __('50% Remote') }}</option>
+                                        <option value="75_remote" {{ $oldRemote == '75_remote' ? 'selected' : '' }}>{{ __('75% Remote') }}</option>
+                                        <option value="100_remote" {{ $oldRemote == '100_remote' ? 'selected' : '' }}>{{ __('100% Remote') }}</option>
                                     </select>
                                 </div>
-                                
-                                <div class="form-group col-md-2">
+                                <div class="form-group col-md-4">
                                     <label for="career_level">{{ __('Career Level') }} <span class="text-danger">*</span></label>
                                     <select name="career_level" id="career_level" class="form-control" required>
                                         @php $oldCareer = old('career_level', $postJob->career_level); @endphp
@@ -226,8 +171,7 @@
                                         <option value="manager" {{ $oldCareer == 'manager' ? 'selected' : '' }}>{{ __('Manager') }}</option>
                                     </select>
                                 </div>
-
-                                <div class="form-group col-md-2">
+                                <div class="form-group col-md-4">
                                     <label for="travel_required">{{ __('Travel Required') }} <span class="text-danger">*</span></label>
                                     <select name="travel_required" id="travel_required" class="form-control" required>
                                         @php $oldTravel = old('travel_required', $postJob->travel_required); @endphp
@@ -235,8 +179,9 @@
                                         <option value="1" {{ (string)$oldTravel === '1' ? 'selected' : '' }}>{{ __('Yes') }}</option>
                                     </select>
                                 </div>
-
-                                <div class="form-group col-md-2">
+                            </div>
+                            <div class="row">
+                                <div class="form-group col-md-4">
                                     <label for="education_level">{{ __('Education Level') }} <span class="text-danger">*</span></label>
                                     <select name="education_level" id="education_level" class="form-control" required>
                                         @php $oldEdu = old('education_level', $postJob->education_level); @endphp
@@ -259,15 +204,15 @@
                                     <h6 class="font-weight-bold mb-2">{{ __('Working Address') }}</h6>
                                     <p class="text-muted small mb-3">{{ __('Specify where the work will be performed.') }}</p>
                                 </div>
-                                <div class="form-group col-md-3">
+                                <div class="form-group col-md-4">
                                     <label for="street_address">{{ __('Street & House Nr.') }}</label>
                                     <input type="text" name="street_address" id="street_address" class="form-control" placeholder="{{ __('Street name') }}" value="{{ old('street_address', $postJob->street_address) }}">
                                 </div>
-                                <div class="form-group col-md-2">
+                                <div class="form-group col-md-4">
                                     <label for="house_number">{{ __('Pobox & City-Country.') }}</label>
                                     <input type="text" name="house_number" id="house_number" class="form-control" placeholder="{{ __('House/Unit No.') }}" value="{{ old('house_number', $postJob->house_number) }}">
                                 </div>
-                                <div class="form-group col-md-3">
+                                <div class="form-group col-md-4">
                                     <label for="working_address">{{ __('Working Address (optional)') }}</label>
                                     <textarea name="working_address" id="working_address" class="form-control textarea" rows="2" placeholder="{{ __('Full address (optional)') }}">{{ old('working_address', $postJob->working_address) }}</textarea>
                                 </div>
