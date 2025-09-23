@@ -255,6 +255,10 @@
                                     <textarea name="description" id="description" class="form-control textarea" rows="3"
                                         placeholder="{{ __('messages.description') }}">{{ old('description', $postJob->description) }}</textarea>
                                 </div>
+                                <div class="col-md-12">
+                                    <h6 class="font-weight-bold mb-2">{{ __('Working Address') }}</h6>
+                                    <p class="text-muted small mb-3">{{ __('Specify where the work will be performed.') }}</p>
+                                </div>
                                 <div class="form-group col-md-3">
                                     <label for="street_address">{{ __('Street & House Nr.') }}</label>
                                     <input type="text" name="street_address" id="street_address" class="form-control" placeholder="{{ __('Street name') }}" value="{{ old('street_address', $postJob->street_address) }}">
