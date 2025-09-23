@@ -191,21 +191,27 @@
                                     </select>
                                 </div>
 
-                                <option value="onsite_100" {{ $oldRemote == 'onsite_100' ? 'selected' : '' }}>
-                                    {{ __('Onsite (100%)') }}
-                                </option>
-                                <option value="25_remote" {{ $oldRemote == '25_remote' ? 'selected' : '' }}>
-                                    {{ __('25% Remote') }}
-                                </option>
-                                <option value="50_remote" {{ $oldRemote == '50_remote' ? 'selected' : '' }}>
-                                    {{ __('50% Remote') }}
-                                </option>
-                                <option value="75_remote" {{ $oldRemote == '75_remote' ? 'selected' : '' }}>
-                                    {{ __('75% Remote') }}
-                                </option>
-                                <option value="100_remote" {{ $oldRemote == '100_remote' ? 'selected' : '' }}>
-                                    {{ __('100% Remote') }}
-                                </option>
+                                <div class="form-group col-md-2">
+                                    <label for="remote_work_level">{{ __('Remote Work Level') }} <span class="text-danger">*</span></label>
+                                    <select name="remote_work_level" id="remote_work_level" class="form-control" required>
+                                        @php $oldRemote = old('remote_work_level', $postJob->remote_work_level); @endphp
+                                        <option value="onsite" {{ $oldRemote == 'onsite' ? 'selected' : '' }}>
+                                            {{ __('Onsite (100%)') }}
+                                        </option>
+                                        <option value="25_remote" {{ $oldRemote == '25_remote' ? 'selected' : '' }}>
+                                            {{ __('25% Remote') }}
+                                        </option>
+                                        <option value="50_remote" {{ $oldRemote == '50_remote' ? 'selected' : '' }}>
+                                            {{ __('50% Remote') }}
+                                        </option>
+                                        <option value="75_remote" {{ $oldRemote == '75_remote' ? 'selected' : '' }}>
+                                            {{ __('75% Remote') }}
+                                        </option>
+                                        <option value="100_remote" {{ $oldRemote == '100_remote' ? 'selected' : '' }}>
+                                            {{ __('100% Remote') }}
+                                        </option>
+                                    </select>
+                                </div>
                                 
                                 <div class="form-group col-md-2">
                                     <label for="career_level">{{ __('Career Level') }} <span class="text-danger">*</span></label>
