@@ -81,6 +81,39 @@
             let pollTimer = null;
             let typingTimer = null;
 
+            // Lightweight audio ringtone via Web Audio API (no external asset)
+            let audioCtx = null;
+            function initAudio() {
+                if (audioCtx) return;
+                const Ctx = window.AudioContext || window.webkitAudioContext;
+                if (Ctx) audioCtx = new Ctx();
+            }
+            function playNotify() {
+                try {
+                    if (!audioCtx) return;
+                    if (audioCtx.state === 'suspended') { audioCtx.resume(); }
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.type = 'sine';
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    const now = audioCtx.currentTime;
+                    // Two short beeps for a unique tone
+                    osc.frequency.setValueAtTime(880, now);
+                    gain.gain.setValueAtTime(0.0001, now);
+                    gain.gain.exponentialRampToValueAtTime(0.12, now + 0.02);
+                    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.12);
+                    osc.frequency.setValueAtTime(1320, now + 0.14);
+                    gain.gain.exponentialRampToValueAtTime(0.12, now + 0.16);
+                    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.26);
+                    osc.start(now);
+                    osc.stop(now + 0.28);
+                } catch (e) { /* ignore */ }
+            }
+            const unlockAudio = () => { initAudio(); };
+            window.addEventListener('click', unlockAudio);
+            window.addEventListener('keydown', unlockAudio);
+
             const safe = (t) => (t || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 
             function renderMessage(m) {
@@ -160,13 +193,16 @@
             function pollNewer() {
                 const url = newestId ? (messagesUrl + '?after_id=' + newestId) : messagesUrl;
                 fetch(url).then(r => r.json()).then(j => {
+                    let inbound = false;
                     (j.messages || []).forEach(m => {
                         oldestId = oldestId === 0 ? m.id : Math.min(oldestId, m.id);
                         newestId = Math.max(newestId, m.id);
+                        if (m.sender_id !== currentUserId) inbound = true;
                         renderMessage(m);
                     });
                     if (j.messages && j.messages.length) {
                         msgScroll.scrollTop = msgScroll.scrollHeight;
+                        if (inbound) playNotify();
                     }
                 });
             }
