@@ -1040,19 +1040,39 @@
                         didOpen: () => {    
                             const advanceInput = document.getElementById('advanceInput');
                             const remainingInput = document.getElementById('remainingInput');
-                            const normalize = () => {
+                            const onInput = () => {
                                 let val = parseInt(advanceInput.value, 10);
-                                if (isNaN(val)) val = 1;
-                                if (val < 1) val = 1;
-                                if (val > 99) val = 99;
-                                advanceInput.value = val;
+                                if (isNaN(val)) {
+                                    remainingInput.value = 100;
+                                    return;
+                                }
+                                if (val > 99) {
+                                    val = 99;
+                                    advanceInput.value = val;
+                                }
+                                if (val < 0) {
+                                    val = 0;
+                                    advanceInput.value = val;
+                                }
                                 remainingInput.value = 100 - val;
                             };
-                            normalize();
-                            advanceInput.addEventListener('input', normalize);
+                            onInput();
+                            advanceInput.addEventListener('input', onInput);
+                            advanceInput.addEventListener('blur', () => {
+                                let val = parseInt(advanceInput.value, 10);
+                                if (isNaN(val)) return; // leave empty if user cleared; preConfirm will validate
+                                if (val < 1) { val = 1; advanceInput.value = val; }
+                                if (val > 99) { val = 99; advanceInput.value = val; }
+                                remainingInput.value = 100 - val;
+                            });
                         },
                         preConfirm: () => {
-                            const advance = parseInt(document.getElementById('advanceInput').value, 10);
+                            const raw = document.getElementById('advanceInput').value;
+                            if (raw === '' || raw === null) {
+                                Swal.showValidationMessage("Advance must be between 1% and 99%.");
+                                return false;
+                            }
+                            const advance = parseInt(raw, 10);
                             if (isNaN(advance) || advance < 1 || advance > 99) {
                                 Swal.showValidationMessage("Advance must be between 1% and 99%.");
                                 return false;
