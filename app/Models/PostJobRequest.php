@@ -11,7 +11,7 @@ class PostJobRequest extends Model
     use HasFactory;
     protected $table = 'post_job_requests';
     protected $fillable = [
-        'title', 'type','customer_id', 'status' ,'description','provider_id','advance_percent','remaining_percent ', 'reason','price','total_budget','date','job_price','price_type','working_address','street_address','house_number', 'country_id','state_id','city_id','category_id','subcategory_id','start_date','end_date','total_hours','total_days','requirement','job_schedule','remote_work_level','career_level','travel_required','education_level','duties','benefits','image','images','total_views'
+        'title', 'type','customer_id', 'status' ,'description','provider_id','advance_percent','remaining_percent ', 'reason','price','total_budget','date','job_price','price_type','working_address','street_address','house_number', 'country_id','state_id','city_id','category_id','subcategory_id','start_date','end_date','total_hours','total_days','requirement','job_schedule','remote_work_level','career_level','travel_required','education_level','duties','benefits','image','images','total_views','accepted_bid_id'
     ];
 
     protected $casts = [

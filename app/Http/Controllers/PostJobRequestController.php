@@ -545,29 +545,34 @@ class PostJobRequestController extends Controller
             'status' => 'required|string',
             'hold_reason' => 'nullable|string|max:500'
         ]);
-
+    
         $bid = PostJobBid::findOrFail($id);
-
+    
         // Assuming post_request_id exists in PostJobBid
         $postjob = PostJobRequest::findOrFail($bid->post_request_id);
-
+    
         // Update bid status
         $bid->status = $request->input('status');
-
+    
         // If hold → save reason
         if ($bid->status === 'hold' && $request->filled('hold_reason')) {
             $bid->hold_reason = $request->input('hold_reason');
         }
         $bid->save();
-
-        // Update postjob status
+    
+        // Update postjob status + accepted_bid_id logic
         if ($bid->status === 'cancelled') {
             $postjob->status = 'requested'; // special case
+            $postjob->accepted_bid_id = null; // reset if cancelled
+        } elseif ($bid->status === 'accepted') {
+            $postjob->status = 'accepted';
+            $postjob->accepted_bid_id = $bid->id; // ✅ store accepted bid id
         } else {
             $postjob->status = $bid->status;
         }
+    
         $postjob->save();
-
+    
         try {
             $this->sendNotification([
                 'activity_type' => 'update_booking_status',
@@ -576,14 +581,13 @@ class PostJobRequestController extends Controller
         } catch (\Throwable $e) {
             // silent fail for notifications
         }
-
+    
         return response()->json([
             'status' => true,
             'message' => 'Status updated successfully',
         ]);
     }
-
-
+    
 
 
 
