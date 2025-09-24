@@ -217,7 +217,7 @@ class PostJobRequestController extends Controller
             'provider:id,display_name',
             'customer:id,display_name',
             // Include required PostJobRequest fields for card details
-            'postrequest:id,title,customer_id,status,provider_id,remaining_percent,type,start_date,end_date,total_budget,city_id,country_id',
+            'postrequest:id,title,customer_id,status,provider_id,remaining_percent,type,start_date,end_date,total_budget,city_id,country_id,accepted_bid_id',
             // Eager-load location and bids for counts
             'postrequest.city:id,name',
             'postrequest.country:id,name',
