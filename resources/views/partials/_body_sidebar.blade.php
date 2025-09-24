@@ -23,6 +23,15 @@
             )
             ->link->attr(['class' => '']);
 
+        // Messages (Chat Inbox)
+        $menu
+            ->add(
+                '<span>Messages</span><span class="custom-tooltip"><span class="tooltip-text">All chats</span></span>',
+                ['route' => 'chat.index'],
+            )
+            ->prepend('<svg width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M21 12C21 7.58172 17.4183 4 13 4H6C4.89543 4 4 4.89543 4 6V18.5C4 18.7761 4.22386 19 4.5 19C4.60555 19 4.7078 18.9665 4.79289 18.9045L7.25528 17.1455C7.66491 16.8526 8.16548 16.6949 8.6797 16.695H13C17.4183 16.695 21 13.1133 21 8.695V12Z" stroke="currentColor" stroke-width="1.5"/></svg>')
+            ->link->attr(['class' => '']);
+
         $menu
             ->add(
                 '<span>' .

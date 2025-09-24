@@ -92,6 +92,10 @@
                         if (j.latest && j.latest.id && j.latest.id !== lastLatestId) {
                             lastLatestId = j.latest.id;
                             playNotify();
+                            if (window.Swal && j.latest.sender_name) {
+                                const text = `${j.latest.sender_name}: ${j.latest.snippet || ''}`;
+                                Swal.fire({ toast:true, position:'bottom-end', timer:3500, showConfirmButton:false, icon:'info', title: text });
+                            }
                         }
                     }).catch(()=>{});
             }

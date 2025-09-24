@@ -197,7 +197,8 @@ class ChatController extends Controller
             ->whereNull('read_at');
 
         $count = (clone $baseQuery)->count();
-        $latest = (clone $baseQuery)->latest('id')->first();
+        $latest = (clone $baseQuery)->with(['sender:id,display_name', 'conversation.bid.postrequest'])
+            ->latest('id')->first();
 
         $latestMeta = null;
         if ($latest) {
@@ -205,11 +206,50 @@ class ChatController extends Controller
                 'id' => $latest->id,
                 'conversation_id' => $latest->conversation_id,
                 'sender_id' => $latest->sender_id,
+                'sender_name' => optional($latest->sender)->display_name,
+                'bid_id' => optional($latest->conversation)->post_job_bid_id,
+                'bid_title' => optional(optional(optional($latest->conversation)->bid)->postrequest)->title,
+                'snippet' => $latest->message ? mb_substr($latest->message, 0, 80) : ($latest->attachment_path ? 'Attachment' : ''),
                 'created_at' => $latest->created_at?->toDateTimeString(),
             ];
         }
 
         return response()->json(['status' => true, 'count' => $count, 'latest' => $latestMeta]);
+    }
+
+    public function index(Request $request)
+    {
+        $uid = (int) auth()->id();
+        abort_unless($uid > 0, 401);
+        $conversations = ChatConversation::where(function ($q) use ($uid) {
+                $q->where('user_one_id', $uid)->orWhere('user_two_id', $uid);
+            })
+            ->with(['bid.postrequest', 'userOne:id,display_name', 'userTwo:id,display_name'])
+            ->orderBy('updated_at', 'desc')
+            ->get();
+
+        $list = [];
+        foreach ($conversations as $c) {
+            $last = ChatMessage::where('conversation_id', $c->id)->orderByDesc('id')->first();
+            $unread = ChatMessage::where('conversation_id', $c->id)
+                ->whereNull('read_at')
+                ->where('sender_id', '!=', $uid)
+                ->count();
+            $otherId = ($c->user_one_id === $uid) ? $c->user_two_id : $c->user_one_id;
+            $other = $otherId === optional($c->userOne)->id ? $c->userOne : $c->userTwo;
+            $list[] = [
+                'conversation_id' => $c->id,
+                'bid_id' => $c->post_job_bid_id,
+                'bid_title' => optional(optional($c->bid)->postrequest)->title,
+                'other_name' => optional($other)->display_name,
+                'other_avatar' => getSingleMedia(optional($other), 'profile_image', null),
+                'unread' => $unread,
+                'last_snippet' => $last ? ($last->message ? mb_substr($last->message, 0, 80) : 'Attachment') : '',
+                'last_at' => $last?->created_at?->toDateTimeString(),
+            ];
+        }
+
+        return view('chat.index', [ 'items' => $list ]);
     }
 }
 
