@@ -34,6 +34,12 @@
                 </button>
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav ml-auto navbar-list align-items-center">
+                        <li class="nav-item nav-icon">
+                            <a href="{{ route('chat.index') }}" class="position-relative" title="Messages">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" class="h-6 w-6 text-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12C21 7.58172 17.4183 4 13 4H6C4.89543 4 4 4.89543 4 6V18.5C4 18.7761 4.22386 19 4.5 19C4.60555 19 4.7078 18.9665 4.79289 18.9045L7.25528 17.1455C7.66491 16.8526 8.16548 16.6949 8.6797 16.695H13C17.4183 16.695 21 13.1133 21 8.695V12Z"/></svg>
+                                <span id="chatBadge" class="badge badge-pill bg-danger position-absolute" style="top:-6px; right:-8px; display:none;">0</span>
+                            </a>
+                        </li>
                         <li class="nav-item nav-icon dropdown">
                             <a href="#" class="search-toggle dropdown-toggle notification_list" id="notification-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" class="h-6 w-6 text-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor">

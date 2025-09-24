@@ -89,6 +89,13 @@
                     .then(r => r.ok ? r.json() : null)
                     .then(j => {
                         if (!j || !j.status) return;
+                        try {
+                            var b = document.getElementById('chatBadge');
+                            if (b) {
+                                if (j.count && j.count > 0) { b.style.display = ''; b.textContent = j.count; }
+                                else { b.style.display = 'none'; b.textContent = '0'; }
+                            }
+                        } catch(e){}
                         if (j.latest && j.latest.id && j.latest.id !== lastLatestId) {
                             lastLatestId = j.latest.id;
                             playNotify();
