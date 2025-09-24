@@ -48,6 +48,7 @@ class PostJobRequestResource extends JsonResource
             'service'           => ServiceResource::collection(Service::whereIn('id',$this->postServiceMapping->pluck('service_id'))->get()),
             'created_at'            => $this->created_at,
             'job_price'             => $this->job_price,
+            'accepted_bid_id'  => $this->accepted_bid_id
 
         ];
     }
