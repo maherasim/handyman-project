@@ -1004,9 +1004,18 @@
                     Swal.fire({
                         title: "Update Payment Split",
                         html: `
+                    <div class="alert alert-info d-flex align-items-start mb-3">
+                        <i class="fas fa-info-circle me-2 mt-1"></i>
+                        <div>
+                            <div class="fw-bold">Advance payment guidelines</div>
+                            <div class="small mb-0">
+                                You can request an advance between 1% and 99% of the total. Values outside this range are not allowed. The remainder will be due later.
+                            </div>
+                        </div>
+                    </div>
                     <div class="mb-3 text-start">
                         <label class="form-label fw-bold">Advance Percentage</label>
-                        <input type="number" id="advanceInput" class="form-control" value="${currentAdvance}" min="0" max="99" placeholder="0-99" />
+                        <input type="number" id="advanceInput" class="form-control" value="${currentAdvance}" min="1" max="99" step="1" placeholder="1-99" />
                     </div>
                     <div class="text-start">
                         <label class="form-label fw-bold">Remaining Percentage</label>
@@ -1017,31 +1026,26 @@
                         showCancelButton: true,
                         confirmButtonText: "Update",
                         didOpen: () => {    
-                            const advanceInput = document.getElementById(
-                                'advanceInput');
-                            const remainingInput = document.getElementById(
-                                'remainingInput');
-                            advanceInput.addEventListener('input', function() {
-                                let val = parseInt(this.value) || 0;
+                            const advanceInput = document.getElementById('advanceInput');
+                            const remainingInput = document.getElementById('remainingInput');
+                            const normalize = () => {
+                                let val = parseInt(advanceInput.value, 10);
+                                if (isNaN(val)) val = 1;
+                                if (val < 1) val = 1;
                                 if (val > 99) val = 99;
+                                advanceInput.value = val;
                                 remainingInput.value = 100 - val;
-                            });
+                            };
+                            normalize();
+                            advanceInput.addEventListener('input', normalize);
                         },
                         preConfirm: () => {
-                            const advance = parseInt(document.getElementById(
-                                'advanceInput').value);
-                            const remaining = parseInt(document.getElementById(
-                                'remainingInput').value);
-                            if (advance < 0 || advance > 100) {
-                                Swal.showValidationMessage(
-                                    "Please enter a valid advance percentage (0-100)"
-                                );
+                            const advance = parseInt(document.getElementById('advanceInput').value, 10);
+                            if (isNaN(advance) || advance < 1 || advance > 99) {
+                                Swal.showValidationMessage("Advance must be between 1% and 99%.");
                                 return false;
                             }
-                            return {
-                                advance,
-                                remaining
-                            };
+                            return { advance, remaining: 100 - advance };
                         }
                     }).then((result) => {
                         if (result.isConfirmed) {
