@@ -115,6 +115,7 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
     Route::get('/chat/{conversationId}/messages', [ChatController::class, 'messages'])->name('chat.messages');
     Route::post('/chat/{conversationId}/send', [ChatController::class, 'send'])->name('chat.send');
     Route::get('/chat/download/{messageId}', [ChatController::class, 'download'])->name('chat.download');
+    Route::get('/messages/bid/{bidId}', [ChatController::class, 'viewByBid'])->name('chat.view.bid');
     Route::get('/home', [HomeController::class, 'index'])->name('home');
     Route::group(['namespace' => '', 'middleware' => ['permission:permission list']], function () {
         Route::resource('permission', PermissionController::class);

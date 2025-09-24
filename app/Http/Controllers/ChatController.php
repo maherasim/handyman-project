@@ -136,5 +136,21 @@ class ChatController extends Controller
             'Content-Type' => $mime,
         ]);
     }
+
+    public function viewByBid(Request $request, int $bidId)
+    {
+        $bid = PostJobBid::with(['postrequest'])->findOrFail($bidId);
+        $this->authorizeForBid($bid);
+
+        $conversation = ChatConversation::firstOrCreate(
+            ['post_job_bid_id' => $bid->id],
+            ['user_one_id' => $bid->provider_id, 'user_two_id' => $bid->customer_id]
+        );
+
+        return view('chat.show', [
+            'conversation' => $conversation,
+            'bid' => $bid,
+        ]);
+    }
 }
 
