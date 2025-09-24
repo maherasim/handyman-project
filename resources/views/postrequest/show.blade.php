@@ -1006,7 +1006,7 @@
                         html: `
                     <div class="mb-3 text-start">
                         <label class="form-label fw-bold">Advance Percentage</label>
-                        <input type="number" id="advanceInput" class="form-control" value="${currentAdvance}" min="0" max="100" />
+                        <input type="number" id="advanceInput" class="form-control" value="${currentAdvance}" min="0" max="99" />
                     </div>
                     <div class="text-start">
                         <label class="form-label fw-bold">Remaining Percentage</label>
