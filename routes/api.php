@@ -74,10 +74,20 @@ Route::get('post-job-status', [ API\PostJobRequestController::class, 'postReques
 // Route::get('booking-list', [ API\BookingController::class, 'getBookingList' ] );
 
 Route::group(['middleware' => ['auth:sanctum']], function () {
-    // Chat API
+    // ===== Chat API (Mobile/Web) =====
+    // Open or create conversation by bid id
     Route::post('chat/open-by-bid', [ChatApiController::class, 'openByBid']);
+    // List all user's conversations with unread counts (paginated)
+    Route::get('chat/conversations', [ChatApiController::class, 'conversations']);
+    // Get unread summary across conversations
+    Route::get('chat/unread', [ChatApiController::class, 'unread']);
+    // Fetch messages with pagination (before_id/after_id/limit)
     Route::get('chat/{conversationId}/messages', [ChatApiController::class, 'listMessages']);
+    // Send message with optional attachment
     Route::post('chat/{conversationId}/send', [ChatApiController::class, 'sendMessage']);
+    // Mark messages as read (optionally up to a specific message id)
+    Route::post('chat/{conversationId}/read', [ChatApiController::class, 'markRead']);
+    // Download attachment (protected)
     Route::get('chat/download/{messageId}', [ChatApiController::class, 'download'])->name('api.chat.download');
     Route::post('service-save', [ App\Http\Controllers\ServiceController::class, 'store' ] );
     //Route::post('service-save', [ App\Http\Controllers\ServiceController::class, 'store' ] );
