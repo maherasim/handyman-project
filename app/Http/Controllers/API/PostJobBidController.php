@@ -55,9 +55,9 @@ public function apiIndex(Request $request)
     }
 
     // Optional filtering (status, category, etc.)
-    if ($request->filled('status')) {
-        $query->where('status', $request->status);
-    }
+    // if ($request->filled('status')) {
+    //     $query->where('status', $request->status);
+    // }
 
     if ($request->filled('category_id')) {
         $query->where('category_id', $request->category_id);
