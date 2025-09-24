@@ -181,6 +181,17 @@
 
         @endif
 
+        {{-- Show Chat button for provider/user from advance_paid onwards --}}
+        @php
+            $chatEnabledStatuses = ['advance_paid','in_process','in_progress','hold','done','confirm_done','remaining_paid','completed'];
+            $isParticipant = ($auth_user->user_type === 'provider' && $auth_user->id == ($bid->provider_id ?? 0)) || ($auth_user->user_type === 'user' && $auth_user->id == ($bid->customer_id ?? 0));
+        @endphp
+        @if($isParticipant && in_array($bid->status, $chatEnabledStatuses))
+            <button class="btn btn-outline-primary chatBtn" data-bid-id="{{ $bid->id }}">
+                <i class="fas fa-comments"></i> Chat
+            </button>
+        @endif
+
         {{-- Customer Actions --}}
         @if ($auth_user->user_type === 'user' && $auth_user->id == $bid->customer_id)
 
@@ -974,6 +985,124 @@
                 });
             });
 
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.chatBtn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const bidId = this.dataset.bidId;
+                    const openUrl = `{{ route('chat.open', ':id') }}`.replace(':id', bidId);
+
+                    fetch(openUrl, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+                        .then(res => res.json())
+                        .then(data => {
+                            if (!data || !data.status) {
+                                Swal.fire('Error', 'Unable to open chat', 'error');
+                                return;
+                            }
+                            const conversationId = data.conversation.id;
+                            const currentUserId = data.current_user_id;
+
+                            const renderMessages = (messages) => {
+                                const box = document.getElementById('chatMessages');
+                                if (!box) return;
+                                box.innerHTML = '';
+                                messages.forEach(m => {
+                                    const wrap = document.createElement('div');
+                                    const mine = m.sender_id === currentUserId;
+                                    wrap.className = 'd-flex mb-2 ' + (mine ? 'justify-content-end' : 'justify-content-start');
+                                    const bubble = document.createElement('div');
+                                    bubble.className = 'p-2 rounded ' + (mine ? 'bg-primary text-white' : 'bg-light border');
+                                    const safe = (t) => (t || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+                                    let html = '';
+                                    if (m.message) {
+                                        html += `<div class="small">${safe(m.message)}</div>`;
+                                    }
+                                    if (m.attachment) {
+                                        const name = safe(m.attachment.name || 'attachment');
+                                        html += `<div class="mt-1"><a href="${m.attachment.download_url}" target="_blank" class="text-decoration-underline ${mine ? 'text-white' : ''}"><i class="fas fa-paperclip"></i> ${name}</a></div>`;
+                                    }
+                                    html += `<div class="text-end small opacity-75 mt-1">${safe(m.created_at || '')}</div>`;
+                                    bubble.innerHTML = html;
+                                    wrap.appendChild(bubble);
+                                    box.appendChild(wrap);
+                                });
+                                box.scrollTop = box.scrollHeight;
+                            };
+
+                            const messagesUrl = `{{ route('chat.messages', ':cid') }}`.replace(':cid', conversationId);
+                            const sendUrl = `{{ route('chat.send', ':cid') }}`.replace(':cid', conversationId);
+
+                            const modalHtml = `
+                                <div class="text-start">
+                                    <div id="chatMessages" style="height:320px; overflow-y:auto; border: 1px solid #e9ecef; border-radius: .25rem; padding: .5rem;"></div>
+                                    <div class="mt-3">
+                                        <label class="form-label fw-bold">Message</label>
+                                        <textarea id="chatInput" class="form-control" rows="2" placeholder="Type a message..."></textarea>
+                                        <div class="d-flex align-items-center gap-2 mt-2">
+                                            <input type="file" id="chatFile" class="form-control" />
+                                            <button class="btn btn-primary" id="chatSend"><i class="fas fa-paper-plane"></i> Send</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+
+                            Swal.fire({
+                                title: 'Chat',
+                                width: 700,
+                                html: modalHtml,
+                                showConfirmButton: false,
+                                showCancelButton: true,
+                                didOpen: () => {
+                                    // Initial render if provided
+                                    renderMessages(data.messages || []);
+
+                                    const reload = () => {
+                                        fetch(messagesUrl, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+                                            .then(r => r.json())
+                                            .then(j => { if (j && j.status) renderMessages(j.messages || []); });
+                                    };
+
+                                    const sendBtn = document.getElementById('chatSend');
+                                    sendBtn.addEventListener('click', () => {
+                                        const fd = new FormData();
+                                        const text = (document.getElementById('chatInput').value || '').trim();
+                                        if (text) fd.append('message', text);
+                                        const f = document.getElementById('chatFile');
+                                        if (f && f.files && f.files[0]) fd.append('attachment', f.files[0]);
+
+                                        fetch(sendUrl, {
+                                            method: 'POST',
+                                            headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+                                            body: fd
+                                        }).then(r => r.json())
+                                        .then(j => {
+                                            if (!j || !j.status) {
+                                                Swal.showValidationMessage(j && j.message ? j.message : 'Unable to send');
+                                                return;
+                                            }
+                                            document.getElementById('chatInput').value = '';
+                                            if (f) f.value = '';
+                                            reload();
+                                        }).catch(() => {});
+                                    });
+
+                                    // Polling
+                                    const pollId = setInterval(reload, 4000);
+                                    // Store to window so we can clear after
+                                    window.__chatPollId = pollId;
+                                }
+                            }).then(() => {
+                                if (window.__chatPollId) {
+                                    clearInterval(window.__chatPollId);
+                                    delete window.__chatPollId;
+                                }
+                            });
+                        })
+                        .catch(() => Swal.fire('Error', 'Unable to open chat', 'error'));
+                });
+            });
         });
     </script>
     <script>

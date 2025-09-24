@@ -6,6 +6,7 @@ use App\Http\Controllers;
 use App\Http\Resources\CountryResource;
 use App\Http\Controllers\API;
 use App\Http\Controllers\PayPalController;
+use App\Http\Controllers\API\ChatApiController;
 
 
 /*
@@ -73,6 +74,11 @@ Route::get('post-job-status', [ API\PostJobRequestController::class, 'postReques
 // Route::get('booking-list', [ API\BookingController::class, 'getBookingList' ] );
 
 Route::group(['middleware' => ['auth:sanctum']], function () {
+    // Chat API
+    Route::post('chat/open-by-bid', [ChatApiController::class, 'openByBid']);
+    Route::get('chat/{conversationId}/messages', [ChatApiController::class, 'listMessages']);
+    Route::post('chat/{conversationId}/send', [ChatApiController::class, 'sendMessage']);
+    Route::get('chat/download/{messageId}', [ChatApiController::class, 'download'])->name('api.chat.download');
     Route::post('service-save', [ App\Http\Controllers\ServiceController::class, 'store' ] );
     //Route::post('service-save', [ App\Http\Controllers\ServiceController::class, 'store' ] );
     Route::post('service-delete/{id}', [ App\Http\Controllers\ServiceController::class, 'destroy' ] );

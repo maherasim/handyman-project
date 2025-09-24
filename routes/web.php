@@ -48,6 +48,7 @@ use App\Http\Controllers\FrontendSettingController;
 use App\Http\Controllers\MailTemplatesController;
 use App\Http\Controllers\VerificationController;
 use App\Http\Controllers\HelpDeskController;
+use App\Http\Controllers\ChatController;
 
 
 use App\Http\Controllers\Installer\WelcomeController;
@@ -109,6 +110,11 @@ Route::get('lang/{locale}', [HomeController::class, 'lang'])->name('switch-langu
 Route::get('/verify/{id}', [VerificationController::class, 'verify'])->name('verify');
 
 Route::group(['middleware' => ['auth', 'verified']], function () {
+    // Simple 1:1 Chat routes
+    Route::get('/chat/open/{bidId}', [ChatController::class, 'open'])->name('chat.open');
+    Route::get('/chat/{conversationId}/messages', [ChatController::class, 'messages'])->name('chat.messages');
+    Route::post('/chat/{conversationId}/send', [ChatController::class, 'send'])->name('chat.send');
+    Route::get('/chat/download/{messageId}', [ChatController::class, 'download'])->name('chat.download');
     Route::get('/home', [HomeController::class, 'index'])->name('home');
     Route::group(['namespace' => '', 'middleware' => ['permission:permission list']], function () {
         Route::resource('permission', PermissionController::class);
