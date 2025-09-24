@@ -1006,7 +1006,7 @@
                         html: `
                     <div class="mb-3 text-start">
                         <label class="form-label fw-bold">Advance Percentage</label>
-                        <input type="number" id="advanceInput" class="form-control" value="${currentAdvance}" min="0" max="99" />
+                        <input type="number" id="advanceInput" class="form-control" value="${currentAdvance}" min="0" max="99" placeholder="0-99" />
                     </div>
                     <div class="text-start">
                         <label class="form-label fw-bold">Remaining Percentage</label>
@@ -1016,14 +1016,14 @@
                         focusConfirm: false,
                         showCancelButton: true,
                         confirmButtonText: "Update",
-                        didOpen: () => {
+                        didOpen: () => {    
                             const advanceInput = document.getElementById(
                                 'advanceInput');
                             const remainingInput = document.getElementById(
                                 'remainingInput');
                             advanceInput.addEventListener('input', function() {
                                 let val = parseInt(this.value) || 0;
-                                if (val > 100) val = 100;
+                                if (val > 99) val = 99;
                                 remainingInput.value = 100 - val;
                             });
                         },
