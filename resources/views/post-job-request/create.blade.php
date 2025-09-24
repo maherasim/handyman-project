@@ -195,11 +195,26 @@
                             </div>
 
                             <div class="row">
-                                <div class="form-group col-md-6">
+                                <div class="form-group col-md-3">
                                     <label for="description">{{ __('messages.description') }}</label>
-                                    <textarea name="description" id="description" class="form-control textarea" rows="3"
-                                        placeholder="{{ __('messages.description') }}">{{ old('description', $postJob->description) }}</textarea>
+                                    <textarea name="description" id="description" class="form-control textarea editor-fixed" rows="6" placeholder="{{ __('messages.description') }}">{{ old('description', $postJob->description) }}</textarea>
                                 </div>
+                                <div class="form-group col-md-3">
+                                    <label for="requirement">{{ __('Skills & Requirements') }} <span class="text-danger">*</span></label>
+                                    <textarea name="requirement" id="requirement" class="form-control textarea editor-fixed" rows="6" placeholder="{{ __('requirements') }}" required>{{ old('requirement', $postJob->requirement) }}</textarea>
+                                    <small class="help-block with-errors text-danger"></small>
+                                </div>
+                                <div class="form-group col-md-3">
+                                    <label for="duties">{{ __('Duties & Responsibilities') }}</label>
+                                    <textarea name="duties" id="duties" class="form-control textarea editor-fixed" rows="6" placeholder="{{ __('duties & responsibilities') }}">{{ old('duties', $postJob->duties) }}</textarea>
+                                </div>
+                                <div class="form-group col-md-3">
+                                    <label for="benefits">{{ __('Benefits') }}</label>
+                                    <textarea name="benefits" id="benefits" class="form-control textarea editor-fixed" rows="6" placeholder="{{ __('benefits') }}">{{ old('benefits', $postJob->benefits) }}</textarea>
+                                </div>
+                            </div>
+
+                            <div class="row">
                                 <div class="col-md-12">
                                     <h6 class="font-weight-bold mb-2">{{ __('Working Address') }}</h6>
                                     <p class="text-muted small mb-3">{{ __('Specify where the work will be performed.') }}</p>
@@ -215,23 +230,6 @@
                                 <div class="form-group col-md-4">
                                     <label for="working_address">{{ __('Working Address (optional)') }}</label>
                                     <textarea name="working_address" id="working_address" class="form-control textarea" rows="2" placeholder="{{ __('Full address (optional)') }}">{{ old('working_address', $postJob->working_address) }}</textarea>
-                                </div>
-
-                                <div class="form-group col-md-6">
-                                    <label for="requirement">{{ __('Skills & Requirements') }} <span
-                                            class="text-danger">*</span></label>
-                                    <textarea name="requirement" id="requirement" class="form-control textarea" rows="3" placeholder="{{ __('requirements') }}" required>{{ old('requirement', $postJob->requirement) }}</textarea>
-                                    <small class="help-block with-errors text-danger"></small>
-                                </div></div>
-
-                            <div class="row">
-                                <div class="form-group col-md-6">
-                                    <label for="duties">{{ __('Duties & Responsibilities') }}</label>
-                                    <textarea name="duties" id="duties" class="form-control textarea" rows="3" placeholder="{{ __('duties & responsibilities') }}">{{ old('duties', $postJob->duties) }}</textarea>
-                                </div>
-                                <div class="form-group col-md-6">
-                                    <label for="benefits">{{ __('Benefits') }}</label>
-                                    <textarea name="benefits" id="benefits" class="form-control textarea" rows="3" placeholder="{{ __('benefits') }}">{{ old('benefits', $postJob->benefits) }}</textarea>
                                 </div>
                             </div>
                                 <div class="form-group custom-file col-md-6 mt-4">
@@ -291,6 +289,9 @@
                 margin-right: 10px;
                 /* Add margin between images */
                 margin-bottom: 10px;
+            }
+            .editor-fixed {
+                min-height: 180px;
             }
                         </style>
  
