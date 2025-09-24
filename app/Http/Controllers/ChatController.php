@@ -71,26 +71,49 @@ class ChatController extends Controller
         $conversation = ChatConversation::findOrFail($conversationId);
         $this->authorizeForConversation($conversation);
 
-        $messages = ChatMessage::where('conversation_id', $conversation->id)
-            ->with('sender:id,display_name')
-            ->orderBy('id', 'asc')
-            ->limit(100)
-            ->get()
-            ->map(function (ChatMessage $m) {
-                return [
-                    'id' => $m->id,
-                    'sender_id' => $m->sender_id,
-                    'sender_name' => optional($m->sender)->display_name,
-                    'sender_avatar_url' => getSingleMedia(optional($m->sender), 'profile_image', null),
-                    'message' => $m->message,
-                    'created_at' => $m->created_at?->toDateTimeString(),
-                    'attachment' => $m->attachment_path ? [
-                        'type' => $m->attachment_type,
-                        'name' => basename($m->attachment_path),
-                        'download_url' => route('chat.download', $m->id)
-                    ] : null,
-                ];
-            });
+        $beforeId = (int) $request->query('before_id', 0);
+        $afterId = (int) $request->query('after_id', 0);
+        $limit = (int) $request->query('limit', 50);
+        if ($limit < 1 || $limit > 200) { $limit = 50; }
+
+        $query = ChatMessage::where('conversation_id', $conversation->id);
+        if ($beforeId > 0) {
+            $query->where('id', '<', $beforeId)->orderBy('id', 'desc');
+        } elseif ($afterId > 0) {
+            $query->where('id', '>', $afterId)->orderBy('id', 'asc');
+        } else {
+            $query->orderBy('id', 'asc');
+        }
+
+        $messagesCollection = $query->with('sender:id,display_name')->limit($limit)->get();
+        // If we fetched older with desc order, reverse to chronological
+        if ($beforeId > 0) {
+            $messagesCollection = $messagesCollection->reverse()->values();
+        }
+
+        // Mark as read any messages from the other user
+        $currentUserId = (int) auth()->id();
+        ChatMessage::where('conversation_id', $conversation->id)
+            ->whereNull('read_at')
+            ->where('sender_id', '!=', $currentUserId)
+            ->update(['read_at' => now()]);
+
+        $messages = $messagesCollection->map(function (ChatMessage $m) {
+            return [
+                'id' => $m->id,
+                'sender_id' => $m->sender_id,
+                'sender_name' => optional($m->sender)->display_name,
+                'sender_avatar_url' => getSingleMedia(optional($m->sender), 'profile_image', null),
+                'message' => $m->message,
+                'created_at' => $m->created_at?->toDateTimeString(),
+                'read' => $m->read_at !== null,
+                'attachment' => $m->attachment_path ? [
+                    'type' => $m->attachment_type,
+                    'name' => basename($m->attachment_path),
+                    'download_url' => route('chat.download', $m->id)
+                ] : null,
+            ];
+        });
 
         return response()->json(['status' => true, 'messages' => $messages]);
     }
