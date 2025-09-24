@@ -41,6 +41,51 @@
 
 <body class="" id="app">
     @include('partials._body') <!-- Your body content -->
+    <script>
+        (function(){
+            const pingUrl = '{{ route('chat.unread.ping') }}';
+            const Ctx = window.AudioContext || window.webkitAudioContext;
+            let audioCtx = null;
+            let lastLatestId = 0;
+            let enabled = true;
+            function initAudio(){ if (!audioCtx && Ctx) audioCtx = new Ctx(); }
+            function playTone(){
+                try{
+                    if (!audioCtx) return;
+                    if (audioCtx.state === 'suspended') audioCtx.resume();
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.type = 'sine';
+                    osc.connect(gain); gain.connect(audioCtx.destination);
+                    const now = audioCtx.currentTime;
+                    osc.frequency.setValueAtTime(880, now);
+                    gain.gain.setValueAtTime(0.0001, now);
+                    gain.gain.exponentialRampToValueAtTime(0.10, now + 0.02);
+                    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.12);
+                    osc.frequency.setValueAtTime(1320, now + 0.14);
+                    gain.gain.exponentialRampToValueAtTime(0.10, now + 0.16);
+                    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.26);
+                    osc.start(now); osc.stop(now + 0.28);
+                }catch(e){}
+            }
+            function poll(){
+                if (!enabled) return;
+                fetch(pingUrl, { credentials: 'same-origin' })
+                    .then(r => r.ok ? r.json() : null)
+                    .then(j => {
+                        if (!j || !j.status) return;
+                        if (j.latest && j.latest.id && j.latest.id !== lastLatestId) {
+                            lastLatestId = j.latest.id;
+                            playTone();
+                        }
+                    }).catch(()=>{});
+            }
+            const unlock = () => initAudio();
+            window.addEventListener('click', unlock);
+            window.addEventListener('keydown', unlock);
+            setInterval(poll, 5000);
+        })();
+    </script>
 </body>
 
 </html>

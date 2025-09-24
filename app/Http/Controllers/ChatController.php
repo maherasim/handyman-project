@@ -179,5 +179,37 @@ class ChatController extends Controller
             'bid' => $bid,
         ]);
     }
+
+    public function unreadPing(Request $request)
+    {
+        $uid = (int) auth()->id();
+        abort_unless($uid > 0, 401);
+        $conversationIds = ChatConversation::where('user_one_id', $uid)
+            ->orWhere('user_two_id', $uid)
+            ->pluck('id');
+
+        if ($conversationIds->isEmpty()) {
+            return response()->json(['status' => true, 'count' => 0]);
+        }
+
+        $baseQuery = ChatMessage::whereIn('conversation_id', $conversationIds)
+            ->where('sender_id', '!=', $uid)
+            ->whereNull('read_at');
+
+        $count = (clone $baseQuery)->count();
+        $latest = (clone $baseQuery)->latest('id')->first();
+
+        $latestMeta = null;
+        if ($latest) {
+            $latestMeta = [
+                'id' => $latest->id,
+                'conversation_id' => $latest->conversation_id,
+                'sender_id' => $latest->sender_id,
+                'created_at' => $latest->created_at?->toDateTimeString(),
+            ];
+        }
+
+        return response()->json(['status' => true, 'count' => $count, 'latest' => $latestMeta]);
+    }
 }
 
