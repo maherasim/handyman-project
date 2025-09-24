@@ -3,9 +3,9 @@
         $auth = auth()->user();
         $fallbackAvatar = asset('images/user/user.png');
     @endphp
-    <div class="container-fluid" style="height: calc(100vh - 90px);">
-        <div class="row h-100">
-            <div class="col-12 col-md-4 col-lg-3 border-end d-flex flex-column p-0">
+    <div class="container-fluid" style="min-height: 100vh;">
+        <div class="row">
+            <div class="col-12 col-md-4 col-lg-3 border-end d-flex flex-column p-0 mb-3 mb-md-0">
                 <div class="p-3 border-bottom">
                     <h5 class="mb-0">Messages</h5>
                     <div class="text-muted small">Bid #{{ $bid->id }} — {{ $bid->postrequest->title ?? 'Post' }}</div>
@@ -38,13 +38,13 @@
                     <div class="fw-bold">{{ $auth->display_name }}</div>
                     <div class="ms-auto small text-muted" id="typingDot" style="display:none;">typing...</div>
                 </div>
-                <div id="msgScroll" class="flex-grow-1 overflow-auto p-3 bg-light" style="position:relative;">
+                <div id="msgScroll" class="flex-grow-1 overflow-auto p-3 bg-light" style="position:relative; min-height: 300px;">
                     <div id="loadMoreTop" class="text-center mb-2">
                         <button class="btn btn-sm btn-outline-secondary" id="loadOlderBtn">Load older</button>
                     </div>
                     <div id="messages"></div>
                 </div>
-                <div class="border-top p-2">
+                <div class="border-top p-2" style="position: sticky; bottom: 0; background: #fff; z-index: 2;">
                     <form id="composer" class="d-flex align-items-center gap-2">
                         <input type="file" id="fileInput" class="form-control" style="max-width:260px;">
                         <input type="text" id="textInput" class="form-control" placeholder="Type a message...">
