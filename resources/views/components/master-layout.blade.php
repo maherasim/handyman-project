@@ -91,9 +91,14 @@
                         if (!j || !j.status) return;
                         try {
                             var b = document.getElementById('chatBadge');
+                            var p = document.getElementById('chatPulse');
                             if (b) {
                                 if (j.count && j.count > 0) { b.style.display = ''; b.textContent = j.count; }
                                 else { b.style.display = 'none'; b.textContent = '0'; }
+                            }
+                            if (p) {
+                                if (j.count && j.count > 0) { p.style.display = ''; }
+                                else { p.style.display = 'none'; }
                             }
                         } catch(e){}
                         if (j.latest && j.latest.id && j.latest.id !== lastLatestId) {
@@ -112,6 +117,21 @@
             setInterval(poll, 5000);
         })();
     </script>
+    <style>
+        .chat-pulse-dot {
+            width: 8px;
+            height: 8px;
+            background: #dc3545;
+            border-radius: 50%;
+            box-shadow: 0 0 0 rgba(220,53,69, 0.7);
+            animation: chatPulse 1.5s infinite;
+        }
+        @keyframes chatPulse {
+            0% { box-shadow: 0 0 0 0 rgba(220,53,69, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(220,53,69, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(220,53,69, 0); }
+        }
+    </style>
 </body>
 
 </html>
