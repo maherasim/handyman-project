@@ -35,7 +35,7 @@ class ChatController extends Controller
         );
 
         $messages = ChatMessage::where('conversation_id', $conversation->id)
-            ->with('sender:id,display_name,profile_image')
+            ->with('sender:id,display_name')
             ->orderBy('id', 'asc')
             ->limit(50)
             ->get()
@@ -43,6 +43,8 @@ class ChatController extends Controller
                 return [
                     'id' => $m->id,
                     'sender_id' => $m->sender_id,
+                    'sender_name' => optional($m->sender)->display_name,
+                    'sender_avatar_url' => getSingleMedia(optional($m->sender), 'profile_image', null),
                     'message' => $m->message,
                     'created_at' => $m->created_at?->toDateTimeString(),
                     'attachment' => $m->attachment_path ? [
@@ -70,7 +72,7 @@ class ChatController extends Controller
         $this->authorizeForConversation($conversation);
 
         $messages = ChatMessage::where('conversation_id', $conversation->id)
-            ->with('sender:id,display_name,profile_image')
+            ->with('sender:id,display_name')
             ->orderBy('id', 'asc')
             ->limit(100)
             ->get()
@@ -78,6 +80,8 @@ class ChatController extends Controller
                 return [
                     'id' => $m->id,
                     'sender_id' => $m->sender_id,
+                    'sender_name' => optional($m->sender)->display_name,
+                    'sender_avatar_url' => getSingleMedia(optional($m->sender), 'profile_image', null),
                     'message' => $m->message,
                     'created_at' => $m->created_at?->toDateTimeString(),
                     'attachment' => $m->attachment_path ? [

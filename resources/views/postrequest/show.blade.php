@@ -1016,6 +1016,12 @@
                                     bubble.className = 'p-2 rounded ' + (mine ? 'bg-primary text-white' : 'bg-light border');
                                     const safe = (t) => (t || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
                                     let html = '';
+                                    const name = safe(m.sender_name || 'User');
+                                    const avatar = safe(m.sender_avatar_url || '{{ asset('images/user/user.png') }}');
+                                    html += `<div class="d-flex align-items-center mb-1">`
+                                        + `<img src="${avatar}" class="rounded-circle me-2" style="width:22px;height:22px;object-fit:cover;">`
+                                        + `<span class="small fw-bold">${name}</span>`
+                                        + `</div>`;
                                     if (m.message) {
                                         html += `<div class="small">${safe(m.message)}</div>`;
                                     }
