@@ -41,11 +41,13 @@
 
 <body class="" id="app">
     @include('partials._body') <!-- Your body content -->
+    <audio id="chatRingtone" preload="auto" src="{{ env('CHAT_RINGTONE_URL', asset('audio/chat.mp3')) }}"></audio>
     <script>
         (function(){
             const pingUrl = '{{ route('chat.unread.ping') }}';
             const Ctx = window.AudioContext || window.webkitAudioContext;
             let audioCtx = null;
+            const audioEl = document.getElementById('chatRingtone');
             let lastLatestId = 0;
             let enabled = true;
             function initAudio(){ if (!audioCtx && Ctx) audioCtx = new Ctx(); }
@@ -68,6 +70,19 @@
                     osc.start(now); osc.stop(now + 0.28);
                 }catch(e){}
             }
+            function playAudioEl(){
+                if (!audioEl) return false;
+                try {
+                    audioEl.currentTime = 0;
+                    const p = audioEl.play();
+                    if (p && typeof p.catch === 'function') p.catch(()=>{});
+                    return true;
+                } catch(e) { return false; }
+            }
+            function playNotify(){
+                if (!playAudioEl()) { playTone(); }
+            }
+            window.__playChatNotify = playNotify;
             function poll(){
                 if (!enabled) return;
                 fetch(pingUrl, { credentials: 'same-origin' })
@@ -76,7 +91,7 @@
                         if (!j || !j.status) return;
                         if (j.latest && j.latest.id && j.latest.id !== lastLatestId) {
                             lastLatestId = j.latest.id;
-                            playTone();
+                            playNotify();
                         }
                     }).catch(()=>{});
             }

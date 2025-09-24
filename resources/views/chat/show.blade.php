@@ -81,14 +81,18 @@
             let pollTimer = null;
             let typingTimer = null;
 
-            // Lightweight audio ringtone via Web Audio API (no external asset)
+            // Lightweight audio ringtone via Web Audio API with external fallback
             let audioCtx = null;
+            const externalAudio = document.getElementById('chatRingtone');
             function initAudio() {
                 if (audioCtx) return;
                 const Ctx = window.AudioContext || window.webkitAudioContext;
                 if (Ctx) audioCtx = new Ctx();
             }
             function playNotify() {
+                if (externalAudio) {
+                    try { externalAudio.currentTime = 0; externalAudio.play(); return; } catch(e) {}
+                }
                 try {
                     if (!audioCtx) return;
                     if (audioCtx.state === 'suspended') { audioCtx.resume(); }
@@ -98,7 +102,6 @@
                     osc.connect(gain);
                     gain.connect(audioCtx.destination);
                     const now = audioCtx.currentTime;
-                    // Two short beeps for a unique tone
                     osc.frequency.setValueAtTime(880, now);
                     gain.gain.setValueAtTime(0.0001, now);
                     gain.gain.exponentialRampToValueAtTime(0.12, now + 0.02);
