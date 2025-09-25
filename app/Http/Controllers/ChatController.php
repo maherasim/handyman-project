@@ -12,24 +12,6 @@ use Illuminate\Support\Str;
 
 class ChatController extends Controller
 {
-    /**
-     * Determine if 1:1 chat is enabled for the given bid based on its status.
-     */
-    protected function isChatEnabledForBid(\App\Models\PostJobBid $bid): bool
-    {
-        $allowedStatuses = [
-            'advance_paid',
-            'in_process',
-            'in_progress',
-            'hold',
-            'done',
-            'confirm_done',
-            'remaining_paid',
-            'completed',
-        ];
-        return in_array((string) ($bid->status ?? ''), $allowedStatuses, true);
-    }
-
     protected function authorizeForBid(PostJobBid $bid): void
     {
         $user = Auth::user();
@@ -46,10 +28,6 @@ class ChatController extends Controller
     {
         $bid = PostJobBid::with(['postrequest'])->findOrFail($bidId);
         $this->authorizeForBid($bid);
-
-        if (!$this->isChatEnabledForBid($bid)) {
-            return response()->json(['status' => false, 'message' => 'Chat becomes available after advance payment.'], 403);
-        }
 
         $conversation = ChatConversation::firstOrCreate(
             ['post_job_bid_id' => $bid->id],
@@ -92,13 +70,6 @@ class ChatController extends Controller
     {
         $conversation = ChatConversation::findOrFail($conversationId);
         $this->authorizeForConversation($conversation);
-
-        // Enforce chat gating by bid status
-        $conversation->loadMissing('bid');
-        $bid = $conversation->bid;
-        if (!$bid || !$this->isChatEnabledForBid($bid)) {
-            return response()->json(['status' => false, 'message' => 'Chat becomes available after advance payment.'], 403);
-        }
 
         $beforeId = (int) $request->query('before_id', 0);
         $afterId = (int) $request->query('after_id', 0);
@@ -152,13 +123,6 @@ class ChatController extends Controller
         $conversation = ChatConversation::findOrFail($conversationId);
         $this->authorizeForConversation($conversation);
 
-        // Enforce chat gating by bid status
-        $conversation->loadMissing('bid');
-        $bid = $conversation->bid;
-        if (!$bid || !$this->isChatEnabledForBid($bid)) {
-            return response()->json(['status' => false, 'message' => 'Chat becomes available after advance payment.'], 403);
-        }
-
         $request->validate([
             'message' => 'nullable|string|max:4000',
             'attachment' => 'nullable|file|max:5120',
@@ -193,11 +157,6 @@ class ChatController extends Controller
     {
         $message = ChatMessage::with('conversation')->findOrFail($messageId);
         $this->authorizeForConversation($message->conversation);
-
-        // Enforce chat gating by bid status
-        $message->conversation->loadMissing('bid');
-        $bid = $message->conversation->bid;
-        abort_unless($bid && $this->isChatEnabledForBid($bid), 403);
         abort_unless($message->attachment_path && Storage::disk('public')->exists($message->attachment_path), 404);
         $mime = $message->attachment_type ?: 'application/octet-stream';
         return Storage::disk('public')->download($message->attachment_path, basename($message->attachment_path), [
@@ -209,8 +168,6 @@ class ChatController extends Controller
     {
         $bid = PostJobBid::with(['postrequest'])->findOrFail($bidId);
         $this->authorizeForBid($bid);
-
-        abort_unless($this->isChatEnabledForBid($bid), 403);
 
         $conversation = ChatConversation::firstOrCreate(
             ['post_job_bid_id' => $bid->id],
@@ -227,15 +184,8 @@ class ChatController extends Controller
     {
         $uid = (int) auth()->id();
         abort_unless($uid > 0, 401);
-        $allowedStatuses = [
-            'advance_paid', 'in_process', 'in_progress', 'hold', 'done', 'confirm_done', 'remaining_paid', 'completed'
-        ];
-        $conversationIds = ChatConversation::where(function ($q) use ($uid) {
-                $q->where('user_one_id', $uid)->orWhere('user_two_id', $uid);
-            })
-            ->whereHas('bid', function ($q) use ($allowedStatuses) {
-                $q->whereIn('status', $allowedStatuses);
-            })
+        $conversationIds = ChatConversation::where('user_one_id', $uid)
+            ->orWhere('user_two_id', $uid)
             ->pluck('id');
 
         if ($conversationIds->isEmpty()) {
@@ -271,14 +221,8 @@ class ChatController extends Controller
     {
         $uid = (int) auth()->id();
         abort_unless($uid > 0, 401);
-        $allowedStatuses = [
-            'advance_paid', 'in_process', 'in_progress', 'hold', 'done', 'confirm_done', 'remaining_paid', 'completed'
-        ];
         $conversations = ChatConversation::where(function ($q) use ($uid) {
                 $q->where('user_one_id', $uid)->orWhere('user_two_id', $uid);
-            })
-            ->whereHas('bid', function ($q) use ($allowedStatuses) {
-                $q->whereIn('status', $allowedStatuses);
             })
             ->with(['bid.postrequest', 'userOne:id,display_name', 'userTwo:id,display_name'])
             ->orderBy('updated_at', 'desc')
