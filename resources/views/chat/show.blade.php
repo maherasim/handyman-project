@@ -149,7 +149,10 @@
                     `<img src="${avatar}" class="rounded-circle me-2" style="width:22px;height:22px;object-fit:cover;">`+
                     `<span class="small fw-bold">${name}</span>`+
                     `</div>`;
-                if (m.message) {
+                if (m.hidden && m.policy_violation) {
+                    const reason = (m.pii_types && m.pii_types.length) ? m.pii_types.join(', ') : 'policy violation';
+                    html += `<div class="small text-danger"><i class="fas fa-shield-alt"></i> Message hidden due to ${safe(reason)}.</div>`;
+                } else if (m.message) {
                     html += `<div class="small">${safe(m.message)}</div>`;
                 }
                 if (m.attachment) {
@@ -196,8 +199,13 @@
                             `<img src="${avatar}" class="rounded-circle me-2" style="width:22px;height:22px;object-fit:cover;">`+
                             `<span class="small fw-bold">${name}</span>`+
                             `</div>`;
-                        if (m.message) { html += `<div class="small">${safe(m.message)}</div>`; }
-                        if (m.attachment) { const name = safe(m.attachment.name || 'attachment'); html += `<div class="mt-1"><a href="${m.attachment.download_url}" target="_blank" class="text-decoration-underline ${mine ? 'text-white' : ''}"><i class="fas fa-paperclip"></i> ${name}</a></div>`; }
+                        if (m.hidden && m.policy_violation) {
+                            const reason = (m.pii_types && m.pii_types.length) ? m.pii_types.join(', ') : 'policy violation';
+                            html += `<div class=\"small text-danger\"><i class=\"fas fa-shield-alt\"></i> Message hidden due to ${safe(reason)}.</div>`;
+                        } else {
+                            if (m.message) { html += `<div class=\"small\">${safe(m.message)}</div>`; }
+                            if (m.attachment) { const name = safe(m.attachment.name || 'attachment'); html += `<div class=\"mt-1\"><a href=\"${m.attachment.download_url}\" target=\"_blank\" class=\"text-decoration-underline ${mine ? 'text-white' : ''}\"><i class=\"fas fa-paperclip\"></i> ${name}</a></div>`; }
+                        }
                         html += `<div class="text-end small opacity-75 mt-1">${safe(m.created_at || '')}${m.read ? ' · <i class=\"fas fa-check-double\"></i>' : ''}</div>`;
                         bubble.innerHTML = html;
                         wrap.appendChild(bubble);
@@ -233,6 +241,17 @@
                 e.preventDefault();
                 const fd = new FormData();
                 const text = (textInput.value || '').trim();
+                // Client-side quick PII check
+                const lower = text.toLowerCase();
+                const emailRe = /[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}/i;
+                const phoneRe = /(?:(?:\+|00)?\d{1,3}[\s.-]?)?(?:\(?\d{2,4}\)?[\s.-]?)?\d{3,4}[\s.-]?\d{3,4}/;
+                const hasMinDigits = (text.match(/\d/g) || []).length >= 7;
+                const isWhats = lower.includes('whatsapp') || lower.includes('wa.me/') || lower.includes('api.whatsapp.com');
+                if (text && (emailRe.test(text) || (phoneRe.test(text) && hasMinDigits) || isWhats || lower.includes('telegram') || lower.includes('t.me/'))) {
+                    if (window.Swal) {
+                        Swal.fire({ icon:'warning', title:'Policy Warning', text:'Sharing personal contact info is not allowed. Your message may be hidden and reported.', confirmButtonText:'OK' });
+                    }
+                }
                 if (text) fd.append('message', text);
                 if (fileInput.files && fileInput.files[0]) fd.append('attachment', fileInput.files[0]);
                 fetch(sendUrl, {
@@ -245,6 +264,9 @@
                         if (fileInput) fileInput.value = '';
                         previewEl.style.display = 'none';
                         previewEl.innerHTML = '';
+                        if (j.flagged && window.Swal) {
+                            Swal.fire({ icon:'info', title:'Message sent', text:'Your message appears to contain personal info and may be hidden for the recipient.' });
+                        }
                         pollNewer();
                     }
                 });

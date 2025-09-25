@@ -51,6 +51,9 @@
                                 </svg>
                                 <span class="bg-primary"></span>
                                 <span class="badge badge-pill badge-up notify_count count-mail d-none"></span>
+                                @role('admin|demo_admin')
+                                <span id="flaggedBadge" class="badge badge-pill bg-danger ml-1" style="display:none;">0</span>
+                                @endrole
                                 <span class=" dots d-none"></span>
                             </a>
                             <div class="iq-sub-dropdown dropdown-menu " aria-labelledby="notification-dropdown">

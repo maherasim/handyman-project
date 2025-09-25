@@ -65,24 +65,29 @@ class ChatController extends Controller
             ['user_one_id' => $bid->provider_id, 'user_two_id' => $bid->customer_id]
         );
 
+        $currentUserId = (int) Auth::id();
         $messages = ChatMessage::where('conversation_id', $conversation->id)
             ->with('sender:id,display_name')
             ->orderBy('id', 'asc')
             ->limit(50)
             ->get()
-            ->map(function (ChatMessage $m) {
+            ->map(function (ChatMessage $m) use ($currentUserId) {
+                $hidden = (bool) $m->contains_pii && (int) $m->sender_id !== $currentUserId;
                 return [
                     'id' => $m->id,
                     'sender_id' => $m->sender_id,
                     'sender_name' => optional($m->sender)->display_name,
                     'sender_avatar_url' => getSingleMedia(optional($m->sender), 'profile_image', null),
-                    'message' => $m->message,
+                    'message' => $hidden ? null : $m->message,
                     'created_at' => $m->created_at?->toDateTimeString(),
-                    'attachment' => $m->attachment_path ? [
+                    'attachment' => $hidden ? null : ($m->attachment_path ? [
                         'type' => $m->attachment_type,
                         'name' => basename($m->attachment_path),
                         'download_url' => route('chat.download', $m->id)
-                    ] : null,
+                    ] : null),
+                    'policy_violation' => (bool) $m->contains_pii,
+                    'hidden' => $hidden,
+                    'pii_types' => $m->pii_types ? explode(',', $m->pii_types) : [],
                 ];
             });
 
@@ -131,20 +136,24 @@ class ChatController extends Controller
             ->where('sender_id', '!=', $currentUserId)
             ->update(['read_at' => now()]);
 
-        $messages = $messagesCollection->map(function (ChatMessage $m) {
+        $messages = $messagesCollection->map(function (ChatMessage $m) use ($currentUserId) {
+            $hidden = (bool) $m->contains_pii && (int) $m->sender_id !== (int) $currentUserId;
             return [
                 'id' => $m->id,
                 'sender_id' => $m->sender_id,
                 'sender_name' => optional($m->sender)->display_name,
                 'sender_avatar_url' => getSingleMedia(optional($m->sender), 'profile_image', null),
-                'message' => $m->message,
+                'message' => $hidden ? null : $m->message,
                 'created_at' => $m->created_at?->toDateTimeString(),
                 'read' => $m->read_at !== null,
-                'attachment' => $m->attachment_path ? [
+                'attachment' => $hidden ? null : ($m->attachment_path ? [
                     'type' => $m->attachment_type,
                     'name' => basename($m->attachment_path),
                     'download_url' => route('chat.download', $m->id)
-                ] : null,
+                ] : null),
+                'policy_violation' => (bool) $m->contains_pii,
+                'hidden' => $hidden,
+                'pii_types' => $m->pii_types ? explode(',', $m->pii_types) : [],
             ];
         });
 
@@ -205,7 +214,13 @@ class ChatController extends Controller
             'flagged_at' => $containsPii ? now() : null,
         ]);
 
-        return response()->json(['status' => true, 'message' => 'Sent', 'id' => $msg->id]);
+        return response()->json([
+            'status' => true,
+            'message' => 'Sent',
+            'id' => $msg->id,
+            'flagged' => (bool) $containsPii,
+            'pii_types' => $containsPii ? $piiTypes : [],
+        ]);
     }
 
     /**
@@ -414,6 +429,28 @@ class ChatController extends Controller
         }
     
         return view('chat.index', [ 'items' => $list ]);
+    }
+
+    /**
+     * Admin ping for flagged (PII) messages.
+     */
+    public function flaggedPing(Request $request)
+    {
+        $user = auth()->user();
+        abort_unless($user && ($user->hasRole('admin') || $user->hasRole('demo_admin')), 403);
+        $count = ChatMessage::where('contains_pii', true)->count();
+        $latest = ChatMessage::where('contains_pii', true)->with('sender:id,display_name')->latest('id')->first();
+        return response()->json([
+            'status' => true,
+            'count' => (int) $count,
+            'latest' => $latest ? [
+                'id' => $latest->id,
+                'sender_id' => $latest->sender_id,
+                'sender_name' => optional($latest->sender)->display_name,
+                'created_at' => $latest->created_at?->toDateTimeString(),
+                'types' => $latest->pii_types ? explode(',', $latest->pii_types) : [],
+            ] : null,
+        ]);
     }
 }
 

@@ -112,20 +112,24 @@ class ChatApiController extends Controller
             ->where('sender_id', '!=', $currentUserId)
             ->update(['read_at' => now()]);
 
-        $messages = $collection->map(function (ChatMessage $m) {
+        $messages = $collection->map(function (ChatMessage $m) use ($currentUserId) {
+            $hidden = (bool) $m->contains_pii && (int) $m->sender_id !== (int) $currentUserId;
             return [
                 'id' => $m->id,
                 'sender_id' => $m->sender_id,
                 'sender_name' => optional($m->sender)->display_name,
                 'sender_avatar_url' => getSingleMedia(optional($m->sender), 'profile_image', null),
-                'message' => $m->message,
+                'message' => $hidden ? null : $m->message,
                 'created_at' => $m->created_at?->toDateTimeString(),
                 'read' => $m->read_at !== null,
-                'attachment' => $m->attachment_path ? [
+                'attachment' => $hidden ? null : ($m->attachment_path ? [
                     'type' => $m->attachment_type,
                     'name' => basename($m->attachment_path),
                     'download_url' => route('api.chat.download', $m->id),
-                ] : null,
+                ] : null),
+                'policy_violation' => (bool) $m->contains_pii,
+                'hidden' => $hidden,
+                'pii_types' => $m->pii_types ? explode(',', $m->pii_types) : [],
             ];
         });
         return response()->json(['status' => true, 'messages' => $messages]);
