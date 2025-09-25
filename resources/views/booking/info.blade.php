@@ -1144,48 +1144,39 @@
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
- <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
 <script>
-    var baseUrl = "{{ env('APP_URL') }}";
+    var baseUrl = "{{ url('/') }}";
+    var csrfToken = "{{ csrf_token() }}";
 
     $(document).ready(function () {
         // Handle booking status dropdown
         $(document).on('change', '.bookingstatus', function () {
             var status = $(this).val();
             var id = $(this).attr('data-id');
-
-            $.ajax({
-                type: "POST",
-                dataType: "json",
-                url: "{{ route('bookingStatus.update') }}",
-                data: {
-                    'status': status,
-                    'bookingId': id
+            fetch("{{ route('bookingStatus.update') }}", {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': csrfToken,
+                    'Content-Type': 'application/json'
                 },
-                success: function (data) {
-                    // success handling
-                }
-            });
+                body: JSON.stringify({ status: status, bookingId: id })
+            }).then(r=>r.json()).then(() => {})
+            .catch(()=>{});
         });
 
         // Handle payment status dropdown
         $(document).on('change', '.paymentStatus', function () {
             var status = $(this).val();
             var id = $(this).attr('data-id');
-
-            $.ajax({
-                type: "POST",
-                dataType: "json",
-                url: "{{ route('bookingStatus.update') }}",
-                data: {
-                    'status': status,
-                    'bookingId': id
+            fetch("{{ route('bookingStatus.update') }}", {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': csrfToken,
+                    'Content-Type': 'application/json'
                 },
-                success: function (data) {
-                    // success handling
-                }
-            });
+                body: JSON.stringify({ status: status, bookingId: id })
+            }).then(r=>r.json()).then(() => {})
+            .catch(()=>{});
         });
 
         // Assign provider button
@@ -1203,29 +1194,18 @@
                 confirmButtonText: 'Yes, assign it!',
                 cancelButtonText: 'No, cancel'
             }).then((willAssign) => {
-                if (willAssign.isConfirmed) {
-                    $.ajax({
-                        url: '{{ route('booking.assigned') }}',
-                        type: 'POST',
-                        data: {
-                            id: bookingId,
-                            'handyman_id[]': handymanIds,
-                            _token: '{{ csrf_token() }}'
-                        },
-                        success: function (response) {
-                            Swal.fire("Success!", response.message, "success");
-                            // Inline feedback: mark provider assigned without full reload
-                            $('.assign-provider-btn, .assign-provider').prop('disabled', true);
-                            $('.assign-provider-btn, .assign-provider').addClass('disabled');
-                            // Optionally update any UI badges here if needed
-                        },
-                        error: function (xhr) {
-                            Swal.fire("Error!", xhr.responseText, "error");
-                        }
-                    });
-                } else {
-                    Swal.fire("Assignment canceled!", "The provider was not assigned.", "info");
-                }
+                if (!willAssign.isConfirmed) return;
+                fetch('{{ route('booking.assigned') }}', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': csrfToken,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ id: bookingId, 'handyman_id[]': handymanIds })
+                }).then(r=>r.json()).then(response => {
+                    Swal.fire('Success!', response.message || 'Assigned', 'success');
+                    $('.assign-provider-btn, .assign-provider').prop('disabled', true).addClass('disabled');
+                }).catch(() => Swal.fire('Error!', 'Unable to assign provider', 'error'));
             });
         });
 
@@ -1291,24 +1271,24 @@
             };
 
             let api_url = baseUrl + '/api/booking-update';
-            // Show busy state on all status buttons to prevent double clicks
             setButtonsPending(true);
-            $.ajax({
-                url: api_url,
-                type: 'POST',
-                data: requestPayload,
-                success: function (response) {
-                    // Update status text inline
-                    const label = humanizeStatus(newStatus);
-                    $('#booking_status__span').text(label);
-                    setButtonsPending(false);
-                    disableStatusActions();
-                    window.location.reload();
+            fetch(api_url, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': csrfToken,
+                    'Content-Type': 'application/json'
                 },
-                error: function (xhr) {
-                    Swal.fire("Error!", xhr.responseText, "error");
-                    setButtonsPending(false);
-                }
+                body: JSON.stringify(requestPayload)
+            }).then(r => r.json()).then(response => {
+                const label = humanizeStatus(newStatus);
+                $('#booking_status__span').text(label);
+                setButtonsPending(false);
+                disableStatusActions();
+                Swal.fire('Updated', 'Booking updated successfully', 'success')
+                    .then(() => window.location.reload());
+            }).catch(err => {
+                Swal.fire('Error', 'Something went wrong', 'error');
+                setButtonsPending(false);
             });
         }
         function humanizeStatus(val){
