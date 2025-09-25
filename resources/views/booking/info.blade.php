@@ -460,9 +460,17 @@
                                     }
                                 @endphp
                                 @if ($isBookParticipant && $advancePaidForBooking)
-                                    <a href="{{ route('chat.index') }}" class="btn btn-outline-primary">
-                                        <i class="fas fa-comments"></i> {{ __('Chat') }}
+                                    <a href="{{ route('chat.view.booking', $bookingdata->id) }}" class="btn btn-outline-primary">
+                                        <i class="fas fa-comments"></i> {{ __('Chat with Provider') }}
                                     </a>
+                                    @if($bookingdata->handymanAdded && $bookingdata->handymanAdded->count())
+                                        @php $firstHandyman = optional($bookingdata->handymanAdded->first())->handyman_id; @endphp
+                                        @if($firstHandyman)
+                                            <a href="{{ route('chat.view.booking.handyman', ['bookingId' => $bookingdata->id, 'handymanId' => $firstHandyman]) }}" class="btn btn-outline-secondary">
+                                                <i class="fas fa-user-cog"></i> {{ __('Chat with Handyman') }}
+                                            </a>
+                                        @endif
+                                    @endif
                                 @endif
 
                             </div>

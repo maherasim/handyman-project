@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\ChatConversation;
 use App\Models\ChatMessage;
 use App\Models\PostJobBid;
+use App\Models\Booking;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -28,6 +29,18 @@ class ChatController extends Controller
             'completed',
         ];
         return in_array((string) ($bid->status ?? ''), $allowedStatuses, true);
+    }
+
+    /** Determine if 1:1 chat is enabled for the given booking based on payment. */
+    protected function isChatEnabledForBooking(Booking $booking): bool
+    {
+        // Consider advance paid when payment record exists and either non-bank, or bank approved (status==1)
+        $payment = optional($booking)->payment;
+        if (!$payment) { return false; }
+        if (($payment->payment_type ?? null) === 'bank_transfer') {
+            return (int) ($payment->status ?? 0) === 1;
+        }
+        return true;
     }
 
     protected function authorizeForBid(PostJobBid $bid): void
@@ -94,10 +107,18 @@ class ChatController extends Controller
         $this->authorizeForConversation($conversation);
 
         // Enforce chat gating by bid status
-        $conversation->loadMissing('bid');
+        $conversation->loadMissing(['bid', 'booking.bookingPostJob', 'booking.payment']);
         $bid = $conversation->bid;
-        if (!$bid || !$this->isChatEnabledForBid($bid)) {
-            return response()->json(['status' => false, 'message' => 'Chat becomes available after advance payment.'], 403);
+        if ($bid) {
+            if (!$this->isChatEnabledForBid($bid)) {
+                return response()->json(['status' => false, 'message' => 'Chat becomes available after advance payment.'], 403);
+            }
+        } else if ($conversation->booking) {
+            if (!$this->isChatEnabledForBooking($conversation->booking)) {
+                return response()->json(['status' => false, 'message' => 'Chat becomes available after advance payment.'], 403);
+            }
+        } else {
+            return response()->json(['status' => false, 'message' => 'Invalid chat context.'], 422);
         }
 
         $beforeId = (int) $request->query('before_id', 0);
@@ -152,11 +173,19 @@ class ChatController extends Controller
         $conversation = ChatConversation::findOrFail($conversationId);
         $this->authorizeForConversation($conversation);
 
-        // Enforce chat gating by bid status
-        $conversation->loadMissing('bid');
+        // Enforce chat gating by bid/booking status
+        $conversation->loadMissing(['bid', 'booking.payment']);
         $bid = $conversation->bid;
-        if (!$bid || !$this->isChatEnabledForBid($bid)) {
-            return response()->json(['status' => false, 'message' => 'Chat becomes available after advance payment.'], 403);
+        if ($bid) {
+            if (!$this->isChatEnabledForBid($bid)) {
+                return response()->json(['status' => false, 'message' => 'Chat becomes available after advance payment.'], 403);
+            }
+        } else if ($conversation->booking) {
+            if (!$this->isChatEnabledForBooking($conversation->booking)) {
+                return response()->json(['status' => false, 'message' => 'Chat becomes available after advance payment.'], 403);
+            }
+        } else {
+            return response()->json(['status' => false, 'message' => 'Invalid chat context.'], 422);
         }
 
         $request->validate([
@@ -195,9 +224,15 @@ class ChatController extends Controller
         $this->authorizeForConversation($message->conversation);
 
         // Enforce chat gating by bid status
-        $message->conversation->loadMissing('bid');
+        $message->conversation->loadMissing(['bid', 'booking.payment']);
         $bid = $message->conversation->bid;
-        abort_unless($bid && $this->isChatEnabledForBid($bid), 403);
+        if ($bid) {
+            abort_unless($this->isChatEnabledForBid($bid), 403);
+        } else if ($message->conversation->booking) {
+            abort_unless($this->isChatEnabledForBooking($message->conversation->booking), 403);
+        } else {
+            abort(422);
+        }
         abort_unless($message->attachment_path && Storage::disk('public')->exists($message->attachment_path), 404);
         $mime = $message->attachment_type ?: 'application/octet-stream';
         return Storage::disk('public')->download($message->attachment_path, basename($message->attachment_path), [
@@ -221,6 +256,45 @@ class ChatController extends Controller
             'conversation' => $conversation,
             'bid' => $bid,
         ]);
+    }
+
+    /**
+     * Open (or create) conversation for a booking's customer <-> provider.
+     */
+    public function viewByBooking(Request $request, int $bookingId)
+    {
+        $booking = Booking::with(['customer', 'provider', 'payment'])->findOrFail($bookingId);
+        $user = Auth::user();
+        abort_unless($user && in_array($user->id, [ (int) $booking->customer_id, (int) $booking->provider_id ], true), 403);
+        abort_unless($this->isChatEnabledForBooking($booking), 403);
+
+        $conversation = ChatConversation::firstOrCreate(
+            ['booking_id' => $booking->id, 'post_job_bid_id' => null],
+            ['user_one_id' => $booking->customer_id, 'user_two_id' => $booking->provider_id]
+        );
+
+        return view('chat.show', [ 'conversation' => $conversation, 'booking' => $booking ]);
+    }
+
+    /**
+     * Open (or create) conversation for a booking's customer <-> a handyman assigned.
+     */
+    public function viewByBookingHandyman(Request $request, int $bookingId, int $handymanId)
+    {
+        $booking = Booking::with(['customer', 'handymanAdded', 'payment'])->findOrFail($bookingId);
+        $isAssigned = (bool) $booking->handymanAdded->firstWhere('handyman_id', $handymanId);
+        abort_unless($isAssigned, 404);
+
+        $user = Auth::user();
+        abort_unless($user && in_array($user->id, [ (int) $booking->customer_id, (int) $handymanId ], true), 403);
+        abort_unless($this->isChatEnabledForBooking($booking), 403);
+
+        $conversation = ChatConversation::firstOrCreate(
+            ['booking_id' => $booking->id],
+            ['user_one_id' => $booking->customer_id, 'user_two_id' => $handymanId]
+        );
+
+        return view('chat.show', [ 'conversation' => $conversation, 'booking' => $booking ]);
     }
 
     public function unreadPing(Request $request)

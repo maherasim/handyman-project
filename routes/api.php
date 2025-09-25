@@ -77,6 +77,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     // ===== Chat API (Mobile/Web) =====
     // Open or create conversation by bid id
     Route::post('chat/open-by-bid', [ChatApiController::class, 'openByBid']);
+    Route::post('chat/open-by-booking', [ChatApiController::class, 'openByBooking']);
     // List all user's conversations with unread counts (paginated)
     Route::get('chat/conversations', [ChatApiController::class, 'conversations']);
     // Get unread summary across conversations
