@@ -13,6 +13,23 @@ use Illuminate\Support\Str;
 
 class ChatApiController extends Controller
 {
+    /**
+     * Determine if chat is enabled for a given bid by its status.
+     */
+    protected function isChatEnabledForBid(\App\Models\PostJobBid $bid): bool
+    {
+        $allowedStatuses = [
+            'advance_paid',
+            'in_process',
+            'in_progress',
+            'hold',
+            'done',
+            'confirm_done',
+            'remaining_paid',
+            'completed',
+        ];
+        return in_array((string) ($bid->status ?? ''), $allowedStatuses, true);
+    }
     protected function ensureParticipant(ChatConversation $conversation): void
     {
         $uid = Auth::id();
@@ -28,6 +45,9 @@ class ChatApiController extends Controller
         $uid = Auth::id();
         abort_unless($uid && ($uid === ($bid->provider_id ?? 0) || $uid === ($bid->customer_id ?? 0)), 403);
 
+        // Gate chat until advance is paid (or later)
+        abort_unless($this->isChatEnabledForBid($bid), 403);
+
         $conversation = ChatConversation::firstOrCreate(
             ['post_job_bid_id' => $bid->id],
             ['user_one_id' => $bid->provider_id, 'user_two_id' => $bid->customer_id]
@@ -40,6 +60,11 @@ class ChatApiController extends Controller
     {
         $conversation = ChatConversation::findOrFail($conversationId);
         $this->ensureParticipant($conversation);
+
+        // Enforce chat gating by bid status
+        $conversation->loadMissing('bid');
+        $bid = $conversation->bid;
+        abort_unless($bid && $this->isChatEnabledForBid($bid), 403);
 
         $beforeId = (int) request()->query('before_id', 0);
         $afterId = (int) request()->query('after_id', 0);
@@ -88,6 +113,11 @@ class ChatApiController extends Controller
         $conversation = ChatConversation::findOrFail($conversationId);
         $this->ensureParticipant($conversation);
 
+        // Enforce chat gating by bid status
+        $conversation->loadMissing('bid');
+        $bid = $conversation->bid;
+        abort_unless($bid && $this->isChatEnabledForBid($bid), 403);
+
         $request->validate([
             'message' => 'nullable|string|max:4000',
             'attachment' => 'nullable|file|max:5120',
@@ -126,8 +156,14 @@ class ChatApiController extends Controller
         $perPage = min(100, max(1, (int) $request->query('per_page', 20)));
         $skip = ($page - 1) * $perPage;
 
+        $allowedStatuses = [
+            'advance_paid', 'in_process', 'in_progress', 'hold', 'done', 'confirm_done', 'remaining_paid', 'completed'
+        ];
         $base = ChatConversation::where(function($q) use ($uid){
                 $q->where('user_one_id', $uid)->orWhere('user_two_id', $uid);
+            })
+            ->whereHas('bid', function ($q) use ($allowedStatuses) {
+                $q->whereIn('status', $allowedStatuses);
             })
             ->with(['bid.postrequest', 'userOne:id,display_name', 'userTwo:id,display_name'])
             ->orderBy('updated_at', 'desc');
@@ -167,8 +203,15 @@ class ChatApiController extends Controller
     {
         $uid = (int) Auth::id();
         abort_unless($uid > 0, 401);
-        $conversationIds = ChatConversation::where('user_one_id', $uid)
-            ->orWhere('user_two_id', $uid)
+        $allowedStatuses = [
+            'advance_paid', 'in_process', 'in_progress', 'hold', 'done', 'confirm_done', 'remaining_paid', 'completed'
+        ];
+        $conversationIds = ChatConversation::where(function($q) use ($uid){
+                $q->where('user_one_id', $uid)->orWhere('user_two_id', $uid);
+            })
+            ->whereHas('bid', function ($q) use ($allowedStatuses) {
+                $q->whereIn('status', $allowedStatuses);
+            })
             ->pluck('id');
         if ($conversationIds->isEmpty()) {
             return response()->json(['status' => true, 'count' => 0]);
@@ -207,6 +250,10 @@ class ChatApiController extends Controller
     {
         $message = ChatMessage::with('conversation')->findOrFail($messageId);
         $this->ensureParticipant($message->conversation);
+        // Enforce chat gating by bid status
+        $message->conversation->loadMissing('bid');
+        $bid = $message->conversation->bid;
+        abort_unless($bid && $this->isChatEnabledForBid($bid), 403);
         abort_unless($message->attachment_path && Storage::disk('public')->exists($message->attachment_path), 404);
         $mime = $message->attachment_type ?: 'application/octet-stream';
         return Storage::disk('public')->download($message->attachment_path, basename($message->attachment_path), [
