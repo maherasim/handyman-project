@@ -112,12 +112,10 @@ class PostJobRequestController extends Controller
     
     public function getPostRequestList(Request $request)
     {
-        // Build query without myPostJob() scope
-        $query = PostJobRequest::whereIn('status', [
-            'requested', 'accepted', 'assigned', 'completed', 'confirm_done',
-            'remaining_paid', 'done', 'in_progress', 'in_process', 'hold',
-            'advance_paid', 'cancelled', 'pending'
-        ]);
+        $user = auth()->user();
+    
+        $query = PostJobRequest::myPostJob()
+            ->whereIn('status', ['requested', 'accepted', 'assigned']);
     
         // Default per page from config; ensure integer fallback
         $per_page = (int) (config('constant.PER_PAGE_LIMIT') ?? 10);
@@ -156,7 +154,6 @@ class PostJobRequestController extends Controller
     
         return comman_custom_response($response);
     }
-    
     public function getPostRequestDetail(Request $request){
         $id = $request->post_request_id;
         $post_request = PostJobRequest::myPostJob()->find($id);
