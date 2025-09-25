@@ -443,6 +443,28 @@
                                     @endif
                                 @endhasanyrole
 
+                                @php
+                                    $authUser = auth()->user();
+                                    $isBookParticipant = $authUser && (
+                                        ($authUser->hasRole('provider') && ($authUser->id ?? 0) === ($bookingdata->provider_id ?? 0)) ||
+                                        ($authUser->hasRole('user') && ($authUser->id ?? 0) === ($bookingdata->customer_id ?? 0))
+                                    );
+                                    $advancePaidForBooking = false;
+                                    if (isset($payment)) {
+                                        if (($payment->payment_type ?? null) === 'bank_transfer') {
+                                            $advancePaidForBooking = (int) ($payment->status ?? 0) === 1;
+                                        } else {
+                                            // Any non-bank-transfer payment implies funds captured
+                                            $advancePaidForBooking = true;
+                                        }
+                                    }
+                                @endphp
+                                @if ($isBookParticipant && $advancePaidForBooking)
+                                    <a href="{{ route('chat.index') }}" class="btn btn-outline-primary">
+                                        <i class="fas fa-comments"></i> {{ __('Chat') }}
+                                    </a>
+                                @endif
+
                             </div>
                         </div>
                         <!-- Main Content Row -->
