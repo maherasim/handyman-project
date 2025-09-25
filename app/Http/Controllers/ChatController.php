@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Mail;
 
 class ChatController extends Controller
 {
@@ -447,6 +448,32 @@ class ChatController extends Controller
             ->orderByDesc('id')
             ->paginate($perPage);
         return view('chat.flagged', ['messages' => $messages]);
+    }
+
+    public function sendWarningEmail(Request $request, int $id)
+    {
+        $user = auth()->user();
+        abort_unless($user && ($user->hasRole('admin') || $user->hasRole('demo_admin')), 403);
+        $message = ChatMessage::with('sender')->findOrFail($id);
+        $recipient = optional($message->sender);
+        $email = $recipient->email ?? null;
+        abort_unless($email, 422);
+
+        $piiTypes = $message->pii_types ? explode(',', $message->pii_types) : [];
+        $snippet = $message->message ? (mb_strlen($message->message) > 160 ? (mb_substr($message->message, 0, 160) . '…') : $message->message) : '';
+
+        $data = [
+            'name' => $recipient->display_name ?? ($recipient->first_name ?? 'User'),
+            'types' => $piiTypes,
+            'snippet' => $snippet,
+            'date' => $message->created_at?->toDateTimeString(),
+        ];
+
+        Mail::send('emails.chat_pii_warning', $data, function($m) use ($email) {
+            $m->to($email)->subject('Policy Warning: Sharing personal contact information');
+        });
+
+        return back()->with('status', 'Warning email sent to sender.');
     }
 
     /**

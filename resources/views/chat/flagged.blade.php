@@ -9,6 +9,9 @@
         </div>
         <div class="card">
             <div class="table-responsive">
+                @if(session('status'))
+                    <div class="alert alert-success m-3">{{ session('status') }}</div>
+                @endif
                 <table class="table table-striped mb-0">
                     <thead>
                         <tr>
@@ -35,7 +38,13 @@
                                     (mb_strlen($m->message) > 80 ? mb_substr($m->message,0,80).'…' : $m->message)
                                  : 'Attachment / empty' }}</td>
                                 <td>#{{ $m->conversation_id }}</td>
-                                <td>{{ $m->created_at?->toDateTimeString() }}</td>
+                                <td>
+                                    <div>{{ $m->created_at?->toDateTimeString() }}</div>
+                                    <form method="POST" action="{{ route('chat.flagged.warn', $m->id) }}" class="mt-1">
+                                        @csrf
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">Send Warning Email</button>
+                                    </form>
+                                </td>
                             </tr>
                         @empty
                             <tr><td colspan="6" class="text-center text-muted">No flagged messages.</td></tr>

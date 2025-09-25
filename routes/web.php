@@ -122,6 +122,7 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
     Route::get('/chat/flagged/ping', [ChatController::class, 'flaggedPing'])->name('chat.flagged.ping');
     Route::get('/messages', [ChatController::class, 'index'])->name('chat.index');
     Route::get('/messages/flagged', [ChatController::class, 'flaggedIndex'])->name('chat.flagged.index');
+    Route::post('/messages/flagged/{id}/warn', [ChatController::class, 'sendWarningEmail'])->name('chat.flagged.warn');
     Route::get('/home', [HomeController::class, 'index'])->name('home');
     Route::group(['namespace' => '', 'middleware' => ['permission:permission list']], function () {
         Route::resource('permission', PermissionController::class);
