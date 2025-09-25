@@ -90,6 +90,10 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('chat/{conversationId}/read', [ChatApiController::class, 'markRead']);
     // Download attachment (protected)
     Route::get('chat/download/{messageId}', [ChatApiController::class, 'download'])->name('api.chat.download');
+    // PII moderation APIs
+    Route::get('chat/flagged/ping', [ChatApiController::class, 'flaggedPing']);
+    Route::get('chat/flagged/list', [ChatApiController::class, 'flaggedList']);
+    Route::post('chat/detect-text', [ChatApiController::class, 'detectText']);
     Route::post('service-save', [ App\Http\Controllers\ServiceController::class, 'store' ] );
     //Route::post('service-save', [ App\Http\Controllers\ServiceController::class, 'store' ] );
     Route::post('service-delete/{id}', [ App\Http\Controllers\ServiceController::class, 'destroy' ] );

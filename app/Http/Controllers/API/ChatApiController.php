@@ -316,5 +316,76 @@ class ChatApiController extends Controller
             'Content-Type' => $mime,
         ]);
     }
+
+    /**
+     * Admin API: flagged (PII) messages ping (count + latest meta)
+     */
+    public function flaggedPing(Request $request)
+    {
+        $user = auth()->user();
+        abort_unless($user && (method_exists($user, 'hasAnyRole') ? $user->hasAnyRole('admin|demo_admin') : true), 403);
+        $count = ChatMessage::where('contains_pii', true)->count();
+        $latest = ChatMessage::where('contains_pii', true)->with('sender:id,display_name')->latest('id')->first();
+        return response()->json([
+            'status' => true,
+            'count' => (int) $count,
+            'latest' => $latest ? [
+                'id' => $latest->id,
+                'sender_id' => $latest->sender_id,
+                'sender_name' => optional($latest->sender)->display_name,
+                'created_at' => $latest->created_at?->toDateTimeString(),
+                'types' => $latest->pii_types ? explode(',', $latest->pii_types) : [],
+            ] : null,
+        ]);
+    }
+
+    /**
+     * Admin API: list flagged messages (paginated)
+     */
+    public function flaggedList(Request $request)
+    {
+        $user = auth()->user();
+        abort_unless($user && (method_exists($user, 'hasAnyRole') ? $user->hasAnyRole('admin|demo_admin') : true), 403);
+
+        $page = max(1, (int) $request->query('page', 1));
+        $perPage = min(100, max(1, (int) $request->query('per_page', 20)));
+        $skip = ($page - 1) * $perPage;
+
+        $base = ChatMessage::where('contains_pii', true)
+            ->with(['sender:id,display_name', 'conversation'])
+            ->orderByDesc('id');
+        $total = (clone $base)->count();
+        $rows = (clone $base)->skip($skip)->take($perPage)->get();
+
+        $items = $rows->map(function(ChatMessage $m){
+            return [
+                'id' => $m->id,
+                'conversation_id' => $m->conversation_id,
+                'sender_id' => $m->sender_id,
+                'sender_name' => optional($m->sender)->display_name,
+                'message' => $m->message,
+                'pii_types' => $m->pii_types ? explode(',', $m->pii_types) : [],
+                'created_at' => $m->created_at?->toDateTimeString(),
+            ];
+        });
+
+        return response()->json([
+            'status' => true,
+            'page' => $page,
+            'per_page' => $perPage,
+            'total' => $total,
+            'items' => $items,
+        ]);
+    }
+
+    /**
+     * Public API (authed): detect PII in a text sample
+     */
+    public function detectText(Request $request)
+    {
+        $request->validate(['text' => 'required|string|max:4000']);
+        [$has, $types] = $this->detectPii($request->input('text'));
+        return response()->json(['status' => true, 'contains_pii' => $has, 'types' => $types]);
+    }
 }
 
