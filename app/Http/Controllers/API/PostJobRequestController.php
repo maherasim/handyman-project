@@ -92,7 +92,7 @@ class PostJobRequestController extends Controller
             'message' => ' payment split updated successfully!'
         ]);
     }
-    public function showBidById($bidId)
+    public function showBidById($bidId) 
     {
         $bid = PostJobBid::with([
             'provider:id,display_name',
@@ -104,11 +104,20 @@ class PostJobRequestController extends Controller
             'extraCharges',
         ])->findOrFail($bidId);
     
+        // ✅ Get country_id from related PostJobRequest
+        $countryId = optional($bid->postrequest)->country_id;
+    
+        // ✅ Fetch tax percent
+        $tax = $countryId ? \App\Models\Tax::where('id', $countryId)->first() : null;
+        $tax_percent = $tax ? $tax->value . '%' : null;
+    
         return response()->json([
             'success' => true,
-            'data' => $bid
+            'data' => $bid,
+            'tax_percent' => $tax_percent, // ✅ Added tax percent
         ]);
     }
+    
     
     public function getPostRequestList(Request $request)
     {
