@@ -65,14 +65,13 @@ class ChatController extends Controller
             ['user_one_id' => $bid->provider_id, 'user_two_id' => $bid->customer_id]
         );
 
-        $currentUserId = (int) Auth::id();
         $messages = ChatMessage::where('conversation_id', $conversation->id)
             ->with('sender:id,display_name')
             ->orderBy('id', 'asc')
             ->limit(50)
             ->get()
-            ->map(function (ChatMessage $m) use ($currentUserId) {
-                $hidden = (bool) $m->contains_pii && (int) $m->sender_id !== $currentUserId;
+            ->map(function (ChatMessage $m) {
+                $hidden = (bool) $m->contains_pii; // hide for both sides
                 return [
                     'id' => $m->id,
                     'sender_id' => $m->sender_id,
@@ -136,8 +135,8 @@ class ChatController extends Controller
             ->where('sender_id', '!=', $currentUserId)
             ->update(['read_at' => now()]);
 
-        $messages = $messagesCollection->map(function (ChatMessage $m) use ($currentUserId) {
-            $hidden = (bool) $m->contains_pii && (int) $m->sender_id !== (int) $currentUserId;
+        $messages = $messagesCollection->map(function (ChatMessage $m) {
+            $hidden = (bool) $m->contains_pii; // hide for both sides
             return [
                 'id' => $m->id,
                 'sender_id' => $m->sender_id,
@@ -414,6 +413,10 @@ class ChatController extends Controller
                 }
             }
     
+            $maskedSnippet = '';
+            if ($last) {
+                $maskedSnippet = $last->contains_pii ? 'Message hidden due to policy violation' : ($last->message ? mb_substr($last->message, 0, 80) : 'Attachment');
+            }
             $list[] = [
                 'conversation_id' => $c->id,
                 'url' => $url,
@@ -423,12 +426,27 @@ class ChatController extends Controller
                 'other_name' => optional($other)->display_name,
                 'other_avatar' => getSingleMedia(optional($other), 'profile_image', null),
                 'unread' => $unread,
-                'last_snippet' => $last ? ($last->message ? mb_substr($last->message, 0, 80) : 'Attachment') : '',
+                'last_snippet' => $maskedSnippet,
                 'last_at' => $last?->created_at?->toDateTimeString(),
             ];
         }
     
         return view('chat.index', [ 'items' => $list ]);
+    }
+
+    /**
+     * Admin: view flagged messages list.
+     */
+    public function flaggedIndex(Request $request)
+    {
+        $user = auth()->user();
+        abort_unless($user && ($user->hasRole('admin') || $user->hasRole('demo_admin')), 403);
+        $perPage = 50;
+        $messages = ChatMessage::where('contains_pii', true)
+            ->with(['sender:id,display_name', 'conversation'])
+            ->orderByDesc('id')
+            ->paginate($perPage);
+        return view('chat.flagged', ['messages' => $messages]);
     }
 
     /**

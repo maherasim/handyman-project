@@ -113,7 +113,7 @@ class ChatApiController extends Controller
             ->update(['read_at' => now()]);
 
         $messages = $collection->map(function (ChatMessage $m) use ($currentUserId) {
-            $hidden = (bool) $m->contains_pii && (int) $m->sender_id !== (int) $currentUserId;
+            $hidden = (bool) $m->contains_pii; // hide for both sides
             return [
                 'id' => $m->id,
                 'sender_id' => $m->sender_id,

@@ -52,7 +52,9 @@
                                 <span class="bg-primary"></span>
                                 <span class="badge badge-pill badge-up notify_count count-mail d-none"></span>
                                 @role('admin|demo_admin')
-                                <span id="flaggedBadge" class="badge badge-pill bg-danger ml-1" style="display:none;">0</span>
+                                <a href="{{ route('chat.flagged.index') }}" class="ml-1" title="Flagged messages">
+                                    <span id="flaggedBadge" class="badge badge-pill bg-danger" style="display:none;">0</span>
+                                </a>
                                 @endrole
                                 <span class=" dots d-none"></span>
                             </a>
