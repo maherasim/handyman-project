@@ -1308,36 +1308,23 @@
             $('.update-booking, .confirm-booking, .hold-booking, #complete-booking').prop('disabled', true).addClass('disabled');
         }
 
-        // Hold booking
+        // Hold booking via SweetAlert textarea (fast, like show.blade.php)
         $(document).on('click', '.hold-booking', function () {
             const bookingId = $(this).data('id');
-            const newStatus = $(this).data('status');
-
-            $('#bookingId').val(bookingId);
-            $('#newStatus').val(newStatus);
-            $('#reasonInput').val('');
-            $('#reasonModal').modal('show');
-        });
-
-        $('#reasonForm').on('submit', function (e) {
-            e.preventDefault();
-
-            const bookingId = $('#bookingId').val();
-            const newStatus = $('#newStatus').val();
-            const reason = $('#reasonInput').val();
-
             Swal.fire({
-                title: 'Are you sure?',
-                text: 'Are you sure you want to hold this booking?',
-                icon: 'warning',
+                title: 'Put on Hold',
+                input: 'textarea',
+                inputLabel: 'Provide hold reason',
+                inputPlaceholder: 'Type your reason here... (max 500 chars)',
                 showCancelButton: true,
-                confirmButtonText: 'Yes!',
-                cancelButtonText: 'No, cancel'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    updateBookingStatus(bookingId, newStatus, 1, reason);
-                    $('#reasonModal').modal('hide');
+                confirmButtonText: 'Submit',
+                preConfirm: (value) => {
+                    if (!value || value.trim().length === 0) return Swal.showValidationMessage('Hold reason is required');
+                    if (value.length > 500) return Swal.showValidationMessage('Reason too long (max 500 chars)');
+                    return value;
                 }
+            }).then((result) => {
+                if (result.isConfirmed) updateBookingStatus(bookingId, 'hold', 1, result.value);
             });
         });
 
