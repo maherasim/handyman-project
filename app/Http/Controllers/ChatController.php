@@ -332,13 +332,14 @@ class ChatController extends Controller
     {
         $uid = (int) auth()->id();
         abort_unless($uid > 0, 401);
+    
         $conversations = ChatConversation::where(function ($q) use ($uid) {
                 $q->where('user_one_id', $uid)->orWhere('user_two_id', $uid);
             })
             ->with(['bid.postrequest', 'booking.service', 'booking.handymanAdded', 'userOne:id,display_name', 'userTwo:id,display_name'])
             ->orderBy('updated_at', 'desc')
             ->get();
-
+    
         $list = [];
         foreach ($conversations as $c) {
             $last = ChatMessage::where('conversation_id', $c->id)->orderByDesc('id')->first();
@@ -348,6 +349,7 @@ class ChatController extends Controller
                 ->count();
             $otherId = ($c->user_one_id === $uid) ? $c->user_two_id : $c->user_one_id;
             $other = $otherId === optional($c->userOne)->id ? $c->userOne : $c->userTwo;
+    
             // Build URL based on conversation context (bid or booking)
             $url = '';
             $title = '';
@@ -370,7 +372,7 @@ class ChatController extends Controller
                     }
                 }
             }
-
+    
             $list[] = [
                 'conversation_id' => $c->id,
                 'url' => $url,
@@ -384,7 +386,7 @@ class ChatController extends Controller
                 'last_at' => $last?->created_at?->toDateTimeString(),
             ];
         }
-
+    
         return view('chat.index', [ 'items' => $list ]);
     }
 }

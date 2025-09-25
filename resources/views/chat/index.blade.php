@@ -44,4 +44,3 @@
         });
     </script>
 </x-master-layout>
-
