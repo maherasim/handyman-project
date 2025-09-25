@@ -190,15 +190,57 @@ class ChatController extends Controller
             return response()->json(['status' => false, 'message' => 'Message or attachment required'], 422);
         }
 
+        // PII detection
+        $text = $request->input('message');
+        [$containsPii, $piiTypes] = $this->detectPii($text);
+
         $msg = ChatMessage::create([
             'conversation_id' => $conversation->id,
             'sender_id' => Auth::id(),
-            'message' => $request->input('message'),
+            'message' => $text,
             'attachment_path' => $attachmentPath,
             'attachment_type' => $attachmentType,
+            'contains_pii' => $containsPii,
+            'pii_types' => $containsPii ? implode(',', $piiTypes) : null,
+            'flagged_at' => $containsPii ? now() : null,
         ]);
 
         return response()->json(['status' => true, 'message' => 'Sent', 'id' => $msg->id]);
+    }
+
+    /**
+     * Detect personal contact information in a text message.
+     * Returns array [bool containsPii, array types]
+     */
+    protected function detectPii(?string $text): array
+    {
+        $text = (string) ($text ?? '');
+        if ($text === '') { return [false, []]; }
+        $hay = mb_strtolower($text);
+        $types = [];
+
+        // Email addresses
+        if (preg_match('/[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}/i', $hay)) {
+            $types[] = 'email';
+        }
+        // Phone numbers (international/local patterns: 7+ digits possibly separated)
+        if (preg_match('/(?:(?:\+|00)?\d{1,3}[\s.-]?)?(?:\(?\d{2,4}\)?[\s.-]?)?\d{3,4}[\s.-]?\d{3,4}/', $hay)) {
+            // Avoid matching numbers that are too short overall
+            if (preg_match_all('/\d/', $hay, $m) && count($m[0]) >= 7) {
+                $types[] = 'phone';
+            }
+        }
+        // WhatsApp keywords or wa.me links
+        if (strpos($hay, 'whatsapp') !== false || strpos($hay, 'wa.me/') !== false || strpos($hay, 'api.whatsapp.com') !== false) {
+            $types[] = 'whatsapp';
+        }
+        // Social handles hint (optional): telegram, insta, etc.
+        if (strpos($hay, 'telegram') !== false || strpos($hay, 't.me/') !== false) {
+            $types[] = 'telegram';
+        }
+
+        $types = array_values(array_unique($types));
+        return [!empty($types), $types];
     }
 
     public function download(int $messageId)

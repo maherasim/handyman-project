@@ -15,6 +15,9 @@ return new class extends Migration
             $table->text('message')->nullable();
             $table->string('attachment_path')->nullable();
             $table->string('attachment_type', 50)->nullable();
+            $table->boolean('contains_pii')->default(false);
+            $table->string('pii_types', 255)->nullable();
+            $table->timestamp('flagged_at')->nullable();
             $table->timestamp('read_at')->nullable();
             $table->timestamps();
 
