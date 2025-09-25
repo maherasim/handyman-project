@@ -11,6 +11,7 @@ class ChatConversation extends Model
 
     protected $fillable = [
         'post_job_bid_id',
+        'booking_id',
         'user_one_id',
         'user_two_id',
     ];
@@ -23,6 +24,11 @@ class ChatConversation extends Model
     public function bid()
     {
         return $this->belongsTo(PostJobBid::class, 'post_job_bid_id');
+    }
+
+    public function booking()
+    {
+        return $this->belongsTo(Booking::class, 'booking_id');
     }
 
     public function userOne()

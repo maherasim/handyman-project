@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\ChatConversation;
 use App\Models\ChatMessage;
 use App\Models\PostJobBid;
+use App\Models\Booking;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -29,6 +30,16 @@ class ChatApiController extends Controller
             'completed',
         ];
         return in_array((string) ($bid->status ?? ''), $allowedStatuses, true);
+    }
+
+    protected function isChatEnabledForBooking(Booking $booking): bool
+    {
+        $payment = optional($booking)->payment;
+        if (!$payment) { return false; }
+        if (($payment->payment_type ?? null) === 'bank_transfer') {
+            return (int) ($payment->status ?? 0) === 1;
+        }
+        return true;
     }
     protected function ensureParticipant(ChatConversation $conversation): void
     {
@@ -56,15 +67,36 @@ class ChatApiController extends Controller
         return response()->json(['status' => true, 'conversation_id' => $conversation->id]);
     }
 
+    public function openByBooking(Request $request)
+    {
+        $request->validate(['booking_id' => 'required|integer|exists:bookings,id']);
+        $booking = Booking::with(['payment'])->findOrFail($request->input('booking_id'));
+        $uid = Auth::id();
+        abort_unless($uid && in_array($uid, [ (int) $booking->customer_id, (int) $booking->provider_id ], true), 403);
+        abort_unless($this->isChatEnabledForBooking($booking), 403);
+
+        $conversation = ChatConversation::firstOrCreate(
+            ['booking_id' => $booking->id, 'post_job_bid_id' => null],
+            ['user_one_id' => $booking->customer_id, 'user_two_id' => $booking->provider_id]
+        );
+        return response()->json(['status' => true, 'conversation_id' => $conversation->id]);
+    }
+
     public function listMessages(int $conversationId)
     {
         $conversation = ChatConversation::findOrFail($conversationId);
         $this->ensureParticipant($conversation);
 
-        // Enforce chat gating by bid status
-        $conversation->loadMissing('bid');
+        // Enforce chat gating by bid/booking status
+        $conversation->loadMissing(['bid', 'booking.payment']);
         $bid = $conversation->bid;
-        abort_unless($bid && $this->isChatEnabledForBid($bid), 403);
+        if ($bid) {
+            abort_unless($this->isChatEnabledForBid($bid), 403);
+        } else if ($conversation->booking) {
+            abort_unless($this->isChatEnabledForBooking($conversation->booking), 403);
+        } else {
+            abort(422);
+        }
 
         $beforeId = (int) request()->query('before_id', 0);
         $afterId = (int) request()->query('after_id', 0);
@@ -113,10 +145,16 @@ class ChatApiController extends Controller
         $conversation = ChatConversation::findOrFail($conversationId);
         $this->ensureParticipant($conversation);
 
-        // Enforce chat gating by bid status
-        $conversation->loadMissing('bid');
+        // Enforce chat gating by bid/booking status
+        $conversation->loadMissing(['bid', 'booking.payment']);
         $bid = $conversation->bid;
-        abort_unless($bid && $this->isChatEnabledForBid($bid), 403);
+        if ($bid) {
+            abort_unless($this->isChatEnabledForBid($bid), 403);
+        } else if ($conversation->booking) {
+            abort_unless($this->isChatEnabledForBooking($conversation->booking), 403);
+        } else {
+            abort(422);
+        }
 
         $request->validate([
             'message' => 'nullable|string|max:4000',
