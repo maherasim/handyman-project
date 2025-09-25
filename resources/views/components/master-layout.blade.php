@@ -114,13 +114,19 @@
             // Admin flagged ping
             function pollFlagged(){
                 var badge = document.getElementById('flaggedBadge');
+                var badgeSun = document.getElementById('flaggedBadgeSun');
                 if (!badge) return;
                 fetch('{{ route('chat.flagged.ping') }}', { credentials: 'same-origin' })
                     .then(r => r.ok ? r.json() : null)
                     .then(j => {
                         if (!j || !j.status) return;
-                        if (j.count && j.count > 0) { badge.style.display = ''; badge.textContent = j.count; }
+                        var show = (j.count && j.count > 0);
+                        if (show) { badge.style.display = ''; badge.textContent = j.count; }
                         else { badge.style.display = 'none'; badge.textContent = '0'; }
+                        if (badgeSun) {
+                            if (show) { badgeSun.style.display = ''; badgeSun.textContent = j.count; }
+                            else { badgeSun.style.display = 'none'; badgeSun.textContent = '0'; }
+                        }
                         if (j.latest && j.latest.id && window.Swal) {
                             const text = `Flagged message by ${j.latest.sender_name} (${(j.latest.types||[]).join(', ')})`;
                             Swal.fire({ toast:true, position:'bottom-end', timer:3500, showConfirmButton:false, icon:'warning', title: text });
