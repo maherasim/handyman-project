@@ -8,27 +8,44 @@
             <div class="col-12 col-md-4 col-lg-3 border-end d-flex flex-column p-0 mb-3 mb-md-0">
                 <div class="p-3 border-bottom">
                     <h5 class="mb-0">Messages</h5>
-                    <div class="text-muted small">Bid #{{ $bid->id }} — {{ $bid->postrequest->title ?? 'Post' }}</div>
+                    @php
+                        $headerLine = '';
+                        if (isset($bid)) {
+                            $headerLine = 'Bid #' . ($bid->id ?? '-') . ' — ' . (($bid->postrequest->title ?? null) ?: 'Post');
+                        } elseif (isset($booking)) {
+                            $serviceName = optional(optional($booking)->service)->name ?? 'Booking';
+                            $headerLine = 'Booking #' . ($booking->id ?? '-') . ' — ' . $serviceName;
+                        }
+                        $providerObj = isset($bid) ? optional($bid->provider) : (isset($booking) ? optional($booking->provider) : null);
+                        $customerObj = isset($bid) ? optional($bid->customer) : (isset($booking) ? optional($booking->customer) : null);
+                    @endphp
+                    @if($headerLine !== '')
+                        <div class="text-muted small">{{ $headerLine }}</div>
+                    @endif
                 </div>
                 <div class="flex-grow-1 overflow-auto p-2" id="threadList">
-                    <div class="d-flex align-items-center gap-2 p-2 rounded hover-bg cursor-pointer active">
-                        <div>
-                            <img src="{{ getSingleMedia(optional($bid->provider), 'profile_image', null) ?? $fallbackAvatar }}" class="rounded-circle" style="width:36px;height:36px;object-fit:cover;">
+                    @if($providerObj)
+                        <div class="d-flex align-items-center gap-2 p-2 rounded hover-bg cursor-pointer active">
+                            <div>
+                                <img src="{{ getSingleMedia($providerObj, 'profile_image', null) ?? $fallbackAvatar }}" class="rounded-circle" style="width:36px;height:36px;object-fit:cover;">
+                            </div>
+                            <div class="flex-grow-1">
+                                <div class="fw-bold mb-0 small">{{ $providerObj->display_name }}</div>
+                                <div class="text-muted small">Provider</div>
+                            </div>
                         </div>
-                        <div class="flex-grow-1">
-                            <div class="fw-bold mb-0 small">{{ optional($bid->provider)->display_name }}</div>
-                            <div class="text-muted small">Provider</div>
+                    @endif
+                    @if($customerObj)
+                        <div class="d-flex align-items-center gap-2 p-2 rounded hover-bg cursor-pointer active mt-1">
+                            <div>
+                                <img src="{{ getSingleMedia($customerObj, 'profile_image', null) ?? $fallbackAvatar }}" class="rounded-circle" style="width:36px;height:36px;object-fit:cover;">
+                            </div>
+                            <div class="flex-grow-1">
+                                <div class="fw-bold mb-0 small">{{ $customerObj->display_name }}</div>
+                                <div class="text-muted small">Customer</div>
+                            </div>
                         </div>
-                    </div>
-                    <div class="d-flex align-items-center gap-2 p-2 rounded hover-bg cursor-pointer active mt-1">
-                        <div>
-                            <img src="{{ getSingleMedia(optional($bid->customer), 'profile_image', null) ?? $fallbackAvatar }}" class="rounded-circle" style="width:36px;height:36px;object-fit:cover;">
-                        </div>
-                        <div class="flex-grow-1">
-                            <div class="fw-bold mb-0 small">{{ optional($bid->customer)->display_name }}</div>
-                            <div class="text-muted small">Customer</div>
-                        </div>
-                    </div>
+                    @endif
                 </div>
             </div>
 

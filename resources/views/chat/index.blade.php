@@ -7,7 +7,7 @@
         <div class="card">
             <div class="list-group list-group-flush">
                 @forelse($items as $c)
-                    <a href="{{ route('chat.view.bid', $c['bid_id']) }}" class="list-group-item list-group-item-action d-flex align-items-center gap-3">
+                    <a href="{{ $c['url'] ?? (isset($c['bid_id']) && $c['bid_id'] ? route('chat.view.bid', $c['bid_id']) : '#') }}" class="list-group-item list-group-item-action d-flex align-items-center gap-3">
                         <img src="{{ $c['other_avatar'] ?? asset('images/user/user.png') }}" class="rounded-circle" style="width:40px;height:40px;object-fit:cover;">
                         <div class="flex-grow-1">
                             <div class="d-flex align-items-center">
@@ -17,7 +17,7 @@
                                 @endif
                                 <div class="ms-auto small text-muted">{{ $c['last_at'] }}</div>
                             </div>
-                            <div class="small text-muted">{{ $c['bid_title'] }}</div>
+                            <div class="small text-muted">{{ $c['title'] ?? $c['bid_title'] }}</div>
                             <div class="small">{{ $c['last_snippet'] }}</div>
                         </div>
                     </a>

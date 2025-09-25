@@ -335,7 +335,7 @@ class ChatController extends Controller
         $conversations = ChatConversation::where(function ($q) use ($uid) {
                 $q->where('user_one_id', $uid)->orWhere('user_two_id', $uid);
             })
-            ->with(['bid.postrequest', 'userOne:id,display_name', 'userTwo:id,display_name'])
+            ->with(['bid.postrequest', 'booking.service', 'booking.handymanAdded', 'userOne:id,display_name', 'userTwo:id,display_name'])
             ->orderBy('updated_at', 'desc')
             ->get();
 
@@ -348,8 +348,33 @@ class ChatController extends Controller
                 ->count();
             $otherId = ($c->user_one_id === $uid) ? $c->user_two_id : $c->user_one_id;
             $other = $otherId === optional($c->userOne)->id ? $c->userOne : $c->userTwo;
+            // Build URL based on conversation context (bid or booking)
+            $url = '';
+            $title = '';
+            if ($c->post_job_bid_id) {
+                $url = route('chat.view.bid', $c->post_job_bid_id);
+                $title = optional(optional($c->bid)->postrequest)->title;
+            } elseif ($c->booking_id) {
+                $booking = $c->booking;
+                $title = optional(optional($booking)->service)->name;
+                if ($booking) {
+                    if ((int) $otherId === (int) ($booking->provider_id ?? 0)) {
+                        $url = route('chat.view.booking', $booking->id);
+                    } else {
+                        $assigned = optional($booking->handymanAdded)->pluck('handyman_id') ?? collect();
+                        if ($assigned->contains((int) $otherId)) {
+                            $url = route('chat.view.booking.handyman', ['bookingId' => $booking->id, 'handymanId' => $otherId]);
+                        } else {
+                            $url = route('chat.view.booking', $booking->id);
+                        }
+                    }
+                }
+            }
+
             $list[] = [
                 'conversation_id' => $c->id,
+                'url' => $url,
+                'title' => $title,
                 'bid_id' => $c->post_job_bid_id,
                 'bid_title' => optional(optional($c->bid)->postrequest)->title,
                 'other_name' => optional($other)->display_name,
