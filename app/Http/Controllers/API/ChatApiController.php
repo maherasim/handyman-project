@@ -87,16 +87,7 @@ class ChatApiController extends Controller
         $conversation = ChatConversation::findOrFail($conversationId);
         $this->ensureParticipant($conversation);
 
-        // Enforce chat gating by bid/booking status
-        $conversation->loadMissing(['bid', 'booking.payment']);
-        $bid = $conversation->bid;
-        if ($bid) {
-            abort_unless($this->isChatEnabledForBid($bid), 403);
-        } else if ($conversation->booking) {
-            abort_unless($this->isChatEnabledForBooking($conversation->booking), 403);
-        } else {
-            abort(422);
-        }
+        // Viewing messages is allowed for all participants regardless of payment
 
         $beforeId = (int) request()->query('before_id', 0);
         $afterId = (int) request()->query('after_id', 0);
@@ -145,15 +136,13 @@ class ChatApiController extends Controller
         $conversation = ChatConversation::findOrFail($conversationId);
         $this->ensureParticipant($conversation);
 
-        // Enforce chat gating by bid/booking status
+        // Keep gating only for sending new content
         $conversation->loadMissing(['bid', 'booking.payment']);
         $bid = $conversation->bid;
         if ($bid) {
             abort_unless($this->isChatEnabledForBid($bid), 403);
         } else if ($conversation->booking) {
             abort_unless($this->isChatEnabledForBooking($conversation->booking), 403);
-        } else {
-            abort(422);
         }
 
         $request->validate([
@@ -194,14 +183,8 @@ class ChatApiController extends Controller
         $perPage = min(100, max(1, (int) $request->query('per_page', 20)));
         $skip = ($page - 1) * $perPage;
 
-        $allowedStatuses = [
-            'advance_paid', 'in_process', 'in_progress', 'hold', 'done', 'confirm_done', 'remaining_paid', 'completed'
-        ];
         $base = ChatConversation::where(function($q) use ($uid){
                 $q->where('user_one_id', $uid)->orWhere('user_two_id', $uid);
-            })
-            ->whereHas('bid', function ($q) use ($allowedStatuses) {
-                $q->whereIn('status', $allowedStatuses);
             })
             ->with(['bid.postrequest', 'userOne:id,display_name', 'userTwo:id,display_name'])
             ->orderBy('updated_at', 'desc');
@@ -241,14 +224,8 @@ class ChatApiController extends Controller
     {
         $uid = (int) Auth::id();
         abort_unless($uid > 0, 401);
-        $allowedStatuses = [
-            'advance_paid', 'in_process', 'in_progress', 'hold', 'done', 'confirm_done', 'remaining_paid', 'completed'
-        ];
         $conversationIds = ChatConversation::where(function($q) use ($uid){
                 $q->where('user_one_id', $uid)->orWhere('user_two_id', $uid);
-            })
-            ->whereHas('bid', function ($q) use ($allowedStatuses) {
-                $q->whereIn('status', $allowedStatuses);
             })
             ->pluck('id');
         if ($conversationIds->isEmpty()) {

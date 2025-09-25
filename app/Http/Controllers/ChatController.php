@@ -102,20 +102,7 @@ class ChatController extends Controller
         $conversation = ChatConversation::findOrFail($conversationId);
         $this->authorizeForConversation($conversation);
 
-        // Enforce chat gating by bid status
-        $conversation->loadMissing(['bid', 'booking.bookingPostJob', 'booking.payment']);
-        $bid = $conversation->bid;
-        if ($bid) {
-            if (!$this->isChatEnabledForBid($bid)) {
-                return response()->json(['status' => false, 'message' => 'Chat becomes available after advance payment.'], 403);
-            }
-        } else if ($conversation->booking) {
-            if (!$this->isChatEnabledForBooking($conversation->booking)) {
-                return response()->json(['status' => false, 'message' => 'Chat becomes available after advance payment.'], 403);
-            }
-        } else {
-            return response()->json(['status' => false, 'message' => 'Invalid chat context.'], 422);
-        }
+        // Viewing messages should always be allowed once you are a participant
 
         $beforeId = (int) $request->query('before_id', 0);
         $afterId = (int) $request->query('after_id', 0);
@@ -219,16 +206,7 @@ class ChatController extends Controller
         $message = ChatMessage::with('conversation')->findOrFail($messageId);
         $this->authorizeForConversation($message->conversation);
 
-        // Enforce chat gating by bid status
-        $message->conversation->loadMissing(['bid', 'booking.payment']);
-        $bid = $message->conversation->bid;
-        if ($bid) {
-            abort_unless($this->isChatEnabledForBid($bid), 403);
-        } else if ($message->conversation->booking) {
-            abort_unless($this->isChatEnabledForBooking($message->conversation->booking), 403);
-        } else {
-            abort(422);
-        }
+        // Allow downloading attachments for existing conversations you are in
         abort_unless($message->attachment_path && Storage::disk('public')->exists($message->attachment_path), 404);
         $mime = $message->attachment_type ?: 'application/octet-stream';
         return Storage::disk('public')->download($message->attachment_path, basename($message->attachment_path), [
@@ -260,7 +238,6 @@ class ChatController extends Controller
         $booking = Booking::with(['customer', 'provider', 'payment'])->findOrFail($bookingId);
         $user = Auth::user();
         abort_unless($user && in_array($user->id, [ (int) $booking->customer_id, (int) $booking->provider_id ], true), 403);
-        abort_unless($this->isChatEnabledForBooking($booking), 403);
 
         $conversation = ChatConversation::firstOrCreate(
             ['booking_id' => $booking->id, 'post_job_bid_id' => null],
@@ -281,8 +258,6 @@ class ChatController extends Controller
 
         $user = Auth::user();
         abort_unless($user && in_array($user->id, [ (int) $booking->customer_id, (int) $handymanId ], true), 403);
-        abort_unless($this->isChatEnabledForBooking($booking), 403);
-
         $conversation = ChatConversation::firstOrCreate(
             ['booking_id' => $booking->id],
             ['user_one_id' => $booking->customer_id, 'user_two_id' => $handymanId]
