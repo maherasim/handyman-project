@@ -16,11 +16,16 @@ class ChatMessage extends Model
         'message',
         'attachment_path',
         'attachment_type',
+        'contains_pii',
+        'pii_types',
+        'flagged_at',
         'read_at',
     ];
 
     protected $casts = [
         'read_at' => 'datetime',
+        'flagged_at' => 'datetime',
+        'contains_pii' => 'boolean',
     ];
 
     public function conversation()
