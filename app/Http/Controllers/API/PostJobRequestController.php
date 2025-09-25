@@ -115,7 +115,7 @@ class PostJobRequestController extends Controller
         $user = auth()->user();
     
         $query = PostJobRequest::myPostJob()
-            ->whereIn('status', ['requested', 'accepted', 'assigned']);
+            ->whereIn('status', ['requested', 'accepted', 'assigned','completed','confirm_done','remaining_paid','done','in_progress','in_process','hold','advance_paid','cancelled','pending']);
     
         // Default per page from config; ensure integer fallback
         $per_page = (int) (config('constant.PER_PAGE_LIMIT') ?? 10);
