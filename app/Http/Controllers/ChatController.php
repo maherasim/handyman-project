@@ -257,11 +257,20 @@ class ChatController extends Controller
         abort_unless($isAssigned, 404);
 
         $user = Auth::user();
-        abort_unless($user && in_array($user->id, [ (int) $booking->customer_id, (int) $handymanId ], true), 403);
-        $conversation = ChatConversation::firstOrCreate(
-            ['booking_id' => $booking->id],
-            ['user_one_id' => $booking->customer_id, 'user_two_id' => $handymanId]
-        );
+        abort_unless($user && in_array($user->id, [ (int) $booking->customer_id, (int) $booking->provider_id, (int) $handymanId ], true), 403);
+
+        // If provider is viewing, open provider <-> handyman chat; otherwise customer <-> handyman
+        if ((int) $user->id === (int) ($booking->provider_id ?? 0)) {
+            $conversation = ChatConversation::firstOrCreate(
+                ['booking_id' => $booking->id, 'user_one_id' => $booking->provider_id, 'user_two_id' => $handymanId],
+                ['user_one_id' => $booking->provider_id, 'user_two_id' => $handymanId]
+            );
+        } else {
+            $conversation = ChatConversation::firstOrCreate(
+                ['booking_id' => $booking->id, 'user_one_id' => $booking->customer_id, 'user_two_id' => $handymanId],
+                ['user_one_id' => $booking->customer_id, 'user_two_id' => $handymanId]
+            );
+        }
 
         return view('chat.show', [ 'conversation' => $conversation, 'booking' => $booking ]);
     }
