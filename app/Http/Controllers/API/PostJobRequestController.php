@@ -66,6 +66,25 @@ class PostJobRequestController extends Controller
             'message' => 'Status updated successfully',
         ]);
     }
+    public function invoice($id)
+    {
+        $bid = \App\Models\PostJobBid::with([
+            'provider:id,display_name,address,vat_number',
+            'customer:id,display_name,address',
+            'postrequest:id,title,price_type,job_price,total_days,total_hours,country_id,city_id',
+            'postrequest.city:id,name',
+            'postrequest.country:id,name',
+            'extraCharges',
+        ])->findOrFail($id);
+    
+        // Optional: last payment (if you want to show context)
+        $payment = \App\Models\PaymentPostJOb::where('post_job_bid_request_id', $bid->id)->latest('id')->first();
+    
+        $pdf = Pdf::loadView('postrequest.invoice', compact('bid', 'payment'))->setPaper('a4');
+        $filename = 'post-bid-invoice-' . $bid->id . '.pdf';
+        return $pdf->download($filename);
+    }
+    
     public function startWork(Request $request, $id)
     {
         // Find the bid
