@@ -169,6 +169,7 @@
                             const isProvider =
                                 {{ auth()->user()->user_type == 'provider' ? 'true' : 'false' }};
                             const providerCan = Boolean(row.accepted_for_current_provider);
+                            const applicants = parseInt(row.applicants || 0, 10);
 
                             // Rule 1: For provider and user: requested/cancelled => not clickable
                             if (nonClickable.includes(statusKey)) {
@@ -180,7 +181,12 @@
                                 return data;
                             }
 
-                            return `<a href="{{ url('post-job-bid') }}/${row.id}" class="job-bid-link">${data}</a>`;
+                            // Rule 3: If there are no proposals (applicants == 0), keep it non-clickable and show tooltip
+                            if (!applicants) {
+                                return `<span title="No proposals yet">${data}</span>`;
+                            }
+
+                            return `<a href="{{ url('post-job-bid') }}/${row.id}" class="job-bid-link" title="View proposals">${data}</a>`;
                         }
                     },
                     {

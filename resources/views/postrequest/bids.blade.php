@@ -16,6 +16,12 @@
 
                 <div class="card mb-3">
                     <div class="card-body">
+                        @if (session('info'))
+                            <div class="alert alert-info mb-3">
+                                <i class="fas fa-info-circle me-1"></i>
+                                {{ session('info') }}
+                            </div>
+                        @endif
                         <div class="d-flex justify-content-end">
                             <div class="input-group w-25">
                                 <span class="input-group-text"><i class="fas fa-search"></i></span>

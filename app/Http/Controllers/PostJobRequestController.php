@@ -127,7 +127,6 @@ class PostJobRequestController extends Controller
             'postrequest.postBidList:id,post_request_id',
             'extraCharges',
         ])->where('post_request_id', $postRequestId);
-        
 
         // Try to get bid matching the post's current status
         $bid = null;
@@ -137,9 +136,16 @@ class PostJobRequestController extends Controller
 
         // Fallback: any non-cancelled bid
         if (!$bid) {
-            $bid = (clone $bidQuery)->where('status', '!=', 'cancelled')->firstOrFail();
+            $bid = (clone $bidQuery)->where('status', '!=', 'cancelled')->first();
         }
- 
+
+        // If still none, redirect to the bids list page with a friendly message
+        if (!$bid) {
+            return redirect()
+                ->route('post-job-request.bids', ['id' => $postRequestId])
+                ->with('info', 'No proposals yet for this job. Please check back later.');
+        }
+
         return view('postrequest.show', compact('bid'));
     }
 
