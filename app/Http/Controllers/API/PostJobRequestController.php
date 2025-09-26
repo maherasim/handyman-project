@@ -6,7 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\PostRequestStatus;
 use Barryvdh\DomPDF\Facade\Pdf;
-use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Mail;
+use App\Models\User;
 
 use App\Models\PostJobRequest;
 use App\Models\PostJobBid;
@@ -81,17 +82,47 @@ class PostJobRequestController extends Controller
             'postrequest.country:id,name',
             'extraCharges',
         ])->findOrFail($id);
-    
+        
+        // Authorize: Only the customer or provider associated with the bid may request the invoice
+        if (!auth()->check()) {
+            return response()->json(['message' => 'Unauthenticated'], 401);
+        }
+        $authUser = auth()->user();
+        $isCustomer = (int) $authUser->id === (int) $bid->customer_id;
+        $isProvider = (int) $authUser->id === (int) $bid->provider_id;
+        if (!$isCustomer && !$isProvider) {
+            return response()->json(['message' => 'Forbidden'], 403);
+        }
+
         $payment = \App\Models\PaymentPostJOb::where('post_job_bid_request_id', $bid->id)
             ->latest('id')
             ->first();
-    
+
         $pdf = Pdf::loadView('postrequest.invoice', compact('bid', 'payment'))->setPaper('a4');
         $filename = 'post-bid-invoice-' . $bid->id . '.pdf';
+        $pdfOutput = $pdf->output();
 
+        // Email the invoice PDF to the matched user (customer or provider)
+        try {
+            $recipientId = $isCustomer ? $bid->customer_id : $bid->provider_id;
+            $recipient = User::find($recipientId);
+            if ($recipient && !empty($recipient->email)) {
+                $subject = 'Your Invoice for Post Job Bid #' . $bid->id;
+                $body = 'Hello ' . (trim((string)($recipient->display_name ?? $recipient->name ?? '')) ?: 'there') . ",\n\nPlease find your invoice attached.\n\nThank you.";
+                Mail::raw($body, function ($message) use ($recipient, $subject, $filename, $pdfOutput) {
+                    $message->to($recipient->email, $recipient->display_name ?? $recipient->name ?? null)
+                        ->subject($subject)
+                        ->attachData($pdfOutput, $filename, ['mime' => 'application/pdf']);
+                });
+            }
+        } catch (\Throwable $e) {
+            \Log::warning('Failed to email invoice PDF: ' . $e->getMessage());
+        }
+
+        // Return direct download to the caller
         return response()->streamDownload(
-            function () use ($pdf) {
-                echo $pdf->output();
+            function () use ($pdfOutput) {
+                echo $pdfOutput;
             },
             $filename,
             [
