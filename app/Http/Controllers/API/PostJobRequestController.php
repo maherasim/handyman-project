@@ -51,6 +51,7 @@ class PostJobRequestController extends Controller
         } elseif ($bid->status === 'accepted') {
             $postjob->status = 'accepted';
             $postjob->accepted_bid_id = $bid->id; // ✅ store accepted bid id
+            $postjob->provider_id = $bid->provider_id;
         } else {
             $postjob->status = $bid->status;
         }
