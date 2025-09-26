@@ -103,33 +103,25 @@ class PostJobRequestController extends Controller
         $pdfOutput = $pdf->output();
 
         // Email the invoice PDF to the matched user (customer or provider)
-        try {
-            $recipientId = $isCustomer ? $bid->customer_id : $bid->provider_id;
-            $recipient = User::find($recipientId);
-            if ($recipient && !empty($recipient->email)) {
-                $subject = 'Your Invoice for Post Job Bid #' . $bid->id;
-                $body = 'Hello ' . (trim((string)($recipient->display_name ?? $recipient->name ?? '')) ?: 'there') . ",\n\nPlease find your invoice attached.\n\nThank you.";
-                Mail::raw($body, function ($message) use ($recipient, $subject, $filename, $pdfOutput) {
-                    $message->to($recipient->email, $recipient->display_name ?? $recipient->name ?? null)
-                        ->subject($subject)
-                        ->attachData($pdfOutput, $filename, ['mime' => 'application/pdf']);
-                });
-            }
-        } catch (\Throwable $e) {
-            \Log::warning('Failed to email invoice PDF: ' . $e->getMessage());
+        $recipientId = $isCustomer ? $bid->customer_id : $bid->provider_id;
+        $recipient = User::find($recipientId);
+        if (!$recipient || empty($recipient->email)) {
+            return response()->json(['status' => false, 'message' => 'Recipient email not found'], 422);
         }
 
-        // Return direct download to the caller
-        return response()->streamDownload(
-            function () use ($pdfOutput) {
-                echo $pdfOutput;
-            },
-            $filename,
-            [
-                'Content-Type' => 'application/pdf',
-                'Content-Disposition' => 'attachment; filename="' . $filename . '"'
-            ]
-        );
+        try {
+            $subject = 'Your Invoice for Post Job Bid #' . $bid->id;
+            $body = 'Hello ' . (trim((string)($recipient->display_name ?? $recipient->name ?? '')) ?: 'there') . ",\n\nPlease find your invoice attached.\n\nThank you.";
+            Mail::raw($body, function ($message) use ($recipient, $subject, $filename, $pdfOutput) {
+                $message->to($recipient->email, $recipient->display_name ?? $recipient->name ?? null)
+                    ->subject($subject)
+                    ->attachData($pdfOutput, $filename, ['mime' => 'application/pdf']);
+            });
+        } catch (\Throwable $e) {
+            return response()->json(['status' => false, 'message' => 'Failed to send email'], 500);
+        }
+
+        return response()->json(['status' => true, 'message' => 'Email sent successfully']);
     }
     
     
