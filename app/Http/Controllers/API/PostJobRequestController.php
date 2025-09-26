@@ -88,11 +88,17 @@ class PostJobRequestController extends Controller
     
         $pdf = Pdf::loadView('postrequest.invoice', compact('bid', 'payment'))->setPaper('a4');
         $filename = 'post-bid-invoice-' . $bid->id . '.pdf';
-    
-        // return as a real file download for mobile app
-        return response($pdf->output(), 200)
-            ->header('Content-Type', 'application/pdf')
-            ->header('Content-Disposition', 'attachment; filename="' . $filename . '"');
+
+        return response()->streamDownload(
+            function () use ($pdf) {
+                echo $pdf->output();
+            },
+            $filename,
+            [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => 'attachment; filename="' . $filename . '"'
+            ]
+        );
     }
     
     
