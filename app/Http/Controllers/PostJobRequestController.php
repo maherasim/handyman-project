@@ -1448,8 +1448,12 @@ class PostJobRequestController extends Controller
             $query->where('status', $filter['column_status']);
         }
 
-        // Count applicants (bids) per job request efficiently
-        $query->withCount(['postBidList as applicants']);
+        // Count only non-cancelled applicants (bids) per job request
+        $query->withCount([
+            'postBidList as applicants' => function ($q) {
+                $q->where('status', '!=', 'cancelled');
+            }
+        ]);
 
         return $datatable->eloquent($query)
             ->addColumn('check', function ($row) {
