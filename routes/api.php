@@ -197,6 +197,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('postjob/bank-transfer/{id}', [App\Http\Controllers\PostJobRequestController::class, 'createPostJobBankTransfer'])->name('postjob.bank.transfer');
     Route::post('postjob-bid/{id}/extra-charges', [App\Http\Controllers\PostJobRequestController::class, 'addExtraCharges'])->name('postjob.addExtraCharges');
     Route::get('/post-job-bid/by-bid/{bidId}', [Api\PostJobRequestController::class, 'showBidById'])->name('post-job-bid.showByBid');
+    Route::get('post-job-request/{id}/invoice', [Api\PostJobRequestController::class, 'invoice']);
 
     Route::get('get-post-job-bid-data',[  App\Http\Controllers\PostJobBidController::class, 'PostJobBidData' ]);
     Route::get('/job-requests/provider', [API\PostJobBidController::class, 'apiIndex']);
