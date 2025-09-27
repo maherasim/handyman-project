@@ -83,7 +83,11 @@
                                     <div class=" p-0 ">
                                         <ul class="dropdown-menu-1 list-group list-group-flush">
                                             <?php
-                                            $language_option = sitesetupSession('get')->language_option ?? ["nl","fr","it","pt","es","en","de"];
+                                            $language_option = sitesetupSession('get')->language_option ?? ["nl","fr","it","pt","es","en"];
+                                            // Ensure German ('de') is available in the dropdown even if not set yet
+                                            if (is_array($language_option)) {
+                                                $language_option = array_values(array_unique(array_merge($language_option, ['de'])));
+                                            }
                                             if (!empty($language_option)) {
                                                 $language_array = languagesArray($language_option);
                                             }
