@@ -212,6 +212,24 @@ class ChatApiController extends Controller
             $types[] = 'telegram';
         }
 
+        // Email provider keywords (covers obfuscations like "name at gmail dot com")
+        $emailProviders = ['gmail', 'yahoo', 'hotmail', 'outlook', 'icloud', 'protonmail', 'ymail', 'gmx', 'aol', 'mail.com', 'yandex', 'zoho'];
+        foreach ($emailProviders as $prov) {
+            if (strpos($hay, $prov) !== false) {
+                $types[] = 'email';
+                break;
+            }
+        }
+
+        // Instagram
+        if (strpos($hay, 'instagram.com') !== false || preg_match('/\binsta(?:gram)?\b/i', $hay)) {
+            $types[] = 'instagram';
+        }
+        // Facebook/Messenger
+        if (strpos($hay, 'facebook.com') !== false || strpos($hay, 'fb.com') !== false || strpos($hay, 'm.me/') !== false || strpos($hay, 'messenger.com') !== false || preg_match('/\bfacebook\b/i', $hay)) {
+            $types[] = 'facebook';
+        }
+
         $types = array_values(array_unique($types));
         return [!empty($types), $types];
     }

@@ -247,7 +247,10 @@
                 const phoneRe = /(?:(?:\+|00)?\d{1,3}[\s.-]?)?(?:\(?\d{2,4}\)?[\s.-]?)?\d{3,4}[\s.-]?\d{3,4}/;
                 const hasMinDigits = (text.match(/\d/g) || []).length >= 7;
                 const isWhats = lower.includes('whatsapp') || lower.includes('wa.me/') || lower.includes('api.whatsapp.com');
-                if (text && (emailRe.test(text) || (phoneRe.test(text) && hasMinDigits) || isWhats || lower.includes('telegram') || lower.includes('t.me/'))) {
+                const mentionsEmailProviders = ['gmail','yahoo','hotmail','outlook','icloud','protonmail','ymail','gmx','aol','mail.com','yandex','zoho'].some(p => lower.includes(p));
+                const mentionsInstagram = lower.includes('instagram.com') || /\binsta(?:gram)?\b/i.test(text);
+                const mentionsFacebook = lower.includes('facebook.com') || lower.includes('fb.com') || lower.includes('m.me/') || lower.includes('messenger.com') || lower.includes('facebook');
+                if (text && (emailRe.test(text) || mentionsEmailProviders || (phoneRe.test(text) && hasMinDigits) || isWhats || lower.includes('telegram') || lower.includes('t.me/') || mentionsInstagram || mentionsFacebook)) {
                     if (window.Swal) {
                         Swal.fire({ icon:'warning', title:'Policy Warning', text:'Sharing personal contact info is not allowed. Your message may be hidden and reported.', confirmButtonText:'OK' });
                     }
