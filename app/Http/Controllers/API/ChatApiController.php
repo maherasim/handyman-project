@@ -196,14 +196,44 @@ class ChatApiController extends Controller
         if ($text === '') { return [false, []]; }
         $hay = mb_strtolower($text);
         $types = [];
-
-        if (preg_match('/[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}/i', $hay)) {
+        
+        // Normalize obfuscated emails like "name at g mail dot com"
+        $norm = $hay;
+        $norm = preg_replace('/\b(at the rate|at)\b/i', '@', $norm);
+        $norm = str_ireplace(['[at]','(at)','{at}',' (at) ',' [at] '], '@', $norm);
+        $norm = preg_replace('/\b(dot)\b/i', '.', $norm);
+        $norm = str_ireplace(['[dot]','(dot)','{dot}',' (dot) ',' [dot] '], '.', $norm);
+        $norm = preg_replace('/\s*(@|\.)\s*/', '$1', $norm);
+        $providerPatterns = [
+            '/g\s*mail/i' => 'gmail',
+            '/y\s*ahoo/i' => 'yahoo',
+            '/hot\s*mail/i' => 'hotmail',
+            '/out\s*look/i' => 'outlook',
+            '/proton\s*mail/i' => 'protonmail',
+            '/i\s*cloud/i' => 'icloud',
+            '/y\s*andex/i' => 'yandex',
+            '/z\s*o\s*h\s*o/i' => 'zoho',
+        ];
+        foreach ($providerPatterns as $pat => $rep) { $norm = preg_replace($pat, $rep, $norm); }
+        
+        if (preg_match('/[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}/i', $hay) || preg_match('/[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}/i', $norm)) {
             $types[] = 'email';
         }
         if (preg_match('/(?:(?:\+|00)?\d{1,3}[\s.-]?)?(?:\(?\d{2,4}\)?[\s.-]?)?\d{3,4}[\s.-]?\d{3,4}/', $hay)) {
-            if (preg_match_all('/\d/', $hay, $m) && count($m[0]) >= 7) {
-                $types[] = 'phone';
-            }
+            if (preg_match_all('/\d/', $hay, $m) && count($m[0]) >= 7) { $types[] = 'phone'; }
+        }
+        // Spelled-out phone numbers
+        $tokens = preg_split('/[^a-z0-9+]+/i', $hay, -1, PREG_SPLIT_NO_EMPTY);
+        $wordToDigit = [ 'zero'=>'0','oh'=>'0','o'=>'0','one'=>'1','two'=>'2','three'=>'3','four'=>'4','five'=>'5','six'=>'6','seven'=>'7','eight'=>'8','nine'=>'9' ];
+        $digitCount = 0; $repeat = 1;
+        foreach ($tokens as $tok) {
+            if ($tok === 'double') { $repeat = 2; continue; }
+            if ($tok === 'triple') { $repeat = 3; continue; }
+            $digitsToAdd = '';
+            if (isset($wordToDigit[$tok])) { $digitsToAdd = str_repeat($wordToDigit[$tok], $repeat); }
+            elseif (preg_match('/^\+?\d+$/', $tok)) { $digitsToAdd = str_repeat(preg_replace('/\D/', '', $tok), $repeat); }
+            if ($digitsToAdd !== '') { $digitCount += strlen($digitsToAdd); if ($digitCount >= 7) { $types[] = 'phone'; break; } }
+            $repeat = 1;
         }
         if (strpos($hay, 'whatsapp') !== false || strpos($hay, 'wa.me/') !== false || strpos($hay, 'api.whatsapp.com') !== false) {
             $types[] = 'whatsapp';

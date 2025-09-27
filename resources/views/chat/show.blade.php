@@ -250,7 +250,39 @@
                 const mentionsEmailProviders = ['gmail','yahoo','hotmail','outlook','icloud','protonmail','ymail','gmx','aol','mail.com','yandex','zoho'].some(p => lower.includes(p));
                 const mentionsInstagram = lower.includes('instagram.com') || /\binsta(?:gram)?\b/i.test(text);
                 const mentionsFacebook = lower.includes('facebook.com') || lower.includes('fb.com') || lower.includes('m.me/') || lower.includes('messenger.com') || lower.includes('facebook');
-                if (text && (emailRe.test(text) || mentionsEmailProviders || (phoneRe.test(text) && hasMinDigits) || isWhats || lower.includes('telegram') || lower.includes('t.me/') || mentionsInstagram || mentionsFacebook)) {
+                // Basic obfuscation normalization for email
+                const norm = lower
+                    .replace(/\b(at the rate|at)\b/g, '@')
+                    .replace(/[\[{(]\s*at\s*[\]})]/g, '@')
+                    .replace(/\b(dot)\b/g, '.')
+                    .replace(/[\[{(]\s*dot\s*[\]})]/g, '.')
+                    .replace(/\s*(@|\.)\s*/g, '$1')
+                    .replace(/g\s*mail/g, 'gmail')
+                    .replace(/y\s*ahoo/g, 'yahoo')
+                    .replace(/hot\s*mail/g, 'hotmail')
+                    .replace(/out\s*look/g, 'outlook')
+                    .replace(/proton\s*mail/g, 'protonmail')
+                    .replace(/i\s*cloud/g, 'icloud')
+                    .replace(/y\s*andex/g, 'yandex')
+                    .replace(/z\s*o\s*h\s*o/g, 'zoho');
+                const emailObfuscated = emailRe.test(norm);
+
+                // Spelled-out phone detection: count digits reconstructed
+                const words = lower.split(/[^a-z0-9+]+/).filter(Boolean);
+                const map = {zero:'0', oh:'0', o:'0', one:'1', two:'2', three:'3', four:'4', five:'5', six:'6', seven:'7', eight:'8', nine:'9'};
+                let count = 0, rep = 1;
+                for (const w of words) {
+                  if (w === 'double') { rep = 2; continue; }
+                  if (w === 'triple') { rep = 3; continue; }
+                  let add = '';
+                  if (map[w]) add = map[w].repeat(rep);
+                  else if (/^\+?\d+$/.test(w)) add = (w.replace(/\D/g,'')).repeat(rep);
+                  if (add) { count += add.length; if (count >= 7) break; }
+                  rep = 1;
+                }
+                const phoneSpelled = count >= 7;
+
+                if (text && (emailRe.test(text) || emailObfuscated || mentionsEmailProviders || (phoneRe.test(text) && hasMinDigits) || phoneSpelled || isWhats || lower.includes('telegram') || lower.includes('t.me/') || mentionsInstagram || mentionsFacebook)) {
                     if (window.Swal) {
                         Swal.fire({ icon:'warning', title:'Policy Warning', text:'Sharing personal contact info is not allowed. Your message may be hidden and reported.', confirmButtonText:'OK' });
                     }
