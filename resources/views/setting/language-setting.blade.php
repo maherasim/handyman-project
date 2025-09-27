@@ -1,6 +1,6 @@
 
 <?php
-$language_option = sitesetupSession('get')->language_option ?? ["nl","fr","it","pt","es","en"];
+$language_option = sitesetupSession('get')->language_option ?? ["nl","fr","it","pt","es","en","de"];
 $language_array = languagesArray($language_option);
 $files = ["auth", "messages", "pagination", "passwords","validation","landingpage"];
 ?>
