@@ -230,11 +230,11 @@
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="form-group col-md-3">
+                                <div class="form-group col-md-6">
                                     <label for="duties">{{ __('Duties & Responsibilities') }}</label>
                                     <textarea name="duties" id="duties" class="form-control textarea editor-fixed" rows="6" placeholder="{{ __('duties & responsibilities') }}">{{ old('duties', $postJob->duties) }}</textarea>
                                 </div>
-                                <div class="form-group col-md-3">
+                                <div class="form-group col-md-6">
                                     <label for="benefits">{{ __('Benefits') }}</label>
                                     <textarea name="benefits" id="benefits" class="form-control textarea editor-fixed" rows="6" placeholder="{{ __('benefits') }}">{{ old('benefits', $postJob->benefits) }}</textarea>
                                 </div></div>
