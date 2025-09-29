@@ -181,6 +181,7 @@
                                 </div>
                             </div>
                             <div class="row">
+                                <!-- Education Level -->
                                 <div class="form-group col-md-4">
                                     <label for="education_level">{{ __('Education Level') }} <span class="text-danger">*</span></label>
                                     <select name="education_level" id="education_level" class="form-control" required>
@@ -193,18 +194,26 @@
                                     </select>
                                 </div>
                             
-                                <div class="form-group col-md-4">
-                                    <label for="street_address">{{ __('Street & House Nr.') }}</label>
-                                    <input type="text" name="street_address" id="street_address" class="form-control"
-                                           placeholder="{{ __('Street name') }}"
-                                           value="{{ old('street_address', $postJob->street_address) }}">
-                                </div>
+                                <!-- Working Address block -->
+                                <div class="col-md-8">
+                                    <h6 class="font-weight-bold mb-2">{{ __('Working Address') }}</h6>
+                                    <p class="text-muted small mb-3">{{ __('Specify where the work will be performed.') }}</p>
                             
-                                <div class="form-group col-md-4">
-                                    <label for="house_number">{{ __('Pobox & City-Country.') }}</label>
-                                    <input type="text" name="house_number" id="house_number" class="form-control"
-                                           placeholder="{{ __('House/Unit No.') }}"
-                                           value="{{ old('house_number', $postJob->house_number) }}">
+                                    <div class="form-row">
+                                        <div class="form-group col-md-6">
+                                            <label for="street_address">{{ __('Street & House Nr.') }}</label>
+                                            <input type="text" name="street_address" id="street_address" class="form-control"
+                                                   placeholder="{{ __('Street name') }}"
+                                                   value="{{ old('street_address', $postJob->street_address) }}">
+                                        </div>
+                            
+                                        <div class="form-group col-md-6">
+                                            <label for="house_number">{{ __('Pobox & City-Country.') }}</label>
+                                            <input type="text" name="house_number" id="house_number" class="form-control"
+                                                   placeholder="{{ __('House/Unit No.') }}"
+                                                   value="{{ old('house_number', $postJob->house_number) }}">
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                             
