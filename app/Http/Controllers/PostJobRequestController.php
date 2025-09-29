@@ -1633,7 +1633,7 @@ class PostJobRequestController extends Controller
         ]);
 
         $data = $request->all();
-        dd(  $data);
+     //   dd(  $data);
         // store new address parts if present
         $data['street_address'] = $request->input('street_address');
         $data['house_number'] = $request->input('house_number');
