@@ -41,6 +41,7 @@ class PostJobRequestDetailResource extends JsonResource
             'total_days'       => $this->total_days,
             'country_id'       => $this->country_id,
             'city_id'          => $this->city_id,
+            'state_id'          => $this->state_id,
             'requirement'      => $this->requirement,
             'type'             => $this->type,
             'category_id'       => $this->category_id,

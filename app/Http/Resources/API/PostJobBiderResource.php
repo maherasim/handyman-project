@@ -22,6 +22,7 @@ class PostJobBiderResource extends JsonResource
             'provider_id'           => $this->provider_id,
             'price'                 => $this->price,
             'duration'              => $this->duration,
+            'why_choose_me'   => $this->why_choose_me,
             'provider'              => new UserResource($this->provider),
             'post_detail'           => new PostJobRequestResource($this->postrequest)
         ];
