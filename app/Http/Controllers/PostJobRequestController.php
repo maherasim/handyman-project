@@ -1604,7 +1604,7 @@ class PostJobRequestController extends Controller
      */
     public function store(Request $request)
     {
-        dd($request->all());
+        //dd($request->all());
         // Basic validation to preserve old input on errors
         $request->validate([
             'title' => 'required|string|max:255',
