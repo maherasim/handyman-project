@@ -72,45 +72,52 @@ class PostJobRequestController extends Controller
         ]);
     }
     public function editPostJob($id)
-{
-    $auth_user = auth()->user();
-    $postJob = PostJobRequest::find($id);
-
-    if (!$postJob) {
-        return response()->json([
-            'status' => 'error',
-            'message' => 'Post Job not found'
-        ], 404);
-    }
-
-    // Allow admin or the owner to edit
-    if (!$auth_user->hasAnyRole(['admin']) && $auth_user->id !== $postJob->customer_id) {
-        return response()->json([
-            'status' => 'error',
-            'message' => 'You are not authorized to edit this job'
-        ], 403);
-    }
-
-    // Handle multiple images
-    $imageUrls = [];
-    if (!empty($postJob->images)) {
-        $images = is_array($postJob->images) ? $postJob->images : json_decode($postJob->images, true);
-
-        foreach ($images as $img) {
-            $imageUrls[] = url('public/' . $img);
+    {
+        $auth_user = auth()->user();
+        $postJob = PostJobRequest::find($id);
+    
+        if (!$postJob) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Post Job not found'
+            ], 404);
         }
+    
+        // Allow admin or the owner to edit
+        if (!$auth_user->hasAnyRole(['admin']) && $auth_user->id !== $postJob->customer_id) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'You are not authorized to edit this job'
+            ], 403);
+        }
+    
+        // Transform images to full URLs
+        $images = [];
+        if (!empty($postJob->images)) {
+            $rawImages = is_array($postJob->images) ? $postJob->images : json_decode($postJob->images, true);
+            foreach ($rawImages as $img) {
+                $images[] = url('public/' . $img);
+            }
+        }
+    
+        // Replace postJob->images with full URLs
+        $postJob->images = $images;
+    
+        // Also replace single `image` field with full URL
+        if (!empty($postJob->image)) {
+            $postJob->image = url('public/' . $postJob->image);
+        }
+    
+        return response()->json([
+            'status' => 'success',
+            'data' => [
+                'postJob' => $postJob,
+                'auth_user' => $auth_user,
+                'pageTitle' => __('messages.update_form_title', ['form' => __('messages.post_job')]),
+            ]
+        ], 200);
     }
-
-    return response()->json([
-        'status' => 'success',
-        'data' => [
-            'postJob' => $postJob,
-            'auth_user' => $auth_user,
-            'pageTitle' => __('messages.update_form_title', ['form' => __('messages.post_job')]),
-            'image_urls' => $imageUrls, // return full URLs here
-        ]
-    ], 200);
-}
+    
 
     
 
