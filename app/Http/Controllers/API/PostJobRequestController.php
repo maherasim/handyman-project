@@ -72,34 +72,46 @@ class PostJobRequestController extends Controller
         ]);
     }
     public function editPostJob($id)
-    {
-        $auth_user = auth()->user(); // authenticated user
-        $postJob = PostJobRequest::find($id);
-    
-        if (!$postJob) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Post Job not found'
-            ], 404);
-        }
-    
-        // Allow admin or the owner to edit
-        if (!$auth_user->hasAnyRole(['admin']) && $auth_user->id !== $postJob->customer_id) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'You are not authorized to edit this job'
-            ], 403);
-        }
-    
+{
+    $auth_user = auth()->user();
+    $postJob = PostJobRequest::find($id);
+
+    if (!$postJob) {
         return response()->json([
-            'status' => 'success',
-            'data' => [
-                'postJob' => $postJob,
-                'auth_user' => $auth_user,
-                'pageTitle' => __('messages.update_form_title', ['form' => __('messages.post_job')])
-            ]
-        ], 200);
+            'status' => 'error',
+            'message' => 'Post Job not found'
+        ], 404);
     }
+
+    // Allow admin or the owner to edit
+    if (!$auth_user->hasAnyRole(['admin']) && $auth_user->id !== $postJob->customer_id) {
+        return response()->json([
+            'status' => 'error',
+            'message' => 'You are not authorized to edit this job'
+        ], 403);
+    }
+
+    // Handle multiple images
+    $imageUrls = [];
+    if (!empty($postJob->images)) {
+        $images = is_array($postJob->images) ? $postJob->images : json_decode($postJob->images, true);
+
+        foreach ($images as $img) {
+            $imageUrls[] = url('public/' . $img);
+        }
+    }
+
+    return response()->json([
+        'status' => 'success',
+        'data' => [
+            'postJob' => $postJob,
+            'auth_user' => $auth_user,
+            'pageTitle' => __('messages.update_form_title', ['form' => __('messages.post_job')]),
+            'image_urls' => $imageUrls, // return full URLs here
+        ]
+    ], 200);
+}
+
     
 
     public function invoice($id)
