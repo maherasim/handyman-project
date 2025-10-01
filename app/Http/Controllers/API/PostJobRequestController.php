@@ -71,7 +71,7 @@ class PostJobRequestController extends Controller
             'message' => 'Status updated successfully',
         ]);
     }
-    public function editPostJobApi($id)
+    public function editPostJob($id)
     {
         $auth_user = auth()->user(); // authenticated user
         $postJob = PostJobRequest::find($id);
