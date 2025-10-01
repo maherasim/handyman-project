@@ -73,7 +73,7 @@ class PostJobRequestController extends Controller
     }
     public function editPostJob($id)
     {
-        $auth_user = auth()->user();
+        $auth_user = auth()->user(); // authenticated user
         $postJob = PostJobRequest::find($id);
     
         if (!$postJob) {
@@ -91,21 +91,12 @@ class PostJobRequestController extends Controller
             ], 403);
         }
     
-        // Transform images to full URLs
-        $images = [];
+        // Map image URLs using storage path
+        $imageUrls = [];
         if (!empty($postJob->images)) {
-            $rawImages = is_array($postJob->images) ? $postJob->images : json_decode($postJob->images, true);
-            foreach ($rawImages as $img) {
-                $images[] = url('public/' . $img);
+            foreach ($postJob->images as $img) {
+                $imageUrls[] = asset('storage/' . $img);
             }
-        }
-    
-        // Replace postJob->images with full URLs
-        $postJob->images = $images;
-    
-        // Also replace single `image` field with full URL
-        if (!empty($postJob->image)) {
-            $postJob->image = url('public/' . $postJob->image);
         }
     
         return response()->json([
@@ -114,9 +105,11 @@ class PostJobRequestController extends Controller
                 'postJob' => $postJob,
                 'auth_user' => $auth_user,
                 'pageTitle' => __('messages.update_form_title', ['form' => __('messages.post_job')]),
+                'image_urls' => $imageUrls
             ]
         ], 200);
     }
+    
     
 
     
