@@ -40,10 +40,27 @@ class PostJobRequestResource extends JsonResource
             'end_date'          => $this->end_date,
             'total_hours'       => $this->total_hours,
             'total_days'        => $this->total_days,
-            'image'             => $this->image ? asset('storage/' . $this->image) : null,
-            'images'            => is_array($this->images)
-            ? array_map(fn($img) => asset('storage/' . $img), $this->images)
-            : [],
+            
+            'images' => (function () {
+    $images = [];
+
+    if (!empty($this->images)) {
+        if (is_string($this->images)) {
+            $decoded = json_decode($this->images, true);
+            if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                $images = $decoded;
+            }
+        } elseif (is_array($this->images)) {
+            $images = $this->images;
+        }
+    }
+
+    return collect($images)
+        ->filter()
+        ->map(fn($img) => asset('storage/' . ltrim($img, '/')))
+        ->values();
+})(),
+
             'total_views'       => $this->total_views,
             'country_id'        => $this->country_id,
             'city_id'           => $this->city_id,

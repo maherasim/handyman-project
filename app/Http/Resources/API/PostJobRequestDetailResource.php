@@ -41,6 +41,27 @@ class PostJobRequestDetailResource extends JsonResource
             'total_days'       => $this->total_days,
             'country_id'       => $this->country_id,
             'city_id'          => $this->city_id,
+            
+       'images' => (function () {
+    $images = [];
+
+    if (!empty($this->images)) {
+        if (is_string($this->images)) {
+            $decoded = json_decode($this->images, true);
+            if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                $images = $decoded;
+            }
+        } elseif (is_array($this->images)) {
+            $images = $this->images;
+        }
+    }
+
+    return collect($images)
+        ->filter()
+        ->map(fn($img) => asset('storage/' . ltrim($img, '/')))
+        ->values();
+})(),
+
             'state_id'          => $this->state_id,
             'requirement'      => $this->requirement,
             'type'             => $this->type,

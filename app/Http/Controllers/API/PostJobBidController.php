@@ -45,32 +45,59 @@ class PostJobBidController extends Controller
 
         return comman_custom_response($response);
     }
-public function apiIndex(Request $request)
-{
-    $query = PostJobRequest::query();
-
-    // Role-based visibility
-    if (!auth()->user()->hasAnyRole(['admin']) && auth()->user()->user_type !== 'provider') {
-        $query->where('customer_id', auth()->id());
+ 
+    public function apiIndex(Request $request)
+    {
+        $query = PostJobRequest::query();
+    
+        // Role-based visibility
+        if (!auth()->user()->hasAnyRole(['admin']) && auth()->user()->user_type !== 'provider') {
+            $query->where('customer_id', auth()->id());
+        }
+    
+        if ($request->filled('category_id')) {
+            $query->where('category_id', $request->category_id);
+        }
+    
+        $query->with(['customer', 'category']);
+    
+        $perPage = $request->input('per_page', 10); // Default to 10 items per page if not specified
+        $data = $query->paginate($perPage);
+    
+        // Transform the items in the paginated result
+        $data->getCollection()->transform(function ($item) {
+            // ✅ Single image URL
+            $item->image = $item->image ? asset('storage/' . ltrim($item->image, '/')) : null;
+    
+            // ✅ Multi-image URLs
+            $images = [];
+    
+            if (!empty($item->images)) {
+                // If it's a string, try to decode JSON
+                if (is_string($item->images)) {
+                    $decoded = json_decode($item->images, true);
+                    if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                        $images = $decoded;
+                    }
+                } elseif (is_array($item->images)) {
+                    $images = $item->images;
+                }
+            }
+    
+            // Convert each image to full URL
+            $item->images = collect($images)
+                ->filter() // remove null or empty values
+                ->map(fn($img) => asset('storage/' . ltrim($img, '/')))
+                ->values(); // reindex array
+    
+            return $item;
+        });
+    
+        return response()->json([
+            'success' => true,
+            'data'    => $data,
+        ]);
     }
-
-    // Optional filtering (status, category, etc.)
-    // if ($request->filled('status')) {
-    //     $query->where('status', $request->status);
-    // }
-
-    if ($request->filled('category_id')) {
-        $query->where('category_id', $request->category_id);
-    }
-
-    // Eager-load related models
-    $query->with(['customer', 'category']);
-
-    // Return paginated response
-    return response()->json([
-        'success' => true,
-        'data' => $query->paginate(10),
-    ]);
-}
+    
 
 }
