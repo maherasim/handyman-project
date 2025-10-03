@@ -337,9 +337,11 @@
                      const container = document.getElementById('imageContainer');
                      const showMoreBtn = document.getElementById('showMoreButton');
                      const MAX_VISIBLE = 4;
+                     
                      function clearContainer() {
                          while (container.firstChild) container.removeChild(container.firstChild);
                      }
+                     
                      function renderPreviews(files) {
                          clearContainer();
                          const urls = [];
@@ -379,6 +381,53 @@
                              showMoreBtn.dataset.expanded = expanded ? 'false' : 'true';
                          };
                      }
+                     
+                     // Load existing images on page load (for edit mode)
+                     function loadExistingImages() {
+                         const existingImages = @json($postJob->images ?? []);
+                         if (existingImages && existingImages.length > 0) {
+                             clearContainer();
+                             existingImages.forEach((imagePath, idx) => {
+                                 const img = document.createElement('img');
+                                 // Handle both relative and absolute paths
+                                 const fullPath = imagePath.startsWith('http') 
+                                     ? imagePath 
+                                     : "{{ asset('storage') }}/" + imagePath.replace(/^\/+/, '');
+                                 img.src = fullPath;
+                                 img.alt = 'existing-' + idx;
+                                 img.className = 'rounded';
+                                 img.style.maxWidth = '120px';
+                                 img.style.maxHeight = '120px';
+                                 img.style.marginRight = '10px';
+                                 img.style.marginBottom = '10px';
+                                 const wrapper = document.createElement('div');
+                                 wrapper.style.display = idx < MAX_VISIBLE ? 'inline-block' : 'none';
+                                 wrapper.appendChild(img);
+                                 container.appendChild(wrapper);
+                             });
+                             
+                             if (existingImages.length > MAX_VISIBLE) {
+                                 showMoreBtn.style.display = 'inline-block';
+                                 showMoreBtn.textContent = 'Show More';
+                                 showMoreBtn.dataset.expanded = 'false';
+                                 showMoreBtn.onclick = () => {
+                                     const expanded = showMoreBtn.dataset.expanded === 'true';
+                                     const children = Array.from(container.children);
+                                     children.forEach((child, idx) => {
+                                         if (idx >= MAX_VISIBLE) {
+                                             child.style.display = expanded ? 'none' : 'inline-block';
+                                         }
+                                     });
+                                     showMoreBtn.textContent = expanded ? 'Show More' : 'Show Less';
+                                     showMoreBtn.dataset.expanded = expanded ? 'false' : 'true';
+                                 };
+                             }
+                         }
+                     }
+                     
+                     // Load existing images when page loads
+                     loadExistingImages();
+                     
                      if (input) {
                          input.addEventListener('change', (e) => renderPreviews(e.target.files));
                      }
