@@ -62,8 +62,9 @@ class PostJobRequestResource extends JsonResource
 })(),
 
             'total_views'       => $this->total_views,
-            'country_id'        => $this->country_id,
-            'city_id'           => $this->city_id,
+           'country' => optional($this->country)->name,
+            'city'    => optional($this->city)->name,
+
             'requirement'       => $this->requirement,
             'category_id'       => $this->category_id,
             'subcategory_id'    => $this->subcategory_id,
