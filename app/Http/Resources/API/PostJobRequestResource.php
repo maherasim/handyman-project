@@ -34,11 +34,17 @@ class PostJobRequestResource extends JsonResource
             'provider_id'       => $this->provider_id,
             'customer_id'       => $this->customer_id,
             'status'            => $this->status,
+            'bid_count'         => $this->postBidList->count(),
             'type'              => $this->type,
             'start_date'        => $this->start_date,
             'end_date'          => $this->end_date,
             'total_hours'       => $this->total_hours,
             'total_days'        => $this->total_days,
+            'image'             => $this->image ? asset('storage/' . $this->image) : null,
+            'images'            => is_array($this->images)
+            ? array_map(fn($img) => asset('storage/' . $img), $this->images)
+            : [],
+            'total_views'       => $this->total_views,
             'country_id'        => $this->country_id,
             'city_id'           => $this->city_id,
             'requirement'       => $this->requirement,

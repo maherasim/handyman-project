@@ -235,11 +235,12 @@ class PostJobRequestController extends Controller
     public function getPostRequestList(Request $request)
     {
         // Build query without myPostJob() scope
-        $query = PostJobRequest::whereIn('status', [
+        $query = PostJobRequest::withCount('postBidList')->whereIn('status', [
             'requested', 'accepted', 'assigned', 'completed', 'confirm_done',
             'remaining_paid', 'done', 'in_progress', 'in_process', 'hold',
             'advance_paid', 'cancelled', 'pending'
         ]);
+        
     
         // Default per page from config; ensure integer fallback
         $per_page = (int) (config('constant.PER_PAGE_LIMIT') ?? 10);
