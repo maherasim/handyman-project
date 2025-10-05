@@ -590,6 +590,20 @@ class FrontendController extends Controller
             $knownLanguageArray = [];
         }
 
+        // Compute provider plan icon for service detail
+        $providerPlanIcon = 'images/freepng.png';
+        if (isset($serviceData['provider']['id'])) {
+            $sub = ProviderSubscription::where('user_id', (int)$serviceData['provider']['id'])->first();
+            if ($sub) {
+                $rawPlan = strtolower(trim($sub->plan_type ?? $sub->title ?? ''));
+                if (str_contains($rawPlan, 'silver')) {
+                    $providerPlanIcon = 'images/icon/silverpng.png';
+                } elseif (str_contains($rawPlan, 'gold')) {
+                    $providerPlanIcon = 'images/goldpng.png';
+                }
+            }
+        }
+
         $price = $serviceData['service_detail']['price'] ?? 0;
         $discount = $serviceData['service_detail']['discount'] ?? 0;
         $subtotal = $discount != 0 ? ($price - ($price * $discount / 100)) : $price;
@@ -598,7 +612,7 @@ class FrontendController extends Controller
         // $total_ratings = BookingRating::where('service_id', $serviceData['service_detail']['id'])->get();
         $serviceIdForRatings = (int)($serviceData['service_detail']['id'] ?? 0);
         $total_ratings = $serviceIdForRatings > 0 ? BookingRating::where('service_id', $serviceIdForRatings)->get() : collect();
-        return view('landing-page.ServiceDetail', compact('serviceData', 'favouriteService', 'date_time', 'completed_services', 'knownLanguageArray', 'subtotal', 'total_ratings', 'favouriteServiceData', 'userId'));
+        return view('landing-page.ServiceDetail', compact('serviceData', 'favouriteService', 'date_time', 'completed_services', 'knownLanguageArray', 'subtotal', 'total_ratings', 'favouriteServiceData', 'userId', 'providerPlanIcon'));
     }
 
 
