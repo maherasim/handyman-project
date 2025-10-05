@@ -424,7 +424,19 @@ class FrontendController extends Controller
 
                 $col = 3;
 
-                return view('service.datatable-card', compact('data', 'totalReviews', 'totalRating', 'favouriteService', 'completedBookingCount', 'col'));
+                // Compute provider plan icon (free/silver/gold)
+                $plan_icon = asset('images/freepng.png');
+                $provider = $data->providers;
+                if ($provider && $provider->providerSubscription) {
+                    $rawPlan = strtolower(trim($provider->providerSubscription->plan_type ?? $provider->providerSubscription->title ?? ''));
+                    if (str_contains($rawPlan, 'silver')) {
+                        $plan_icon = asset('images/icon/silverpng.png');
+                    } elseif (str_contains($rawPlan, 'gold')) {
+                        $plan_icon = asset('images/goldpng.png');
+                    }
+                }
+
+                return view('service.datatable-card', compact('data', 'totalReviews', 'totalRating', 'favouriteService', 'completedBookingCount', 'col', 'plan_icon'));
             })
             ->order(function ($query) {
                 $query->orderBy('id', 'desc');
@@ -1331,7 +1343,18 @@ class FrontendController extends Controller
                 } else {
                     $favouriteService = collect();
                 }
-                return view('service.datatable-card', compact('data', 'totalReviews', 'totalRating', 'favouriteService'));
+                // Compute provider plan icon (free/silver/gold)
+                $plan_icon = asset('images/freepng.png');
+                $provider = $data->providers;
+                if ($provider && $provider->providerSubscription) {
+                    $rawPlan = strtolower(trim($provider->providerSubscription->plan_type ?? $provider->providerSubscription->title ?? ''));
+                    if (str_contains($rawPlan, 'silver')) {
+                        $plan_icon = asset('images/icon/silverpng.png');
+                    } elseif (str_contains($rawPlan, 'gold')) {
+                        $plan_icon = asset('images/goldpng.png');
+                    }
+                }
+                return view('service.datatable-card', compact('data', 'totalReviews', 'totalRating', 'favouriteService', 'plan_icon'));
             });
 
         return $datatable->rawColumns(['name'])
