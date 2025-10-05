@@ -376,6 +376,23 @@
                                         @endif
                                     </div>
 
+                                    @php
+                                        $provDesignation = $serviceData['provider']['designation'] ?? '';
+                                        $provCity = $serviceData['provider']['city_name'] ?? data_get($serviceData['provider'], 'city.name');
+                                        $provCountry = $serviceData['provider']['country_name'] ?? data_get($serviceData['provider'], 'country.name');
+                                    @endphp
+                                    <div class="d-flex align-items-center gap-2 mt-1">
+                                        @if(!empty($provDesignation))
+                                            <h6 class="m-0 text-capitalize">{{ $provDesignation }}</h6>
+                                        @endif
+                                        @if(!empty($provDesignation) && ($provCity || $provCountry))
+                                            <span class="text-muted">•</span>
+                                        @endif
+                                        @if($provCity || $provCountry)
+                                            <span class="m-0" style="font-size: 12px;">{{ $provCity ?? '' }}{{ ($provCity && $provCountry) ? ' - ' : '' }}{{ $provCountry ?? '' }}</span>
+                                        @endif
+                                    </div>
+
                                     <div class="d-flex align-items-center gap-2 flex-wrap">
                                         <div class="star-rating">
                                             <rating-component :readonly="true" :showrating="false"
