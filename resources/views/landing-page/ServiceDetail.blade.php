@@ -649,9 +649,17 @@
                         </div>
 
                         <div class="d-flex align-items-center  mt-2 justify-content-evenly">
-
-                            <img src="{{ asset('images/icon/verifiedpng.png') }}" alt="icon"
-                                style="width: 26px; height: 26px; margin-right: 10px;">
+                            @php
+                                $providerId = $serviceData['provider']['id'] ?? null;
+                                $isAllVerified = $providerId && function_exists('verify_provider_document') ? verify_provider_document($providerId) : false;
+                            @endphp
+                            @if ($isAllVerified)
+                                <img src="{{ asset('images/icon/verified.jpg') }}" alt="icon"
+                                    style="width: 26px; height: 26px; margin-right: 10px;">
+                            @else
+                                <img src="{{ asset('images/icon/notverifiedpng.png') }}" alt="icon"
+                                    style="width: 26px; height: 26px; margin-right: 10px;">
+                            @endif
 
 
                             <div class="d-flex align-items-center gap-2 flex-wrap">
