@@ -676,7 +676,19 @@
 
 
 
-                            <img src="{{ asset('images/icon/freeicon.jpg') }}" alt="icon"
+                            @php
+                                $subscriptionIcon = 'images/freepng.png';
+                                $providerSub = $serviceData['provider']['provider_subscription'] ?? null;
+                                if ($providerSub) {
+                                    $rawPlan = strtolower(trim($providerSub['plan_type'] ?? $providerSub['title'] ?? ''));
+                                    if (str_contains($rawPlan, 'silver')) {
+                                        $subscriptionIcon = 'images/icon/silverpng.png';
+                                    } elseif (str_contains($rawPlan, 'gold')) {
+                                        $subscriptionIcon = 'images/goldpng.png';
+                                    }
+                                }
+                            @endphp
+                            <img src="{{ asset($subscriptionIcon) }}" alt="icon"
                                 style="width: 26px; height: 26px;">
 
 

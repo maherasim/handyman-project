@@ -140,7 +140,7 @@
        </a>
    </div>
    <div class="d-flex align-items-center justify-content-end">
-       <img src="{{ asset('images/icon/freeicon.jpg') }}" alt="icon"
+       <img src="{{ isset($plan_icon) ? $plan_icon : asset('images/freepng.png') }}" alt="plan"
            style="width: 26px; height: 26px; margin-right: 10px;">
        @php
            $providerId = optional($data->providers)->id;
