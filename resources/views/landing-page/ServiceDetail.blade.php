@@ -361,6 +361,20 @@
                                         <h5 class="text-capitalize mb-1">{{ $serviceData['provider']['display_name'] }}
                                         </h5>
                                     </a>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <img src="{{ asset($providerPlanIcon) }}" alt="plan"
+                                            style="width: 26px; height: 26px;">
+                                        @php
+                                            $aboutVerified = function_exists('verify_provider_document') ? verify_provider_document($serviceData['provider']['id']) : false;
+                                        @endphp
+                                        @if ($aboutVerified)
+                                            <img src="{{ asset('images/icon/verified.jpg') }}" alt="verified"
+                                                style="width: 26px; height: 26px;">
+                                        @else
+                                            <img src="{{ asset('images/icon/notverifiedpng.png') }}" alt="not verified"
+                                                style="width: 26px; height: 26px;">
+                                        @endif
+                                    </div>
 
                                     <div class="d-flex align-items-center gap-2 flex-wrap">
                                         <div class="star-rating">
