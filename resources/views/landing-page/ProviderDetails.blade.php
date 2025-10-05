@@ -59,26 +59,13 @@
                                         @endif
                                     </span>
                                     @php
-                                        $providerDocuments = $providerData['document_detail'] ?? null;
-                                        $allVerified = true; // Flag to check if all documents are verified
+                                        $allVerified = function_exists('verify_provider_document') ? verify_provider_document($providerData['data']['id']) : false;
                                     @endphp
 
-                                    @if ($providerDocuments)
-                                        @foreach ($providerDocuments as $document)
-                                            @if (!isset($document['is_verified']) || !$document['is_verified'])
-                                                @php
-                                                    $allVerified = false; // If any document is not verified, set flag to false
-                                                @endphp
-                                            @endif
-                                        @endforeach
-                                    @endif
-
                                     @if ($allVerified)
-                                        <!-- Show verified icon if all documents are verified -->
-                                        <img src="{{ asset('images/icon/verifiedpng.png') }}" alt="Verified Icon"
+                                        <img src="{{ asset('images/icon/verified.jpg') }}" alt="Verified Icon"
                                             style="width: 14%; height: 23%; margin-right: 10px;">
                                     @else
-                                        <!-- Show non-verified icon if not all documents are verified -->
                                         <img src="{{ asset('images/icon/notverifiedpng.png') }}" alt="Non-Verified Icon"
                                             style="width: 14%; height: 23%; margin-right: 10px;">
                                     @endif
