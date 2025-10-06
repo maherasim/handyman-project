@@ -30,44 +30,19 @@ class PostJobRequest extends Model
     public function postServiceMapping(){
         return $this->hasMany(PostJobServiceMapping::class, 'post_request_id','id');
     }
-    public function getPostRequestDetail(Request $request)
+    public function scopeMyPostJob($query)
     {
-        $id = $request->post_request_id;
         $user = auth()->user();
     
-        // ✅ Determine access based on role
+        if ($user->hasRole('admin') || $user->hasRole('provider')) {
+            return $query;
+        }
+    
         if ($user->hasRole('user')) {
-            // Only allow the customer to access their own post
-            $post_request = PostJobRequest::where('customer_id', $user->id)->find($id);
-        } else {
-            // Providers and admins can access any
-            $post_request = PostJobRequest::find($id);
+            return $query->where('customer_id', $user->id);
         }
     
-        // ❌ Not found or not authorized
-        if (empty($post_request)) {
-            $message = __('messages.record_not_found');
-            return comman_message_response($message, 400);
-        }
-    
-        // ✅ Increment view count
-        try {
-            $post_request->increment('total_views');
-        } catch (\Throwable $e) {
-            // Silently ignore or log
-        }
-    
-        // ✅ Load detail & bids
-        $post_request_detail = new PostJobRequestDetailResource($post_request);
-        $bider_data = PostJobBiderResource::collection(
-            PostJobBid::where('post_request_id', $id)->get()
-        );
-    
-        // ✅ Return response
-        return comman_custom_response([
-            'post_request_detail' => $post_request_detail,
-            'bider_data' => $bider_data,
-        ]);
+        return $query->whereRaw('1 = 0'); // default deny if role is unknown
     }
     
     public function getTotalBidsAttribute()

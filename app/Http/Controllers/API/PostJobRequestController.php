@@ -279,28 +279,49 @@ class PostJobRequestController extends Controller
     
         return comman_custom_response($response);
     }
-    
-    public function getPostRequestDetail(Request $request){
+    public function getPostRequestDetail(Request $request)
+    {
         $id = $request->post_request_id;
-        $post_request = PostJobRequest::myPostJob()->find($id);
-        if(empty($post_request)){
-            $message = __('messages.record_not_found');
-            return comman_message_response($message,400);   
+        $user = auth()->user();
+    
+        // ✅ Base query
+        $query = PostJobRequest::query();
+    
+        // 🔐 Restrict based on role
+        if ($user->hasRole('user')) {
+            // Users can only view their own posts
+            $query->where('customer_id', $user->id);
         }
-        // increment total views
+        // Admins and Providers can view any post — no extra filter
+    
+        // 🔍 Find the post
+        $post_request = $query->find($id);
+    
+        // ❌ Not found or unauthorized
+        if (empty($post_request)) {
+            $message = __('messages.record_not_found');
+            return comman_message_response($message, 400);
+        }
+    
+        // ✅ Increment view count
         try {
             $post_request->increment('total_views');
         } catch (\Throwable $e) {
-            // ignore
+            // Optional: log the exception
         }
-
+    
+        // ✅ Load detail & bids
         $post_request_detail = new PostJobRequestDetailResource($post_request);
-        $bider_data = PostJobBiderResource::collection(PostJobBid::where('post_request_id',$id)->get());
-        $response = [
-            'post_request_detail'    => $post_request_detail,
-            'bider_data'    => $bider_data,
-        ];
-
-        return comman_custom_response($response);
+        $bider_data = PostJobBiderResource::collection(
+            PostJobBid::where('post_request_id', $id)->get()
+        );
+    
+        // ✅ Return response
+        return comman_custom_response([
+            'post_request_detail' => $post_request_detail,
+            'bider_data' => $bider_data,
+        ]);
     }
+       
+ 
 }
