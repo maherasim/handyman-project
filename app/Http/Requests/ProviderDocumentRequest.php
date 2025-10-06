@@ -25,8 +25,27 @@ class ProviderDocumentRequest extends FormRequest
      */
     public function rules()
     {
+        $providerId = auth()->user()->hasRole('provider') ? auth()->id() : $this->provider_id;
+        
         return [
-            'document_id'              => 'required',
+            'document_id'              => [
+                'required',
+                function ($attribute, $value, $fail) use ($providerId) {
+                    // Check if updating existing document
+                    if ($this->id) {
+                        return; // Allow update
+                    }
+                    
+                    // Check for duplicate document_id for this provider
+                    $exists = \App\Models\ProviderDocument::where('provider_id', $providerId)
+                        ->where('document_id', $value)
+                        ->exists();
+                    
+                    if ($exists) {
+                        $fail('This document type has already been uploaded. Please delete the existing one first or upload a different document type.');
+                    }
+                }
+            ],
             'provider_document'        => 'mimes:jpg,jpeg,png,pdf,docx'
         ];
     }
