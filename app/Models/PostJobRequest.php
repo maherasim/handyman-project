@@ -51,6 +51,11 @@ class PostJobRequest extends Model
         public function postBidList(){
             return $this->hasMany(PostJobBid::class, 'post_request_id','id');
         }
+        public function proposals()
+{
+    return $this->hasMany(PostJobBid::class, 'post_request_id');
+}
+
         public function provider(){
             return $this->belongsTo(User::class,'provider_id', 'id')->withTrashed();
         }

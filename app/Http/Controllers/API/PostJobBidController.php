@@ -59,7 +59,7 @@ class PostJobBidController extends Controller
             $query->where('category_id', $request->category_id);
         }
     
-        // Eager load relationships
+        // Eager load relationships and count proposals
         $query->with([
             'customer.city',
             'customer.state',
@@ -68,17 +68,14 @@ class PostJobBidController extends Controller
             'city',
             'state',
             'country'
-        ]);
+        ])->withCount('proposals'); // ✅ proposals_count will be available
     
-        $perPage = $request->input('per_page', 10); // Default to 10 items per page if not specified
+        $perPage = $request->input('per_page', 10);
         $data = $query->paginate($perPage);
     
-        // Transform the items in the paginated result
         $data->getCollection()->transform(function ($item) {
-            // ✅ Single image URL
             $item->image = $item->image ? asset('storage/' . ltrim($item->image, '/')) : null;
     
-            // ✅ Multi-image URLs
             $images = [];
     
             if (!empty($item->images)) {
@@ -97,17 +94,20 @@ class PostJobBidController extends Controller
                 ->map(fn($img) => asset('storage/' . ltrim($img, '/')))
                 ->values();
     
-            // ✅ Add readable location names for the job
+            // Location names
             $item->city_name = optional($item->city)->name;
             $item->state_name = optional($item->state)->name;
             $item->country_name = optional($item->country)->name;
     
-            // ✅ Add readable location names for the customer
+            // Customer location names
             if ($item->customer) {
                 $item->customer->city_name = optional($item->customer->city)->name;
                 $item->customer->state_name = optional($item->customer->state)->name;
                 $item->customer->country_name = optional($item->customer->country)->name;
             }
+    
+            // Proposal count (already available from withCount)
+            $item->proposals_count = $item->proposals_count ?? 0;
     
             return $item;
         });
@@ -117,6 +117,7 @@ class PostJobBidController extends Controller
             'data'    => $data,
         ]);
     }
+    
     
     
 
