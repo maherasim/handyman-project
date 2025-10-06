@@ -59,7 +59,16 @@ class PostJobBidController extends Controller
             $query->where('category_id', $request->category_id);
         }
     
-        $query->with(['customer', 'category']);
+        // Eager load relationships
+        $query->with([
+            'customer.city',
+            'customer.state',
+            'customer.country',
+            'category',
+            'city',
+            'state',
+            'country'
+        ]);
     
         $perPage = $request->input('per_page', 10); // Default to 10 items per page if not specified
         $data = $query->paginate($perPage);
@@ -73,7 +82,6 @@ class PostJobBidController extends Controller
             $images = [];
     
             if (!empty($item->images)) {
-                // If it's a string, try to decode JSON
                 if (is_string($item->images)) {
                     $decoded = json_decode($item->images, true);
                     if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
@@ -84,11 +92,22 @@ class PostJobBidController extends Controller
                 }
             }
     
-            // Convert each image to full URL
             $item->images = collect($images)
-                ->filter() // remove null or empty values
+                ->filter()
                 ->map(fn($img) => asset('storage/' . ltrim($img, '/')))
-                ->values(); // reindex array
+                ->values();
+    
+            // ✅ Add readable location names for the job
+            $item->city_name = optional($item->city)->name;
+            $item->state_name = optional($item->state)->name;
+            $item->country_name = optional($item->country)->name;
+    
+            // ✅ Add readable location names for the customer
+            if ($item->customer) {
+                $item->customer->city_name = optional($item->customer->city)->name;
+                $item->customer->state_name = optional($item->customer->state)->name;
+                $item->customer->country_name = optional($item->customer->country)->name;
+            }
     
             return $item;
         });
@@ -98,6 +117,7 @@ class PostJobBidController extends Controller
             'data'    => $data,
         ]);
     }
+    
     
 
 }
