@@ -840,6 +840,17 @@ $menu->add('<span>'.__('Job Request').'</span><span class="custom-tooltip"><span
         ->nickname('custom_job')
         ->data('permission', 'payment list');
 
+        // Verify Account - Provider Document Upload
+        $menu->add('<span>'.__('Verify Account').'</span><span class="custom-tooltip"><span class="tooltip-text">'.__('Verify Account').'</span></span>', ['route' => ['providerdocument.show', auth()->user()->id]])
+        ->prepend('<svg width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M9 12L10.6828 13.6828V13.6828C10.858 13.858 11.142 13.858 11.3172 13.6828V13.6828L15 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M21 7V13.5C21 17.2712 21 19.1569 19.8284 20.3284C18.6569 21.5 16.7712 21.5 13 21.5H11C7.22876 21.5 5.34315 21.5 4.17157 20.3284C3 19.1569 3 17.2712 3 13.5V7" stroke="currentColor" stroke-width="1.5"/>
+        <path d="M2.84718 4.46447C2 5.31157 2 6.68393 2 9.42857V10C2 10.9428 2 11.4142 2.29289 11.7071C2.58579 12 3.05719 12 4 12H20C20.9428 12 21.4142 12 21.7071 11.7071C22 11.4142 22 10.9428 22 10V9.42857C22 6.68393 22 5.31157 21.1528 4.46447C20.3057 3.61738 18.933 3.61738 16.1886 3.61738H7.81141C5.06705 3.61738 3.69487 3.61738 2.84718 4.46447Z" stroke="currentColor" stroke-width="1.5"/>
+        <path d="M11.9959 7H12.0049" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>')
+        ->nickname('verify_account')
+        ->data('permission', 'providerdocument list');
+
 }
 
 
