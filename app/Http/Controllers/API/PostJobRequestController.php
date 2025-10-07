@@ -47,7 +47,10 @@ class PostJobRequestController extends Controller
         // Update postjob status
         if ($bid->status === 'cancelled') {
             $postjob->status = 'requested'; // special case
-            $postjob->accepted_bid_id = null; // reset if cancelled
+            $postjob->cancel_bid_id = $bid->id; // reset if cancelled
+            $postjob->cancel_bid_id = $bid->id;
+            $postjob->provider_id = $bid->provider_id;
+
         } elseif ($bid->status === 'accepted') {
             $postjob->status = 'accepted';
             $postjob->accepted_bid_id = $bid->id; // ✅ store accepted bid id
