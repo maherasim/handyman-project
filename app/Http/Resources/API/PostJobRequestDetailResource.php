@@ -56,6 +56,7 @@ class PostJobRequestDetailResource extends JsonResource
             'remaining_percent' => $this->remaining_percent,
             'reason'            => $this->reason,
             'job_price'         => $this->job_price,
+            'isCurrentBidCancelled '     => $this->cancel_bid_id,
             'end_date'          => $this->end_date,
             'total_hours'       => $this->total_hours,
             'total_days'       => $this->total_days,
