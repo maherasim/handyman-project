@@ -759,6 +759,13 @@ class FrontendController extends Controller
             abort(404);
         }
 
+        // Increment view count
+        try {
+            $jobrequest->increment('total_views');
+        } catch (\Throwable $e) {
+            // Silent fail - view tracking shouldn't break the page
+        }
+
         // Build attachments array similar to service detail
         $attachments = [];
         if (!empty($jobrequest->image)) {
