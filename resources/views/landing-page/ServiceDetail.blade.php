@@ -7,6 +7,13 @@
     .mt-2 {
     margin-top: 2.5rem !important;
 }
+    .readmore-text {
+        max-height: 120px;
+        overflow: hidden;
+    }
+    .readmore-text.expanded {
+        max-height: none;
+    }
 </style>
 
     <div class="section-padding service-detail">
@@ -600,7 +607,7 @@
                         </div>
                         @if (!empty($serviceData['service_detail']['description']))
                             <p class="m-0 readmore-text">
-                                {{ strip_tags($serviceData['service_detail']['description']) }}
+                                {{ html_entity_decode(strip_tags($serviceData['service_detail']['description'])) }}
                             </p>
 
                             <a href="javascript:void(0);" class="readmore-btn">{{ __('landingpage.read_more') }}</a>
@@ -915,10 +922,19 @@
             var description = document.querySelector('.readmore-text');
             var readmoreBtn = document.querySelector('.readmore-btn');
 
-            if (description.offsetHeight < description.scrollHeight) {
-                readmoreBtn.style.display = 'block';
-            } else {
-                readmoreBtn.style.display = 'none';
+            if (description && readmoreBtn) {
+                // Show button only if content overflows
+                if (description.offsetHeight < description.scrollHeight) {
+                    readmoreBtn.style.display = 'inline-block';
+                } else {
+                    readmoreBtn.style.display = 'none';
+                }
+
+                // Toggle expand/collapse
+                readmoreBtn.addEventListener('click', function() {
+                    var expanded = description.classList.toggle('expanded');
+                    this.textContent = expanded ? '{{ __('landingpage.read_less') }}' : '{{ __('landingpage.read_more') }}';
+                });
             }
         });
     </script>
