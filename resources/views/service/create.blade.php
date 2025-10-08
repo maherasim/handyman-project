@@ -24,13 +24,13 @@
                         {{ html()->hidden('id', $servicedata->id ?? null) }}
 
                         <div class="row">
-                            <div class="form-group col-md-2">
+                            <div class="form-group col-md-3">
                                 {{ html()->label(__('messages.name') . ' <span class="text-danger">*</span>', 'name')->class('form-control-label') }}
                                 {{ html()->text('name', old('name', $servicedata->name))->placeholder(__('messages.name'))->class('form-control')->attributes(['title' => 'Please enter alphabetic characters and spaces only']) }}
                                 <small class="help-block with-errors text-danger"></small>
                             </div>
 
-                            <div class="form-group col-md-2">
+                            <div class="form-group col-md-3">
                                 {{ html()->label(__('messages.select_name', ['select' => __('messages.category')]) . ' <span class="text-danger">*</span>', 'name')->class('form-control-label') }}
                                 <br />
                                 {{ html()->select(
@@ -40,7 +40,7 @@
                                     )->class('select2js form-group category')->required()->id('category_id')->attribute('data-placeholder', __('messages.select_name', ['select' => __('messages.category')]))->attribute('data-ajax--url', route('ajax-list', ['type' => 'category'])) }}
 
                             </div>
-                            <div class="form-group col-md-2">
+                            <div class="form-group col-md-3">
                                 {{ html()->label(__('messages.select_name', ['select' => __('messages.subcategory')]), 'subcategory_id')->class('form-control-label') }}
                                 <br />
                                 {{ html()->select('subcategory_id', [])->class('select2js form-group subcategory_id')->attribute('data-placeholder', __('messages.select_name', ['select' => __('messages.subcategory')])) }}
@@ -48,7 +48,7 @@
 
 
 
-                            <div class="col-md-2">
+                            <div class="col-md-3">
                                 <label
                                     for="country_id">{{ __('messages.select_name', ['select' => __('messages.country')]) }}</label>
                                 <br />
@@ -60,7 +60,7 @@
                                     </option>
                                 </select>
                             </div>
-                            <div class=" col-md-2">
+                            <div class=" col-md-3">
                                 <label
                                     for="country_id">{{ __('messages.select_name', ['select' => __('Tax Country')]) }}</label>
                                 {{ html()->select(
@@ -71,7 +71,7 @@
                                     )->class('form-group select2js tax_country')->attribute('data-placeholder', __('messages.select_name', ['select' => __('messages.tax_country')]))->attribute('data-ajax--url', route('ajax-list', ['type' => 'country']))->attribute('disabled', true)->id('tax_country_id_display') }}
                             </div>
 
-                            <div class="form-group col-md-2">
+                            <div class="form-group col-md-3">
                                 <label
                                     for="state_id">{{ __('messages.select_name', ['select' => __('messages.state')]) }}
                                     <span class="text-danger">*</span></label>
@@ -81,7 +81,7 @@
                                 </select>
                             </div>
 
-                            <div class="form-group col-md-2">
+                            <div class="form-group col-md-3">
                                 <label
                                     for="city_id">{{ __('messages.select_name', ['select' => __('messages.city')]) }}
                                     <span class="text-danger">*</span></label>
@@ -101,7 +101,7 @@
 
 
                             @if (auth()->user()->hasAnyRole(['admin', 'demo_admin']))
-                                <div class="form-group col-md-4">
+                                <div class="form-group col-md-3">
                                     {{ html()->label(__('messages.select_name', ['select' => __('messages.provider')]) . ' <span class="text-danger">*</span>', 'name')->class('form-control-label') }}
                                     <br />
                                     {{ html()->select(
@@ -111,7 +111,7 @@
                                         )->class('select2js form-group')->id('provider_id')->attribute('onchange', 'selectprovider(this)')->required()->attribute('data-placeholder', __('messages.select_name', ['select' => __('messages.provider')]))->attribute('data-ajax--url', route('ajax-list', ['type' => 'provider'])) }}
                                 </div>
                             @endif
-                            <div class="form-group col-md-4">
+                            <div class="form-group col-md-3">
                                 {{ html()->label(__('messages.select_name', ['select' => __('messages.provider_address')]), 'name')->class('form-control-label') }}
                                 <br />
                                 {{ html()->select('provider_address_id[]', [], old('provider_address_id'))->class('select2js form-group provider_address_id')->id('provider_address_id')->multiple()->attribute('data-placeholder', __('messages.select_name', ['select' => __('messages.provider_address')])) }}
@@ -129,7 +129,7 @@
                                 @endif
                             </div>
 
-                            <div class="form-group col-md-4">
+                            <div class="form-group col-md-3">
                                 {{ html()->label(__('messages.price_type') . ' <span class="text-danger">*</span>', 'type')->class('form-control-label') }}
                                 {{ html()->select(
                                         'type',
@@ -170,12 +170,12 @@
                                 <small class="help-block with-errors text-danger"></small>
                             </div>
 
-                            <div class="form-group col-md-4">
+                            <div class="form-group col-md-3">
                                 {{ html()->label(__('messages.status') . ' <span class="text-danger">*</span>', 'status')->class('form-control-label') }}
                                 {{ html()->select('status', ['1' => __('messages.active'), '0' => __('messages.inactive')], old('status', $servicedata->status))->class('form-control select2js')->required() }}
                             </div>
 
-                            <div class="form-group col-md-4">
+                            <div class="form-group col-md-3">
                                 {{ html()->label(__('messages.visit_type') . ' ', 'visit_type')->class('form-control-label') }}
                                 <br />
                                 {{ html()->select('visit_type', $visittype, old('visit_type', $servicedata->visit_type))->id('visit_type')->class('form-control select2js')->required() }}
@@ -185,7 +185,7 @@
 
 
 
-                            <div class="form-group col-md-4">
+                            <div class="form-group col-md-3">
                                 <label class="form-control-label" for="service_attachment">{{ __('messages.image') }}
                                     <span class="text-danger">*</span>
                                 </label>
@@ -311,7 +311,7 @@
                                 </div>
                             </div>
                             {{-- @endif --}}
-                            <div class="form-group col-md-4" id="amount">
+                            <div class="form-group col-md-3" id="amount">
                                 {{ html()->label(__('messages.advance_payment_amount') . ' <span class="text-danger"></span> (%)', 'advance_payment_amount')->class('form-control-label') }}
                                 {{ html()->number('advance_payment_amount', $servicedata->advance_payment_amount)->placeholder(__('messages.amount'))->class('form-control')->id('advance_payment_amount')->attributes(['min' => 1, 'max' => 99]) }}
                                 <small class="help-block with-errors text-danger"></small>
