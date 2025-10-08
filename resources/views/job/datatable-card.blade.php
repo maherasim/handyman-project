@@ -424,6 +424,20 @@
                                          </span>
                                      </div>
                                  </div>
+
+                                 <!-- Views Count -->
+                                 <div class="views-info" style="margin-bottom: 8px;">
+                                     <div class="d-flex align-items-center" style="gap: 5px;">
+                                         <i class='bx bx-show' style="color: #8e8e93; font-size: 11px;"></i>
+                                         <span style="
+                                             font-size: 11px;
+                                             color: #8e8e93;
+                                             font-weight: 400;
+                                         ">
+                                             {{ number_format($jobRequest->total_views ?? 0) }} views
+                                         </span>
+                                     </div>
+                                 </div>
                                  
                                  <!-- Customer Info -->
                                  <div class="customer-info" style="margin-bottom: 8px;">
