@@ -237,8 +237,8 @@ class PostJobRequestController extends Controller
     
     public function getPostRequestList(Request $request)
     {
-        // Build query without myPostJob() scope
-        $query = PostJobRequest::withCount('postBidList')->whereIn('status', [
+        // Apply role-aware scope: users see only their own posts; admins/providers see all
+        $query = PostJobRequest::withCount('postBidList')->myPostJob()->whereIn('status', [
             'requested', 'accepted', 'assigned', 'completed', 'confirm_done',
             'remaining_paid', 'done', 'in_progress', 'in_process', 'hold',
             'advance_paid', 'cancelled', 'pending'
@@ -249,8 +249,8 @@ class PostJobRequestController extends Controller
         $per_page = (int) (config('constant.PER_PAGE_LIMIT') ?? 10);
     
         // Sanitize order direction
-        $orderBy = strtolower((string) $request->input('orderby', 'desc'));
-        $orderBy = in_array($orderBy, ['asc', 'desc'], true) ? $orderBy : 'desc';
+        $orderBy = strtolower((string) $request->input('orderby', 'asc'));
+        $orderBy = in_array($orderBy, ['asc', 'desc'], true) ? $orderBy : 'asc';
     
         // Sanitize per_page
         $perPageParam = $request->input('per_page');
