@@ -216,7 +216,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.1/dist/sweetalert2.all.min.js"></script>
 
-<!-- Social Media Sharing Script -->
+{{-- <!-- Social Media Sharing Script -->
 <script>
 $(document).ready(function () {
     // Social Media Sharing Functionality
@@ -247,21 +247,21 @@ $(document).ready(function () {
         };
         
         // Share based on platform
-        switch(platform) {
-            case 'facebook':
-                shareToFacebook(shareContent);
-                break;
-            case 'twitter':
-                shareToTwitter(shareContent);
-                break;
-            case 'instagram':
-                shareToInstagram(shareContent);
-                break;
-            case 'linkedin':
-                shareToLinkedIn(shareContent);
-                break;
-            // removed whatsapp and copy link
-        }
+        // switch(platform) {
+        //     case 'facebook':
+        //         shareToFacebook(shareContent);
+        //         break;
+        //     case 'twitter':
+        //         shareToTwitter(shareContent);
+        //         break;
+        //     case 'instagram':
+        //         shareToInstagram(shareContent);
+        //         break;
+        //     case 'linkedin':
+        //         shareToLinkedIn(shareContent);
+        //         break;
+        //     // removed whatsapp and copy link
+        // }
     });
     
     // Facebook Sharing
@@ -360,7 +360,7 @@ $(document).ready(function () {
     }
 });
 
-</script>
+</script> --}}
 <script>
   document.addEventListener('DOMContentLoaded', function () {
     if (window.bootstrap && bootstrap.Tooltip) {
