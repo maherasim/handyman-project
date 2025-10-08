@@ -258,8 +258,8 @@ class PostJobRequestController extends Controller
             $per_page = max(1, (int) $query->count());
         }
     
-		// Paginate (latest first)
-		$paginator = $query->orderBy('id', 'desc')->paginate($per_page);
+		// Paginate (latest by creation date first; id as tiebreaker)
+		$paginator = $query->orderBy('created_at', 'desc')->orderBy('id', 'desc')->paginate($per_page);
     
         // Wrap items with resource
         $items = PostJobRequestResource::collection($paginator);
