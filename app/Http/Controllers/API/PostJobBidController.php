@@ -15,7 +15,7 @@ class PostJobBidController extends Controller
         $post_request = PostJobBid::myPostJobBid();
         $per_page = config('constant.PER_PAGE_LIMIT');
 
-        $orderBy = $request->orderby ? $request->orderby: 'asc';
+		// Always show latest bids first
 
         if( $request->has('per_page') && !empty($request->per_page)){
             if(is_numeric($request->per_page)){
@@ -26,7 +26,7 @@ class PostJobBidController extends Controller
             }
         }
 
-        $post_request = $post_request->orderBy('id',$orderBy)->paginate($per_page);
+		$post_request = $post_request->orderBy('created_at','desc')->orderBy('id','desc')->paginate($per_page);
         $items = PostJobBiderResource::collection($post_request);
 
         $response = [
@@ -70,8 +70,9 @@ class PostJobBidController extends Controller
             'country'
         ])->withCount('proposals'); // ✅ proposals_count will be available
     
-        $perPage = $request->input('per_page', 10);
-        $data = $query->paginate($perPage);
+		$perPage = $request->input('per_page', 10);
+		// Newest posts first for provider view
+		$data = $query->orderBy('created_at', 'desc')->orderBy('id', 'desc')->paginate($perPage);
     
         $data->getCollection()->transform(function ($item) {
             $item->image = $item->image ? asset('storage/' . ltrim($item->image, '/')) : null;
