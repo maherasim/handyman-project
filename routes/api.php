@@ -201,7 +201,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('post-job-request/{id}/invoice', [Api\PostJobRequestController::class, 'invoice']);
 
     Route::get('get-post-job-bid-data',[  App\Http\Controllers\PostJobBidController::class, 'PostJobBidData' ]);
-    // Route::get('/job-requests/provider', [API\PostJobBidController::class, 'apiIndex']);
+    Route::get('/job-requests/provider', [API\PostJobBidController::class, 'apiIndex']);
 
 
 
