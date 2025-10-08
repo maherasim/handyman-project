@@ -87,7 +87,7 @@
                         </div>
                     @endif
                     @if (!empty($serviceData['service_detail']['description']))
-                        <div class="mt-5 pt-lg-5 pt-3">
+                        <div class="mt-5 pt-lg-5 pt-3" id="about-service">
                             <h5 class="mb-3">{{ __('landingpage.about_service') }}</h5>
                             <p class="m-0">
                             <div class="m-0">
@@ -919,21 +919,22 @@
         });
 
         document.addEventListener("DOMContentLoaded", function() {
-            var description = document.querySelector('.readmore-text');
             var readmoreBtn = document.querySelector('.readmore-btn');
+            var aboutSection = document.getElementById('about-service');
 
-            if (description && readmoreBtn) {
-                // Show button only if content overflows
-                if (description.offsetHeight < description.scrollHeight) {
-                    readmoreBtn.style.display = 'inline-block';
-                } else {
-                    readmoreBtn.style.display = 'none';
-                }
+            if (readmoreBtn) {
+                // Show the button only if the destination section exists
+                readmoreBtn.style.display = aboutSection ? 'inline-block' : 'none';
 
-                // Toggle expand/collapse
-                readmoreBtn.addEventListener('click', function() {
-                    var expanded = description.classList.toggle('expanded');
-                    this.textContent = expanded ? '{{ __('landingpage.read_less') }}' : '{{ __('landingpage.read_more') }}';
+                // Smooth scroll to the About Service section
+                readmoreBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    if (aboutSection && typeof aboutSection.scrollIntoView === 'function') {
+                        aboutSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    } else if (aboutSection) {
+                        // Fallback without smooth behavior
+                        window.location.hash = '#about-service';
+                    }
                 });
             }
         });
