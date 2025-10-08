@@ -247,10 +247,8 @@ class PostJobRequestController extends Controller
     
         // Default per page from config; ensure integer fallback
         $per_page = (int) (config('constant.PER_PAGE_LIMIT') ?? 10);
-    
-        // Sanitize order direction
-        $orderBy = strtolower((string) $request->input('orderby', 'asc'));
-        $orderBy = in_array($orderBy, ['asc', 'desc'], true) ? $orderBy : 'asc';
+
+		// Always show latest posts first
     
         // Sanitize per_page
         $perPageParam = $request->input('per_page');
@@ -260,8 +258,8 @@ class PostJobRequestController extends Controller
             $per_page = max(1, (int) $query->count());
         }
     
-        // Paginate
-        $paginator = $query->orderBy('id', $orderBy)->paginate($per_page);
+		// Paginate (latest first)
+		$paginator = $query->orderBy('id', 'desc')->paginate($per_page);
     
         // Wrap items with resource
         $items = PostJobRequestResource::collection($paginator);
