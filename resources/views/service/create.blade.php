@@ -142,21 +142,21 @@
                                         old('type', $servicedata->type),
                                     )->class('form-control select2js')->required()->id('price_type') }}
                             </div>
-                            <div class="form-group col-md-4" id="price_div">
+                            <div class="form-group col-md-3" id="price_div">
                                 {{ html()->label(__('messages.price') . ' <span class="text-danger">*</span>', 'price')->class('form-control-label') }}
                                 {{ html()->text('price', old('price', $servicedata->price))->attributes(['min' => 1, 'step' => 'any', 'pattern' => '^\\d+(\\.\\d{1,2})?$'])->placeholder(__('messages.price'))->class('form-control')->required()->id('price') }}
                                 <small class="help-block with-errors text-danger"></small>
                             </div>
 
 
-                            <div class="form-group col-md-4" id="minimum_booking_div">
+                            <div class="form-group col-md-3" id="minimum_booking_div">
                                 {{ html()->label(__('Minimum Booking'), 'minimum_booking')->class('form-control-label') }}
                                 {{ html()->text('minimum_booking', old('minimum_booking', $servicedata->minimum_booking))->attributes(['step' => 'any'])->placeholder(__('minimum booking'))->class('form-control')->id('minimum_booking') }}
                                 <small class="help-block with-errors text-danger"></small>
                             </div>
 
 
-                            <div class="form-group col-md-4" id="discount_div">
+                            <div class="form-group col-md-3" id="discount_div">
                                 {{ html()->label(__('messages.discount') . ' %', 'discount')->class('form-control-label') }}
                                 {{ html()->number('discount', old('discount', $servicedata->discount))->attributes(['min' => 0, 'max' => 99, 'step' => 'any'])->placeholder(__('messages.discount'))->class('form-control')->id('discount') }}
 
@@ -164,7 +164,7 @@
                             </div>
 
 
-                            <div class="form-group col-md-4">
+                            <div class="form-group col-md-3">
                                 {{ html()->label(__('messages.duration') . ' (hours) ', 'duration')->class('form-control-label') }}
                                 {{ html()->text('duration', old('duration', $servicedata->duration))->placeholder(__('messages.duration'))->class('form-control min-datetimepicker-time') }}
                                 <small class="help-block with-errors text-danger"></small>
@@ -190,10 +190,10 @@
                                     <span class="text-danger">*</span>
                                 </label>
                                 <div class="custom-file">
-                                    <input type="file" onchange="previewSelectedImages(this)" name="service_attachment[]"
-                                        class="custom-file-input"
+                                    <input type="file" onchange="previewSelectedImages(this)"
+                                        name="service_attachment[]" class="custom-file-input"
                                         data-file-error="{{ __('messages.files_not_allowed') }}" multiple
-                                        accept="image/*" @if(empty($servicedata->id)) required @endif>
+                                        accept="image/*" @if (empty($servicedata->id)) required @endif>
                                     <label
                                         class="custom-file-label upload-label">{{ __('messages.choose_file', ['file' => __('messages.attachments')]) }}</label>
                                 </div>
@@ -208,7 +208,7 @@
                                     $attchments = $servicedata->getMedia('service_attachment');
                                     $file_extention = config('constant.IMAGE_EXTENTIONS');
                                     $validAttachments = collect();
-                                    
+
                                     if ($attchments->isNotEmpty()) {
                                         foreach ($attchments as $attchment) {
                                             if (getFileExistsCheck($attchment)) {
@@ -232,16 +232,25 @@
                                                         data-gallery=".file-gallary-{{ $servicedata->id }}"
                                                         id="service_attachment_preview_{{ $attchment->id }}">
                                                         @if ($extention)
-                                                            <a id="attachment_files" href="{{ $attchment->getFullUrl() }}" class="list-group-item-action attachment-list" target="_blank">
-                                                                <img src="{{ $attchment->getFullUrl() }}" class="attachment-image" alt="">
+                                                            <a id="attachment_files"
+                                                                href="{{ $attchment->getFullUrl() }}"
+                                                                class="list-group-item-action attachment-list"
+                                                                target="_blank">
+                                                                <img src="{{ $attchment->getFullUrl() }}"
+                                                                    class="attachment-image" alt="">
                                                             </a>
                                                         @else
-                                                            <a id="attachment_files" class="video list-group-item-action attachment-list" href="{{ $attchment->getFullUrl() }}">
-                                                                <img src="{{ asset('images/file.png') }}" class="attachment-file">
+                                                            <a id="attachment_files"
+                                                                class="video list-group-item-action attachment-list"
+                                                                href="{{ $attchment->getFullUrl() }}">
+                                                                <img src="{{ asset('images/file.png') }}"
+                                                                    class="attachment-file">
                                                             </a>
                                                         @endif
-                                                        <a class="text-danger remove-file" href="{{ route('remove.file', ['id' => $attchment->id, 'type' => 'service_attachment']) }}"
-                                                            data--submit="confirm_form" data--confirmation='true' data--ajax="true" data-toggle="tooltip"
+                                                        <a class="text-danger remove-file"
+                                                            href="{{ route('remove.file', ['id' => $attchment->id, 'type' => 'service_attachment']) }}"
+                                                            data--submit="confirm_form" data--confirmation='true'
+                                                            data--ajax="true" data-toggle="tooltip"
                                                             title='{{ __('messages.remove_file_title', ['name' => __('messages.attachments')]) }}'
                                                             data-title='{{ __('messages.remove_file_title', ['name' => __('messages.attachments')]) }}'
                                                             data-message='{{ __('messages.remove_file_msg') }}'>
@@ -257,11 +266,11 @@
                         </div>
 
                         <div class="row">
-                            <div class="form-group col-md-12">
+                            <div class="form-group col-md-6">
                                 {{ html()->label(__('messages.description'), 'description')->class('form-control-label') }}
                                 {{ html()->textarea('description', old('description', $servicedata->description))->class('form-control textarea')->rows(3)->placeholder(__('messages.description')) }}
                             </div>
-                            <div class="form-group col-md-12">
+                            <div class="form-group col-md-6">
                                 {{ html()->label(__('Cancellation Policy & Fees'), 'cancellation_policy')->class('form-control-label') }}
                                 {{ html()->textarea('cancellation_policy', old('cancellation_policy', $servicedata->cancellation_policy))->class('form-control textarea')->rows(3)->placeholder(__('cancellation_policy')) }}
                             </div>
@@ -414,14 +423,17 @@
             (function($) {
                 "use strict";
                 $(document).ready(function() {
-                    var provider_id = "{{ old('provider_id', isset($servicedata->provider_id) ? $servicedata->provider_id : '') }}";
+                    var provider_id =
+                        "{{ old('provider_id', isset($servicedata->provider_id) ? $servicedata->provider_id : '') }}";
                     var provider_address_id = "{{ isset($data) ? $data : [] }}";
 
-                    var category_id = "{{ old('category_id', isset($servicedata->category_id) ? $servicedata->category_id : '') }}";
+                    var category_id =
+                        "{{ old('category_id', isset($servicedata->category_id) ? $servicedata->category_id : '') }}";
                     var subcategory_id =
                         "{{ old('subcategory_id', isset($servicedata->subcategory_id) ? $servicedata->subcategory_id : '') }}";
 
-                    var country_id = "{{ old('country_id', isset($servicedata->country_id) ? $servicedata->country_id : 0) }}";
+                    var country_id =
+                        "{{ old('country_id', isset($servicedata->country_id) ? $servicedata->country_id : 0) }}";
                     var city_id = "{{ old('city_id', isset($servicedata->city_id) ? $servicedata->city_id : 0) }}";
                     var price_type = "{{ old('type', isset($servicedata->type) ? $servicedata->type : '') }}";
 
@@ -626,13 +638,17 @@
                 "use strict";
 
                 $(document).ready(function() {
-                    var country_id = "{{ old('country_id', isset($servicedata->country_id) ? $servicedata->country_id : '') }}";
+                    var country_id =
+                        "{{ old('country_id', isset($servicedata->country_id) ? $servicedata->country_id : '') }}";
                     var tax_country_id =
                         "{{ old('tax_country_id', isset($servicedata->tax_country_id) ? $servicedata->tax_country_id : '') }}";
-                    var state_id = "{{ old('state_id', isset($servicedata->state_id) ? $servicedata->state_id : '') }}";
-                    var city_id = "{{ old('city_id', isset($servicedata->city_id) ? $servicedata->city_id : '') }}";
+                    var state_id =
+                        "{{ old('state_id', isset($servicedata->state_id) ? $servicedata->state_id : '') }}";
+                    var city_id =
+                    "{{ old('city_id', isset($servicedata->city_id) ? $servicedata->city_id : '') }}";
                     var initialCityId = city_id;
-                    var category_id = "{{ old('category_id', isset($servicedata->category_id) ? $servicedata->category_id : '') }}";
+                    var category_id =
+                        "{{ old('category_id', isset($servicedata->category_id) ? $servicedata->category_id : '') }}";
                     var subcategory_id =
                         "{{ old('subcategory_id', isset($servicedata->subcategory_id) ? $servicedata->subcategory_id : '') }}";
 

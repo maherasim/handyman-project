@@ -868,6 +868,131 @@ class PostJobRequestController extends Controller
             ->withErrors('Stripe payment not completed.');
     }
 
+    /**
+     * JSON endpoint for apps: confirm Stripe Checkout and update bid status
+     */
+    public function confirmPostJobStripePayment(Request $request, $id)
+    {
+        $request->validate([
+            'session_id' => 'required|string',
+            'type'       => 'nullable|in:advance,remaining'
+        ]);
+
+        $type      = strtolower((string)$request->input('type', 'advance'));
+        $sessionId = (string) $request->input('session_id');
+
+        $bid = PostJobBid::findOrFail($id);
+        $adminUser  = User::where('user_type', 'admin')->first();
+        $providerId = $bid->provider_id;
+
+        try {
+            $session = getstripePaymnetId($sessionId, 'stripe');
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Stripe verification failed: ' . $e->getMessage(),
+            ], 422);
+        }
+
+        if (!empty($session['payment_intent']) && ($session['payment_status'] ?? '') === 'paid') {
+            $txnId     = $session['payment_intent'];
+            $payAmount = (float)($session['amount_total'] / 100);
+
+            $adminCommissionSetting = Setting::getValueByKey('admin_commission_percentage', 'site-setup');
+            $adminCommissionPercent = is_object($adminCommissionSetting) && isset($adminCommissionSetting->value)
+                ? (float) $adminCommissionSetting->value
+                : 10;
+
+            $adminCommissionAmount = ($payAmount * $adminCommissionPercent) / 100.0;
+            $providerEarningAmount = $payAmount - $adminCommissionAmount;
+
+            $finalPayment = PaymentPostJOb::create([
+                'customer_id' => $bid->customer_id,
+                'provider_id' => $bid->provider_id,
+                'post_job_bid_request_id' => $bid->id,
+                'total_amount' => $payAmount,
+                'discount' => 0,
+                'payment_type' => 'stripe',
+                'payment_status' => 'completed',
+                'status' => $type,
+                'txn_id' => $txnId,
+                'other_transaction_detail' => json_encode([
+                    'session_id' => $sessionId,
+                    'admin_commission' => $adminCommissionAmount,
+                    'provider_earning' => $providerEarningAmount,
+                ]),
+            ]);
+
+            if ($adminCommissionAmount > 0) {
+                CommissionEarning::create([
+                    'post_job_bid_request_id' => $bid->id,
+                    'user_type'           => 'admin',
+                    'employee_id'         => $adminUser?->id ?? 1,
+                    'commission_amount'   => $adminCommissionAmount,
+                    'commission_status'   => 'paid',
+                    'payment_id'          => $finalPayment->id,
+                ]);
+            }
+
+            if ($providerEarningAmount > 0) {
+                CommissionEarning::create([
+                    'post_job_bid_request_id' => $bid->id,
+                    'user_type'           => 'provider',
+                    'employee_id'         => $providerId,
+                    'commission_amount'   => $providerEarningAmount,
+                    'commission_status'   => 'paid',
+                    'payment_id'          => $finalPayment->id,
+                ]);
+            }
+
+            if ($providerEarningAmount > 0) {
+                ProviderPayout::create([
+                    'provider_id'         => $providerId,
+                    'amount'              => $providerEarningAmount,
+                    'payment_method'      => 'Stripe',
+                    'paid_date'           => now(),
+                    'status'              => 'paid',
+                    'booking_id'          => null,
+                    'post_job_request_id' => $bid->id,
+                    'payment_gateway'     => 'Stripe',
+                ]);
+            }
+
+            PaymentPostJObHistory::create([
+                'payment_id'  => $finalPayment->id,
+                'parent_id'   => null,
+                'action'      => 'customer_send_provider',
+                'status'      => 'completed',
+                'sender_id'   => $finalPayment->customer_id,
+                'receiver_id' => $providerId,
+                'datetime'    => now(),
+                'total_amount' => $payAmount,
+                'txn_id'      => $finalPayment->txn_id,
+                'type'        => 'stripe',
+                'text'        => __('messages.payment_transfer', [
+                    'from'   => get_user_name($finalPayment->customer_id),
+                    'to'     => get_user_name($providerId),
+                    'amount' => number_format((float) $finalPayment->total_amount, 2),
+                ]),
+                'other_transaction_detail' => null,
+            ]);
+
+            $bid->status = ($type === 'advance') ? 'advance_paid' : 'remaining_paid';
+            $bid->save();
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Stripe payment processed successfully',
+                'new_status' => $bid->status,
+            ]);
+        }
+
+        return response()->json([
+            'status' => false,
+            'message' => 'Stripe payment not completed',
+        ], 400);
+    }
+
 
 
 
