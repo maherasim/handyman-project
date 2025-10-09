@@ -860,13 +860,15 @@
 
                         {{-- Provider Location --}}
                         <div class="text-center mt-2">
-                            <p class="mb-1" style="color: white; font-size: 14px; font-weight: 500;">
+                            <p class="mb-1" style="color: red; font-size: 14px; font-weight: 500;">
                                 @if(isset($serviceData['provider']['city']['name']) && isset($serviceData['provider']['country']['name']))
-                                    {{ $serviceData['provider']['city']['name'] }}, {{ $serviceData['provider']['country']['name'] }}
+                                    {{ $serviceData['provider']['city']['name'] }} - {{ $serviceData['provider']['country']['name'] }}
                                 @elseif(isset($serviceData['provider']['city']['name']))
                                     {{ $serviceData['provider']['city']['name'] }}
                                 @elseif(isset($serviceData['provider']['country']['name']))
                                     {{ $serviceData['provider']['country']['name'] }}
+                                @else
+                                    City - Country
                                 @endif
                             </p>
                         </div>
