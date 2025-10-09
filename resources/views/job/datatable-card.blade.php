@@ -598,9 +598,8 @@
 
          <script>
              $(document).ready(function() {
-                 // When the category dropdown changes
-                 $('#category-select').on('change', function(e) {
-                     e.preventDefault();
+                 // When the category dropdown changes - ONLY load subcategories, don't apply filters
+                 $('#category-select').on('change', function() {
                      var categoryId = $(this).val();
                      
                      // Reset subcategory dropdown
@@ -630,9 +629,8 @@
                      }
                  });
 
-                 // When the country dropdown changes
-                 $('#country-select').on('change', function(e) {
-                     e.preventDefault();
+                 // When the country dropdown changes - ONLY load cities, don't apply filters
+                 $('#country-select').on('change', function() {
                      var countryId = $(this).val();
                      
                      // Reset city dropdown
@@ -658,9 +656,12 @@
                      }
                  });
 
-                 // Filter application (for non-dependent dropdowns)
+                 // Apply filters only when final selections are made
                  $('#subcategory-select, #customer-select, #city-select, #sort-select').on('change', function() {
-                     applyFilters();
+                     // Small delay to ensure all dropdowns are updated
+                     setTimeout(function() {
+                         applyFilters();
+                     }, 100);
                  });
 
                  // Clear Filters functionality
@@ -680,7 +681,7 @@
                      const cityId = $('#city-select').val();
                      const sortValue = $('#sort-select').val();
 
-                     // Set parameters only if they have values
+                     // Set parameters only if they have actual values (not default text)
                      if (categoryId && categoryId !== 'Category') {
                          params.set('category_id', categoryId);
                      } else {
