@@ -3,124 +3,77 @@
 @section('content')
 
     <style>
-        /* Professional Job Details Tab Styling */
-        .job-details-tabs {
-            margin-top: 2rem;
-        }
-        
-        .tab-navigation {
-            background: #f8f9fa;
-            border-radius: 8px 8px 0 0;
-            border-bottom: 1px solid #e9ecef;
-        }
-        
+        /* Simple Professional Tabs */
         .tab-btn {
-            position: relative;
-            z-index: 1;
-            border-radius: 0 !important;
+            padding: 12px 20px;
+            border: none;
+            background: transparent;
+            color: #6c757d;
+            font-weight: 500;
+            font-size: 14px;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s ease;
+            flex: 1;
         }
         
         .tab-btn:hover {
-            background: #e9ecef !important;
-            color: #495057 !important;
-            border-bottom-color: #007bff !important;
+            color: #007bff;
+            background: #f8f9fa;
         }
         
         .tab-btn.active {
-            background: #fff !important;
-            color: #007bff !important;
-            border-bottom-color: #007bff !important;
-            box-shadow: 0 -2px 4px rgba(0,0,0,0.1);
+            color: #007bff;
+            border-bottom-color: #007bff;
+            font-weight: 600;
         }
         
         .tab-content {
-            animation: fadeIn 0.3s ease-in-out;
+            padding: 20px 0;
+            display: none;
         }
         
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+        .tab-content.active {
+            display: block;
         }
         
         .job-content {
-            line-height: 1.7;
-            color: #495057;
-            font-size: 15px;
+            line-height: 1.6;
+            color: #333;
         }
         
         .job-content p {
-            margin-bottom: 1.2rem;
+            margin-bottom: 1rem;
         }
         
         .job-content ul, .job-content ol {
-            margin-bottom: 1.2rem;
-            padding-left: 1.8rem;
+            margin-bottom: 1rem;
+            padding-left: 1.5rem;
         }
         
         .job-content li {
-            margin-bottom: 0.6rem;
-        }
-        
-        .job-content h1, .job-content h2, .job-content h3, .job-content h4, .job-content h5, .job-content h6 {
-            color: #212529;
-            margin-bottom: 1rem;
-            margin-top: 1.5rem;
-        }
-        
-        .job-content h1:first-child, .job-content h2:first-child, .job-content h3:first-child {
-            margin-top: 0;
+            margin-bottom: 0.5rem;
         }
         
         .no-content {
             text-align: center;
-            padding: 3rem 2rem;
-            font-style: italic;
+            padding: 2rem;
             color: #6c757d;
-            background: #f8f9fa;
-            border-radius: 8px;
-            border: 2px dashed #dee2e6;
+            font-style: italic;
         }
         
-        .no-content i {
-            font-size: 2rem;
-            margin-bottom: 1rem;
-            display: block;
-            color: #adb5bd;
-        }
-        
-        /* Responsive Design */
+        /* Responsive */
         @media (max-width: 768px) {
             .tab-btn {
-                font-size: 13px !important;
-                padding: 12px 8px !important;
-            }
-            
-            .tab-content-container {
-                padding: 20px !important;
-            }
-            
-            .job-content {
-                font-size: 14px;
+                padding: 10px 12px;
+                font-size: 13px;
             }
         }
         
         @media (max-width: 576px) {
-            .tab-navigation .col-3 {
-                flex: 0 0 50%;
-                max-width: 50%;
-            }
-            
             .tab-btn {
-                font-size: 12px !important;
-                padding: 10px 6px !important;
-            }
-            
-            .tab-content-container {
-                padding: 16px !important;
-            }
-            
-            .job-content {
-                font-size: 13px;
+                padding: 8px 6px;
+                font-size: 12px;
             }
         }
     </style>
@@ -147,92 +100,28 @@
                              style="border-radius: 12px; width: 100%; height: auto; max-height: 400px; object-fit: cover;">
                     @endif
                 
-                    <!-- Tabbed Job Details Section -->
+                    <!-- Simple Professional Tabs -->
                     <div class="job-details-tabs mt-4">
                         <!-- Tab Navigation -->
-                        <div class="tab-navigation mb-4">
-                            <div class="row g-0">
-                                <div class="col-3">
-                                    <button class="tab-btn active" data-tab="description" style="
-                                        width: 100%;
-                                        padding: 14px 12px;
-                                        border: none;
-                                        border-bottom: 3px solid #007bff;
-                                        background: #fff;
-                                        color: #007bff;
-                                        font-weight: 600;
-                                        font-size: 14px;
-                                        transition: all 0.3s ease;
-                                        cursor: pointer;
-                                        position: relative;
-                                    ">
-                                        Job Description
-                                    </button>
-                                </div>
-                                <div class="col-3">
-                                    <button class="tab-btn" data-tab="duties" style="
-                                        width: 100%;
-                                        padding: 14px 12px;
-                                        border: none;
-                                        border-bottom: 3px solid transparent;
-                                        background: #f8f9fa;
-                                        color: #6c757d;
-                                        font-weight: 500;
-                                        font-size: 14px;
-                                        transition: all 0.3s ease;
-                                        cursor: pointer;
-                                        position: relative;
-                                    ">
-                                        Duties & Responsibilities
-                                    </button>
-                                </div>
-                                <div class="col-3">
-                                    <button class="tab-btn" data-tab="skills" style="
-                                        width: 100%;
-                                        padding: 14px 12px;
-                                        border: none;
-                                        border-bottom: 3px solid transparent;
-                                        background: #f8f9fa;
-                                        color: #6c757d;
-                                        font-weight: 500;
-                                        font-size: 14px;
-                                        transition: all 0.3s ease;
-                                        cursor: pointer;
-                                        position: relative;
-                                    ">
-                                        Skills & Requirements
-                                    </button>
-                                </div>
-                                <div class="col-3">
-                                    <button class="tab-btn" data-tab="benefits" style="
-                                        width: 100%;
-                                        padding: 14px 12px;
-                                        border: none;
-                                        border-bottom: 3px solid transparent;
-                                        background: #f8f9fa;
-                                        color: #6c757d;
-                                        font-weight: 500;
-                                        font-size: 14px;
-                                        transition: all 0.3s ease;
-                                        cursor: pointer;
-                                        position: relative;
-                                    ">
-                                        Benefits
-                                    </button>
-                                </div>
+                        <div class="tab-navigation mb-0">
+                            <div class="d-flex border-bottom">
+                                <button class="tab-btn active" data-tab="description">
+                                    Job Description
+                                </button>
+                                <button class="tab-btn" data-tab="duties">
+                                    Duties & Responsibilities
+                                </button>
+                                <button class="tab-btn" data-tab="skills">
+                                    Skills & Requirements
+                                </button>
+                                <button class="tab-btn" data-tab="benefits">
+                                    Benefits
+                                </button>
                             </div>
                         </div>
 
                         <!-- Tab Content -->
-                        <div class="tab-content-container" style="
-                            border: 1px solid #e9ecef;
-                            border-top: none;
-                            border-radius: 0 0 8px 8px;
-                            padding: 24px;
-                            background: #fff;
-                            min-height: 200px;
-                            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-                        ">
+                        <div class="tab-content-container mt-0">
                             <!-- Job Description Tab -->
                             <div class="tab-content active" id="description-content">
                                 <div class="content-section">
@@ -417,20 +306,10 @@
                         // Remove active class from all buttons
                         tabButtons.forEach(btn => {
                             btn.classList.remove('active');
-                            btn.style.border = 'none';
-                            btn.style.borderBottom = '3px solid transparent';
-                            btn.style.background = '#f8f9fa';
-                            btn.style.color = '#6c757d';
-                            btn.style.fontWeight = '500';
                         });
                         
                         // Add active class to clicked button
                         this.classList.add('active');
-                        this.style.border = 'none';
-                        this.style.borderBottom = '3px solid #007bff';
-                        this.style.background = '#fff';
-                        this.style.color = '#007bff';
-                        this.style.fontWeight = '600';
                         
                         // Hide all tab contents
                         tabContents.forEach(content => {
