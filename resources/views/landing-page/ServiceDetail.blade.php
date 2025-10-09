@@ -808,8 +808,8 @@
                                     style="width: 30px; border-radius: 8px;" alt="">
                             </a>
                             <a href="#">
-                                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRokEYt0yyh6uNDKL8uksVLlhZ35laKNQgZ9g&s"
-                                    style="width: 30px; border-radius: 8px;" alt="">
+                                <img src="https://static.vecteezy.com/system/resources/previews/016/716/481/original/facebook-icon-free-png.png"
+                                alt="Facebook" style="width: 30px; height: 30px;">
                             </a>
                         </div>
                     </div>
