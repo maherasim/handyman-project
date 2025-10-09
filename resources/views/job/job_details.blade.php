@@ -2,6 +2,85 @@
 
 @section('content')
 
+    <style>
+        /* Job Details Tab Styling */
+        .job-details-tabs {
+            margin-top: 2rem;
+        }
+        
+        .tab-navigation .row {
+            border-bottom: 2px solid #dc3545;
+        }
+        
+        .tab-btn {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .tab-btn:hover {
+            background: #fff !important;
+            color: #dc3545 !important;
+            border-color: #dc3545 !important;
+        }
+        
+        .tab-content {
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .job-content {
+            line-height: 1.6;
+            color: #333;
+        }
+        
+        .job-content p {
+            margin-bottom: 1rem;
+        }
+        
+        .job-content ul, .job-content ol {
+            margin-bottom: 1rem;
+            padding-left: 1.5rem;
+        }
+        
+        .job-content li {
+            margin-bottom: 0.5rem;
+        }
+        
+        .no-content {
+            text-align: center;
+            padding: 2rem;
+            font-style: italic;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .tab-btn {
+                font-size: 12px !important;
+                padding: 10px 6px !important;
+            }
+            
+            .tab-content-container {
+                padding: 15px !important;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .tab-navigation .col-3 {
+                flex: 0 0 50%;
+                max-width: 50%;
+            }
+            
+            .tab-btn {
+                font-size: 11px !important;
+                padding: 8px 4px !important;
+            }
+        }
+    </style>
+
     <body>
         <div class="container">
             <div class="row">
@@ -24,24 +103,155 @@
                              style="border-radius: 12px; width: 100%; height: auto; max-height: 400px; object-fit: cover;">
                     @endif
                 
-                    <div class="mt-2">
-                        <b class="heading_text">Job Description</b>
-                        <p>{{ strip_tags($jobrequest->description) }}</p>
-                    </div>
+                    <!-- Tabbed Job Details Section -->
+                    <div class="job-details-tabs mt-4">
+                        <!-- Tab Navigation -->
+                        <div class="tab-navigation mb-4">
+                            <div class="row g-0">
+                                <div class="col-3">
+                                    <button class="tab-btn active" data-tab="description" style="
+                                        width: 100%;
+                                        padding: 12px 8px;
+                                        border: 2px solid #dc3545;
+                                        border-bottom: none;
+                                        background: #fff;
+                                        color: #dc3545;
+                                        font-weight: 600;
+                                        font-size: 14px;
+                                        border-radius: 8px 8px 0 0;
+                                        transition: all 0.3s ease;
+                                        cursor: pointer;
+                                    ">
+                                        Job Description
+                                    </button>
+                                </div>
+                                <div class="col-3">
+                                    <button class="tab-btn" data-tab="duties" style="
+                                        width: 100%;
+                                        padding: 12px 8px;
+                                        border: 2px solid #e9ecef;
+                                        border-bottom: none;
+                                        background: #f8f9fa;
+                                        color: #6c757d;
+                                        font-weight: 600;
+                                        font-size: 14px;
+                                        border-radius: 8px 8px 0 0;
+                                        transition: all 0.3s ease;
+                                        cursor: pointer;
+                                    ">
+                                        Duties & Responsibilities
+                                    </button>
+                                </div>
+                                <div class="col-3">
+                                    <button class="tab-btn" data-tab="skills" style="
+                                        width: 100%;
+                                        padding: 12px 8px;
+                                        border: 2px solid #e9ecef;
+                                        border-bottom: none;
+                                        background: #f8f9fa;
+                                        color: #6c757d;
+                                        font-weight: 600;
+                                        font-size: 14px;
+                                        border-radius: 8px 8px 0 0;
+                                        transition: all 0.3s ease;
+                                        cursor: pointer;
+                                    ">
+                                        Skills & Requirements
+                                    </button>
+                                </div>
+                                <div class="col-3">
+                                    <button class="tab-btn" data-tab="benefits" style="
+                                        width: 100%;
+                                        padding: 12px 8px;
+                                        border: 2px solid #e9ecef;
+                                        border-bottom: none;
+                                        background: #f8f9fa;
+                                        color: #6c757d;
+                                        font-weight: 600;
+                                        font-size: 14px;
+                                        border-radius: 8px 8px 0 0;
+                                        transition: all 0.3s ease;
+                                        cursor: pointer;
+                                    ">
+                                        Benefits
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
 
-                    <div class="mt-4">
-                        <b class="heading_text">Duties & Responsibilities</b>
-                        <p>{{ strip_tags($jobrequest->duties) }}</p>
-                    </div>
+                        <!-- Tab Content -->
+                        <div class="tab-content-container" style="
+                            border: 2px solid #dc3545;
+                            border-top: none;
+                            border-radius: 0 0 8px 8px;
+                            padding: 20px;
+                            background: #fff;
+                            min-height: 200px;
+                        ">
+                            <!-- Job Description Tab -->
+                            <div class="tab-content active" id="description-content">
+                                <div class="content-section">
+                                    @if(!empty($jobrequest->description))
+                                        <div class="job-content">
+                                            {!! $jobrequest->description !!}
+                                        </div>
+                                    @else
+                                        <div class="no-content text-muted">
+                                            <i class="fas fa-info-circle me-2"></i>
+                                            No job description provided.
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
 
-                    <div class="mt-4">
-                        <b class="heading_text">Skills & Requirements</b>
-                        <p>{{ strip_tags($jobrequest->requirement) }}</p>
-                    </div>
+                            <!-- Duties & Responsibilities Tab -->
+                            <div class="tab-content" id="duties-content" style="display: none;">
+                                <div class="content-section">
+                                    @if(!empty($jobrequest->duties))
+                                        <div class="job-content">
+                                            {!! $jobrequest->duties !!}
+                                        </div>
+                                    @else
+                                        <div class="no-content text-muted">
+                                            <i class="fas fa-tasks me-2"></i>
+                                            No duties and responsibilities specified.
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
 
-                    <div class="mt-4">
-                        <b class="heading_text">Benefits</b>
-                        <p>{{ strip_tags($jobrequest->benefits) }}</p>
+                            <!-- Skills & Requirements Tab -->
+                            <div class="tab-content" id="skills-content" style="display: none;">
+                                <div class="content-section">
+                                    @if(!empty($jobrequest->requirement))
+                                        <div class="job-content">
+                                            {!! $jobrequest->requirement !!}
+                                        </div>
+                                    @else
+                                        <div class="no-content text-muted">
+                                            <i class="fas fa-cogs me-2"></i>
+                                            No skills and requirements specified.
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
+
+                            <!-- Benefits Tab -->
+                            <div class="tab-content" id="benefits-content" style="display: none;">
+                                <div class="content-section">
+                                    @if(!empty($jobrequest->benefits))
+                                        <div class="job-content">
+                                            {!! $jobrequest->benefits !!}
+                                        </div>
+                                    @else
+                                        <div class="no-content text-muted">
+                                            <i class="fas fa-gift me-2"></i>
+                                            No benefits specified.
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -144,6 +354,49 @@
                     window.scrollTo({
                         top: document.body.scrollHeight,
                         behavior: 'smooth'
+                    });
+                });
+            });
+        </script>
+
+        <!-- Tab Switching Script -->
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const tabButtons = document.querySelectorAll('.tab-btn');
+                const tabContents = document.querySelectorAll('.tab-content');
+
+                tabButtons.forEach(button => {
+                    button.addEventListener('click', function () {
+                        const targetTab = this.getAttribute('data-tab');
+                        
+                        // Remove active class from all buttons
+                        tabButtons.forEach(btn => {
+                            btn.classList.remove('active');
+                            btn.style.border = '2px solid #e9ecef';
+                            btn.style.borderBottom = 'none';
+                            btn.style.background = '#f8f9fa';
+                            btn.style.color = '#6c757d';
+                        });
+                        
+                        // Add active class to clicked button
+                        this.classList.add('active');
+                        this.style.border = '2px solid #dc3545';
+                        this.style.borderBottom = 'none';
+                        this.style.background = '#fff';
+                        this.style.color = '#dc3545';
+                        
+                        // Hide all tab contents
+                        tabContents.forEach(content => {
+                            content.style.display = 'none';
+                            content.classList.remove('active');
+                        });
+                        
+                        // Show target tab content
+                        const targetContent = document.getElementById(targetTab + '-content');
+                        if (targetContent) {
+                            targetContent.style.display = 'block';
+                            targetContent.classList.add('active');
+                        }
                     });
                 });
             });
