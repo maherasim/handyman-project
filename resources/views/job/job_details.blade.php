@@ -8,7 +8,7 @@
             padding: 12px 20px;
             border: none;
             background: transparent;
-            color: #6c757d;-
+            color: #6c757d;
             font-weight: 500;
             font-size: 14px;
             cursor: pointer;
@@ -306,10 +306,20 @@
                         // Remove active class from all buttons
                         tabButtons.forEach(btn => {
                             btn.classList.remove('active');
+                            btn.style.border = 'none';
+                            btn.style.borderBottom = '3px solid transparent';
+                            btn.style.background = '#f8f9fa';
+                            btn.style.color = '#6c757d';
+                            btn.style.fontWeight = '500';
                         });
                         
                         // Add active class to clicked button
                         this.classList.add('active');
+                        this.style.border = 'none';
+                        this.style.borderBottom = '3px solid #007bff';
+                        this.style.background = '#fff';
+                        this.style.color = '#007bff';
+                        this.style.fontWeight = '600';
                         
                         // Hide all tab contents
                         tabContents.forEach(content => {
