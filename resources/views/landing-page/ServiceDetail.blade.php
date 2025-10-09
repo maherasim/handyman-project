@@ -14,6 +14,83 @@
     .readmore-text.expanded {
         max-height: none;
     }
+
+    /* Service Detail Tabs Styling */
+    .tab-btn {
+        padding: 12px 20px;
+        border: none;
+        background: #fff;
+        color: #000;
+        font-weight: 500;
+        font-size: 14px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        flex: 1;
+        border-right: 1px solid #dc3545;
+    }
+    
+    .tab-btn:last-child {
+        border-right: none;
+    }
+    
+    .tab-btn:hover {
+        background: #f8f9fa;
+    }
+    
+    .tab-btn.active {
+        background: #fff;
+        color: #000;
+        font-weight: 600;
+    }
+    
+    .tab-content {
+        display: none;
+        background: #fff;
+    }
+    
+    .tab-content.active {
+        display: block;
+    }
+    
+    .service-content, .cancellation-content {
+        line-height: 1.6;
+        color: #333;
+    }
+    
+    .service-content p, .cancellation-content p {
+        margin-bottom: 1rem;
+    }
+    
+    .service-content ul, .service-content ol, .cancellation-content ul, .cancellation-content ol {
+        margin-bottom: 1rem;
+        padding-left: 1.5rem;
+    }
+    
+    .service-content li, .cancellation-content li {
+        margin-bottom: 0.5rem;
+    }
+    
+    .no-content {
+        text-align: center;
+        padding: 2rem;
+        color: #6c757d;
+        font-style: italic;
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+        .tab-btn {
+            padding: 10px 12px;
+            font-size: 13px;
+        }
+    }
+    
+    @media (max-width: 576px) {
+        .tab-btn {
+            padding: 8px 6px;
+            font-size: 12px;
+        }
+    }
 </style>
 
     <div class="section-padding service-detail">
@@ -86,17 +163,128 @@
                             </p>
                         </div>
                     @endif
-                    @if (!empty($serviceData['service_detail']['description']))
-                        <div class="mt-5 pt-lg-5 pt-3" id="about-service">
-                            <h5 class="mb-3">{{ __('landingpage.about_service') }}</h5>
-                            <p class="m-0">
-                            <div class="m-0">
-                                {!! $serviceData['service_detail']['description'] !!}
+                    <!-- Tabbed Service Information Section -->
+                    <div class="mt-5 pt-lg-5 pt-3">
+                        <!-- Tab Navigation -->
+                        <div class="tab-navigation mb-0">
+                            <div class="d-flex border border-danger">
+                                <button class="tab-btn active" data-tab="about-services">
+                                    About Services
+                                </button>
+                                <button class="tab-btn" data-tab="about-provider">
+                                    About Provider
+                                </button>
+                                <button class="tab-btn" data-tab="cancellation-policy">
+                                    Cancellation Policy
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Tab Content -->
+                        <div class="tab-content-container border border-danger border-top-0">
+                            <!-- About Services Tab -->
+                            <div class="tab-content active" id="about-services-content">
+                                <div class="p-4">
+                                    @if (!empty($serviceData['service_detail']['description']))
+                                        <div class="service-content">
+                                            {!! $serviceData['service_detail']['description'] !!}
+                                        </div>
+                                    @else
+                                        <div class="no-content text-muted text-center py-4">
+                                            <i class="fas fa-info-circle me-2"></i>
+                                            No service description available.
+                                        </div>
+                                    @endif
+                                </div>
                             </div>
 
-                            </p>
+                            <!-- About Provider Tab -->
+                            <div class="tab-content" id="about-provider-content" style="display: none;">
+                                <div class="p-4">
+                                    <div class="about-provider-box">
+                                        <div class="mb-4 pb-4 border-bottom d-flex align-items-sm-center aling-items-start flex-sm-row flex-column gap-5">
+                                            <div class="flex-shrink-0 provider-image-container">
+                                                <img src="{{ $serviceData['provider']['profile_image'] }}" alt="provider-user"
+                                                    class="img-fluid w-100">
+                                            </div>
+                                            <div>
+                                                <a href="{{ route('provider.detail', $serviceData['provider']['id']) }}">
+                                                    <h5 class="text-capitalize mb-1">{{ $serviceData['provider']['display_name'] }}</h5>
+                                                </a>
+                                                <div class="d-flex align-items-center gap-2">
+                                                    <img src="{{ asset($providerPlanIcon) }}" alt="plan" style="width: 26px; height: 26px;">
+                                                    @php
+                                                        $aboutVerified = function_exists('verify_provider_document') ? verify_provider_document($serviceData['provider']['id']) : false;
+                                                    @endphp
+                                                    @if ($aboutVerified)
+                                                        <img src="{{ asset('images/icon/verified.jpg') }}" alt="verified" style="width: 26px; height: 26px;">
+                                                    @else
+                                                        <img src="{{ asset('images/icon/notverifiedpng.png') }}" alt="not verified" style="width: 26px; height: 26px;">
+                                                    @endif
+                                                </div>
+
+                                                @php
+                                                    $provDesignation = $serviceData['provider']['designation'] ?? '';
+                                                    $provCity = $serviceData['provider']['city_name'] ?? data_get($serviceData['provider'], 'city.name');
+                                                    $provCountry = $serviceData['provider']['country_name'] ?? data_get($serviceData['provider'], 'country.name');
+                                                @endphp
+                                                <div class="d-flex align-items-center gap-2 mt-1">
+                                                    @if(!empty($provDesignation))
+                                                        <span class="text-body">{{ $provDesignation }}</span>
+                                                    @endif
+                                                    @if(!empty($provCity) || !empty($provCountry))
+                                                        <span class="text-body">• {{ $provCity }}{{ !empty($provCity) && !empty($provCountry) ? ', ' : '' }}{{ $provCountry }}</span>
+                                                    @endif
+                                                </div>
+
+                                                <div class="d-flex align-items-center gap-2 flex-wrap">
+                                                    <div class="star-rating">
+                                                        <rating-component :readonly="true" :showrating="false" :ratingvalue="{{ $serviceData['provider']['providers_service_rating'] }}" />
+                                                    </div>
+                                                    <h6 class="lh-sm">{{ round($serviceData['provider']['providers_service_rating'], 1) }}</h6>
+                                                    <a href="{{ route('rating.all', ['provider_id' => $serviceData['provider']['id']]) }}">({{ $serviceData['provider']['total_service_rating'] }} {{ __('messages.reviews') }})</a>
+                                                </div>
+
+                                                <p class="mt-3 mb-0">
+                                                    {{ $serviceData['provider']['description'] }}
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-4 col-sm-6">
+                                                <h6 class="mb-1">{{ __('landingpage.member_since') }}:</h6>
+                                                <p class="m-0">{{ date("$date_time->date_format", strtotime($serviceData['provider']['created_at'])) }}</p>
+                                            </div>
+                                            <div class="col-md-4 col-sm-6 mt-sm-0 mt-3">
+                                                <h6 class="mb-1">{{ __('landingpage.total_services') }}:</h6>
+                                                <p class="m-0">{{ $serviceData['provider']['total_services'] ?? 0 }}</p>
+                                            </div>
+                                            <div class="col-md-4 col-sm-6 mt-sm-0 mt-3">
+                                                <h6 class="mb-1">{{ __('landingpage.total_bookings') }}:</h6>
+                                                <p class="m-0">{{ $serviceData['provider']['total_bookings'] ?? 0 }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Cancellation Policy Tab -->
+                            <div class="tab-content" id="cancellation-policy-content" style="display: none;">
+                                <div class="p-4">
+                                    @if (!empty($serviceData['service_detail']['cancellation_policy']))
+                                        <div class="cancellation-content">
+                                            {!! $serviceData['service_detail']['cancellation_policy'] !!}
+                                        </div>
+                                    @else
+                                        <div class="no-content text-muted text-center py-4">
+                                            <i class="fas fa-file-contract me-2"></i>
+                                            No cancellation policy available.
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
                         </div>
-                    @endif
+                    </div>
 
 
 
@@ -354,91 +542,6 @@
                             </div>
                         </div>
                     @endif
-                    <div class="mt-5 pt-lg-5 pt-3">
-                        <h5 class="mb-3">{{ __('landingpage.about_provider') }}</h5>
-                        <div class="p-5 border rounded-3 about-provider-box">
-                            <div
-                                class="mb-4 pb-4 border-bottom d-flex align-items-sm-center aling-items-start flex-sm-row flex-column gap-5">
-                                <div class="flex-shrink-0 provider-image-container">
-                                    <img src="{{ $serviceData['provider']['profile_image'] }}" alt="provider-user"
-                                        class="img-fluid w-100">
-                                </div>
-                                <div>
-                                    <a href="{{ route('provider.detail', $serviceData['provider']['id']) }}">
-                                        <h5 class="text-capitalize mb-1">{{ $serviceData['provider']['display_name'] }}
-                                        </h5>
-                                    </a>
-                                    <div class="d-flex align-items-center gap-2">
-                                        <img src="{{ asset($providerPlanIcon) }}" alt="plan"
-                                            style="width: 26px; height: 26px;">
-                                        @php
-                                            $aboutVerified = function_exists('verify_provider_document') ? verify_provider_document($serviceData['provider']['id']) : false;
-                                        @endphp
-                                        @if ($aboutVerified)
-                                            <img src="{{ asset('images/icon/verified.jpg') }}" alt="verified"
-                                                style="width: 26px; height: 26px;">
-                                        @else
-                                            <img src="{{ asset('images/icon/notverifiedpng.png') }}" alt="not verified"
-                                                style="width: 26px; height: 26px;">
-                                        @endif
-                                    </div>
-
-                                    @php
-                                        $provDesignation = $serviceData['provider']['designation'] ?? '';
-                                        $provCity = $serviceData['provider']['city_name'] ?? data_get($serviceData['provider'], 'city.name');
-                                        $provCountry = $serviceData['provider']['country_name'] ?? data_get($serviceData['provider'], 'country.name');
-                                    @endphp
-                                    <div class="d-flex align-items-center gap-2 mt-1">
-                                        @if(!empty($provDesignation))
-                                            <h6 class="m-0 text-capitalize">{{ $provDesignation }}</h6>
-                                        @endif
-                                        @if(!empty($provDesignation) && ($provCity || $provCountry))
-                                            <span class="text-muted">•</span>
-                                        @endif
-                                        @if($provCity || $provCountry)
-                                            <span class="m-0" style="font-size: 12px;">{{ $provCity ?? '' }}{{ ($provCity && $provCountry) ? ' - ' : '' }}{{ $provCountry ?? '' }}</span>
-                                        @endif
-                                    </div>
-
-                                    <div class="d-flex align-items-center gap-2 flex-wrap">
-                                        <div class="star-rating">
-                                            <rating-component :readonly="true" :showrating="false"
-                                                :ratingvalue="{{ $serviceData['provider']['providers_service_rating'] }}" />
-                                        </div>
-                                        <h6 class="lh-sm">
-                                            {{ round($serviceData['provider']['providers_service_rating'], 1) }}</h6><a
-                                            href="{{ route('rating.all', ['provider_id' => $serviceData['provider']['id']]) }}">({{ $serviceData['provider']['total_service_rating'] }}
-                                            {{ __('messages.reviews') }})</a>
-                                    </div>
-
-                                    <p class="mt-3 mb-0">
-                                        {{ $serviceData['provider']['description'] }}
-                                    </p>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-4 col-sm-6">
-                                    <h6 class="mb-1">{{ __('landingpage.member_since') }}:</h6>
-                                    <p class="m-0">
-                                        {{ date("$date_time->date_format", strtotime($serviceData['provider']['created_at'])) }}
-                                    </p>
-                                </div>
-                                <div class="col-md-4 col-sm-6 mt-sm-0 mt-3">
-
-                                    <h6 class="mb-1">{{ __('landingpage.complet_project') }}:</h6>
-                                    <p class="m-0">{{ $completed_services }}
-                                        {{ __('landingpage.msg_complete_project') }}</p>
-                                </div>
-
-                                @if (!empty($knownLanguageArray))
-                                    <div class="col-md-4 mt-md-0 mt-3">
-                                        <h6 class="mb-1">{{ __('landingpage.languages') }}:</h6>
-                                        <p class="m-0">{{ implode(', ', $knownLanguageArray) }}</p>
-                                    </div>
-                                @endif
-                            </div>
-                        </div>
-                    </div>
                     @if ($total_ratings->isNotEmpty())
                         <div class="section-padding px-0 pb-0">
                             <div class="row align-items-center mb-5">
@@ -493,9 +596,6 @@
                         </div>
                     @endif
 
-                    <h5 class="mb-3" style="margin-top: 20px;">Cancellation Policy</h5>
-                    {!! $serviceData['service_detail']['cancellation_policy'] !!}
-                    
 
                     <div class="mt-5 pt-lg-5 pt-3">
                         <div class="d-flex align-items-center justify-content-between gap-3 flex-wrap">
@@ -836,6 +936,23 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.1/dist/sweetalert2.all.min.js"></script>
     <script>
         $(document).ready(function() {
+            // Tab switching functionality
+            $('.tab-btn').on('click', function() {
+                const targetTab = $(this).data('tab');
+                
+                // Remove active class from all buttons
+                $('.tab-btn').removeClass('active');
+                
+                // Add active class to clicked button
+                $(this).addClass('active');
+                
+                // Hide all tab contents
+                $('.tab-content').hide().removeClass('active');
+                
+                // Show target tab content
+                $('#' + targetTab + '-content').show().addClass('active');
+            });
+
             $('.service-addon-checkbox').on('change', function() {
                 updateContinueButtonHref();
             });
