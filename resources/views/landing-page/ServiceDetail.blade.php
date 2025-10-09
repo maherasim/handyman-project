@@ -17,28 +17,39 @@
 
     /* Service Detail Tabs Styling */
     .tab-btn {
-        padding: 14px 20px;
+        padding: 16px 24px;
         border: none;
         background: transparent;
         color: #6c757d;
         font-weight: 500;
-        font-size: 14px;
+        font-size: 15px;
         cursor: pointer;
-        transition: all 0.3s ease;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         flex: 1;
-        border-bottom: 2px solid transparent;
+        border-bottom: 3px solid transparent;
         position: relative;
+        text-transform: none;
+        letter-spacing: 0.3px;
+        outline: none;
     }
     
     .tab-btn:hover {
-        color: #007bff;
+        color: #495057;
         background: #f8f9fa;
+        transform: translateY(-1px);
     }
     
     .tab-btn.active {
         color: #007bff;
         font-weight: 600;
         border-bottom-color: #007bff;
+        background: #fff;
+        box-shadow: 0 2px 4px rgba(0,123,255,0.1);
+    }
+    
+    .tab-btn:focus {
+        outline: none;
+        box-shadow: 0 0 0 2px rgba(0,123,255,0.2);
     }
     
     .tab-content {
@@ -53,8 +64,22 @@
     
     .tab-content-container {
         background: #fff;
-        border-radius: 0 0 8px 8px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        border-radius: 0 0 12px 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        border: 1px solid #e9ecef;
+        border-top: none;
+    }
+    
+    .tab-navigation {
+        background: #fff;
+        border-radius: 12px 12px 0 0;
+        border: 1px solid #e9ecef;
+        border-bottom: none;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+    
+    .tab-navigation .d-flex {
+        border-bottom: 1px solid #e9ecef;
     }
     
     .service-content, .cancellation-content {
@@ -82,18 +107,60 @@
         font-style: italic;
     }
     
-    /* Responsive */
+    /* Professional Animations */
+    @keyframes tabSlideIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .tab-content.active {
+        animation: tabSlideIn 0.3s ease-out;
+    }
+    
+    /* Responsive Design */
     @media (max-width: 768px) {
         .tab-btn {
-            padding: 10px 12px;
-            font-size: 13px;
+            padding: 14px 16px;
+            font-size: 14px;
+        }
+        
+        .tab-navigation {
+            border-radius: 8px 8px 0 0;
+        }
+        
+        .tab-content-container {
+            border-radius: 0 0 8px 8px;
         }
     }
     
     @media (max-width: 576px) {
         .tab-btn {
-            padding: 8px 6px;
-            font-size: 12px;
+            padding: 12px 8px;
+            font-size: 13px;
+            letter-spacing: 0.2px;
+        }
+        
+        .tab-navigation .d-flex {
+            flex-direction: column;
+        }
+        
+        .tab-btn {
+            border-bottom: 1px solid #e9ecef;
+            border-right: none;
+        }
+        
+        .tab-btn:last-child {
+            border-bottom: none;
+        }
+        
+        .tab-btn.active {
+            border-bottom-color: #007bff;
         }
     }
 </style>
