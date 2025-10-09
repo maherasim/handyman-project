@@ -64,11 +64,12 @@
           <div class="col-sm-2 mt-sm-0 mt-3">
             <button 
               @click="clearAllFilters" 
-              class="btn btn-outline-secondary w-100"
+              class="form-select text-start"
               :disabled="!hasActiveFilters"
               :title="$t('Clear all filters')"
+              style="background-color: transparent; border: 1px solid #ced4da; cursor: pointer;"
             >
-              <i class="fas fa-times me-1"></i>
+              <i class="fas fa-times me-2"></i>
               {{ $t('Clear Filters') }}
             </button>
           </div>
