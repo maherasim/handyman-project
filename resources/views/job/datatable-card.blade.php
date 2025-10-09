@@ -353,7 +353,7 @@
                                      padding: 4px 8px;
                                      border-radius: 12px;
                                      font-weight: 600;
-                                     font-size: 10px;
+                                     font-size: 15px;
                                      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
                                      backdrop-filter: blur(10px);
                                  ">

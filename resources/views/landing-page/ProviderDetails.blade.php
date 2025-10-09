@@ -211,15 +211,24 @@
                 </div>
                 <div class="col-lg-8 mt-lg-0 mt-5">
                     <h3 class="text-capitalize mb-3">{{ __('landingpage.provider_personal_info') }}</h3>
-                    <div class="mt-0 mb-3">
-                        <h5>{{ __('About Me') }}</h5>
-                        {!! $providerData['data']['about_me'] !!}
-                    </div>
+                   
 
                     <p class="mt-0 mb-3">
                     <h5>{{ __('Skills') }}</h5>
                     {{ $providerData['data']['skills'] }}
                     </p>
+                    <p class="mt-0 mb-3">
+                        <h5>{{ __('Location') }}</h5>
+                        @if(isset($providerData['data']['city_name']) && isset($providerData['data']['country_name']))
+                            {{ $providerData['data']['city_name'] }}, {{ $providerData['data']['country_name'] }}
+                        @elseif(isset($providerData['data']['city_name']))
+                            {{ $providerData['data']['city_name'] }}
+                        @elseif(isset($providerData['data']['country_name']))
+                            {{ $providerData['data']['country_name'] }}
+                        @else
+                            {{ __('N/A') }}
+                        @endif
+                        </p>
                     <p class="mt-0 mb-3">
                     <h5>{{ __('Experince') }}</h5>
                     {{ $providerData['data']['experience'] }}
@@ -243,7 +252,10 @@
 
                     </p>
 
-
+                    <div class="mt-0 mb-3">
+                        <h5>{{ __('About Me') }}</h5>
+                        {!! $providerData['data']['about_me'] !!}
+                    </div>
 
 
 
