@@ -60,6 +60,19 @@
             </select>
           </div>
 
+          <!-- Clear Filters Button -->
+          <div class="col-sm-2 mt-sm-0 mt-3">
+            <button 
+              @click="clearAllFilters" 
+              class="btn btn-outline-secondary w-100"
+              :disabled="!hasActiveFilters"
+              :title="$t('Clear all filters')"
+            >
+              <i class="fas fa-times me-1"></i>
+              {{ $t('Clear Filters') }}
+            </button>
+          </div>
+
         </div>
       </div>
 
@@ -268,8 +281,43 @@ const checkDropdowns = computed(() => {
   return selectedProvider.value || selectedPriceRange.value || selectedSortOption.value || selectedCity.value
 });
 
+// Check if any filters are active
+const hasActiveFilters = computed(() => {
+  return selectedCategory.value || 
+         selectedSubCategory.value || 
+         selectedProvider.value || 
+         selectedCountry.value || 
+         selectedCity.value || 
+         selectedPriceRange.value || 
+         selectedSortOption.value || 
+         search.value;
+});
+
 const clearSearch = () => {
   search.value = '';
+}
+
+// Clear all filters function
+const clearAllFilters = () => {
+  // Reset all filter values
+  selectedCategory.value = '';
+  selectedSubCategory.value = '';
+  selectedProvider.value = '';
+  selectedCountry.value = '';
+  selectedCity.value = '';
+  selectedPriceRange.value = '';
+  selectedSortOption.value = '';
+  search.value = '';
+  
+  // Reset dropdowns using existing function
+  refreshDropdowns();
+  
+  // Clear subcategories and cities when clearing filters
+  sub_category_data.value = [];
+  cities.value = [];
+  
+  // Reload the data table
+  ajaxReload();
 }
 
 </script>
