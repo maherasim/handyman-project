@@ -247,7 +247,7 @@
                                         </div>
                                     @endif
                                 </div>
-                            </div>
+                    </div>
 
                             <!-- Duties & Responsibilities Tab -->
                             <div class="tab-content" id="duties-content" style="display: none;">
@@ -263,7 +263,7 @@
                                         </div>
                                     @endif
                                 </div>
-                            </div>
+                    </div>
 
                             <!-- Skills & Requirements Tab -->
                             <div class="tab-content" id="skills-content" style="display: none;">
@@ -279,7 +279,7 @@
                                         </div>
                                     @endif
                                 </div>
-                            </div>
+                    </div>
 
                             <!-- Benefits Tab -->
                             <div class="tab-content" id="benefits-content" style="display: none;">

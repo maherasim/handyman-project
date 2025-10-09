@@ -257,9 +257,9 @@
                             <!-- About Services Tab -->
                             <div class="tab-content active" id="about-services-content">
                                 <div class="px-4">
-                                    @if (!empty($serviceData['service_detail']['description']))
+                    @if (!empty($serviceData['service_detail']['description']))
                                         <div class="service-content">
-                                            {!! $serviceData['service_detail']['description'] !!}
+                                {!! $serviceData['service_detail']['description'] !!}
                                         </div>
                                     @else
                                         <div class="no-content text-muted text-center py-4">
@@ -351,8 +351,8 @@
                                         <div class="no-content text-muted text-center py-4">
                                             <i class="fas fa-file-contract me-2"></i>
                                             No cancellation policy available.
-                                        </div>
-                                    @endif
+                        </div>
+                    @endif
                                 </div>
                             </div>
                         </div>
@@ -667,7 +667,7 @@
                             </ul>
                         </div>
                     @endif
-
+                    
 
                     <div class="mt-5 pt-lg-5 pt-3">
                         <div class="d-flex align-items-center justify-content-between gap-3 flex-wrap">
@@ -856,6 +856,19 @@
                                 style="width: 100%; height: 100%; position: absolute; z-index: 2;">
                             <img src="{{ asset($serviceData['provider']['profile_image']) }}" alt="Provider"
                                 style="width: 80%; height: 80%; object-fit: cover; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 2;">
+                        </div>
+
+                        {{-- Provider Location --}}
+                        <div class="text-center mt-2">
+                            <p class="mb-1" style="color: white; font-size: 14px; font-weight: 500;">
+                                @if(isset($serviceData['provider']['city']['name']) && isset($serviceData['provider']['country']['name']))
+                                    {{ $serviceData['provider']['city']['name'] }}, {{ $serviceData['provider']['country']['name'] }}
+                                @elseif(isset($serviceData['provider']['city']['name']))
+                                    {{ $serviceData['provider']['city']['name'] }}
+                                @elseif(isset($serviceData['provider']['country']['name']))
+                                    {{ $serviceData['provider']['country']['name'] }}
+                                @endif
+                            </p>
                         </div>
 
                         <div class="d-flex align-items-center  mt-2 justify-content-evenly">

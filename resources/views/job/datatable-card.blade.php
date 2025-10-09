@@ -607,25 +607,25 @@
                      $('#subcategory-select').append('<option selected>Sub-Category</option>');
 
                      if (categoryId && categoryId !== 'Category') {
-                         // Make AJAX request to fetch subcategories
-                         $.ajax({
-                             url: '{{ route('subcategory.listforgood') }}',
-                             method: 'GET',
-                             data: {
-                                 category_id: categoryId
-                             },
-                             success: function(response) {
-                                 // Populate the subcategory dropdown with the new options
-                                 $.each(response, function(key, subcategory) {
-                                     $('#subcategory-select').append('<option value="' +
-                                         subcategory.id + '">' + subcategory.name +
-                                         '</option>');
-                                 });
-                             },
-                             error: function(xhr, status, error) {
-                                 console.error('AJAX request failed:', status, error);
-                             }
-                         });
+                     // Make AJAX request to fetch subcategories
+                     $.ajax({
+                         url: '{{ route('subcategory.listforgood') }}',
+                         method: 'GET',
+                         data: {
+                             category_id: categoryId
+                         },
+                         success: function(response) {
+                             // Populate the subcategory dropdown with the new options
+                             $.each(response, function(key, subcategory) {
+                                 $('#subcategory-select').append('<option value="' +
+                                     subcategory.id + '">' + subcategory.name +
+                                     '</option>');
+                             });
+                         },
+                         error: function(xhr, status, error) {
+                             console.error('AJAX request failed:', status, error);
+                         }
+                     });
                      }
                  });
 

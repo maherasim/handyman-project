@@ -302,7 +302,7 @@
                                                  style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease;">
                                         @else
                                             <img class="default-image" 
-                                                 src="{{ asset('images/post-job/ac_refresh_and_revive.png') }}"
+                                            src="{{ asset('images/post-job/ac_refresh_and_revive.png') }}"
                                                  alt="Default Image"
                                                  style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease;">
                                         @endif
@@ -340,7 +340,7 @@
                                             transition: all 0.3s ease;
                                         ">
                                             <i class='bx bx-heart' style="color: #667eea; font-size: 14px;"></i>
-                                        </div>
+                                    </div>
                                     </div>
                                     
                                     <!-- Card Content -->
@@ -359,8 +359,8 @@
                                             min-height: 34px;
                                         ">
                                             {{ $jobRequest->title }}
-                                        </h5>
-                                        
+                                            </h5>
+                                           
                                         <!-- Location -->
                                         <div class="location-info" style="margin-bottom: 8px;">
                                             <div class="d-flex align-items-center" style="gap: 5px;">
@@ -371,7 +371,7 @@
                                                     font-weight: 500;
                                                 ">
                                                     {{ $jobRequest->city ? $jobRequest->city->name : 'City' }}, {{ $jobRequest->country ? $jobRequest->country->name : 'Country' }}
-                                                </span>
+                                            </span>
                                             </div>
                                         </div>
                                         
@@ -400,7 +400,7 @@
                                                 ">
                                                     {{ number_format($jobRequest->total_views ?? 0) }} views
                                                 </span>
-                                            </div>
+                                        </div>
                                         </div>
                                         
                                         <!-- Customer Info -->
@@ -415,7 +415,7 @@
                                                 ">
                                                     <img src="{{ getSingleMedia($jobRequest->customer,'profile_image', null) ?? 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQnnM0ib-pYCZg4DbbB_T5_mfxpqrDHYXFLy208bjvHjIM5q1FF4lzLvNFp2qZ5Eo11orA&usqp=CAU' }}"
                                                         alt="Customer" style="width: 100%; height: 100%; object-fit: cover;">
-                                                </div>
+                                    </div>
                                                 <div class="customer-details">
                                                     <div style="
                                                         font-size: 12px;
