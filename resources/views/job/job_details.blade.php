@@ -88,28 +88,41 @@
             color: #adb5bd;
         }
         
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .tab-btn {
-                font-size: 13px !important;
-                padding: 12px 8px !important;
-            }
-            
-            .tab-content-container {
-                padding: 20px !important;
-            }
-            
-            .job-content {
-                font-size: 14px;
-            }
+        /* Detail Items Styling */
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 8px 0;
+            border-bottom: 1px solid #f0f0f0;
         }
         
-        @media (max-width: 576px) {
-            .tab-navigation .col-3 {
-                flex: 0 0 50%;
-                max-width: 50%;
-            }
-            
+        .detail-item:last-child {
+            border-bottom: none;
+        }
+        
+        .detail-label {
+            flex: 0 0 45%;
+            font-size: 13px;
+            color: #6c757d;
+            font-weight: 500;
+        }
+        
+        .detail-value {
+            flex: 1;
+            font-size: 13px;
+            color: #212529;
+            text-align: right;
+            font-weight: 400;
+        }
+        
+        .badge {
+            font-size: 11px;
+            padding: 4px 8px;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
             .tab-btn {
                 font-size: 12px !important;
                 padding: 10px 6px !important;
@@ -120,7 +133,48 @@
             }
             
             .job-content {
+                font-size: 14px;
+            }
+            
+            .detail-label {
+                font-size: 12px;
+            }
+            
+            .detail-value {
+                font-size: 12px;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .tab-navigation .col-6 {
+                flex: 0 0 50%;
+                max-width: 50%;
+            }
+            
+            .tab-btn {
+                font-size: 11px !important;
+                padding: 8px 4px !important;
+            }
+            
+            .tab-content-container {
+                padding: 12px !important;
+            }
+            
+            .job-content {
                 font-size: 13px;
+            }
+            
+            .detail-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .detail-label {
+                margin-bottom: 2px;
+            }
+            
+            .detail-value {
+                text-align: left;
             }
         }
     </style>
@@ -301,72 +355,215 @@
                 </div>
 
                 <div class="col-md-4 mt-3">
-                    @php
-                        $priceLabel = $jobrequest->price_type === 'fixed' ? 'Fixed Price' : ($jobrequest->price_type === 'daily' ? '/ Day' : '/ Hour');
-                    @endphp
-                    <h5 class="mt-4">$ {{ $jobrequest->price }} <span class="text-dark"><b>{{ $priceLabel }}</b></span> </h5>
-                    <p class="mb-0" id="description">
-                        {{ Str::words(strip_tags($jobrequest->description), 10, '...') }}
-                    </p>
-
-                    <button id="readMoreBtn" class="btn btn-link p-0" style="display: none;">Read More</button>
-
-                    <p id="fullDescription" class="mb-0" style="display: none;">
-                        {!! $jobrequest->description !!}
-                    </p>
-
-                    <hr>
-                    <button id="continueBtn" class="btn btn-cont text-white col-md-12"
-                            style="background: #5F60BA; padding: 10px;">Continue</button>
-
-                    <div class="d-flex align-items-center justify-content-center gap-3 mt-3 mb-3">
-                        <a href="#"><img src="https://cdn.pixabay.com/photo/2021/06/15/12/51/facebook-6338507_1280.png" style="width: 30px; border-radius: 8px;" alt=""></a>
-                        <a href="#"><img src="https://upload.wikimedia.org/wikipedia/commons/9/95/Instagram_logo_2022.svg" style="width: 30px; border-radius: 8px;" alt=""></a>
-                        <a href="#"><img src="https://cdn.pixabay.com/photo/2015/03/10/17/30/twitter-667462_640.png" style="width: 30px; border-radius: 8px;" alt=""></a>
-                        <a href="#"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRokEYt0yyh6uNDKL8uksVLlhZ35laKNQgZ9g&s" style="width: 30px; border-radius: 8px;" alt=""></a>
+                    <!-- Job Price Section -->
+                    <div class="bg-light p-4 rounded-3 mb-4">
+                        @php
+                            $priceLabel = $jobrequest->price_type === 'fixed' ? 'Fixed Price' : ($jobrequest->price_type === 'daily' ? '/ Day' : '/ Hour');
+                        @endphp
+                        <h4 class="text-primary mb-2">$ {{ number_format($jobrequest->price, 2) }} <span class="text-dark"><b>{{ $priceLabel }}</b></span></h4>
+                        <p class="mb-0 text-muted" id="description">
+                            {{ Str::words(strip_tags($jobrequest->description), 15, '...') }}
+                        </p>
+                        
+                        <button id="readMoreBtn" class="btn btn-link p-0 mt-2" style="display: none;">Read More</button>
+                        <p id="fullDescription" class="mb-0 mt-2" style="display: none;">
+                            {!! $jobrequest->description !!}
+                        </p>
                     </div>
 
-                    <button class="btn btn-job col-md-12"
-                            style="background: #018E27; border-radius: 50px; color: white;padding: 10px;">About Job Request</button>
+                    <!-- Continue Button -->
+                    <button id="continueBtn" class="btn btn-primary w-100 mb-4" style="background: #5F60BA; padding: 12px;">
+                        Continue
+                    </button>
 
-                    <ul class="pl-0 mt-3" style="list-style: none; font-weight: 500;">
-                        <li>
-                            <a href="#" class="text-dark"><b>Published at: </b>{{ $jobrequest->created_at ? $jobrequest->created_at->format('Y-m-d') : 'N/A' }}</a>
-                        </li>
-                        <li><a href="#" class="text-dark"><b>Customer :</b> {{ $jobrequest->customer->username ?? 'N/A' }}</a></li>
-                        <li><a href="#" class="text-dark"><b>Location:</b> {{ optional($jobrequest->city)->name ?? 'N/A' }} - {{ optional($jobrequest->country)->name ?? 'N/A' }}</a></li>
-                        <li><a href="#" class="text-dark"><b>Category: </b>{{ $jobrequest->category->name ?? 'N/A' }}</a></li>
-                        <li><a class="text-dark"><b>Type:</b> <span> {{ $jobrequest->type ?? 'N/A' }}</span></a></li>
-                        <li><a class="text-dark"><b>Start Date:</b> {{ $jobrequest->start_date ? \Carbon\Carbon::parse($jobrequest->start_date)->format('Y-m-d') : 'N/A' }}</a></li>
-                        <li><a class="text-dark"><b>End Date:</b> {{ $jobrequest->end_date ? \Carbon\Carbon::parse($jobrequest->end_date)->format('Y-m-d') : 'N/A' }}</a></li>
-                        <li><a class="text-dark"><b>Status:</b> {{ $jobrequest->status ?? 'N/A' }}</a></li>
-                        <li><a class="text-dark"><b>Total Bids:</b> {{ $totalBids }}</a></li>
-                        <li><a class="text-dark"><b>Total Views:</b>{{ $jobrequest->total_views ?? 'N/A' }}</a></li>
-                    </ul>
+                    <!-- Social Sharing -->
+                    <div class="d-flex align-items-center justify-content-center gap-3 mb-4">
+                        <a href="#" class="text-decoration-none">
+                            <img src="https://cdn.pixabay.com/photo/2021/06/15/12/51/facebook-6338507_1280.png" 
+                                 style="width: 30px; border-radius: 8px;" alt="Facebook">
+                        </a>
+                        <a href="#" class="text-decoration-none">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/9/95/Instagram_logo_2022.svg" 
+                                 style="width: 30px; border-radius: 8px;" alt="Instagram">
+                        </a>
+                        <a href="#" class="text-decoration-none">
+                            <img src="https://cdn.pixabay.com/photo/2015/03/10/17/30/twitter-667462_640.png" 
+                                 style="width: 30px; border-radius: 8px;" alt="Twitter">
+                        </a>
+                        <a href="#" class="text-decoration-none">
+                            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRokEYt0yyh6uNDKL8uksVLlhZ35laKNQgZ9g&s" 
+                                 style="width: 30px; border-radius: 8px;" alt="LinkedIn">
+                        </a>
+                    </div>
 
-                    <a href="{{ auth()->check() ? route('post-job-request.index') : route('login') }}"
-                       class="btn btn-green"
-                       style="background: #59E054; color: #fff; border: 5px solid #F0F0F0; padding: 10px 30px; border-radius: 50px; font-weight: 800; display: flex; margin: auto; text-decoration: none; text-align: center;">
-                        APPLY NOW
-                    </a>
-
-                    <div class="card mt-4">
-                        <div class="card-body">
-                            <h6 class="mb-3 text-center">Customer Details</h6>
-                            <div class="text-center mb-3">
-                                <img src="{{ getSingleMedia($jobrequest->customer,'profile_image', null) }}" alt="photo" style="width:120px;height:120px;border-radius:50%;object-fit:cover;margin:0 auto;">
-                            </div>
-                            <div class="d-flex align-items-center gap-3">
-                                <div>
-                                    <div><b>Full Name:</b> {{ $jobrequest->customer->display_name ?? $jobrequest->customer->username ?? 'N/A' }}</div>
-                                    <div><b>Position:</b> {{ $jobrequest->customer->designation ?? 'N/A' }}</div>
-                                    <div><b>Member since:</b> {{ optional($jobrequest->customer->created_at)->format('Y-m-d') ?? 'N/A' }}</div>
-                                    <div><b>Languages:</b> {{ is_array($jobrequest->customer->languages ?? null) ? implode(', ', $jobrequest->customer->languages) : ($jobrequest->customer->languages ?? 'N/A') }}</div>
-                                    <div><b>Location:</b> {{ optional($jobrequest->customer->city)->name ?? 'N/A' }} - {{ optional($jobrequest->customer->country)->name ?? 'N/A' }}</div>
-                                    <div><b>Jobs published:</b> {{ $jobsPublishedCount ?? 0 }}</div>
+                    <!-- Tabbed Job Details Section -->
+                    <div class="bg-light rounded-3">
+                        <!-- Tab Navigation -->
+                        <div class="tab-navigation">
+                            <div class="row g-0">
+                                <div class="col-6">
+                                    <button class="tab-btn active" data-tab="job-details" style="
+                                        width: 100%;
+                                        padding: 12px 8px;
+                                        border: none;
+                                        border-bottom: 3px solid #dc3545;
+                                        background: #fff;
+                                        color: #dc3545;
+                                        font-weight: 600;
+                                        font-size: 13px;
+                                        transition: all 0.3s ease;
+                                        cursor: pointer;
+                                    ">
+                                        Job Details
+                                    </button>
+                                </div>
+                                <div class="col-6">
+                                    <button class="tab-btn" data-tab="customer-details" style="
+                                        width: 100%;
+                                        padding: 12px 8px;
+                                        border: none;
+                                        border-bottom: 3px solid transparent;
+                                        background: #f8f9fa;
+                                        color: #6c757d;
+                                        font-weight: 500;
+                                        font-size: 13px;
+                                        transition: all 0.3s ease;
+                                        cursor: pointer;
+                                    ">
+                                        Customer Details
+                                    </button>
                                 </div>
                             </div>
                         </div>
+
+                        <!-- Tab Content -->
+                        <div class="tab-content-container" style="padding: 20px;">
+                            <!-- Job Details Tab -->
+                            <div class="tab-content active" id="job-details-content">
+                                <div class="job-details-list">
+                                    <div class="detail-item mb-2">
+                                        <span class="detail-label"><b>Published at:</b></span>
+                                        <span class="detail-value">{{ $jobrequest->created_at ? $jobrequest->created_at->format('M d, Y') : 'N/A' }}</span>
+                                    </div>
+                                    <div class="detail-item mb-2">
+                                        <span class="detail-label"><b>Location:</b></span>
+                                        <span class="detail-value">{{ optional($jobrequest->city)->name ?? 'N/A' }} - {{ optional($jobrequest->country)->name ?? 'N/A' }}</span>
+                                    </div>
+                                    <div class="detail-item mb-2">
+                                        <span class="detail-label"><b>Category:</b></span>
+                                        <span class="detail-value">{{ $jobrequest->category->name ?? 'N/A' }}</span>
+                                    </div>
+                                    <div class="detail-item mb-2">
+                                        <span class="detail-label"><b>Total Budget:</b></span>
+                                        <span class="detail-value">${{ number_format($jobrequest->total_budget ?? $jobrequest->price, 2) }}</span>
+                                    </div>
+                                    <div class="detail-item mb-2">
+                                        <span class="detail-label"><b>Start Date:</b></span>
+                                        <span class="detail-value">{{ $jobrequest->start_date ? \Carbon\Carbon::parse($jobrequest->start_date)->format('M d, Y') : 'N/A' }}</span>
+                                    </div>
+                                    <div class="detail-item mb-2">
+                                        <span class="detail-label"><b>End Date:</b></span>
+                                        <span class="detail-value">{{ $jobrequest->end_date ? \Carbon\Carbon::parse($jobrequest->end_date)->format('M d, Y') : 'N/A' }}</span>
+                                    </div>
+                                    <div class="detail-item mb-2">
+                                        <span class="detail-label"><b>Total Hours:</b></span>
+                                        <span class="detail-value">{{ $jobrequest->total_hours ?? 'N/A' }}</span>
+                                    </div>
+                                    <div class="detail-item mb-2">
+                                        <span class="detail-label"><b>Total Days:</b></span>
+                                        <span class="detail-value">{{ $jobrequest->total_days ?? 'N/A' }}</span>
+                                    </div>
+                                    <div class="detail-item mb-2">
+                                        <span class="detail-label"><b>Type:</b></span>
+                                        <span class="detail-value">{{ ucfirst($jobrequest->type ?? 'N/A') }}</span>
+                                    </div>
+                                    <div class="detail-item mb-2">
+                                        <span class="detail-label"><b>Remote Level:</b></span>
+                                        <span class="detail-value">{{ ucfirst($jobrequest->remote_work_level ?? 'N/A') }}</span>
+                                    </div>
+                                    <div class="detail-item mb-2">
+                                        <span class="detail-label"><b>Career Level:</b></span>
+                                        <span class="detail-value">{{ ucfirst($jobrequest->career_level ?? 'N/A') }}</span>
+                                    </div>
+                                    <div class="detail-item mb-2">
+                                        <span class="detail-label"><b>Travel Required:</b></span>
+                                        <span class="detail-value">{{ $jobrequest->travel_required ? 'Yes' : 'No' }}</span>
+                                    </div>
+                                    <div class="detail-item mb-2">
+                                        <span class="detail-label"><b>Education Level:</b></span>
+                                        <span class="detail-value">{{ ucfirst($jobrequest->education_level ?? 'N/A') }}</span>
+                                    </div>
+                                    <div class="detail-item mb-2">
+                                        <span class="detail-label"><b>Status:</b></span>
+                                        <span class="detail-value">
+                                            <span class="badge bg-{{ $jobrequest->status === 'active' ? 'success' : ($jobrequest->status === 'completed' ? 'info' : 'warning') }}">
+                                                {{ ucfirst($jobrequest->status ?? 'N/A') }}
+                                            </span>
+                                        </span>
+                                    </div>
+                                    <div class="detail-item mb-2">
+                                        <span class="detail-label"><b>Total Bids:</b></span>
+                                        <span class="detail-value">{{ $totalBids }}</span>
+                                    </div>
+                                    <div class="detail-item mb-2">
+                                        <span class="detail-label"><b>Total Views:</b></span>
+                                        <span class="detail-value">{{ $jobrequest->total_views ?? 0 }}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Customer Details Tab -->
+                            <div class="tab-content" id="customer-details-content" style="display: none;">
+                                <div class="text-center mb-3">
+                                    <img src="{{ getSingleMedia($jobrequest->customer,'profile_image', asset('images/default.png')) }}" 
+                                         alt="Customer Photo" 
+                                         style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; margin: 0 auto;">
+                                </div>
+                                <div class="customer-details-list">
+                                    <div class="detail-item mb-2">
+                                        <span class="detail-label"><b>Full Name:</b></span>
+                                        <span class="detail-value">{{ $jobrequest->customer->display_name ?? $jobrequest->customer->username ?? 'N/A' }}</span>
+                                    </div>
+                                    <div class="detail-item mb-2">
+                                        <span class="detail-label"><b>Position:</b></span>
+                                        <span class="detail-value">{{ $jobrequest->customer->designation ?? 'N/A' }}</span>
+                                    </div>
+                                    <div class="detail-item mb-2">
+                                        <span class="detail-label"><b>Member Since:</b></span>
+                                        <span class="detail-value">{{ optional($jobrequest->customer->created_at)->format('M d, Y') ?? 'N/A' }}</span>
+                                    </div>
+                                    <div class="detail-item mb-2">
+                                        <span class="detail-label"><b>Languages:</b></span>
+                                        <span class="detail-value">{{ is_array($jobrequest->customer->languages ?? null) ? implode(', ', $jobrequest->customer->languages) : ($jobrequest->customer->languages ?? 'N/A') }}</span>
+                                    </div>
+                                    <div class="detail-item mb-2">
+                                        <span class="detail-label"><b>Location:</b></span>
+                                        <span class="detail-value">{{ optional($jobrequest->customer->city)->name ?? 'N/A' }} - {{ optional($jobrequest->customer->country)->name ?? 'N/A' }}</span>
+                                    </div>
+                                    <div class="detail-item mb-2">
+                                        <span class="detail-label"><b>Jobs Published:</b></span>
+                                        <span class="detail-value">{{ $jobsPublishedCount ?? 0 }}</span>
+                                    </div>
+                                    <div class="detail-item mb-2">
+                                        <span class="detail-label"><b>Email:</b></span>
+                                        <span class="detail-value">{{ $jobrequest->customer->email ?? 'N/A' }}</span>
+                                    </div>
+                                    <div class="detail-item mb-2">
+                                        <span class="detail-label"><b>Contact:</b></span>
+                                        <span class="detail-value">{{ $jobrequest->customer->contact_number ?? 'N/A' }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Apply Now Button -->
+                    <div class="text-center mt-4">
+                        <a href="{{ auth()->check() ? route('post-job-request.index') : route('login') }}"
+                           class="btn btn-success btn-lg"
+                           style="background: #59E054; color: #fff; border: 5px solid #F0F0F0; padding: 12px 30px; border-radius: 50px; font-weight: 800; text-decoration: none;">
+                            APPLY NOW
+                        </a>
                     </div>
                 </div>
             </div>
@@ -427,9 +624,9 @@
                         // Add active class to clicked button
                         this.classList.add('active');
                         this.style.border = 'none';
-                        this.style.borderBottom = '3px solid #007bff';
+                        this.style.borderBottom = '3px solid #dc3545';
                         this.style.background = '#fff';
-                        this.style.color = '#007bff';
+                        this.style.color = '#dc3545';
                         this.style.fontWeight = '600';
                         
                         // Hide all tab contents
