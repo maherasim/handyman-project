@@ -867,8 +867,6 @@
                                     {{ $serviceData['provider']['city']['name'] }}
                                 @elseif(isset($serviceData['provider']['country']['name']))
                                     {{ $serviceData['provider']['country']['name'] }}
-                                @else
-                                    City - Country
                                 @endif
                             </p>
                         </div>
