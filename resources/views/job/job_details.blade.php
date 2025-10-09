@@ -545,12 +545,68 @@
                                         <span class="detail-value">{{ $jobsPublishedCount ?? 0 }}</span>
                                     </div>
                                     <div class="detail-item mb-2">
-                                        <span class="detail-label"><b>Email:</b></span>
-                                        <span class="detail-value">{{ $jobrequest->customer->email ?? 'N/A' }}</span>
+                                        <span class="detail-label"><b>Location:</b></span>
+                                        <span class="detail-value">{{ $jobrequest->city->name ?? 'N/A' }}-{{ $jobrequest->country->name ?? 'N/A' }}</span>
                                     </div>
                                     <div class="detail-item mb-2">
-                                        <span class="detail-label"><b>Contact:</b></span>
-                                        <span class="detail-value">{{ $jobrequest->customer->contact_number ?? 'N/A' }}</span>
+                                        <span class="detail-label"><b>Category:</b></span>
+                                        <span class="detail-value">{{ $jobrequest->category->name ?? 'N/A' }}</span>
+                                    </div>
+                                    <div class="detail-item mb-2">
+                                        <span class="detail-label"><b>Total budget:</b></span>
+                                        <span class="detail-value">{{ $jobrequest->total_budget ?? 'N/A' }}</span>
+                                    </div>
+                                    <div class="detail-item mb-2">
+                                        <span class="detail-label"><b>Start date:</b></span>
+                                        <span class="detail-value">{{ $jobrequest->start_date ?? 'N/A' }}</span>
+                                    </div>
+                                    <div class="detail-item mb-2">
+                                        <span class="detail-label"><b>End date:</b></span>
+                                        <span class="detail-value">{{ $jobrequest->end_date ?? 'N/A' }}</span>
+                                    </div>
+                                    <div class="detail-item mb-2">
+                                        <span class="detail-label"><b>Total hours:</b></span>
+                                        <span class="detail-value">{{ $jobrequest->total_hours ?? 'N/A' }}</span>
+                                    </div>
+                                    <div class="detail-item mb-2">
+                                        <span class="detail-label"><b>Total days:</b></span>
+                                        <span class="detail-value">{{ $jobrequest->total_days ?? 'N/A' }}</span>
+                                    </div>
+                                    <div class="detail-item mb-2">
+                                        <span class="detail-label"><b>Type:</b></span>
+                                        <span class="detail-value">{{ $jobrequest->type ?? 'N/A' }}</span>
+                                    </div>
+                                    <div class="detail-item mb-2">
+                                        <span class="detail-label"><b>Remote level:</b></span>
+                                        <span class="detail-value">{{ $jobrequest->remote_work_level ?? 'N/A' }}</span>
+                                    </div>
+                                    <div class="detail-item mb-2">
+                                        <span class="detail-label"><b>Career level:</b></span>
+                                        <span class="detail-value">{{ $jobrequest->career_level ?? 'N/A' }}</span>
+                                    </div>
+                                    <div class="detail-item mb-2">
+                                        <span class="detail-label"><b>Travel required:</b></span>
+                                        <span class="detail-value">{{ $jobrequest->travel_required ? 'Yes' : 'No' }}</span>
+                                    </div>
+                                    <div class="detail-item mb-2">
+                                        <span class="detail-label"><b>Education level:</b></span>
+                                        <span class="detail-value">{{ $jobrequest->education_level ?? 'N/A' }}</span>
+                                    </div>
+                                    <div class="detail-item mb-2">
+                                        <span class="detail-label"><b>Status:</b></span>
+                                        <span class="detail-value">
+                                            <span class="badge bg-{{ $jobrequest->status === 'active' ? 'success' : ($jobrequest->status === 'completed' ? 'info' : 'warning') }}">
+                                                {{ ucfirst($jobrequest->status ?? 'N/A') }}
+                                            </span>
+                                        </span>
+                                    </div>
+                                    <div class="detail-item mb-2">
+                                        <span class="detail-label"><b>Total bids:</b></span>
+                                        <span class="detail-value">{{ $totalBids }}</span>
+                                    </div>
+                                    <div class="detail-item mb-2">
+                                        <span class="detail-label"><b>Total views:</b></span>
+                                        <span class="detail-value">{{ $jobrequest->total_views ?? 0 }}</span>
                                     </div>
                                 </div>
                             </div>
