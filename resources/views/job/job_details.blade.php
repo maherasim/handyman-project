@@ -8,7 +8,7 @@
             padding: 12px 20px;
             border: none;
             background: transparent;
-            color: #6c757d;
+            color: #6c757d;-
             font-weight: 500;
             font-size: 14px;
             cursor: pointer;
