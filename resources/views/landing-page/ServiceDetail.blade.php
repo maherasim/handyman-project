@@ -17,39 +17,44 @@
 
     /* Service Detail Tabs Styling */
     .tab-btn {
-        padding: 12px 20px;
+        padding: 14px 20px;
         border: none;
-        background: #fff;
-        color: #000;
+        background: transparent;
+        color: #6c757d;
         font-weight: 500;
         font-size: 14px;
         cursor: pointer;
         transition: all 0.3s ease;
         flex: 1;
-        border-right: 1px solid #dc3545;
-    }
-    
-    .tab-btn:last-child {
-        border-right: none;
+        border-bottom: 2px solid transparent;
+        position: relative;
     }
     
     .tab-btn:hover {
+        color: #007bff;
         background: #f8f9fa;
     }
     
     .tab-btn.active {
-        background: #fff;
-        color: #000;
+        color: #007bff;
         font-weight: 600;
+        border-bottom-color: #007bff;
     }
     
     .tab-content {
         display: none;
         background: #fff;
+        padding: 24px 0;
     }
     
     .tab-content.active {
         display: block;
+    }
+    
+    .tab-content-container {
+        background: #fff;
+        border-radius: 0 0 8px 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
     
     .service-content, .cancellation-content {
@@ -167,7 +172,7 @@
                     <div class="mt-5 pt-lg-5 pt-3">
                         <!-- Tab Navigation -->
                         <div class="tab-navigation mb-0">
-                            <div class="d-flex border border-danger">
+                            <div class="d-flex border-bottom">
                                 <button class="tab-btn active" data-tab="about-services">
                                     About Services
                                 </button>
@@ -181,10 +186,10 @@
                         </div>
 
                         <!-- Tab Content -->
-                        <div class="tab-content-container border border-danger border-top-0">
+                        <div class="tab-content-container">
                             <!-- About Services Tab -->
                             <div class="tab-content active" id="about-services-content">
-                                <div class="p-4">
+                                <div class="px-4">
                                     @if (!empty($serviceData['service_detail']['description']))
                                         <div class="service-content">
                                             {!! $serviceData['service_detail']['description'] !!}
@@ -200,7 +205,7 @@
 
                             <!-- About Provider Tab -->
                             <div class="tab-content" id="about-provider-content" style="display: none;">
-                                <div class="p-4">
+                                <div class="px-4">
                                     <div class="about-provider-box">
                                         <div class="mb-4 pb-4 border-bottom d-flex align-items-sm-center aling-items-start flex-sm-row flex-column gap-5">
                                             <div class="flex-shrink-0 provider-image-container">
@@ -270,7 +275,7 @@
 
                             <!-- Cancellation Policy Tab -->
                             <div class="tab-content" id="cancellation-policy-content" style="display: none;">
-                                <div class="p-4">
+                                <div class="px-4">
                                     @if (!empty($serviceData['service_detail']['cancellation_policy']))
                                         <div class="cancellation-content">
                                             {!! $serviceData['service_detail']['cancellation_policy'] !!}
