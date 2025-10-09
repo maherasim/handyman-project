@@ -809,7 +809,7 @@
                             </a>
                             <a href="#">
                                 <img src="https://static.vecteezy.com/system/resources/previews/016/716/481/original/facebook-icon-free-png.png"
-                                alt="Facebook" style="width: 30px; height: 30px;">
+                                    style="width: 30px; border-radius: 8px;" alt="">
                             </a>
                         </div>
                     </div>
