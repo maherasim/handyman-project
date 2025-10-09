@@ -61,21 +61,100 @@
         <img :src="userImage" alt="service" class="img-fluid rounded-3 object-cover avatar-24">
         <a :href="`${baseUrl}/provider-detail/${provider_id}`"><span class="font-size-14 service-user-name">{{ userName }}</span></a>
      </div>
-           <div class="d-flex align-items-center gap-1 f-none mt-2">
-       <rating-component :readonly = true :showrating ="false" :ratingvalue="props.reviewNo" />              
-
-        <h6 class="font-size-14">{{reviewNo }}
-    <a :href="`${baseUrl}/rating-all?service_id=${service_id}`"><span v-if="reviewCount>1" class="text-body ms-1">({{ reviewCount }} {{ $t('messages.reviews') }})</span><span v-else class="text-body ms-1">({{ reviewCount }} {{ $t('messages.review') }})</span>
-    </a>
-   </h6>
-   <span class="ms-3 d-inline-flex align-items-center" title="Views">
-     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns=" "><path d="M12 5c-7.633 0-10 7-10 7s2.367 7 10 7 10-7 10-7-2.367-7-10-7Zm0 12a5 5 0 1 1 0-10 5 5 0 0 1 0 10Zm0-8a3 3 0 1 0 .002 6.002A3 3 0 0 0 12 9Z" fill="currentColor"/></svg>
-     <span class="ms-1">{{ Number(props.totalViews || 0) }}</span>
-   </span>
+           <!-- Statistics Section - Optimized Layout -->
+      <div class="stats-section mt-3">
+         <div class="row g-2 text-center">
+            <!-- Reviews Section -->
+            <div class="col-4">
+               <div class="stats-item">
+                  <div class="d-flex align-items-center justify-content-center mb-1">
+                     <rating-component :readonly="true" :showrating="false" :ratingvalue="props.reviewNo" />
+                     <span class="stats-value ms-1">{{ props.reviewNo }}</span>
+                  </div>
+                  <div class="stats-label">
+                     <a :href="`${baseUrl}/rating-all?service_id=${service_id}`" class="text-decoration-none text-muted">
+                        ({{ props.reviewCount }} {{ props.reviewCount > 1 ? $t('messages.reviews') : $t('messages.review') }})
+                     </a>
+                  </div>
+               </div>
+            </div>
+            
+            <!-- Bookings Section -->
+            <div class="col-4">
+               <div class="stats-item">
+                  <div class="d-flex align-items-center justify-content-center mb-1">
+                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns=" " class="stats-icon text-success">
+                        <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                     </svg>
+                     <span class="stats-value">{{ props.totalBookings || 0 }}</span>
+                  </div>
+                  <div class="stats-label">Bookings</div>
+               </div>
+            </div>
+            
+            <!-- Views Section -->
+            <div class="col-4">
+               <div class="stats-item">
+                  <div class="d-flex align-items-center justify-content-center mb-1">
+                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns=" " class="stats-icon text-info">
+                        <path d="M12 5c-7.633 0-10 7-10 7s2.367 7 10 7 10-7 10-7-2.367-7-10-7Zm0 12a5 5 0 1 1 0-10 5 5 0 0 1 0 10Zm0-8a3 3 0 1 0 .002 6.002A3 3 0 0 0 12 9Z" fill="currentColor"/>
+                     </svg>
+                     <span class="stats-value">{{ Number(props.totalViews || 0) }}</span>
+                  </div>
+                  <div class="stats-label">Views</div>
+               </div>
+            </div>
+         </div>
       </div>
   </div>
 </div>
 </template>
+
+<style scoped>
+/* Statistics section improvements */
+.stats-section {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 12px 8px;
+    margin: 12px 0;
+}
+
+.stats-item {
+    text-align: center;
+    padding: 4px;
+}
+
+.stats-icon {
+    width: 16px;
+    height: 16px;
+    margin-right: 4px;
+}
+
+.stats-value {
+    font-weight: 600;
+    font-size: 14px;
+    color: #2c3e50;
+}
+
+.stats-label {
+    font-size: 11px;
+    color: #6c757d;
+    margin-top: 2px;
+}
+
+/* Card polish */
+.service-box-card { 
+    border: 1px solid #eef0f2; 
+    transition: box-shadow .2s ease, transform .2s ease; 
+    background: #fff; 
+    padding: 15px;
+    border-radius: 12px;
+}
+.service-box-card:hover { 
+    box-shadow: 0 10px 24px rgba(18,38,63,.08); 
+    transform: translateY(-2px); 
+}
+</style>
 
 <script setup>
 import { ref ,onMounted} from 'vue';
