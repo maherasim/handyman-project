@@ -2030,17 +2030,23 @@ table.provider-detail-info td h6 {
 .service-card-table tbody tr td {
   padding-left: 0;
   padding-right: 0;
-  padding-top: 1rem;
-  padding-bottom: 1rem;
+  padding-top: 1.5rem;
+  padding-bottom: 1.5rem;
   height: auto;
   vertical-align: top;
+  border: none;
 }
 .service-card-table tbody tr td .service-box-card {
   height: auto;
   margin-bottom: 0;
+  transition: all 0.3s ease;
 }
 .service-card-table .service-box-card .service-img {
   height: 13.5rem;
+}
+
+.service-card-table tbody tr:not(:last-child) td {
+  border-bottom: 1rem solid transparent;
 }
 
 .iq-testimonial {
