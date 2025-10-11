@@ -1275,7 +1275,7 @@ const formSubmit = handleSubmit(async (values) => {
   let note = '';
 
   // Add note about cancellation charge if applicable
-  if (cancellationCharge > 0) {
+  if (cancellationCharge > 0 && cancellation['cancellation_charge'] == 1) {
     note = `A ${formatCurrencyVue(cancellationCharge)} fee applies for cancellation within ${cancellation['cancellation_charge_hours']} hours of the scheduled service.`;
   }
 
