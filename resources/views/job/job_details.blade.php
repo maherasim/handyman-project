@@ -660,15 +660,57 @@
         <!-- Tab Switching Script -->
         <script>
             document.addEventListener('DOMContentLoaded', function () {
-                const tabButtons = document.querySelectorAll('.tab-btn');
-                const tabContents = document.querySelectorAll('.tab-content');
+                // Job Details Tabs (Description, Duties, Skills, Benefits)
+                const jobDetailTabButtons = document.querySelectorAll('.job-details-tabs .tab-btn');
+                const jobDetailTabContents = document.querySelectorAll('.job-details-tabs .tab-content');
 
-                tabButtons.forEach(button => {
+                jobDetailTabButtons.forEach(button => {
                     button.addEventListener('click', function () {
                         const targetTab = this.getAttribute('data-tab');
                         
-                        // Remove active class from all buttons
-                        tabButtons.forEach(btn => {
+                        // Remove active class from all job detail buttons
+                        jobDetailTabButtons.forEach(btn => {
+                            btn.classList.remove('active');
+                            btn.style.border = 'none';
+                            btn.style.borderBottom = '3px solid transparent';
+                            btn.style.background = '#f8f9fa';
+                            btn.style.color = '#6c757d';
+                            btn.style.fontWeight = '500';
+                        });
+                        
+                        // Add active class to clicked button
+                        this.classList.add('active');
+                        this.style.border = 'none';
+                        this.style.borderBottom = '3px solid #007bff';
+                        this.style.background = '#fff';
+                        this.style.color = '#007bff';
+                        this.style.fontWeight = '600';
+                        
+                        // Hide all job detail tab contents
+                        jobDetailTabContents.forEach(content => {
+                            content.style.display = 'none';
+                            content.classList.remove('active');
+                        });
+                        
+                        // Show target tab content
+                        const targetContent = document.getElementById(targetTab + '-content');
+                        if (targetContent) {
+                            targetContent.style.display = 'block';
+                            targetContent.classList.add('active');
+                        }
+                    });
+                });
+
+                // Customer Details Tabs (Job Details, Customer Details)
+                const customerDetailTabButtons = document.querySelectorAll('.bg-light .tab-btn');
+                const customerDetailTabContents = document.querySelectorAll('.bg-light .tab-content');
+
+                customerDetailTabButtons.forEach(button => {
+                    button.addEventListener('click', function () {
+                        const targetTab = this.getAttribute('data-tab');
+                        
+                        // Remove active class from all customer detail buttons
+                        customerDetailTabButtons.forEach(btn => {
                             btn.classList.remove('active');
                             btn.style.border = 'none';
                             btn.style.borderBottom = '3px solid transparent';
@@ -685,8 +727,8 @@
                         this.style.color = '#dc3545';
                         this.style.fontWeight = '600';
                         
-                        // Hide all tab contents
-                        tabContents.forEach(content => {
+                        // Hide all customer detail tab contents
+                        customerDetailTabContents.forEach(content => {
                             content.style.display = 'none';
                             content.classList.remove('active');
                         });
