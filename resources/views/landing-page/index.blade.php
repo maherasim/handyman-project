@@ -574,7 +574,7 @@
                         <div class="row">
                             @foreach ($servicerequest as $data)
                                 <div class="col-md-3"> <!-- Changed from col-md-4 to col-md-3 -->
-                                    <div class="service-box-card bg-light rounded-3 mb-5"
+                                    <div class="service-box-card bg-light rounded-3 mb-3"
                                         data-service-id="{{ $data->id }}">
                                         <div class="iq-image position-relative">
                                             @if ($data->visit_type == 'ONLINE')
@@ -651,50 +651,86 @@
                                                 </form>
                                             @endif
                                         </div>
-                                        <ul class="list-inline p-0 mt-1 mb-0 price-content">
-                                            <li class="text-primary fw-500 d-inline-block position-relative font-size-18">
+                                        <ul class="list-inline p-0 mt-0 mb-0 price-content">
+                                            <div class="service d-flex justify-content-center "
+                                                style="position:relative; z-index:1111; margin:auto; background-image: url('{{ asset('images/icon/banner2.jpg') }}'); background-size: cover; width:68% ; margin-top:-32px;  background-repeat: no-repeat; background-position: center; padding: 10px 20px; color: white; font-weight: 600; font-size: 18px; border-radius: 10px; border: 3px solid #E1DCDD;">
+
                                                 @if ($data->price == 0)
-                                                    Free
+                                                    <li
+                                                        class="text-white fw-500 d-inline-block position-relative font-size-18">
+                                                        Free</li>
                                                 @else
-                                                    {{ getPriceFormat($data->price) }}
+                                                    <li
+                                                        class="text-white fw-500 d-inline-block position-relative font-size-18">
+                                                        {{ getPriceFormat($data->price) }}/{{ $data->type }}
+                                                    </li>
                                                 @endif
-                                            </li>
-                                            @if ($data->duration && $data->duration !== '00:00')
-                                                <li class="d-inline-block fw-500 position-relative service-price">
-                                                    ({{ $data->duration }})
-                                                </li>
-                                            @endif
+                                            </div>
                                         </ul>
 
 
-                                        <a href="{{ route('service.detail', $data->id) }}" class="service-heading mt-4 d-block p-0">
-                                            <h5 class="service-title font-size-18 line-count-2">{{ $data->name }}</h5>
+                                        <a href="{{ route('service.detail', $data->id) }}"
+                                            class="service-heading mt-2 d-block p-0">
+                                            <h5 class="service-heading text-capitalize"style="font-size:15px">
+                                                <b>{{ $data->name }}</b> </h5>
+
+                                                
                                         </a>
 
 
-                                        <div class="mt-3">
-                                            <div class="d-flex align-items-center gap-2">
+                                        <p class="mt-0 mb-0" style="font-size: 10;  ">
+                                            {{ $data->city ? $data->city->name : 'City' }}-{{ $data->country ? $data->country->name : 'Country' }}
+                                        </p>
+
+
+                                        <div class="d-flex align-items-center justify-content-between w-100">
+                                            <div class="d-flex align-items-center flex-nowrap">
                                                 <img src="{{ getSingleMedia($data->providers, 'profile_image', null) }}"
                                                     alt="service" class="img-fluid rounded-3 object-cover avatar-24">
-                                                <a href="{{ route('provider.detail', $data->providers->id) }}">
-                                                    <span class="font-size-14 service-user-name">{{ $data->providers->display_name }}</span>
+                                                <a href="{{ route('provider.detail', $data->providers->id) }}" class="ml-2">
+                                                    <span class="font-size-14 service-user-name" style="white-space: nowrap;">
+                                                        {{ $data->providers->display_name }}
+                                                    </span>
                                                 </a>
                                             </div>
-                                            
-                                            <div class="d-flex align-items-center gap-1 f-none mt-2">
-                                                <rating-component :readonly="true" :showrating="false" :ratingvalue="{{ $data->avg_rating }}" />
-                                                <h6 class="font-size-14">{{ $data->avg_rating }}
-                                                    <a href="{{ route('rating.all', ['service_id' => $data->id]) }}">
-                                                        <span class="text-body ms-1">({{ $data->total_reviews }} {{ __('messages.reviews') }})</span>
-                                                    </a>
-                                                </h6>
-                                                <span class="ms-3 d-inline-flex align-items-center" title="Views">
-                                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                        <path d="M12 5c-7.633 0-10 7-10 7s2.367 7 10 7 10-7 10-7-2.367-7-10-7Zm0 12a5 5 0 1 1 0-10 5 5 0 0 1 0 10Zm0-8a3 3 0 1 0 .002 6.002A3 3 0 0 0 12 9Z" fill="currentColor"/>
-                                                    </svg>
-                                                    <span class="ms-1">{{ $data->total_views ?? 0 }}</span>
-                                                </span>
+                                            <div class="d-flex align-items-center justify-content-end">
+                                                <img src="{{ asset('images/icon/freeicon.jpg') }}" alt="icon"
+                                                    style="width: 26px; height: 26px; margin-right: 10px;">
+                                                <img src="{{ asset('images/icon/verifiedpng.png') }}" alt="icon"
+                                                    style="width: 26px; height: 26px;">
                                             </div>
+                                        </div>
+                                        
+                                        <div class="d-flex align-items-center mt-2 gap-3"> 
+                                            <div class="d-flex align-items-center gap-2 flex-wrap ml-2">
+                                                <div class="star-rating">
+                                                    <rating-component :readonly="true" :showrating="false" :ratingvalue="1" />
+                                                </div>
+                                                <h6 class="lh-sm mb-0">{{  $data->avg_rating }}</h6>
+                                                <a href="{{ route('rating.all', ['service_id' => $data->id]) }}">({{  $data->total_reviews }} {{ __('messages.reviews') }})</a>
+                                            </div>
+                                            <p class="mb-0">{{ $data->booking_count }} Bookings</p>
+                                            <span class="ms-2 d-inline-flex align-items-center" title="Views">
+                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns=" "><path d="M12 5c-7.633 0-10 7-10 7s2.367 7 10 7 10-7 10-7-2.367-7-10-7Zm0 12a5 5 0 1 1 0-10 5 5 0 0 1 0 10Zm0-8a3 3 0 1 0 .002 6.002A3 3 0 0 0 12 9Z" fill="currentColor"/></svg>
+                                                <span class="ms-1">{{ $data->total_views ?? 0 }}</span>
+                                            </span>
+                                        </div>
+                                        
+
+
+                                        <div class="d-flex mt-0 " style="gap: 18px; justify-content: center;">
+                                            <a href="#"><img
+                                                    src="https://static.vecteezy.com/system/resources/previews/016/716/481/original/facebook-icon-free-png.png"
+                                                    style="width: 30px; border-radius: 8px;" alt=""></a>
+                                            <a href="#"><img
+                                                    src="https://upload.wikimedia.org/wikipedia/commons/9/95/Instagram_logo_2022.svg"
+                                                    style="width: 30px; border-radius: 8px;" alt=""></a>
+                                            <a href="#"><img
+                                                    src="https://cdn.pixabay.com/photo/2015/03/10/17/30/twitter-667462_640.png"
+                                                    style="width: 30px; border-radius: 8px;" alt=""></a>
+                                            <a href="#"><img
+                                                    src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRokEYt0yyh6uNDKL8uksVLlhZ35laKNQgZ9g&s"
+                                                    style="width: 30px; border-radius: 8px;" alt=""></a>
                                         </div>
 
                                     </div>
@@ -747,7 +783,7 @@
                     <div class="row">
                         @foreach ($featuredrequest  as $data)
                             <div class="col-md-3"> <!-- Changed from col-md-4 to col-md-3 -->
-                                <div class="service-box-card bg-light rounded-3 mb-5"
+                                <div class="service-box-card bg-light rounded-3 mb-3"
                                     data-service-id="{{ $data->id }}">
                                     <div class="iq-image position-relative">
                                         @if ($data->visit_type == 'ONLINE')
@@ -824,50 +860,89 @@
                                             </form>
                                         @endif
                                     </div>
-                                    <ul class="list-inline p-0 mt-1 mb-0 price-content">
-                                        <li class="text-primary fw-500 d-inline-block position-relative font-size-18">
+                                    <ul class="list-inline p-0 mt-0 mb-0 price-content">
+                                        <div class="service d-flex justify-content-center "
+                                            style="position:relative; z-index:1111; margin:auto; background-image: url('{{ asset('images/icon/newbanner.jpg') }}'); background-size: cover; width:68% ; margin-top:-32px;  background-repeat: no-repeat; background-position: center; padding: 10px 20px; color: white; font-weight: 600; font-size: 18px; border-radius: 10px; border: 3px solid #E1DCDD;">
+
                                             @if ($data->price == 0)
-                                                Free
+                                                <li
+                                                    class="text-white fw-500 d-inline-block position-relative font-size-18">
+                                                    Free</li>
                                             @else
-                                                {{ getPriceFormat($data->price) }}
+                                                <li
+                                                    class="text-white fw-500 d-inline-block position-relative font-size-18">
+                                                    {{ getPriceFormat($data->price) }}/{{ $data->type }}
+                                                </li>
                                             @endif
-                                        </li>
-                                        @if ($data->duration && $data->duration !== '00:00')
-                                            <li class="d-inline-block fw-500 position-relative service-price">
-                                                ({{ $data->duration }})
-                                            </li>
-                                        @endif
+                                        </div>
                                     </ul>
 
 
-                                    <a href="{{ route('service.detail', $data->id) }}" class="service-heading mt-4 d-block p-0">
-                                        <h5 class="service-title font-size-18 line-count-2">{{ $data->name }}</h5>
+                                    <a href="{{ route('service.detail', $data->id) }}"
+                                        class="service-heading mt-2 d-block p-0">
+                                        <h5 class="service-heading text-capitalize"style="font-size:15px">
+                                           <b>{{ $data->name }}</b> </h5>
+
+                                           
+
+
+
+
                                     </a>
 
 
-                                    <div class="mt-3">
-                                        <div class="d-flex align-items-center gap-2">
+                                    <p class="mt-0 mb-0" style="font-size: 10;  ">
+                                        {{ $data->city ? $data->city->name : 'City' }}-{{ $data->country ? $data->country->name : 'Country' }}
+                                    </p>
+
+
+                                    <div class="d-flex align-items-center justify-content-between w-100">
+                                        <div class="d-flex align-items-center flex-nowrap">
                                             <img src="{{ getSingleMedia($data->providers, 'profile_image', null) }}"
                                                 alt="service" class="img-fluid rounded-3 object-cover avatar-24">
-                                            <a href="{{ route('provider.detail', $data->providers->id) }}">
-                                                <span class="font-size-14 service-user-name">{{ $data->providers->display_name }}</span>
+                                            <a href="{{ route('provider.detail', $data->providers->id) }}" class="ml-2">
+                                                <span class="font-size-14 service-user-name" style="white-space: nowrap;">
+                                                    {{ $data->providers->display_name }}
+                                                </span>
                                             </a>
                                         </div>
-                                        
-                                        <div class="d-flex align-items-center gap-1 f-none mt-2">
-                                            <rating-component :readonly="true" :showrating="false" :ratingvalue="{{ $data->avg_rating }}" />
-                                            <h6 class="font-size-14">{{ $data->avg_rating }}
-                                                <a href="{{ route('rating.all', ['service_id' => $data->id]) }}">
-                                                    <span class="text-body ms-1">({{ $data->total_reviews }} {{ __('messages.reviews') }})</span>
-                                                </a>
-                                            </h6>
-                                            <span class="ms-3 d-inline-flex align-items-center" title="Views">
-                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                    <path d="M12 5c-7.633 0-10 7-10 7s2.367 7 10 7 10-7 10-7-2.367-7-10-7Zm0 12a5 5 0 1 1 0-10 5 5 0 0 1 0 10Zm0-8a3 3 0 1 0 .002 6.002A3 3 0 0 0 12 9Z" fill="currentColor"/>
-                                                </svg>
-                                                <span class="ms-1">{{ $data->total_views ?? 0 }}</span>
-                                            </span>
+                                        <div class="d-flex align-items-center justify-content-end">
+                                            <img src="{{ asset('images/icon/freeicon.jpg') }}" alt="icon"
+                                                style="width: 26px; height: 26px; margin-right: 10px;">
+                                            <img src="{{ asset('images/icon/verifiedpng.png') }}" alt="icon"
+                                                style="width: 26px; height: 26px;">
                                         </div>
+                                    </div>
+                                    
+                                    <div class="d-flex align-items-center mt-2 gap-3"> 
+                                        <div class="d-flex align-items-center gap-2 flex-wrap ml-2">
+                                            <div class="star-rating">
+                                                <rating-component :readonly="true" :showrating="false" :ratingvalue="1" />
+                                            </div>
+                                            <h6 class="lh-sm mb-0">{{  $data->avg_rating }}</h6>
+                                            <a href="{{ route('rating.all', ['service_id' => $data->id]) }}">({{  $data->total_reviews }} {{ __('messages.reviews') }})</a>
+                                        </div>
+                                        <p class="mb-0">{{ $data->booking_count }} Bookings</p>
+                                        <span class="ms-2 d-inline-flex align-items-center" title="Views">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns=" "><path d="M12 5c-7.633 0-10 7-10 7s2.367 7 10 7 10-7 10-7-2.367-7-10-7Zm0 12a5 5 0 1 1 0-10 5 5 0 0 1 0 10Zm0-8a3 3 0 1 0 .002 6.002A3 3 0 0 0 12 9Z" fill="currentColor"/></svg>
+                                            <span class="ms-1">{{ $data->total_views ?? 0 }}</span>
+                                        </span>
+                                    </div>
+
+
+                                    <div class="d-flex mt-0 " style="gap: 18px; justify-content: center;">
+                                        <a href="#"><img
+                                                src="https://static.vecteezy.com/system/resources/previews/016/716/481/original/facebook-icon-free-png.png"
+                                                style="width: 30px; border-radius: 8px;" alt=""></a>
+                                        <a href="#"><img
+                                                src="https://upload.wikimedia.org/wikipedia/commons/9/95/Instagram_logo_2022.svg"
+                                                style="width: 30px; border-radius: 8px;" alt=""></a>
+                                        <a href="#"><img
+                                                src="https://cdn.pixabay.com/photo/2015/03/10/17/30/twitter-667462_640.png"
+                                                style="width: 30px; border-radius: 8px;" alt=""></a>
+                                        <a href="#"><img
+                                                src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRokEYt0yyh6uNDKL8uksVLlhZ35laKNQgZ9g&s"
+                                                style="width: 30px; border-radius: 8px;" alt=""></a>
                                     </div>
 
                                 </div>
