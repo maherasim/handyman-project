@@ -536,17 +536,31 @@ Index Of Script
         }, false);
 
         /*---------------------------------------------------------------------
-        Scrollbar
+        Scrollbar - Initialize only once to prevent conflicts
         -----------------------------------------------------------------------*/
 
-        jQuery('.data-scrollbar').each(function () {
-            var attr = $(this).attr('data-scroll');
-            if (typeof attr !== typeof undefined && attr !== false){
-            let Scrollbar = window.Scrollbar;
-            var a = jQuery(this).data('scroll');
-            Scrollbar.init(document.querySelector('div[data-scroll= "' + a + '"]'));
-            }
-        });
+        // Initialize scrollbar only if not already initialized
+        if (!window.scrollbarInitialized) {
+            jQuery('.data-scrollbar').each(function () {
+                var attr = $(this).attr('data-scroll');
+                if (typeof attr !== typeof undefined && attr !== false){
+                    let Scrollbar = window.Scrollbar;
+                    var a = jQuery(this).data('scroll');
+                    var scrollElement = document.querySelector('div[data-scroll= "' + a + '"]');
+                    
+                    // Check if scrollbar is already initialized
+                    if (scrollElement && !scrollElement.hasAttribute('data-scrollbar-initialized')) {
+                        try {
+                            Scrollbar.init(scrollElement);
+                            scrollElement.setAttribute('data-scrollbar-initialized', 'true');
+                        } catch (error) {
+                            console.warn('Scrollbar initialization failed:', error);
+                        }
+                    }
+                }
+            });
+            window.scrollbarInitialized = true;
+        }
 
     });
 

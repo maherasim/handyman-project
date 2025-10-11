@@ -1,9 +1,9 @@
 {
-    "/js/backend-bundle.min.js": "/js/backend-bundle.min.js",
-    "/js/landing-app.min.js": "/js/landing-app.min.js",
-    "/css/backend-bundle.min.css": "/css/backend-bundle.min.css",
-    "/css/backend.css": "/css/backend.css",
-    "/css/landing-page-rtl.min.css": "/css/landing-page-rtl.min.css",
-    "/css/landing-page.min.css": "/css/landing-page.min.css",
-    "/css/landing-page-custom.min.css": "/css/landing-page-custom.min.css"
+    "/js/backend-bundle.min.js": "/js/backend-bundle.min.js?id=7c387934f14beaf9e0f7d31f61d3680b",
+    "/js/landing-app.min.js": "/js/landing-app.min.js?id=e9edba981321fff8713202999562592e",
+    "/css/backend-bundle.min.css": "/css/backend-bundle.min.css?id=771cad278a66a7afbb7a85817c67d82b",
+    "/css/backend.css": "/css/backend.css?id=4ccceced43997c7e79d655c52e31ae87",
+    "/css/landing-page-rtl.min.css": "/css/landing-page-rtl.min.css?id=1119977a7384cbac0ee1f24122e96640",
+    "/css/landing-page.min.css": "/css/landing-page.min.css?id=ce968d725dc586796d9904a06cce6118",
+    "/css/landing-page-custom.min.css": "/css/landing-page-custom.min.css?id=fd049bf4cc513be6603453c601ea151b"
 }

@@ -8,6 +8,17 @@ require('select2')
 require('flatpickr')
 window.moment = require('moment')
 window.Snackbar = require('node-snackbar')
+
+// Import utility functions
+import { initializeAllScrollbars } from './utils/scrollbar-init.js'
+import { initializeAllSelect2 } from './utils/select2-init.js'
+import BuildFixes from './utils/build-fixes.js'
+
+// Initialize scrollbars and select2 globally
+window.initializeAllScrollbars = initializeAllScrollbars
+window.initializeAllSelect2 = initializeAllSelect2
+window.BuildFixes = BuildFixes
+
 // window.Vue = require('vue').default;
 
 /**

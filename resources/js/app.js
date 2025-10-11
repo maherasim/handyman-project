@@ -45,6 +45,11 @@ import Wallet from './components/Wallet.vue'
 import HelpdeskPage from './sections/HelpdeskPage.vue'
 import HelpdeskTable from './sections/HelpdeskTable.vue'
 
+// Import utility functions
+import { initializeAllScrollbars } from './utils/scrollbar-init.js'
+import { initializeAllSelect2 } from './utils/select2-init.js'
+import BuildFixes from './utils/build-fixes.js'
+
 const pinia = createPinia()
 
 const app = createApp()
@@ -160,4 +165,10 @@ const i18n = createI18n({
 window.i18n = i18n
 
 app.use(i18n)
+
+// Initialize scrollbars and select2 globally
+window.initializeAllScrollbars = initializeAllScrollbars
+window.initializeAllSelect2 = initializeAllSelect2
+window.BuildFixes = BuildFixes
+
 app.mount('#landing-app')

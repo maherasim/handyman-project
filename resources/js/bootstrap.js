@@ -14,7 +14,10 @@ window.ApexCharts = require('apexcharts')
 require('web-animations-js')
 // window.Vivus = require('vivus');
 // window.dragula = require('dragula');
-window.Scrollbar = require('smooth-scrollbar/dist/smooth-scrollbar')
+// Initialize smooth-scrollbar only once globally
+if (!window.Scrollbar) {
+    window.Scrollbar = require('smooth-scrollbar/dist/smooth-scrollbar')
+}
 require('jquery.appear')
 require('datatables')
 require('datatables.net-bs4')

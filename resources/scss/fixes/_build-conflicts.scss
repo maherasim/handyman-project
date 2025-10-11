@@ -1,0 +1,175 @@
+/**
+ * Build Conflict Fixes
+ * Addresses issues with sidebar scrolling and dropdown functionality
+ */
+
+/* Fix for sidebar scrolling issues */
+.iq-sidebar {
+    .data-scrollbar {
+        overflow: hidden !important;
+        position: relative;
+        
+        // Ensure proper height calculation
+        height: calc(100vh - 120px);
+        max-height: calc(100vh - 120px);
+        
+        // Fix for smooth-scrollbar initialization
+        &[data-scrollbar-initialized="true"] {
+            overflow: hidden !important;
+        }
+    }
+    
+    // Ensure sidebar menu items are properly styled
+    .iq-sidebar-menu {
+        .side-menu {
+            li {
+                a {
+                    // Fix dropdown arrow positioning
+                    .iq-arrow-right {
+                        transition: transform 0.3s ease;
+                        
+                        &.arrow-active {
+                            transform: rotate(90deg);
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+/* Fix for dropdown conflicts */
+.select2-container {
+    z-index: 9999 !important;
+    
+    .select2-dropdown {
+        z-index: 9999 !important;
+    }
+    
+    // Fix for dropdown positioning
+    &.select2-container--open {
+        .select2-dropdown {
+            z-index: 9999 !important;
+        }
+    }
+}
+
+/* Fix for Bootstrap dropdown conflicts */
+.dropdown-menu {
+    z-index: 1050 !important;
+}
+
+/* Fix for modal z-index conflicts */
+.modal {
+    z-index: 1055 !important;
+}
+
+.modal-backdrop {
+    z-index: 1050 !important;
+}
+
+/* Fix for tooltip conflicts */
+.tooltip {
+    z-index: 1070 !important;
+}
+
+/* Fix for popover conflicts */
+.popover {
+    z-index: 1060 !important;
+}
+
+/* Fix for sticky header conflicts */
+.iq-top-navbar {
+    &.fixed {
+        z-index: 1030 !important;
+    }
+}
+
+/* Fix for sidebar toggle conflicts */
+.sidebar-main {
+    .iq-sidebar {
+        z-index: 1020 !important;
+    }
+}
+
+/* Responsive fixes */
+@media (max-width: 1299px) {
+    .iq-sidebar {
+        z-index: 999 !important;
+        
+        &.sidebar-main {
+            z-index: 999 !important;
+        }
+    }
+}
+
+/* Fix for Vue component conflicts */
+.vue-component {
+    // Ensure Vue components don't interfere with existing styles
+    position: relative;
+    z-index: auto;
+}
+
+/* Fix for build-specific issues */
+.build-conflict-fix {
+    // Reset any conflicting styles
+    all: unset;
+    
+    // Reapply necessary styles
+    display: block;
+    position: relative;
+}
+
+/* Fix for scrollbar appearance */
+.data-scrollbar {
+    // Ensure consistent scrollbar styling
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 0, 0, 0.3) transparent;
+    
+    &::-webkit-scrollbar {
+        width: 6px;
+    }
+    
+    &::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    
+    &::-webkit-scrollbar-thumb {
+        background-color: rgba(0, 0, 0, 0.3);
+        border-radius: 3px;
+        
+        &:hover {
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+    }
+}
+
+/* Fix for select2 dropdown positioning */
+.select2-container {
+    // Ensure proper positioning
+    position: relative;
+    
+    .select2-selection {
+        // Fix for selection styling
+        border: 1px solid #ced4da;
+        border-radius: 0.375rem;
+        
+        &:focus {
+            border-color: #86b7fe;
+            outline: 0;
+            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+        }
+    }
+}
+
+/* Fix for animation conflicts */
+.animate__animated {
+    // Ensure animations don't conflict with other transitions
+    animation-fill-mode: both;
+}
+
+/* Fix for build cache issues */
+.cache-bust {
+    // Force reflow to prevent cached styles
+    transform: translateZ(0);
+}
