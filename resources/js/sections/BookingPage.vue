@@ -79,7 +79,7 @@ const initializeFlatpickr = () => {
     dateFormat: "Y-m-d",
     onClose: function(selectedDates) {
       if (selectedDates && selectedDates.length === 2) {
-        booking_date_range.value = selectedDates.map(date => date.toLocaleDateString()).join(" to ")
+        booking_date_range.value = selectedDates.map(date => date.toISOString().split('T')[0]).join(" to ")
       } else {
         booking_date_range.value = ''
       }

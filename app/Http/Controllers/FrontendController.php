@@ -1217,21 +1217,20 @@ class FrontendController extends Controller
             });
         }
         if (isset($filter['booking_date_range'])) {
-            $startDate = explode(' to ', $filter['booking_date_range'])[0];
-
-            $startDate = \Carbon\Carbon::createFromFormat('d/m/Y', $startDate)->format('Y-m-d');
-            $startDate = \Carbon\Carbon::parse($startDate);
-            $startDate = $startDate->format('Y-m-d');
-
-            $endDate = explode(' to ', $filter['booking_date_range'])[1];
-            $endDate = \Carbon\Carbon::createFromFormat('d/m/Y', $endDate)->format('Y-m-d');
-            $endDate = \Carbon\Carbon::parse($endDate);
-            $endDate = $endDate->format('Y-m-d');
-
-            $query->whereHas('slots', function ($q) use ($startDate, $endDate) {
-                $q->whereDate('date', '>=', $startDate)
-                    ->whereDate('date', '<=', $endDate);
-            });
+            $dateRange = explode(' to ', $filter['booking_date_range']);
+            
+            if (count($dateRange) === 2) {
+                $startDate = trim($dateRange[0]);
+                $endDate = trim($dateRange[1]);
+                
+                // Validate date format (Y-m-d)
+                if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $startDate) && preg_match('/^\d{4}-\d{2}-\d{2}$/', $endDate)) {
+                    $query->whereHas('slots', function ($q) use ($startDate, $endDate) {
+                        $q->whereDate('date', '>=', $startDate)
+                            ->whereDate('date', '<=', $endDate);
+                    });
+                }
+            }
         }
 
         if (isset($filter['status'])) {
