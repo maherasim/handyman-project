@@ -1225,9 +1225,9 @@ class FrontendController extends Controller
                 
                 // Validate date format (Y-m-d)
                 if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $startDate) && preg_match('/^\d{4}-\d{2}-\d{2}$/', $endDate)) {
+                    // Show booking if ANY slot falls within the date range
                     $query->whereHas('slots', function ($q) use ($startDate, $endDate) {
-                        $q->whereDate('date', '>=', $startDate)
-                            ->whereDate('date', '<=', $endDate);
+                        $q->whereBetween('date', [$startDate, $endDate]);
                     });
                 }
             }
