@@ -281,7 +281,7 @@
 
                                 <!-- Remove Button -->
                                 <div class="col-md-1 text-center">
-                                    <button class="btn btn-outline-danger mt-4" @click="removeSlot(index)" v-if="dateSlots.length > 1">
+                                    <button type="button" class="btn btn-outline-danger mt-4" @click="removeSlot(index)" v-if="dateSlots.length > 1">
                                         🗑️
                                     </button>
                                 </div>
@@ -289,7 +289,7 @@
 
                             <!-- Add Button -->
                             <div class="mb-4">
-                                <button class="btn btn-outline-primary" @click="addMoreDates">
+                                <button type="button" class="btn btn-outline-primary" @click="addMoreDates">
                                     ➕ Add More Dates
                                 </button>
                             </div>
