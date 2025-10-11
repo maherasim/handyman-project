@@ -360,7 +360,7 @@
                         @php
                             $priceLabel = $jobrequest->price_type === 'fixed' ? 'Fixed Price' : ($jobrequest->price_type === 'daily' ? '/ Day' : '/ Hour');
                         @endphp
-                        <h4 class="text-primary mb-2">$ {{ number_format($jobrequest->price, 2) }} <span class="text-dark"><b>{{ $priceLabel }}</b></span></h4>
+                        <h4 class="text-primary mb-2">€ {{ number_format($jobrequest->price, 2) }} <span class="text-dark"><b>{{ $priceLabel }}</b></span></h4>
                         <p class="mb-0 text-muted" id="description">
                             {{ Str::words(strip_tags($jobrequest->description), 15, '...') }}
                         </p>
@@ -455,15 +455,15 @@
                                     </div>
                                     <div class="detail-item mb-2">
                                         <span class="detail-label"><b>Total Budget:</b></span>
-                                        <span class="detail-value">${{ number_format($jobrequest->total_budget ?? $jobrequest->price, 2) }}</span>
+                                        <span class="detail-value">€{{ number_format($jobrequest->total_budget ?? $jobrequest->price, 2) }}</span>
                                     </div>
                                     <div class="detail-item mb-2">
                                         <span class="detail-label"><b>Start Date:</b></span>
-                                        <span class="detail-value">{{ $jobrequest->start_date ? \Carbon\Carbon::parse($jobrequest->start_date)->format('M d, Y') : 'N/A' }}</span>
+                                        <span class="detail-value">{{ $jobrequest->start_date ? \Carbon\Carbon::parse($jobrequest->start_date)->format('Y-m-d') : 'N/A' }}</span>
                                     </div>
                                     <div class="detail-item mb-2">
                                         <span class="detail-label"><b>End Date:</b></span>
-                                        <span class="detail-value">{{ $jobrequest->end_date ? \Carbon\Carbon::parse($jobrequest->end_date)->format('M d, Y') : 'N/A' }}</span>
+                                        <span class="detail-value">{{ $jobrequest->end_date ? \Carbon\Carbon::parse($jobrequest->end_date)->format('Y-m-d') : 'N/A' }}</span>
                                     </div>
                                     <div class="detail-item mb-2">
                                         <span class="detail-label"><b>Total Hours:</b></span>
@@ -554,15 +554,15 @@
                                     </div>
                                     <div class="detail-item mb-2">
                                         <span class="detail-label"><b>Total budget:</b></span>
-                                        <span class="detail-value">{{ $jobrequest->total_budget ?? 'N/A' }}</span>
+                                        <span class="detail-value">€{{ number_format($jobrequest->total_budget ?? $jobrequest->price, 2) }}</span>
                                     </div>
                                     <div class="detail-item mb-2">
                                         <span class="detail-label"><b>Start date:</b></span>
-                                        <span class="detail-value">{{ $jobrequest->start_date ?? 'N/A' }}</span>
+                                        <span class="detail-value">{{ $jobrequest->start_date ? \Carbon\Carbon::parse($jobrequest->start_date)->format('Y-m-d') : 'N/A' }}</span>
                                     </div>
                                     <div class="detail-item mb-2">
                                         <span class="detail-label"><b>End date:</b></span>
-                                        <span class="detail-value">{{ $jobrequest->end_date ?? 'N/A' }}</span>
+                                        <span class="detail-value">{{ $jobrequest->end_date ? \Carbon\Carbon::parse($jobrequest->end_date)->format('Y-m-d') : 'N/A' }}</span>
                                     </div>
                                     <div class="detail-item mb-2">
                                         <span class="detail-label"><b>Total hours:</b></span>
