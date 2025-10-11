@@ -1140,15 +1140,14 @@ const remaining_amount = computed(() => {
 const isFormValid = computed(() => {
   // Check if all required fields are filled
   const hasAddress = address.value && address.value.trim() !== '';
-  const hasDate = date.value && date.value !== '';
   
-  // For slot services, check start_time
-  const hasStartTime = props.service.is_slot !== 1 || (start_time.value && start_time.value !== '');
+  // Check if at least one date slot has date filled
+  const hasDate = dateSlots.value.some(slot => slot.date && slot.date !== '');
   
-  // Check if form is valid according to validation schema
-  const isSchemaValid = meta.value.valid;
+  // For slot services, check if at least one slot has start_time
+  const hasStartTime = props.service.is_slot !== 1 || dateSlots.value.some(slot => slot.startTime && slot.startTime !== '');
   
-  return hasAddress && hasDate && hasStartTime && isSchemaValid;
+  return hasAddress && hasDate && hasStartTime;
 });
 const taxRatesDisplay = computed(() => {
   if (!props.taxes || props.taxes.length === 0) return '0%';
