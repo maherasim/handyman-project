@@ -15,65 +15,51 @@
         max-height: none;
     }
 
-    /* Service Detail Tabs Styling */
+    /* Service Detail Tabs Styling - Matching Job Details Design */
+    .service-details-tabs {
+        margin-top: 2rem;
+    }
+    
+    .tab-navigation {
+        background: #f8f9fa;
+        border-radius: 8px 8px 0 0;
+        border-bottom: 1px solid #e9ecef;
+    }
+    
     .tab-btn {
-        padding: 18px 28px;
+        position: relative;
+        z-index: 1;
+        border-radius: 0 !important;
+        width: 100%;
+        padding: 14px 12px;
         border: none;
-        background: transparent;
+        border-bottom: 3px solid transparent;
+        background: #f8f9fa;
         color: #6c757d;
         font-weight: 500;
-        font-size: 16px;
+        font-size: 14px;
+        transition: all 0.3s ease;
         cursor: pointer;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        flex: 1;
-        border-bottom: 3px solid transparent;
-        position: relative;
-        text-transform: none;
-        letter-spacing: 0.3px;
-        outline: none;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-        border-radius: 8px 8px 0 0;
-        margin: 0 2px;
     }
     
     .tab-btn:hover {
-        color: #495057;
-        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        background: #e9ecef !important;
+        color: #495057 !important;
+        border-bottom-color: #007bff !important;
     }
     
     .tab-btn.active {
-        color: #007bff;
+        background: #fff !important;
+        color: #007bff !important;
+        border-bottom-color: #007bff !important;
         font-weight: 600;
-        border-bottom-color: #007bff;
-        background: linear-gradient(135deg, #fff 0%, #f8f9ff 100%);
-        box-shadow: 0 4px 16px rgba(0,123,255,0.15);
-        transform: translateY(-1px);
-    }
-    
-    .tab-btn:focus {
-        outline: none;
-        box-shadow: 0 0 0 3px rgba(0,123,255,0.2);
-    }
-    
-    .tab-btn i {
-        font-size: 18px;
-        opacity: 0.8;
-    }
-    
-    .tab-btn.active i {
-        opacity: 1;
-        color: #007bff;
+        box-shadow: 0 -2px 4px rgba(0,0,0,0.1);
     }
     
     .tab-content {
         display: none;
         background: #fff;
-        padding: 32px 0;
+        padding: 24px 0;
         animation: fadeIn 0.3s ease-in-out;
     }
     
@@ -88,169 +74,48 @@
     
     .tab-content-container {
         background: #fff;
-        border-radius: 0 0 16px 16px;
-        box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+        border-radius: 0 0 8px 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         border: 1px solid #e9ecef;
         border-top: none;
-        overflow: hidden;
-    }
-    
-    .tab-navigation {
-        background: #fff;
-        border-radius: 16px 16px 0 0;
-        border: 1px solid #e9ecef;
-        border-bottom: none;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-        overflow: hidden;
-    }
-    
-    .tab-navigation .d-flex {
-        border-bottom: 1px solid #e9ecef;
-        background: linear-gradient(135deg, #fafbfc 0%, #f8f9fa 100%);
     }
     
     .service-content, .cancellation-content {
-        line-height: 1.6;
-        color: #333;
-    }
-    
-    /* Responsive Design */
-    @media (max-width: 768px) {
-        .tab-btn {
-            padding: 14px 16px;
-            font-size: 14px;
-            flex-direction: column;
-            gap: 4px;
-        }
-        
-        .tab-btn i {
-            font-size: 16px;
-        }
-        
-        .tab-content {
-            padding: 24px 0;
-        }
-        
-        .tab-navigation .d-flex {
-            flex-direction: column;
-        }
-        
-        .tab-btn {
-            border-radius: 0;
-            margin: 0;
-            border-bottom: 1px solid #e9ecef;
-        }
-        
-        .tab-btn:last-child {
-            border-bottom: none;
-        }
-    }
-    
-    /* Enhanced visual effects */
-    .tab-navigation {
-        position: relative;
-    }
-    
-    .tab-navigation::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 1px;
-        background: linear-gradient(90deg, transparent 0%, #e9ecef 50%, transparent 100%);
-    }
-    
-    .tab-content-container {
-        position: relative;
-    }
-    
-    .tab-content-container::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 1px;
-        background: linear-gradient(90deg, transparent 0%, #007bff 20%, #007bff 80%, transparent 100%);
-        opacity: 0.3;
+        line-height: 1.7;
+        color: #495057;
+        font-size: 15px;
     }
     
     .service-content p, .cancellation-content p {
-        margin-bottom: 1rem;
+        margin-bottom: 1.2rem;
     }
     
     .service-content ul, .service-content ol, .cancellation-content ul, .cancellation-content ol {
-        margin-bottom: 1rem;
-        padding-left: 1.5rem;
+        margin-bottom: 1.2rem;
+        padding-left: 1.8rem;
     }
     
     .service-content li, .cancellation-content li {
-        margin-bottom: 0.5rem;
+        margin-bottom: 0.6rem;
+    }
+    
+    .service-content h1, .service-content h2, .service-content h3, .service-content h4, .service-content h5, .service-content h6,
+    .cancellation-content h1, .cancellation-content h2, .cancellation-content h3, .cancellation-content h4, .cancellation-content h5, .cancellation-content h6 {
+        color: #212529;
+        margin-bottom: 1rem;
+        margin-top: 1.5rem;
+    }
+    
+    .service-content h1:first-child, .service-content h2:first-child, .service-content h3:first-child,
+    .cancellation-content h1:first-child, .cancellation-content h2:first-child, .cancellation-content h3:first-child {
+        margin-top: 0;
     }
     
     .no-content {
         text-align: center;
-        padding: 2rem;
         color: #6c757d;
         font-style: italic;
-    }
-    
-    /* Professional Animations */
-    @keyframes tabSlideIn {
-        from {
-            opacity: 0;
-            transform: translateY(10px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-    
-    .tab-content.active {
-        animation: tabSlideIn 0.3s ease-out;
-    }
-    
-    /* Responsive Design */
-    @media (max-width: 768px) {
-        .tab-btn {
-            padding: 14px 16px;
-            font-size: 14px;
-        }
-        
-        .tab-navigation {
-            border-radius: 8px 8px 0 0;
-        }
-        
-        .tab-content-container {
-            border-radius: 0 0 8px 8px;
-        }
-    }
-    
-    @media (max-width: 576px) {
-        .tab-btn {
-            padding: 12px 8px;
-            font-size: 13px;
-            letter-spacing: 0.2px;
-        }
-        
-        .tab-navigation .d-flex {
-            flex-direction: column;
-        }
-        
-        .tab-btn {
-            border-bottom: 1px solid #e9ecef;
-            border-right: none;
-        }
-        
-        .tab-btn:last-child {
-            border-bottom: none;
-        }
-        
-        .tab-btn.active {
-            border-bottom-color: #007bff;
-        }
+        padding: 2rem 0;
     }
 </style>
 
@@ -325,22 +190,25 @@
                         </div>
                     @endif
                     <!-- Tabbed Service Information Section -->
-                    <div class="mt-5 pt-lg-5 pt-3">
+                    <div class="service-details-tabs mt-4">
                         <!-- Tab Navigation -->
-                        <div class="tab-navigation mb-0">
-                            <div class="d-flex border-bottom">
-                                <button class="tab-btn active" data-tab="about-services">
-                                    <i class="fas fa-info-circle"></i>
-                                    About Services
-                                </button>
-                                <button class="tab-btn" data-tab="about-provider">
-                                    <i class="fas fa-user-tie"></i>
-                                    About Provider
-                                </button>
-                                <button class="tab-btn" data-tab="cancellation-policy">
-                                    <i class="fas fa-file-contract"></i>
-                                    Cancellation Policy
-                                </button>
+                        <div class="tab-navigation mb-4">
+                            <div class="row g-0">
+                                <div class="col-4">
+                                    <button class="tab-btn active" data-tab="about-services">
+                                        About Services
+                                    </button>
+                                </div>
+                                <div class="col-4">
+                                    <button class="tab-btn" data-tab="about-provider">
+                                        About Provider
+                                    </button>
+                                </div>
+                                <div class="col-4">
+                                    <button class="tab-btn" data-tab="cancellation-policy">
+                                        Cancellation Policy
+                                    </button>
+                                </div>
                             </div>
                         </div>
 
@@ -1115,28 +983,39 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.1/dist/sweetalert2.all.min.js"></script>
     <script>
         $(document).ready(function() {
-            // Tab switching functionality with smooth animations
-            $('.tab-btn').on('click', function() {
+            // Tab switching functionality - matching job details style
+            $('.service-details-tabs .tab-btn').on('click', function() {
                 const targetTab = $(this).data('tab');
                 
-                // Prevent multiple clicks during animation
-                if ($(this).hasClass('active')) return;
-                
-                // Remove active class from all buttons with animation
-                $('.tab-btn').removeClass('active');
+                // Remove active class from all service detail buttons
+                $('.service-details-tabs .tab-btn').each(function() {
+                    $(this).removeClass('active');
+                    $(this).css({
+                        'border': 'none',
+                        'border-bottom': '3px solid transparent',
+                        'background': '#f8f9fa',
+                        'color': '#6c757d',
+                        'font-weight': '500'
+                    });
+                });
                 
                 // Add active class to clicked button
                 $(this).addClass('active');
-                
-                // Hide all tab contents with fade out
-                $('.tab-content').fadeOut(200, function() {
-                    $(this).removeClass('active');
+                $(this).css({
+                    'border': 'none',
+                    'border-bottom': '3px solid #007bff',
+                    'background': '#fff',
+                    'color': '#007bff',
+                    'font-weight': '600'
                 });
                 
-                // Show target tab content with fade in
-                setTimeout(() => {
-                    $('#' + targetTab + '-content').fadeIn(300).addClass('active');
-                }, 200);
+                // Hide all service detail tab contents
+                $('.service-details-tabs .tab-content').each(function() {
+                    $(this).hide().removeClass('active');
+                });
+                
+                // Show target tab content
+                $('#' + targetTab + '-content').show().addClass('active');
             });
 
             $('.service-addon-checkbox').on('change', function() {
