@@ -181,6 +181,50 @@
                                 {{ html()->select('visit_type', $visittype, old('visit_type', $servicedata->visit_type))->id('visit_type')->class('form-control select2js')->required() }}
                             </div>
 
+                            <div class="form-group col-md-3">
+                                {{ html()->label(__('Remote Work Level') . ' <span class="text-danger">*</span>', 'remote_work_level')->class('form-control-label') }}
+                                {{ html()->select(
+                                        'remote_work_level',
+                                        [
+                                            'onsite' => __('Onsite (100%)'),
+                                            '25_remote' => __('25% Remote'),
+                                            '50_remote' => __('50% Remote'),
+                                            '75_remote' => __('75% Remote'),
+                                            '100_remote' => __('100% Remote'),
+                                        ],
+                                        old('remote_work_level', $servicedata->remote_work_level ?? 'onsite'),
+                                    )->class('form-control select2js')->required()->id('remote_work_level') }}
+                            </div>
+
+                            <div class="form-group col-md-3">
+                                {{ html()->label(__('Career Level') . ' <span class="text-danger">*</span>', 'career_level')->class('form-control-label') }}
+                                {{ html()->select(
+                                        'career_level',
+                                        [
+                                            'intern' => __('Intern'),
+                                            'entry' => __('Entry'),
+                                            'junior' => __('Junior'),
+                                            'mid' => __('Mid-Level'),
+                                            'senior' => __('Senior'),
+                                            'lead' => __('Lead'),
+                                            'manager' => __('Manager'),
+                                        ],
+                                        old('career_level', $servicedata->career_level ?? 'entry'),
+                                    )->class('form-control select2js')->required()->id('career_level') }}
+                            </div>
+
+                            <div class="form-group col-md-3">
+                                {{ html()->label(__('Travel Required') . ' <span class="text-danger">*</span>', 'travel_required')->class('form-control-label') }}
+                                {{ html()->select(
+                                        'travel_required',
+                                        [
+                                            '0' => __('No'),
+                                            '1' => __('Yes'),
+                                        ],
+                                        old('travel_required', $servicedata->travel_required ?? '0'),
+                                    )->class('form-control select2js')->required()->id('travel_required') }}
+                            </div>
+
 
 
 
@@ -645,7 +689,7 @@
                     var state_id =
                         "{{ old('state_id', isset($servicedata->state_id) ? $servicedata->state_id : '') }}";
                     var city_id =
-                    "{{ old('city_id', isset($servicedata->city_id) ? $servicedata->city_id : '') }}";
+                        "{{ old('city_id', isset($servicedata->city_id) ? $servicedata->city_id : '') }}";
                     var initialCityId = city_id;
                     var category_id =
                         "{{ old('category_id', isset($servicedata->category_id) ? $servicedata->category_id : '') }}";

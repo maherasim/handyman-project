@@ -16,7 +16,7 @@ class Service extends Model implements  HasMedia
     protected $fillable = [
         'name', 'category_id', 'provider_id' , 'type' , 'is_slot','discount' , 'duration' ,'description','country_id', 'state_id',  'city_id' , 
         'is_featured', 'status' , 'price' , 'added_by','subcategory_id','service_type','visit_type','cancellation_policy','minimum_booking','tax_country_id',
-        'is_enable_advance_payment','advance_payment_amount','total_views'
+        'is_enable_advance_payment','advance_payment_amount','total_views','remote_work_level','career_level','travel_required'
     ];
 
     protected $casts = [
@@ -31,6 +31,7 @@ class Service extends Model implements  HasMedia
         'is_slot'                   => 'integer',
         'is_enable_advance_payment' => 'integer',
         'advance_payment_amount'    => 'double',
+        'travel_required'           => 'boolean',
     ];
 
     public function providers(){
