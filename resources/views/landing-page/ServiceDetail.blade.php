@@ -32,20 +32,38 @@
         border-radius: 0 !important;
         width: 100%;
         padding: 14px 12px;
-        border: none;
-        border-bottom: 3px solid transparent;
-        background: #f8f9fa;
-        color: #6c757d;
+        border: none !important;
+        border-bottom: 3px solid transparent !important;
+        background: #f8f9fa !important;
+        color: #6c757d !important;
         font-weight: 500;
         font-size: 14px;
         transition: all 0.3s ease;
         cursor: pointer;
+        outline: none !important;
+        box-shadow: none !important;
+    }
+    
+    .tab-btn:focus {
+        outline: none !important;
+        box-shadow: none !important;
+        border: none !important;
+        border-bottom: 3px solid transparent !important;
+    }
+    
+    .tab-btn:active {
+        outline: none !important;
+        box-shadow: none !important;
+        border: none !important;
+        border-bottom: 3px solid transparent !important;
     }
     
     .tab-btn:hover {
         background: #e9ecef !important;
         color: #495057 !important;
         border-bottom-color: #007bff !important;
+        outline: none !important;
+        box-shadow: none !important;
     }
     
     .tab-btn.active {
@@ -53,7 +71,13 @@
         color: #007bff !important;
         border-bottom-color: #007bff !important;
         font-weight: 600;
-        box-shadow: 0 -2px 4px rgba(0,0,0,0.1);
+        box-shadow: 0 -2px 4px rgba(0,0,0,0.1) !important;
+        outline: none !important;
+    }
+    
+    .tab-btn.active:focus {
+        outline: none !important;
+        box-shadow: 0 -2px 4px rgba(0,0,0,0.1) !important;
     }
     
     .tab-content {
@@ -116,6 +140,32 @@
         color: #6c757d;
         font-style: italic;
         padding: 2rem 0;
+    }
+    
+    /* Override Bootstrap button defaults */
+    .service-details-tabs button.tab-btn {
+        border: none !important;
+        outline: none !important;
+        box-shadow: none !important;
+        background: #f8f9fa !important;
+        color: #6c757d !important;
+    }
+    
+    .service-details-tabs button.tab-btn:focus,
+    .service-details-tabs button.tab-btn:active,
+    .service-details-tabs button.tab-btn:focus-visible {
+        border: none !important;
+        outline: none !important;
+        box-shadow: none !important;
+        background: #f8f9fa !important;
+        color: #6c757d !important;
+    }
+    
+    .service-details-tabs button.tab-btn.active {
+        background: #fff !important;
+        color: #007bff !important;
+        border-bottom: 3px solid #007bff !important;
+        box-shadow: 0 -2px 4px rgba(0,0,0,0.1) !important;
     }
 </style>
 
@@ -983,6 +1033,21 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.1/dist/sweetalert2.all.min.js"></script>
     <script>
         $(document).ready(function() {
+            // Initialize tab buttons with clean styling
+            $('.service-details-tabs .tab-btn').each(function() {
+                if (!$(this).hasClass('active')) {
+                    $(this).css({
+                        'border': 'none',
+                        'border-bottom': '3px solid transparent',
+                        'background': '#f8f9fa',
+                        'color': '#6c757d',
+                        'font-weight': '500',
+                        'outline': 'none',
+                        'box-shadow': 'none'
+                    });
+                }
+            });
+            
             // Tab switching functionality - matching job details style
             $('.service-details-tabs .tab-btn').on('click', function() {
                 const targetTab = $(this).data('tab');
@@ -995,7 +1060,9 @@
                         'border-bottom': '3px solid transparent',
                         'background': '#f8f9fa',
                         'color': '#6c757d',
-                        'font-weight': '500'
+                        'font-weight': '500',
+                        'outline': 'none',
+                        'box-shadow': 'none'
                     });
                 });
                 
@@ -1006,7 +1073,9 @@
                     'border-bottom': '3px solid #007bff',
                     'background': '#fff',
                     'color': '#007bff',
-                    'font-weight': '600'
+                    'font-weight': '600',
+                    'outline': 'none',
+                    'box-shadow': '0 -2px 4px rgba(0,0,0,0.1)'
                 });
                 
                 // Hide all service detail tab contents
