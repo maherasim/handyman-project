@@ -1122,7 +1122,7 @@
                     return $charge->price * $charge->qty;
                 });
                 @endphp
-                <div class="card-header bg-primary text-white">
+                <div class="  bg-primary text-white">
                     <div class="d-flex justify-content-between align-items-center">
                         <h5 class="mb-0">
                             <i class="fas fa-plus-circle me-2"></i>
