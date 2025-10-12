@@ -491,6 +491,77 @@
 
                             </div>
                         </div>
+
+                        {{-- Dynamic Next-Step Marquee --}}
+                        @php
+                            $status = (string) ($bookingdata->status ?? '');
+                            $nextActor = null; // 'provider' | 'user' | 'handyman' | null
+                            $nextText = null;
+
+                            switch ($status) {
+                                case 'pending':
+                                    $nextActor = 'provider';
+                                    $nextText = 'Waiting for provider to accept the booking';
+                                    break;
+                                case 'accept':
+                                    if ($is_enable_advance_payment == 1 && (!isset($payment) || $payment->payment_status != 'advanced_paid')) {
+                                        $nextActor = 'user';
+                                        $nextText = 'Waiting for customer to pay advance payment';
+                                    } else {
+                                        $nextActor = 'provider';
+                                        $nextText = 'Waiting for provider to assign handyman';
+                                    }
+                                    break;
+                                case 'on_going':
+                                    $nextActor = 'user';
+                                    $nextText = 'Waiting for customer to confirm "Let\'s Start Work"';
+                                    break;
+                                case 'in_progress':
+                                    $nextActor = 'handyman';
+                                    $nextText = 'Work in progress — waiting for handyman to complete or put on hold';
+                                    break;
+                                case 'hold':
+                                    $nextActor = 'handyman';
+                                    $nextText = 'Work is on hold — waiting for handyman to resume';
+                                    break;
+                                case 'pending_approval':
+                                    $nextActor = 'user';
+                                    $nextText = 'Waiting for customer to confirm work is done';
+                                    break;
+                                case 'confirm':
+                                    $nextActor = 'handyman';
+                                    $nextText = 'Waiting for handyman to mark booking as completed';
+                                    break;
+                                case 'completed':
+                                    if (isset($payment) && $payment->payment_status != 'paid') {
+                                        $nextActor = 'user';
+                                        $nextText = 'Waiting for customer to pay remaining amount';
+                                    } else {
+                                        $nextActor = null;
+                                        $nextText = 'Booking completed successfully! You can download the invoice.';
+                                    }
+                                    break;
+                                case 'cancelled':
+                                    $nextActor = null;
+                                    $nextText = 'This booking has been cancelled.';
+                                    break;
+                                default:
+                                    $nextActor = null;
+                                    $nextText = null;
+                            }
+                        @endphp
+
+                        @if ($nextText)
+                            <div class="w-100 px-3 mb-4">
+                                <div class="marquee-banner {{ $nextActor === 'provider' ? 'marquee-provider' : ($nextActor === 'user' ? 'marquee-user' : ($nextActor === 'handyman' ? 'marquee-handyman' : 'marquee-neutral')) }}">
+                                    <marquee behavior="scroll" direction="left" scrollamount="6">
+                                        <i class="fas fa-info-circle me-2"></i>
+                                        {{ $nextText }}
+                                    </marquee>
+                                </div>
+                            </div>
+                        @endif
+
                         <!-- Main Content Row -->
                         <div class="row ">
                             <div class="col-md-4 mb-3">
@@ -1613,5 +1684,34 @@
 	}
 	.booking-info-container .card-body .text-primary {
 		font-weight: 600;
+	}
+	
+	/* Marquee Banner Styles */
+	.marquee-banner {
+		border-radius: 6px;
+		padding: 8px 12px;
+		margin: 8px 0 4px 0;
+		box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+		border-left: 4px solid transparent;
+	}
+	.marquee-provider {
+		background: #fff8e1;
+		color: #7a5d00;
+		border-left-color: #ffc107;
+	}
+	.marquee-user {
+		background: #e7f1ff;
+		color: #084298;
+		border-left-color: #0d6efd;
+	}
+	.marquee-handyman {
+		background: #f0f9ff;
+		color: #0c4a6e;
+		border-left-color: #0ea5e9;
+	}
+	.marquee-neutral {
+		background: #f1f1f1;
+		color: #333;
+		border-left-color: #6c757d;
 	}
 </style>
