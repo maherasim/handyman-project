@@ -477,7 +477,7 @@
                         </div>
                         <!-- Main Content Row -->
                         <div class="row ">
-                            <div class="col-md-4 ">
+                            <div class="col-md-4 mb-3">
                                 <div class="card h-100 soft-shadow hover-lift">
                                     <div class="card-body">
                                         <p class="opacity-75 fz-12">{{ __('messages.book_placed') }}</p>
@@ -489,7 +489,7 @@
                             </div>
 
 
-                            <div class="col-md-4">
+                            <div class="col-md-4 mb-3">
                                 <div class="card h-100 soft-shadow hover-lift">
                                     <div class="card-body">
                                         <p class="opacity-75 fz-12">{{ __('messages.booking_status') }}</p>
@@ -498,7 +498,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-4 mb-3">
                                 <div class="card h-100 soft-shadow hover-lift">
                                     <div class="card-body">
                                         <p class="opacity-75 fz-12">{{ __('Location') }}</p>
@@ -510,7 +510,7 @@
                                 </div>
                             </div>
                             @hasanyrole(['user', 'provider', 'admin'])
-                                <div class="col-md-4">
+                                <div class="col-md-4 mb-3">
                                     <div class="card h-100 soft-shadow hover-lift">
                                         <div class="card-body">
                                             <p class="opacity-75 fz-12">{{ __('messages.total_amount') }}</p>
@@ -521,7 +521,7 @@
                                     </div>
                                 </div>
                             @endhasanyrole
-                            <div class="col-md-4">
+                            <div class="col-md-4 mb-3">
                                 <div class="card h-100 soft-shadow hover-lift">
                                     <div class="card-body">
                                         <p class="opacity-75 fz-12">{{ __('messages.payment_method') }}</p>
@@ -534,7 +534,7 @@
                                 @if (
                                     (isset($payment) && $payment->payment_type === 'bank_transfer' && $payment->status == 1) ||
                                         (isset($payment) && $payment->payment_type !== 'bank_transfer'))
-                                    <div class="col-md-4">
+                                    <div class="col-md-4 mb-3">
                                         <div class="card h-65 border-0 soft-shadow hover-lift"
                                             style="background: linear-gradient(135deg, #f7c59f, #ff9a9e); color: #fff;">
                                             <div class="card-body">
@@ -550,40 +550,7 @@
                                 @endif
                             @endhasanyrole
 
-                            <div class="col-md-4">
-                                <div class="card h-100 soft-shadow hover-lift">
-                                    <div class="card-body">
-                                        <p class="opacity-75 fz-12 mb-3">{{ __('Booking Schedule') }}</p>
-                                        @if($bookingdata->slots && count($bookingdata->slots) > 0)
-                                            <div class="booking-slots-container">
-                                                @foreach ($bookingdata->slots as $index => $slot)
-                                                    <div class="slot-item d-flex align-items-center mb-2 p-2 rounded" 
-                                                         style="background: linear-gradient(135deg, #f8f9fa, #e9ecef); border-left: 3px solid #007bff;">
-                                                        <div class="flex-shrink-0 me-2">
-                                                            <i class="ri-calendar-check-line text-primary" style="font-size: 16px;"></i>
-                                                        </div>
-                                                        <div class="flex-grow-1">
-                                                            <div class="fw-semibold text-dark small">
-                                                                {{ date("M d, Y", strtotime($slot->date)) ?? '-' }}
-                                                            </div>
-                                                            <div class="text-muted small">
-                                                                <i class="ri-time-line me-1"></i>
-                                                                {{ date('g:i A', strtotime($slot->start_time)) }} - {{ date('g:i A', strtotime($slot->end_time)) }}
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                @endforeach
-                                            </div>
-                                        @else
-                                            <div class="text-muted text-center py-3">
-                                                <i class="ri-calendar-line" style="font-size: 24px; opacity: 0.5;"></i>
-                                                <p class="mb-0 small mt-2">No slots scheduled</p>
-                                            </div>
-                                        @endif
-                                    </div>
-                                </div>
-                            </div>
-                           <div class="col-md-4">  
+                           <div class="col-md-4 mb-3">  
     <div class="card h-100 soft-shadow hover-lift">
         @php
             // If booking is cancelled, override payment status
@@ -629,7 +596,7 @@
 
                             
 
-                        <div class="col-md-4">
+                        <div class="col-md-4 mb-3">
                                 <div class="card h-100 soft-shadow hover-lift">
                                     <div class="card-body">
                                         <p class="opacity-75 fz-12">{{ __('Working Address') }}</p>
@@ -646,7 +613,7 @@
 
                             <!-- Add Cancellation Reason Card -->
                             @if ($bookingdata->status === 'cancelled')
-                                <div class="col-md-4">
+                                <div class="col-md-4 mb-3">
                                     <div class="card h-100 soft-shadow hover-lift">
                                         <div class="card-body">
                                             <p class="opacity-75 fz-12">{{ __('landingpage.cancel_reason') }}</p>
@@ -657,6 +624,41 @@
                                     </div>
                                 </div>
                             @endif
+
+                            <!-- Booking Schedule Card - Moved to the end -->
+                            <div class="col-md-4 mb-3">
+                                <div class="card h-100 soft-shadow hover-lift">
+                                    <div class="card-body">
+                                        <p class="opacity-75 fz-12 mb-3">{{ __('Booking Schedule') }}</p>
+                                        @if($bookingdata->slots && count($bookingdata->slots) > 0)
+                                            <div class="booking-slots-container">
+                                                @foreach ($bookingdata->slots as $index => $slot)
+                                                    <div class="slot-item d-flex align-items-center mb-2 p-2 rounded" 
+                                                         style="background: linear-gradient(135deg, #f8f9fa, #e9ecef); border-left: 3px solid #007bff;">
+                                                        <div class="flex-shrink-0 me-2">
+                                                            <i class="ri-calendar-check-line text-primary" style="font-size: 16px;"></i>
+                                                        </div>
+                                                        <div class="flex-grow-1">
+                                                            <div class="fw-semibold text-dark small">
+                                                                {{ date("M d, Y", strtotime($slot->date)) ?? '-' }}
+                                                            </div>
+                                                            <div class="text-muted small">
+                                                                <i class="ri-time-line me-1"></i>
+                                                                {{ date('g:i A', strtotime($slot->start_time)) }} - {{ date('g:i A', strtotime($slot->end_time)) }}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                @endforeach
+                                            </div>
+                                        @else
+                                            <div class="text-muted text-center py-3">
+                                                <i class="ri-calendar-line" style="font-size: 24px; opacity: 0.5;"></i>
+                                                <p class="mb-0 small mt-2">No slots scheduled</p>
+                                            </div>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
