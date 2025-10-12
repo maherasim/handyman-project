@@ -247,12 +247,19 @@
 
                                         @hasanyrole('user')
                                             @if (!isset($bookingdata->payment) && $is_enable_advance_payment == 1)
+                                                @php
+                                                    $advanceAmount = $bookingdata->advance_paid_amount ?? 0;
+                                                @endphp
                                                 <div class="w3-third">
-                                                    <a class="float-end btn btn-primary"
+                                                    <a class="float-end btn btn-primary d-flex align-items-center gap-2"
                                                         href="{{ route('book.service', ['id' => $bookingdata->service_id, 'booking_id' => $bookingdata->id, 'payment_type' => 'advance_paid']) }}"
-                                                        target="_blank" data-id="{{ $bookingdata->id }}">
+                                                        target="_blank" data-id="{{ $bookingdata->id }}"
+                                                        style="background: linear-gradient(135deg, #28a745, #20c997); border: none; box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);">
                                                         <i class="las la-credit-card"></i>
-                                                        {{ __('messages.advance_pay') }}
+                                                        <span>{{ __('messages.advance_pay') }}</span>
+                                                        <span class="badge bg-light text-dark px-2 py-1 rounded-pill">
+                                                            <i class="fas fa-euro-sign me-1"></i>{{ getPriceFormat($advanceAmount) }}
+                                                        </span>
                                                     </a>
                                                 </div>
                                             @endif
@@ -407,13 +414,22 @@
                                             </button>
                                         </div>
                                         @if (isset($payment) && $payment->payment_status != 'paid')
+                                            @php
+                                                // Calculate remaining amount
+                                                $grandTotal = $bookingdata->total_amount ?? 0;
+                                                $advancePaid = $bookingdata->advance_paid_amount ?? 0;
+                                                $remainingAmount = $grandTotal - $advancePaid;
+                                            @endphp
                                             <div class="w3-third d-flex align-items-end">
-                                                <a class="float-end btn btn-warning"
+                                                <a class="float-end btn btn-warning d-flex align-items-center gap-2"
                                                     href="{{ route('book.service', ['id' => $bookingdata->service_id, 'booking_id' => $bookingdata->id, 'payment_type' => 'full_payment']) }}"
-                                                    target="_blank" data-id="{{ $bookingdata->id }}">
+                                                    target="_blank" data-id="{{ $bookingdata->id }}"
+                                                    style="background: linear-gradient(135deg, #fd7e14, #ffc107); border: none; box-shadow: 0 4px 12px rgba(253, 126, 20, 0.3);">
                                                     <i class="las la-credit-card"></i>
-                                                    <!-- Changed to a star icon (Line Awesome) -->
-                                                    {{ __('Pay now') }}
+                                                    <span>{{ __('Pay Remaining') }}</span>
+                                                    <span class="badge bg-light text-dark px-2 py-1 rounded-pill">
+                                                        <i class="fas fa-euro-sign me-1"></i>{{ getPriceFormat($remainingAmount) }}
+                                                    </span>
                                                 </a>
                                             </div>
                                         @endif
