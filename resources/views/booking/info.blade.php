@@ -1117,9 +1117,26 @@
     @if (count($bookingdata->bookingExtraCharge) > 0)
         <div class="col-md-12 mt-4">
             <div class="card">
+                @php
+                $extraChargeTotal = $bookingdata->bookingExtraCharge->sum(function ($charge) {
+                    return $charge->price * $charge->qty;
+                });
+                @endphp
+                <div class="card-header bg-primary text-white">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">
+                            <i class="fas fa-plus-circle me-2"></i>
+                            {{ __('messages.extra_charge') }}
+                        </h5>
+                        <div class="text-end">
+                            <span class="badge bg-light text-dark fs-6">
+                                {{ __('Total Extra Charges') }}: <strong>{{ getPriceFormat($extraChargeTotal) }}</strong>
+                            </span>
+                        </div>
+                    </div>
+                </div>
                 <div class="card-body">
                     <div class="table-responsive mb-4">
-                        <h4 class="mb-3">{{ __('messages.extra_charge') }}</h4>
                         <table class="table table-bordered">
                             <thead>
                                 <tr>
@@ -1128,15 +1145,8 @@
                                     <th>{{ __('messages.quantity') }}</th>
                                     <th class="text-end">{{ __('messages.total_amount') }}</th>
                                 </tr>
-                                @php
-                                    $extraChargeTotal = $bookingdata->bookingExtraCharge->sum(function ($charge) {
-                                        return $charge->price * $charge->qty;
-                                    });
-                                @endphp
-                                <tr class="table-info">
-                                    <th colspan="3" class="text-end fw-bold">{{ __('Total Extra Charges') }}:</th>
-                                    <th class="text-end fw-bold">{{ getPriceFormat($extraChargeTotal) }}</th>
-                                </tr>
+                               
+                               
                             </thead>
                             <tbody>
                                 @foreach ($bookingdata->bookingExtraCharge as $charge)
