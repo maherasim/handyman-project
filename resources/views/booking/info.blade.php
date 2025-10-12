@@ -248,7 +248,33 @@
                                         @hasanyrole('user')
                                             @if (!isset($bookingdata->payment) && $is_enable_advance_payment == 1)
                                                 @php
-                                                    $advanceAmount = $bookingdata->advance_paid_amount ?? 0;
+                                                    // Calculate advance amount using same logic as billing table
+                                                    $baseTotal = $bookingdata->amount * $bookingdata->quantity;
+                                                    $subTotal = $baseTotal;
+                                                    if ($bookingdata->discount > 0) {
+                                                        $subTotal -= $bookingdata->final_discount_amount;
+                                                    }
+                                                    if ($bookingdata->couponAdded) {
+                                                        $subTotal -= $bookingdata->final_coupon_discount_amount;
+                                                    }
+                                                    $addonTotal = $bookingdata->bookingAddonService->sum('price');
+                                                    $extraChargeTotal = $bookingdata->bookingExtraCharge->sum(function ($item) {
+                                                        return $item->price * $item->qty;
+                                                    });
+                                                    $totalBeforeTax = $subTotal + $addonTotal + $extraChargeTotal;
+                                                    $serviceTaxId = $bookingdata->service->tax_country_id ?? null;
+                                                    $taxRate = 0;
+                                                    if ($serviceTaxId) {
+                                                        $tax = \App\Models\Tax::find($serviceTaxId);
+                                                        $taxRate = $tax->value ?? 0;
+                                                    }
+                                                    $taxAmount = ($totalBeforeTax * $taxRate) / 100;
+                                                    $grandTotal = $totalBeforeTax + $taxAmount;
+                                                    $advancePaidAmount = $bookingdata->advance_paid_amount;
+                                                    if ($advancePaidAmount <= 0 && isset($advanceservice) && $advanceservice > 0) {
+                                                        $advancePaidAmount = ($grandTotal * $advanceservice) / 100;
+                                                    }
+                                                    $advanceAmount = $advancePaidAmount;
                                                 @endphp
                                                 <div class="w3-third">
                                                     <a class="float-end btn btn-primary d-flex align-items-center gap-2"
@@ -415,10 +441,33 @@
                                         </div>
                                         @if (isset($payment) && $payment->payment_status != 'paid')
                                             @php
-                                                // Calculate remaining amount
-                                                $grandTotal = $bookingdata->total_amount ?? 0;
-                                                $advancePaid = $bookingdata->advance_paid_amount ?? 0;
-                                                $remainingAmount = $grandTotal - $advancePaid;
+                                                // Calculate remaining amount using same logic as billing table
+                                                $baseTotal = $bookingdata->amount * $bookingdata->quantity;
+                                                $subTotal = $baseTotal;
+                                                if ($bookingdata->discount > 0) {
+                                                    $subTotal -= $bookingdata->final_discount_amount;
+                                                }
+                                                if ($bookingdata->couponAdded) {
+                                                    $subTotal -= $bookingdata->final_coupon_discount_amount;
+                                                }
+                                                $addonTotal = $bookingdata->bookingAddonService->sum('price');
+                                                $extraChargeTotal = $bookingdata->bookingExtraCharge->sum(function ($item) {
+                                                    return $item->price * $item->qty;
+                                                });
+                                                $totalBeforeTax = $subTotal + $addonTotal + $extraChargeTotal;
+                                                $serviceTaxId = $bookingdata->service->tax_country_id ?? null;
+                                                $taxRate = 0;
+                                                if ($serviceTaxId) {
+                                                    $tax = \App\Models\Tax::find($serviceTaxId);
+                                                    $taxRate = $tax->value ?? 0;
+                                                }
+                                                $taxAmount = ($totalBeforeTax * $taxRate) / 100;
+                                                $grandTotal = $totalBeforeTax + $taxAmount;
+                                                $advancePaidAmount = $bookingdata->advance_paid_amount;
+                                                if ($advancePaidAmount <= 0 && isset($advanceservice) && $advanceservice > 0) {
+                                                    $advancePaidAmount = ($grandTotal * $advanceservice) / 100;
+                                                }
+                                                $remainingAmount = $grandTotal - $advancePaidAmount;
                                             @endphp
                                             <div class="w3-third d-flex align-items-end">
                                                 <a class="float-end btn btn-warning d-flex align-items-center gap-2"
