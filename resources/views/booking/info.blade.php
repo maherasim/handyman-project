@@ -553,12 +553,33 @@
                             <div class="col-md-4">
                                 <div class="card h-100 soft-shadow hover-lift">
                                     <div class="card-body">
-                                        <p class="opacity-75 fz-12">{{ __('Booking Slots') }}</p>
-                                        @foreach ($bookingdata->slots as $slot)
-                                            <p class="mb-0 text-primary">
-                                                {{ date("$datetime->date_format", strtotime($slot->date)) ?? '-' }}
-                                                / {{ $slot->start_time }} -> {{ $slot->end_time }}</p>
-                                        @endforeach
+                                        <p class="opacity-75 fz-12 mb-3">{{ __('Booking Schedule') }}</p>
+                                        @if($bookingdata->slots && count($bookingdata->slots) > 0)
+                                            <div class="booking-slots-container">
+                                                @foreach ($bookingdata->slots as $index => $slot)
+                                                    <div class="slot-item d-flex align-items-center mb-2 p-2 rounded" 
+                                                         style="background: linear-gradient(135deg, #f8f9fa, #e9ecef); border-left: 3px solid #007bff;">
+                                                        <div class="flex-shrink-0 me-2">
+                                                            <i class="ri-calendar-check-line text-primary" style="font-size: 16px;"></i>
+                                                        </div>
+                                                        <div class="flex-grow-1">
+                                                            <div class="fw-semibold text-dark small">
+                                                                {{ date("M d, Y", strtotime($slot->date)) ?? '-' }}
+                                                            </div>
+                                                            <div class="text-muted small">
+                                                                <i class="ri-time-line me-1"></i>
+                                                                {{ date('g:i A', strtotime($slot->start_time)) }} - {{ date('g:i A', strtotime($slot->end_time)) }}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                @endforeach
+                                            </div>
+                                        @else
+                                            <div class="text-muted text-center py-3">
+                                                <i class="ri-calendar-line" style="font-size: 24px; opacity: 0.5;"></i>
+                                                <p class="mb-0 small mt-2">No slots scheduled</p>
+                                            </div>
+                                        @endif
                                     </div>
                                 </div>
                             </div>
@@ -642,7 +663,7 @@
             </div>
 
             <!-- Order information section  -->
-            <div class="row">
+            <div class="row mt-4">
                 <div class="col-md-4">
                     <div class="card soft-shadow hover-lift role-card role-customer">
                         <div class="card-body">
@@ -704,7 +725,7 @@
                                     @endif
                                 </div>
                                 <div class="flex-grow-1">
-                                    <p class="mb-1 text-primary d-flex align-items-center"><i class="ri-briefcase-line role-icon me-1"></i> {{ __('messages.provider') }}</p>
+                                    <p class="mb-1 text-primary d-flex align-items-center"><i class="ri-briefcase-line role-icon me-1"></i> {{ __('Employer') }}</p>
                                     <h5 class="mb-2">{{ optional($bookingdata->provider)->display_name ?? '-' }}
                                     </h5>
                                 </div>
@@ -750,7 +771,7 @@
                                             @endif
                                         </div>
                                         <div class="flex-grow-1">
-                                            <p class="mb-1 text-primary d-flex align-items-center"><i class="ri-tools-line role-icon me-1"></i> {{ __('messages.handyman') }}</p>
+                                            <p class="mb-1 text-primary d-flex align-items-center"><i class="ri-tools-line role-icon me-1"></i> {{ __('Worker') }}</p>
                                             <h5 class="mb-2 ">
                                                 {{ optional($booking->handyman)->display_name ?? '-' }}
                                             </h5>
@@ -792,7 +813,7 @@
 
         <!-- billing section -->
         @hasanyrole(['user', 'provider', 'admin'])
-            <div class="col-md-4">
+            <div class="col-md-4 mt-4">
                 <div class="card">
                     <div class="card-body">
                         <div class="table-responsive">
@@ -956,7 +977,7 @@
 
     <!-- Extra Charges table -->
     @if (count($bookingdata->bookingExtraCharge) > 0)
-        <div class="col-md-12">
+        <div class="col-md-12 mt-4">
             <div class="card">
                 <div class="card-body">
                     <div class="table-responsive mb-4">
@@ -968,6 +989,15 @@
                                     <th>{{ __('messages.price') }}</th>
                                     <th>{{ __('messages.quantity') }}</th>
                                     <th class="text-end">{{ __('messages.total_amount') }}</th>
+                                </tr>
+                                @php
+                                    $extraChargeTotal = $bookingdata->bookingExtraCharge->sum(function ($charge) {
+                                        return $charge->price * $charge->qty;
+                                    });
+                                @endphp
+                                <tr class="table-info">
+                                    <th colspan="3" class="text-end fw-bold">{{ __('Total Extra Charges') }}:</th>
+                                    <th class="text-end fw-bold">{{ getPriceFormat($extraChargeTotal) }}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -989,7 +1019,7 @@
     @endif
 
     @if (count($bookingdata->bookingRating) > 0)
-        <div class="col-md-12">
+        <div class="col-md-12 mt-4">
             <div class="card">
                 <div class="card-body">
                     <div class="table-responsive mb-4">
@@ -1021,7 +1051,7 @@
     @endif
 
     @if (!empty($customer_review))
-        <div class="col-md-12">
+        <div class="col-md-12 mt-4">
             <div class="card">
                 <div class="card-body">
                     <div class="table-responsive mb-4">
@@ -1064,7 +1094,7 @@
     @endif
 
     @if (!empty($serviceProof) && count($serviceProof) > 0)
-        <div class="col-md-12">
+        <div class="col-md-12 mt-4">
             <div class="card">
                 <div class="card-body">
                     <div class="table-responsive mb-4">
@@ -1107,7 +1137,7 @@
 
     <!-- Addon  Charges table -->
     @if ($bookingdata->bookingAddonService->count() > 0)
-        <div class="col-md-12">
+        <div class="col-md-12 mt-4">
             <div class="card">
                 <div class="card-body">
                     <div class="table-responsive mb-4">
