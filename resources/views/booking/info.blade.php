@@ -1504,71 +1504,89 @@
             });
         });
 
-        // Complete booking - charges modal
+        // Complete booking - charges SweetAlert2
         $('#complete-booking').on('click', function () {
-            $('#extraChargesWrapper').html('');
-            addChargeRow();
-
             const bookingId = $(this).data('id');
-            $('#extraChargesModal').find('#bookingId').val(bookingId);
-            $('#extraChargesModal').modal('show');
-        });
-
-        // Add extra charge row
-        $('#addChargeRow').on('click', function () {
-            addChargeRow();
-        });
-
-        // Remove charge row
-        $(document).on('click', '.remove-charge-row', function () {
-            $(this).closest('.charge-row').remove();
-        });
-
-        // Increase quantity
-        $(document).on('click', '.increase-qty', function () {
-            const input = $(this).closest('.input-group').find('.charge-quantity');
-            input.val(parseInt(input.val()) + 1);
-        });
-
-        // Decrease quantity
-        $(document).on('click', '.decrease-qty', function () {
-            const input = $(this).closest('.input-group').find('.charge-quantity');
-            let qty = parseInt(input.val());
-            if (qty > 1) input.val(qty - 1);
-        });
-
-        // Submit charges
-        $('#extraChargesForm').on('submit', function (e) {
-            e.preventDefault();
-
-            const charges = [];
-            $('.charge-row').each(function () {
-                const title = $(this).find('.charge-detail').val();
-                const price = parseFloat($(this).find('.charge-amount').val()) || 0;
-                const qty = parseInt($(this).find('.charge-quantity').val()) || 0;
-                const total_amount = price * qty;
-
-                if (title && price > 0 && qty > 0) {
-                    charges.push({ title, price, qty, total_amount });
-                }
-            });
-
-            const bookingId = $('#extraChargesModal').find('#bookingId').val();
-
+            
             Swal.fire({
-                title: 'Are you sure?',
-                text: 'Are you sure you want to perform this action?',
-                icon: 'warning',
+                title: 'Complete Booking',
+                html: `
+                    <div id="extraChargesWrapper">
+                        <div class="charge-row border p-3 mb-3 rounded bg-light">
+                            <div class="row g-3 align-items-end">
+                                <div class="col-md-5">
+                                    <label class="form-label">Extra Charge Detail</label>
+                                    <input type="text" class="form-control charge-detail" placeholder="e.g. Travel cost">
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">Amount</label>
+                                    <input type="number" class="form-control charge-amount" placeholder="e.g. 100">
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">Quantity</label>
+                                    <div class="input-group">
+                                        <button class="btn btn-outline-secondary btn-sm decrease-qty" type="button">-</button>
+                                        <input type="number" class="form-control text-center charge-quantity" value="1" min="1">
+                                        <button class="btn btn-outline-secondary btn-sm increase-qty" type="button">+</button>
+                                    </div>
+                                </div>
+                                <div class="col-md-1 text-end">
+                                    <button class="btn btn-danger btn-sm remove-charge-row" type="button">&times;</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="button" id="addChargeRow" class="btn btn-outline-primary btn-sm">
+                        <i class="las la-plus"></i> Add More Charges
+                    </button>
+                `,
+                width: '800px',
                 showCancelButton: true,
-                confirmButtonText: 'Yes!',
-                cancelButtonText: 'No, cancel'
+                confirmButtonText: 'Complete Booking',
+                cancelButtonText: 'Cancel',
+                didOpen: () => {
+                    // Add event listeners for dynamic functionality
+                    $('#addChargeRow').on('click', function () {
+                        addChargeRow();
+                    });
+                    
+                    $(document).on('click', '.remove-charge-row', function () {
+                        $(this).closest('.charge-row').remove();
+                    });
+                    
+                    $(document).on('click', '.increase-qty', function () {
+                        const input = $(this).closest('.input-group').find('.charge-quantity');
+                        input.val(parseInt(input.val()) + 1);
+                    });
+                    
+                    $(document).on('click', '.decrease-qty', function () {
+                        const input = $(this).closest('.input-group').find('.charge-quantity');
+                        let qty = parseInt(input.val());
+                        if (qty > 1) input.val(qty - 1);
+                    });
+                },
+                preConfirm: () => {
+                    const charges = [];
+                    $('.charge-row').each(function () {
+                        const title = $(this).find('.charge-detail').val();
+                        const price = parseFloat($(this).find('.charge-amount').val()) || 0;
+                        const qty = parseInt($(this).find('.charge-quantity').val()) || 0;
+                        const total_amount = price * qty;
+
+                        if (title && price > 0 && qty > 0) {
+                            charges.push({ title, price, qty, total_amount });
+                        }
+                    });
+                    return { charges, bookingId };
+                }
             }).then((result) => {
                 if (result.isConfirmed) {
+                    const { charges, bookingId } = result.value;
                     updateBookingStatus(bookingId, 'completed', 1, '', charges);
-                    $('#extraChargesModal').modal('hide');
                 }
             });
         });
+
 
         // Add charge row function
         function addChargeRow() {
@@ -1603,13 +1621,81 @@
         let selectedRating = 0;
         let editingReviewId = null;
 
+        // Rating and review handlers
+        let selectedRating = 0;
+        let editingReviewId = null;
+
         $(document).on('click', '#rate-now-btn', function () {
             const bookingId = $(this).data('id');
-            $('#ratingBookingId').val(bookingId);
-            $('#reviewText').val('');
-            selectedRating = 0;
-            $('.star').removeClass('selected');
-            $('#ratingModal').modal('show');
+            
+            Swal.fire({
+                title: 'Rate Your Experience',
+                html: `
+                    <div class="text-center mb-3">
+                        <div class="star-rating">
+                            <i class="las la-star star" data-value="1" style="font-size: 30px; color: #ddd; cursor: pointer; margin: 0 5px;"></i>
+                            <i class="las la-star star" data-value="2" style="font-size: 30px; color: #ddd; cursor: pointer; margin: 0 5px;"></i>
+                            <i class="las la-star star" data-value="3" style="font-size: 30px; color: #ddd; cursor: pointer; margin: 0 5px;"></i>
+                            <i class="las la-star star" data-value="4" style="font-size: 30px; color: #ddd; cursor: pointer; margin: 0 5px;"></i>
+                            <i class="las la-star star" data-value="5" style="font-size: 30px; color: #ddd; cursor: pointer; margin: 0 5px;"></i>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Your Review</label>
+                        <textarea class="form-control" id="reviewText" rows="4" placeholder="Share your experience..."></textarea>
+                    </div>
+                `,
+                width: '500px',
+                showCancelButton: true,
+                confirmButtonText: 'Submit Rating',
+                cancelButtonText: 'Cancel',
+                didOpen: () => {
+                    let selectedRating = 0;
+                    
+                    $('.star').on('click', function () {
+                        selectedRating = $(this).data('value');
+                        $('.star').removeClass('selected').css('color', '#ddd');
+                        $(this).prevAll().addBack().addClass('selected').css('color', '#ffc107');
+                    });
+                },
+                preConfirm: () => {
+                    const review = $('#reviewText').val().trim();
+                    const rating = $('.star.selected').length;
+                    
+                    if (rating === 0) {
+                        Swal.showValidationMessage('Please select a star rating.');
+                        return false;
+                    }
+                    
+                    return { rating, review };
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const { rating, review } = result.value;
+                    
+                    const payload = {
+                        booking_id: "{{ $bookingdata->id }}",
+                        service_id: "{{ $bookingdata->service_id }}",
+                        customer_id: "{{ $bookingdata->customer_id }}",
+                        rating: rating,
+                        review: review
+                    };
+
+                    $.ajax({
+                        url: baseUrl + '/api/save-booking-rating',
+                        type: 'POST',
+                        data: payload,
+                        success: function (response) {
+                            Swal.fire('Thank you!', 'Your rating has been submitted.', 'success');
+                            window.location.reload();
+                        },
+                        error: function (xhr) {
+                            console.error(xhr);
+                            Swal.fire('Error', 'Failed to submit rating.', 'error');
+                        }
+                    });
+                }
+            });
         });
 
         $(document).on('click', '.star', function () {
@@ -1661,17 +1747,80 @@
             const rating = $(this).data('rating');
             const reviewText = $(this).data('review');
 
-            selectedRating = rating;
-            editingReviewId = reviewId;
+            Swal.fire({
+                title: 'Edit Your Review',
+                html: `
+                    <div class="text-center mb-3">
+                        <div class="star-rating">
+                            <i class="las la-star star" data-value="1" style="font-size: 30px; color: #ddd; cursor: pointer; margin: 0 5px;"></i>
+                            <i class="las la-star star" data-value="2" style="font-size: 30px; color: #ddd; cursor: pointer; margin: 0 5px;"></i>
+                            <i class="las la-star star" data-value="3" style="font-size: 30px; color: #ddd; cursor: pointer; margin: 0 5px;"></i>
+                            <i class="las la-star star" data-value="4" style="font-size: 30px; color: #ddd; cursor: pointer; margin: 0 5px;"></i>
+                            <i class="las la-star star" data-value="5" style="font-size: 30px; color: #ddd; cursor: pointer; margin: 0 5px;"></i>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Your Review</label>
+                        <textarea class="form-control" id="editReviewText" rows="4" placeholder="Share your experience...">${reviewText}</textarea>
+                    </div>
+                `,
+                width: '500px',
+                showCancelButton: true,
+                confirmButtonText: 'Update Review',
+                cancelButtonText: 'Cancel',
+                didOpen: () => {
+                    // Set initial rating
+                    $('.star').each(function () {
+                        if ($(this).data('value') <= rating) {
+                            $(this).css('color', '#ffc107');
+                        }
+                    });
+                    
+                    $('.star').on('click', function () {
+                        const selectedRating = $(this).data('value');
+                        $('.star').css('color', '#ddd');
+                        $(this).prevAll().addBack().css('color', '#ffc107');
+                    });
+                },
+                preConfirm: () => {
+                    const review = $('#editReviewText').val().trim();
+                    const rating = $('.star[style*="ffc107"]').length;
+                    
+                    if (rating === 0) {
+                        Swal.showValidationMessage('Please select a star rating.');
+                        return false;
+                    }
+                    
+                    return { rating, review, reviewId };
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const { rating, review, reviewId } = result.value;
+                    
+                    const payload = {
+                        booking_id: "{{ $bookingdata->id }}",
+                        service_id: "{{ $bookingdata->service_id }}",
+                        customer_id: "{{ $bookingdata->customer_id }}",
+                        rating: rating,
+                        review: review,
+                        id: reviewId
+                    };
 
-            $('#reviewText').val(reviewText);
-            $('.star').removeClass('selected').each(function () {
-                if ($(this).data('value') <= rating) {
-                    $(this).addClass('selected');
+                    $.ajax({
+                        url: baseUrl + '/api/save-booking-rating',
+                        type: 'POST',
+                        data: payload,
+                        success: function (response) {
+                            Swal.fire('Updated!', 'Your review has been updated.', 'success');
+                            window.location.reload();
+                        },
+                        error: function (xhr) {
+                            console.error(xhr);
+                            Swal.fire('Error', 'Failed to update review.', 'error');
+                        }
+                    });
                 }
             });
-
-            $('#ratingModal').modal('show');
         });
 
         $(document).on('click', '.delete-review', function () {
