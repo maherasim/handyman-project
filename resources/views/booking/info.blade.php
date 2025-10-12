@@ -247,78 +247,12 @@
 
                                         @hasanyrole('user')
                                             @if (!isset($bookingdata->payment) && $is_enable_advance_payment == 1)
-                                                @php
-                                                    // Calculate advance amount using same logic as billing table
-                                                    $baseTotal = $bookingdata->amount * $bookingdata->quantity;
-                                                    $subTotal = $baseTotal;
-                                                    if ($bookingdata->discount > 0) {
-                                                        $subTotal -= $bookingdata->final_discount_amount;
-                                                    }
-                                                    if ($bookingdata->couponAdded) {
-                                                        $subTotal -= $bookingdata->final_coupon_discount_amount;
-                                                    }
-                                                    $addonTotal = $bookingdata->bookingAddonService->sum('price');
-                                                    $extraChargeTotal = $bookingdata->bookingExtraCharge->sum(function ($item) {
-                                                        return $item->price * $item->qty;
-                                                    });
-                                                    $totalBeforeTax = $subTotal + $addonTotal + $extraChargeTotal;
-                                                    $serviceTaxId = $bookingdata->service->tax_country_id ?? null;
-                                                    $taxRate = 0;
-                                                    if ($serviceTaxId) {
-                                                        $tax = \App\Models\Tax::find($serviceTaxId);
-                                                        $taxRate = $tax->value ?? 0;
-                                                    }
-                                                    $taxAmount = ($totalBeforeTax * $taxRate) / 100;
-                                                    $grandTotal = $totalBeforeTax + $taxAmount;
-                                                    $advancePaidAmount = $bookingdata->advance_paid_amount;
-                                                    if ($advancePaidAmount <= 0 && isset($advanceservice) && $advanceservice > 0) {
-                                                        $advancePaidAmount = ($grandTotal * $advanceservice) / 100;
-                                                    }
-                                                    $advanceAmount = $advancePaidAmount;
-                                                @endphp
-                                                <div class="w3-third">
-                                                    <a class="float-end btn btn-primary d-flex align-items-center gap-2"
-                                                        href="{{ route('book.service', ['id' => $bookingdata->service_id, 'booking_id' => $bookingdata->id, 'payment_type' => 'advance_paid']) }}"
-                                                        target="_blank" data-id="{{ $bookingdata->id }}"
-                                                        style="background: linear-gradient(135deg, #28a745, #20c997); border: none; box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);">
-                                                        <i class="las la-credit-card"></i>
-                                                        <span>{{ __('messages.advance_pay') }}</span>
-                                                        <span class="badge bg-light text-dark px-2 py-1 rounded-pill">
-                                                            <i class="fas fa-euro-sign me-1"></i>{{ getPriceFormat($advanceAmount) }}
-                                                        </span>
-                                                    </a>
-                                                </div>
-                                            @endif
-                                        @endhasanyrole
-                                    @endif
+                                                        target="_blank" data-id="{{ $bookingdata->id }}">
+                                                    <a class="float-end btn btn-primary"
+                                                        {{ __('messages.advance_pay') }}
+                                                        target="_blank" data-id="{{ $bookingdata->id }}">
                                 @endif
-
-                                @if ($bookingdata->status === 'on_going')
-                                    @hasanyrole(['provider', 'handyman'])
-                                        <div class="w3-third d-flex align-items-end">
-                                            <p><span class="text-info font-size-14" style="font-weight: 700">Waiting for
-                                                    response by customer</span>
-                                            </p>
-                                        </div>
-                                    @endhasanyrole
-
-                                    @hasanyrole('user')
-                                        <div class="w3-third">
-                                            <button class="float-end btn btn-primary update-booking"
-                                                data-id="{{ $bookingdata->id }}"
-                                                data-handyman-id="{{ $bookingdata->provider_id }}"
-                                                data-status="in_progress"
-                                                data-confirm-message="You want to start this booking?">
-                                                <i class="las la-play-circle"></i>
-                                                {{ __('Lets Start') }}
-                                            </button>
-                                        </div>
-                                    @endhasanyrole
-                                @endif
-
-                                @if ($bookingdata->status === 'in_progress')
-                                    @hasanyrole(['user', 'handyman'])
-                                        <div class="w3-third">
+                                                        {{ __('messages.advance_pay') }}
                                             <button class="float-end btn btn-warning hold-booking"
                                                 data-id="{{ $bookingdata->id }}"
                                                 data-handyman-id="{{ $bookingdata->provider_id }}" data-status="hold"
@@ -441,33 +375,10 @@
                                         </div>
                                         @if (isset($payment) && $payment->payment_status != 'paid')
                                             @php
-                                                // Calculate remaining amount using same logic as billing table
-                                                $baseTotal = $bookingdata->amount * $bookingdata->quantity;
-                                                $subTotal = $baseTotal;
-                                                if ($bookingdata->discount > 0) {
-                                                    $subTotal -= $bookingdata->final_discount_amount;
-                                                }
-                                                if ($bookingdata->couponAdded) {
-                                                    $subTotal -= $bookingdata->final_coupon_discount_amount;
-                                                }
-                                                $addonTotal = $bookingdata->bookingAddonService->sum('price');
-                                                $extraChargeTotal = $bookingdata->bookingExtraCharge->sum(function ($item) {
-                                                    return $item->price * $item->qty;
-                                                });
-                                                $totalBeforeTax = $subTotal + $addonTotal + $extraChargeTotal;
-                                                $serviceTaxId = $bookingdata->service->tax_country_id ?? null;
-                                                $taxRate = 0;
-                                                if ($serviceTaxId) {
-                                                    $tax = \App\Models\Tax::find($serviceTaxId);
-                                                    $taxRate = $tax->value ?? 0;
-                                                }
-                                                $taxAmount = ($totalBeforeTax * $taxRate) / 100;
-                                                $grandTotal = $totalBeforeTax + $taxAmount;
-                                                $advancePaidAmount = $bookingdata->advance_paid_amount;
-                                                if ($advancePaidAmount <= 0 && isset($advanceservice) && $advanceservice > 0) {
-                                                    $advancePaidAmount = ($grandTotal * $advanceservice) / 100;
-                                                }
-                                                $remainingAmount = $grandTotal - $advancePaidAmount;
+                                                // Calculate remaining amount
+                                                $grandTotal = $bookingdata->total_amount ?? 0;
+                                                $advancePaid = $bookingdata->advance_paid_amount ?? 0;
+                                                $remainingAmount = $grandTotal - $advancePaid;
                                             @endphp
                                             <div class="w3-third d-flex align-items-end">
                                                 <a class="float-end btn btn-warning d-flex align-items-center gap-2"
@@ -489,22 +400,13 @@
                                     @hasanyrole('handyman')
                                         <div class="w3-third d-flex align-items-end">
                                             <button class="float-end btn btn-primary" id="service-proof-btn"
-                                                data-id="{{ $bookingdata->id }}"
-                                                data-service-id="{{ $bookingdata->service_id }}"
-                                                data-user-id="{{ $bookingdata->customer_id }}">
-                                                <i class="las la-clipboard-list"></i>
-                                                {{ __('messages.service_proof') }}
-                                            </button>
                                         </div>
-                                    @endhasanyrole
+                                                <a class="float-end btn btn-warning"
                                 @endif
-                                @hasanyrole(['user', 'provider', 'admin'])
-                                    @if ($bookingdata->status === 'completed' && isset($payment) && $payment->payment_status == 'paid')
+                                                    target="_blank" data-id="{{ $bookingdata->id }}">
                                         <a href="{{ route('invoice_pdf', $bookingdata->id) }}" class="btn btn-primary"
-                                            target="_blank">
-                                            <i class="ri-file-text-line"></i>
-                                            {{ __('messages.invoice') }}
-                                        </a>
+                                                    <!-- Changed to a star icon (Line Awesome) -->
+                                                    {{ __('Pay now') }}
                                     @endif
                                 @endhasanyrole
 
@@ -566,148 +468,6 @@
                                     $nextText = 'Waiting for customer to confirm "Let\'s Start Work"';
                                     break;
                                 case 'in_progress':
-                                    $nextActor = 'handyman';
-                                    $nextText = 'Work in progress — waiting for handyman to complete or put on hold';
-                                    break;
-                                case 'hold':
-                                    $nextActor = 'handyman';
-                                    $nextText = 'Work is on hold — waiting for handyman to resume';
-                                    break;
-                                case 'pending_approval':
-                                    $nextActor = 'user';
-                                    $nextText = 'Waiting for customer to confirm work is done';
-                                    break;
-                                case 'confirm':
-                                    $nextActor = 'handyman';
-                                    $nextText = 'Waiting for handyman to mark booking as completed';
-                                    break;
-                                case 'completed':
-                                    if (isset($payment) && $payment->payment_status != 'paid') {
-                                        $nextActor = 'user';
-                                        $nextText = 'Waiting for customer to pay remaining amount';
-                                    } else {
-                                        $nextActor = null;
-                                        $nextText = 'Booking completed successfully! You can download the invoice.';
-                                    }
-                                    break;
-                                case 'cancelled':
-                                    $nextActor = null;
-                                    $nextText = 'This booking has been cancelled.';
-                                    break;
-                                default:
-                                    $nextActor = null;
-                                    $nextText = null;
-                            }
-                        @endphp
-
-                        @if ($nextText)
-                            <div class="w-100 px-3 mb-4">
-                                <div class="marquee-banner {{ $nextActor === 'provider' ? 'marquee-provider' : ($nextActor === 'user' ? 'marquee-user' : ($nextActor === 'handyman' ? 'marquee-handyman' : 'marquee-neutral')) }}">
-                                    <marquee behavior="scroll" direction="left" scrollamount="6">
-                                        <i class="fas fa-info-circle me-2"></i>
-                                        {{ $nextText }}
-                                    </marquee>
-                                </div>
-                            </div>
-                        @endif
-
-                        <!-- Main Content Row -->
-                        <div class="row ">
-                            <div class="col-md-4 mb-3">
-                                <div class="card h-100 soft-shadow hover-lift">
-                                    <div class="card-body">
-                                        <p class="opacity-75 fz-12">{{ __('messages.book_placed') }}</p>
-                                        <p class="mb-0">
-                                            {{ date("$datetime->date_format $datetime->time_format", strtotime($bookingdata->created_at)) ?? '-' }}
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-
-
-                            <div class="col-md-4 mb-3">
-                                <div class="card h-100 soft-shadow hover-lift">
-                                    <div class="card-body">
-                                        <p class="opacity-75 fz-12">{{ __('messages.booking_status') }}</p>
-                                        <p class="mb-0 text-primary" id="booking_status__span">
-                                            {{ str_replace('_', ' ', ucfirst($bookingdata->status)) }}</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-4 mb-3">
-                                <div class="card h-100 soft-shadow hover-lift">
-                                    <div class="card-body">
-                                        <p class="opacity-75 fz-12">{{ __('Location') }}</p>
-                                        <p class="mb-0 text-primary">
-                                            {{ optional($bookingdata->service->city)->name ?? '-' }},
-                                            {{ optional($bookingdata->service->country)->name ?? '-' }}
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                            @hasanyrole(['user', 'provider', 'admin'])
-                                <div class="col-md-4 mb-3">
-                                    <div class="card h-100 soft-shadow hover-lift">
-                                        <div class="card-body">
-                                            <p class="opacity-75 fz-12">{{ __('messages.total_amount') }}</p>
-                                            <p class="mb-0 text-primary">
-                                                {{ getPriceFormat($bookingdata->total_amount ?? 0) }}
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-                            @endhasanyrole
-                            <div class="col-md-4 mb-3">
-                                <div class="card h-100 soft-shadow hover-lift">
-                                    <div class="card-body">
-                                        <p class="opacity-75 fz-12">{{ __('messages.payment_method') }}</p>
-                                        <p class="mb-0 text-primary">
-                                            {{ isset($payment) ? ucfirst($payment->payment_type) : '-' }}</p>
-                                    </div>
-                                </div>
-                            </div>
-                            @hasanyrole(['user', 'provider', 'admin'])
-                                @if (
-                                    (isset($payment) && $payment->payment_type === 'bank_transfer' && $payment->status == 1) ||
-                                        (isset($payment) && $payment->payment_type !== 'bank_transfer'))
-                                    <div class="col-md-4 mb-3">
-                                        <div class="card h-65 border-0 soft-shadow hover-lift"
-                                            style="background: linear-gradient(135deg, #f7c59f, #ff9a9e); color: #fff;">
-                                            <div class="card-body">
-                                                <p class="mb-1 fw-bold text-uppercase" style="opacity: 0.9;">
-                                                    {{ __('Advance Payment') }}
-                                                </p>
-                                                <p class="mb-0 fs-5 fw-bold" id="service_schedule__span">
-                                                    {{ getPriceFormat($bookingdata->advance_paid_amount) }}
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                @endif
-                            @endhasanyrole
-
-                           <div class="col-md-4 mb-3">  
-    <div class="card h-100 soft-shadow hover-lift">
-        @php
-            // If booking is cancelled, override payment status
-            if (isset($bookingdata) && $bookingdata->status === 'cancelled') {
-                $paymentStatus = 'cancelled';
-            } elseif (isset($payment) && $payment->payment_status) {
-                $paymentStatus = $payment->payment_status;
-            } else {
-                $paymentStatus = null;
-            }
-
-            $isPaid = $paymentStatus === 'paid';
-            $cardStyle = $isPaid
-                ? 'background: linear-gradient(135deg, #43e97b, #38f9d7); color: #fff; border-radius: 10px; padding: 12px;'
-                : '';
-
-            $statusClass = match ($paymentStatus) {
-                'paid' => 'text-white fw-bold',
-                'advanced_paid' => 'text-dark fw-bold',
-                'Advanced Refund' => 'text-warning',
-                'cancelled' => 'text-danger fw-bold', // Red text for cancelled
                 default => 'text-danger',
             };
         @endphp
@@ -717,7 +477,7 @@
                 {{ __('messages.payment_status') }}
             </p>
 
-            @if ($paymentStatus)
+                            <div class="col-md-4 ">
                 <p class="mb-0 {{ $statusClass }}">
                     {{ str_replace('_', ' ', ucfirst($paymentStatus)) }}
                 </p>
@@ -729,7 +489,7 @@
         </div>
     </div>
 </div>
-
+                            <div class="col-md-4">
                             
 
                         <div class="col-md-4 mb-3">
@@ -738,7 +498,7 @@
                                         <p class="opacity-75 fz-12">{{ __('Working Address') }}</p>
                                         <p class="mb-0 text-primary" id="booking_status__span">
                                             {{ str_replace('_', ' ', ucfirst($bookingdata->address)) }}</p>
-                                    </div>
+                            <div class="col-md-4">
                                 </div>
                         </div>
 
@@ -750,7 +510,7 @@
                             <!-- Add Cancellation Reason Card -->
                             @if ($bookingdata->status === 'cancelled')
                                 <div class="col-md-4 mb-3">
-                                    <div class="card h-100 soft-shadow hover-lift">
+                                <div class="col-md-4">
                                         <div class="card-body">
                                             <p class="opacity-75 fz-12">{{ __('landingpage.cancel_reason') }}</p>
                                             <p class="mb-0 text-danger">
@@ -761,8 +521,36 @@
                                 </div>
                             @endif
 
-                            <!-- Booking Schedule Card - Moved to the end -->
+                            <div class="col-md-4">
                             <div class="col-md-4 mb-3">
+                                <div class="card h-100 soft-shadow hover-lift">
+                                    <div class="card-body">
+                                        <p class="opacity-75 fz-12 mb-3">{{ __('Booking Schedule') }}</p>
+                                        @if($bookingdata->slots && count($bookingdata->slots) > 0)
+                                            <div class="booking-slots-container">
+                                                @foreach ($bookingdata->slots as $index => $slot)
+                                                    <div class="slot-item d-flex align-items-center mb-2 p-2 rounded" 
+                                                         style="background: linear-gradient(135deg, #f8f9fa, #e9ecef); border-left: 3px solid #007bff;">
+                                                        <div class="flex-shrink-0 me-2">
+                                                            <i class="ri-calendar-check-line text-primary" style="font-size: 16px;"></i>
+                                                        </div>
+                                    <div class="col-md-4">
+                                                            <div class="fw-semibold text-dark small">
+                                                                {{ date("M d, Y", strtotime($slot->date)) ?? '-' }}
+                                                            </div>
+                                                            <div class="text-muted small">
+                                                                <i class="ri-time-line me-1"></i>
+                                                                {{ date('g:i A', strtotime($slot->start_time)) }} - {{ date('g:i A', strtotime($slot->end_time)) }}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                @endforeach
+                                            </div>
+                                        @else
+                                            <div class="text-muted text-center py-3">
+                                                <i class="ri-calendar-line" style="font-size: 24px; opacity: 0.5;"></i>
+                                                <p class="mb-0 small mt-2">No slots scheduled</p>
+                            <div class="col-md-4">
                                 <div class="card h-100 soft-shadow hover-lift">
                                     <div class="card-body">
                                         <p class="opacity-75 fz-12 mb-3">{{ __('Booking Schedule') }}</p>
@@ -795,6 +583,44 @@
                                     </div>
                                 </div>
                             </div>
+                           <div class="col-md-4">  
+                                <div class="card h-100 soft-shadow hover-lift">
+                                    <div class="card-body">
+                                        <p class="opacity-75 fz-12 mb-3">{{ __('Booking Schedule') }}</p>
+                                        @if($bookingdata->slots && count($bookingdata->slots) > 0)
+                                            <div class="booking-slots-container">
+                                                @foreach ($bookingdata->slots as $index => $slot)
+                                                    <div class="slot-item d-flex align-items-center mb-2 p-2 rounded" 
+                                                         style="background: linear-gradient(135deg, #f8f9fa, #e9ecef); border-left: 3px solid #007bff;">
+                                                        <div class="flex-shrink-0 me-2">
+                                                            <i class="ri-calendar-check-line text-primary" style="font-size: 16px;"></i>
+                                                        </div>
+                                                        <div class="flex-grow-1">
+                                                            <div class="fw-semibold text-dark small">
+                                                                {{ date("M d, Y", strtotime($slot->date)) ?? '-' }}
+                                                            </div>
+                                                            <div class="text-muted small">
+                                                                <i class="ri-time-line me-1"></i>
+                                                                {{ date('g:i A', strtotime($slot->start_time)) }} - {{ date('g:i A', strtotime($slot->end_time)) }}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                @endforeach
+                                            </div>
+                                        @else
+                                            <div class="text-muted text-center py-3">
+                                                <i class="ri-calendar-line" style="font-size: 24px; opacity: 0.5;"></i>
+                                                <p class="mb-0 small mt-2">No slots scheduled</p>
+                                            </div>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                           <div class="col-md-4">  
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -803,7 +629,7 @@
             <!-- Order information section  -->
             <div class="row mt-4">
                 <div class="col-md-4">
-                    <div class="card soft-shadow hover-lift role-card role-customer">
+                        <div class="col-md-4">ole-card role-customer">
                         <div class="card-body">
                             <div class="d-flex align-items-start gap-3">
                                 <div class="flex-shrink-0">
@@ -820,7 +646,7 @@
                                 <div class="flex-grow-1">
                                     <p class="mb-1 text-primary d-flex align-items-center"><i class="ri-user-line role-icon me-1"></i> {{ __('messages.customer') }}</p>
                                     <h5 class="mb-2">{{ optional($bookingdata->customer)->display_name ?? '-' }}
-                                    </h5>
+                                <div class="col-md-4">
                                 </div>
                             </div>
                             <ul class="list-unstyled mt-3">
@@ -836,7 +662,7 @@
                                         <a href="mailto:{{ optional($bookingdata->customer)->email }}" class="text-body">
                                             {{ optional($bookingdata->customer)->email ?? '-' }}
                                 </a>
-                            </li> -->
+                        <div class="col-md-4">
                                 <li class="d-flex align-items-center">
                                     <i class="ri-map-pin-line me-2"></i>
                                     <span
@@ -853,7 +679,7 @@
                             <div class="d-flex align-items-start gap-3">
                                 <div class="flex-shrink-0">
 
-                                    <img src="{{ getSingleMedia($bookingdata->provider, 'profile_image', null) }}"
+                                <div class="col-md-4">edia($bookingdata->provider, 'profile_image', null) }}"
                                         alt="Provider Profile" class="rounded-circle"
                                         style="width: 60px; height: 60px; object-fit: cover;">
                                     @if (optional($bookingdata->provider)->profile_image)
@@ -864,41 +690,6 @@
                                 </div>
                                 <div class="flex-grow-1">
                                     <p class="mb-1 text-primary d-flex align-items-center"><i class="ri-briefcase-line role-icon me-1"></i> {{ __('Employer') }}</p>
-                                    <h5 class="mb-2">{{ optional($bookingdata->provider)->display_name ?? '-' }}
-                                    </h5>
-                                </div>
-                            </div>
-                            <ul class="list-unstyled mt-3">
-                                <li class="d-flex align-items-center mb-2">
-                                    <i class="ri-calendar-line me-2"></i>
-                                    <span class="text-body">
-                                        {{ optional($bookingdata->provider)->created_at ? optional($bookingdata->provider)->created_at->format('Y-m-d') : '-' }}
-                                    </span>
-                                </li>
-                                <!-- <li class="d-flex align-items-center mb-2">
-                                            <i class="ri-mail-line me-2"></i>
-                                            <a href="mailto:{{ optional($bookingdata->provider)->email }}" class="text-body">
-                                                {{ optional($bookingdata->provider)->email ?? '-' }}
-                                </a>
-                            </li> -->
-                                <li class="d-flex align-items-center">
-                                    <i class="ri-map-pin-line me-2"></i>
-                                    <span
-                                        class="text-wrap">{{ optional($bookingdata->provider)->address ?? '-' }}</span>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-                <!-- Handyman Information -->
-                <div class="col-md-4">
-                    <div class="card soft-shadow hover-lift role-card role-handyman">
-                        @if (count($bookingdata->handymanAdded) > 0)
-                            @foreach ($bookingdata->handymanAdded as $booking)
-                                <div class="card-body">
-                                    <div class="d-flex align-items-start gap-4">
-                                        <div class="flex-shrink-0">
-
                                             <img src="{{ getSingleMedia($booking->handyman, 'profile_image', null) }}"
                                                 alt="Handyman Profile" class="rounded-circle"
                                                 style="width: 60px; height: 60px; object-fit: cover;">
@@ -906,7 +697,7 @@
                                                 <img src="{{ asset('images/default-user.png') }}"
                                                     alt="Default Profile" class="rounded-circle"
                                                     style="width: 60px; height: 60px; object-fit: cover;">
-                                            @endif
+                                  messages.provider  @endif
                                         </div>
                                         <div class="flex-grow-1">
                                             <p class="mb-1 text-primary d-flex align-items-center"><i class="ri-tools-line role-icon me-1"></i> {{ __('Worker') }}</p>
@@ -968,7 +759,7 @@
                                     <!-- Quantity -->
                                     <tr>
                                         <td>{{ __('Quantity (Nbr of Packages, Hours, Days)') }}</td>
-                                        <td class="bk-value">
+                                   <td class="bk-value">
                                             {{ $bookingdata->quantity }}
                                         </td>
                                     </tr>
@@ -1319,18 +1110,12 @@
 
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
 <script>
     var baseUrl = "{{ url('/') }}";
     var csrfToken = "{{ csrf_token() }}";
 
     $(document).ready(function () {
-        // Handle booking status dropdown
-        $(document).on('change', '.bookingstatus', function () {
-            var status = $(this).val();
-            var id = $(this).attr('data-id');
             fetch("{{ route('bookingStatus.update') }}", {
-                method: 'POST',
                 headers: {
                     'X-CSRF-TOKEN': csrfToken,
                     'Content-Type': 'application/json'
@@ -1388,15 +1173,12 @@
         // Handle confirm or update button
         $(document).on('click', '.update-booking, .confirm-booking', function (e) {
             e.preventDefault();
-
             const bookingId = $(this).data('id');
             const status = $(this).data('status');
             const confirmMessage = $(this).data('confirm-message');
             const isAdvancePaid = $(this).data('advance') === 1;
 
             if (status === 'cancelled') {
-                Swal.fire({
-                    title: 'Cancellation Reason',
                     input: 'textarea',
                     inputLabel: 'Please provide a reason for cancellation',
                     inputPlaceholder: 'Type your reason here...',
@@ -1504,372 +1286,29 @@
             });
         });
 
-        // Complete booking - charges SweetAlert2
+        // Complete booking - charges modal
+        // Complete booking - charges modal
         $('#complete-booking').on('click', function () {
-            const bookingId = $(this).data('id');
-            
-            Swal.fire({
-                title: 'Complete Booking',
-                html: `
-                    <div id="extraChargesWrapper">
-                        <div class="charge-row border p-3 mb-3 rounded bg-light">
-                            <div class="row g-3 align-items-end">
-                                <div class="col-md-5">
-                                    <label class="form-label">Extra Charge Detail</label>
-                                    <input type="text" class="form-control charge-detail" placeholder="e.g. Travel cost">
-                                </div>
-                                <div class="col-md-3">
-                                    <label class="form-label">Amount</label>
-                                    <input type="number" class="form-control charge-amount" placeholder="e.g. 100">
-                                </div>
-                                <div class="col-md-3">
-                                    <label class="form-label">Quantity</label>
-                                    <div class="input-group">
-                                        <button class="btn btn-outline-secondary btn-sm decrease-qty" type="button">-</button>
-                                        <input type="number" class="form-control text-center charge-quantity" value="1" min="1">
-                                        <button class="btn btn-outline-secondary btn-sm increase-qty" type="button">+</button>
-                                    </div>
-                                </div>
-                                <div class="col-md-1 text-end">
-                                    <button class="btn btn-danger btn-sm remove-charge-row" type="button">&times;</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <button type="button" id="addChargeRow" class="btn btn-outline-primary btn-sm">
-                        <i class="las la-plus"></i> Add More Charges
-                    </button>
-                `,
-                width: '800px',
-                showCancelButton: true,
-                confirmButtonText: 'Complete Booking',
-                cancelButtonText: 'Cancel',
-                didOpen: () => {
-                    // Add event listeners for dynamic functionality
-                    $('#addChargeRow').on('click', function () {
-                        addChargeRow();
-                    });
-                    
-                    $(document).on('click', '.remove-charge-row', function () {
-                        $(this).closest('.charge-row').remove();
-                    });
-                    
-                    $(document).on('click', '.increase-qty', function () {
-                        const input = $(this).closest('.input-group').find('.charge-quantity');
-                        input.val(parseInt(input.val()) + 1);
-                    });
-                    
-                    $(document).on('click', '.decrease-qty', function () {
-                        const input = $(this).closest('.input-group').find('.charge-quantity');
-                        let qty = parseInt(input.val());
-                        if (qty > 1) input.val(qty - 1);
-                    });
-                },
-                preConfirm: () => {
-                    const charges = [];
-                    $('.charge-row').each(function () {
-                        const title = $(this).find('.charge-detail').val();
-                        const price = parseFloat($(this).find('.charge-amount').val()) || 0;
-                        const qty = parseInt($(this).find('.charge-quantity').val()) || 0;
-                        const total_amount = price * qty;
-
-                        if (title && price > 0 && qty > 0) {
-                            charges.push({ title, price, qty, total_amount });
-                        }
-                    });
-                    return { charges, bookingId };
-                }
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    const { charges, bookingId } = result.value;
-                    updateBookingStatus(bookingId, 'completed', 1, '', charges);
-                }
-            });
-        });
-
-
-        // Add charge row function
-        function addChargeRow() {
+            $('#extraChargesWrapper').html('');
+            addChargeRow();
             const row = `
-                <div class="charge-row border p-3 mb-3 rounded bg-light">
-                    <div class="row g-3 align-items-end">
-                        <div class="col-md-5">
-                            <label class="form-label">Extra Charge Detail</label>
-                            <input type="text" class="form-control charge-detail" placeholder="e.g. Travel cost">
-                        </div>
-                        <div class="col-md-3">
-                            <label class="form-label">Amount</label>
-                            <input type="number" class="form-control charge-amount" placeholder="e.g. 100">
-                        </div>
-                        <div class="col-md-3">
-                            <label class="form-label">Quantity</label>
+            const row = `
+            $('#extraChargesModal').find('#bookingId').val(bookingId);
+        // Complete booking - charges modal
+        // Complete booking - charges modal
+        $('#complete-booking').on('click', function () {
+            $('#extraChargesWrapper').html('');
+            addChargeRow();
+            const row = `
+            const row = `ine-secondary btn-sm decrease-qty" type="button">-</button>
+            $('#extraChargesModal').find('#bookingId').val(bookingId);
+        // Add extra charge row
+            $('#extraChargesModal').find('#bookingId').val(bookingId);
+            $('#extraChargesModal').modal('show');             <label class="form-label">Quantity</label>
                             <div class="input-group">
                                 <button class="btn btn-outline-secondary btn-sm decrease-qty" type="button">-</button>
-                                <input type="number" class="form-control text-center charge-quantity" value="1" min="1">
-                                <button class="btn btn-outline-secondary btn-sm increase-qty" type="button">+</button>
-                            </div>
-                        </div>
-                        <div class="col-md-1 text-end">
-                            <button class="btn btn-danger btn-sm remove-charge-row" type="button">&times;</button>
-                        </div>
-                    </div>
-                </div>`;
-            $('#extraChargesWrapper').append(row);
-        }
-
-        // Rating and review handlers
-        let selectedRating = 0;
-        let editingReviewId = null;
-
-        // Rating and review handlers
-        let selectedRating = 0;
-        let editingReviewId = null;
-
-        $(document).on('click', '#rate-now-btn', function () {
-            const bookingId = $(this).data('id');
-            
-            Swal.fire({
-                title: 'Rate Your Experience',
-                html: `
-                    <div class="text-center mb-3">
-                        <div class="star-rating">
-                            <i class="las la-star star" data-value="1" style="font-size: 30px; color: #ddd; cursor: pointer; margin: 0 5px;"></i>
-                            <i class="las la-star star" data-value="2" style="font-size: 30px; color: #ddd; cursor: pointer; margin: 0 5px;"></i>
-                            <i class="las la-star star" data-value="3" style="font-size: 30px; color: #ddd; cursor: pointer; margin: 0 5px;"></i>
-                            <i class="las la-star star" data-value="4" style="font-size: 30px; color: #ddd; cursor: pointer; margin: 0 5px;"></i>
-                            <i class="las la-star star" data-value="5" style="font-size: 30px; color: #ddd; cursor: pointer; margin: 0 5px;"></i>
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Your Review</label>
-                        <textarea class="form-control" id="reviewText" rows="4" placeholder="Share your experience..."></textarea>
-                    </div>
-                `,
-                width: '500px',
-                showCancelButton: true,
-                confirmButtonText: 'Submit Rating',
-                cancelButtonText: 'Cancel',
-                didOpen: () => {
-                    let selectedRating = 0;
-                    
-                    $('.star').on('click', function () {
-                        selectedRating = $(this).data('value');
-                        $('.star').removeClass('selected').css('color', '#ddd');
-                        $(this).prevAll().addBack().addClass('selected').css('color', '#ffc107');
-                    });
-                },
-                preConfirm: () => {
-                    const review = $('#reviewText').val().trim();
-                    const rating = $('.star.selected').length;
-                    
-                    if (rating === 0) {
-                        Swal.showValidationMessage('Please select a star rating.');
-                        return false;
-                    }
-                    
-                    return { rating, review };
-                }
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    const { rating, review } = result.value;
-                    
-                    const payload = {
-                        booking_id: "{{ $bookingdata->id }}",
-                        service_id: "{{ $bookingdata->service_id }}",
-                        customer_id: "{{ $bookingdata->customer_id }}",
-                        rating: rating,
-                        review: review
-                    };
-
-                    $.ajax({
-                        url: baseUrl + '/api/save-booking-rating',
-                        type: 'POST',
-                        data: payload,
-                        success: function (response) {
-                            Swal.fire('Thank you!', 'Your rating has been submitted.', 'success');
-                            window.location.reload();
-                        },
-                        error: function (xhr) {
-                            console.error(xhr);
-                            Swal.fire('Error', 'Failed to submit rating.', 'error');
-                        }
-                    });
-                }
-            });
-        });
-
-        $(document).on('click', '.star', function () {
-            selectedRating = $(this).data('value');
-            $('.star').removeClass('selected');
-            $(this).prevAll().addBack().addClass('selected');
-        });
-
-        $('#ratingForm').on('submit', function (e) {
-            e.preventDefault();
-
-            const bookingId = $('#ratingBookingId').val();
-            const review = $('#reviewText').val().trim();
-
-            if (selectedRating === 0) {
-                return Swal.fire('Error', 'Please select a star rating.', 'warning');
-            }
-
-            const payload = {
-                booking_id: "{{ $bookingdata->id }}",
-                service_id: "{{ $bookingdata->service_id }}",
-                customer_id: "{{ $bookingdata->customer_id }}",
-                rating: selectedRating,
-                review: review
-            };
-
-            if (editingReviewId) {
-                payload.id = editingReviewId;
-            }
-
-            $.ajax({
-                url: baseUrl + '/api/save-booking-rating',
-                type: 'POST',
-                data: payload,
-                success: function (response) {
-                    Swal.fire('Thank you!', 'Your rating has been submitted.', 'success');
-                    $('#ratingModal').modal('hide');
-                    window.location.reload();
-                },
-                error: function (xhr) {
-                    console.error(xhr);
-                    Swal.fire('Error', 'Failed to submit rating.', 'error');
-                }
-            });
-        });
-
-        $(document).on('click', '.edit-review', function () {
-            const reviewId = $(this).data('id');
-            const rating = $(this).data('rating');
-            const reviewText = $(this).data('review');
-
-            Swal.fire({
-                title: 'Edit Your Review',
-                html: `
-                    <div class="text-center mb-3">
-                        <div class="star-rating">
-                            <i class="las la-star star" data-value="1" style="font-size: 30px; color: #ddd; cursor: pointer; margin: 0 5px;"></i>
-                            <i class="las la-star star" data-value="2" style="font-size: 30px; color: #ddd; cursor: pointer; margin: 0 5px;"></i>
-                            <i class="las la-star star" data-value="3" style="font-size: 30px; color: #ddd; cursor: pointer; margin: 0 5px;"></i>
-                            <i class="las la-star star" data-value="4" style="font-size: 30px; color: #ddd; cursor: pointer; margin: 0 5px;"></i>
-                            <i class="las la-star star" data-value="5" style="font-size: 30px; color: #ddd; cursor: pointer; margin: 0 5px;"></i>
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Your Review</label>
-                        <textarea class="form-control" id="editReviewText" rows="4" placeholder="Share your experience...">${reviewText}</textarea>
-                    </div>
-                `,
-                width: '500px',
-                showCancelButton: true,
-                confirmButtonText: 'Update Review',
-                cancelButtonText: 'Cancel',
-                didOpen: () => {
-                    // Set initial rating
-                    $('.star').each(function () {
-                        if ($(this).data('value') <= rating) {
-                            $(this).css('color', '#ffc107');
-                        }
-                    });
-                    
-                    $('.star').on('click', function () {
-                        const selectedRating = $(this).data('value');
-                        $('.star').css('color', '#ddd');
-                        $(this).prevAll().addBack().css('color', '#ffc107');
-                    });
-                },
-                preConfirm: () => {
-                    const review = $('#editReviewText').val().trim();
-                    const rating = $('.star[style*="ffc107"]').length;
-                    
-                    if (rating === 0) {
-                        Swal.showValidationMessage('Please select a star rating.');
-                        return false;
-                    }
-                    
-                    return { rating, review, reviewId };
-                }
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    const { rating, review, reviewId } = result.value;
-                    
-                    const payload = {
-                        booking_id: "{{ $bookingdata->id }}",
-                        service_id: "{{ $bookingdata->service_id }}",
-                        customer_id: "{{ $bookingdata->customer_id }}",
-                        rating: rating,
-                        review: review,
-                        id: reviewId
-                    };
-
-                    $.ajax({
-                        url: baseUrl + '/api/save-booking-rating',
-                        type: 'POST',
-                        data: payload,
-                        success: function (response) {
-                            Swal.fire('Updated!', 'Your review has been updated.', 'success');
-                            window.location.reload();
-                        },
-                        error: function (xhr) {
-                            console.error(xhr);
-                            Swal.fire('Error', 'Failed to update review.', 'error');
-                        }
-                    });
-                }
-            });
-        });
-
-        $(document).on('click', '.delete-review', function () {
-            const reviewId = $(this).data('id');
-
-            Swal.fire({
-                title: 'Are you sure?',
-                text: 'You will not be able to recover this review!',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Yes, delete it!'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    $.ajax({
-                        url: baseUrl + '/api/delete-booking-rating',
-                        type: 'POST',
-                        data: { id: reviewId },
-                        success: function (res) {
-                            Swal.fire('Deleted!', 'Your review has been removed.', 'success');
-                            window.location.reload();
-                        },
-                        error: function (xhr) {
-                            console.error(xhr);
-                            Swal.fire('Error!', 'Failed to delete the review.', 'error');
-                        }
-                    });
-                }
-            });
-        });
-
-    });
-</script>
-<style>
-	.soft-shadow {
-		box-shadow: 0 6px 18px rgba(0,0,0,0.06);
-		transition: transform 0.25s ease, box-shadow 0.25s ease;
-		border-radius: 12px;
-		border: 1px solid rgba(0,0,0,0.04);
-	}
-	.hover-lift:hover {
-		transform: translateY(-4px);
-		box-shadow: 0 12px 24px rgba(0,0,0,0.12);
-	}
-	.role-card {
-		border-left: 4px solid transparent;
-	}
-	.role-card .role-icon { font-size: 18px; }
-	.role-customer { border-left-color: #3b82f6; }
-	.role-provider { border-left-color: #16a34a; }
+        // Add extra charge row
+        $('#addChargeRow').on('click', function () {ider { border-left-color: #16a34a; }
 	.role-handyman { border-left-color: #f59e0b; }
 	.role-customer .role-icon { color: #3b82f6; }
 	.role-provider .role-icon { color: #16a34a; }
