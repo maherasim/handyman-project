@@ -1,3 +1,7 @@
+@php
+    $transactions = \App\Models\SubscriptionTransaction::with(['user', 'subscription'])->orderBy('created_at', 'desc')->get();
+@endphp
+
 @extends('layouts.app')
 
 @section('content')
@@ -11,7 +15,7 @@
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
-                        <table class="table table-striped" id="subscriptionTransactionsTable">
+                        <table class="table table-striped">
                             <thead>
                                 <tr>
                                     <th>ID</th>
@@ -26,7 +30,59 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <!-- Data will be loaded via AJAX -->
+                                @forelse($transactions as $transaction)
+                                    <tr>
+                                        <td>{{ $transaction->id }}</td>
+                                        <td>
+                                            @if($transaction->user)
+                                                {{ $transaction->user->first_name }} {{ $transaction->user->last_name }}
+                                            @else
+                                                Unknown User
+                                            @endif
+                                        </td>
+                                        <td>
+                                            @if($transaction->user)
+                                                {{ $transaction->user->email }}
+                                            @else
+                                                No Email
+                                            @endif
+                                        </td>
+                                        <td>
+                                            @if($transaction->subscription)
+                                                {{ $transaction->subscription->title }}
+                                            @else
+                                                Unknown Plan
+                                            @endif
+                                        </td>
+                                        <td>€{{ number_format($transaction->amount, 2) }}</td>
+                                        <td>{{ ucfirst(str_replace('_', ' ', $transaction->payment_type)) }}</td>
+                                        <td>
+                                            @if($transaction->payment_status === 'pending')
+                                                <span class="badge bg-warning">Pending</span>
+                                            @elseif($transaction->payment_status === 'paid')
+                                                <span class="badge bg-success">Paid</span>
+                                            @elseif($transaction->payment_status === 'rejected')
+                                                <span class="badge bg-danger">Rejected</span>
+                                            @else
+                                                <span class="badge bg-secondary">{{ ucfirst($transaction->payment_status) }}</span>
+                                            @endif
+                                        </td>
+                                        <td>{{ $transaction->created_at->format('Y-m-d H:i:s') }}</td>
+                                        <td>
+                                            @if($transaction->payment_status === 'pending')
+                                                <button class="btn btn-sm btn-success verify-btn" data-id="{{ $transaction->id }}">
+                                                    Verify
+                                                </button>
+                                            @else
+                                                <span class="text-muted">Verified</span>
+                                            @endif
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="9" class="text-center">No transactions found</td>
+                                    </tr>
+                                @endforelse
                             </tbody>
                         </table>
                     </div>
@@ -61,65 +117,7 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
 $(document).ready(function() {
-    let table;
     let currentTransactionId = null;
-
-    // Initialize DataTable
-    function initializeTable() {
-        table = $('#subscriptionTransactionsTable').DataTable({
-            processing: true,
-            serverSide: true,
-            ajax: {
-                url: '{{ route("admin.subscription-transactions.data") }}',
-                error: function(xhr, error, thrown) {
-                    console.error('DataTable AJAX Error:', error);
-                    console.error('Response:', xhr.responseText);
-                    alert('Error loading data: ' + error);
-                }
-            },
-            columns: [
-                { data: 'id' },
-                { data: 'user_name' },
-                { data: 'user_email' },
-                { data: 'plan_name' },
-                { data: 'amount' },
-                { data: 'payment_type' },
-                {
-                    data: 'payment_status',
-                    render: function(data, type, row) {
-                        let badgeClass = '';
-                        switch(data) {
-                            case 'pending':
-                                badgeClass = 'bg-warning';
-                                break;
-                            case 'paid':
-                                badgeClass = 'bg-success';
-                                break;
-                            case 'rejected':
-                                badgeClass = 'bg-danger';
-                                break;
-                        }
-                        return '<span class="badge ' + badgeClass + '">' + data.charAt(0).toUpperCase() + data.slice(1) + '</span>';
-                    }
-                },
-                { data: 'created_at' },
-                {
-                    data: 'actions',
-                    orderable: false,
-                    searchable: false,
-                    render: function(data, type, row) {
-                        if (row.payment_status === 'pending') {
-                            return '<button class="btn btn-sm btn-success verify-btn" data-id="' + data + '">Verify</button>';
-                        } else {
-                            return '<span class="text-muted">Verified</span>';
-                        }
-                    }
-                }
-            ],
-            order: [[0, 'desc']],
-            pageLength: 25
-        });
-    }
 
     // Verify payment
     $(document).on('click', '.verify-btn', function() {
@@ -143,8 +141,9 @@ $(document).ready(function() {
                             text: response.message,
                             icon: 'success',
                             confirmButtonText: 'OK'
+                        }).then(() => {
+                            location.reload();
                         });
-                        table.ajax.reload();
                     } else {
                         Swal.fire({
                             title: 'Error!',
@@ -167,9 +166,6 @@ $(document).ready(function() {
             });
         }
     });
-
-    // Initialize
-    initializeTable();
 });
 </script>
 @endpush

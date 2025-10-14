@@ -39,7 +39,6 @@ class SubscriptionTransactionController extends Controller
      */
     public function indexData(Request $request)
     {
-        dd('indexData');
         \Log::info('SubscriptionTransactionController::indexData called');
         \Log::info('Request data:', $request->all());
         
