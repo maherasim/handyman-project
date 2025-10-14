@@ -1423,6 +1423,7 @@ public function getProviderTimeSlot(Request $request)
 
     public function saveSubscriptionStripePayment(Request $request, $id)
     {
+        dd($request->all());
         $user_id = $id;
         $session_id = $request->get('session_id');
         $plan_type = $request->get('plan_type');
