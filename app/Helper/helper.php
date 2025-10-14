@@ -2202,6 +2202,17 @@ function formatString($input)
             return ucfirst(str_replace('_', ' ', $input));
         }
 
+function sendBankTransferConfirmationEmail($user, $subscription, $transaction) {
+    try {
+        \Mail::to($user->email)->send(new \App\Mail\BankTransferInstructionsMail($user, $subscription, $transaction));
+        \Log::info('Bank transfer instructions email sent successfully to: ' . $user->email);
+        return true;
+    } catch (\Exception $e) {
+        \Log::error('Failed to send bank transfer instructions email: ' . $e->getMessage());
+        return false;
+    }
+}
+
 function sendSubscriptionUpgradeEmail($user, $subscription, $paymentMethod, $transactionId) {
     try {
         \Mail::to($user->email)->send(new \App\Mail\SubscriptionUpgradeMail($user, $subscription, $paymentMethod, $transactionId));

@@ -846,6 +846,10 @@ public function store(UserRequest $request)
             $existing_subscription->payment_id = $payment->id;
             $existing_subscription->save();
 
+            // Send bank transfer instructions email
+            $user = User::find($user_id);
+            sendBankTransferConfirmationEmail($user, $existing_subscription, $payment);
+
             return response()->json(['status' => true, 'message' => 'Subscription upgrade recorded. Please send proof of payment to billing@frobster.com.']);
         } else {
             // If no existing subscription, create new one
@@ -882,6 +886,10 @@ public function store(UserRequest $request)
                 // Update subscription with payment reference
                 $result->payment_id = $payment->id;
                 $result->save();
+
+                // Send bank transfer instructions email
+                $user = User::find($user_id);
+                sendBankTransferConfirmationEmail($user, $result, $payment);
 
                 return response()->json(['status' => true, 'message' => 'Subscription created. Please send proof of payment to billing@frobster.com.']);
             }
