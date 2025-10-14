@@ -1372,9 +1372,10 @@ public function getProviderTimeSlot(Request $request)
 
         Log::info('Currency code determined: ' . $currencyCode);
 
-        $baseURL = config('app.url') ?: 'https://frobster.com';
-        $baseURL = env('APP_URL');
-dd($baseURL);
+        $baseURL = 'https://frobster.com';
+
+        dd($baseURL);
+        
         if (empty($baseURL)) {
             return response()->json(['status' => false, 'message' => 'APP_URL not configured'], 500);
         }
