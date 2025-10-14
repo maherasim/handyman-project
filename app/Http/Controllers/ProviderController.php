@@ -1543,8 +1543,11 @@ public function getProviderTimeSlot(Request $request)
         $stripe_secret = $payment_geteway_value['stripe_key'] ?? null;
 
         if (!$stripe_secret) {
+            Log::error('Stripe secret key not found in payment gateway settings');
             return response()->json(['status' => false, 'message' => 'Stripe not configured'], 500);
         }
+
+        Log::info('Stripe secret key found, creating Stripe client');
 
         $stripe = new \Stripe\StripeClient($stripe_secret);
 
@@ -1552,7 +1555,9 @@ public function getProviderTimeSlot(Request $request)
         $sitesetupdata = $sitesetup ? json_decode($sitesetup->value, true) : null;
         $country_id = $sitesetupdata['default_currency'] ?? null;
         $country = Country::find($country_id);
-        $currencyCode = $country ? $country->currency_code : 'EURO';
+        $currencyCode = $country ? $country->currency_code : 'USD'; // Default to USD instead of EURO
+
+        Log::info('Currency code determined: ' . $currencyCode);
 
         $baseURL = env('APP_URL');
 
@@ -1573,6 +1578,9 @@ public function getProviderTimeSlot(Request $request)
             
             Log::info('Stripe URLs - Success: ' . $successUrl . ', Cancel: ' . $cancelUrl);
             
+            $unitAmount = stripe_unit_amount_from_decimal($payAmount, $currencyCode);
+            Log::info('Unit amount calculated: ' . $unitAmount . ' for amount: ' . $payAmount . ' currency: ' . $currencyCode);
+            
             $session = $stripe->checkout->sessions->create([
                 'success_url' => $successUrl,
                 'cancel_url' => $cancelUrl,
@@ -1584,7 +1592,7 @@ public function getProviderTimeSlot(Request $request)
                         'product_data' => [
                             'name' => 'Subscription Plan: ' . $request->plan_type,
                         ],
-                        'unit_amount' => stripe_unit_amount_from_decimal($payAmount, $currencyCode),
+                        'unit_amount' => $unitAmount,
                     ],
                     'quantity' => 1,
                 ]],
