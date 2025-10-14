@@ -477,16 +477,15 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
         Route::post('subcategory/{id}', [SubCategoryController::class, 'destroy'])->name('subcategory.destroy');
     });
 
-    // Test routes without middleware
+    // Subscription Transactions Routes - No Middleware
+    Route::get('subscription-transactions', [App\Http\Controllers\Admin\SubscriptionTransactionController::class, 'index'])->name('admin.subscription-transactions.index');
+    Route::get('subscription-transactions/data', [App\Http\Controllers\Admin\SubscriptionTransactionController::class, 'indexData'])->name('admin.subscription-transactions.data');
+    Route::post('subscription-transactions/{id}/verify', [App\Http\Controllers\Admin\SubscriptionTransactionController::class, 'verifyPayment'])->name('admin.subscription-transactions.verify');
+    Route::get('subscription-transactions/debug', [App\Http\Controllers\Admin\SubscriptionTransactionController::class, 'debug'])->name('admin.subscription-transactions.debug');
+    
+    // Test routes
     Route::get('test-subscription-controller', [App\Http\Controllers\Admin\SubscriptionTransactionController::class, 'test'])->name('test.subscription.controller');
     Route::get('test-subscription-data', [App\Http\Controllers\Admin\SubscriptionTransactionController::class, 'indexData'])->name('test.subscription.data');
-    
-    Route::group([], function () {
-        Route::get('subscription-transactions', [App\Http\Controllers\Admin\SubscriptionTransactionController::class, 'index'])->name('admin.subscription-transactions.index');
-        Route::get('subscription-transactions/data', [App\Http\Controllers\Admin\SubscriptionTransactionController::class, 'indexData'])->name('admin.subscription-transactions.data');
-        Route::post('subscription-transactions/{id}/verify', [App\Http\Controllers\Admin\SubscriptionTransactionController::class, 'verifyPayment'])->name('admin.subscription-transactions.verify');
-        Route::get('subscription-transactions/debug', [App\Http\Controllers\Admin\SubscriptionTransactionController::class, 'debug'])->name('admin.subscription-transactions.debug');
-    });
     
 
     Route::group(['middleware' => ['permission:plan list']], function () {

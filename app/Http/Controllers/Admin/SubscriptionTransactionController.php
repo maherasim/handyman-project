@@ -144,7 +144,7 @@ class SubscriptionTransactionController extends Controller
             Log::info('Bank transfer payment verified by admin', [
                 'transaction_id' => $transaction->id,
                 'user_id' => $subscription->user_id ?? null,
-                'admin_id' => auth()->id()
+                'admin_id' => 'system'
             ]);
 
             return response()->json([
