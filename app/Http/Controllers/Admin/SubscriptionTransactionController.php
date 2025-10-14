@@ -18,8 +18,20 @@ class SubscriptionTransactionController extends Controller
      */
     public function index()
     {
-        dd('index');
+        \Log::info('SubscriptionTransactionController::index called');
         return view('admin.subscription-transactions.index');
+    }
+
+    /**
+     * Simple test method
+     */
+    public function test()
+    {
+        return response()->json([
+            'message' => 'Controller is working!',
+            'timestamp' => now(),
+            'transactions_count' => SubscriptionTransaction::count()
+        ]);
     }
 
     /**
@@ -27,11 +39,17 @@ class SubscriptionTransactionController extends Controller
      */
     public function indexData(Request $request)
     {
-        dd($request->all());
+        \Log::info('SubscriptionTransactionController::indexData called');
+        \Log::info('Request data:', $request->all());
+        
         try {
             // Get all transactions with relationships
-            $transactions = SubscriptionTransaction::get();
-            dd($transactions);
+            $transactions = SubscriptionTransaction::with(['user', 'subscription'])
+                ->orderBy('created_at', 'desc')
+                ->get();
+            
+            \Log::info('Found transactions:', ['count' => $transactions->count()]);
+            
             $data = [];
             foreach ($transactions as $transaction) {
                 $user = $transaction->user;
