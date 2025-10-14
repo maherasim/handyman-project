@@ -1,5 +1,9 @@
 @php
-    $transactions = \App\Models\SubscriptionTransaction::with(['user', 'subscription'])->orderBy('created_at', 'desc')->get();
+    $transactions = \App\Models\SubscriptionTransaction::with(['user', 'subscription'])
+        ->where('payment_type', 'bank_transfer')
+        ->where('payment_status', 'pending')
+        ->orderBy('created_at', 'desc')
+        ->get();
 @endphp
 
 @extends('layouts.app')
