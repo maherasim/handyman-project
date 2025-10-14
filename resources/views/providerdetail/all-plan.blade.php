@@ -171,37 +171,46 @@
                             // Debug logging
                             console.log('Current plan:', currentPlan);
 
-                            // If current plan is Free Plan, show only Silver and Gold
+                            // If current plan is Free Plan, show Silver and Gold (upgrades)
                             if (currentPlan.toLowerCase().includes('free')) {
                                 upgradeOptions = plans.filter(plan => 
                                     plan.title.toLowerCase().includes('silver') || 
                                     plan.title.toLowerCase().includes('gold')
                                 );
-                                console.log('Free plan detected - showing only Silver and Gold:', upgradeOptions);
+                                console.log('Free plan detected - showing Silver and Gold upgrades:', upgradeOptions);
                             } else if (currentPlan.toLowerCase().includes('silver')) {
-                                // If Silver plan, show only Gold
+                                // If Silver plan, show Free and Gold (downgrade to Free, upgrade to Gold)
                                 upgradeOptions = plans.filter(plan => 
+                                    plan.title.toLowerCase().includes('free') || 
                                     plan.title.toLowerCase().includes('gold')
                                 );
-                                console.log('Silver plan detected - showing only Gold:', upgradeOptions);
+                                console.log('Silver plan detected - showing Free and Gold options:', upgradeOptions);
                             } else if (currentPlan.toLowerCase().includes('gold')) {
-                                // If Gold plan, show no upgrades (highest tier)
-                                upgradeOptions = [];
-                                console.log('Gold plan detected - no upgrades available');
+                                // If Gold plan, show Free and Silver (downgrades)
+                                upgradeOptions = plans.filter(plan => 
+                                    plan.title.toLowerCase().includes('free') || 
+                                    plan.title.toLowerCase().includes('silver')
+                                );
+                                console.log('Gold plan detected - showing Free and Silver downgrades:', upgradeOptions);
                             } else {
-                                // For other plans, show all available upgrades except current
+                                // For other plans, show all available plans except current
                                 upgradeOptions = plans.filter(plan => plan.title !== currentPlan);
-                                console.log('Other plan - showing all upgrades except current:', upgradeOptions);
+                                console.log('Other plan - showing all plans except current:', upgradeOptions);
                             }
 
                             let buttons = '';
                             if (upgradeOptions.length > 0) {
                                 upgradeOptions.forEach(plan => {
+                                    // Determine if it's an upgrade or downgrade based on amount
+                                    let currentAmount = parseFloat($('#plan_amount').text()) || 0;
+                                    let planAmount = parseFloat(plan.amount) || 0;
+                                    let buttonText = planAmount > currentAmount ? 'Upgrade to' : 'Switch to';
+                                    
                                     buttons +=
-                                        `<button class="btn btn-warning upgrade-btn" data-plan="${plan.title}" data-id="${row.id}" data-amount="${plan.amount}">Upgrade to ${plan.title}</button> `;
+                                        `<button class="btn btn-warning upgrade-btn" data-plan="${plan.title}" data-id="${row.id}" data-amount="${plan.amount}">${buttonText} ${plan.title}</button> `;
                                 });
                             } else {
-                                buttons = '<span>No upgrades available</span>';
+                                buttons = '<span>No other plans available</span>';
                             }
                             return buttons;
                         }
