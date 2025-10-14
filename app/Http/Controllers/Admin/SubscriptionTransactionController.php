@@ -156,17 +156,13 @@ class SubscriptionTransactionController extends Controller
                 'admin_id' => 'system'
             ]);
 
-            return response()->json([
-                'status' => true,
-                'message' => 'Payment verified successfully. Subscription activated.'
-            ]);
+            return redirect()->route('admin.subscription-transactions.index')
+                ->with('success', 'Payment verified successfully! Subscription activated.');
 
         } catch (\Exception $e) {
             Log::error('Failed to verify payment: ' . $e->getMessage());
-            return response()->json([
-                'status' => false,
-                'message' => 'Failed to verify payment: ' . $e->getMessage()
-            ], 500);
+            return redirect()->route('admin.subscription-transactions.index')
+                ->with('error', 'Failed to verify payment: ' . $e->getMessage());
         }
     }
 

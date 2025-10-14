@@ -16,6 +16,20 @@
                 <div class="card-header">
                     <h4 class="card-title mb-0">Bank Transfer Payments - Pending Verification</h4>
                     <p class="text-muted">Verify pending bank transfer payments</p>
+                    
+                    @if(session('success'))
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <i class="fas fa-check-circle"></i> {{ session('success') }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    @endif
+                    
+                    @if(session('error'))
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="fas fa-exclamation-circle"></i> {{ session('error') }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    @endif
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
@@ -74,9 +88,13 @@
                                         <td>{{ $transaction->created_at->format('Y-m-d H:i:s') }}</td>
                                         <td>
                                             @if($transaction->payment_status === 'pending')
-                                                <button class="btn btn-sm btn-success verify-btn" data-id="{{ $transaction->id }}">
-                                                    Verify
-                                                </button>
+                                                <form method="POST" action="{{ route('admin.subscription-transactions.verify', $transaction->id) }}" style="display: inline;">
+                                                    @csrf
+                                                    <button type="submit" class="btn btn-sm btn-success verify-btn" 
+                                                            onclick="return confirmVerify('{{ $transaction->user->first_name ?? 'User' }}', '{{ $transaction->subscription->title ?? 'Plan' }}', '€{{ number_format($transaction->amount, 2) }}')">
+                                                        Verify
+                                                    </button>
+                                                </form>
                                             @else
                                                 <span class="text-muted">Verified</span>
                                             @endif
@@ -96,92 +114,49 @@
     </div>
 </div>
 
-<!-- Simple Verification Modal -->
-<div class="modal fade" id="verifyModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Verify Payment</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <p>Are you sure you want to verify this payment?</p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-success" id="confirmVerifyBtn">Verify</button>
-            </div>
-        </div>
-    </div>
-</div>
-
 @endsection
 
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-$(document).ready(function() {
-    let currentTransactionId = null;
-
-    // Verify payment
-    $(document).on('click', '.verify-btn', function() {
-        console.log('Verify button clicked');
-        currentTransactionId = $(this).data('id');
-        console.log('Transaction ID:', currentTransactionId);
-        $('#verifyModal').modal('show');
-    });
-
-    // Confirm verify
-    $('#confirmVerifyBtn').click(function() {
-        console.log('Confirm verify clicked');
-        if (currentTransactionId) {
-            console.log('Making AJAX call for ID:', currentTransactionId);
-            const url = '{{ route("admin.subscription-transactions.verify", ":id") }}'.replace(':id', currentTransactionId);
-            console.log('AJAX URL:', url);
-            
-            $.ajax({
-                url: url,
-                type: 'POST',
-                data: {
-                    _token: '{{ csrf_token() }}'
-                },
-                success: function(response) {
-                    console.log('AJAX Success:', response);
-                    if (response.status) {
-                        Swal.fire({
-                            title: 'Success!',
-                            text: response.message,
-                            icon: 'success',
-                            confirmButtonText: 'OK'
-                        }).then(() => {
-                            location.reload();
-                        });
-                    } else {
-                        Swal.fire({
-                            title: 'Error!',
-                            text: response.message,
-                            icon: 'error',
-                            confirmButtonText: 'OK'
-                        });
-                    }
-                    $('#verifyModal').modal('hide');
-                },
-                error: function(xhr, status, error) {
-                    console.error('AJAX Error:', error);
-                    console.error('Response:', xhr.responseText);
-                    Swal.fire({
-                        title: 'Error!',
-                        text: 'An error occurred while verifying the payment: ' + error,
-                        icon: 'error',
-                        confirmButtonText: 'OK'
-                    });
-                    $('#verifyModal').modal('hide');
+function confirmVerify(userName, planName, amount) {
+    Swal.fire({
+        title: 'Verify Payment?',
+        html: `
+            <div class="text-start">
+                <p><strong>User:</strong> ${userName}</p>
+                <p><strong>Plan:</strong> ${planName}</p>
+                <p><strong>Amount:</strong> ${amount}</p>
+                <p class="mt-3">Are you sure you want to verify this bank transfer payment?</p>
+            </div>
+        `,
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#28a745',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: 'Yes, Verify Payment',
+        cancelButtonText: 'Cancel'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Show loading
+            Swal.fire({
+                title: 'Verifying...',
+                text: 'Please wait while we verify the payment.',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
                 }
             });
+            
+            // The form will submit automatically after confirmation
+            return true;
         } else {
-            console.error('No transaction ID set');
+            return false;
         }
     });
-});
+    
+    // Return false to prevent form submission until confirmed
+    return false;
+}
 </script>
 @endpush
