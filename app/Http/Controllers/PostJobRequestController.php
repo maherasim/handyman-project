@@ -717,7 +717,7 @@ class PostJobRequestController extends Controller
         $country = Country::find($country_id);
         $currencyCode = $country ? $country->currency_code : 'EURO';
     
-        $baseURL = env('APP_URL');
+        $baseURL = config('app.url') ?: 'https://frobster.com';
     
         try {
             $session = $stripe->checkout->sessions->create([
@@ -1071,7 +1071,7 @@ class PostJobRequestController extends Controller
             $client = new PayPalHttpClient($environment);
     
             // Base URL
-            $baseURL = env('APP_URL');
+            $baseURL = config('app.url') ?: 'https://frobster.com';
     
             // Create PayPal order
             $order = new OrdersCreateRequest();

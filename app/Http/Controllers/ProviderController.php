@@ -1372,9 +1372,8 @@ public function getProviderTimeSlot(Request $request)
 
         Log::info('Currency code determined: ' . $currencyCode);
 
+        $baseURL = config('app.url') ?: 'https://frobster.com';
         $baseURL = env('APP_URL');
-        dd($baseURL);
-
         // Validate base URL
         if (empty($baseURL)) {
             return response()->json(['status' => false, 'message' => 'APP_URL not configured'], 500);
@@ -1383,6 +1382,7 @@ public function getProviderTimeSlot(Request $request)
         // Ensure base URL doesn't end with slash
         $baseURL = rtrim($baseURL, '/');
 
+        Log::info('Base URL determined: ' . $baseURL);
         Log::info('Creating Stripe session for user: ' . $user_id . ' with plan: ' . $request->plan_type . ' amount: ' . $payAmount);
 
         try {

@@ -1992,7 +1992,7 @@ function  getPaymentMethodkey($type){
 }
 
 function getstripepayments($data){
-    $baseURL = env('APP_URL');
+    $baseURL = config('app.url') ?: 'https://frobster.com';
 
     $stripe_key_data = getPaymentMethodkey($data['payment_type']);
 
@@ -2057,7 +2057,7 @@ function default_user_name(){
 
 function addWalletAmount($data){
 
-    $baseURL = env('APP_URL');
+    $baseURL = config('app.url') ?: 'https://frobster.com';
 
     // Retrieve the Stripe secret key
     $stripe_key_data = getPaymentMethodkey($data['payment_type']);

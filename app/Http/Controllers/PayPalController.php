@@ -44,7 +44,7 @@ class PayPalController extends Controller
 
     public function createPayment(Request $request)
     {
-        $baseURL = env('APP_URL');
+        $baseURL = config('app.url') ?: 'https://frobster.com';
 
         if ($request->type == 'full_payment') {
             $booking = Booking::find($request->booking_id);
