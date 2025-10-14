@@ -26,6 +26,7 @@ class SubscriptionTransactionController extends Controller
      */
     public function indexData(Request $request)
     {
+        dd($request->all());
         try {
             // Get all transactions with relationships
             $transactions = SubscriptionTransaction::get();
