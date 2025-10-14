@@ -437,9 +437,9 @@ public function store(UserRequest $request)
             
             // Find existing active subscription to update
             $existing_subscription = ProviderSubscription::where('user_id', $user_id)
-                 
+                ->where('status', config('constant.SUBSCRIPTION_STATUS.ACTIVE'))
                 ->first();
-dd(  $existing_subscription);
+
             if ($existing_subscription) {
                 // Update existing subscription instead of creating new one
                 $existing_subscription->update([
