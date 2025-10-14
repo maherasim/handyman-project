@@ -436,10 +436,8 @@ public function store(UserRequest $request)
             $user_id = auth()->id();
             
             // Find existing active subscription to update
-            $existing_subscription = ProviderSubscription::where('user_id', $user_id)
-                 
-                ->first();
-
+            $existing_subscription = ProviderSubscription::where('user_id', $user_id)->first();
+dd($existing_subscription);
             if ($existing_subscription) {
                 // Update existing subscription instead of creating new one
                 $existing_subscription->update([
