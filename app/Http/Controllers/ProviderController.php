@@ -798,6 +798,177 @@ public function store(UserRequest $request)
         return response()->json(['status' => false, 'message' => 'Failed to record bank transfer.'], 500);
     }
 
+    public function createSubscriptionStripePayment(Request $request)
+    {
+        $request->validate([
+            'plan_id' => 'required',
+            'plan_type' => 'required|string',
+            'plan_amount' => 'required|numeric',
+        ]);
+
+        $user_id = auth()->id();
+        $user = User::find($user_id);
+
+        if (!$user) {
+            return response()->json(['status' => false, 'message' => 'User not found'], 404);
+        }
+
+        $payAmount = (float)$request->plan_amount;
+
+        if ($payAmount <= 0) {
+            return response()->json(['status' => false, 'message' => 'Invalid amount'], 422);
+        }
+
+        // Get Stripe settings
+        $payment_geteway_value = getPaymentMethodkey('stripe');
+        $stripe_secret = $payment_geteway_value['stripe_key'] ?? null;
+
+        if (!$stripe_secret) {
+            return response()->json(['status' => false, 'message' => 'Stripe not configured'], 500);
+        }
+
+        $stripe = new \Stripe\StripeClient($stripe_secret);
+
+        $sitesetup = Setting::where('type', 'site-setup')->where('key', 'site-setup')->first();
+        $sitesetupdata = $sitesetup ? json_decode($sitesetup->value, true) : null;
+        $country_id = $sitesetupdata['default_currency'] ?? null;
+        $country = Country::find($country_id);
+        $currencyCode = $country ? $country->currency_code : 'EURO';
+
+        $baseURL = env('APP_URL');
+
+        try {
+            $session = $stripe->checkout->sessions->create([
+                'success_url' => $baseURL . '/subscription/stripe/save/' . $user_id .
+                    '?plan_type=' . $request->plan_type . '&session_id={CHECKOUT_SESSION_ID}',
+                'cancel_url' => $baseURL . '/provider_info/' . $user_id,
+                'payment_method_types' => ['card'],
+                'billing_address_collection' => 'required',
+                'line_items' => [[
+                    'price_data' => [
+                        'currency' => $currencyCode,
+                        'product_data' => [
+                            'name' => 'Subscription Plan: ' . $request->plan_type,
+                        ],
+                        'unit_amount' => stripe_unit_amount_from_decimal($payAmount, $currencyCode),
+                    ],
+                    'quantity' => 1,
+                ]],
+                'mode' => 'payment',
+            ]);
+
+            return response()->json(['status' => true, 'id' => $session->id, 'url' => $session->url]);
+        } catch (\Exception $e) {
+            return response()->json(['status' => false, 'message' => $e->getMessage()], 500);
+        }
+    }
+
+    public function saveSubscriptionStripePayment(Request $request, $id)
+    {
+        $user_id = $id;
+        $session_id = $request->get('session_id');
+        $plan_type = $request->get('plan_type');
+
+        if (!$session_id || !$plan_type) {
+            return redirect()->route('provider_info', $user_id)->with('error', 'Invalid payment session.');
+        }
+
+        // Get Stripe settings
+        $payment_geteway_value = getPaymentMethodkey('stripe');
+        $stripe_secret = $payment_geteway_value['stripe_key'] ?? null;
+
+        if (!$stripe_secret) {
+            return redirect()->route('provider_info', $user_id)->with('error', 'Stripe not configured.');
+        }
+
+        $stripe = new \Stripe\StripeClient($stripe_secret);
+
+        try {
+            // Retrieve the session to get payment details
+            $session = $stripe->checkout->sessions->retrieve($session_id);
+
+            if ($session->payment_status === 'paid') {
+                // Get the new plan details
+                $newPlan = Plans::where('title', $plan_type)->first();
+                if (!$newPlan) {
+                    return redirect()->route('provider_info', $user_id)->with('error', 'Plan not found.');
+                }
+
+                // Get current user's active subscription
+                $get_existing_plan = get_user_active_plan($user_id);
+                $active_plan_left_days = 0;
+                
+                // Calculate remaining days from current plan
+                if ($get_existing_plan) {
+                    $active_plan_left_days = check_days_left_plan($get_existing_plan, ['start_at' => now()]);
+                    
+                    // Deactivate existing plan if switching to different plan
+                    if ($plan_type != $get_existing_plan->plan_type) {
+                        $existing_subscription = ProviderSubscription::where('user_id', $user_id)
+                            ->where('status', config('constant.SUBSCRIPTION_STATUS.ACTIVE'))
+                            ->first();
+                        if ($existing_subscription) {
+                            $existing_subscription->update([
+                                'status' => config('constant.SUBSCRIPTION_STATUS.INACTIVE')
+                            ]);
+                        }
+                    }
+                }
+
+                // Create new subscription following API logic
+                $data = [
+                    'plan_id' => $newPlan->id,
+                    'user_id' => $user_id,
+                    'title' => $newPlan->title,
+                    'identifier' => $newPlan->identifier,
+                    'type' => $newPlan->type,
+                    'amount' => $newPlan->amount,
+                    'status' => config('constant.SUBSCRIPTION_STATUS.PENDING'),
+                    'start_at' => now(),
+                    'end_at' => get_plan_expiration_date(now(), $newPlan->type, $active_plan_left_days, $newPlan->duration),
+                    'duration' => $newPlan->duration,
+                    'description' => $newPlan->description,
+                    'plan_type' => $newPlan->plan_type,
+                    'plan_limitation' => $newPlan->planlimit ? json_encode($newPlan->planlimit->plan_limitation) : null,
+                ];
+
+                $result = ProviderSubscription::create($data);
+
+                if ($result) {
+                    // Create payment transaction
+                    $payment_data = [
+                        'subscription_plan_id' => $result->id,
+                        'user_id' => $result->user_id,
+                        'amount' => $result->amount,
+                        'payment_status' => 'paid',
+                        'payment_type' => 'stripe',
+                        'txn_id' => $session->payment_intent,
+                    ];
+                    $payment = SubscriptionTransaction::create($payment_data);
+
+                    // Update subscription to active
+                    $result->status = config('constant.SUBSCRIPTION_STATUS.ACTIVE');
+                    $result->payment_id = $payment->id;
+                    $result->save();
+
+                    // Update user subscription status
+                    $user = User::find($user_id);
+                    $user->is_subscribe = 1;
+                    $user->save();
+
+                    return redirect()->route('provider_info', $user_id)->with('success', 'Subscription upgraded successfully!');
+                }
+
+                return redirect()->route('provider_info', $user_id)->with('error', 'Failed to create subscription.');
+            } else {
+                return redirect()->route('provider_info', $user_id)->with('error', 'Payment was not completed.');
+            }
+        } catch (\Exception $e) {
+            Log::error('Stripe payment verification failed: ' . $e->getMessage());
+            return redirect()->route('provider_info', $user_id)->with('error', 'Payment verification failed.');
+        }
+    }
+
         public function getCountries()
         {
             $countries = Country::select('id', 'name')->get();
