@@ -477,12 +477,11 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
         Route::post('subcategory/{id}', [SubCategoryController::class, 'destroy'])->name('subcategory.destroy');
     });
 
-    Route::get('subscription-transactions', [App\Http\Controllers\Admin\SubscriptionTransactionController::class, 'index'])->name('admin.subscription-transactions.index');
-    Route::get('subscription-transactions/data', [App\Http\Controllers\Admin\SubscriptionTransactionController::class, 'indexData'])->name('admin.subscription-transactions.data');
-    Route::get('subscription-transactions/statistics', [App\Http\Controllers\Admin\SubscriptionTransactionController::class, 'statistics'])->name('admin.subscription-transactions.statistics');
-    Route::post('subscription-transactions/{id}/verify', [App\Http\Controllers\Admin\SubscriptionTransactionController::class, 'verifyPayment'])->name('admin.subscription-transactions.verify');
-    Route::post('subscription-transactions/{id}/reject', [App\Http\Controllers\Admin\SubscriptionTransactionController::class, 'rejectPayment'])->name('admin.subscription-transactions.reject');
-    Route::post('subscription-transactions/bulk-action', [App\Http\Controllers\Admin\SubscriptionTransactionController::class, 'bulkAction'])->name('admin.subscription-transactions.bulk-action');
+    Route::group(['middleware' => ['permission:subscription transaction list']], function () {
+        Route::get('subscription-transactions', [App\Http\Controllers\Admin\SubscriptionTransactionController::class, 'index'])->name('admin.subscription-transactions.index');
+        Route::get('subscription-transactions/data', [App\Http\Controllers\Admin\SubscriptionTransactionController::class, 'indexData'])->name('admin.subscription-transactions.data');
+        Route::post('subscription-transactions/{id}/verify', [App\Http\Controllers\Admin\SubscriptionTransactionController::class, 'verifyPayment'])->name('admin.subscription-transactions.verify');
+    });
     
 
     Route::group(['middleware' => ['permission:plan list']], function () {
