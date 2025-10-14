@@ -1374,7 +1374,7 @@ public function getProviderTimeSlot(Request $request)
 
         $baseURL = config('app.url') ?: 'https://frobster.com';
         $baseURL = env('APP_URL');
-        // Validate base URL
+dd($baseURL);
         if (empty($baseURL)) {
             return response()->json(['status' => false, 'message' => 'APP_URL not configured'], 500);
         }
