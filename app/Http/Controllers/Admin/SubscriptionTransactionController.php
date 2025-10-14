@@ -18,6 +18,7 @@ class SubscriptionTransactionController extends Controller
      */
     public function index()
     {
+        dd('index');
         return view('admin.subscription-transactions.index');
     }
 
