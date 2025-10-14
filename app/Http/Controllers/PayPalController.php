@@ -212,6 +212,9 @@ class PayPalController extends Controller
                     $user->is_subscribe = 1;
                     $user->save();
 
+                    // Send subscription upgrade email
+                    sendSubscriptionUpgradeEmail($user, $result, 'paypal', $response->result->id);
+
                     return redirect()->route('provider_info', $user_id)->with('success', 'Subscription upgraded successfully!');
                 }
 

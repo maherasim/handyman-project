@@ -2202,6 +2202,17 @@ function formatString($input)
             return ucfirst(str_replace('_', ' ', $input));
         }
 
+function sendSubscriptionUpgradeEmail($user, $subscription, $paymentMethod, $transactionId) {
+    try {
+        \Mail::to($user->email)->send(new \App\Mail\SubscriptionUpgradeMail($user, $subscription, $paymentMethod, $transactionId));
+        \Log::info('Subscription upgrade email sent successfully to: ' . $user->email);
+        return true;
+    } catch (\Exception $e) {
+        \Log::error('Failed to send subscription upgrade email: ' . $e->getMessage());
+        return false;
+    }
+}
+
 function stripe_unit_amount_from_decimal($amountDecimal, $currencyCode){
     // Stripe expects integer minor units. Some currencies are zero-decimal.
     $currency = strtoupper($currencyCode);

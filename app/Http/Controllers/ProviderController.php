@@ -567,6 +567,9 @@ public function store(UserRequest $request)
             $user->is_subscribe = 1;
             $user->save();
 
+            // Send subscription upgrade email
+            sendSubscriptionUpgradeEmail($user, $existing_subscription, 'free', 'FREE_' . time());
+
             return response()->json(['status' => true, 'message' => 'Subscription upgraded to Free Plan successfully.']);
         } else {
             // If no existing subscription, create new one
@@ -608,6 +611,9 @@ public function store(UserRequest $request)
                 $user = User::find($user_id);
                 $user->is_subscribe = 1;
                 $user->save();
+
+                // Send subscription upgrade email
+                sendSubscriptionUpgradeEmail($user, $result, 'free', 'FREE_' . time());
 
                 return response()->json(['status' => true, 'message' => 'Subscription created successfully.']);
             }
@@ -684,6 +690,9 @@ public function store(UserRequest $request)
             $user->is_subscribe = 1;
             $user->save();
 
+            // Send subscription upgrade email
+            sendSubscriptionUpgradeEmail($user, $existing_subscription, 'wallet', 'WALLET_' . time());
+
             return response()->json(['status' => true, 'message' => 'Subscription upgraded successfully using wallet payment.']);
         } else {
             // If no existing subscription, create new one
@@ -729,6 +738,9 @@ public function store(UserRequest $request)
                 // Update user subscription status
                 $user->is_subscribe = 1;
                 $user->save();
+
+                // Send subscription upgrade email
+                sendSubscriptionUpgradeEmail($user, $result, 'wallet', 'WALLET_' . time());
 
                 return response()->json(['status' => true, 'message' => 'Subscription created successfully using wallet payment.']);
             }
@@ -1520,7 +1532,10 @@ public function getProviderTimeSlot(Request $request)
                     $user = User::find($user_id);
                     $user->is_subscribe = 1;
                     $user->save();
-    
+
+                    // Send subscription upgrade email
+                    sendSubscriptionUpgradeEmail($user, $result, 'stripe', $session->payment_intent);
+
                     return redirect()->route('provider_info', $user_id)->with('success', 'Subscription updated successfully!');
                 }
     
