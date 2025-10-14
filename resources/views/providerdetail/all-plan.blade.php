@@ -166,8 +166,33 @@
                         searchable: false,
                         render: function(data, type, row) {
                             let currentPlan = data;
-                            let upgradeOptions = plans.filter(plan => plan.title !==
-                                currentPlan);
+                            let upgradeOptions = [];
+
+                            // Debug logging
+                            console.log('Current plan:', currentPlan);
+
+                            // If current plan is Free Plan, show only Silver and Gold
+                            if (currentPlan.toLowerCase().includes('free')) {
+                                upgradeOptions = plans.filter(plan => 
+                                    plan.title.toLowerCase().includes('silver') || 
+                                    plan.title.toLowerCase().includes('gold')
+                                );
+                                console.log('Free plan detected - showing only Silver and Gold:', upgradeOptions);
+                            } else if (currentPlan.toLowerCase().includes('silver')) {
+                                // If Silver plan, show only Gold
+                                upgradeOptions = plans.filter(plan => 
+                                    plan.title.toLowerCase().includes('gold')
+                                );
+                                console.log('Silver plan detected - showing only Gold:', upgradeOptions);
+                            } else if (currentPlan.toLowerCase().includes('gold')) {
+                                // If Gold plan, show no upgrades (highest tier)
+                                upgradeOptions = [];
+                                console.log('Gold plan detected - no upgrades available');
+                            } else {
+                                // For other plans, show all available upgrades except current
+                                upgradeOptions = plans.filter(plan => plan.title !== currentPlan);
+                                console.log('Other plan - showing all upgrades except current:', upgradeOptions);
+                            }
 
                             let buttons = '';
                             if (upgradeOptions.length > 0) {
