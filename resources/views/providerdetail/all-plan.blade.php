@@ -374,27 +374,191 @@
             var planAmount = $('#plan_amount').text();
 
             const bankInfoHtml = `
-                <div class="text-start">
-                    <h6 class="mb-2">Bank Information</h6>
-                    <div><strong>Bank Name:</strong> Norisbank</div>
-                    <div><strong>Country:</strong> Germany</div>
-                    <div><strong>Account Number:</strong> 4776167</div>
-                    <div><strong>IBAN:</strong> DE57760260000477616700</div>
-                    <div><strong>BIC/Swift:</strong> NORDSDE71XXX</div>
+                <div class="bank-transfer-modal">
+                    <div class="bank-header mb-4">
+                        <div class="bank-icon">🏦</div>
+                        <h4 class="mb-2">Bank Transfer Payment</h4>
+                        <p class="text-muted">Complete your subscription upgrade via bank transfer</p>
+                    </div>
                     
-                    <h6 class="mt-3">Instructions</h6>
-                    <div class="small mt-1">
-                        Send Proof of Payment (screenshot or PDF Document) to: 
-                        <a href="mailto:billing@frobster.com">billing@frobster.com</a>
+                    <div class="subscription-info mb-4">
+                        <h6 class="text-primary mb-2">📋 Subscription Details</h6>
+                        <div class="row">
+                            <div class="col-6"><strong>Plan:</strong> ${planType}</div>
+                            <div class="col-6"><strong>Amount:</strong> €${planAmount}</div>
+                        </div>
+                    </div>
+
+                    <div class="bank-details mb-4">
+                        <h6 class="text-success mb-3">🏦 Bank Information</h6>
+                        <div class="bank-info-card">
+                            <div class="bank-row">
+                                <span class="bank-label">Bank Name:</span>
+                                <span class="bank-value">Norisbank</span>
+                            </div>
+                            <div class="bank-row">
+                                <span class="bank-label">Country:</span>
+                                <span class="bank-value">Germany</span>
+                            </div>
+                            <div class="bank-row">
+                                <span class="bank-label">Account Number:</span>
+                                <span class="bank-value">4776167</span>
+                            </div>
+                            <div class="bank-row">
+                                <span class="bank-label">IBAN:</span>
+                                <span class="bank-value">DE57760260000477616700</span>
+                            </div>
+                            <div class="bank-row">
+                                <span class="bank-label">BIC/Swift:</span>
+                                <span class="bank-value">NORDSDE71XXX</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="instructions mb-4">
+                        <h6 class="text-warning mb-3">📝 Important Instructions</h6>
+                        <div class="instruction-steps">
+                            <div class="step">
+                                <span class="step-number">1</span>
+                                <span class="step-text">Transfer the exact amount (€${planAmount}) to the bank account above</span>
+                            </div>
+                            <div class="step">
+                                <span class="step-number">2</span>
+                                <span class="step-text">Include your name and "Subscription ${planType}" in the transfer reference</span>
+                            </div>
+                            <div class="step">
+                                <span class="step-number">3</span>
+                                <span class="step-text">Send proof of payment (screenshot or PDF) to: <a href="mailto:billing@frobster.com" class="email-link">billing@frobster.com</a></span>
+                            </div>
+                            <div class="step">
+                                <span class="step-number">4</span>
+                                <span class="step-text">Your subscription will be activated within 24 hours after verification</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="note-box">
+                        <small class="text-muted">
+                            <i class="fas fa-info-circle"></i>
+                            <strong>Note:</strong> Bank transfers may take 1-3 business days to process. 
+                            Your subscription will be activated once payment is verified.
+                        </small>
                     </div>
                 </div>
+                
+                <style>
+                    .bank-transfer-modal {
+                        text-align: left;
+                        max-width: 100%;
+                    }
+                    .bank-header {
+                        text-align: center;
+                        padding: 20px;
+                        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                        color: white;
+                        border-radius: 10px;
+                        margin: -20px -20px 20px -20px;
+                    }
+                    .bank-icon {
+                        font-size: 2rem;
+                        margin-bottom: 10px;
+                    }
+                    .subscription-info {
+                        background-color: #e3f2fd;
+                        padding: 15px;
+                        border-radius: 8px;
+                        border-left: 4px solid #2196f3;
+                    }
+                    .bank-details {
+                        background-color: #f8f9fa;
+                        padding: 15px;
+                        border-radius: 8px;
+                        border-left: 4px solid #28a745;
+                    }
+                    .bank-info-card {
+                        background-color: white;
+                        padding: 15px;
+                        border-radius: 6px;
+                        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                    }
+                    .bank-row {
+                        display: flex;
+                        justify-content: space-between;
+                        padding: 8px 0;
+                        border-bottom: 1px solid #e9ecef;
+                    }
+                    .bank-row:last-child {
+                        border-bottom: none;
+                    }
+                    .bank-label {
+                        font-weight: 600;
+                        color: #495057;
+                    }
+                    .bank-value {
+                        color: #6c757d;
+                        font-family: monospace;
+                    }
+                    .instructions {
+                        background-color: #fff3cd;
+                        padding: 15px;
+                        border-radius: 8px;
+                        border-left: 4px solid #ffc107;
+                    }
+                    .instruction-steps {
+                        margin-top: 10px;
+                    }
+                    .step {
+                        display: flex;
+                        align-items: flex-start;
+                        margin-bottom: 10px;
+                    }
+                    .step-number {
+                        background-color: #ffc107;
+                        color: #212529;
+                        width: 24px;
+                        height: 24px;
+                        border-radius: 50%;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        font-weight: bold;
+                        font-size: 12px;
+                        margin-right: 10px;
+                        flex-shrink: 0;
+                    }
+                    .step-text {
+                        flex: 1;
+                        line-height: 1.4;
+                    }
+                    .email-link {
+                        color: #007bff;
+                        text-decoration: none;
+                        font-weight: 600;
+                    }
+                    .email-link:hover {
+                        text-decoration: underline;
+                    }
+                    .note-box {
+                        background-color: #d1ecf1;
+                        padding: 12px;
+                        border-radius: 6px;
+                        border-left: 4px solid #17a2b8;
+                    }
+                </style>
             `;
 
             Swal.fire({
-                title: 'Bank Transfer',
+                title: '',
                 html: bankInfoHtml,
                 showCancelButton: true,
-                confirmButtonText: 'Proceed',
+                confirmButtonText: 'I Understand, Proceed',
+                cancelButtonText: 'Cancel',
+                confirmButtonColor: '#28a745',
+                cancelButtonColor: '#6c757d',
+                width: '600px',
+                customClass: {
+                    popup: 'bank-transfer-popup'
+                }
             }).then(result => {
                 if (!result.isConfirmed) return;
                 
@@ -409,8 +573,26 @@
                     },
                     success: function(response) {
                         if (response.status) {
-                            alert('Bank transfer recorded. Please send proof of payment.');
-                            location.reload();
+                            Swal.fire({
+                                title: '✅ Bank Transfer Initiated',
+                                html: `
+                                    <div class="text-center">
+                                        <p>Your subscription upgrade has been recorded.</p>
+                                        <p><strong>Next Steps:</strong></p>
+                                        <ol class="text-left">
+                                            <li>Complete the bank transfer using the provided details</li>
+                                            <li>Send proof of payment to <a href="mailto:billing@frobster.com">billing@frobster.com</a></li>
+                                            <li>Your subscription will be activated within 24 hours</li>
+                                        </ol>
+                                        <p class="text-muted mt-3">You will receive a confirmation email shortly.</p>
+                                    </div>
+                                `,
+                                icon: 'success',
+                                confirmButtonText: 'Got It!',
+                                confirmButtonColor: '#28a745'
+                            }).then(() => {
+                                location.reload();
+                            });
                         } else {
                             alert('Failed to record bank transfer: ' + response.message);
                         }
