@@ -923,9 +923,12 @@ public function store(UserRequest $request)
 
         // Get Stripe settings
         $payment_geteway_value = getPaymentMethodkey('stripe');
-        $stripe_secret = $payment_geteway_value['stripe_key'] ?? null;
+        Log::info('Payment gateway value: ' . json_encode($payment_geteway_value));
+        
+        $stripe_secret = $payment_geteway_value['stripe_key'] ?? $payment_geteway_value['secret_key'] ?? null;
 
         if (!$stripe_secret) {
+            Log::error('Stripe secret key not found in configuration');
             return response()->json(['status' => false, 'message' => 'Stripe not configured'], 500);
         }
 
@@ -938,17 +941,29 @@ public function store(UserRequest $request)
         $currencyCode = $country ? $country->currency_code : 'EURO';
 
         $baseURL = env('APP_URL');
+        
+        Log::info('Stripe configuration check:');
+        Log::info('Base URL: ' . $baseURL);
+        Log::info('Currency Code: ' . $currencyCode);
+        Log::info('Pay Amount: ' . $payAmount);
+        Log::info('Stripe Secret Key exists: ' . ($stripe_secret ? 'YES' : 'NO'));
 
         try {
+            $success_url = $baseURL . '/subscription/stripe/save/' . $user_id .
+                '?plan_type=' . urlencode($request->plan_type) . '&session_id={CHECKOUT_SESSION_ID}';
+            $cancel_url = $baseURL . '/provider_info/' . $user_id;
+            
+            Log::info('Success URL: ' . $success_url);
+            Log::info('Cancel URL: ' . $cancel_url);
+            
             $session = $stripe->checkout->sessions->create([
-                'success_url' => $baseURL . '/subscription/stripe/save/' . $user_id .
-                    '?plan_type=' . $request->plan_type . '&session_id={CHECKOUT_SESSION_ID}',
-                'cancel_url' => $baseURL . '/provider_info/' . $user_id,
+                'success_url' => $success_url,
+                'cancel_url' => $cancel_url,
                 'payment_method_types' => ['card'],
                 'billing_address_collection' => 'required',
                 'line_items' => [[
                     'price_data' => [
-                        'currency' => $currencyCode,
+                        'currency' => strtolower($currencyCode),
                         'product_data' => [
                             'name' => 'Subscription Plan: ' . $request->plan_type,
                         ],
@@ -959,8 +974,11 @@ public function store(UserRequest $request)
                 'mode' => 'payment',
             ]);
 
+            Log::info('Stripe session created successfully: ' . $session->id);
             return response()->json(['status' => true, 'id' => $session->id, 'url' => $session->url]);
         } catch (\Exception $e) {
+            Log::error('Stripe session creation failed: ' . $e->getMessage());
+            Log::error('Stripe error details: ' . json_encode($e->getTraceAsString()));
             return response()->json(['status' => false, 'message' => $e->getMessage()], 500);
         }
     }
