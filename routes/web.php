@@ -181,8 +181,6 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
     Route::post('subscription/wallet/payment', [ProviderController::class, 'walletPayment'])->name('subscription.wallet.payment');
     Route::post('subscription/paypal/create', [ProviderController::class, 'paypalCreate'])->name('subscription.paypal.create');
     Route::post('subscription/bank/transfer', [ProviderController::class, 'bankTransfer'])->name('subscription.bank.transfer');
-    Route::post('subscription/stripe/create', [ProviderController::class, 'createStripePayment'])->name('subscription.stripe.create');
-    Route::get('subscription/stripe/save/{id}', [ProviderController::class, 'saveStripePayment'])->name('subscription.stripe.save');
 
     Route::post('provider-save-slot', [ProviderSlotController::class, 'store'])->name('providerslot.store');
     Route::group(['middleware' => ['permission:provider list']], function () {

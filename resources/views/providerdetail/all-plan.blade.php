@@ -272,26 +272,8 @@
             var planType = $('#plan_type').val();
             var planAmount = $('#plan_amount').text();
 
-            $.ajax({
-                url: '{{ route('subscription.stripe.create') }}',
-                type: 'POST',
-                data: {
-                    _token: '{{ csrf_token() }}',
-                    plan_id: planId,
-                    plan_type: planType,
-                    plan_amount: planAmount
-                },
-                success: function(response) {
-                    if (response.status && response.url) {
-                        window.location.href = response.url;
-                    } else {
-                        alert('Stripe payment failed: ' + response.message);
-                    }
-                },
-                error: function(error) {
-                    alert('Stripe payment failed. Please try again.');
-                }
-            });
+            window.location.href =
+                `{{ route('stripe') }}?plan_id=${planId}&plan_type=${planType}&plan_amount=${planAmount}`;
         });
 
         // Handle PayPal payment selection
