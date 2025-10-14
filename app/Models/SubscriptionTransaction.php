@@ -17,4 +17,20 @@ class SubscriptionTransaction extends Model
         'user_id'    => 'integer',
         'subscription_plan_id'    => 'integer',
     ];
+
+    /**
+     * Get the user that owns the transaction
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Get the subscription that owns the transaction
+     */
+    public function subscription()
+    {
+        return $this->belongsTo(ProviderSubscription::class, 'subscription_plan_id');
+    }
 }

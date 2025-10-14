@@ -481,6 +481,7 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
         Route::get('subscription-transactions', [App\Http\Controllers\Admin\SubscriptionTransactionController::class, 'index'])->name('admin.subscription-transactions.index');
         Route::get('subscription-transactions/data', [App\Http\Controllers\Admin\SubscriptionTransactionController::class, 'indexData'])->name('admin.subscription-transactions.data');
         Route::post('subscription-transactions/{id}/verify', [App\Http\Controllers\Admin\SubscriptionTransactionController::class, 'verifyPayment'])->name('admin.subscription-transactions.verify');
+        Route::get('subscription-transactions/debug', [App\Http\Controllers\Admin\SubscriptionTransactionController::class, 'debug'])->name('admin.subscription-transactions.debug');
     });
     
 

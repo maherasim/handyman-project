@@ -70,7 +70,12 @@ $(document).ready(function() {
             processing: true,
             serverSide: true,
             ajax: {
-                url: '{{ route("admin.subscription-transactions.data") }}'
+                url: '{{ route("admin.subscription-transactions.data") }}',
+                error: function(xhr, error, thrown) {
+                    console.error('DataTable AJAX Error:', error);
+                    console.error('Response:', xhr.responseText);
+                    alert('Error loading data: ' + error);
+                }
             },
             columns: [
                 { data: 'id' },

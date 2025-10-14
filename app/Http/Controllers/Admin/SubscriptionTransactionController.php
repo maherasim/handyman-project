@@ -26,52 +26,64 @@ class SubscriptionTransactionController extends Controller
      */
     public function indexData(Request $request)
     {
-        $query = SubscriptionTransaction::with(['user', 'subscription'])
-            ->orderBy('created_at', 'desc');
+        try {
+            // Get all transactions with relationships
+            $transactions = SubscriptionTransaction::with(['user', 'subscription'])
+                ->orderBy('created_at', 'desc')
+                ->get();
 
-        // Filter by payment status
-        if ($request->has('payment_status') && $request->payment_status !== '') {
-            $query->where('payment_status', $request->payment_status);
+            $data = [];
+            foreach ($transactions as $transaction) {
+                $user = $transaction->user;
+                $subscription = $transaction->subscription;
+                
+                $data[] = [
+                    'id' => $transaction->id,
+                    'user_name' => $user ? ($user->first_name . ' ' . $user->last_name) : 'Unknown User',
+                    'user_email' => $user ? $user->email : 'No Email',
+                    'plan_name' => $subscription ? $subscription->title : 'Unknown Plan',
+                    'amount' => '€' . number_format($transaction->amount, 2),
+                    'payment_type' => ucfirst(str_replace('_', ' ', $transaction->payment_type)),
+                    'payment_status' => $transaction->payment_status,
+                    'txn_id' => $transaction->txn_id,
+                    'created_at' => $transaction->created_at->format('Y-m-d H:i:s'),
+                    'actions' => $transaction->id
+                ];
+            }
+
+            return response()->json([
+                'data' => $data,
+                'recordsTotal' => count($data),
+                'recordsFiltered' => count($data)
+            ]);
+
+        } catch (\Exception $e) {
+            \Log::error('Error loading subscription transactions: ' . $e->getMessage());
+            return response()->json([
+                'data' => [],
+                'recordsTotal' => 0,
+                'recordsFiltered' => 0,
+                'error' => 'Error loading data: ' . $e->getMessage()
+            ]);
         }
+    }
 
-        // Filter by payment type
-        if ($request->has('payment_type') && $request->payment_type !== '') {
-            $query->where('payment_type', $request->payment_type);
-        }
-
-        // Filter by date range
-        if ($request->has('date_from') && $request->date_from !== '') {
-            $query->whereDate('created_at', '>=', $request->date_from);
-        }
-        if ($request->has('date_to') && $request->date_to !== '') {
-            $query->whereDate('created_at', '<=', $request->date_to);
-        }
-
-        $transactions = $query->get();
-
-        $data = [];
-        foreach ($transactions as $transaction) {
-            $user = $transaction->user;
-            $subscription = $transaction->subscription;
-            
-            $data[] = [
-                'id' => $transaction->id,
-                'user_name' => $user ? $user->first_name . ' ' . $user->last_name : 'N/A',
-                'user_email' => $user ? $user->email : 'N/A',
-                'plan_name' => $subscription ? $subscription->title : 'N/A',
-                'amount' => '€' . number_format($transaction->amount, 2),
-                'payment_type' => ucfirst(str_replace('_', ' ', $transaction->payment_type)),
-                'payment_status' => $transaction->payment_status,
-                'txn_id' => $transaction->txn_id,
-                'created_at' => $transaction->created_at->format('Y-m-d H:i:s'),
-                'actions' => $transaction->id
-            ];
-        }
-
+    /**
+     * Debug method to check data
+     */
+    public function debug()
+    {
+        $transactions = SubscriptionTransaction::all();
+        $bankTransfers = SubscriptionTransaction::where('payment_type', 'bank_transfer')->get();
+        $pending = SubscriptionTransaction::where('payment_status', 'pending')->get();
+        
         return response()->json([
-            'data' => $data,
-            'recordsTotal' => count($data),
-            'recordsFiltered' => count($data)
+            'total_transactions' => $transactions->count(),
+            'bank_transfers' => $bankTransfers->count(),
+            'pending_transactions' => $pending->count(),
+            'all_transactions' => $transactions->toArray(),
+            'bank_transfer_transactions' => $bankTransfers->toArray(),
+            'pending_transactions' => $pending->toArray()
         ]);
     }
 
