@@ -1425,7 +1425,7 @@ public function getProviderTimeSlot(Request $request)
     {
        // dd($request->all());
         $user_id = $id;
-        dd($user_id);
+       // dd($user_id);
         $session_id = $request->get('session_id');
         $plan_type = $request->get('plan_type');
     
