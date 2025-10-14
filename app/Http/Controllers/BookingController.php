@@ -1134,7 +1134,7 @@ public function bookingAssigned(Request $request)
         $country_id = $sitesetupdata['default_currency'] ?? null;
         $country = Country::find($country_id);
 
-        $data['currency_code'] = $country ? $country->currency_code : "USD";
+        $data['currency_code'] = $country ? $country->currency_code : "EUR";
 
         switch ($data['payment_type']) {
             case 'stripe':

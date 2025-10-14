@@ -200,12 +200,18 @@
             var planId = $(this).data('id');
             var planAmount = $(this).data('amount');
 
+            // Debug logging
+            console.log('Plan Type:', planType);
+            console.log('Plan Amount:', planAmount);
+            console.log('Plan ID:', planId);
+
             $('#plan_id').val(planId);
             $('#plan_type').val(planType);
             $('#plan_name').text(planType + " Plan");
             $('#plan_amount').text(planAmount);
 
-            if (planType === "Free plan") {
+            // Check if it's a free plan (either by name or amount)
+            if (planType.toLowerCase().includes('free') || planAmount == 0 || planAmount == '0') {
                 // Automatically upgrade without payment
                 $.ajax({
                     url: '{{ route('upgrade.free.plan') }}',
@@ -216,11 +222,16 @@
                         plan_type: planType
                     },
                     success: function(response) {
-                        alert('You have been successfully upgraded to Free Plan.');
-                        location.reload();
+                        if (response.status) {
+                            alert('You have been successfully upgraded to ' + planType + '.');
+                            location.reload();
+                        } else {
+                            alert('Failed to upgrade to ' + planType + ': ' + (response.message || 'Unknown error'));
+                        }
                     },
                     error: function(error) {
-                        alert('Failed to upgrade to Free Plan.');
+                        console.error('Free plan upgrade error:', error);
+                        alert('Failed to upgrade to ' + planType + '.');
                     }
                 });
             } else {

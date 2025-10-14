@@ -507,15 +507,20 @@ public function store(UserRequest $request)
     public function upgradeFreePlan(Request $request)
     {
         $request->validate([
-            'plan_id' => 'required|exists:provider_subscriptions,id',
+            'plan_id' => 'required', // This is actually the subscription ID, not plan ID
             'plan_type' => 'required|string',
         ]);
+
+        Log::info('Free plan upgrade request:', $request->all());
 
         // Get the new plan details
         $newPlan = Plans::where('title', $request->plan_type)->first();
         if (!$newPlan) {
+            Log::error('Plan not found for type: ' . $request->plan_type);
             return response()->json(['error' => 'Plan not found.'], 404);
         }
+
+        Log::info('Found plan:', ['id' => $newPlan->id, 'title' => $newPlan->title, 'amount' => $newPlan->amount]);
 
         // Get current user's active subscription
         $user_id = auth()->id();
@@ -562,7 +567,7 @@ public function store(UserRequest $request)
             $user->is_subscribe = 1;
             $user->save();
 
-            return response()->json(['success' => 'Subscription upgraded to Free Plan successfully.']);
+            return response()->json(['status' => true, 'message' => 'Subscription upgraded to Free Plan successfully.']);
         } else {
             // If no existing subscription, create new one
             $data = [
@@ -604,7 +609,7 @@ public function store(UserRequest $request)
                 $user->is_subscribe = 1;
                 $user->save();
 
-                return response()->json(['success' => 'Subscription created successfully.']);
+                return response()->json(['status' => true, 'message' => 'Subscription created successfully.']);
             }
         }
 
@@ -1368,7 +1373,7 @@ public function getProviderTimeSlot(Request $request)
         $sitesetupdata = $sitesetup ? json_decode($sitesetup->value, true) : null;
         $country_id = $sitesetupdata['default_currency'] ?? null;
         $country = Country::find($country_id);
-        $currencyCode = $country ? $country->currency_code : 'USD'; // Default to USD instead of EURO
+        $currencyCode = $country ? $country->currency_code : 'EUR'; // Default to EUR
 
         Log::info('Currency code determined: ' . $currencyCode);
 
