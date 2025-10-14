@@ -409,6 +409,8 @@ public function store(UserRequest $request)
     }
     public function stripePost(Request $request)
     {
+        Log::info('stripePost called with data: ' . json_encode($request->all()));
+        
         // Set Stripe API key
         Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
 
@@ -898,6 +900,8 @@ public function store(UserRequest $request)
 
     public function createSubscriptionStripePayment(Request $request)
     {
+        Log::info('createSubscriptionStripePayment called with data: ' . json_encode($request->all()));
+        
         $request->validate([
             'plan_id' => 'required',
             'plan_type' => 'required|string',
@@ -963,6 +967,8 @@ public function store(UserRequest $request)
 
     public function saveSubscriptionStripePayment(Request $request, $id)
     {
+        Log::info('saveSubscriptionStripePayment called with user_id: ' . $id . ' and session_id: ' . $request->get('session_id'));
+        
         $user_id = $id;
         $session_id = $request->get('session_id');
         $plan_type = $request->get('plan_type');
@@ -996,6 +1002,8 @@ public function store(UserRequest $request)
                 $existing_subscription = ProviderSubscription::where('user_id', $user_id)
                     ->where('status', config('constant.SUBSCRIPTION_STATUS.ACTIVE'))
                     ->first();
+                
+                Log::info('Found existing subscription: ' . ($existing_subscription ? 'YES (ID: ' . $existing_subscription->id . ')' : 'NO'));
 
                 if ($existing_subscription) {
                     // Update existing subscription instead of creating new one
