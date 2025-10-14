@@ -1373,6 +1373,7 @@ public function getProviderTimeSlot(Request $request)
         Log::info('Currency code determined: ' . $currencyCode);
 
         $baseURL = env('APP_URL');
+        dd($baseURL);
 
         // Validate base URL
         if (empty($baseURL)) {
