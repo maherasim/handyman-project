@@ -18,6 +18,7 @@ use App\Models\ProviderSlotMapping;
 use App\Http\Requests\UserRequest;
 use App\Models\ProviderPayout;
 use App\Models\ProviderSubscription;
+use App\Models\SubscriptionTransaction;
 use App\Models\PaymentGateway;
 use Carbon\Carbon;
 use Yajra\DataTables\DataTables;
@@ -408,9 +409,6 @@ public function store(UserRequest $request)
     }
     public function stripePost(Request $request)
     {
-        // Debugging request data
-       // dd($request->all());
-
         // Set Stripe API key
         Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
 
@@ -426,30 +424,82 @@ public function store(UserRequest $request)
                 "description" => "Payment for plan: " . $request->plan_type, // Description with plan type
             ]);
 
-            // Find the plan from the database
-            $plan = ProviderSubscription::find($request->plan_id);
+            // Get the new plan details
+            $newPlan = Plans::where('title', $request->plan_type)->first();
+            if (!$newPlan) {
+                return redirect()->back()->with('error', 'Plan not found.');
+            }
 
-            if ($plan) {
-                // Update plan details based on the request
-                $plan->plan_type = $request->plan_type;
-                $plan->amount = $request->plan_amount;
-                $plan->status = 'active';
-                $plan->start_at = now();
-                $plan->end_at = now()->addMonth(); // Assuming a 1-month subscription
-
-                // Attempt to save the updated plan details
-                if ($plan->save()) {
-                    Log::info('Subscription updated successfully for ID: ' . $plan->id);
-                    return redirect()->back()->with('success', 'Subscription updated successfully.');
-                } else {
-                    Log::error('Failed to update subscription for ID: ' . $plan->id);
-                    return redirect()->back()->with('error', 'Failed to update subscription.');
+            // Get current user's active subscription
+            $user_id = auth()->id();
+            $get_existing_plan = get_user_active_plan($user_id);
+            
+            $active_plan_left_days = 0;
+            
+            // Calculate remaining days from current plan
+            if ($get_existing_plan) {
+                $active_plan_left_days = check_days_left_plan($get_existing_plan, ['start_at' => now()]);
+                
+                // Deactivate existing plan if switching to different plan
+                if ($request->plan_type != $get_existing_plan->plan_type) {
+                    $existing_subscription = ProviderSubscription::where('user_id', $user_id)
+                        ->where('status', config('constant.SUBSCRIPTION_STATUS.ACTIVE'))
+                        ->first();
+                    if ($existing_subscription) {
+                        $existing_subscription->update([
+                            'status' => config('constant.SUBSCRIPTION_STATUS.INACTIVE')
+                        ]);
+                    }
                 }
             }
 
-            return redirect()->back()->with('error', 'Subscription not found.');
+            // Create new subscription following API logic
+            $data = [
+                'plan_id' => $newPlan->id,
+                'user_id' => $user_id,
+                'title' => $newPlan->title,
+                'identifier' => $newPlan->identifier,
+                'type' => $newPlan->type,
+                'amount' => $newPlan->amount,
+                'status' => config('constant.SUBSCRIPTION_STATUS.PENDING'),
+                'start_at' => now(),
+                'end_at' => get_plan_expiration_date(now(), $newPlan->type, $active_plan_left_days, $newPlan->duration),
+                'duration' => $newPlan->duration,
+                'description' => $newPlan->description,
+                'plan_type' => $newPlan->plan_type,
+                'plan_limitation' => $newPlan->planlimit ? json_encode($newPlan->planlimit->plan_limitation) : null,
+            ];
+
+            $result = ProviderSubscription::create($data);
+
+            if ($result) {
+                // Create payment transaction
+                $payment_data = [
+                    'subscription_plan_id' => $result->id,
+                    'user_id' => $result->user_id,
+                    'amount' => $result->amount,
+                    'payment_status' => 'paid',
+                    'payment_type' => 'stripe',
+                    'txn_id' => $charge->id,
+                ];
+                $payment = SubscriptionTransaction::create($payment_data);
+
+                // Update subscription to active
+                $result->status = config('constant.SUBSCRIPTION_STATUS.ACTIVE');
+                $result->payment_id = $payment->id;
+                $result->save();
+
+                // Update user subscription status
+                $user = User::find($user_id);
+                $user->is_subscribe = 1;
+                $user->save();
+
+                Log::info('Subscription created successfully for user: ' . $user_id);
+                return redirect()->back()->with('success', 'Subscription upgraded successfully.');
+            }
+
+            return redirect()->back()->with('error', 'Failed to create subscription.');
         } catch (\Exception $e) {
-            // If something goes wrong with Stripe
             Log::error('Stripe charge failed: ' . $e->getMessage());
             return redirect()->back()->with('error', 'Payment failed: ' . $e->getMessage());
         }
@@ -461,25 +511,294 @@ public function store(UserRequest $request)
             'plan_type' => 'required|string',
         ]);
 
-        $plan = ProviderSubscription::find($request->plan_id);
+        // Get the new plan details
+        $newPlan = Plans::where('title', $request->plan_type)->first();
+        if (!$newPlan) {
+            return response()->json(['error' => 'Plan not found.'], 404);
+        }
 
-        if ($plan) {
-            $plan->plan_type = $request->plan_type;
-            $plan->amount = 0;
-            $plan->status = 'active';
-            $plan->start_at = now();
-            $plan->end_at = now()->addMonth(); // Example: 1-month free plan
-
-            if ($plan->save()) {
-                return response()->json(['success' => 'Subscription upgraded to Free Plan successfully.']);
+        // Get current user's active subscription
+        $user_id = auth()->id();
+        $get_existing_plan = get_user_active_plan($user_id);
+        
+        $active_plan_left_days = 0;
+        
+        // Calculate remaining days from current plan
+        if ($get_existing_plan) {
+            $active_plan_left_days = check_days_left_plan($get_existing_plan, ['start_at' => now()]);
+            
+            // Deactivate existing plan if switching to different plan
+            if ($request->plan_type != $get_existing_plan->plan_type) {
+                $existing_subscription = ProviderSubscription::where('user_id', $user_id)
+                    ->where('status', config('constant.SUBSCRIPTION_STATUS.ACTIVE'))
+                    ->first();
+                if ($existing_subscription) {
+                    $existing_subscription->update([
+                        'status' => config('constant.SUBSCRIPTION_STATUS.INACTIVE')
+                    ]);
+                }
             }
         }
 
-        return response()->json(['error' => 'Subscription upgrade failed.'], 500);
+        // Create new subscription following API logic
+        $data = [
+            'plan_id' => $newPlan->id,
+            'user_id' => $user_id,
+            'title' => $newPlan->title,
+            'identifier' => $newPlan->identifier,
+            'type' => $newPlan->type,
+            'amount' => $newPlan->amount,
+            'status' => config('constant.SUBSCRIPTION_STATUS.ACTIVE'), // Free plan is immediately active
+            'start_at' => now(),
+            'end_at' => get_plan_expiration_date(now(), $newPlan->type, $active_plan_left_days, $newPlan->duration),
+            'duration' => $newPlan->duration,
+            'description' => $newPlan->description,
+            'plan_type' => $newPlan->plan_type,
+            'plan_limitation' => $newPlan->planlimit ? json_encode($newPlan->planlimit->plan_limitation) : null,
+        ];
+
+        $result = ProviderSubscription::create($data);
+
+        if ($result) {
+            // Create payment transaction for free plan
+            $payment_data = [
+                'subscription_plan_id' => $result->id,
+                'user_id' => $result->user_id,
+                'amount' => $result->amount,
+                'payment_status' => 'paid',
+                'payment_type' => 'free',
+                'txn_id' => 'FREE_' . time(),
+            ];
+            $payment = SubscriptionTransaction::create($payment_data);
+
+            // Update subscription with payment reference
+            $result->payment_id = $payment->id;
+            $result->save();
+
+            // Update user subscription status
+            $user = User::find($user_id);
+            $user->is_subscribe = 1;
+            $user->save();
+
+            return response()->json(['success' => 'Subscription upgraded to Free Plan successfully.']);
+        }
+
     }
 
+    public function walletPayment(Request $request)
+    {
+        $request->validate([
+            'plan_id' => 'required',
+            'plan_type' => 'required|string',
+            'plan_amount' => 'required|numeric',
+        ]);
 
-        public function getCountries()
+        // Get the new plan details
+        $newPlan = Plans::where('title', $request->plan_type)->first();
+        if (!$newPlan) {
+            return response()->json(['status' => false, 'message' => 'Plan not found.'], 404);
+        }
+
+        $user_id = auth()->id();
+        $user = User::find($user_id);
+        
+        // Check wallet balance
+        $wallet = $user->wallet;
+        if (!$wallet || $wallet->amount < $request->plan_amount) {
+            return response()->json(['status' => false, 'message' => 'Insufficient wallet balance.'], 400);
+        }
+
+        // Get current user's active subscription
+        $get_existing_plan = get_user_active_plan($user_id);
+        $active_plan_left_days = 0;
+        
+        // Calculate remaining days from current plan
+        if ($get_existing_plan) {
+            $active_plan_left_days = check_days_left_plan($get_existing_plan, ['start_at' => now()]);
+            
+            // Deactivate existing plan if switching to different plan
+            if ($request->plan_type != $get_existing_plan->plan_type) {
+                $existing_subscription = ProviderSubscription::where('user_id', $user_id)
+                    ->where('status', config('constant.SUBSCRIPTION_STATUS.ACTIVE'))
+                    ->first();
+                if ($existing_subscription) {
+                    $existing_subscription->update([
+                        'status' => config('constant.SUBSCRIPTION_STATUS.INACTIVE')
+                    ]);
+                }
+            }
+        }
+
+        // Create new subscription following API logic
+        $data = [
+            'plan_id' => $newPlan->id,
+            'user_id' => $user_id,
+            'title' => $newPlan->title,
+            'identifier' => $newPlan->identifier,
+            'type' => $newPlan->type,
+            'amount' => $newPlan->amount,
+            'status' => config('constant.SUBSCRIPTION_STATUS.PENDING'),
+            'start_at' => now(),
+            'end_at' => get_plan_expiration_date(now(), $newPlan->type, $active_plan_left_days, $newPlan->duration),
+            'duration' => $newPlan->duration,
+            'description' => $newPlan->description,
+            'plan_type' => $newPlan->plan_type,
+            'plan_limitation' => $newPlan->planlimit ? json_encode($newPlan->planlimit->plan_limitation) : null,
+        ];
+
+        $result = ProviderSubscription::create($data);
+
+        if ($result) {
+            // Create payment transaction
+            $payment_data = [
+                'subscription_plan_id' => $result->id,
+                'user_id' => $result->user_id,
+                'amount' => $result->amount,
+                'payment_status' => 'paid',
+                'payment_type' => 'wallet',
+                'txn_id' => 'WALLET_' . time(),
+            ];
+            $payment = SubscriptionTransaction::create($payment_data);
+
+            // Update subscription to active
+            $result->status = config('constant.SUBSCRIPTION_STATUS.ACTIVE');
+            $result->payment_id = $payment->id;
+            $result->save();
+
+            // Deduct from wallet
+            $wallet->amount -= $request->plan_amount;
+            $wallet->save();
+
+            // Update user subscription status
+            $user->is_subscribe = 1;
+            $user->save();
+
+            return response()->json(['status' => true, 'message' => 'Subscription upgraded successfully using wallet payment.']);
+        }
+
+        return response()->json(['status' => false, 'message' => 'Failed to create subscription.'], 500);
+    }
+
+    public function paypalCreate(Request $request)
+    {
+        $request->validate([
+            'plan_id' => 'required',
+            'plan_type' => 'required|string',
+            'plan_amount' => 'required|numeric',
+        ]);
+
+        // Get the new plan details
+        $newPlan = Plans::where('title', $request->plan_type)->first();
+        if (!$newPlan) {
+            return response()->json(['status' => false, 'message' => 'Plan not found.'], 404);
+        }
+
+        // Create PayPal payment session
+        try {
+            $paypalController = app(\App\Http\Controllers\PayPalController::class);
+            $paypalRequest = new Request([
+                'amount' => $request->plan_amount,
+                'plan_type' => $request->plan_type,
+                'plan_id' => $request->plan_id,
+                'subscription_type' => 'upgrade'
+            ]);
+            
+            $response = $paypalController->createPayment($paypalRequest);
+            $responseData = json_decode($response->getContent(), true);
+            
+            if ($responseData['status'] && isset($responseData['url'])) {
+                return response()->json([
+                    'status' => true,
+                    'url' => $responseData['url'],
+                    'message' => 'PayPal payment initiated successfully.'
+                ]);
+            }
+            
+            return response()->json(['status' => false, 'message' => 'Failed to create PayPal payment.'], 500);
+        } catch (\Exception $e) {
+            return response()->json(['status' => false, 'message' => 'PayPal payment failed: ' . $e->getMessage()], 500);
+        }
+    }
+
+    public function bankTransfer(Request $request)
+    {
+        $request->validate([
+            'plan_id' => 'required',
+            'plan_type' => 'required|string',
+            'plan_amount' => 'required|numeric',
+        ]);
+
+        // Get the new plan details
+        $newPlan = Plans::where('title', $request->plan_type)->first();
+        if (!$newPlan) {
+            return response()->json(['status' => false, 'message' => 'Plan not found.'], 404);
+        }
+
+        $user_id = auth()->id();
+        
+        // Get current user's active subscription
+        $get_existing_plan = get_user_active_plan($user_id);
+        $active_plan_left_days = 0;
+        
+        // Calculate remaining days from current plan
+        if ($get_existing_plan) {
+            $active_plan_left_days = check_days_left_plan($get_existing_plan, ['start_at' => now()]);
+            
+            // Deactivate existing plan if switching to different plan
+            if ($request->plan_type != $get_existing_plan->plan_type) {
+                $existing_subscription = ProviderSubscription::where('user_id', $user_id)
+                    ->where('status', config('constant.SUBSCRIPTION_STATUS.ACTIVE'))
+                    ->first();
+                if ($existing_subscription) {
+                    $existing_subscription->update([
+                        'status' => config('constant.SUBSCRIPTION_STATUS.INACTIVE')
+                    ]);
+                }
+            }
+        }
+
+        // Create new subscription with pending status
+        $data = [
+            'plan_id' => $newPlan->id,
+            'user_id' => $user_id,
+            'title' => $newPlan->title,
+            'identifier' => $newPlan->identifier,
+            'type' => $newPlan->type,
+            'amount' => $newPlan->amount,
+            'status' => config('constant.SUBSCRIPTION_STATUS.PENDING'),
+            'start_at' => now(),
+            'end_at' => get_plan_expiration_date(now(), $newPlan->type, $active_plan_left_days, $newPlan->duration),
+            'duration' => $newPlan->duration,
+            'description' => $newPlan->description,
+            'plan_type' => $newPlan->plan_type,
+            'plan_limitation' => $newPlan->planlimit ? json_encode($newPlan->planlimit->plan_limitation) : null,
+        ];
+
+        $result = ProviderSubscription::create($data);
+
+        if ($result) {
+            // Create payment transaction with pending status
+            $payment_data = [
+                'subscription_plan_id' => $result->id,
+                'user_id' => $result->user_id,
+                'amount' => $result->amount,
+                'payment_status' => 'pending',
+                'payment_type' => 'bank_transfer',
+                'txn_id' => 'BANK_' . time(),
+            ];
+            $payment = SubscriptionTransaction::create($payment_data);
+
+            // Update subscription with payment reference
+            $result->payment_id = $payment->id;
+            $result->save();
+
+            return response()->json(['status' => true, 'message' => 'Bank transfer recorded. Please send proof of payment to billing@frobster.com.']);
+        }
+
+        return response()->json(['status' => false, 'message' => 'Failed to record bank transfer.'], 500);
+    }
+
+    public function getCountries()
         {
             $countries = Country::select('id', 'name')->get();
             return response()->json($countries);

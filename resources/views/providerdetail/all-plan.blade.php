@@ -73,8 +73,20 @@
             </div>
             <div class="modal-body">
                 <p>Please select your preferred payment method:</p>
-                <button id="payWithStripe" class="btn btn-primary">Pay with Stripe</button>
-                <button id="payWithPaypal" class="btn btn-secondary">Pay with PayPal</button>
+                <div class="d-grid gap-2">
+                    <button id="payWithWallet" class="btn btn-outline-primary">
+                        <i class="fas fa-wallet me-1"></i> Wallet
+                    </button>
+                    <button id="payWithStripe" class="btn btn-outline-dark">
+                        <i class="fab fa-cc-stripe me-1"></i> Stripe
+                    </button>
+                    <button id="payWithPaypal" class="btn btn-outline-primary">
+                        <i class="fab fa-paypal me-1"></i> PayPal
+                    </button>
+                    <button id="payWithBank" class="btn btn-outline-secondary">
+                        <i class="la la-university me-1"></i> Bank Transfer
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -225,6 +237,35 @@
             $('#paymentMethodModal').modal('show');
         });
 
+        // Handle Wallet payment selection
+        $('#payWithWallet').on('click', function() {
+            var planId = $('#plan_id').val();
+            var planType = $('#plan_type').val();
+            var planAmount = $('#plan_amount').text();
+
+            $.ajax({
+                url: '{{ route('subscription.wallet.payment') }}',
+                type: 'POST',
+                data: {
+                    _token: '{{ csrf_token() }}',
+                    plan_id: planId,
+                    plan_type: planType,
+                    plan_amount: planAmount
+                },
+                success: function(response) {
+                    if (response.status) {
+                        alert('Subscription upgraded successfully using wallet payment.');
+                        location.reload();
+                    } else {
+                        alert('Payment failed: ' + response.message);
+                    }
+                },
+                error: function(error) {
+                    alert('Payment failed. Please try again.');
+                }
+            });
+        });
+
         // Handle Stripe payment selection
         $('#payWithStripe').on('click', function() {
             var planId = $('#plan_id').val();
@@ -241,8 +282,81 @@
             var planType = $('#plan_type').val();
             var planAmount = $('#plan_amount').text();
 
-            window.location.href =
-                `{{ route('paypal.payment') }}?plan_id=${planId}&plan_type=${planType}&plan_amount=${planAmount}`;
+            $.ajax({
+                url: '{{ route('subscription.paypal.create') }}',
+                type: 'POST',
+                data: {
+                    _token: '{{ csrf_token() }}',
+                    plan_id: planId,
+                    plan_type: planType,
+                    plan_amount: planAmount
+                },
+                success: function(response) {
+                    if (response.status && response.url) {
+                        window.location.href = response.url;
+                    } else {
+                        alert('PayPal payment failed: ' + response.message);
+                    }
+                },
+                error: function(error) {
+                    alert('PayPal payment failed. Please try again.');
+                }
+            });
+        });
+
+        // Handle Bank Transfer payment selection
+        $('#payWithBank').on('click', function() {
+            var planId = $('#plan_id').val();
+            var planType = $('#plan_type').val();
+            var planAmount = $('#plan_amount').text();
+
+            const bankInfoHtml = `
+                <div class="text-start">
+                    <h6 class="mb-2">Bank Information</h6>
+                    <div><strong>Bank Name:</strong> Norisbank</div>
+                    <div><strong>Country:</strong> Germany</div>
+                    <div><strong>Account Number:</strong> 4776167</div>
+                    <div><strong>IBAN:</strong> DE57760260000477616700</div>
+                    <div><strong>BIC/Swift:</strong> NORDSDE71XXX</div>
+                    
+                    <h6 class="mt-3">Instructions</h6>
+                    <div class="small mt-1">
+                        Send Proof of Payment (screenshot or PDF Document) to: 
+                        <a href="mailto:billing@frobster.com">billing@frobster.com</a>
+                    </div>
+                </div>
+            `;
+
+            Swal.fire({
+                title: 'Bank Transfer',
+                html: bankInfoHtml,
+                showCancelButton: true,
+                confirmButtonText: 'Proceed',
+            }).then(result => {
+                if (!result.isConfirmed) return;
+                
+                $.ajax({
+                    url: '{{ route('subscription.bank.transfer') }}',
+                    type: 'POST',
+                    data: {
+                        _token: '{{ csrf_token() }}',
+                        plan_id: planId,
+                        plan_type: planType,
+                        plan_amount: planAmount
+                    },
+                    success: function(response) {
+                        if (response.status) {
+                            alert('Bank transfer recorded. Please send proof of payment.');
+                            location.reload();
+                        } else {
+                            alert('Failed to record bank transfer: ' + response.message);
+                        }
+                    },
+                    error: function(error) {
+                        alert('Failed to record bank transfer. Please try again.');
+                    }
+                });
+            });
         });
     });
 </script>
