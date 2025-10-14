@@ -125,20 +125,28 @@ $(document).ready(function() {
 
     // Verify payment
     $(document).on('click', '.verify-btn', function() {
+        console.log('Verify button clicked');
         currentTransactionId = $(this).data('id');
+        console.log('Transaction ID:', currentTransactionId);
         $('#verifyModal').modal('show');
     });
 
     // Confirm verify
     $('#confirmVerifyBtn').click(function() {
+        console.log('Confirm verify clicked');
         if (currentTransactionId) {
+            console.log('Making AJAX call for ID:', currentTransactionId);
+            const url = '{{ route("admin.subscription-transactions.verify", ":id") }}'.replace(':id', currentTransactionId);
+            console.log('AJAX URL:', url);
+            
             $.ajax({
-                url: '{{ route("admin.subscription-transactions.verify", ":id") }}'.replace(':id', currentTransactionId),
+                url: url,
                 type: 'POST',
                 data: {
                     _token: '{{ csrf_token() }}'
                 },
                 success: function(response) {
+                    console.log('AJAX Success:', response);
                     if (response.status) {
                         Swal.fire({
                             title: 'Success!',
@@ -158,16 +166,20 @@ $(document).ready(function() {
                     }
                     $('#verifyModal').modal('hide');
                 },
-                error: function() {
+                error: function(xhr, status, error) {
+                    console.error('AJAX Error:', error);
+                    console.error('Response:', xhr.responseText);
                     Swal.fire({
                         title: 'Error!',
-                        text: 'An error occurred while verifying the payment.',
+                        text: 'An error occurred while verifying the payment: ' + error,
                         icon: 'error',
                         confirmButtonText: 'OK'
                     });
                     $('#verifyModal').modal('hide');
                 }
             });
+        } else {
+            console.error('No transaction ID set');
         }
     });
 });

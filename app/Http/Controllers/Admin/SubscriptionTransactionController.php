@@ -115,8 +115,12 @@ class SubscriptionTransactionController extends Controller
      */
     public function verifyPayment(Request $request, $id)
     {
+        \Log::info('Verify payment called for ID: ' . $id);
+        \Log::info('Request data:', $request->all());
+        
         try {
             $transaction = SubscriptionTransaction::findOrFail($id);
+            \Log::info('Transaction found:', $transaction->toArray());
             
             if ($transaction->payment_status !== 'pending') {
                 return response()->json([

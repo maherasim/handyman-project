@@ -486,6 +486,7 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
     // Test routes
     Route::get('test-subscription-controller', [App\Http\Controllers\Admin\SubscriptionTransactionController::class, 'test'])->name('test.subscription.controller');
     Route::get('test-subscription-data', [App\Http\Controllers\Admin\SubscriptionTransactionController::class, 'indexData'])->name('test.subscription.data');
+    Route::get('test-verify/{id}', [App\Http\Controllers\Admin\SubscriptionTransactionController::class, 'verifyPayment'])->name('test.verify');
     
 
     Route::group(['middleware' => ['permission:plan list']], function () {
