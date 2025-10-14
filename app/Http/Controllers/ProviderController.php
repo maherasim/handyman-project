@@ -409,8 +409,6 @@ public function store(UserRequest $request)
     }
     public function stripePost(Request $request)
     {
-        Log::info('stripePost called with data: ' . json_encode($request->all()));
-        
         // Set Stripe API key
         Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
 
@@ -434,99 +432,73 @@ public function store(UserRequest $request)
 
             // Get current user's active subscription
             $user_id = auth()->id();
+            $get_existing_plan = get_user_active_plan($user_id);
             
-            // Find existing active subscription to update
-            $existing_subscription = ProviderSubscription::where('user_id', $user_id)
-                ->where('status', config('constant.SUBSCRIPTION_STATUS.ACTIVE'))
-                ->first();
+            $active_plan_left_days = 0;
+            
+            // Calculate remaining days from current plan
+            if ($get_existing_plan) {
+                $active_plan_left_days = check_days_left_plan($get_existing_plan, ['start_at' => now()]);
+                
+                // Deactivate existing plan if switching to different plan
+                if ($request->plan_type != $get_existing_plan->plan_type) {
+                    $existing_subscription = ProviderSubscription::where('user_id', $user_id)
+                        ->where('status', config('constant.SUBSCRIPTION_STATUS.ACTIVE'))
+                        ->first();
+                    if ($existing_subscription) {
+                        $existing_subscription->update([
+                            'status' => config('constant.SUBSCRIPTION_STATUS.INACTIVE')
+                        ]);
+                    }
+                }
+            }
 
-            if ($existing_subscription) {
-                // Update existing subscription instead of creating new one
-                $existing_subscription->update([
-                    'plan_id' => $newPlan->id,
-                    'title' => $newPlan->title,
-                    'identifier' => $newPlan->identifier,
-                    'type' => $newPlan->type,
-                    'amount' => $newPlan->amount,
-                    'duration' => $newPlan->duration,
-                    'description' => $newPlan->description,
-                    'plan_type' => $newPlan->plan_type,
-                    'plan_limitation' => $newPlan->planlimit ? json_encode($newPlan->planlimit->plan_limitation) : null,
-                    'status' => config('constant.SUBSCRIPTION_STATUS.ACTIVE'),
-                    'start_at' => now(),
-                    'end_at' => get_plan_expiration_date(now(), $newPlan->type, 0, $newPlan->duration), // Reset end date for new plan
-                ]);
+            // Create new subscription following API logic
+            $data = [
+                'plan_id' => $newPlan->id,
+                'user_id' => $user_id,
+                'title' => $newPlan->title,
+                'identifier' => $newPlan->identifier,
+                'type' => $newPlan->type,
+                'amount' => $newPlan->amount,
+                'status' => config('constant.SUBSCRIPTION_STATUS.PENDING'),
+                'start_at' => now(),
+                'end_at' => get_plan_expiration_date(now(), $newPlan->type, $active_plan_left_days, $newPlan->duration),
+                'duration' => $newPlan->duration,
+                'description' => $newPlan->description,
+                'plan_type' => $newPlan->plan_type,
+                'plan_limitation' => $newPlan->planlimit ? json_encode($newPlan->planlimit->plan_limitation) : null,
+            ];
 
+            $result = ProviderSubscription::create($data);
+
+            if ($result) {
                 // Create payment transaction
                 $payment_data = [
-                    'subscription_plan_id' => $existing_subscription->id,
-                    'user_id' => $existing_subscription->user_id,
-                    'amount' => $existing_subscription->amount,
+                    'subscription_plan_id' => $result->id,
+                    'user_id' => $result->user_id,
+                    'amount' => $result->amount,
                     'payment_status' => 'paid',
                     'payment_type' => 'stripe',
                     'txn_id' => $charge->id,
                 ];
                 $payment = SubscriptionTransaction::create($payment_data);
 
-                // Update subscription with payment reference
-                $existing_subscription->payment_id = $payment->id;
-                $existing_subscription->save();
+                // Update subscription to active
+                $result->status = config('constant.SUBSCRIPTION_STATUS.ACTIVE');
+                $result->payment_id = $payment->id;
+                $result->save();
 
                 // Update user subscription status
                 $user = User::find($user_id);
                 $user->is_subscribe = 1;
                 $user->save();
 
-                Log::info('Subscription updated successfully for user: ' . $user_id);
+                Log::info('Subscription created successfully for user: ' . $user_id);
                 return redirect()->back()->with('success', 'Subscription upgraded successfully.');
-                } else {
-                // If no existing subscription, create new one
-                $data = [
-                    'plan_id' => $newPlan->id,
-                    'user_id' => $user_id,
-                    'title' => $newPlan->title,
-                    'identifier' => $newPlan->identifier,
-                    'type' => $newPlan->type,
-                    'amount' => $newPlan->amount,
-                    'status' => config('constant.SUBSCRIPTION_STATUS.PENDING'),
-                    'start_at' => now(),
-                    'end_at' => get_plan_expiration_date(now(), $newPlan->type, 0, $newPlan->duration),
-                    'duration' => $newPlan->duration,
-                    'description' => $newPlan->description,
-                    'plan_type' => $newPlan->plan_type,
-                    'plan_limitation' => $newPlan->planlimit ? json_encode($newPlan->planlimit->plan_limitation) : null,
-                ];
-
-                $result = ProviderSubscription::create($data);
-
-                if ($result) {
-                    // Create payment transaction
-                    $payment_data = [
-                        'subscription_plan_id' => $result->id,
-                        'user_id' => $result->user_id,
-                        'amount' => $result->amount,
-                        'payment_status' => 'paid',
-                        'payment_type' => 'stripe',
-                        'txn_id' => $charge->id,
-                    ];
-                    $payment = SubscriptionTransaction::create($payment_data);
-
-                    // Update subscription to active
-                    $result->status = config('constant.SUBSCRIPTION_STATUS.ACTIVE');
-                    $result->payment_id = $payment->id;
-                    $result->save();
-
-                    // Update user subscription status
-                    $user = User::find($user_id);
-                    $user->is_subscribe = 1;
-                    $user->save();
-
-                    Log::info('Subscription created successfully for user: ' . $user_id);
-                    return redirect()->back()->with('success', 'Subscription created successfully.');
-                }
             }
 
-            return redirect()->back()->with('error', 'Failed to update subscription.');
+            return redirect()->back()->with('error', 'Failed to create subscription.');
         } catch (\Exception $e) {
             Log::error('Stripe charge failed: ' . $e->getMessage());
             return redirect()->back()->with('error', 'Payment failed: ' . $e->getMessage());
@@ -590,7 +562,7 @@ public function store(UserRequest $request)
             $user->is_subscribe = 1;
             $user->save();
 
-                return response()->json(['success' => 'Subscription upgraded to Free Plan successfully.']);
+            return response()->json(['success' => 'Subscription upgraded to Free Plan successfully.']);
         } else {
             // If no existing subscription, create new one
             $data = [
@@ -900,8 +872,6 @@ public function store(UserRequest $request)
 
     public function createSubscriptionStripePayment(Request $request)
     {
-        Log::info('createSubscriptionStripePayment called with data: ' . json_encode($request->all()));
-        
         $request->validate([
             'plan_id' => 'required',
             'plan_type' => 'required|string',
@@ -923,12 +893,9 @@ public function store(UserRequest $request)
 
         // Get Stripe settings
         $payment_geteway_value = getPaymentMethodkey('stripe');
-        Log::info('Payment gateway value: ' . json_encode($payment_geteway_value));
-        
-        $stripe_secret = $payment_geteway_value['stripe_key'] ?? $payment_geteway_value['secret_key'] ?? null;
+        $stripe_secret = $payment_geteway_value['stripe_key'] ?? null;
 
         if (!$stripe_secret) {
-            Log::error('Stripe secret key not found in configuration');
             return response()->json(['status' => false, 'message' => 'Stripe not configured'], 500);
         }
 
@@ -941,29 +908,17 @@ public function store(UserRequest $request)
         $currencyCode = $country ? $country->currency_code : 'EURO';
 
         $baseURL = env('APP_URL');
-        
-        Log::info('Stripe configuration check:');
-        Log::info('Base URL: ' . $baseURL);
-        Log::info('Currency Code: ' . $currencyCode);
-        Log::info('Pay Amount: ' . $payAmount);
-        Log::info('Stripe Secret Key exists: ' . ($stripe_secret ? 'YES' : 'NO'));
 
         try {
-            $success_url = $baseURL . '/subscription/stripe/save/' . $user_id .
-                '?plan_type=' . urlencode($request->plan_type) . '&session_id={CHECKOUT_SESSION_ID}';
-            $cancel_url = $baseURL . '/provider_info/' . $user_id;
-            
-            Log::info('Success URL: ' . $success_url);
-            Log::info('Cancel URL: ' . $cancel_url);
-            
             $session = $stripe->checkout->sessions->create([
-                'success_url' => $success_url,
-                'cancel_url' => $cancel_url,
+                'success_url' => $baseURL . '/subscription/stripe/save/' . $user_id .
+                    '?plan_type=' . $request->plan_type . '&session_id={CHECKOUT_SESSION_ID}',
+                'cancel_url' => $baseURL . '/provider_info/' . $user_id,
                 'payment_method_types' => ['card'],
                 'billing_address_collection' => 'required',
                 'line_items' => [[
                     'price_data' => [
-                        'currency' => strtolower($currencyCode),
+                        'currency' => $currencyCode,
                         'product_data' => [
                             'name' => 'Subscription Plan: ' . $request->plan_type,
                         ],
@@ -974,19 +929,14 @@ public function store(UserRequest $request)
                 'mode' => 'payment',
             ]);
 
-            Log::info('Stripe session created successfully: ' . $session->id);
             return response()->json(['status' => true, 'id' => $session->id, 'url' => $session->url]);
         } catch (\Exception $e) {
-            Log::error('Stripe session creation failed: ' . $e->getMessage());
-            Log::error('Stripe error details: ' . json_encode($e->getTraceAsString()));
             return response()->json(['status' => false, 'message' => $e->getMessage()], 500);
         }
     }
 
     public function saveSubscriptionStripePayment(Request $request, $id)
     {
-        Log::info('saveSubscriptionStripePayment called with user_id: ' . $id . ' and session_id: ' . $request->get('session_id'));
-        
         $user_id = $id;
         $session_id = $request->get('session_id');
         $plan_type = $request->get('plan_type');
@@ -1020,8 +970,6 @@ public function store(UserRequest $request)
                 $existing_subscription = ProviderSubscription::where('user_id', $user_id)
                     ->where('status', config('constant.SUBSCRIPTION_STATUS.ACTIVE'))
                     ->first();
-                
-                Log::info('Found existing subscription: ' . ($existing_subscription ? 'YES (ID: ' . $existing_subscription->id . ')' : 'NO'));
 
                 if ($existing_subscription) {
                     // Update existing subscription instead of creating new one
