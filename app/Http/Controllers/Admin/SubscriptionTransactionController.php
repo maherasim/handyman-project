@@ -28,10 +28,8 @@ class SubscriptionTransactionController extends Controller
     {
         try {
             // Get all transactions with relationships
-            $transactions = SubscriptionTransaction::with(['user', 'subscription'])
-                ->orderBy('created_at', 'desc')
-                ->get();
-dd($transactions);
+            $transactions = SubscriptionTransaction::get();
+            dd($transactions);
             $data = [];
             foreach ($transactions as $transaction) {
                 $user = $transaction->user;
