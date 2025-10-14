@@ -1426,54 +1426,41 @@ public function getProviderTimeSlot(Request $request)
         $user_id = $id;
         $session_id = $request->get('session_id');
         $plan_type = $request->get('plan_type');
-
+    
         if (!$session_id || !$plan_type) {
             return redirect()->route('provider_info', $user_id)->with('error', 'Invalid payment session.');
         }
-
+    
         // Get Stripe settings
         $payment_geteway_value = getPaymentMethodkey('stripe');
         $stripe_secret = $payment_geteway_value['stripe_key'] ?? null;
-
+    
         if (!$stripe_secret) {
             return redirect()->route('provider_info', $user_id)->with('error', 'Stripe not configured.');
         }
-
+    
         $stripe = new \Stripe\StripeClient($stripe_secret);
-
+    
         try {
             // Retrieve the session to get payment details
             $session = $stripe->checkout->sessions->retrieve($session_id);
-
+    
             if ($session->payment_status === 'paid') {
                 // Get the new plan details
                 $newPlan = Plans::where('title', $plan_type)->first();
                 if (!$newPlan) {
                     return redirect()->route('provider_info', $user_id)->with('error', 'Plan not found.');
                 }
-
+    
                 // Get current user's active subscription
                 $get_existing_plan = get_user_active_plan($user_id);
                 $active_plan_left_days = 0;
-                
-                // Calculate remaining days from current plan
+    
                 if ($get_existing_plan) {
                     $active_plan_left_days = check_days_left_plan($get_existing_plan, ['start_at' => now()]);
-                    
-                    // Deactivate existing plan if switching to different plan
-                    if ($plan_type != $get_existing_plan->plan_type) {
-                        $existing_subscription = ProviderSubscription::where('user_id', $user_id)
-                            ->where('status', config('constant.SUBSCRIPTION_STATUS.ACTIVE'))
-                            ->first();
-                        if ($existing_subscription) {
-                            $existing_subscription->update([
-                                'status' => config('constant.SUBSCRIPTION_STATUS.INACTIVE')
-                            ]);
-                        }
-                    }
                 }
-
-                // Create new subscription following API logic
+    
+                // Prepare subscription data
                 $data = [
                     'plan_id' => $newPlan->id,
                     'user_id' => $user_id,
@@ -1489,9 +1476,19 @@ public function getProviderTimeSlot(Request $request)
                     'plan_type' => $newPlan->plan_type,
                     'plan_limitation' => $newPlan->planlimit ? json_encode($newPlan->planlimit->plan_limitation) : null,
                 ];
-
-                $result = ProviderSubscription::create($data);
-
+    
+                // Update existing subscription if found, otherwise create new
+                $existing_subscription = ProviderSubscription::where('user_id', $user_id)
+                    ->where('status', config('constant.SUBSCRIPTION_STATUS.ACTIVE'))
+                    ->first();
+    
+                if ($existing_subscription) {
+                    $existing_subscription->update($data);
+                    $result = $existing_subscription;
+                } else {
+                    $result = ProviderSubscription::create($data);
+                }
+    
                 if ($result) {
                     // Create payment transaction
                     $payment_data = [
@@ -1503,21 +1500,21 @@ public function getProviderTimeSlot(Request $request)
                         'txn_id' => $session->payment_intent,
                     ];
                     $payment = SubscriptionTransaction::create($payment_data);
-
+    
                     // Update subscription to active
                     $result->status = config('constant.SUBSCRIPTION_STATUS.ACTIVE');
                     $result->payment_id = $payment->id;
                     $result->save();
-
+    
                     // Update user subscription status
                     $user = User::find($user_id);
                     $user->is_subscribe = 1;
                     $user->save();
-
-                    return redirect()->route('provider_info', $user_id)->with('success', 'Subscription upgraded successfully!');
+    
+                    return redirect()->route('provider_info', $user_id)->with('success', 'Subscription updated successfully!');
                 }
-
-                return redirect()->route('provider_info', $user_id)->with('error', 'Failed to create subscription.');
+    
+                return redirect()->route('provider_info', $user_id)->with('error', 'Failed to save subscription.');
             } else {
                 return redirect()->route('provider_info', $user_id)->with('error', 'Payment was not completed.');
             }
@@ -1526,6 +1523,7 @@ public function getProviderTimeSlot(Request $request)
             return redirect()->route('provider_info', $user_id)->with('error', 'Payment verification failed.');
         }
     }
+    
     public function getSubCategoryList(Request $request){
         $subcategory = SubCategory::where('status',1);
         if(auth()->user() !== null){
