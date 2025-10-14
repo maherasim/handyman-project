@@ -88,6 +88,143 @@ class PayPalController extends Controller
         }
     }
 
+    public function createSubscriptionPayment(Request $request)
+    {
+        $baseURL = config('app.url') ?: 'https://frobster.com';
+        
+        $amount = number_format((float)$request->amount, 2, '.', '');
+
+        $order = new OrdersCreateRequest();
+        $order->prefer('return=representation');
+        $order->body = [
+            'intent' => 'CAPTURE',
+            'purchase_units' => [[
+                'amount' => [
+                    'currency_code' => 'EUR',
+                    'value' => $amount
+                ],
+                'description' => 'Subscription Plan: ' . $request->plan_type
+            ]],
+            'application_context' => [
+                'cancel_url' => $baseURL . '/provider_info/' . auth()->id(),
+                'return_url' => $baseURL . '/subscription/paypal/success/' . auth()->id() . '?plan_type=' . urlencode($request->plan_type),
+                'brand_name' => env('APP_NAME'),
+                'landing_page' => 'LOGIN',
+                'user_action' => 'PAY_NOW',
+            ]
+        ];
+
+        try {
+            $response = $this->client->execute($order);
+            $approvalLink = collect($response->result->links)->firstWhere('rel', 'approve')->href;
+
+            return comman_custom_response([
+                'url' => $approvalLink
+            ]);
+        } catch (\Exception $e) {
+            return comman_custom_response([
+                'error' => 'PayPal Subscription Payment Error: ' . $e->getMessage()
+            ]);
+        }
+    }
+
+    public function subscriptionSuccess(Request $request, $id)
+    {
+        $token = $request->query('token');
+        $plan_type = $request->query('plan_type');
+        $user_id = $id;
+
+        if (!$token || !$plan_type) {
+            return redirect()->route('provider_info', $user_id)->with('error', 'Invalid PayPal payment session.');
+        }
+
+        try {
+            $captureRequest = new OrdersCaptureRequest($token);
+            $captureRequest->prefer('return=representation');
+            $response = $this->client->execute($captureRequest);
+
+            if ($response->result->status === 'COMPLETED') {
+                // Get the new plan details
+                $newPlan = \App\Models\Plans::where('title', $plan_type)->first();
+                if (!$newPlan) {
+                    return redirect()->route('provider_info', $user_id)->with('error', 'Plan not found.');
+                }
+
+                // Get current user's active subscription
+                $get_existing_plan = get_user_active_plan($user_id);
+                $active_plan_left_days = 0;
+                
+                // Calculate remaining days from current plan
+                if ($get_existing_plan) {
+                    $active_plan_left_days = check_days_left_plan($get_existing_plan, ['start_at' => now()]);
+                    
+                    // Deactivate existing plan if switching to different plan
+                    if ($plan_type != $get_existing_plan->plan_type) {
+                        $existing_subscription = \App\Models\ProviderSubscription::where('user_id', $user_id)
+                            ->where('status', config('constant.SUBSCRIPTION_STATUS.ACTIVE'))
+                            ->first();
+                        if ($existing_subscription) {
+                            $existing_subscription->update([
+                                'status' => config('constant.SUBSCRIPTION_STATUS.INACTIVE')
+                            ]);
+                        }
+                    }
+                }
+
+                // Create new subscription
+                $data = [
+                    'plan_id' => $newPlan->id,
+                    'user_id' => $user_id,
+                    'title' => $newPlan->title,
+                    'identifier' => $newPlan->identifier,
+                    'type' => $newPlan->type,
+                    'amount' => $newPlan->amount,
+                    'status' => config('constant.SUBSCRIPTION_STATUS.PENDING'),
+                    'start_at' => now(),
+                    'end_at' => get_plan_expiration_date(now(), $newPlan->type, $active_plan_left_days, $newPlan->duration),
+                    'duration' => $newPlan->duration,
+                    'description' => $newPlan->description,
+                    'plan_type' => $newPlan->plan_type,
+                    'plan_limitation' => $newPlan->planlimit ? json_encode($newPlan->planlimit->plan_limitation) : null,
+                ];
+
+                $result = \App\Models\ProviderSubscription::create($data);
+
+                if ($result) {
+                    // Create payment transaction
+                    $payment_data = [
+                        'subscription_plan_id' => $result->id,
+                        'user_id' => $result->user_id,
+                        'amount' => $result->amount,
+                        'payment_status' => 'paid',
+                        'payment_type' => 'paypal',
+                        'txn_id' => $response->result->id,
+                    ];
+                    $payment = \App\Models\SubscriptionTransaction::create($payment_data);
+
+                    // Update subscription to active
+                    $result->status = config('constant.SUBSCRIPTION_STATUS.ACTIVE');
+                    $result->payment_id = $payment->id;
+                    $result->save();
+
+                    // Update user subscription status
+                    $user = \App\Models\User::find($user_id);
+                    $user->is_subscribe = 1;
+                    $user->save();
+
+                    return redirect()->route('provider_info', $user_id)->with('success', 'Subscription upgraded successfully!');
+                }
+
+                return redirect()->route('provider_info', $user_id)->with('error', 'Failed to create subscription.');
+            } else {
+                return redirect()->route('provider_info', $user_id)->with('error', 'Payment was not completed.');
+            }
+        } catch (\Exception $e) {
+            \Log::error('PayPal subscription payment verification failed: ' . $e->getMessage());
+            return redirect()->route('provider_info', $user_id)->with('error', 'Payment verification failed.');
+        }
+    }
+
     public function success(Request $request)
     {
         $token = $request->query('token');

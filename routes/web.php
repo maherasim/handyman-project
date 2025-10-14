@@ -180,6 +180,7 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
     // Subscription payment routes
     Route::post('subscription/wallet/payment', [ProviderController::class, 'walletPayment'])->name('subscription.wallet.payment');
     Route::post('subscription/paypal/create', [ProviderController::class, 'paypalCreate'])->name('subscription.paypal.create');
+    Route::get('subscription/paypal/success/{id}', [PayPalController::class, 'subscriptionSuccess'])->name('subscription.paypal.success');
     Route::post('subscription/bank/transfer', [ProviderController::class, 'bankTransfer'])->name('subscription.bank.transfer');
     Route::post('subscription/stripe/create', [ProviderController::class, 'createSubscriptionStripePayment'])->name('subscription.stripe.create');
     Route::get('subscription/stripe/save/{id}', [ProviderController::class, 'saveSubscriptionStripePayment'])->name('subscription.stripe.save');

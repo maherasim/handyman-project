@@ -757,23 +757,26 @@ public function store(UserRequest $request)
             $paypalRequest = new Request([
                 'amount' => $request->plan_amount,
                 'plan_type' => $request->plan_type,
-                'plan_id' => $request->plan_id,
-                'subscription_type' => 'upgrade'
+                'plan_id' => $request->plan_id
             ]);
             
-            $response = $paypalController->createPayment($paypalRequest);
+            $response = $paypalController->createSubscriptionPayment($paypalRequest);
             $responseData = json_decode($response->getContent(), true);
             
-            if ($responseData['status'] && isset($responseData['url'])) {
+            // PayPal controller returns 'url' on success or 'error' on failure
+            if (isset($responseData['url'])) {
                 return response()->json([
                     'status' => true,
                     'url' => $responseData['url'],
                     'message' => 'PayPal payment initiated successfully.'
                 ]);
+            } elseif (isset($responseData['error'])) {
+                return response()->json(['status' => false, 'message' => $responseData['error']], 500);
             }
             
             return response()->json(['status' => false, 'message' => 'Failed to create PayPal payment.'], 500);
         } catch (\Exception $e) {
+            Log::error('PayPal subscription payment failed: ' . $e->getMessage());
             return response()->json(['status' => false, 'message' => 'PayPal payment failed: ' . $e->getMessage()], 500);
         }
     }
