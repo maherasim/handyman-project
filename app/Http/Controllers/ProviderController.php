@@ -935,135 +935,135 @@ public function store(UserRequest $request)
     //     }
     // }
 
-    public function saveSubscriptionStripePayment(Request $request, $id)
-    {
-        $user_id = $id;
-        $session_id = $request->get('session_id');
-        $plan_type = $request->get('plan_type');
+    // public function saveSubscriptionStripePayment(Request $request, $id)
+    // {
+    //     $user_id = $id;
+    //     $session_id = $request->get('session_id');
+    //     $plan_type = $request->get('plan_type');
 
-        if (!$session_id || !$plan_type) {
-            return redirect()->route('provider_info', $user_id)->with('error', 'Invalid payment session.');
-        }
+    //     if (!$session_id || !$plan_type) {
+    //         return redirect()->route('provider_info', $user_id)->with('error', 'Invalid payment session.');
+    //     }
 
-        // Get Stripe settings
-        $payment_geteway_value = getPaymentMethodkey('stripe');
-        $stripe_secret = $payment_geteway_value['stripe_key'] ?? null;
+    //     // Get Stripe settings
+    //     $payment_geteway_value = getPaymentMethodkey('stripe');
+    //     $stripe_secret = $payment_geteway_value['stripe_key'] ?? null;
 
-        if (!$stripe_secret) {
-            return redirect()->route('provider_info', $user_id)->with('error', 'Stripe not configured.');
-        }
+    //     if (!$stripe_secret) {
+    //         return redirect()->route('provider_info', $user_id)->with('error', 'Stripe not configured.');
+    //     }
 
-        $stripe = new \Stripe\StripeClient($stripe_secret);
+    //     $stripe = new \Stripe\StripeClient($stripe_secret);
 
-        try {
-            // Retrieve the session to get payment details
-            $session = $stripe->checkout->sessions->retrieve($session_id);
+    //     try {
+    //         // Retrieve the session to get payment details
+    //         $session = $stripe->checkout->sessions->retrieve($session_id);
 
-            if ($session->payment_status === 'paid') {
-                // Get the new plan details
-                $newPlan = Plans::where('title', $plan_type)->first();
-                if (!$newPlan) {
-                    return redirect()->route('provider_info', $user_id)->with('error', 'Plan not found.');
-                }
+    //         if ($session->payment_status === 'paid') {
+    //             // Get the new plan details
+    //             $newPlan = Plans::where('title', $plan_type)->first();
+    //             if (!$newPlan) {
+    //                 return redirect()->route('provider_info', $user_id)->with('error', 'Plan not found.');
+    //             }
 
-                // Find existing active subscription to update
-                $existing_subscription = ProviderSubscription::where('user_id', $user_id)
-                    ->where('status', config('constant.SUBSCRIPTION_STATUS.ACTIVE'))
-                    ->first();
+    //             // Find existing active subscription to update
+    //             $existing_subscription = ProviderSubscription::where('user_id', $user_id)
+    //                 ->where('status', config('constant.SUBSCRIPTION_STATUS.ACTIVE'))
+    //                 ->first();
 
-                if ($existing_subscription) {
-                    // Update existing subscription instead of creating new one
-                    $existing_subscription->update([
-                        'plan_id' => $newPlan->id,
-                        'title' => $newPlan->title,
-                        'identifier' => $newPlan->identifier,
-                        'type' => $newPlan->type,
-                        'amount' => $newPlan->amount,
-                        'duration' => $newPlan->duration,
-                        'description' => $newPlan->description,
-                        'plan_type' => $newPlan->plan_type,
-                        'plan_limitation' => $newPlan->planlimit ? json_encode($newPlan->planlimit->plan_limitation) : null,
-                        'status' => config('constant.SUBSCRIPTION_STATUS.ACTIVE'),
-                        'start_at' => now(),
-                        'end_at' => get_plan_expiration_date(now(), $newPlan->type, 0, $newPlan->duration), // Reset end date for new plan
-                    ]);
+    //             if ($existing_subscription) {
+    //                 // Update existing subscription instead of creating new one
+    //                 $existing_subscription->update([
+    //                     'plan_id' => $newPlan->id,
+    //                     'title' => $newPlan->title,
+    //                     'identifier' => $newPlan->identifier,
+    //                     'type' => $newPlan->type,
+    //                     'amount' => $newPlan->amount,
+    //                     'duration' => $newPlan->duration,
+    //                     'description' => $newPlan->description,
+    //                     'plan_type' => $newPlan->plan_type,
+    //                     'plan_limitation' => $newPlan->planlimit ? json_encode($newPlan->planlimit->plan_limitation) : null,
+    //                     'status' => config('constant.SUBSCRIPTION_STATUS.ACTIVE'),
+    //                     'start_at' => now(),
+    //                     'end_at' => get_plan_expiration_date(now(), $newPlan->type, 0, $newPlan->duration), // Reset end date for new plan
+    //                 ]);
 
-                    // Create payment transaction
-                    $payment_data = [
-                        'subscription_plan_id' => $existing_subscription->id,
-                        'user_id' => $existing_subscription->user_id,
-                        'amount' => $existing_subscription->amount,
-                        'payment_status' => 'paid',
-                        'payment_type' => 'stripe',
-                        'txn_id' => $session->payment_intent,
-                    ];
-                    $payment = SubscriptionTransaction::create($payment_data);
+    //                 // Create payment transaction
+    //                 $payment_data = [
+    //                     'subscription_plan_id' => $existing_subscription->id,
+    //                     'user_id' => $existing_subscription->user_id,
+    //                     'amount' => $existing_subscription->amount,
+    //                     'payment_status' => 'paid',
+    //                     'payment_type' => 'stripe',
+    //                     'txn_id' => $session->payment_intent,
+    //                 ];
+    //                 $payment = SubscriptionTransaction::create($payment_data);
 
-                    // Update subscription with payment reference
-                    $existing_subscription->payment_id = $payment->id;
-                    $existing_subscription->save();
+    //                 // Update subscription with payment reference
+    //                 $existing_subscription->payment_id = $payment->id;
+    //                 $existing_subscription->save();
 
-                    // Update user subscription status
-                    $user = User::find($user_id);
-                    $user->is_subscribe = 1;
-                    $user->save();
+    //                 // Update user subscription status
+    //                 $user = User::find($user_id);
+    //                 $user->is_subscribe = 1;
+    //                 $user->save();
 
-                    return redirect()->route('provider_info', $user_id)->with('success', 'Subscription upgraded successfully!');
-                } else {
-                    // If no existing subscription, create new one
-                    $data = [
-                        'plan_id' => $newPlan->id,
-                        'user_id' => $user_id,
-                        'title' => $newPlan->title,
-                        'identifier' => $newPlan->identifier,
-                        'type' => $newPlan->type,
-                        'amount' => $newPlan->amount,
-                        'status' => config('constant.SUBSCRIPTION_STATUS.PENDING'),
-                        'start_at' => now(),
-                        'end_at' => get_plan_expiration_date(now(), $newPlan->type, 0, $newPlan->duration),
-                        'duration' => $newPlan->duration,
-                        'description' => $newPlan->description,
-                        'plan_type' => $newPlan->plan_type,
-                        'plan_limitation' => $newPlan->planlimit ? json_encode($newPlan->planlimit->plan_limitation) : null,
-                    ];
+    //                 return redirect()->route('provider_info', $user_id)->with('success', 'Subscription upgraded successfully!');
+    //             } else {
+    //                 // If no existing subscription, create new one
+    //                 $data = [
+    //                     'plan_id' => $newPlan->id,
+    //                     'user_id' => $user_id,
+    //                     'title' => $newPlan->title,
+    //                     'identifier' => $newPlan->identifier,
+    //                     'type' => $newPlan->type,
+    //                     'amount' => $newPlan->amount,
+    //                     'status' => config('constant.SUBSCRIPTION_STATUS.PENDING'),
+    //                     'start_at' => now(),
+    //                     'end_at' => get_plan_expiration_date(now(), $newPlan->type, 0, $newPlan->duration),
+    //                     'duration' => $newPlan->duration,
+    //                     'description' => $newPlan->description,
+    //                     'plan_type' => $newPlan->plan_type,
+    //                     'plan_limitation' => $newPlan->planlimit ? json_encode($newPlan->planlimit->plan_limitation) : null,
+    //                 ];
 
-                    $result = ProviderSubscription::create($data);
+    //                 $result = ProviderSubscription::create($data);
 
-                    if ($result) {
-                        // Create payment transaction
-                        $payment_data = [
-                            'subscription_plan_id' => $result->id,
-                            'user_id' => $result->user_id,
-                            'amount' => $result->amount,
-                            'payment_status' => 'paid',
-                            'payment_type' => 'stripe',
-                            'txn_id' => $session->payment_intent,
-                        ];
-                        $payment = SubscriptionTransaction::create($payment_data);
+    //                 if ($result) {
+    //                     // Create payment transaction
+    //                     $payment_data = [
+    //                         'subscription_plan_id' => $result->id,
+    //                         'user_id' => $result->user_id,
+    //                         'amount' => $result->amount,
+    //                         'payment_status' => 'paid',
+    //                         'payment_type' => 'stripe',
+    //                         'txn_id' => $session->payment_intent,
+    //                     ];
+    //                     $payment = SubscriptionTransaction::create($payment_data);
 
-                        // Update subscription to active
-                        $result->status = config('constant.SUBSCRIPTION_STATUS.ACTIVE');
-                        $result->payment_id = $payment->id;
-                        $result->save();
+    //                     // Update subscription to active
+    //                     $result->status = config('constant.SUBSCRIPTION_STATUS.ACTIVE');
+    //                     $result->payment_id = $payment->id;
+    //                     $result->save();
 
-                        // Update user subscription status
-                        $user = User::find($user_id);
-                        $user->is_subscribe = 1;
-                        $user->save();
+    //                     // Update user subscription status
+    //                     $user = User::find($user_id);
+    //                     $user->is_subscribe = 1;
+    //                     $user->save();
 
-                        return redirect()->route('provider_info', $user_id)->with('success', 'Subscription created successfully!');
-                    }
-                }
+    //                     return redirect()->route('provider_info', $user_id)->with('success', 'Subscription created successfully!');
+    //                 }
+    //             }
 
-                return redirect()->route('provider_info', $user_id)->with('error', 'Failed to update subscription.');
-            } else {
-                return redirect()->route('provider_info', $user_id)->with('error', 'Payment was not completed.');
-            }
-        } catch (\Exception $e) {
-            Log::error('Stripe payment verification failed: ' . $e->getMessage());
-            return redirect()->route('provider_info', $user_id)->with('error', 'Payment verification failed.');
-        }
-    }
+    //             return redirect()->route('provider_info', $user_id)->with('error', 'Failed to update subscription.');
+    //         } else {
+    //             return redirect()->route('provider_info', $user_id)->with('error', 'Payment was not completed.');
+    //         }
+    //     } catch (\Exception $e) {
+    //         Log::error('Stripe payment verification failed: ' . $e->getMessage());
+    //         return redirect()->route('provider_info', $user_id)->with('error', 'Payment verification failed.');
+    //     }
+    // }
 
         public function getCountries()
         {
