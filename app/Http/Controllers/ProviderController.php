@@ -1326,7 +1326,6 @@ public function getProviderTimeSlot(Request $request)
     }
     public function createSubscriptionStripePayment(Request $request)
     {
-        dd($request->all());
         $request->validate([
             'plan_id' => 'required',
             'plan_type' => 'required|string',
@@ -1350,8 +1349,14 @@ public function getProviderTimeSlot(Request $request)
         $payment_geteway_value = getPaymentMethodkey('stripe');
         $stripe_secret = $payment_geteway_value['stripe_key'] ?? null;
 
+        // Fallback to environment variables if database configuration is not available
         if (!$stripe_secret) {
-            Log::error('Stripe secret key not found in payment gateway settings');
+            $stripe_secret = env('STRIPE_SECRET');
+            Log::info('Using Stripe secret from environment variables');
+        }
+
+        if (!$stripe_secret) {
+            Log::error('Stripe secret key not found in payment gateway settings or environment variables');
             return response()->json(['status' => false, 'message' => 'Stripe not configured'], 500);
         }
 
