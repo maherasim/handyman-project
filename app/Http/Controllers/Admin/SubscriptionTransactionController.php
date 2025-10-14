@@ -94,14 +94,19 @@ class SubscriptionTransactionController extends Controller
         $transactions = SubscriptionTransaction::all();
         $bankTransfers = SubscriptionTransaction::where('payment_type', 'bank_transfer')->get();
         $pending = SubscriptionTransaction::where('payment_status', 'pending')->get();
+        $bankTransferPending = SubscriptionTransaction::where('payment_type', 'bank_transfer')
+            ->where('payment_status', 'pending')
+            ->get();
         
         return response()->json([
             'total_transactions' => $transactions->count(),
             'bank_transfers' => $bankTransfers->count(),
             'pending_transactions' => $pending->count(),
+            'bank_transfer_pending' => $bankTransferPending->count(),
             'all_transactions' => $transactions->toArray(),
             'bank_transfer_transactions' => $bankTransfers->toArray(),
-            'pending_transactions' => $pending->toArray()
+            'pending_transactions' => $pending->toArray(),
+            'bank_transfer_pending_transactions' => $bankTransferPending->toArray()
         ]);
     }
 

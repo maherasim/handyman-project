@@ -14,8 +14,8 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                    <h4 class="card-title mb-0">Subscription Transactions</h4>
-                    <p class="text-muted">Verify bank transfer payments</p>
+                    <h4 class="card-title mb-0">Bank Transfer Payments - Pending Verification</h4>
+                    <p class="text-muted">Verify pending bank transfer payments</p>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
@@ -84,7 +84,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="9" class="text-center">No transactions found</td>
+                                        <td colspan="9" class="text-center">No pending bank transfer payments found</td>
                                     </tr>
                                 @endforelse
                             </tbody>
