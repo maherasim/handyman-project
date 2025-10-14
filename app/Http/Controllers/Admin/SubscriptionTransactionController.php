@@ -31,7 +31,7 @@ class SubscriptionTransactionController extends Controller
             $transactions = SubscriptionTransaction::with(['user', 'subscription'])
                 ->orderBy('created_at', 'desc')
                 ->get();
-
+dd($transactions);
             $data = [];
             foreach ($transactions as $transaction) {
                 $user = $transaction->user;
