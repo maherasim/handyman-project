@@ -1556,11 +1556,26 @@ public function getProviderTimeSlot(Request $request)
 
         $baseURL = env('APP_URL');
 
+        // Validate base URL
+        if (empty($baseURL)) {
+            return response()->json(['status' => false, 'message' => 'APP_URL not configured'], 500);
+        }
+
+        // Ensure base URL doesn't end with slash
+        $baseURL = rtrim($baseURL, '/');
+
+        Log::info('Creating Stripe session for user: ' . $user_id . ' with plan: ' . $request->plan_type . ' amount: ' . $payAmount);
+
         try {
+            $successUrl = $baseURL . '/subscription/stripe/save/' . $user_id .
+                '?plan_type=' . urlencode($request->plan_type) . '&session_id={CHECKOUT_SESSION_ID}';
+            $cancelUrl = $baseURL . '/provider_info/' . $user_id;
+            
+            Log::info('Stripe URLs - Success: ' . $successUrl . ', Cancel: ' . $cancelUrl);
+            
             $session = $stripe->checkout->sessions->create([
-                'success_url' => $baseURL . '/subscription/stripe/save/' . $user_id .
-                    '?plan_type=' . $request->plan_type . '&session_id={CHECKOUT_SESSION_ID}',
-                'cancel_url' => $baseURL . '/provider_info/' . $user_id,
+                'success_url' => $successUrl,
+                'cancel_url' => $cancelUrl,
                 'payment_method_types' => ['card'],
                 'billing_address_collection' => 'required',
                 'line_items' => [[
@@ -1578,6 +1593,7 @@ public function getProviderTimeSlot(Request $request)
 
             return response()->json(['status' => true, 'id' => $session->id, 'url' => $session->url]);
         } catch (\Exception $e) {
+            Log::error('Stripe session creation failed: ' . $e->getMessage());
             return response()->json(['status' => false, 'message' => $e->getMessage()], 500);
         }
     }
