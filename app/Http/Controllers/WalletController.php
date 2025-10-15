@@ -416,10 +416,8 @@ public function getWalletPaymentMethod(Request $request)
 
     $sitesetup = Setting::where('type','site-setup')->where('key', 'site-setup')->first();
     $sitesetupdata = $sitesetup ? json_decode($sitesetup->value, true) : null;
-    $country_id = $sitesetupdata['default_currency'] ?? null;
-    $country = Country::find($country_id);
-
-    $data['currency_code'] = $country ? $country->currency_code : "EUR";
+    // Always use EUR currency regardless of country
+    $data['currency_code'] = "EUR";
 
     switch ($data['payment_type']) {
         case 'stripe':

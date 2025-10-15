@@ -1395,10 +1395,10 @@ public function getProviderTimeSlot(Request $request)
         $sitesetup = Setting::where('type', 'site-setup')->where('key', 'site-setup')->first();
         $sitesetupdata = $sitesetup ? json_decode($sitesetup->value, true) : null;
         $country_id = $sitesetupdata['default_currency'] ?? null;
-        $country = Country::find($country_id);
-        $currencyCode = $country ? $country->currency_code : 'EUR'; // Default to EUR
+        // Always use EUR currency regardless of country
+        $currencyCode = 'EUR';
 
-        Log::info('Currency code determined: ' . $currencyCode);
+        Log::info('Currency code set to EUR (forced)');
 
         $baseURL = 'https://frobster.com';
 

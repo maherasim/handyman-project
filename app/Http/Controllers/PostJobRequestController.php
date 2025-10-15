@@ -713,9 +713,8 @@ class PostJobRequestController extends Controller
     
         $sitesetup = Setting::where('type', 'site-setup')->where('key', 'site-setup')->first();
         $sitesetupdata = $sitesetup ? json_decode($sitesetup->value, true) : null;
-        $country_id = $sitesetupdata['default_currency'] ?? null;
-        $country = Country::find($country_id);
-        $currencyCode = $country ? $country->currency_code : 'EURO';
+        // Always use EUR currency regardless of country
+        $currencyCode = 'EUR';
     
         $baseURL = config('app.url') ?: 'https://frobster.com';
     

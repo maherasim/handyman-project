@@ -466,17 +466,11 @@ function getPriceFormat($price){
     $price = (double)$price;
 
     $setting = App\Models\Setting::getValueByKey('site-setup','site-setup');
-    // $sitesetup = App\Models\Setting::where('type','site-setup')->where('key', 'site-setup')->first();
-    // $sitesetupdata = $sitesetup ? json_decode($sitesetup->value) : null;
-    $currencyId = $setting ? $setting->default_currency : "231";
     $currency_position = $setting ? $setting->currency_position : "left";
     $afterdecimalpoint = $setting ? $setting->digitafter_decimal_point : "2";
-    $country = App\Models\Country::find($currencyId);
-
-    $symbol = '$';
-    if (!empty($country)) {
-        $symbol = $country->symbol;
-    }
+    
+    // Always use EUR currency regardless of country settings
+    $symbol = '€';
 
     $position = 'left';
     if( !empty($currency_position) ){
