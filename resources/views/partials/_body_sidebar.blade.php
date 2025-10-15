@@ -407,14 +407,15 @@
             )
             ->link->attr(['class' => '']);
 
-        $menu->handyman
-            ->add('<span>' . __('messages.list_form_title', ['form' => __('messages.handymantype')]) . '</span>', [
-                'class' => 'sidebar-layout',
-                'route' => 'handymantype.index',
-            ])
-            ->data('permission', 'handymantype list')
-            ->prepend(
-                '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        if (auth()->user()->user_type == 'admin' || auth()->user()->user_type == 'demo_admin') {
+            $menu->handyman
+                ->add('<span>' . __('messages.list_form_title', ['form' => __('messages.handymantype')]) . '</span>', [
+                    'class' => 'sidebar-layout',
+                    'route' => 'handymantype.index',
+                ])
+                ->data('permission', 'handymantype list')
+                ->prepend(
+                    '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M14 20.8344C13.3663 20.9421 12.695 21 12 21C8.13401 21 5 19.2091 5 17C5 14.7909 8.13401 13 12 13C13.7135 13 15.2832 13.3518 16.5 13.9359" stroke="currentColor" stroke-width="1.5"/>
 <g clip-path="url(#clip0_10_6123)">
 <circle cx="17" cy="18" r="1.25" stroke="currentColor" stroke-width="1.36364"/>
@@ -427,8 +428,9 @@
 </clipPath>
 </defs>
 </svg>',
-            )
-            ->link->attr(['class' => '']);
+                )
+                ->link->attr(['class' => '']);
+        }
 
         $menu
             ->add(

@@ -327,7 +327,7 @@
                                     </div>
                                 </div>
                             @endif
-                            @if (auth()->check() && auth()->user()->user_type === 'provider')
+                            @if (auth()->check() && (auth()->user()->user_type === 'provider' || auth()->user()->user_type === 'admin' || auth()->user()->user_type === 'demo_admin'))
                                 <div class="form-group col-md-3">
                                     <div class="custom-control custom-switch">
                                         {{ html()->checkbox('is_featured', old('is_featured', $servicedata->is_featured))->class('custom-control-input')->id('is_featured') }}

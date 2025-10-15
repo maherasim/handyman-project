@@ -419,7 +419,7 @@ public function store(UserRequest $request)
             // Create the Stripe charge
             $charge = Stripe\Charge::create([
                 "amount" => $amount,   // Dynamic amount based on plan_amount
-                "currency" => "usd",   // Currency
+                "currency" => "EUR",   // Currency
                 "source" => $request->stripeToken, // Stripe token from the request
                 "description" => "Payment for plan: " . $request->plan_type, // Description with plan type
             ]);
