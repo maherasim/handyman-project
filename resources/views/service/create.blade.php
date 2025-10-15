@@ -672,9 +672,13 @@
                         $duration.val(1).prop('readonly', true).prop('disabled', true);
                     } else if (type.toLowerCase() === 'daily') {
                         $duration.val(8).prop('readonly', true).prop('disabled', true);
-                    } else {
+                    } else if (type === 'fixed') {
                         $duration.prop('readonly', false).prop('disabled', false);
-                        // Remove max restriction for fixed and free types to allow flexible duration
+                        // For fixed type, allow manual entry - no restrictions
+                        $duration.removeAttr('max');
+                    } else if (type === 'free') {
+                        $duration.prop('readonly', false).prop('disabled', false);
+                        // For free type, allow manual entry - no restrictions
                         $duration.removeAttr('max');
                     }
                 }
@@ -688,18 +692,24 @@
                             var durationValue = parseFloat(durationInput.value);
                             var priceType = $("#price_type").val();
                             
-                            if (priceType === 'fixed') {
-                                if (isNaN(durationValue) || durationValue < 0.5) {
-                                    durationError.textContent = "Duration must be at least 0.5 hours for fixed price type";
-                                } else {
-                                    durationError.textContent = "";
+                            // Only validate if field is not readonly/disabled
+                            if (!durationInput.readOnly && !durationInput.disabled) {
+                                if (priceType === 'fixed') {
+                                    if (isNaN(durationValue) || durationValue < 0.5) {
+                                        durationError.textContent = "Duration must be at least 0.5 hours for fixed price type";
+                                    } else {
+                                        durationError.textContent = "";
+                                    }
+                                } else if (priceType === 'free') {
+                                    if (isNaN(durationValue) || durationValue < 0.5) {
+                                        durationError.textContent = "Duration must be at least 0.5 hours";
+                                    } else {
+                                        durationError.textContent = "";
+                                    }
                                 }
-                            } else if (priceType === 'free') {
-                                if (isNaN(durationValue) || durationValue < 0.5) {
-                                    durationError.textContent = "Duration must be at least 0.5 hours";
-                                } else {
-                                    durationError.textContent = "";
-                                }
+                            } else {
+                                // Clear error when field is readonly
+                                durationError.textContent = "";
                             }
                         });
                     }
