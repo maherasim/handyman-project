@@ -166,8 +166,9 @@
 
                             <div class="form-group col-md-3">
                                 {{ html()->label(__('messages.duration') . ' (hours) ', 'duration')->class('form-control-label') }}
-                                {{ html()->text('duration', old('duration', $servicedata->duration))->placeholder(__('messages.duration'))->class('form-control min-datetimepicker-time') }}
+                                {{ html()->text('duration', old('duration', $servicedata->duration))->placeholder(__('messages.duration'))->class('form-control min-datetimepicker-time')->attributes(['min' => '0.5', 'step' => '0.5'])->id('duration') }}
                                 <small class="help-block with-errors text-danger"></small>
+                                <small id="duration-error" class="text-danger"></small>
                             </div>
 
                             <div class="form-group col-md-3">
@@ -658,6 +659,7 @@
         <script type="text/javascript">
             document.addEventListener('DOMContentLoaded', function() {
                 handleDurationField($("#price_type").val());
+                addDurationValidation();
 
                 $("#price_type").on('change', function() {
                     handleDurationField($(this).val());
@@ -672,6 +674,34 @@
                         $duration.val(8).prop('readonly', true).prop('disabled', true);
                     } else {
                         $duration.prop('readonly', false).prop('disabled', false);
+                        // Remove max restriction for fixed and free types to allow flexible duration
+                        $duration.removeAttr('max');
+                    }
+                }
+
+                function addDurationValidation() {
+                    var durationInput = document.getElementById('duration');
+                    var durationError = document.getElementById('duration-error');
+
+                    if (durationInput) {
+                        durationInput.addEventListener('input', function() {
+                            var durationValue = parseFloat(durationInput.value);
+                            var priceType = $("#price_type").val();
+                            
+                            if (priceType === 'fixed') {
+                                if (isNaN(durationValue) || durationValue < 0.5 || durationValue > 24) {
+                                    durationError.textContent = "Duration must be between 0.5 and 24 hours for fixed price type";
+                                } else {
+                                    durationError.textContent = "";
+                                }
+                            } else if (priceType === 'free') {
+                                if (isNaN(durationValue) || durationValue < 0.5 || durationValue > 24) {
+                                    durationError.textContent = "Duration must be between 0.5 and 24 hours";
+                                } else {
+                                    durationError.textContent = "";
+                                }
+                            }
+                        });
                     }
                 }
             });
