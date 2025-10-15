@@ -689,14 +689,14 @@
                             var priceType = $("#price_type").val();
                             
                             if (priceType === 'fixed') {
-                                if (isNaN(durationValue) || durationValue < 0.5 || durationValue > 24) {
-                                    durationError.textContent = "Duration must be between 0.5 and 24 hours for fixed price type";
+                                if (isNaN(durationValue) || durationValue < 0.5) {
+                                    durationError.textContent = "Duration must be at least 0.5 hours for fixed price type";
                                 } else {
                                     durationError.textContent = "";
                                 }
                             } else if (priceType === 'free') {
-                                if (isNaN(durationValue) || durationValue < 0.5 || durationValue > 24) {
-                                    durationError.textContent = "Duration must be between 0.5 and 24 hours";
+                                if (isNaN(durationValue) || durationValue < 0.5) {
+                                    durationError.textContent = "Duration must be at least 0.5 hours";
                                 } else {
                                     durationError.textContent = "";
                                 }
