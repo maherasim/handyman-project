@@ -16,31 +16,18 @@ class ChatController extends Controller
 {
     /**
      * Determine if 1:1 chat is enabled for the given bid based on its status.
+     * Now allows chat for all statuses - no advance payment restriction.
      */
     protected function isChatEnabledForBid(\App\Models\PostJobBid $bid): bool
     {
-        $allowedStatuses = [
-            'advance_paid',
-            'in_process',
-            'in_progress',
-            'hold',
-            'done',
-            'confirm_done',
-            'remaining_paid',
-            'completed',
-        ];
-        return in_array((string) ($bid->status ?? ''), $allowedStatuses, true);
+        // Allow chat for all bid statuses - no restrictions
+        return true;
     }
 
     /** Determine if 1:1 chat is enabled for the given booking based on payment. */
     protected function isChatEnabledForBooking(Booking $booking): bool
     {
-        // Consider advance paid when payment record exists and either non-bank, or bank approved (status==1)
-        $payment = optional($booking)->payment;
-        if (!$payment) { return false; }
-        if (($payment->payment_type ?? null) === 'bank_transfer') {
-            return (int) ($payment->status ?? 0) === 1;
-        }
+        // Allow chat for all bookings - no payment restrictions
         return true;
     }
 
@@ -165,20 +152,7 @@ class ChatController extends Controller
         $conversation = ChatConversation::findOrFail($conversationId);
         $this->authorizeForConversation($conversation);
 
-        // Enforce chat gating by bid/booking status
-        $conversation->loadMissing(['bid', 'booking.payment']);
-        $bid = $conversation->bid;
-        if ($bid) {
-            if (!$this->isChatEnabledForBid($bid)) {
-                return response()->json(['status' => false, 'message' => 'Chat becomes available after advance payment.'], 403);
-            }
-        } else if ($conversation->booking) {
-            if (!$this->isChatEnabledForBooking($conversation->booking)) {
-                return response()->json(['status' => false, 'message' => 'Chat becomes available after advance payment.'], 403);
-            }
-        } else {
-            return response()->json(['status' => false, 'message' => 'Invalid chat context.'], 422);
-        }
+        // Sending messages is now allowed for all participants - no advance payment restriction
 
         $request->validate([
             'message' => 'nullable|string|max:4000',

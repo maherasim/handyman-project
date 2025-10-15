@@ -16,29 +16,17 @@ class ChatApiController extends Controller
 {
     /**
      * Determine if chat is enabled for a given bid by its status.
+     * Now allows chat for all statuses - no advance payment restriction.
      */
     protected function isChatEnabledForBid(\App\Models\PostJobBid $bid): bool
     {
-        $allowedStatuses = [
-            'advance_paid',
-            'in_process',
-            'in_progress',
-            'hold',
-            'done',
-            'confirm_done',
-            'remaining_paid',
-            'completed',
-        ];
-        return in_array((string) ($bid->status ?? ''), $allowedStatuses, true);
+        // Allow chat for all bid statuses - no restrictions
+        return true;
     }
 
     protected function isChatEnabledForBooking(Booking $booking): bool
     {
-        $payment = optional($booking)->payment;
-        if (!$payment) { return false; }
-        if (($payment->payment_type ?? null) === 'bank_transfer') {
-            return (int) ($payment->status ?? 0) === 1;
-        }
+        // Allow chat for all bookings - no payment restrictions
         return true;
     }
     protected function ensureParticipant(ChatConversation $conversation): void
@@ -56,8 +44,7 @@ class ChatApiController extends Controller
         $uid = Auth::id();
         abort_unless($uid && ($uid === ($bid->provider_id ?? 0) || $uid === ($bid->customer_id ?? 0)), 403);
 
-        // Gate chat until advance is paid (or later)
-        abort_unless($this->isChatEnabledForBid($bid), 403);
+        // Chat is now available for all participants - no advance payment restriction
 
         $conversation = ChatConversation::firstOrCreate(
             ['post_job_bid_id' => $bid->id],
@@ -73,7 +60,7 @@ class ChatApiController extends Controller
         $booking = Booking::with(['payment'])->findOrFail($request->input('booking_id'));
         $uid = Auth::id();
         abort_unless($uid && in_array($uid, [ (int) $booking->customer_id, (int) $booking->provider_id ], true), 403);
-        abort_unless($this->isChatEnabledForBooking($booking), 403);
+        // Chat is now available for all bookings - no payment restrictions
 
         $conversation = ChatConversation::firstOrCreate(
             ['booking_id' => $booking->id, 'post_job_bid_id' => null],
@@ -140,14 +127,7 @@ class ChatApiController extends Controller
         $conversation = ChatConversation::findOrFail($conversationId);
         $this->ensureParticipant($conversation);
 
-        // Keep gating only for sending new content
-        $conversation->loadMissing(['bid', 'booking.payment']);
-        $bid = $conversation->bid;
-        if ($bid) {
-            abort_unless($this->isChatEnabledForBid($bid), 403);
-        } else if ($conversation->booking) {
-            abort_unless($this->isChatEnabledForBooking($conversation->booking), 403);
-        }
+        // Sending messages is now allowed for all participants - no advance payment restriction
 
         $request->validate([
             'message' => 'nullable|string|max:4000',
@@ -354,10 +334,7 @@ class ChatApiController extends Controller
     {
         $message = ChatMessage::with('conversation')->findOrFail($messageId);
         $this->ensureParticipant($message->conversation);
-        // Enforce chat gating by bid status
-        $message->conversation->loadMissing('bid');
-        $bid = $message->conversation->bid;
-        abort_unless($bid && $this->isChatEnabledForBid($bid), 403);
+        // Downloading attachments is now allowed for all participants - no advance payment restriction
         abort_unless($message->attachment_path && Storage::disk('public')->exists($message->attachment_path), 404);
         $mime = $message->attachment_type ?: 'application/octet-stream';
         return Storage::disk('public')->download($message->attachment_path, basename($message->attachment_path), [

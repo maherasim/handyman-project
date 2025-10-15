@@ -181,12 +181,11 @@
 
         @endif
 
-        {{-- Show Chat button for provider/user from advance_paid onwards --}}
+        {{-- Show Chat button for all participants --}}
         @php
-            $chatEnabledStatuses = ['advance_paid','in_process','in_progress','hold','done','confirm_done','remaining_paid','completed'];
             $isParticipant = ($auth_user->user_type === 'provider' && $auth_user->id == ($bid->provider_id ?? 0)) || ($auth_user->user_type === 'user' && $auth_user->id == ($bid->customer_id ?? 0));
         @endphp
-        @if($isParticipant && in_array($bid->status, $chatEnabledStatuses))
+        @if($isParticipant)
             <a href="{{ route('chat.view.bid', $bid->id) }}" class="btn btn-outline-primary">
                 <i class="fas fa-comments"></i> Chat
             </a>
