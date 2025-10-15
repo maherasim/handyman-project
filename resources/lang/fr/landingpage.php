@@ -159,4 +159,6 @@ return [
     'get_current_location' => 'Obtenir l\'emplacement actuel',
     'data_deletion_request' => 'Deletation Request',
     'admin_login'=>'Admin Login',
+    'total_services' => 'Total Services',
+    'total_bookings' => 'Total Réservations'
 ];

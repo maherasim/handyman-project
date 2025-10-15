@@ -162,5 +162,7 @@
   'total_cancellation_fee' => 'Total cancellation fee',
   'based_book_service' => 'Based on your booked service',
   'start_date_time'=> 'Start Date Time',
-  'end_date_time' => 'End Date Time'
+  'end_date_time' => 'End Date Time',
+  'total_services' => 'Total Services',
+  'total_bookings' => 'Total Bookings'
 );
