@@ -107,8 +107,9 @@
                             <div class="row align-items-center">
                                 <div class="col-md-8">
                                     <div class="d-flex align-items-center">
-                                        <div class="plan-icon-large me-3">
-                                            <i class="fas fa-crown text-warning fa-2x"></i>
+                                        <div class="plan-image-container me-3">
+                                            <img id="plan_image" src="{{ asset('images/icon/freepng.png') }}" 
+                                                 alt="Plan Image" class="plan-image">
                                         </div>
                                         <div>
                                             <h6 class="mb-1 text-dark" id="plan_name">Premium Plan</h6>
@@ -405,15 +406,31 @@
     background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
 }
 
-.plan-icon-large {
-    width: 60px;
-    height: 60px;
-    background: linear-gradient(135deg, #ffc107, #ff8c00);
-    border-radius: 50%;
+.plan-image-container {
+    width: 80px;
+    height: 80px;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background: white;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: white;
+    border: 3px solid #e9ecef;
+    transition: all 0.3s ease;
+}
+
+.plan-image-container:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    border-color: #667eea;
+}
+
+.plan-image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border-radius: 8px;
 }
 
 .plan-benefits ul li {
@@ -664,6 +681,24 @@
             $('#plan_name').text(planType);
             $('#plan_amount').text('€' + planAmount);
             $('#payment_amount').text('€' + planAmount);
+            
+            // Update plan image based on plan type
+            var planImageSrc = '';
+            var planImageAlt = planType + ' Plan';
+            
+            if (planType.toLowerCase().includes('silver')) {
+                planImageSrc = '{{ asset("images/icon/silverpng.png") }}';
+            } else if (planType.toLowerCase().includes('gold')) {
+                planImageSrc = '{{ asset("images/icon/goldpng.png") }}';
+            } else if (planType.toLowerCase().includes('free') || planType.toLowerCase().includes('basic')) {
+                planImageSrc = '{{ asset("images/icon/freepng.png") }}';
+            } else {
+                // Default fallback
+                planImageSrc = '{{ asset("images/icon/freepng.png") }}';
+            }
+            
+            // Update the plan image in the modal
+            $('#plan_image').attr('src', planImageSrc).attr('alt', planImageAlt);
 
             // Check if it's a free plan (either by name or amount)
             if (planType.toLowerCase().includes('free') || planAmount == 0 || planAmount == '0') {
@@ -673,7 +708,7 @@
                     html: `
                         <div class="text-center">
                             <div class="mb-3">
-                                <i class="fas fa-gift text-success fa-3x"></i>
+                                <img src="${planImageSrc}" alt="${planImageAlt}" style="width: 80px; height: 80px; object-fit: contain; border-radius: 12px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
                             </div>
                             <p class="mb-3">You're upgrading to the <strong>${planType}</strong> plan!</p>
                             <p class="text-muted">This is a free plan, so no payment is required.</p>
