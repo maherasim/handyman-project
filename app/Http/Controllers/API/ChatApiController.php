@@ -54,19 +54,55 @@ class ChatApiController extends Controller
         return response()->json(['status' => true, 'conversation_id' => $conversation->id]);
     }
 
-    public function openByBooking(Request $request)
+    public function openWithUser(Request $request)
     {
-        $request->validate(['booking_id' => 'required|integer|exists:bookings,id']);
-        $booking = Booking::with(['payment'])->findOrFail($request->input('booking_id'));
-        $uid = Auth::id();
-        abort_unless($uid && in_array($uid, [ (int) $booking->customer_id, (int) $booking->provider_id ], true), 403);
-        // Chat is now available for all bookings - no payment restrictions
+        $request->validate([
+            'user_id' => 'required|integer|exists:users,id',
+            'title' => 'nullable|string|max:255',
+        ]);
+        
+        $targetUserId = (int) $request->input('user_id');
+        $currentUserId = Auth::id();
+        
+        // Prevent self-chat
+        abort_unless($targetUserId !== $currentUserId, 422, 'Cannot chat with yourself');
+        
+        // Check if conversation already exists between these users
+        $existingConversation = ChatConversation::where('conversation_type', 'standalone')
+            ->where(function($query) use ($currentUserId, $targetUserId) {
+                $query->where(function($q) use ($currentUserId, $targetUserId) {
+                    $q->where('user_one_id', $currentUserId)
+                      ->where('user_two_id', $targetUserId);
+                })->orWhere(function($q) use ($currentUserId, $targetUserId) {
+                    $q->where('user_one_id', $targetUserId)
+                      ->where('user_two_id', $currentUserId);
+                });
+            })
+            ->first();
+        
+        if ($existingConversation) {
+            return response()->json([
+                'status' => true, 
+                'conversation_id' => $existingConversation->id,
+                'existing' => true
+            ]);
+        }
+        
+        // Create new standalone conversation
+        $conversation = ChatConversation::create([
+            'user_one_id' => $currentUserId,
+            'user_two_id' => $targetUserId,
+            'conversation_type' => 'standalone',
+            'title' => $request->input('title', 'Direct Message'),
+            'post_job_bid_id' => null,
+            'booking_id' => null,
+        ]);
 
-        $conversation = ChatConversation::firstOrCreate(
-            ['booking_id' => $booking->id, 'post_job_bid_id' => null],
-            ['user_one_id' => $booking->customer_id, 'user_two_id' => $booking->provider_id]
-        );
-        return response()->json(['status' => true, 'conversation_id' => $conversation->id]);
+        return response()->json([
+            'status' => true, 
+            'conversation_id' => $conversation->id,
+            'existing' => false
+        ]);
     }
 
     public function listMessages(int $conversationId)
@@ -244,48 +280,46 @@ class ChatApiController extends Controller
         return [!empty($types), $types];
     }
 
-    public function conversations(Request $request)
+    public function getUsers(Request $request)
     {
         $uid = (int) Auth::id();
         abort_unless($uid > 0, 401);
+        
         $page = max(1, (int) $request->query('page', 1));
         $perPage = min(100, max(1, (int) $request->query('per_page', 20)));
-        $skip = ($page - 1) * $perPage;
-
-        $base = ChatConversation::where(function($q) use ($uid){
-                $q->where('user_one_id', $uid)->orWhere('user_two_id', $uid);
-            })
-            ->with(['bid.postrequest', 'userOne:id,display_name', 'userTwo:id,display_name'])
-            ->orderBy('updated_at', 'desc');
-
-        $total = (clone $base)->count();
-        $convs = (clone $base)->skip($skip)->take($perPage)->get();
-
-        $items = [];
-        foreach ($convs as $c) {
-            $last = ChatMessage::where('conversation_id', $c->id)->orderByDesc('id')->first();
-            $unread = ChatMessage::where('conversation_id', $c->id)
-                ->whereNull('read_at')->where('sender_id', '!=', $uid)->count();
-            $otherId = ($c->user_one_id === $uid) ? $c->user_two_id : $c->user_one_id;
-            $other = $otherId === optional($c->userOne)->id ? $c->userOne : $c->userTwo;
-            $items[] = [
-                'conversation_id' => $c->id,
-                'bid_id' => $c->post_job_bid_id,
-                'bid_title' => optional(optional($c->bid)->postrequest)->title,
-                'other_name' => optional($other)->display_name,
-                'other_avatar_url' => getSingleMedia(optional($other), 'profile_image', null),
-                'unread' => $unread,
-                'last_snippet' => $last ? ($last->message ? mb_substr($last->message, 0, 120) : 'Attachment') : '',
-                'last_at' => $last?->created_at?->toDateTimeString(),
-            ];
+        $search = $request->query('search', '');
+        
+        $query = \App\Models\User::where('id', '!=', $uid)
+            ->where('status', 1) // Only active users
+            ->select('id', 'display_name', 'first_name', 'last_name', 'user_type');
+        
+        if ($search) {
+            $query->where(function($q) use ($search) {
+                $q->where('display_name', 'LIKE', "%{$search}%")
+                  ->orWhere('first_name', 'LIKE', "%{$search}%")
+                  ->orWhere('last_name', 'LIKE', "%{$search}%");
+            });
         }
-
+        
+        $total = (clone $query)->count();
+        $users = $query->skip(($page - 1) * $perPage)
+            ->take($perPage)
+            ->get()
+            ->map(function($user) {
+                return [
+                    'id' => $user->id,
+                    'name' => $user->display_name ?: ($user->first_name . ' ' . $user->last_name),
+                    'user_type' => $user->user_type,
+                    'avatar_url' => getSingleMedia($user, 'profile_image', null),
+                ];
+            });
+        
         return response()->json([
             'status' => true,
             'page' => $page,
             'per_page' => $perPage,
             'total' => $total,
-            'items' => $items,
+            'users' => $users,
         ]);
     }
 

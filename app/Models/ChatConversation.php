@@ -14,6 +14,8 @@ class ChatConversation extends Model
         'booking_id',
         'user_one_id',
         'user_two_id',
+        'conversation_type', // 'bid', 'booking', 'standalone'
+        'title', // Optional title for standalone conversations
     ];
 
     public function messages()

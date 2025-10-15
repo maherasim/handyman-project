@@ -78,6 +78,10 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     // Open or create conversation by bid id
     Route::post('chat/open-by-bid', [ChatApiController::class, 'openByBid']);
     Route::post('chat/open-by-booking', [ChatApiController::class, 'openByBooking']);
+    // Standalone chat - open or create conversation with another user
+    Route::post('chat/open-with-user', [ChatApiController::class, 'openWithUser']);
+    // Get list of users for starting conversations
+    Route::get('chat/users', [ChatApiController::class, 'getUsers']);
     // List all user's conversations with unread counts (paginated)
     Route::get('chat/conversations', [ChatApiController::class, 'conversations']);
     // Get unread summary across conversations
