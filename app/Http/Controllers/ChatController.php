@@ -188,6 +188,9 @@ class ChatController extends Controller
             'flagged_at' => $containsPii ? now() : null,
         ]);
 
+        // Send notification to the recipient
+        $this->sendMessageNotification($conversation, $msg);
+
         return response()->json([
             'status' => true,
             'message' => 'Sent',
@@ -195,6 +198,43 @@ class ChatController extends Controller
             'flagged' => (bool) $containsPii,
             'pii_types' => $containsPii ? $piiTypes : [],
         ]);
+    }
+
+    /**
+     * Send notification to the recipient of a chat message.
+     */
+    protected function sendMessageNotification(ChatConversation $conversation, ChatMessage $message): void
+    {
+        $sender = $message->sender;
+        $recipientId = ($conversation->user_one_id === $sender->id) 
+            ? $conversation->user_two_id 
+            : $conversation->user_one_id;
+            
+        $recipient = \App\Models\User::find($recipientId);
+        if (!$recipient) return;
+        
+        // Prepare notification data - using a simple approach
+        $notificationData = [
+            'id' => $message->id,
+            'type' => 'chat_message',
+            'subject' => 'New Message from ' . ($sender->display_name ?? $sender->name),
+            'message' => $message->message ? mb_substr($message->message, 0, 100) : 'New attachment',
+            'sender_name' => $sender->display_name ?? $sender->name,
+            'sender_id' => $sender->id,
+            'conversation_id' => $conversation->id,
+            'user_type' => $recipient->user_type,
+            "ios_badgeType" => "Increase",
+            "ios_badgeCount" => 1,
+            "notification-type" => 'chat'
+        ];
+        
+        // Send notification using the existing helper function
+        try {
+            sendNotification($recipient->user_type, $recipient, $notificationData);
+        } catch (\Exception $e) {
+            // Log error but don't break the message sending
+            \Log::error('Failed to send chat notification: ' . $e->getMessage());
+        }
     }
 
     /**
@@ -335,9 +375,15 @@ class ChatController extends Controller
     {
         $uid = (int) auth()->id();
         abort_unless($uid > 0, 401);
-        $conversationIds = ChatConversation::where('user_one_id', $uid)
-            ->orWhere('user_two_id', $uid)
-            ->pluck('id');
+        
+        // Get ONLY standalone conversations for this user
+        $conversationIds = ChatConversation::where(function($query) use ($uid) {
+            $query->where('user_one_id', $uid)->orWhere('user_two_id', $uid);
+        })
+        ->whereNull('booking_id')
+        ->whereNull('post_job_bid_id')
+        ->where('conversation_type', 'standalone')
+        ->pluck('id');
 
         if ($conversationIds->isEmpty()) {
             return response()->json(['status' => true, 'count' => 0]);
@@ -348,18 +394,23 @@ class ChatController extends Controller
             ->whereNull('read_at');
 
         $count = (clone $baseQuery)->count();
-        $latest = (clone $baseQuery)->with(['sender:id,display_name', 'conversation.bid.postrequest'])
+        $latest = (clone $baseQuery)->with(['sender:id,display_name', 'conversation.userOne:id,display_name', 'conversation.userTwo:id,display_name'])
             ->latest('id')->first();
 
         $latestMeta = null;
         if ($latest) {
+            // Get the other user in the conversation
+            $otherUser = ($latest->conversation->user_one_id === $uid) 
+                ? $latest->conversation->userTwo 
+                : $latest->conversation->userOne;
+                
             $latestMeta = [
                 'id' => $latest->id,
                 'conversation_id' => $latest->conversation_id,
                 'sender_id' => $latest->sender_id,
                 'sender_name' => optional($latest->sender)->display_name,
-                'bid_id' => optional($latest->conversation)->post_job_bid_id,
-                'bid_title' => optional(optional(optional($latest->conversation)->bid)->postrequest)->title,
+                'other_user_id' => optional($otherUser)->id,
+                'other_user_name' => optional($otherUser)->display_name,
                 'snippet' => $latest->message ? mb_substr($latest->message, 0, 80) : ($latest->attachment_path ? 'Attachment' : ''),
                 'created_at' => $latest->created_at?->toDateTimeString(),
             ];
