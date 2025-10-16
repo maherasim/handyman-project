@@ -126,10 +126,6 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
     Route::get('/messages', [ChatController::class, 'index'])->name('chat.index');
     Route::get('/messages/flagged', [ChatController::class, 'flaggedIndex'])->name('chat.flagged.index');
     Route::post('/messages/flagged/{id}/warn', [ChatController::class, 'sendWarningEmail'])->name('chat.flagged.warn');
-    // Standalone chat - independent of bids/bookings
-    Route::get('/chat/standalone', function() {
-        return view('chat.standalone');
-    })->name('chat.standalone');
     Route::get('/home', [HomeController::class, 'index'])->name('home');
     Route::group(['namespace' => '', 'middleware' => ['permission:permission list']], function () {
         Route::resource('permission', PermissionController::class);

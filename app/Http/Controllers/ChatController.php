@@ -473,6 +473,10 @@ class ChatController extends Controller
                         }
                     }
                 }
+            } else {
+                // Standalone conversation - use simple user-to-user chat
+                $url = route('chat.view.user', $otherId);
+                $title = 'Direct Message';
             }
     
             $maskedSnippet = '';
