@@ -287,89 +287,14 @@ class ChatController extends Controller
         ]);
     }
 
-    public function viewByBid(Request $request, int $bidId)
-    {
-        $bid = PostJobBid::with(['postrequest'])->findOrFail($bidId);
-        $this->authorizeForBid($bid);
+    // REMOVED: viewByBid method - using standalone chat only
 
-        $conversation = ChatConversation::firstOrCreate(
-            ['post_job_bid_id' => $bid->id],
-            ['user_one_id' => $bid->provider_id, 'user_two_id' => $bid->customer_id]
-        );
-
-        return view('chat.show', [
-            'conversation' => $conversation,
-            'bid' => $bid,
-        ]);
-    }
+    // REMOVED: All booking/bid dependent methods - using standalone chat only
+    // The old viewByBooking and viewByBookingHandyman methods have been removed
+    // All chat functionality now uses the standalone viewWithUser method
 
     /**
-     * Open (or create) conversation for a booking's customer <-> provider.
-     */
-    public function viewByBooking(Request $request, int $bookingId)
-    {
-        $booking = Booking::with(['customer', 'provider', 'handymanAdded', 'payment'])->findOrFail($bookingId);
-        $user = Auth::user();
-        
-        // Get all authorized user IDs (customer, provider, and assigned handymen)
-        $authorizedUserIds = [
-            (int) $booking->customer_id,
-            (int) $booking->provider_id
-        ];
-        
-        // Add assigned handymen IDs
-        $assignedHandymanIds = $booking->handymanAdded->pluck('handyman_id')->toArray();
-        $authorizedUserIds = array_merge($authorizedUserIds, $assignedHandymanIds);
-        
-        abort_unless($user && in_array($user->id, $authorizedUserIds, true), 403);
-
-        $conversation = ChatConversation::firstOrCreate(
-            ['booking_id' => $booking->id, 'post_job_bid_id' => null],
-            ['user_one_id' => $booking->customer_id, 'user_two_id' => $booking->provider_id, 'conversation_type' => 'booking']
-        );
-
-        return view('chat.show', [ 'conversation' => $conversation, 'booking' => $booking ]);
-    }
-
-    /**
-     * Open (or create) conversation for a booking's customer <-> a handyman assigned.
-     */
-    public function viewByBookingHandyman(Request $request, int $bookingId, int $handymanId)
-    {
-        $booking = Booking::with(['customer', 'provider', 'handymanAdded.handyman', 'payment'])->findOrFail($bookingId);
-        $isAssigned = (bool) $booking->handymanAdded->firstWhere('handyman_id', $handymanId);
-        abort_unless($isAssigned, 404);
-
-        $user = Auth::user();
-        abort_unless($user && in_array($user->id, [ (int) $booking->customer_id, (int) $booking->provider_id, (int) $handymanId ], true), 403);
-
-        // Get the handyman user object
-        $handyman = \App\Models\User::find($handymanId);
-        abort_unless($handyman, 404);
-
-        // If provider is viewing, open provider <-> handyman chat; otherwise customer <-> handyman
-        if ((int) $user->id === (int) ($booking->provider_id ?? 0)) {
-            $conversation = ChatConversation::firstOrCreate(
-                ['booking_id' => $booking->id, 'user_one_id' => $booking->provider_id, 'user_two_id' => $handymanId],
-                ['user_one_id' => $booking->provider_id, 'user_two_id' => $handymanId, 'conversation_type' => 'booking']
-            );
-        } else {
-            $conversation = ChatConversation::firstOrCreate(
-                ['booking_id' => $booking->id, 'user_one_id' => $booking->customer_id, 'user_two_id' => $handymanId],
-                ['user_one_id' => $booking->customer_id, 'user_two_id' => $handymanId, 'conversation_type' => 'booking']
-            );
-        }
-
-        return view('chat.show', [ 
-            'conversation' => $conversation, 
-            'booking' => $booking,
-            'handyman' => $handyman,
-            'isHandymanChat' => true
-        ]);
-    }
-
-    /**
-     * Simple user-to-user chat - completely standalone.
+     * Completely standalone user-to-user chat - NO dependencies on booking/bid.
      */
     public function viewWithUser(Request $request, int $userId)
     {
@@ -379,7 +304,7 @@ class ChatController extends Controller
         // Prevent users from chatting with themselves
         abort_if($currentUser->id === $userId, 403, 'Cannot chat with yourself');
         
-        // Simple: Find or create conversation between these two users
+        // Find or create conversation between these two users - completely standalone
         $conversation = ChatConversation::where(function($query) use ($currentUser, $userId) {
             $query->where('user_one_id', $currentUser->id)
                   ->where('user_two_id', $userId);
@@ -394,7 +319,9 @@ class ChatController extends Controller
             $conversation = ChatConversation::create([
                 'user_one_id' => $currentUser->id,
                 'user_two_id' => $userId,
-                'conversation_type' => 'standalone'
+                'conversation_type' => 'standalone',
+                'booking_id' => null,
+                'post_job_bid_id' => null
             ]);
         }
         
@@ -441,18 +368,25 @@ class ChatController extends Controller
         return response()->json(['status' => true, 'count' => $count, 'latest' => $latestMeta]);
     }
 
+    /**
+     * Show all standalone conversations for the current user - NO booking/bid dependencies.
+     */
     public function index(Request $request)
     {
         $uid = (int) auth()->id();
         abort_unless($uid > 0, 401);
-    
+
+        // Get ONLY standalone conversations for this user
         $conversations = ChatConversation::where(function ($q) use ($uid) {
                 $q->where('user_one_id', $uid)->orWhere('user_two_id', $uid);
             })
-            ->with(['bid.postrequest', 'booking.service', 'booking.handymanAdded', 'userOne:id,display_name', 'userTwo:id,display_name'])
+            ->whereNull('booking_id')
+            ->whereNull('post_job_bid_id')
+            ->where('conversation_type', 'standalone')
+            ->with(['userOne:id,display_name', 'userTwo:id,display_name'])
             ->orderBy('updated_at', 'desc')
             ->get();
-    
+
         $list = [];
         foreach ($conversations as $c) {
             $last = ChatMessage::where('conversation_id', $c->id)->orderByDesc('id')->first();
@@ -462,34 +396,11 @@ class ChatController extends Controller
                 ->count();
             $otherId = ($c->user_one_id === $uid) ? $c->user_two_id : $c->user_one_id;
             $other = $otherId === optional($c->userOne)->id ? $c->userOne : $c->userTwo;
-    
-            // Build URL based on conversation context (bid or booking)
-            $url = '';
-            $title = '';
-            if ($c->post_job_bid_id) {
-                $url = route('chat.view.bid', $c->post_job_bid_id);
-                $title = optional(optional($c->bid)->postrequest)->title;
-            } elseif ($c->booking_id) {
-                $booking = $c->booking;
-                $title = optional(optional($booking)->service)->name;
-                if ($booking) {
-                    if ((int) $otherId === (int) ($booking->provider_id ?? 0)) {
-                        $url = route('chat.view.booking', $booking->id);
-                    } else {
-                        $assigned = optional($booking->handymanAdded)->pluck('handyman_id') ?? collect();
-                        if ($assigned->contains((int) $otherId)) {
-                            $url = route('chat.view.booking.handyman', ['bookingId' => $booking->id, 'handymanId' => $otherId]);
-                        } else {
-                            $url = route('chat.view.booking', $booking->id);
-                        }
-                    }
-                }
-            } else {
-                // Standalone conversation - use simple user-to-user chat
-                $url = route('chat.view.user', $otherId);
-                $title = 'Direct Message';
-            }
-    
+
+            // Simple standalone URL - no booking/bid logic
+            $url = route('chat.view.user', $otherId);
+            $title = 'Direct Message with ' . (optional($other)->display_name ?? 'Unknown');
+
             $maskedSnippet = '';
             if ($last) {
                 $maskedSnippet = $last->contains_pii ? 'Message hidden due to policy violation' : ($last->message ? mb_substr($last->message, 0, 80) : 'Attachment');
@@ -498,8 +409,8 @@ class ChatController extends Controller
                 'conversation_id' => $c->id,
                 'url' => $url,
                 'title' => $title,
-                'bid_id' => $c->post_job_bid_id,
-                'bid_title' => optional(optional($c->bid)->postrequest)->title,
+                'bid_id' => null, // No bid dependency
+                'bid_title' => null, // No bid dependency
                 'other_name' => optional($other)->display_name,
                 'other_avatar' => getSingleMedia(optional($other), 'profile_image', null),
                 'unread' => $unread,
@@ -507,7 +418,7 @@ class ChatController extends Controller
                 'last_at' => $last?->created_at?->toDateTimeString(),
             ];
         }
-    
+
         return view('chat.index', [ 'items' => $list ]);
     }
 

@@ -110,22 +110,16 @@ Route::get('lang/{locale}', [HomeController::class, 'lang'])->name('switch-langu
 Route::get('/verify/{id}', [VerificationController::class, 'verify'])->name('verify');
 
 Route::group(['middleware' => ['auth', 'verified']], function () {
-    // Simple 1:1 Chat routes
-    Route::get('/chat/open/{bidId}', [ChatController::class, 'open'])->name('chat.open');
-    Route::get('/chat/{conversationId}/messages', [ChatController::class, 'messages'])->name('chat.messages');
-    Route::post('/chat/{conversationId}/send', [ChatController::class, 'send'])->name('chat.send');
-    Route::get('/chat/download/{messageId}', [ChatController::class, 'download'])->name('chat.download');
-    Route::get('/messages/bid/{bidId}', [ChatController::class, 'viewByBid'])->name('chat.view.bid');
-    Route::get('/messages/booking/{bookingId}', [ChatController::class, 'viewByBooking'])->name('chat.view.booking');
-    Route::get('/messages/booking/{bookingId}/handyman/{handymanId}', [ChatController::class, 'viewByBookingHandyman'])->name('chat.view.booking.handyman');
-    
-    // Independent chat system routes
-    Route::get('/messages/user/{userId}', [ChatController::class, 'viewWithUser'])->name('chat.view.user');
-    Route::get('/chat/unread/ping', [ChatController::class, 'unreadPing'])->name('chat.unread.ping');
-    Route::get('/chat/flagged/ping', [ChatController::class, 'flaggedPing'])->name('chat.flagged.ping');
-    Route::get('/messages', [ChatController::class, 'index'])->name('chat.index');
-    Route::get('/messages/flagged', [ChatController::class, 'flaggedIndex'])->name('chat.flagged.index');
-    Route::post('/messages/flagged/{id}/warn', [ChatController::class, 'sendWarningEmail'])->name('chat.flagged.warn');
+        // Completely standalone chat system - NO booking/bid dependencies
+        Route::get('/messages/user/{userId}', [ChatController::class, 'viewWithUser'])->name('chat.view.user');
+        Route::get('/chat/{conversationId}/messages', [ChatController::class, 'messages'])->name('chat.messages');
+        Route::post('/chat/{conversationId}/send', [ChatController::class, 'send'])->name('chat.send');
+        Route::get('/chat/download/{messageId}', [ChatController::class, 'download'])->name('chat.download');
+        Route::get('/chat/unread/ping', [ChatController::class, 'unreadPing'])->name('chat.unread.ping');
+        Route::get('/chat/flagged/ping', [ChatController::class, 'flaggedPing'])->name('chat.flagged.ping');
+        Route::get('/messages', [ChatController::class, 'index'])->name('chat.index');
+        Route::get('/messages/flagged', [ChatController::class, 'flaggedIndex'])->name('chat.flagged.index');
+        Route::post('/messages/flagged/{id}/warn', [ChatController::class, 'sendWarningEmail'])->name('chat.flagged.warn');
     Route::get('/home', [HomeController::class, 'index'])->name('home');
     Route::group(['namespace' => '', 'middleware' => ['permission:permission list']], function () {
         Route::resource('permission', PermissionController::class);
