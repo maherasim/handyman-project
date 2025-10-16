@@ -308,9 +308,20 @@ class ChatController extends Controller
      */
     public function viewByBooking(Request $request, int $bookingId)
     {
-        $booking = Booking::with(['customer', 'provider', 'payment'])->findOrFail($bookingId);
+        $booking = Booking::with(['customer', 'provider', 'handymanAdded', 'payment'])->findOrFail($bookingId);
         $user = Auth::user();
-        abort_unless($user && in_array($user->id, [ (int) $booking->customer_id, (int) $booking->provider_id ], true), 403);
+        
+        // Get all authorized user IDs (customer, provider, and assigned handymen)
+        $authorizedUserIds = [
+            (int) $booking->customer_id,
+            (int) $booking->provider_id
+        ];
+        
+        // Add assigned handymen IDs
+        $assignedHandymanIds = $booking->handymanAdded->pluck('handyman_id')->toArray();
+        $authorizedUserIds = array_merge($authorizedUserIds, $assignedHandymanIds);
+        
+        abort_unless($user && in_array($user->id, $authorizedUserIds, true), 403);
 
         $conversation = ChatConversation::firstOrCreate(
             ['booking_id' => $booking->id, 'post_job_bid_id' => null],
