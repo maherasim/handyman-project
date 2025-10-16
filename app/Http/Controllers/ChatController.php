@@ -358,7 +358,7 @@ class ChatController extends Controller
     }
 
     /**
-     * Open (or create) independent conversation between two users.
+     * Simple user-to-user chat - completely standalone.
      */
     public function viewWithUser(Request $request, int $userId)
     {
@@ -368,7 +368,7 @@ class ChatController extends Controller
         // Prevent users from chatting with themselves
         abort_if($currentUser->id === $userId, 403, 'Cannot chat with yourself');
         
-        // Create or find conversation between the two users
+        // Simple: Find or create conversation between these two users
         $conversation = ChatConversation::where(function($query) use ($currentUser, $userId) {
             $query->where('user_one_id', $currentUser->id)
                   ->where('user_two_id', $userId);
@@ -383,41 +383,13 @@ class ChatController extends Controller
             $conversation = ChatConversation::create([
                 'user_one_id' => $currentUser->id,
                 'user_two_id' => $userId,
-                'conversation_type' => 'standalone',
-                'title' => "Chat with {$targetUser->display_name}"
+                'conversation_type' => 'standalone'
             ]);
         }
         
-        return view('chat.show', [
+        return view('chat.simple', [
             'conversation' => $conversation,
-            'targetUser' => $targetUser,
-            'isStandaloneChat' => true
-        ]);
-    }
-    
-    /**
-     * Standalone chat interface for browsing and starting conversations.
-     */
-    public function standalone(Request $request)
-    {
-        $currentUser = Auth::user();
-        
-        // Get all standalone conversations for the current user
-        $conversations = ChatConversation::where(function($query) use ($currentUser) {
-            $query->where('user_one_id', $currentUser->id)
-                  ->orWhere('user_two_id', $currentUser->id);
-        })
-        ->whereNull('booking_id')
-        ->whereNull('post_job_bid_id')
-        ->with(['userOne', 'userTwo', 'messages' => function($query) {
-            $query->latest()->limit(1);
-        }])
-        ->orderBy('updated_at', 'desc')
-        ->get();
-        
-        return view('chat.standalone', [
-            'conversations' => $conversations,
-            'currentUser' => $currentUser
+            'targetUser' => $targetUser
         ]);
     }
 
