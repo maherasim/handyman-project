@@ -668,7 +668,7 @@
                             <div class="col-md-4 mb-3">
                                 <div class="card h-100 soft-shadow hover-lift">
                                     <div class="card-body">
-                                        <p class="opacity-75 fz-12">{{ __('Location') }}</p>
+                                        <p class="opacity-75 fz-12">{{ __('Standort') }}</p>
                                         <p class="mb-0 text-primary">
                                             {{ optional($bookingdata->service->city)->name ?? '-' }},
                                             {{ optional($bookingdata->service->country)->name ?? '-' }}
@@ -706,7 +706,7 @@
                                             style="background: linear-gradient(135deg, #f7c59f, #ff9a9e); color: #fff;">
                                             <div class="card-body">
                                                 <p class="mb-1 fw-bold text-uppercase" style="opacity: 0.9;">
-                                                    {{ __('Advance Payment') }}
+                                                    {{ __('Anzahlung') }}
                                                 </p>
                                                 <p class="mb-0 fs-5 fw-bold" id="service_schedule__span">
                                                     {{ getPriceFormat($bookingdata->advance_paid_amount) }}
@@ -766,7 +766,7 @@
                         <div class="col-md-4 mb-3">
                                 <div class="card h-100 soft-shadow hover-lift">
                                     <div class="card-body">
-                                        <p class="opacity-75 fz-12">{{ __('Working Address') }}</p>
+                                        <p class="opacity-75 fz-12">{{ __('Arbeitsadresse') }}</p>
                                         <p class="mb-0 text-primary" id="booking_status__span">
                                             {{ str_replace('_', ' ', ucfirst($bookingdata->address)) }}</p>
                                     </div>
@@ -796,7 +796,7 @@
                             <div class="col-md-4 mb-3">
                                 <div class="card h-100 soft-shadow hover-lift">
                                     <div class="card-body">
-                                        <p class="opacity-75 fz-12 mb-3">{{ __('Booking Schedule') }}</p>
+                                        <p class="opacity-75 fz-12 mb-3">{{ __('Buchungsplan') }}</p>
                                         @if($bookingdata->slots && count($bookingdata->slots) > 0)
                                             <div class="booking-slots-container">
                                                 @foreach ($bookingdata->slots as $index => $slot)

@@ -150,6 +150,11 @@ class ChatController extends Controller
     public function send(Request $request, int $conversationId)
     {
         $conversation = ChatConversation::findOrFail($conversationId);
+        $currentUser = Auth::user();
+        
+        // Debug logging
+        \Log::info('Chat send - User: ' . $currentUser->id . ' (' . $currentUser->user_type . '), Conversation: ' . $conversationId . ', Users: ' . $conversation->user_one_id . ' <-> ' . $conversation->user_two_id);
+        
         $this->authorizeForConversation($conversation);
 
         // Sending messages is now allowed for all participants - no advance payment restriction
@@ -212,26 +217,45 @@ class ChatController extends Controller
             : $conversation->user_one_id;
             
         $recipient = \App\Models\User::find($recipientId);
-        if (!$recipient) return;
+        if (!$recipient) {
+            \Log::error('Chat notification failed - Recipient not found: ' . $recipientId);
+            return;
+        }
         
-        // Use a simpler notification approach that doesn't rely on templates
+        // Debug logging
+        \Log::info('Chat notification - Sender: ' . $sender->id . ' (' . $sender->user_type . '), Recipient: ' . $recipient->id . ' (' . $recipient->user_type . ')');
+        
+        // Use a simpler notification approach that bypasses templates
         try {
-            // Create a database notification record
-            $recipient->notify(new \App\Notifications\CommonNotification('add_booking', [
+            // Create a simple database notification record without templates
+            $notificationData = [
                 'id' => $message->id,
                 'type' => 'chat_message',
-                'subject' => 'New Message from ' . ($sender->display_name ?? $sender->name),
-                'message' => $message->message ? mb_substr($message->message, 0, 100) : 'New attachment',
-                'sender_name' => $sender->display_name ?? $sender->name,
-                'sender_id' => $sender->id,
-                'conversation_id' => $conversation->id,
-                'user_type' => $recipient->user_type,
-                "ios_badgeType" => "Increase",
-                "ios_badgeCount" => 1,
-                "notification-type" => 'chat'
-            ]));
+                'data' => [
+                    'message_id' => $message->id,
+                    'conversation_id' => $conversation->id,
+                    'sender_id' => $sender->id,
+                    'sender_name' => $sender->display_name ?? $sender->name,
+                    'message_preview' => $message->message ? mb_substr($message->message, 0, 100) : 'New attachment',
+                ],
+                'read_at' => null,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ];
             
-            // Also try the direct FCM approach
+            // Insert directly into notifications table
+            \DB::table('notifications')->insert([
+                'id' => \Str::uuid()->toString(),
+                'type' => 'App\Notifications\DatabaseNotification',
+                'notifiable_type' => 'App\Models\User',
+                'notifiable_id' => $recipient->id,
+                'data' => json_encode($notificationData),
+                'read_at' => null,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+            
+            // Try the direct FCM approach (but don't fail if it doesn't work)
             $this->sendDirectFCMNotification($recipient, $sender, $message);
             
         } catch (\Exception $e) {
@@ -252,10 +276,19 @@ class ChatController extends Controller
 
             if($firebase_notification == 1) {
                 $projectID = isset($decodedata->project_id) ? $decodedata->project_id : null;
-                if (!$projectID) return;
+                if (!$projectID) {
+                    \Log::info('FCM notification skipped - No project ID configured');
+                    return;
+                }
 
                 $apiUrl = 'https://fcm.googleapis.com/v1/projects/' . $projectID . '/messages:send';
                 $access_token = getAccessToken();
+                
+                if (!$access_token) {
+                    \Log::info('FCM notification skipped - No access token available');
+                    return;
+                }
+                
                 $headers = [
                     'Authorization: Bearer ' . $access_token,
                     'Content-Type: application/json',
@@ -286,12 +319,19 @@ class ChatController extends Controller
                 curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($firebase_data));
 
                 $response = curl_exec($ch);
+                $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
                 curl_close($ch);
                 
-                \Log::info('FCM notification sent to user ' . $recipient->id . ': ' . $response);
+                if ($httpCode === 200) {
+                    \Log::info('FCM notification sent successfully to user ' . $recipient->id);
+                } else {
+                    \Log::warning('FCM notification failed for user ' . $recipient->id . ' - HTTP ' . $httpCode . ': ' . $response);
+                }
+            } else {
+                \Log::info('FCM notification skipped - Firebase notifications disabled');
             }
         } catch (\Exception $e) {
-            \Log::error('FCM notification failed: ' . $e->getMessage());
+            \Log::warning('FCM notification failed: ' . $e->getMessage());
         }
     }
 
@@ -398,6 +438,9 @@ class ChatController extends Controller
     {
         $currentUser = Auth::user();
         $targetUser = \App\Models\User::findOrFail($userId);
+        
+        // Debug logging
+        \Log::info('Chat viewWithUser - Current user: ' . $currentUser->id . ' (' . $currentUser->user_type . '), Target user: ' . $userId . ' (' . $targetUser->user_type . '), Status: ' . $targetUser->status . ', Verified: ' . ($targetUser->email_verified_at ? 'Yes' : 'No'));
         
         // Prevent users from chatting with themselves
         abort_if($currentUser->id === $userId, 403, 'Cannot chat with yourself');
