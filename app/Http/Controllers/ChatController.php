@@ -189,6 +189,7 @@ class ChatController extends Controller
         ]);
 
         // Send notification to the recipient
+        \Log::info('Sending notification for message ' . $msg->id . ' in conversation ' . $conversation->id);
         $this->sendMessageNotification($conversation, $msg);
 
         return response()->json([
@@ -213,27 +214,84 @@ class ChatController extends Controller
         $recipient = \App\Models\User::find($recipientId);
         if (!$recipient) return;
         
-        // Prepare notification data - using a simple approach
-        $notificationData = [
-            'id' => $message->id,
-            'type' => 'chat_message',
-            'subject' => 'New Message from ' . ($sender->display_name ?? $sender->name),
-            'message' => $message->message ? mb_substr($message->message, 0, 100) : 'New attachment',
-            'sender_name' => $sender->display_name ?? $sender->name,
-            'sender_id' => $sender->id,
-            'conversation_id' => $conversation->id,
-            'user_type' => $recipient->user_type,
-            "ios_badgeType" => "Increase",
-            "ios_badgeCount" => 1,
-            "notification-type" => 'chat'
-        ];
-        
-        // Send notification using the existing helper function
+        // Use a simpler notification approach that doesn't rely on templates
         try {
-            sendNotification($recipient->user_type, $recipient, $notificationData);
+            // Create a database notification record
+            $recipient->notify(new \App\Notifications\CommonNotification('add_booking', [
+                'id' => $message->id,
+                'type' => 'chat_message',
+                'subject' => 'New Message from ' . ($sender->display_name ?? $sender->name),
+                'message' => $message->message ? mb_substr($message->message, 0, 100) : 'New attachment',
+                'sender_name' => $sender->display_name ?? $sender->name,
+                'sender_id' => $sender->id,
+                'conversation_id' => $conversation->id,
+                'user_type' => $recipient->user_type,
+                "ios_badgeType" => "Increase",
+                "ios_badgeCount" => 1,
+                "notification-type" => 'chat'
+            ]));
+            
+            // Also try the direct FCM approach
+            $this->sendDirectFCMNotification($recipient, $sender, $message);
+            
         } catch (\Exception $e) {
             // Log error but don't break the message sending
             \Log::error('Failed to send chat notification: ' . $e->getMessage());
+        }
+    }
+    
+    /**
+     * Send direct FCM notification for chat messages.
+     */
+    protected function sendDirectFCMNotification($recipient, $sender, $message): void
+    {
+        try {
+            $othersetting = \App\Models\Setting::where('type','OTHER_SETTING')->first();
+            $decodedata = $othersetting ? json_decode($othersetting['value']) : null;
+            $firebase_notification = $decodedata->firebase_notification ?? 0;
+
+            if($firebase_notification == 1) {
+                $projectID = isset($decodedata->project_id) ? $decodedata->project_id : null;
+                if (!$projectID) return;
+
+                $apiUrl = 'https://fcm.googleapis.com/v1/projects/' . $projectID . '/messages:send';
+                $access_token = getAccessToken();
+                $headers = [
+                    'Authorization: Bearer ' . $access_token,
+                    'Content-Type: application/json',
+                ];
+
+                $heading = 'New Message from ' . ($sender->display_name ?? $sender->name);
+                $content = $message->message ? mb_substr($message->message, 0, 100) : 'New attachment';
+
+                $firebase_data = [
+                    'topic' => 'user_' . $recipient->id,
+                    'collapse_key' => 'chat_message',
+                    'notification' => [
+                        'body' => $content,
+                        'title' => $heading,
+                    ],
+                    'data' => [
+                        'type' => 'chat_message',
+                        'id' => $message->id,
+                        'conversation_id' => $message->conversation_id,
+                        'sender_id' => $sender->id
+                    ],
+                ];
+
+                $ch = curl_init($apiUrl);
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
+                curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+                curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($firebase_data));
+
+                $response = curl_exec($ch);
+                curl_close($ch);
+                
+                \Log::info('FCM notification sent to user ' . $recipient->id . ': ' . $response);
+            }
+        } catch (\Exception $e) {
+            \Log::error('FCM notification failed: ' . $e->getMessage());
         }
     }
 
