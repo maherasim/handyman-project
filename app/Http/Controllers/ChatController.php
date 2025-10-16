@@ -314,7 +314,7 @@ class ChatController extends Controller
 
         $conversation = ChatConversation::firstOrCreate(
             ['booking_id' => $booking->id, 'post_job_bid_id' => null],
-            ['user_one_id' => $booking->customer_id, 'user_two_id' => $booking->provider_id]
+            ['user_one_id' => $booking->customer_id, 'user_two_id' => $booking->provider_id, 'conversation_type' => 'booking']
         );
 
         return view('chat.show', [ 'conversation' => $conversation, 'booking' => $booking ]);
@@ -325,27 +325,100 @@ class ChatController extends Controller
      */
     public function viewByBookingHandyman(Request $request, int $bookingId, int $handymanId)
     {
-        $booking = Booking::with(['customer', 'handymanAdded', 'payment'])->findOrFail($bookingId);
+        $booking = Booking::with(['customer', 'provider', 'handymanAdded.handyman', 'payment'])->findOrFail($bookingId);
         $isAssigned = (bool) $booking->handymanAdded->firstWhere('handyman_id', $handymanId);
         abort_unless($isAssigned, 404);
 
         $user = Auth::user();
         abort_unless($user && in_array($user->id, [ (int) $booking->customer_id, (int) $booking->provider_id, (int) $handymanId ], true), 403);
 
+        // Get the handyman user object
+        $handyman = \App\Models\User::find($handymanId);
+        abort_unless($handyman, 404);
+
         // If provider is viewing, open provider <-> handyman chat; otherwise customer <-> handyman
         if ((int) $user->id === (int) ($booking->provider_id ?? 0)) {
             $conversation = ChatConversation::firstOrCreate(
                 ['booking_id' => $booking->id, 'user_one_id' => $booking->provider_id, 'user_two_id' => $handymanId],
-                ['user_one_id' => $booking->provider_id, 'user_two_id' => $handymanId]
+                ['user_one_id' => $booking->provider_id, 'user_two_id' => $handymanId, 'conversation_type' => 'booking']
             );
         } else {
             $conversation = ChatConversation::firstOrCreate(
                 ['booking_id' => $booking->id, 'user_one_id' => $booking->customer_id, 'user_two_id' => $handymanId],
-                ['user_one_id' => $booking->customer_id, 'user_two_id' => $handymanId]
+                ['user_one_id' => $booking->customer_id, 'user_two_id' => $handymanId, 'conversation_type' => 'booking']
             );
         }
 
-        return view('chat.show', [ 'conversation' => $conversation, 'booking' => $booking ]);
+        return view('chat.show', [ 
+            'conversation' => $conversation, 
+            'booking' => $booking,
+            'handyman' => $handyman,
+            'isHandymanChat' => true
+        ]);
+    }
+
+    /**
+     * Open (or create) independent conversation between two users.
+     */
+    public function viewWithUser(Request $request, int $userId)
+    {
+        $currentUser = Auth::user();
+        $targetUser = \App\Models\User::findOrFail($userId);
+        
+        // Prevent users from chatting with themselves
+        abort_if($currentUser->id === $userId, 403, 'Cannot chat with yourself');
+        
+        // Create or find conversation between the two users
+        $conversation = ChatConversation::where(function($query) use ($currentUser, $userId) {
+            $query->where('user_one_id', $currentUser->id)
+                  ->where('user_two_id', $userId);
+        })->orWhere(function($query) use ($currentUser, $userId) {
+            $query->where('user_one_id', $userId)
+                  ->where('user_two_id', $currentUser->id);
+        })->whereNull('booking_id')
+          ->whereNull('post_job_bid_id')
+          ->first();
+        
+        if (!$conversation) {
+            $conversation = ChatConversation::create([
+                'user_one_id' => $currentUser->id,
+                'user_two_id' => $userId,
+                'conversation_type' => 'standalone',
+                'title' => "Chat with {$targetUser->display_name}"
+            ]);
+        }
+        
+        return view('chat.show', [
+            'conversation' => $conversation,
+            'targetUser' => $targetUser,
+            'isStandaloneChat' => true
+        ]);
+    }
+    
+    /**
+     * Standalone chat interface for browsing and starting conversations.
+     */
+    public function standalone(Request $request)
+    {
+        $currentUser = Auth::user();
+        
+        // Get all standalone conversations for the current user
+        $conversations = ChatConversation::where(function($query) use ($currentUser) {
+            $query->where('user_one_id', $currentUser->id)
+                  ->orWhere('user_two_id', $currentUser->id);
+        })
+        ->whereNull('booking_id')
+        ->whereNull('post_job_bid_id')
+        ->with(['userOne', 'userTwo', 'messages' => function($query) {
+            $query->latest()->limit(1);
+        }])
+        ->orderBy('updated_at', 'desc')
+        ->get();
+        
+        return view('chat.standalone', [
+            'conversations' => $conversations,
+            'currentUser' => $currentUser
+        ]);
     }
 
     public function unreadPing(Request $request)

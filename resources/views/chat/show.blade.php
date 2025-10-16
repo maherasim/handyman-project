@@ -15,6 +15,8 @@
                         } elseif (isset($booking)) {
                             $serviceName = optional(optional($booking)->service)->name ?? 'Booking';
                             $headerLine = 'Booking #' . ($booking->id ?? '-') . ' — ' . $serviceName;
+                        } elseif (isset($isStandaloneChat) && $isStandaloneChat) {
+                            $headerLine = 'Direct Message';
                         }
                         $providerObj = isset($bid) ? optional($bid->provider) : (isset($booking) ? optional($booking->provider) : null);
                         $customerObj = isset($bid) ? optional($bid->customer) : (isset($booking) ? optional($booking->customer) : null);
@@ -24,27 +26,49 @@
                     @endif
                 </div>
                 <div class="flex-grow-1 overflow-auto p-2" id="threadList">
-                    @if($providerObj)
+                    @if(isset($isStandaloneChat) && $isStandaloneChat && isset($targetUser))
                         <div class="d-flex align-items-center gap-2 p-2 rounded hover-bg cursor-pointer active">
                             <div>
-                                <img src="{{ getSingleMedia($providerObj, 'profile_image', null) ?? $fallbackAvatar }}" class="rounded-circle" style="width:36px;height:36px;object-fit:cover;">
+                                <img src="{{ getSingleMedia($targetUser, 'profile_image', null) ?? $fallbackAvatar }}" class="rounded-circle" style="width:36px;height:36px;object-fit:cover;">
                             </div>
                             <div class="flex-grow-1">
-                                <div class="fw-bold mb-0 small">{{ $providerObj->display_name }}</div>
-                                <div class="text-muted small">Provider</div>
+                                <div class="fw-bold mb-0 small">{{ $targetUser->display_name }}</div>
+                                <div class="text-muted small">{{ ucfirst($targetUser->user_type ?? 'User') }}</div>
                             </div>
                         </div>
-                    @endif
-                    @if($customerObj)
-                        <div class="d-flex align-items-center gap-2 p-2 rounded hover-bg cursor-pointer active mt-1">
+                    @elseif(isset($isHandymanChat) && $isHandymanChat && isset($handyman))
+                        <div class="d-flex align-items-center gap-2 p-2 rounded hover-bg cursor-pointer active">
                             <div>
-                                <img src="{{ getSingleMedia($customerObj, 'profile_image', null) ?? $fallbackAvatar }}" class="rounded-circle" style="width:36px;height:36px;object-fit:cover;">
+                                <img src="{{ getSingleMedia($handyman, 'profile_image', null) ?? $fallbackAvatar }}" class="rounded-circle" style="width:36px;height:36px;object-fit:cover;">
                             </div>
                             <div class="flex-grow-1">
-                                <div class="fw-bold mb-0 small">{{ $customerObj->display_name }}</div>
-                                <div class="text-muted small">Customer</div>
+                                <div class="fw-bold mb-0 small">{{ $handyman->display_name }}</div>
+                                <div class="text-muted small">Handyman</div>
                             </div>
                         </div>
+                    @else
+                        @if($providerObj)
+                            <div class="d-flex align-items-center gap-2 p-2 rounded hover-bg cursor-pointer active">
+                                <div>
+                                    <img src="{{ getSingleMedia($providerObj, 'profile_image', null) ?? $fallbackAvatar }}" class="rounded-circle" style="width:36px;height:36px;object-fit:cover;">
+                                </div>
+                                <div class="flex-grow-1">
+                                    <div class="fw-bold mb-0 small">{{ $providerObj->display_name }}</div>
+                                    <div class="text-muted small">Provider</div>
+                                </div>
+                            </div>
+                        @endif
+                        @if($customerObj)
+                            <div class="d-flex align-items-center gap-2 p-2 rounded hover-bg cursor-pointer active mt-1">
+                                <div>
+                                    <img src="{{ getSingleMedia($customerObj, 'profile_image', null) ?? $fallbackAvatar }}" class="rounded-circle" style="width:36px;height:36px;object-fit:cover;">
+                                </div>
+                                <div class="flex-grow-1">
+                                    <div class="fw-bold mb-0 small">{{ $customerObj->display_name }}</div>
+                                    <div class="text-muted small">Customer</div>
+                                </div>
+                            </div>
+                        @endif
                     @endif
                 </div>
             </div>

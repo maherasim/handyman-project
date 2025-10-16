@@ -118,6 +118,10 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
     Route::get('/messages/bid/{bidId}', [ChatController::class, 'viewByBid'])->name('chat.view.bid');
     Route::get('/messages/booking/{bookingId}', [ChatController::class, 'viewByBooking'])->name('chat.view.booking');
     Route::get('/messages/booking/{bookingId}/handyman/{handymanId}', [ChatController::class, 'viewByBookingHandyman'])->name('chat.view.booking.handyman');
+    
+    // Independent chat system routes
+    Route::get('/messages/user/{userId}', [ChatController::class, 'viewWithUser'])->name('chat.view.user');
+    Route::get('/messages/standalone', [ChatController::class, 'standalone'])->name('chat.standalone');
     Route::get('/chat/unread/ping', [ChatController::class, 'unreadPing'])->name('chat.unread.ping');
     Route::get('/chat/flagged/ping', [ChatController::class, 'flaggedPing'])->name('chat.flagged.ping');
     Route::get('/messages', [ChatController::class, 'index'])->name('chat.index');

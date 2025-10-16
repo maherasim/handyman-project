@@ -186,7 +186,10 @@
             $isParticipant = ($auth_user->user_type === 'provider' && $auth_user->id == ($bid->provider_id ?? 0)) || ($auth_user->user_type === 'user' && $auth_user->id == ($bid->customer_id ?? 0));
         @endphp
         @if($isParticipant)
-            <a href="{{ route('chat.view.bid', $bid->id) }}" class="btn btn-outline-primary">
+            @php
+                $chatUserId = ($auth_user->user_type === 'provider') ? $bid->customer_id : $bid->provider_id;
+            @endphp
+            <a href="{{ route('chat.view.user', $chatUserId) }}" class="btn btn-outline-primary">
                 <i class="fas fa-comments"></i> Chat
             </a>
         @endif
