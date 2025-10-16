@@ -525,16 +525,47 @@
                                     }
                                 @endphp
                                 @if ($isBookParticipant && $advancePaidForBooking)
-                                    <a href="{{ route('chat.view.user', $bookingdata->provider_id) }}" class="btn btn-outline-primary">
-                                        <i class="fas fa-comments"></i> {{ __('Chat with Provider') }}
-                                    </a>
-                                    @if($bookingdata->handymanAdded && $bookingdata->handymanAdded->count())
-                                        @php $firstHandyman = optional($bookingdata->handymanAdded->first())->handyman_id; @endphp
-                                        @if($firstHandyman)
-                                            <a href="{{ route('chat.view.user', $firstHandyman) }}" class="btn btn-outline-secondary">
-                                                <i class="fas fa-user-cog"></i> {{ __('Chat with Handyman') }}
-                                            </a>
+                                    @php
+                                        $currentUser = auth()->user();
+                                        $isProvider = $currentUser && $currentUser->id == $bookingdata->provider_id;
+                                        $isCustomer = $currentUser && $currentUser->id == $bookingdata->customer_id;
+                                        $isHandyman = $currentUser && $bookingdata->handymanAdded->contains('handyman_id', $currentUser->id);
+                                    @endphp
+                                    
+                                    @if($isCustomer)
+                                        {{-- Customer sees: Chat with Provider and Chat with Handyman --}}
+                                        <a href="{{ route('chat.view.user', $bookingdata->provider_id) }}" class="btn btn-outline-primary">
+                                            <i class="fas fa-comments"></i> {{ __('Chat with Provider') }}
+                                        </a>
+                                        @if($bookingdata->handymanAdded && $bookingdata->handymanAdded->count())
+                                            @php $firstHandyman = optional($bookingdata->handymanAdded->first())->handyman_id; @endphp
+                                            @if($firstHandyman)
+                                                <a href="{{ route('chat.view.user', $firstHandyman) }}" class="btn btn-outline-secondary">
+                                                    <i class="fas fa-user-cog"></i> {{ __('Chat with Handyman') }}
+                                                </a>
+                                            @endif
                                         @endif
+                                    @elseif($isProvider)
+                                        {{-- Provider sees: Chat with Customer and Chat with Handyman --}}
+                                        <a href="{{ route('chat.view.user', $bookingdata->customer_id) }}" class="btn btn-outline-primary">
+                                            <i class="fas fa-comments"></i> {{ __('Chat with Customer') }}
+                                        </a>
+                                        @if($bookingdata->handymanAdded && $bookingdata->handymanAdded->count())
+                                            @php $firstHandyman = optional($bookingdata->handymanAdded->first())->handyman_id; @endphp
+                                            @if($firstHandyman)
+                                                <a href="{{ route('chat.view.user', $firstHandyman) }}" class="btn btn-outline-secondary">
+                                                    <i class="fas fa-user-cog"></i> {{ __('Chat with Handyman') }}
+                                                </a>
+                                            @endif
+                                        @endif
+                                    @elseif($isHandyman)
+                                        {{-- Handyman sees: Chat with Provider and Chat with Customer --}}
+                                        <a href="{{ route('chat.view.user', $bookingdata->provider_id) }}" class="btn btn-outline-primary">
+                                            <i class="fas fa-comments"></i> {{ __('Chat with Provider') }}
+                                        </a>
+                                        <a href="{{ route('chat.view.user', $bookingdata->customer_id) }}" class="btn btn-outline-secondary">
+                                            <i class="fas fa-user"></i> {{ __('Chat with Customer') }}
+                                        </a>
                                     @endif
                                 @endif
 
