@@ -6,9 +6,7 @@
         ->get();
 @endphp
 
-@extends('layouts.app')
-
-@section('content')
+<x-master-layout>
 <div class="container-fluid">
     <div class="row">
         <div class="col-12">
@@ -113,8 +111,7 @@
         </div>
     </div>
 </div>
-
-@endsection
+</x-master-layout>
 
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
