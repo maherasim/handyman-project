@@ -119,7 +119,7 @@
                                 </div>
                                 <div class="col-md-4 text-end">
                                     <div class="plan-price">
-                                        <span class="price-amount text-primary fs-3 fw-bold" id="plan_amount">€29.99</span>
+                                        <span class="price-amount text-primary fs-3 fw-bold" id="plan_amount">€0.00</span>
                                         <small class="text-muted d-block">per month</small>
                                     </div>
                                 </div>
@@ -186,6 +186,7 @@
                 <form id="upgradeForm" class="w-100">
                     <input type="hidden" id="plan_id" name="plan_id">
                     <input type="hidden" id="plan_type" name="plan_type">
+                    <input type="hidden" id="plan_amount_value" name="plan_amount_value">
                     <div class="d-flex justify-content-end gap-2">
                         <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">
                             <i class="fas fa-times me-1"></i>Cancel
@@ -223,7 +224,7 @@
                         <div class="card-body text-center">
                             <h6 class="text-muted mb-2">Payment Summary</h6>
                             <div class="payment-amount">
-                                <span class="amount text-primary fs-2 fw-bold" id="payment_amount">€29.99</span>
+                                <span class="amount text-primary fs-2 fw-bold" id="payment_amount">€0.00</span>
                                 <small class="text-muted d-block">One-time payment</small>
                             </div>
                         </div>
@@ -289,7 +290,8 @@
                                 <div class="card h-100 border-0 shadow-sm payment-card">
                                     <div class="card-body text-center p-4">
                                         <div class="payment-icon-large mb-3">
-                                            <i class="fas fa-university text-primary fa-2x"></i>
+                                            <i
+                                             class="fas fa-university text-primary fa-2x"></i>
                                         </div>
                                         <h6 class="card-title text-dark mb-2">Bank Transfer</h6>
                                         <p class="card-text text-muted small mb-3">Traditional bank transfer</p>
@@ -535,6 +537,12 @@
             '{{ route('provider_detail_pages') }}?tabpage=all-plan&type=tbl&providerid={{ request()->providerid }}';
         var plans = [];
 
+        function formatCurrency(amount){
+            var num = parseFloat(amount);
+            if (isNaN(num)) { num = 0; }
+            return '€' + num.toFixed(2);
+        }
+
         // Fetch available plans
         $.ajax({
             url: '{{ route('get.plans') }}',
@@ -578,7 +586,10 @@
                     },
                     {
                         data: 'amount',
-                        name: 'amount'
+                        name: 'amount',
+                        render: function(data){
+                            return formatCurrency(data);
+                        }
                     },
                     {
                         data: 'start_at',
@@ -679,8 +690,11 @@
             $('#plan_id').val(planId);
             $('#plan_type').val(planType);
             $('#plan_name').text(planType);
-            $('#plan_amount').text('€' + planAmount);
-            $('#payment_amount').text('€' + planAmount);
+            var amountNumber = parseFloat(planAmount);
+            var formattedAmount = formatCurrency(amountNumber);
+            $('#plan_amount').text(formattedAmount);
+            $('#payment_amount').text(formattedAmount);
+            $('#plan_amount_value').val(amountNumber.toFixed(2));
             
             // Update plan image based on plan type
             var planImageSrc = '';
@@ -792,7 +806,8 @@
         $('#payWithWallet').on('click', function() {
             var planId = $('#plan_id').val();
             var planType = $('#plan_type').val();
-            var planAmount = $('#plan_amount').text().replace('€', '');
+            var planAmount = $('#plan_amount_value').val();
+            var planAmountDisplay = formatCurrency(planAmount);
 
             // Show confirmation
             Swal.fire({
@@ -802,7 +817,7 @@
                         <div class="mb-3">
                             <i class="fas fa-wallet text-primary fa-3x"></i>
                         </div>
-                        <p class="mb-3">Pay <strong>€${planAmount}</strong> using your wallet balance</p>
+                        <p class="mb-3">Pay <strong>${planAmountDisplay}</strong> using your wallet balance</p>
                         <p class="text-muted">This payment will be processed instantly.</p>
                     </div>
                 `,
@@ -871,7 +886,8 @@
         $('#payWithStripe').on('click', function() {
             var planId = $('#plan_id').val();
             var planType = $('#plan_type').val();
-            var planAmount = $('#plan_amount').text().replace('€', '');
+            var planAmount = $('#plan_amount_value').val();
+            var planAmountDisplay = formatCurrency(planAmount);
 
             // Show confirmation
             Swal.fire({
@@ -881,7 +897,7 @@
                         <div class="mb-3">
                             <i class="fab fa-cc-stripe text-primary fa-3x"></i>
                         </div>
-                        <p class="mb-3">Pay <strong>€${planAmount}</strong> using your credit/debit card</p>
+                        <p class="mb-3">Pay <strong>${planAmountDisplay}</strong> using your credit/debit card</p>
                         <p class="text-muted">You will be redirected to Stripe's secure payment page.</p>
                     </div>
                 `,
@@ -942,7 +958,8 @@
         $('#payWithPaypal').on('click', function() {
             var planId = $('#plan_id').val();
             var planType = $('#plan_type').val();
-            var planAmount = $('#plan_amount').text().replace('€', '');
+            var planAmount = $('#plan_amount_value').val();
+            var planAmountDisplay = formatCurrency(planAmount);
 
             // Show confirmation
             Swal.fire({
@@ -952,7 +969,7 @@
                         <div class="mb-3">
                             <i class="fab fa-paypal text-primary fa-3x"></i>
                         </div>
-                        <p class="mb-3">Pay <strong>€${planAmount}</strong> using your PayPal account</p>
+                        <p class="mb-3">Pay <strong>${planAmountDisplay}</strong> using your PayPal account</p>
                         <p class="text-muted">You will be redirected to PayPal's secure payment page.</p>
                     </div>
                 `,
@@ -1013,7 +1030,8 @@
         $('#payWithBank').on('click', function() {
             var planId = $('#plan_id').val();
             var planType = $('#plan_type').val();
-            var planAmount = $('#plan_amount').text();
+            var planAmount = $('#plan_amount_value').val();
+            var planAmountDisplay = formatCurrency(planAmount);
 
             const bankInfoHtml = `
                 <div class="bank-transfer-modal">
@@ -1027,7 +1045,7 @@
                         <h6 class="text-primary mb-2">📋 Subscription Details</h6>
                         <div class="row">
                             <div class="col-6"><strong>Plan:</strong> ${planType}</div>
-                            <div class="col-6"><strong>Amount:</strong> €${planAmount}</div>
+                            <div class="col-6"><strong>Amount:</strong> ${planAmountDisplay}</div>
                         </div>
                     </div>
 
@@ -1062,7 +1080,7 @@
                         <div class="instruction-steps">
                             <div class="step">
                                 <span class="step-number">1</span>
-                                <span class="step-text">Transfer the exact amount (€${planAmount}) to the bank account above</span>
+                                <span class="step-text">Transfer the exact amount (${planAmountDisplay}) to the bank account above</span>
                             </div>
                             <div class="step">
                                 <span class="step-number">2</span>
