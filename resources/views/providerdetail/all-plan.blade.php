@@ -85,7 +85,7 @@
 
 <!-- Enhanced Upgrade Confirmation Modal -->
 <div class="modal fade" id="upgradeModal" tabindex="-1" role="dialog" aria-labelledby="upgradeModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-dialog" role="document">
         <div class="modal-content border-0 shadow-lg">
             <div class="modal-header bg-gradient-primary text-white border-0">
                 <div class="d-flex align-items-center">
@@ -203,7 +203,7 @@
 
 <!-- Enhanced Payment Method Selection Modal -->
 <div class="modal fade" id="paymentMethodModal" tabindex="-1" role="dialog" aria-labelledby="paymentMethodModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-dialog" role="document">
         <div class="modal-content border-0 shadow-lg">
             <div class="modal-header bg-gradient-success text-white border-0">
                 <div class="d-flex align-items-center">
@@ -292,7 +292,8 @@
                                         <div class="payment-icon-large mb-3">
                                             <i
                                              class="fas fa-university text-primary fa-2x"></i>
-                                        </div>
+                      
+                                            </div>
                                         <h6 class="card-title text-dark mb-2">Bank Transfer</h6>
                                         <p class="card-text text-muted small mb-3">Traditional bank transfer</p>
                                         <div class="payment-badge">
@@ -454,6 +455,22 @@
     background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
 }
 
+/* Modal sizing: keep professional medium height with scroll */
+.modal .modal-body{
+    max-height: 65vh;
+    overflow-y: auto;
+}
+
+/* SweetAlert bank transfer popup sizing */
+.bank-transfer-popup{
+    max-width: 640px !important;
+}
+.bank-transfer-popup .swal2-html-container{
+    max-height: 65vh;
+    overflow-y: auto;
+    text-align: left;
+}
+
 .payment-methods-grid .payment-card {
     border-radius: 12px;
     transition: all 0.3s ease;
@@ -517,9 +534,7 @@
         padding: 1rem;
     }
     
-    .modal-lg {
-        max-width: 95%;
-    }
+    .modal-dialog { max-width: 95%; }
     
     .payment-methods-grid .col-md-6 {
         margin-bottom: 1rem;
