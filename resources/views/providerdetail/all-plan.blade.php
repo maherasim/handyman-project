@@ -1092,7 +1092,7 @@
                             </div>
                             <div class="step">
                                 <span class="step-number">4</span>
-                                <span class="step-text">Your subscription will be activated within 24 hours after verification</span>
+                                <span class="step-text">Your subscription will be activated within 24 hours after payment verification</span>
                             </div>
                         </div>
                     </div>
@@ -1100,7 +1100,7 @@
                     <div class="note-box">
                         <small class="text-muted">
                             <i class="fas fa-info-circle"></i>
-                            <strong>Note:</strong> Bank transfers may take 1-3 business days to process. 
+                            <strong>Note:</strong> Bank transfers may take varying business days to process. 
                             Your subscription will be activated once payment is verified.
                         </small>
                     </div>

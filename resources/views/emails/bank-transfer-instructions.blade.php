@@ -277,14 +277,14 @@
                     </div>
                     <div class="step">
                         <span class="step-number">4</span>
-                        <span class="step-text">Your subscription will be activated within 24 hours after verification</span>
+                        <span class="step-text">Your subscription will be activated within 24 hours after payment verification</span>
                     </div>
                 </div>
             </div>
             
             <div class="highlight">
                 <h4>⏰ Processing Time</h4>
-                <p>Bank transfers may take 1-3 business days to process. Your subscription will be activated once payment is verified by our team.</p>
+                <p>Bank transfers may take varying business days to process. Your subscription will be activated once payment is verified by our team.</p>
             </div>
             
             <p>If you have any questions about this bank transfer or need assistance, please don't hesitate to contact our support team.</p>
