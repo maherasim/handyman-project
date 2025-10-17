@@ -22,6 +22,7 @@ use App\Models\SubCategory;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use App\Models\BookingRating;
 use App\Models\CommissionEarning;
+use App\Models\SubscriptionTransaction;
 use App\Models\HelpDesk;
 use DB;
 
@@ -115,6 +116,9 @@ class HomeController extends Controller
     $data['cancellationcharge'] = Booking::where('status', 'cancelled')->sum('cancellation_charge_amount');
     
     $data['total_revenue'] = $data['CommissionEarning'] + $data['cancellationcharge'];
+
+    // Total subscription transactions amount (all types)
+    $data['versatile_earning'] = SubscriptionTransaction::sum('amount');
 
     if ($user->hasAnyRole(['admin', 'demo_admin'])) {
         $data['revenueData'] = adminEarning();
