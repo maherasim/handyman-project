@@ -101,7 +101,7 @@
                                             <div class="d-flex flex-wrap justify-content-start align-items-center">
                                                 <h4 class="mb-2 booking-text fw-bold">{{ getPriceFormat($data['versatile_earning']) }}</h4>
                                             </div>
-                                            <p class="mb-0 booking-text">Versatile Earning</p>
+                                            <p class="mb-0 booking-text">Other Earnings</p>
                                         </div>
                                         <div class="col-auto d-flex flex-column">
                                             <div class="iq-card-icon iq-card-icon-revenue icon-shape text-white rounded-circle shadow">
