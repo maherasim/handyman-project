@@ -1,7 +1,5 @@
 @php
     $transactions = \App\Models\SubscriptionTransaction::with(['user', 'subscription'])
-        ->where('payment_type', 'bank_transfer')
-        ->where('payment_status', 'pending')
         ->orderBy('created_at', 'desc')
         ->get();
 @endphp
@@ -12,8 +10,8 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                    <h4 class="card-title mb-0">Bank Transfer Payments - Pending Verification</h4>
-                    <p class="text-muted">Verify pending bank transfer payments</p>
+                    <h4 class="card-title mb-0">Subscription Transactions</h4>
+                    <p class="text-muted">All subscription payments with status</p>
                     
                     @if(session('success'))
                         <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -85,7 +83,7 @@
                                         </td>
                                         <td>{{ $transaction->created_at->format('Y-m-d H:i:s') }}</td>
                                         <td>
-                                            @if($transaction->payment_status === 'pending')
+                                            @if($transaction->payment_status === 'pending' && $transaction->payment_type === 'bank_transfer')
                                                 <form method="POST" action="{{ route('admin.subscription-transactions.verify', $transaction->id) }}" style="display: inline;">
                                                     @csrf
                                                     <button type="submit" class="btn btn-sm btn-success verify-btn" 
@@ -94,13 +92,13 @@
                                                     </button>
                                                 </form>
                                             @else
-                                                <span class="text-muted">Verified</span>
+                                                <span class="text-muted">—</span>
                                             @endif
                                         </td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="9" class="text-center">No pending bank transfer payments found</td>
+                                        <td colspan="9" class="text-center">No subscription transactions found</td>
                                     </tr>
                                 @endforelse
                             </tbody>
