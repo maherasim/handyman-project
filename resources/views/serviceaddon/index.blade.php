@@ -160,7 +160,7 @@
                             title: "{{ __('messages.action') }}",
                             className: 'text-end'
                         }
-                    @endif ()
+                    @endif
 
                 ],
                 order: [
