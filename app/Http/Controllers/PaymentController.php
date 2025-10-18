@@ -1016,13 +1016,14 @@ class PaymentController extends Controller
 
     public function cashApprove($id)
     {
+        dd($id);
         // Approve a cash payment reported by provider; admin is verifying here
         $sitesetup = Setting::where('type', 'site-setup')->where('key', 'site-setup')->first();
         $admin = json_decode($sitesetup->value);
         $paymentdata = Payment::where('id', $id)->first();
         $parent_payment_history = PaymentHistory::where('status', 'pending_by_admin')
             ->where('payment_id', $id)->first();
-dd($parent_payment_history);
+//dd($parent_payment_history);
         $payment_history = [
             'payment_id' => $id,
             'booking_id' => $paymentdata->booking_id,
