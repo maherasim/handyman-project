@@ -1557,7 +1557,7 @@ function set_admin_approved_cash($payment_id){
     $payment_status_check =  \App\Models\PaymentHistory::where('payment_id',$payment_id)
     ->where('action','provider_send_admin')->where('status','pending_by_admin')->first();
     if($payment_status_check !== null){
-        $status = '<a class="btn-sm text-white btn-success" data-approve-cash="1" href='.route('cash.approve',$payment_id).'><i class="fa fa-check"></i>Approve</a>';
+        $status = '<a class="btn-sm text-white btn-primary" data-verify-cash="1" href='.route('cash.approve',$payment_id).'><i class="fa fa-check-circle"></i>Verify</a>';
     }else{
         $status = '-';
     }
