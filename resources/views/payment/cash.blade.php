@@ -293,6 +293,24 @@
                 form.submit();
             }
         });
+
+        // Intercept Approve Cash links with SweetAlert confirm
+        $(document).on('click', 'a[data-approve-cash="1"]', function(e){
+            e.preventDefault();
+            const href = $(this).attr('href');
+            Swal.fire({
+                title: 'Approve Cash Payment?',
+                text: 'This will mark the payment as approved and update related records.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, approve',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if(result.isConfirmed){
+                    window.location.href = href;
+                }
+            });
+        });
     </script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 </x-master-layout>
