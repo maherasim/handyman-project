@@ -1,9 +1,6 @@
 <x-master-layout>
 
-    <head>
-        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-        <script type="text/javascript" src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
-    </head>
+    
     <div class="container-fluid">
         <div class="row">
             <div class="col-lg-12">
@@ -28,7 +25,7 @@
                             <input type="hidden" name="rowIds" id="rowIds" value="">
                             @if (auth()->user()->hasAnyRole(['admin']))
                                 <select name="action_type" class="form-control select2" id="quick-action-type"
-                                    style="width:100%" disabled>
+                                    style="width:100%">
                                     <option value="">{{ __('messages.no_action') }}</option>
                                     <option value="change-status">{{ __('messages.status') }}</option>
                                     <option value="delete">{{ __('messages.delete') }}</option>
@@ -42,7 +39,7 @@
                                 </div>
 
                                 <button id="quick-action-apply" class="btn btn-primary" data-ajax="true"
-                                    data--submit="{{ route('payment.bulk-action') }}" data-datatable="reload"
+                                    data-submit="{{ route('payment.bulk-action') }}" data-datatable="reload"
                                     data-confirmation='true'
                                     data-title="{{ __('cash payment list', ['form' => __('cash payment list')]) }}"
                                     title="{{ __('cash payment list', ['form' => __('cash payment list')]) }}"
@@ -282,12 +279,14 @@
             if (confirmation === 'true') {
                 const message = button.data('message');
                 if (confirm(message)) {
+                    collectSelectedRowIds();
                     const submitUrl = button.data('submit');
                     const form = button.closest('form');
                     form.attr('action', submitUrl);
                     form.submit();
                 }
             } else {
+                collectSelectedRowIds();
                 const submitUrl = button.data('submit');
                 const form = button.closest('form');
                 form.attr('action', submitUrl);
