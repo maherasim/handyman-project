@@ -1057,16 +1057,15 @@ class PaymentController extends Controller
 
         $booking = Booking::where('id', $payment_history['booking_id'])->first();
 
-        // Determine payment type (advance or full)
-        $paymentType = $parent_payment_history->type ?? $paymentdata->type ?? null; // 'advance_payment' or 'full_payment'
+        // Determine payment type (advance or remaining)
+        $paymentType = $parent_payment_history->type ?? $paymentdata->type ?? null; // 'advance_payment' or 'remaining'
 
         // Commission percentage
         $admin_commission_percentage = Setting::getValueByKey('admin_commission_percentage', 'site-setup')->value ?? 10;
-        $admin_user_id = 
-            \App\Models\User::where('user_type', 'admin')->value('id');
+        $admin_user_id = \App\Models\User::where('user_type', 'admin')->value('id');
 
         if ($paymentType === 'advance_payment') {
-            // Mark as advanced paid and record advance on booking
+            // Advance payment: Don't touch booking status, update payment status to advanced_paid
             $paymentdata->payment_status = 'advanced_paid';
             $paymentdata->status = '1';
             $paymentdata->save();
@@ -1086,13 +1085,26 @@ class PaymentController extends Controller
                 'commission_amount' => $admin_commission_amount,
                 'commission_status' => 'paid',
             ]);
-        } else {
-            // Treat as full payment
-            $paymentdata->payment_status = 'paid';
+        } elseif ($paymentType === 'remaining') {
+            // Remaining payment: Update payment status to completed
+            $paymentdata->payment_status = 'completed';
+            $paymentdata->status = '1';
             $paymentdata->save();
 
             // Complete booking
-            $booking->status = 'completed';
+            $booking->status = 'accept';
+            $booking->save();
+
+            // Mark all related commission earnings as paid
+            CommissionEarning::where('booking_id', $booking->id)->update(['commission_status' => 'paid']);
+        } else {
+            // Default case: Treat as full payment (backward compatibility)
+            $paymentdata->payment_status = 'paid';
+            $paymentdata->status = '1';
+            $paymentdata->save();
+
+            // Complete booking
+            $booking->status = 'accept';
             $booking->save();
 
             // Mark all related commission earnings as paid
