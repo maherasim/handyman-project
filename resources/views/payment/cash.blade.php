@@ -25,6 +25,7 @@
                         <form action="{{ route('payment.bulk-action') }}" id="quick-action-form"
                             class="form-disabled d-flex gap-3 align-items-center">
                             @csrf
+                            <input type="hidden" name="rowIds" id="rowIds" value="">
                             @if (auth()->user()->hasAnyRole(['admin']))
                                 <select name="action_type" class="form-control select2" id="quick-action-type"
                                     style="width:100%" disabled>
@@ -92,7 +93,8 @@
     <script>
         document.addEventListener('DOMContentLoaded', (event) => {
 
-            window.renderedDataTable = $('#datatable').DataTable({
+            var tableEl = $('#datatable');
+            window.renderedDataTable = tableEl.DataTable({
                 processing: true,
                 serverSide: true,
                 autoWidth: false,
@@ -120,7 +122,9 @@
                             orderable: false,
                             searchable: false,
                         },
-                    @endif () {
+                    @endif
+                    ,
+                    {
                         data: 'updated_at',
                         name: 'updated_at',
                         title: "{{ __('product.lbl_update_at') }}",
@@ -176,7 +180,7 @@
                             searchable: false,
                             title: "{{ __('messages.action') }}"
                         }
-                    @endif ()
+                    @endif
 
                 ],
                 order: [
@@ -223,6 +227,44 @@
                 $('.quick-action-field').addClass('d-none');
             }
         }
+
+        function collectSelectedRowIds(){
+            var ids = [];
+            $('#datatable').find('tbody input[type="checkbox"]').each(function(){
+                var $cb = $(this);
+                if($cb.is(':checked')){
+                    var val = $cb.val() || $cb.data('id') || $cb.data('row-id');
+                    if(val){ ids.push(val); }
+                }
+            });
+            $('#rowIds').val(ids.join(','));
+        }
+
+        function updateBulkControls(){
+            collectSelectedRowIds();
+            var anyChecked = $('#rowIds').val().length > 0;
+            $('#quick-action-type').prop('disabled', !anyChecked);
+            if(!anyChecked){
+                $('#quick-action-apply').attr('disabled', true);
+                $('.quick-action-field').addClass('d-none');
+                $('#quick-action-type').val('');
+            }
+        }
+
+        window.selectAllTable = function(el){
+            var checked = $(el).is(':checked');
+            $('#datatable').find('tbody input[type="checkbox"]').prop('checked', checked);
+            updateBulkControls();
+        }
+
+        $(document).on('change', '#datatable tbody input[type="checkbox"]', function(){
+            updateBulkControls();
+        });
+
+        // After table redraw, ensure events and state
+        window.renderedDataTable.on('draw', function(){
+            updateBulkControls();
+        });
 
         $('#quick-action-type').change(function() {
             resetQuickAction()
