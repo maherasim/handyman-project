@@ -1024,38 +1024,17 @@ class PaymentController extends Controller
         $parent_payment_history = PaymentHistory::where('status', 'pending_by_admin')
             ->where('payment_id', $id)->first();
 //dd($parent_payment_history);
-        $payment_history = [
-            'payment_id' => $id,
-            'booking_id' => $paymentdata->booking_id,
-            'action' => config('constant.PAYMENT_HISTORY_ACTION.ADMIN_APPROVED_CASH'),
-            'type' => 'Bank_Transfer',
-            'sender_id' => $parent_payment_history->sender_id,
-            'receiver_id' => admin_id(),
-            'total_amount' => $paymentdata->total_amount,
-            'text' =>  __('messages.cash_approved', ['amount' => getPriceFormat((float)$paymentdata->total_amount), 'name' => get_user_name(admin_id())]),
-            'status' => config('constant.PAYMENT_HISTORY_STATUS.APPROVED_ADMIN'),
-            'parent_id' => $parent_payment_history->parent_id
-        ];
-
-
-        date_default_timezone_set($admin->time_zone ?? 'UTC');
-        $payment_history['datetime'] = date('Y-m-d H:i:s');
-
-        if (!empty($paymentdata->txn_id)) {
-            $payment_history['txn_id'] = $paymentdata->txn_id;
+        // Update the existing payment history record instead of creating new one
+        if ($parent_payment_history) {
+            $parent_payment_history->status = config('constant.PAYMENT_HISTORY_STATUS.APPROVED_ADMIN');
+            $parent_payment_history->text = __('messages.cash_approved', [
+                'amount' => getPriceFormat((float)$paymentdata->total_amount), 
+                'name' => get_user_name(admin_id())
+            ]);
+            $parent_payment_history->save();
         }
-        if (!empty($paymentdata->other_transaction_detail)) {
-            $payment_history['other_transaction_detail'] = $paymentdata->other_transaction_detail;
-        }
-        $res = PaymentHistory::create($payment_history);
-        // $parent_record = PaymentHistory::where('parent_id',$parent_payment_history->parent_id)->first();
 
-        // $payment_record_data= PaymentHistory::where('payment_id',$id)->update(['status'=>'approved_by_admin']);
-
-        // $parent_record->status = 'approved_by_admin';
-        // $parent_record->update();
-
-        $booking = Booking::where('id', $payment_history['booking_id'])->first();
+        $booking = Booking::where('id', $paymentdata->booking_id)->first();
 
         // Determine payment type (advance or remaining)
         $paymentType = $parent_payment_history->type ?? $paymentdata->type ?? null; // 'advance_payment' or 'remaining'
