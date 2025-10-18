@@ -174,37 +174,29 @@ class PaymentController extends Controller
             CommissionEarning::where('booking_id', $booking->id)->update(['commission_status' => 'paid']);
         }
 
-        // Always create new PaymentHistory entry
-        $firstHandymanId = optional($booking->handymanAdded->first())->handyman_id;
-        $assignedUserData = User::find($firstHandymanId);
+        // ALWAYS create new PaymentHistory entry - NO CONDITIONS
+        $payment_history = [
+            'payment_id' => $result->id,
+            'booking_id' => $result->booking_id,
+            'parent_id' => $result->booking_id,
+            'action' => config('constant.PAYMENT_HISTORY_ACTION.CUSTOMER_SEND_PROVIDER'),
+            'status' => config('constant.PAYMENT_HISTORY_STATUS.PENDING_PROVIDER'),
+            'sender_id' => $request->customer_id,
+            'receiver_id' => $booking->provider_id, // Always use provider_id
+            'datetime' => $request->datetime,
+            'total_amount' => $request->total_amount,
+            'txn_id' => $request->txn_id,
+            'type' => $request->payment_type,
+            'text' => __('messages.payment_transfer', [
+                'from' => get_user_name($request->customer_id),
+                'to' => get_user_name($booking->provider_id),
+                'amount' => getPriceFormat((float)$request->total_amount),
+            ]),
+        ];
 
-        // Create payment history regardless of user type
-        if ($firstHandymanId != null) {
-            $payment_history = [
-                'payment_id' => $result->id,
-                'booking_id' => $result->booking_id,
-                'parent_id' => $result->booking_id,
-                'action' => config('constant.PAYMENT_HISTORY_ACTION.CUSTOMER_SEND_PROVIDER'),
-                'status' => config('constant.PAYMENT_HISTORY_STATUS.PENDING_PROVIDER'),
-                'sender_id' => $request->customer_id,
-                'receiver_id' => $firstHandymanId,
-                'datetime' => $request->datetime,
-                'total_amount' => ($result->payment_status == 'paid')
-                    ? ($booking->total_amount - ($booking->advance_paid_amount ?? 0))
-                    : $request->total_amount,
-                'txn_id' => $request->txn_id,
-                'type' => $request->payment_type,
-                'text' => __('messages.payment_transfer', [
-                    'from' => get_user_name($request->customer_id),
-                    'to' => get_user_name($firstHandymanId),
-                    'amount' => getPriceFormat((float)$request->total_amount),
-                ]),
-            ];
-
-            $res = PaymentHistory::create($payment_history);
-            $res->parent_id = $res->id;
-            $res->save();
-        }
+        $res = PaymentHistory::create($payment_history);
+        $res->parent_id = $res->id;
+        $res->save();
 
         // Assign payment ID to booking
         $booking->payment_id = $result->id;
@@ -339,42 +331,29 @@ class PaymentController extends Controller
         // For full bank transfer payments, keep everything pending until admin verifies.
         // We'll only record the Payment above; no status changes, wallet credits, or payouts yet.
 
-        // Always create payment history for bank transfer payments
-        $firstHandymanId = optional($booking->handymanAdded->first())->handyman_id;
-        $assignedUserData = User::find($firstHandymanId);
+        // ALWAYS create payment history for bank transfer payments - NO CONDITIONS
+        $payment_history = [
+            'payment_id' => $result->id,
+            'booking_id' => $result->booking_id,
+            'parent_id' => $result->booking_id,
+            'action' => config('constant.PAYMENT_HISTORY_ACTION.CUSTOMER_SEND_PROVIDER'),
+            'status' => config('constant.PAYMENT_HISTORY_STATUS.PENDING_PROVIDER'),
+            'sender_id' => $request->customer_id,
+            'receiver_id' => $booking->provider_id, // Always use provider_id
+            'datetime' => $request->datetime,
+            'total_amount' => $request->total_amount,
+            'txn_id' => $request->txn_id,
+            'type' => $request->payment_type,
+            'text' => __('messages.payment_transfer', [
+                'from' => get_user_name($request->customer_id),
+                'to' => get_user_name($booking->provider_id),
+                'amount' => getPriceFormat((float)$request->total_amount),
+            ]),
+        ];
         
-        // Create payment history regardless of user type
-        if ($firstHandymanId != null) {
-            $payment_history = [
-                'payment_id' => $result->id,
-                'booking_id' => $result->booking_id,
-                'parent_id' => $result->booking_id,
-                'action' => config('constant.PAYMENT_HISTORY_ACTION.CUSTOMER_SEND_PROVIDER'),
-                'status' => config('constant.PAYMENT_HISTORY_STATUS.PENDING_PROVIDER'),
-                'sender_id' => $request->customer_id,
-                'receiver_id' => $firstHandymanId,
-                'datetime' => $request->datetime,
-                'total_amount' => ($result->payment_status == 'paid')
-                    ? ($booking->total_amount - ($booking->advance_paid_amount ?? 0))
-                    : $request->total_amount,
-
-                'txn_id' => $request->txn_id,
-                'type' => $request->payment_type,
-                'text' => __('messages.payment_transfer', [
-                    'from' => get_user_name($request->customer_id),
-                    'to' => get_user_name($firstHandymanId),
-                    'amount' => getPriceFormat(
-                        ($result->payment_status == 'paid')
-                            ? ($booking->total_amount - ($booking->advance_paid_amount ?? 0))
-                            : (float)$request->total_amount
-                    ),
-                ]),
-
-            ];
-            $res = PaymentHistory::create($payment_history);
-            $res->parent_id = $res->id;
-            $res->update();
-        }
+        $res = PaymentHistory::create($payment_history);
+        $res->parent_id = $res->id;
+        $res->save();
         $service_id = Booking::where('id', $request->booking_id)->pluck('service_id');
         $service = Service::where('id', $service_id)->first();
         $booking->payment_id = $result->id;
