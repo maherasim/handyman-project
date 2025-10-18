@@ -298,6 +298,7 @@ class PaymentController extends Controller
 
     public function saveBankTransferPayment(Request $request)
     {
+        dd($request->all());
         $data = $request->all();
         $data['datetime'] = isset($request->datetime) ? date('Y-m-d H:i:s', strtotime($request->datetime)) : date('Y-m-d H:i:s');
         // Bank transfers are always pending until verified by admin
