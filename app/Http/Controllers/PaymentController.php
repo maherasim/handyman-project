@@ -1033,34 +1033,71 @@ class PaymentController extends Controller
             'receiver_id' => admin_id(),
             'total_amount' => $paymentdata->total_amount,
             'text' =>  __('messages.cash_approved', ['amount' => getPriceFormat((float)$paymentdata->total_amount), 'name' => get_user_name(admin_id())]),
-    'status' => 'approved_by_admin',
+            'status' => config('constant.PAYMENT_HISTORY_STATUS.APPROVED_ADMIN'),
             'parent_id' => $parent_payment_history->parent_id
-            ];
+        ];
+
+
+        date_default_timezone_set($admin->time_zone ?? 'UTC');
+        $payment_history['datetime'] = date('Y-m-d H:i:s');
+
+        if (!empty($paymentdata->txn_id)) {
+            $payment_history['txn_id'] = $paymentdata->txn_id;
+        }
+        if (!empty($paymentdata->other_transaction_detail)) {
+            $payment_history['other_transaction_detail'] = $paymentdata->other_transaction_detail;
+        }
         $res = PaymentHistory::create($payment_history);
-        $res->parent_id = $res->id;
-        $res->save();
+        // $parent_record = PaymentHistory::where('parent_id',$parent_payment_history->parent_id)->first();
+
+        // $payment_record_data= PaymentHistory::where('payment_id',$id)->update(['status'=>'approved_by_admin']);
+
+        // $parent_record->status = 'approved_by_admin';
+        // $parent_record->update();
+
         $booking = Booking::where('id', $payment_history['booking_id'])->first();
-        $paymentdata->payment_status = 'advanced_paid';
-        $paymentdata->save();
-        $booking->advance_paid_amount = $paymentdata->total_amount;
-        $booking->save();
-        $admin_commission_amount = ($paymentdata->total_amount * $admin_commission_percentage) / 100;
-        Wallet::firstOrCreate(['user_id' => $admin_user_id])->increment('amount', $admin_commission_amount);
-        CommissionEarning::create([
-            'booking_id' => $booking->id,
+
+        // Determine payment type (advance or full)
+        $paymentType = $parent_payment_history->type ?? $paymentdata->type ?? null; // 'advance_payment' or 'full_payment'
+
+        // Commission percentage
+        $admin_commission_percentage = Setting::getValueByKey('admin_commission_percentage', 'site-setup')->value ?? 10;
+        $admin_user_id = 
+            \App\Models\User::where('user_type', 'admin')->value('id');
+
+        if ($paymentType === 'advance_payment') {
+            // Mark as advanced paid and record advance on booking
+            $paymentdata->payment_status = 'advanced_paid';
+            $paymentdata->save();
+
+            $booking->advance_paid_amount = $paymentdata->total_amount;
+            $booking->save();
+
+            // Create/mark admin commission as paid on advance (credit admin wallet)
+            $admin_commission_amount = ($paymentdata->total_amount * $admin_commission_percentage) / 100;
+
+            Wallet::firstOrCreate(['user_id' => $admin_user_id])->increment('amount', $admin_commission_amount);
+
+            CommissionEarning::create([
+                'booking_id' => $booking->id,
                 'user_type' => 'admin',
                 'employee_id' => $admin_user_id,
                 'commission_amount' => $admin_commission_amount,
                 'commission_status' => 'paid',
             ]);
-        $booking->status = 'completed';
-        $booking->save();
-        CommissionEarning::where('booking_id', $booking->id)->update(['commission_status' => 'paid']);
-        $paymentdata->payment_status = 'paid';
-        $paymentdata->save();
-        $booking->status = 'completed';
-        $booking->save();
-        CommissionEarning::where('booking_id', $booking->id)->update(['commission_status' => 'paid']);
+        } else {
+            // Treat as full payment
+            $paymentdata->payment_status = 'paid';
+            $paymentdata->save();
+
+            // Complete booking
+            $booking->status = 'completed';
+            $booking->save();
+
+            // Mark all related commission earnings as paid
+            CommissionEarning::where('booking_id', $booking->id)->update(['commission_status' => 'paid']);
+        }
+
         $msg = __('messages.approve_successfully');
         return redirect()->back()->withSuccess($msg);
     }
