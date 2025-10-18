@@ -261,6 +261,9 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
     Route::get('cash/history/{id?}', [PaymentController::class, 'cashIndex'])->name('cash.index');
     Route::get('paymenthistory-index-data/{id}', [PaymentController::class, 'paymenthistory_index_data'])->name('paymenthistory.index_data');
     Route::get('cash/approve/{id}', [PaymentController::class, 'cashApprove'])->name('cash.approve');
+    
+    // Service Proof Routes
+    Route::post('service-proof/store', [App\Http\Controllers\API\BookingController::class, 'uploadServiceProof'])->name('service.proof.store');
 
     Route::post('save-payment', [App\Http\Controllers\API\PaymentController::class, 'savePayment'])->name('payment.save');
     Route::get('save-stripe-payment/{id}', [App\Http\Controllers\BookingController::class, 'saveStripePayment']);

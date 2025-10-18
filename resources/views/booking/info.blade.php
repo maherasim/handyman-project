@@ -485,8 +485,8 @@
                                     @endhasanyrole
                                 @endif
 
-                                @if ($bookingdata->status === 'completed' && isset($payment) && $payment->payment_status == 'paid')
-                                    @hasanyrole('handyman')
+                                @if (($bookingdata->status === 'completed' || $bookingdata->status === 'paid') && isset($payment) && $payment->payment_status == 'paid')
+                                    @hasanyrole(['handyman', 'provider'])
                                         <div class="w3-third d-flex align-items-end">
                                             <button class="float-end btn btn-primary" id="service-proof-btn"
                                                 data-id="{{ $bookingdata->id }}"
@@ -1805,5 +1805,114 @@
 		border-left-color: #6c757d;
 	}
 </style>
+
+<!-- Service Proof Modal -->
+<div class="modal fade" id="serviceProofModal" tabindex="-1" aria-labelledby="serviceProofModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="serviceProofModalLabel">{{ __('messages.service_proof') }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="serviceProofForm" enctype="multipart/form-data">
+                    @csrf
+                    <input type="hidden" id="proof_booking_id" name="booking_id">
+                    <input type="hidden" id="proof_service_id" name="service_id">
+                    <input type="hidden" id="proof_user_id" name="user_id">
+                    
+                    <div class="mb-3">
+                        <label for="proof_title" class="form-label">{{ __('messages.title') }}</label>
+                        <input type="text" class="form-control" id="proof_title" name="title" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="proof_description" class="form-label">{{ __('messages.description') }}</label>
+                        <textarea class="form-control" id="proof_description" name="description" rows="3"></textarea>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="proof_images" class="form-label">{{ __('messages.upload_images') }}</label>
+                        <input type="file" class="form-control" id="proof_images" name="images[]" multiple accept="image/*" required>
+                        <div class="form-text">{{ __('messages.upload_multiple_images') }}</div>
+                    </div>
+                    
+                    <div id="imagePreview" class="mb-3"></div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('messages.cancel') }}</button>
+                <button type="button" class="btn btn-primary" id="submitServiceProof">{{ __('messages.submit') }}</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+$(document).ready(function() {
+    // Service Proof Button Click
+    $('#service-proof-btn').click(function() {
+        var bookingId = $(this).data('id');
+        var serviceId = $(this).data('service-id');
+        var userId = $(this).data('user-id');
+        
+        $('#proof_booking_id').val(bookingId);
+        $('#proof_service_id').val(serviceId);
+        $('#proof_user_id').val(userId);
+        
+        $('#serviceProofModal').modal('show');
+    });
+    
+    // Image Preview
+    $('#proof_images').change(function() {
+        var files = this.files;
+        var preview = $('#imagePreview');
+        preview.empty();
+        
+        for (var i = 0; i < files.length; i++) {
+            var file = files[i];
+            if (file.type.startsWith('image/')) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.append('<img src="' + e.target.result + '" class="img-thumbnail me-2 mb-2" style="width: 100px; height: 100px; object-fit: cover;">');
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+    });
+    
+    // Submit Service Proof
+    $('#submitServiceProof').click(function() {
+        var formData = new FormData($('#serviceProofForm')[0]);
+        
+        $.ajax({
+            url: '{{ route("service.proof.store") }}',
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(response) {
+                if (response.status) {
+                    $('#serviceProofModal').modal('hide');
+                    $('#serviceProofForm')[0].reset();
+                    $('#imagePreview').empty();
+                    
+                    // Show success message
+                    alert('{{ __("messages.service_proof_submitted_successfully") }}');
+                    
+                    // Reload page to show updated service proof
+                    location.reload();
+                } else {
+                    alert('{{ __("messages.error_occurred") }}');
+                }
+            },
+            error: function(xhr) {
+                console.error('Error:', xhr);
+                alert('{{ __("messages.error_occurred") }}');
+            }
+        });
+    });
+});
+</script>
 
 <!-- reverted: removed inline modal/iframe logic to restore redirect behavior -->
