@@ -304,51 +304,6 @@
                 }
             });
         });
-
-        // Verify Payment Function - AJAX API Call
-        window.verifyPayment = function(paymentId) {
-            Swal.fire({
-                title: 'Verify Payment?',
-                text: 'Are you sure you want to verify this cash payment?',
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonText: 'Yes, verify',
-                cancelButtonText: 'Cancel',
-                showLoaderOnConfirm: true,
-                preConfirm: () => {
-                    return fetch(`/cash/approve/${paymentId}`, {
-                        method: 'GET',
-                        headers: {
-                            'X-Requested-With': 'XMLHttpRequest',
-                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                        }
-                    })
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error('Network response was not ok');
-                        }
-                        return response.text();
-                    })
-                    .catch(error => {
-                        Swal.showValidationMessage(`Request failed: ${error}`);
-                    });
-                },
-                allowOutsideClick: () => !Swal.isLoading()
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    Swal.fire({
-                        title: 'Success!',
-                        text: 'Payment has been verified successfully.',
-                        icon: 'success',
-                        timer: 2000,
-                        showConfirmButton: false
-                    }).then(() => {
-                        // Reload the datatable
-                        window.renderedDataTable.ajax.reload();
-                    });
-                }
-            });
-        };
     </script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 </x-master-layout>
