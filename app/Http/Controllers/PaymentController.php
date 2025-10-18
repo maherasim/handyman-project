@@ -1071,7 +1071,7 @@ class PaymentController extends Controller
             $paymentdata->save();
 
             // Complete booking
-            $booking->status = 'complete';
+            $booking->status = 'paid';
             $booking->save();
 
             // Mark all related commission earnings as paid
