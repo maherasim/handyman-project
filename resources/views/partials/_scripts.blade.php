@@ -1,4 +1,4 @@
-_script.blade.php 
+
  <!-- Backend Bundle JavaScript -->
  <script src="{{ asset('js/backend-bundle.min.js')}}"></script>
 <script src="{{ asset('vendor/tinymce/js/tinymce/tinymce.min.js') }}"></script>

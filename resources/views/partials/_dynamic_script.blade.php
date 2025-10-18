@@ -1,4 +1,4 @@
-dynamic script  
+
 <script>
 (function($) {
     "use strict";
