@@ -52,7 +52,7 @@
 
                     </form>
                 </div>
-                <div class="col-md-6 col-lg-4 col-xl-3">
+                {{-- <div class="col-md-6 col-lg-4 col-xl-3">
                     <div class="d-flex align-items-center gap-3 justify-content-end">
                         <div class="d-flex justify-content-end gap-3">
                             <div class="datatable-filter ml-auto">
@@ -81,7 +81,7 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                </div> --}}
                 <div class="table-responsive">
                     <table id="datatable" class="table table-striped border">
                     </table>

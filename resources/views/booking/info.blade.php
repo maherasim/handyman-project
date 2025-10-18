@@ -277,17 +277,16 @@
                                                     $advanceAmount = $advancePaidAmount;
                                                 @endphp
                                                 <div class="w3-third">
-                                                    <button type="button" class="float-end btn btn-primary d-flex align-items-center gap-2 open-payment-modal"
-                                                        id="openAdvancePaymentModal"
-                                                        data-url="{{ route('book.service', ['id' => $bookingdata->service_id, 'booking_id' => $bookingdata->id, 'payment_type' => 'advance_paid']) }}"
-                                                        data-bs-toggle="modal" data-bs-target="#advancePaymentModal"
+                                                    <a class="float-end btn btn-primary d-flex align-items-center gap-2"
+                                                        href="{{ route('book.service', ['id' => $bookingdata->service_id, 'booking_id' => $bookingdata->id, 'payment_type' => 'advance_paid']) }}"
+                                                        target="_blank" data-id="{{ $bookingdata->id }}"
                                                         style="background: linear-gradient(135deg, #28a745, #20c997); border: none; box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);">
                                                         <i class="las la-credit-card"></i>
                                                         <span>{{ __('messages.advance_pay') }}</span>
                                                         <span class="badge bg-light text-dark px-2 py-1 rounded-pill">
                                                             <i class="fas fa-euro-sign me-1"></i>{{ getPriceFormat($advanceAmount) }}
                                                         </span>
-                                                    </button>
+                                                    </a>
                                                 </div>
                                             @endif
                                         @endhasanyrole
@@ -471,16 +470,16 @@
                                                 $remainingAmount = $grandTotal - $advancePaidAmount;
                                             @endphp
                                             <div class="w3-third d-flex align-items-end">
-                                                <button type="button" class="float-end btn btn-warning d-flex align-items-center gap-2"
-                                                    id="openRemainingPaymentModal"
-                                                    data-url="{{ route('book.service', ['id' => $bookingdata->service_id, 'booking_id' => $bookingdata->id, 'payment_type' => 'full_payment']) }}"
+                                                <a class="float-end btn btn-warning d-flex align-items-center gap-2"
+                                                    href="{{ route('book.service', ['id' => $bookingdata->service_id, 'booking_id' => $bookingdata->id, 'payment_type' => 'full_payment']) }}"
+                                                    target="_blank" data-id="{{ $bookingdata->id }}"
                                                     style="background: linear-gradient(135deg, #fd7e14, #ffc107); border: none; box-shadow: 0 4px 12px rgba(253, 126, 20, 0.3);">
                                                     <i class="las la-credit-card"></i>
                                                     <span>{{ __('Pay Remaining') }}</span>
                                                     <span class="badge bg-light text-dark px-2 py-1 rounded-pill">
                                                         <i class="fas fa-euro-sign me-1"></i>{{ getPriceFormat($remainingAmount) }}
                                                     </span>
-                                                </button>
+                                                </a>
                                             </div>
                                         @endif
                                     @endhasanyrole
@@ -1807,43 +1806,4 @@
 	}
 </style>
 
-<div class="modal fade" id="advancePaymentModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">{{ __('messages.payment_method') }}</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body p-0">
-                <iframe id="advancePaymentFrame" src="" frameborder="0" style="width:100%; height:65vh;"></iframe>
-            </div>
-        </div>
-    </div>
-    </div>
-
-<script>
-document.addEventListener('DOMContentLoaded', function(){
-    var btn = document.getElementById('openAdvancePaymentModal');
-    if(btn){
-        btn.addEventListener('click', function(){
-            try{
-                var url = this.getAttribute('data-url');
-                var frame = document.getElementById('advancePaymentFrame');
-                if(frame){ frame.src = url; }
-            }catch(e){ console.error(e); }
-        });
-    }
-    var rbtn = document.getElementById('openRemainingPaymentModal');
-    if(rbtn){
-        rbtn.addEventListener('click', function(){
-            try{
-                var url = this.getAttribute('data-url');
-                var frame = document.getElementById('advancePaymentFrame');
-                if(frame){ frame.src = url; }
-                var modalEl = document.getElementById('advancePaymentModal');
-                if(window.bootstrap && modalEl){ new window.bootstrap.Modal(modalEl).show(); }
-            }catch(e){ console.error(e); }
-        });
-    }
-});
-</script>
+<!-- reverted: removed inline modal/iframe logic to restore redirect behavior -->
