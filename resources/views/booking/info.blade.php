@@ -159,7 +159,7 @@
                                         @endhasanyrole
                                     @endif
                                   @if ($bookingdata->status === 'pending')
-                                   @hasanyrole('user | provider')
+                                   @hasanyrole('user|provider')
                                         <div class="w3-third">
                                             <button class="float-end btn btn-primary update-booking" id="cancel-booking"
                                                 data-id="{{ $bookingdata->id }}"
