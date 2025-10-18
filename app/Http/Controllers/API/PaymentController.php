@@ -4,10 +4,9 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Models\ProviderPayout;
-
+use App\Models\HandymanPayout;
 use App\Traits\EarningTrait;
 use App\Models\BookingHandymanMapping;
-use App\Models\HandymanPayout;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Models\Payment;
@@ -306,17 +305,25 @@ class PaymentController extends Controller
         $data['payment_status'] = 'pending_by_admin';
         $result = Payment::create($data);
         $booking = Booking::find($request->booking_id);
-        if (!empty($result) && $request->type === 'advance_payment') {
+
+        if (!$booking || !$result) {
+            return comman_message_response(__('messages.booking_not_found'), 404);
+        }
+
+        $isAdvance = $request->type === 'advance_payment';
+        $isRemaining = $request->type === 'remaining';
+
+        $admin_commission_percentage = Setting::getValueByKey('admin_commission_percentage', 'site-setup')->value ?? 10;
+        $admin_user_id = User::where('user_type', 'admin')->value('id');
+
+        if ($isAdvance) {
             // Record the intended advance amount on the booking but keep verification pending
-            $booking->advance_paid_amount  = $request->total_amount;
+            $booking->advance_paid_amount = $request->total_amount;
             $booking->update();
 
             // Calculate admin commission but DO NOT credit any wallets until admin approves
             $advance_paid_amount = $request->total_amount;
-            $admin_commission_percentage = Setting::getValueByKey('admin_commission_percentage', 'site-setup')->value ?? 10;
             $admin_commission_amount = ($advance_paid_amount * $admin_commission_percentage) / 100;
-
-            $admin_user_id = User::where('user_type', 'admin')->value('id');
 
             // Create a pending commission record for admin; actual payout occurs after verification
             CommissionEarning::create([
@@ -328,6 +335,98 @@ class PaymentController extends Controller
             ]);
         }
 
+        if ($isRemaining) {
+            // For remaining payments, calculate all commissions but keep them pending
+            $advance_paid = $booking->advance_paid_amount ?? 0;
+            $total_amount = $booking->total_amount;
+            $remaining_amount = $total_amount - $advance_paid;
+            $result->total_amount = $remaining_amount;
+            $result->save();
+
+            // Compute totals across the whole booking
+            $total_admin_commission = ($total_amount * $admin_commission_percentage) / 100;
+            $provider_total_earning = $total_amount - $total_admin_commission;
+            $remaining_admin_commission = ($remaining_amount > 0)
+                ? ($remaining_amount * $admin_commission_percentage) / 100
+                : 0;
+
+            // Calculate handyman payouts from provider_total_earning
+            $handymen = BookingHandymanMapping::where('booking_id', $booking->id)->pluck('handyman_id');
+            $handyman_payouts = [];
+            $total_handyman_share = 0;
+            foreach ($handymen as $handyman_id) {
+                $handyman = User::find($handyman_id);
+                if (!$handyman || $handyman->handyman_commission === null) {
+                    continue;
+                }
+                // Clamp each handyman commission between 1% and 85%
+                $commission_percent = max(1, min(85, $handyman->handyman_commission));
+                $handyman_total_share = ($provider_total_earning * $commission_percent) / 100;
+                $total_handyman_share += $handyman_total_share;
+                $handyman_payouts[] = [
+                    'handyman_id' => $handyman_id,
+                    'amount' => $handyman_total_share,
+                ];
+            }
+
+            // Final provider earning = provider_total_earning - sum(handymen)
+            $provider_final_earning = $provider_total_earning - $total_handyman_share;
+            if ($provider_final_earning < 0) {
+                // Guard rail: never pay negative. If business rules allow, you can scale down handymen instead.
+                $provider_final_earning = 0;
+            }
+
+            // Create pending commission records for handymen
+            foreach ($handyman_payouts as $payout) {
+                HandymanPayout::create([
+                    'handyman_id' => $payout['handyman_id'],
+                    'booking_id' => $booking->id,
+                    'amount' => $payout['amount'],
+                    'status' => 'pending', // Keep pending until admin approves
+                    'paid_date' => null, // No paid date until approved
+                    'payment_method' => 'bank_transfer',
+                    'payment_gateway' => 'bank_transfer',
+                ]);
+
+                CommissionEarning::create([
+                    'booking_id' => $booking->id,
+                    'user_type' => 'handyman',
+                    'employee_id' => $payout['handyman_id'],
+                    'commission_amount' => $payout['amount'],
+                    'commission_status' => 'pending', // Keep pending until admin approves
+                ]);
+            }
+
+            // Create pending commission record for remaining admin commission
+            if ($remaining_admin_commission > 0) {
+                CommissionEarning::create([
+                    'booking_id' => $booking->id,
+                    'user_type' => 'admin',
+                    'employee_id' => $admin_user_id,
+                    'commission_amount' => $remaining_admin_commission,
+                    'commission_status' => 'pending', // Keep pending until admin approves
+                ]);
+            }
+
+            // Create pending provider payout
+            ProviderPayout::create([
+                'provider_id' => $booking->provider_id,
+                'amount' => $provider_final_earning,
+                'payment_method' => 'bank_transfer',
+                'paid_date' => null, // No paid date until approved
+                'status' => 'pending', // Keep pending until admin approves
+                'booking_id' => $booking->id,
+                'payment_gateway' => 'bank_transfer',
+            ]);
+
+            CommissionEarning::create([
+                'booking_id' => $booking->id,
+                'user_type' => 'provider',
+                'employee_id' => $booking->provider_id,
+                'commission_amount' => $provider_final_earning,
+                'commission_status' => 'pending', // Keep pending until admin approves
+            ]);
+        }
 
         // For full bank transfer payments, keep everything pending until admin verifies.
         // We'll only record the Payment above; no status changes, wallet credits, or payouts yet.

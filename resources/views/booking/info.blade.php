@@ -1311,6 +1311,14 @@
                 </div>
             </div>
         </div>
+    @else
+        <!-- Debug: Show if no service proof found -->
+        <div class="col-md-12 mt-4">
+            <div class="alert alert-info">
+                <strong>Debug:</strong> No service proof found for this booking. 
+                ServiceProof count: {{ isset($serviceProof) ? count($serviceProof) : 'Not set' }}
+            </div>
+        </div>
     @endif
 
 
@@ -1908,6 +1916,7 @@ $(document).ready(function() {
             processData: false,
             contentType: false,
             success: function(response) {
+                console.log('Service Proof Response:', response);
                 if (response.status) {
                     $('#serviceProofModal').modal('hide');
                     $('#serviceProofForm')[0].reset();
