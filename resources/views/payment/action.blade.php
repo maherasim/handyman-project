@@ -21,7 +21,7 @@ $auth_user= authSession();
         title="{{ __('messages.approve_form_title',['form'=>  __('messages.cash_history') ]) }}"
         data-message='{{ __("messages.approve_msg") }}'>
         <i class="far fa-check-circle text-success"></i>
-    </a> --}}
+    </a> 
 @endif
 </div>
 {{ html()->form()->close() }}
