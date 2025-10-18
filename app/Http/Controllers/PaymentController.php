@@ -1068,6 +1068,7 @@ class PaymentController extends Controller
         if ($paymentType === 'advance_payment') {
             // Mark as advanced paid and record advance on booking
             $paymentdata->payment_status = 'advanced_paid';
+            $paymentdata->status = '1';
             $paymentdata->save();
 
             $booking->advance_paid_amount = $paymentdata->total_amount;
