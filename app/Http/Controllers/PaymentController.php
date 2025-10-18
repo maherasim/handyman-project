@@ -1085,14 +1085,14 @@ class PaymentController extends Controller
                 'commission_amount' => $admin_commission_amount,
                 'commission_status' => 'paid',
             ]);
-        } elseif ($paymentType === 'remaining') {
+        } elseif ($paymentType === 'full_payment') {
             // Remaining payment: Update payment status to completed
             $paymentdata->payment_status = 'completed';
             $paymentdata->status = '1';
             $paymentdata->save();
 
             // Complete booking
-            $booking->status = 'accept';
+            $booking->status = 'complete';
             $booking->save();
 
             // Mark all related commission earnings as paid
