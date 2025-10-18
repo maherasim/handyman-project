@@ -191,10 +191,15 @@ const formSubmit = handleSubmit(async (values) => {
   values.discount = props.discount
   values.payment_type = values.payment_method
   values.wallet_amount = props.wallet_amount
-  values.total_amount = props.payment_type == 'paid' ? props.total_booking_amount : advance_payment
+  // Calculate remaining amount for remaining payments
+  const remaining_amount = props.payment_type == 'paid' 
+    ? (props.total_booking_amount - (Number(props.total_advance_paid_amount) || 0))
+    : advance_payment
+  
+  values.total_amount = remaining_amount
   values.advance_paid_amount = props.payment_type == 'paid' ? null : advance_payment
 
-  values.type = props.payment_type == 'paid' ? 'full_payment' : 'advance_payment'
+  values.type = props.payment_type == 'paid' ? 'remaining' : 'advance_payment'
   values.total_amount = Number(values.total_amount).toFixed(2)
 
   const csrfToken = document.querySelector('meta[name="csrf-token"]').content
