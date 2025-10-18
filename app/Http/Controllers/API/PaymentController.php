@@ -337,7 +337,7 @@ class PaymentController extends Controller
                 'user_type' => 'admin',
                 'employee_id' => $admin_user_id,
                 'commission_amount' => $admin_commission_amount,
-                'commission_status' => 'paid',
+                'commission_status' => 'pending',
             ]);
         }
 

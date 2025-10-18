@@ -51,7 +51,7 @@
           <h5 class="modal-title" id="bankTransferModalLabel">
             <i class="bi bi-bank2 me-2"></i> {{ $t('Bank Transfer Details') || 'Bank Transfer Details' }}
           </h5>
-          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close" @click="hideBankInfoModal"></button>
         </div>
         <div class="modal-body p-4">
           <div class="mb-4">
@@ -88,7 +88,7 @@
           </div>
         </div>
         <div class="modal-footer border-top-0 px-4 pb-4">
-          <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal" @click="hideBankInfoModal">Close</button>
         </div>
       </div>
     </div>
@@ -363,14 +363,24 @@ const Openstripepayment = async (data) => {
   }
 }
 
+const getBankModalInstance = () => {
+  const modalEl = document.getElementById('bankTransferModal')
+  if (!modalEl) return null
+  // Reuse existing instance if present, otherwise create it
+  const existing = Modal.getInstance ? Modal.getInstance(modalEl) : null
+  return existing ?? (Modal.getOrCreateInstance ? Modal.getOrCreateInstance(modalEl) : new Modal(modalEl))
+}
+
 const showBankInfoModal = () => {
   if (payment_method.value === 'bank_transfer') {
-    const modalEl = document.getElementById('bankTransferModal')
-    if (modalEl) {
-      const modal = new Modal(modalEl)
-      modal.show()
-    }
+    const modal = getBankModalInstance()
+    if (modal) modal.show()
   }
+}
+
+const hideBankInfoModal = () => {
+  const modal = getBankModalInstance()
+  if (modal) modal.hide()
 }
 
 const formatCurrencyVue = (value) => {
