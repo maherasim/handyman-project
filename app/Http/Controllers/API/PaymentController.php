@@ -178,7 +178,8 @@ class PaymentController extends Controller
         $firstHandymanId = optional($booking->handymanAdded->first())->handyman_id;
         $assignedUserData = User::find($firstHandymanId);
 
-        if ($firstHandymanId && $assignedUserData->user_type == 'provider') {
+        // Create payment history regardless of user type
+        if ($firstHandymanId != null) {
             $payment_history = [
                 'payment_id' => $result->id,
                 'booking_id' => $result->booking_id,
@@ -338,9 +339,12 @@ class PaymentController extends Controller
         // For full bank transfer payments, keep everything pending until admin verifies.
         // We'll only record the Payment above; no status changes, wallet credits, or payouts yet.
 
+        // Always create payment history for bank transfer payments
         $firstHandymanId = optional($booking->handymanAdded->first())->handyman_id;
         $assignedUserData = User::find($firstHandymanId);
-        if ($firstHandymanId != null && $assignedUserData->user_type == 'provider') {
+        
+        // Create payment history regardless of user type
+        if ($firstHandymanId != null) {
             $payment_history = [
                 'payment_id' => $result->id,
                 'booking_id' => $result->booking_id,
@@ -367,7 +371,7 @@ class PaymentController extends Controller
                 ]),
 
             ];
-            $res =  PaymentHistory::create($payment_history);
+            $res = PaymentHistory::create($payment_history);
             $res->parent_id = $res->id;
             $res->update();
         }
