@@ -1022,7 +1022,7 @@ class PaymentController extends Controller
         $paymentdata = Payment::where('id', $id)->first();
         $parent_payment_history = PaymentHistory::where('status', 'pending_by_admin')
             ->where('payment_id', $id)->first();
-
+dd($parent_payment_history);
         $payment_history = [
             'payment_id' => $id,
             'booking_id' => $paymentdata->booking_id,
