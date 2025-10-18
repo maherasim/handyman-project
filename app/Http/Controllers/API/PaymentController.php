@@ -337,7 +337,7 @@ class PaymentController extends Controller
             'booking_id' => $result->booking_id,
             'parent_id' => $result->booking_id,
             'action' => config('constant.PAYMENT_HISTORY_ACTION.CUSTOMER_SEND_PROVIDER'),
-            'status' => config('constant.PAYMENT_HISTORY_STATUS.PENDING_PROVIDER'),
+    'status' => 'pending_by_admin',
             'sender_id' => $request->customer_id,
             'receiver_id' => $booking->provider_id, // Always use provider_id
             'datetime' => $request->datetime,
