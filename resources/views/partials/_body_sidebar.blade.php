@@ -23,8 +23,6 @@
             )
             ->link->attr(['class' => '']);
 
-        // Messages moved to header
-
         $menu
             ->add(
                 '<span>' .
@@ -407,15 +405,14 @@
             )
             ->link->attr(['class' => '']);
 
-        if (auth()->user()->user_type == 'admin' || auth()->user()->user_type == 'demo_admin') {
-            $menu->handyman
-                ->add('<span>' . __('messages.list_form_title', ['form' => __('messages.handymantype')]) . '</span>', [
-                    'class' => 'sidebar-layout',
-                    'route' => 'handymantype.index',
-                ])
-                ->data('permission', 'handymantype list')
-                ->prepend(
-                    '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        $menu->handyman
+            ->add('<span>' . __('messages.list_form_title', ['form' => __('messages.handymantype')]) . '</span>', [
+                'class' => 'sidebar-layout',
+                'route' => 'handymantype.index',
+            ])
+            ->data('permission', 'handymantype list')
+            ->prepend(
+                '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M14 20.8344C13.3663 20.9421 12.695 21 12 21C8.13401 21 5 19.2091 5 17C5 14.7909 8.13401 13 12 13C13.7135 13 15.2832 13.3518 16.5 13.9359" stroke="currentColor" stroke-width="1.5"/>
 <g clip-path="url(#clip0_10_6123)">
 <circle cx="17" cy="18" r="1.25" stroke="currentColor" stroke-width="1.36364"/>
@@ -428,9 +425,8 @@
 </clipPath>
 </defs>
 </svg>',
-                )
-                ->link->attr(['class' => '']);
-        }
+            )
+            ->link->attr(['class' => '']);
 
         $menu
             ->add(
@@ -497,7 +493,7 @@
             ->data('permission', 'user list');
 
         $menu
-            ->add(__('messages.sidebar_form_title', ['form' => __('Service Transactions')]), [
+            ->add(__('messages.sidebar_form_title', ['form' => trans('messages.transactions')]), [
                 'class' => 'category-main',
             ])
             ->data('permission', ['tax list', 'payment list', 'earning list']);
@@ -505,14 +501,14 @@
         $menu
             ->add(
                 '<span>' .
-                    __('Services Payment') .
+                    __('messages.payments') .
                     '</span><span class="custom-tooltip"><span class="tooltip-text">' .
-                    __('Services Payment') .
+                    __('messages.payments') .
                     '</span></span>',
-                ['route' => 'payment.index', 'class' => 'sidebar-layout'],
+                ['route' => 'payment.index'],
             )
             ->prepend(
-                '<svg class="sidebar-menu-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M2 12C2 8.22876 2 6.34315 3.17157 5.17157C4.34315 4 6.22876 4 10 4H14C17.7712 4 19.6569 4 20.8284 5.17157C22 6.34315 22 8.22876 22 12C22 15.7712 22 17.6569 20.8284 18.8284C19.6569 20 17.7712 20 14 20H10C6.22876 20 4.34315 20 3.17157 18.8284C2 17.6569 2 15.7712 2 12Z" stroke="currentColor" stroke-width="1.5"/>
 <path d="M10 16H6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
 <path d="M14 16H12.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
@@ -520,122 +516,22 @@
 </svg>
 ',
             )
-            ->nickname('service_payment')
-            ->data('permission', 'payment list');
-            
-            // Service Cash Payment (moved here for proper sequence)
-            $menu
-            ->add(
-                '<span>' .
-                    __('Service Cash Payment') .
-                    '</span><span class="custom-tooltip"><span class="tooltip-text">' .
-                    __('Service Cash Payment') .
-                    '</span></span>',
-                ['route' => 'cash.list', 'class' => 'sidebar-layout'],
-            )
-            ->prepend(
-                '<svg class="sidebar-menu-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-<rect x="2" y="5" width="20" height="14" rx="2" stroke="currentColor" stroke-width="1.5"/>
-<circle cx="12" cy="12" r="2.5" stroke="currentColor" stroke-width="1.5"/>
-<path d="M4 9C5.10457 9 6 8.10457 6 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-<path d="M20 15C18.8954 15 18 15.8954 18 17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-</svg>',
-            )
-            ->nickname('service_cash_payment')
+            ->nickname('payment')
             ->data('permission', 'payment list');
             if(auth()->user()->user_type == 'user' || auth()->user()->user_type == 'provider'){
-$menu->add('<span>'.__('Service Wallet Balance').'</span><span class="custom-tooltip"><span class="tooltip-text">'.__('Service Wallet Balance').'</span></span>', ['route' => 'wallet.index', 'class' => 'sidebar-layout'])
-->prepend(' <svg class="sidebar-menu-icon mr-2" width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M3 7.5C3 6.11929 4.11929 5 5.5 5H16.5C17.8807 5 19 6.11929 19 7.5V9H6C4.34315 9 3 10.3431 3 12V7.5Z" stroke="currentColor" stroke-width="1.5"/>
-<rect x="3" y="9" width="18" height="10" rx="2.5" stroke="currentColor" stroke-width="1.5"/>
-<circle cx="16.5" cy="14" r="1.5" fill="currentColor"/>
-</svg>')
-->nickname('service_wallet_balance')
+$menu->add('<span>'.__('Wallet Balance').'</span><span class="custom-tooltip"><span class="tooltip-text">'.__('messages.messages.custom_job').'</span></span>', ['route' => 'wallet.index'])
+->prepend(' <svg class="mr-2" width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M2 12C2 8.22876 2 6.34315 3.17157 5.17157C4.34315 4 6.22876 4 10 4H14C17.7712 4 19.6569 4 20.8284 5.17157C22 6.34315 22 8.22876 22 12C22 15.7712 22 17.6569 20.8284 18.8284C19.6569 20 17.7712 20 14 20H10C6.22876 20 4.34315 20 3.17157 18.8284C2 17.6569 2 15.7712 2 12Z" stroke="currentColor" stroke-width="1.5"/>
+<path d="M10 16H6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M14 16H12.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M2 10L22 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+</svg>
+')
+->nickname('custom_job')
 ->data('permission', 'payment list');
 
 
 }
-
-        // Post Job Request Transactions heading (single line label)
-        $menu
-            ->add('Transactions Job Request', [
-                'class' => 'category-main',
-            ])
-            ->data('permission', ['payment list']);
-            
-
-
-            
-
-        // Job Request Payment
-        $menu
-            ->add(
-                '<span>' .
-                    __('Job Request Payment') .
-                    '</span><span class="custom-tooltip"><span class="tooltip-text">' .
-                    __('Job Request Payment') .
-                    '</span></span>',
-                ['route' => 'paymentjobrequest', 'class' => 'sidebar-layout'],
-            )
-            ->prepend(
-                '<svg class="sidebar-menu-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-<rect x="3" y="4" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.5"/>
-<path d="M3 9H21" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-<path d="M8 13H12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-<path d="M14.5 13H17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-</svg>',
-            )
-            ->nickname('job_request_payment')
-            ->data('permission', 'payment list');
-
-        // Job Request Cash Payment
-        $menu
-            ->add(
-                '<span>' .
-                    __('Job Request Cash Payment') .
-                    '</span><span class="custom-tooltip"><span class="tooltip-text">' .
-                    __('Job Request Cash Payment') .
-                    '</span></span>',
-                ['route' => 'paymentjobrequest.cash.index', 'class' => 'sidebar-layout'],
-            )
-            ->prepend(
-                '<svg class="sidebar-menu-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-<rect x="2" y="6" width="20" height="12" rx="2" stroke="currentColor" stroke-width="1.5"/>
-<path d="M6 12H10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-<circle cx="16.5" cy="12" r="2" stroke="currentColor" stroke-width="1.5"/>
-</svg>',
-            )
-            ->nickname('job_request_cash_payment')
-            ->data('permission', 'payment list');
-
-
-if(auth()->user()->user_type == 'user' || auth()->user()->user_type == 'provider'){
-$menu->add('<span>'.__('Job Request Wallet Balance').'</span><span class="custom-tooltip"><span class="tooltip-text">'.__('Job Request Wallet Balance').'</span></span>', ['route' => 'paymentjobrequest.wallet.index', 'class' => 'sidebar-layout'])
-->prepend(' <svg class="sidebar-menu-icon mr-2" width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M4 8.5C4 7.11929 5.11929 6 6.5 6H17.5C18.8807 6 20 7.11929 20 8.5V10H7C5.34315 10 4 11.3431 4 13V8.5Z" stroke="currentColor" stroke-width="1.5"/>
-<rect x="4" y="10" width="16" height="9" rx="2.5" stroke="currentColor" stroke-width="1.5"/>
-<path d="M15 14.5C15 13.6716 15.6716 13 16.5 13C17.3284 13 18 13.6716 18 14.5C18 15.3284 17.3284 16 16.5 16C15.6716 16 15 15.3284 15 14.5Z" fill="currentColor"/>
-</svg>')
-->nickname('postjob_wallet_balance')
-->data('permission', 'payment list');
-
-
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 if(auth()->user()->user_type == 'admin'){
 $menu->add('<span>'.__('Transaction Request').'</span><span class="custom-tooltip"><span class="tooltip-text">'.__('messages.messages.custom_job').'</span></span>', ['route' => 'transaction-request.index'])
@@ -663,16 +559,6 @@ $menu->add('<span>'.__('Wallet Balance').'</span><span class="custom-tooltip"><s
 ')
 ->nickname('custom_job')
 ->data('permission', 'Wallet Balance');
-
-$menu->add('<span>'.__('Subscription Transactions').'</span><span class="custom-tooltip"><span class="tooltip-text">'.__('Manage subscription payments and verify bank transfers').'</span></span>', ['route' => 'admin.subscription-transactions.index'])
-->prepend(' <svg class="mr-2" width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M2 12C2 8.22876 2 6.34315 3.17157 5.17157C4.34315 4 6.22876 4 10 4H14C17.7712 4 19.6569 4 20.8284 5.17157C22 6.34315 22 8.22876 22 12C22 15.7712 22 17.6569 20.8284 18.8284C19.6569 20 17.7712 20 14 20H10C6.22876 20 4.34315 20 3.17157 18.8284C2 17.6569 2 15.7712 2 12Z" stroke="currentColor" stroke-width="1.5"/>
-<path d="M8 12H16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-<path d="M12 8V16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-</svg>
-')
-->nickname('subscription_transactions')
-->data('permission', 'subscription transaction list');
 
 
 }
@@ -721,13 +607,27 @@ $menu->add('<span>'.__('Favourit Provider').'</span><span class="custom-tooltip"
 
 }
 
-
-
-            
-
-
-
-
+        $menu
+            ->add(
+                '<span>' .
+                    __('messages.cash_payments') .
+                    '</span><span class="custom-tooltip"><span class="tooltip-text">' .
+                    __('messages.cash_payments') .
+                    '</span></span>',
+                ['route' => 'cash.list'],
+            )
+            ->prepend(
+                '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0_1544_3669)">
+<path d="M12 15C13.6569 15 15 13.6569 15 12C15 10.3431 13.6569 9 12 9C10.3431 9 9 10.3431 9 12C9 13.6569 10.3431 15 12 15Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M22.5 6H1.5V18H22.5V6Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M22.5 9.75C21.5631 9.59121 20.6989 9.14494 20.027 8.47304C19.3551 7.80113 18.9088 6.93686 18.75 6" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M18.75 18C18.9088 17.0631 19.3551 16.1989 20.027 15.527C20.6989 14.8551 21.5631 14.4088 22.5 14.25" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M1.5 14.25C2.43686 14.4088 3.30113 14.8551 3.97304 15.527C4.64494 16.1989 5.09121 17.0631 5.25 18" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M5.25 6C5.09121 6.93686 4.64494 7.80113 3.97304 8.47304C3.30113 9.14494 2.43686 9.59121 1.5 9.75" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+</g><defs><clipPath id="clip0_1544_3669"><rect width="24" height="24" fill="white"/></clipPath></defs></svg>',
+            )
+            ->nickname('cash_history')
+            ->data('permission', 'payment list');
 
         $menu
             ->add(
@@ -838,30 +738,19 @@ $menu->add('<span>'.__('Job Request').'</span><span class="custom-tooltip"><span
 
 
 
-        if(auth()->user()->user_type == 'provider'){
+        if(auth()->user()->user_type == 'provider' ){
 
-        $menu->add('<span>'.__('My Bid List').'</span><span class="custom-tooltip"><span class="tooltip-text">'.__('messages.messages.custom_job').'</span></span>', ['route' => 'bidsshow'])
-        ->prepend(' <svg width="15" height="15" class="sidebar-menu-icon" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-            
-        <path d="M2 12C2 8.22876 2 6.34315 3.17157 5.17157C4.34315 4 6.22876 4 10 4H14C17.7712 4 19.6569 4 20.8284 5.17157C22 6.34315 22 8.22876 22 12C22 15.7712 22 17.6569 20.8284 18.8284C19.6569 20 17.7712 20 14 20H10C6.22876 20 4.34315 20 3.17157 18.8284C2 17.6569 2 15.7712 2 12Z" stroke="currentColor" stroke-width="1.5"/>
-        <path d="M10 16H6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-        <path d="M14 16H12.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-        <path d="M2 10L22 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-        </svg>
-        ')
-        ->nickname('custom_job')
-        ->data('permission', 'payment list');
-
-        // Verify Account - Provider Document Upload
-        $menu->add('<span>'.__('Verify Account').'</span><span class="custom-tooltip"><span class="tooltip-text">'.__('Verify Account').'</span></span>', ['route' => ['providerdocument.show', auth()->user()->id]])
-        ->prepend('<svg width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M9 12L10.6828 13.6828V13.6828C10.858 13.858 11.142 13.858 11.3172 13.6828V13.6828L15 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-        <path d="M21 7V13.5C21 17.2712 21 19.1569 19.8284 20.3284C18.6569 21.5 16.7712 21.5 13 21.5H11C7.22876 21.5 5.34315 21.5 4.17157 20.3284C3 19.1569 3 17.2712 3 13.5V7" stroke="currentColor" stroke-width="1.5"/>
-        <path d="M2.84718 4.46447C2 5.31157 2 6.68393 2 9.42857V10C2 10.9428 2 11.4142 2.29289 11.7071C2.58579 12 3.05719 12 4 12H20C20.9428 12 21.4142 12 21.7071 11.7071C22 11.4142 22 10.9428 22 10V9.42857C22 6.68393 22 5.31157 21.1528 4.46447C20.3057 3.61738 18.933 3.61738 16.1886 3.61738H7.81141C5.06705 3.61738 3.69487 3.61738 2.84718 4.46447Z" stroke="currentColor" stroke-width="1.5"/>
-        <path d="M11.9959 7H12.0049" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>')
-        ->nickname('verify_account')
-        ->data('permission', 'providerdocument list');
+$menu->add('<span>'.__('My  Bid List').'</span><span class="custom-tooltip"><span class="tooltip-text">'.__('messages.messages.custom_job').'</span></span>', ['route' => 'bidsshow'])
+->prepend(' <svg width="15" height="15" class="sidebar-menu-icon" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+    
+<path d="M2 12C2 8.22876 2 6.34315 3.17157 5.17157C4.34315 4 6.22876 4 10 4H14C17.7712 4 19.6569 4 20.8284 5.17157C22 6.34315 22 8.22876 22 12C22 15.7712 22 17.6569 20.8284 18.8284C19.6569 20 17.7712 20 14 20H10C6.22876 20 4.34315 20 3.17157 18.8284C2 17.6569 2 15.7712 2 12Z" stroke="currentColor" stroke-width="1.5"/>
+<path d="M10 16H6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M14 16H12.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M2 10L22 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+</svg>
+')
+->nickname('custom_job')
+->data('permission', 'payment list');
 
 }
 
