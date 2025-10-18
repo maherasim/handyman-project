@@ -27,14 +27,6 @@
                         </div>
                     </div>
                 </div>
-                @role('admin|demo_admin')
-                <a href="{{ route('chat.flagged.index') }}" class="ml-3 position-relative" title="Flagged messages">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" class="text-danger" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v4m0 4h.01M12 2a10 10 0 100 20 10 10 0 000-20z" />
-                    </svg>
-                    <span id="flaggedBadgeSun" class="badge badge-pill bg-danger position-absolute" style="top:-6px; right:-8px; display:none;">0</span>
-                </a>
-                @endrole
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-label="Toggle navigation">
                     <svg xmlns="http://www.w3.org/2000/svg" class="text-secondary" width="30" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
@@ -42,34 +34,19 @@
                 </button>
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav ml-auto navbar-list align-items-center">
-                        <li class="nav-item nav-icon">
-                            <a href="{{ route('chat.index') }}" class="position-relative" title="Chat">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" class="h-6 w-6 text-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h8M8 14h6"/>
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a8 8 0 10-15.5 3.5L4 20l4.5-1.5A8 8 0 0021 12z"/>
-                                </svg>
-                                <span id="chatBadge" class="badge badge-pill bg-danger position-absolute" style="top:-6px; right:-8px; display:none;">0</span>
-                                <span id="chatPulse" class="position-absolute chat-pulse-dot" style="top:-2px; right:-2px; display:none;"></span>
-                            </a>
-                        </li>
-                        {{-- <li class="nav-item nav-icon dropdown">
+                        <li class="nav-item nav-icon dropdown">
                             <a href="#" class="search-toggle dropdown-toggle notification_list" id="notification-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" class="h-6 w-6 text-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                                 </svg>
                                 <span class="bg-primary"></span>
                                 <span class="badge badge-pill badge-up notify_count count-mail d-none"></span>
-                                @role('admin|demo_admin')
-                                <a href="{{ route('chat.flagged.index') }}" class="ml-1" title="Flagged messages">
-                                    <span id="flaggedBadge" class="badge badge-pill bg-danger" style="display:none;">0</span>
-                                </a>
-                                @endrole
                                 <span class=" dots d-none"></span>
                             </a>
                             <div class="iq-sub-dropdown dropdown-menu " aria-labelledby="notification-dropdown">
                                 <div class="card shadow-none m-0 border-0 notification_data"></div>
                             </div>
-                        </li> --}}
+                        </li>
                         <li class="nav-item nav-icon dropdown">
                             <a href="#" class="search-toggle dropdown-toggle language-toggle" id="languageDropdownMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <?php
@@ -84,10 +61,6 @@
                                         <ul class="dropdown-menu-1 list-group list-group-flush">
                                             <?php
                                             $language_option = sitesetupSession('get')->language_option ?? ["nl","fr","it","pt","es","en"];
-                                            // Ensure German ('de') is available in the dropdown even if not set yet
-                                            if (is_array($language_option)) {
-                                                $language_option = array_values(array_unique(array_merge($language_option, ['de'])));
-                                            }
                                             if (!empty($language_option)) {
                                                 $language_array = languagesArray($language_option);
                                             }
@@ -129,22 +102,25 @@
                                     </svg>
                                     <a href="{{ route('setting.index',['page' => 'profile_form']) }}">{{ __('messages.my_profile') }}</a>
                                 </li>
-                                @role('provider')
+                              
+                                @if (auth()->check() && auth()->user()->user_type == 'provider')
                                 <li class="dropdown-item d-flex svg-icon">
                                     <svg class="svg-icon me-0 text-secondary" id="h-01-p" width="20" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                                     </svg>
                                     <a href="{{ route('provider_info', ['id' => auth()->id()]) }}">{{ __('messages.my_info') }}</a>
                                 </li>
-                                @endrole
-                                @role('handyman')
+                            @endif
+                            
+                                
+                            @if (auth()->check() && auth()->user()->type == 'handyman')
                                 <li class="dropdown-item d-flex svg-icon">
                                     <svg class="svg-icon me-0 text-secondary" id="h-01-p" width="20" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                                     </svg>
                                     <a href="{{ route('handyman.detail', ['id' => auth()->id()]) }}">{{ __('messages.my_info') }}</a>
                                 </li>
-                                @endrole
+                                @endif
                                 <li class="dropdown-item d-flex svg-icon border-top">
                                     <svg class="svg-icon me-0 text-secondary" id="h-03-p" width="20" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />

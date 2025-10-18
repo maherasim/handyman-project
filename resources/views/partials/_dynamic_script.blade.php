@@ -3,14 +3,9 @@
     "use strict";
     
     $(document).ready(function(){
-        // Initialize Select2 only if not already initialized
-        $('.select2js').each(function() {
-            if (!$(this).hasClass('select2-hidden-accessible')) {
-                $(this).select2({
-                    width: '100%',
-                    dropdownParent: $(this).parent()
-                });
-            }
+        $('.select2js').select2({
+                width: '100%',
+					// dropdownParent: jQuery(this).parent()
         });
         $.ajaxSetup({
             headers: {
