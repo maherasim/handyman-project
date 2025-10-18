@@ -176,21 +176,8 @@
                             orderable: false,
                             searchable: false,
                             title: "{{ __('messages.action') }}"
-                        },
-                        {
-                            data: null,
-                            orderable: false,
-                            searchable: false,
-                            title: "Verify",
-                            render: function(data, type, row) {
-                                // Check if payment status is pending
-                                if (row.payment_status === 'pending_by_admin' || row.status === 'pending_by_admin') {
-                                    return '<button class="btn btn-success btn-sm" onclick="verifyPayment(' + row.id + ')"><i class="fa fa-check"></i> Verify</button>';
-                                } else {
-                                    return '<span class="text-muted">Verified</span>';
-                                }
-                            }
                         }
+                         
                     @endif
 
                 ],
