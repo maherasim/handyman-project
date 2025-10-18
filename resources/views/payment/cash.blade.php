@@ -176,13 +176,27 @@
                             orderable: false,
                             searchable: false,
                             title: "{{ __('messages.action') }}"
+                        },
+                        {
+                            data: null,
+                            orderable: false,
+                            searchable: false,
+                            title: "Verify",
+                            render: function(data, type, row) {
+                                // Check if payment status is pending
+                                if (row.payment_status === 'pending_by_admin' || row.status === 'pending_by_admin') {
+                                    return '<button class="btn btn-success btn-sm" onclick="verifyPayment(' + row.id + ')"><i class="fa fa-check"></i> Verify</button>';
+                                } else {
+                                    return '<span class="text-muted">Verified</span>';
+                                }
+                            }
                         }
                     @endif
 
                 ],
                 order: [
                     @if (auth()->user()->hasAnyRole(['admin']))
-                        [5, 'desc']
+                        [6, 'desc']
                     @else
                         [4, 'desc']
                     @endif
@@ -193,6 +207,14 @@
 
             });
         });
+
+        // Simple Verify Payment Function
+        window.verifyPayment = function(paymentId) {
+            if (confirm('Are you sure you want to verify this payment?')) {
+                // Simple redirect to verify the payment
+                window.location.href = '/cash/approve/' + paymentId;
+            }
+        };
 
         $(document).ready(function() {
             $('#statusSelect').change(function() {
