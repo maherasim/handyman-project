@@ -1883,7 +1883,23 @@ $(document).ready(function() {
     
     // Submit Service Proof
     $('#submitServiceProof').click(function() {
-        var formData = new FormData($('#serviceProofForm')[0]);
+        var formData = new FormData();
+        
+        // Add form fields
+        formData.append('_token', $('meta[name="csrf-token"]').attr('content'));
+        formData.append('booking_id', $('#proof_booking_id').val());
+        formData.append('service_id', $('#proof_service_id').val());
+        formData.append('user_id', $('#proof_user_id').val());
+        formData.append('title', $('#proof_title').val());
+        formData.append('description', $('#proof_description').val());
+        
+        // Add images with correct naming convention
+        var files = $('#proof_images')[0].files;
+        formData.append('attachment_count', files.length);
+        
+        for (var i = 0; i < files.length; i++) {
+            formData.append('booking_attachment_' + i, files[i]);
+        }
         
         $.ajax({
             url: '{{ route("service.proof.store") }}',
