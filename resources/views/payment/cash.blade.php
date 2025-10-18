@@ -183,7 +183,7 @@
                 ],
                 order: [
                     @if (auth()->user()->hasAnyRole(['admin']))
-                        [6, 'desc']
+                        [5, 'desc']
                     @else
                         [4, 'desc']
                     @endif
@@ -194,14 +194,6 @@
 
             });
         });
-
-        // Simple Verify Payment Function
-        window.verifyPayment = function(paymentId) {
-            if (confirm('Are you sure you want to verify this payment?')) {
-                // Simple redirect to verify the payment
-                window.location.href = '/cash/approve/' + paymentId;
-            }
-        };
 
         $(document).ready(function() {
             $('#statusSelect').change(function() {
