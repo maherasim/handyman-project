@@ -120,14 +120,6 @@
                             searchable: false,
                         },
                     @endif
-                    ,
-                    {
-                        data: 'updated_at',
-                        name: 'updated_at',
-                        title: "{{ __('product.lbl_update_at') }}",
-                        orderable: true,
-                        visible: false,
-                    },
                     {
                         data: 'id',
                         name: 'id',
@@ -183,9 +175,9 @@
                 ],
                 order: [
                     @if (auth()->user()->hasAnyRole(['admin']))
-                        [5, 'desc']
+                        [6, 'desc']
                     @else
-                        [4, 'desc']
+                        [5, 'desc']
                     @endif
                 ],
                 language: {
