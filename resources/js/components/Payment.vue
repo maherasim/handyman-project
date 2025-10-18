@@ -97,6 +97,7 @@
 
 <script setup>
 import { ref, defineProps, computed, onMounted } from 'vue'
+import { Modal } from 'bootstrap'
 import * as yup from 'yup'
 import { useField, useForm } from 'vee-validate'
 import {
@@ -361,7 +362,7 @@ const showBankInfoModal = () => {
   if (payment_method.value === 'bank_transfer') {
     const modalEl = document.getElementById('bankTransferModal')
     if (modalEl) {
-      const modal = new bootstrap.Modal(modalEl)
+      const modal = new Modal(modalEl)
       modal.show()
     }
   }
