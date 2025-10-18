@@ -1,11 +1,17 @@
+dynamic script  
 <script>
 (function($) {
     "use strict";
     
     $(document).ready(function(){
-        $('.select2js').select2({
-                width: '100%',
-					// dropdownParent: jQuery(this).parent()
+        // Initialize Select2 only if not already initialized
+        $('.select2js').each(function() {
+            if (!$(this).hasClass('select2-hidden-accessible')) {
+                $(this).select2({
+                    width: '100%',
+                    dropdownParent: $(this).parent()
+                });
+            }
         });
         $.ajaxSetup({
             headers: {
