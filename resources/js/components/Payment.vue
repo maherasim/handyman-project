@@ -122,7 +122,10 @@ const paymentDisplayAmount = computed(() => {
         const advancePaid = props.total_advance_paid_amount || 0;
         return props.total_booking_amount - advancePaid;
     } else {
-        return props.total_booking_amount * props.advance_percentage / 100;
+        const bookedAdvance = Number(props.total_advance_paid_amount) || 0;
+        return bookedAdvance > 0
+            ? bookedAdvance
+            : (props.total_booking_amount * props.advance_percentage) / 100;
     }
 });
 
@@ -180,7 +183,9 @@ const { value: payment_method } = useField('payment_method')
 const errorMessages = ref({})
 
 const formSubmit = handleSubmit(async (values) => {
-   let advance_payment = (props.total_booking_amount * props.advance_percentage) / 100;
+   let advance_payment = (Number(props.total_advance_paid_amount) && Number(props.total_advance_paid_amount) > 0)
+       ? Number(props.total_advance_paid_amount)
+       : (props.total_booking_amount * props.advance_percentage) / 100;
   values.booking_id = props.booking_id
   values.customer_id = props.customer_id
   values.discount = props.discount
