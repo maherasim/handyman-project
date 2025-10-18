@@ -1027,7 +1027,7 @@ class PaymentController extends Controller
             'payment_id' => $id,
             'booking_id' => $paymentdata->booking_id,
             'action' => config('constant.PAYMENT_HISTORY_ACTION.ADMIN_APPROVED_CASH'),
-            'type' => $parent_payment_history->type,
+            'type' => 'Bank_Transfer',
             'sender_id' => $parent_payment_history->sender_id,
             'receiver_id' => admin_id(),
             'total_amount' => $paymentdata->total_amount,
