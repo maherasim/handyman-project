@@ -57,7 +57,7 @@
           <div class="mb-4">
             <p class="fs-6 mb-0">
               <strong>
-                Please pay the amount of <span class="text-success">{{ formatCurrencyVue(remainingAmount) }}</span>
+                Please pay the amount of <span class="text-success">{{ formatCurrencyVue(paymentDisplayAmount) }}</span>
                 via bank transfer using the details below:
               </strong>
             </p>
