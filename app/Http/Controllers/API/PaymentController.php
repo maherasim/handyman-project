@@ -316,7 +316,7 @@ class PaymentController extends Controller
         }
     
         $isAdvance = $request->type === 'advance_payment';
-        $isRemaining = $request->type === 'remaining';
+        $isRemaining = $request->type === 'full_payment';
     
         $admin_commission_percentage = Setting::getValueByKey('admin_commission_percentage', 'site-setup')->value ?? 10;
         $admin_user_id = User::where('user_type', 'admin')->value('id');
