@@ -22,16 +22,22 @@ class NotificationController extends Controller
 
         return $datatable->collection($row)
         ->editColumn('type', function ($row) {
-            if(isset($row->data['check_booking_type'])){
-                return '<a class="btn-link btn-link-hover notify-table-link" href="'.route('booking.show',$row->data['id']) .'" >'.str_replace("_"," ",ucfirst($row->data['type'])).'</a>';
-            }
-            else{
-                return '<a class="btn-link btn-link-hover notify-table-link" href="#" >'.str_replace("_"," ",ucfirst($row->data['type'])).'</a>';
+            $data = is_array($row->data) ? $row->data : [];
+            $type = isset($data['type']) ? $data['type'] : '';
+            $id = isset($data['id']) ? $data['id'] : null;
+            $label = str_replace("_"," ", ucfirst($type ?: ''));
+
+            if (isset($data['check_booking_type']) && $id) {
+                return '<a class="btn-link btn-link-hover notify-table-link" href="'.route('booking.show', $id) .'" >'.$label.'</a>';
+            } else {
+                return '<a class="btn-link btn-link-hover notify-table-link" href="#" >'.$label.'</a>';
             }
 
         })
         ->editColumn('message', function ($row) {
-            return strip_tags($row->data['message']);
+            $data = is_array($row->data) ? $row->data : [];
+            $message = isset($data['message']) ? $data['message'] : '';
+            return strip_tags($message);
         })
         ->editColumn('created_at', function ($row) {
             return dateAgoFormate($row->created_at,true);
@@ -45,10 +51,11 @@ class NotificationController extends Controller
             return dateAgoFormate($row->updated_at,true);
         })
         ->editColumn('action', function ($row) {
-            if(isset($row->data['check_booking_type'])){
-                return '<a href="'.route('booking.show',$row->data['id']) .'"><span class="iq-bg-info mr-2"><i class="far fa-eye text-secondary"></i></span></a>';
-            }
-            else{
+            $data = is_array($row->data) ? $row->data : [];
+            $id = isset($data['id']) ? $data['id'] : null;
+            if (isset($data['check_booking_type']) && $id) {
+                return '<a href="'.route('booking.show', $id) .'"><span class="iq-bg-info mr-2"><i class="far fa-eye text-secondary"></i></span></a>';
+            } else {
                 return '<a href="#"><span class="iq-bg-info mr-2"><i class="far fa-eye text-secondary"></i></span></a>';
             }
         })
