@@ -19,7 +19,7 @@
               <label class="form-check-label h6 fw-normal text-capitalize" for="paypal">{{ $t('PayPal') }}</label>
             </div>
             <div class="form-check">
-              <input class="form-check-input" type="radio" name="payment_method" v-model="payment_method" id="bank_transfer" value="bank_transfer" @change="showBankInfoModal" />
+              <input class="form-check-input" type="radio" name="payment_method" v-model="payment_method" id="bank_transfer" value="bank_transfer" @change="onPaymentMethodChange" />
               <label class="form-check-label h6 fw-normal text-capitalize" for="bank_transfer">{{ $t('Bank Transfer') || 'Bank Transfer' }}</label>
             </div>
           </div>
@@ -44,14 +44,14 @@
   </div>
 
   <!-- Bank Transfer Info Modal -->
-  <div class="modal fade" id="bankTransferModal" tabindex="-1" aria-labelledby="bankTransferModalLabel" aria-hidden="true">
+  <div class="modal fade" id="bankTransferModal" ref="bankModalRef" tabindex="-1" aria-labelledby="bankTransferModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
       <div class="modal-content shadow-lg border-0 rounded-4">
         <div class="modal-header bg-primary text-white rounded-top-4">
           <h5 class="modal-title" id="bankTransferModalLabel">
             <i class="bi bi-bank2 me-2"></i> {{ $t('Bank Transfer Details') || 'Bank Transfer Details' }}
           </h5>
-          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close" @click="hideBankInfoModal"></button>
+          <button type="button" class="btn-close btn-close-white" aria-label="Close" @click.stop.prevent="hideBankInfoModal"></button>
         </div>
         <div class="modal-body p-4">
           <div class="mb-4">
@@ -88,7 +88,7 @@
           </div>
         </div>
         <div class="modal-footer border-top-0 px-4 pb-4">
-          <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal" @click="hideBankInfoModal">Close</button>
+          <button type="button" class="btn btn-secondary rounded-pill px-4" @click.stop.prevent="hideBankInfoModal">Close</button>
         </div>
       </div>
     </div>
@@ -96,7 +96,7 @@
 </template>
 
 <script setup>
-import { ref, defineProps, computed, onMounted } from 'vue'
+import { ref, defineProps, computed, onMounted, onBeforeUnmount } from 'vue'
 import { Modal } from 'bootstrap'
 import * as yup from 'yup'
 import { useField, useForm } from 'vee-validate'
@@ -368,24 +368,38 @@ const Openstripepayment = async (data) => {
   }
 }
 
+const bankModalRef = ref(null)
+let bankModalInstance = null
+const isBankModalOpen = ref(false)
+
 const getBankModalInstance = () => {
-  const modalEl = document.getElementById('bankTransferModal')
+  const modalEl = bankModalRef.value || document.getElementById('bankTransferModal')
   if (!modalEl) return null
-  // Reuse existing instance if present, otherwise create it
-  const existing = Modal.getInstance ? Modal.getInstance(modalEl) : null
-  return existing ?? (Modal.getOrCreateInstance ? Modal.getOrCreateInstance(modalEl) : new Modal(modalEl))
+  if (bankModalInstance) return bankModalInstance
+  bankModalInstance = Modal.getOrCreateInstance ? Modal.getOrCreateInstance(modalEl) : new Modal(modalEl)
+  // Track open/close state to avoid double inits and help with logic
+  modalEl.addEventListener('shown.bs.modal', () => { isBankModalOpen.value = true })
+  modalEl.addEventListener('hidden.bs.modal', () => { isBankModalOpen.value = false })
+  return bankModalInstance
 }
 
 const showBankInfoModal = () => {
-  if (payment_method.value === 'bank_transfer') {
-    const modal = getBankModalInstance()
-    if (modal) modal.show()
-  }
+  if (payment_method.value !== 'bank_transfer') return
+  const modal = getBankModalInstance()
+  if (modal && !isBankModalOpen.value) modal.show()
 }
 
 const hideBankInfoModal = () => {
   const modal = getBankModalInstance()
-  if (modal) modal.hide()
+  if (modal && isBankModalOpen.value) modal.hide()
+}
+
+const onPaymentMethodChange = () => {
+  if (payment_method.value === 'bank_transfer') {
+    showBankInfoModal()
+  } else {
+    hideBankInfoModal()
+  }
 }
 
 const formatCurrencyVue = (value) => {
