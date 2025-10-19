@@ -7,8 +7,8 @@ use Illuminate\Http\Request;
 use App\Models\PaymentHistory;
 use App\Models\Payment;
 use App\Models\Setting;
-use App\Models\HandymanPayout;
 use App\Models\Wallet;
+use App\Models\HandymanPayout;
 use App\Models\PaymentPostJOb;
 use App\Models\PaymentPostJObHistory;
 
@@ -21,7 +21,6 @@ use Yajra\DataTables\DataTables;
 use App\Models\Booking;
 use App\Models\CommissionEarning;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\MailMailableSend;
 
@@ -632,8 +631,7 @@ class PaymentController extends Controller
             })
             ->editColumn('action', function ($payment) {
                 if (auth()->user()->hasRole(['admin', 'demo_admin'])) {
-                    // Render a single Verify button via blade; avoid duplicate helper button
-                    return view('payment.cashaction', compact('payment'))->render();
+                    return set_admin_approved_cash($payment->id) . ' ' . view('payment.cashaction', compact('payment'))->render();
                 }
                 return '';
             })
@@ -1021,47 +1019,51 @@ class PaymentController extends Controller
 
     public function cashApprove($id)
     {
-      //  dd($id);
         // Approve a cash payment reported by provider; admin is verifying here
         $sitesetup = Setting::where('type', 'site-setup')->where('key', 'site-setup')->first();
         $admin = json_decode($sitesetup->value);
         $paymentdata = Payment::where('id', $id)->first();
+    
+        if (!$paymentdata) {
+            return redirect()->back()->withError(__('messages.payment_not_found'));
+        }
+    
         $parent_payment_history = PaymentHistory::where('status', 'pending_by_admin')
             ->where('payment_id', $id)->first();
-//dd($parent_payment_history);
-        // Update the existing payment history record instead of creating new one
+    
+        // ✅ Update payment history
         if ($parent_payment_history) {
             $parent_payment_history->status = config('constant.PAYMENT_HISTORY_STATUS.APPROVED_ADMIN');
             $parent_payment_history->text = __('messages.cash_approved', [
-                'amount' => getPriceFormat((float)$paymentdata->total_amount), 
+                'amount' => getPriceFormat((float)$paymentdata->total_amount),
                 'name' => get_user_name(admin_id())
             ]);
             $parent_payment_history->save();
         }
-
+    
         $booking = Booking::where('id', $paymentdata->booking_id)->first();
-
-        // Determine payment type (advance or remaining)
-        $paymentType = $parent_payment_history->type ?? $paymentdata->type ?? null; // 'advance_payment' or 'remaining'
-
-        // Commission percentage
+        if (!$booking) {
+            return redirect()->back()->withError(__('messages.booking_not_found'));
+        }
+    
+        // Determine payment type
+        $paymentType = $parent_payment_history->type ?? $paymentdata->type ?? null;
+    
         $admin_commission_percentage = Setting::getValueByKey('admin_commission_percentage', 'site-setup')->value ?? 10;
         $admin_user_id = \App\Models\User::where('user_type', 'admin')->value('id');
-
+    
         if ($paymentType === 'advance_payment') {
-            // Advance payment: Don't touch booking status, update payment status to advanced_paid
+            // ✅ Advance Payment Approval
             $paymentdata->payment_status = 'advanced_paid';
             $paymentdata->status = '1';
             $paymentdata->save();
-
+    
             $booking->advance_paid_amount = $paymentdata->total_amount;
             $booking->save();
-
-            // Create/mark admin commission as paid on advance (credit admin wallet)
+    
             $admin_commission_amount = ($paymentdata->total_amount * $admin_commission_percentage) / 100;
-
             Wallet::firstOrCreate(['user_id' => $admin_user_id])->increment('amount', $admin_commission_amount);
-
+    
             CommissionEarning::create([
                 'booking_id' => $booking->id,
                 'user_type' => 'admin',
@@ -1069,136 +1071,72 @@ class PaymentController extends Controller
                 'commission_amount' => $admin_commission_amount,
                 'commission_status' => 'paid',
             ]);
-        } elseif ($paymentType === 'full_payment') {
-            // Remaining payment: Update payment status to completed
+        } else {
+            // ✅ Remaining / Full Payment Approval
             $paymentdata->payment_status = 'paid';
             $paymentdata->status = '1';
             $paymentdata->save();
-
+    
             // Complete booking
             $booking->status = 'completed';
             $booking->save();
-
-            // Mark all related commission earnings as paid
+    
+            // Mark commissions as paid
             CommissionEarning::where('booking_id', $booking->id)->update(['commission_status' => 'paid']);
-
-            // Update payouts to paid (provider and handymen) where applicable
-            if (Schema::hasTable('provider_payouts')) {
-                $providerUpdate = ['status' => 'paid'];
-                if (Schema::hasColumn('provider_payouts', 'paid_date')) {
-                    $providerUpdate['paid_date'] = Carbon::now();
-                }
-                $providerQuery = ProviderPayout::where('provider_id', $booking->provider_id);
-                if (Schema::hasColumn('provider_payouts', 'booking_id')) {
-                    $providerQuery->where('booking_id', $booking->id);
-                } elseif (Schema::hasColumn('provider_payouts', 'payment_id')) {
-                    $providerQuery->where('payment_id', $id);
-                }
-                $providerQuery->update($providerUpdate);
-            }
-
-            if (Schema::hasTable('handyman_payouts') && Schema::hasColumn('handyman_payouts','status')) {
-                $handymanUpdate = ['status' => 'paid'];
-                if (Schema::hasColumn('handyman_payouts', 'paid_date')) {
-                    $handymanUpdate['paid_date'] = Carbon::now();
-                }
-                $handymanQuery = HandymanPayout::query();
-                if (Schema::hasColumn('handyman_payouts', 'booking_id')) {
-                    $handymanQuery->where('booking_id', $booking->id);
-                } else {
-                    // Fallback: mark all for handymen attached to this booking if mapping exists
-                    $handymanIds = \App\Models\BookingHandymanMapping::where('booking_id', $booking->id)->pluck('handyman_id');
-                    if ($handymanIds->count() > 0) {
-                        $handymanQuery->whereIn('handyman_id', $handymanIds);
-                    } else {
-                        $handymanQuery->whereRaw('1=0');
-                    }
-                }
-                $handymanQuery->update($handymanUpdate);
-            }
-        } else {
-            // Default case: Treat as full payment (backward compatibility)
-            $paymentdata->payment_status = 'paid';
-            $paymentdata->status = '1';
-            $paymentdata->save();
-
-            // Complete booking
-            $booking->status = 'accept';
-            $booking->save();
-
-            // Mark all related commission earnings as paid
-            CommissionEarning::where('booking_id', $booking->id)->update(['commission_status' => 'paid']);
-
-            // Also mark payouts as paid in default case
-            if (Schema::hasTable('provider_payouts')) {
-                $providerUpdate = ['status' => 'paid'];
-                if (Schema::hasColumn('provider_payouts', 'paid_date')) {
-                    $providerUpdate['paid_date'] = Carbon::now();
-                }
-                $providerQuery = ProviderPayout::where('provider_id', $booking->provider_id);
-                if (Schema::hasColumn('provider_payouts', 'booking_id')) {
-                    $providerQuery->where('booking_id', $booking->id);
-                } elseif (Schema::hasColumn('provider_payouts', 'payment_id')) {
-                    $providerQuery->where('payment_id', $id);
-                }
-                $providerQuery->update($providerUpdate);
-            }
-
-            if (Schema::hasTable('handyman_payouts') && Schema::hasColumn('handyman_payouts','status')) {
-                $handymanUpdate = ['status' => 'paid'];
-                if (Schema::hasColumn('handyman_payouts', 'paid_date')) {
-                    $handymanUpdate['paid_date'] = Carbon::now();
-                }
-                $handymanQuery = HandymanPayout::query();
-                if (Schema::hasColumn('handyman_payouts', 'booking_id')) {
-                    $handymanQuery->where('booking_id', $booking->id);
-                } else {
-                    $handymanIds = \App\Models\BookingHandymanMapping::where('booking_id', $booking->id)->pluck('handyman_id');
-                    if ($handymanIds->count() > 0) {
-                        $handymanQuery->whereIn('handyman_id', $handymanIds);
-                    } else {
-                        $handymanQuery->whereRaw('1=0');
-                    }
-                }
-                $handymanQuery->update($handymanUpdate);
-            }
+    
+            // ✅ Mark Provider & Handyman Payouts as PAID (based on payment_id)
+            ProviderPayout::where('booking_id', $booking->id)
+                ->where('status', 'pending')
+                ->update([
+                    'status' => 'paid',
+                    'payment_id' => $paymentdata->id,
+                ]);
+    
+            HandymanPayout::where('booking_id', $booking->id)
+                ->where('status', 'pending')
+                ->update([
+                    'status' => 'paid',
+                    'payment_id' => $paymentdata->id,
+                ]);
         }
-
-		// Send email notifications to provider and customer about approval
-		try {
-			$amount = getPriceFormat((float)$paymentdata->total_amount);
-			$bookingIdText = $booking ? ('#' . $booking->id) : '';
-			$subject = __('messages.cash_approved_subject') ?? 'Cash Payment Approved';
-			$body = __('messages.cash_approved', ['amount' => $amount, 'name' => get_user_name(admin_id())]);
-
-			// Notify provider
-			if ($booking && $booking->provider_id) {
-				$provider = User::find($booking->provider_id);
-				if ($provider && !empty($provider->email)) {
-					Mail::to($provider->email)->send(
-						(new MailMailableSend(null, [
-							'message' => $body . ' ' . __('messages.booking_id') . ' ' . $bookingIdText,
-						]))->subject($subject)
-					);
-				}
-			}
-
-			// Notify customer (sender)
-			if (!empty($paymentdata->customer_id)) {
-				$customer = User::find($paymentdata->customer_id);
-				if ($customer && !empty($customer->email)) {
-					Mail::to($customer->email)->send(
-						(new MailMailableSend(null, [
-							'message' => $body . ' ' . __('messages.booking_id') . ' ' . $bookingIdText,
-						]))->subject($subject)
-					);
-				}
-			}
-		} catch (\Throwable $e) {
-			\Log::error('Cash approval email send failed: ' . $e->getMessage());
-		}
-
+    
+        // ✅ Send notification emails
+        try {
+            $amount = getPriceFormat((float)$paymentdata->total_amount);
+            $bookingIdText = $booking ? ('#' . $booking->id) : '';
+            $subject = __('messages.cash_approved_subject') ?? 'Cash Payment Approved';
+            $body = __('messages.cash_approved', ['amount' => $amount, 'name' => get_user_name(admin_id())]);
+    
+            // Notify provider
+            if ($booking->provider_id) {
+                $provider = User::find($booking->provider_id);
+                if ($provider && !empty($provider->email)) {
+                    Mail::to($provider->email)->send(
+                        (new MailMailableSend(null, [
+                            'message' => $body . ' ' . __('messages.booking_id') . ' ' . $bookingIdText,
+                        ]))->subject($subject)
+                    );
+                }
+            }
+    
+            // Notify customer
+            if (!empty($paymentdata->customer_id)) {
+                $customer = User::find($paymentdata->customer_id);
+                if ($customer && !empty($customer->email)) {
+                    Mail::to($customer->email)->send(
+                        (new MailMailableSend(null, [
+                            'message' => $body . ' ' . __('messages.booking_id') . ' ' . $bookingIdText,
+                        ]))->subject($subject)
+                    );
+                }
+            }
+        } catch (\Throwable $e) {
+            \Log::error('Cash approval email send failed: ' . $e->getMessage());
+        }
+    
         $msg = __('messages.approve_successfully');
         return redirect()->back()->withSuccess($msg);
     }
+    
+
 }

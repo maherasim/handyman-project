@@ -379,6 +379,7 @@ class PaymentController extends Controller
             foreach ($handyman_payouts as $payout) {
                 HandymanPayout::create([
                     'handyman_id' => $payout['handyman_id'],
+                    'payment_id' => $payment->id,
                     'booking_id' => $booking->id,
                     'amount' => $payout['amount'],
                     'status' => 'pending',
@@ -398,6 +399,7 @@ class PaymentController extends Controller
             // ✅ Create pending provider payout
             ProviderPayout::create([
                 'provider_id' => $booking->provider_id,
+                'payment_id' => $payment->id,
                 'amount' => $provider_final_earning,
                 'status' => 'pending',
                 'payment_method' => 'bank_transfer',

@@ -10,12 +10,13 @@ class HandymanPayout extends Model
     use HasFactory;
     protected $table = 'handyman_payouts';
     protected $fillable = [
-        'handyman_id', 'payment_method', 'description','amount','status'
+        'handyman_id', 'payment_method', 'description','amount','status','payment_id'
     ];
 
     protected $casts = [
         'handyman_id'     => 'integer',
         'amount'    => 'double',
+        'payment_id'  => 'integer',
     ];
     public function handymans(){
         return $this->belongsTo(User::class, 'handyman_id','id');
