@@ -389,9 +389,18 @@ const showBankInfoModal = () => {
   if (modal && !isBankModalOpen.value) modal.show()
 }
 
+const forceCloseBankModal = () => {
+  // Fallback cleanup in case backdrop/body gets stuck due to version conflicts
+  document.querySelectorAll('.modal-backdrop').forEach(el => el.parentNode && el.parentNode.removeChild(el))
+  document.body.classList.remove('modal-open')
+  document.body.style.removeProperty('padding-right')
+}
+
 const hideBankInfoModal = () => {
   const modal = getBankModalInstance()
-  if (modal && isBankModalOpen.value) modal.hide()
+  if (modal) modal.hide()
+  // Ensure cleanup after animation completes
+  setTimeout(forceCloseBankModal, 300)
 }
 
 const onPaymentMethodChange = () => {
