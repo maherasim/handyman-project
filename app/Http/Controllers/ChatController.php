@@ -570,7 +570,7 @@ class ChatController extends Controller
                 $items[] = [
                     'conversation_id' => null,
                     'url' => route('chat.view.user', $u->id),
-                    'title' => 'Direct Message with ' . ($u->display_name ?: trim(($u->first_name.' '.$u->last_name))),
+                    'title' =>  $u->user_type ?? 'Unknown',
                     'other_name' => $u->display_name ?: trim(($u->first_name.' '.$u->last_name)),
                     'other_avatar' => getSingleMedia($u, 'profile_image', null),
                     'unread' => $unread,
