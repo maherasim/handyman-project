@@ -495,8 +495,14 @@ class ChatController extends Controller
             ->whereNull('read_at');
 
         $count = (clone $baseQuery)->count();
-        $latest = (clone $baseQuery)->with(['sender:id,display_name', 'conversation.userOne:id,display_name', 'conversation.userTwo:id,display_name'])
-            ->latest('id')->first();
+
+        // Only surface a toast for messages newer than user's last acknowledged notification id
+        $lastSeenId = (int) optional(auth()->user())->last_notification_seen;
+        $latest = (clone $baseQuery)
+            ->where('id', '>', $lastSeenId)
+            ->with(['sender:id,display_name', 'conversation.userOne:id,display_name', 'conversation.userTwo:id,display_name'])
+            ->latest('id')
+            ->first();
 
         $latestMeta = null;
         if ($latest) {
@@ -518,6 +524,26 @@ class ChatController extends Controller
         }
 
         return response()->json(['status' => true, 'count' => $count, 'latest' => $latestMeta]);
+    }
+
+    /**
+     * Persist the last notification id that the user has acknowledged to avoid repeat toasts.
+     */
+    public function unreadAck(Request $request)
+    {
+        $uid = (int) auth()->id();
+        abort_unless($uid > 0, 401);
+        $lastId = (int) $request->input('last_id', 0);
+        if ($lastId <= 0) {
+            return response()->json(['status' => false], 422);
+        }
+        $user = auth()->user();
+        $current = (int) ($user->last_notification_seen ?? 0);
+        if ($lastId > $current) {
+            $user->last_notification_seen = $lastId;
+            $user->save();
+        }
+        return response()->json(['status' => true, 'last_id' => (int) $user->last_notification_seen]);
     }
 
     /**

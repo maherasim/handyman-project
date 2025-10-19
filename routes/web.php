@@ -118,6 +118,7 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
         Route::get('/chat/unread/ping', [ChatController::class, 'unreadPing'])->name('chat.unread.ping');
         Route::get('/chat/flagged/ping', [ChatController::class, 'flaggedPing'])->name('chat.flagged.ping');
         Route::get('/messages', [ChatController::class, 'index'])->name('chat.index');
+        Route::post('/chat/unread/ack', [ChatController::class, 'unreadAck'])->name('chat.unread.ack');
         Route::get('/messages/flagged', [ChatController::class, 'flaggedIndex'])->name('chat.flagged.index');
         Route::post('/messages/flagged/{id}/warn', [ChatController::class, 'sendWarningEmail'])->name('chat.flagged.warn');
     Route::get('/home', [HomeController::class, 'index'])->name('home');

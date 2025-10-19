@@ -127,7 +127,7 @@
                     });
                 }
             } catch (_) {}
-            function handlePingResponse(j, forceToast){
+            async function handlePingResponse(j, forceToast){
                 const last = sessionStorage.getItem(lastKey) || '0';
                 if (j && j.latest && j.latest.id) {
                     const isNew = j.latest.id.toString() !== last.toString();
@@ -136,6 +136,13 @@
                         const text = `${j.latest.sender_name}: ${j.latest.snippet || ''}`;
                         if (window.Swal){ Swal.fire({ toast:true, position:'bottom-end', timer:3500, showConfirmButton:false, icon:'info', title: text }); }
                         if (window.__playChatNotify) window.__playChatNotify();
+                        try {
+                            await fetch('{{ route('chat.unread.ack') }}', {
+                                method: 'POST',
+                                headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ last_id: j.latest.id })
+                            });
+                        } catch(_) {}
                     }
                 }
             }
