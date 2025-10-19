@@ -539,10 +539,13 @@ class ChatController extends Controller
                 $q->where(function($qq) use ($search){
                     $qq->where('display_name', 'like', "%{$search}%")
                        ->orWhere('first_name', 'like', "%{$search}%")
-                       ->orWhere('last_name', 'like', "%{$search}%");
+                       ->orWhere('last_name', 'like', "%{$search}%")
+                       ->orWhere('user_type', 'like', "%{$search}%");
+
+                       
                 });
             }
-            $users = $q->select('id','display_name','first_name','last_name')->orderBy('display_name')->limit(500)->get();
+            $users = $q->select('id','display_name','first_name','last_name','user_type')->orderBy('display_name')->limit(500)->get();
 
             $items = [];
             foreach ($users as $u) {
@@ -589,7 +592,10 @@ class ChatController extends Controller
             ->whereNull('booking_id')
             ->whereNull('post_job_bid_id')
             ->where('conversation_type', 'standalone')
-            ->with(['userOne:id,display_name', 'userTwo:id,display_name'])
+            ->with([
+                'userOne:id,display_name,user_type', // include user_type
+                'userTwo:id,display_name,user_type', // include user_type
+            ])
             ->orderBy('updated_at', 'desc')
             ->get();
 
