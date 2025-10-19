@@ -631,7 +631,8 @@ class PaymentController extends Controller
             })
             ->editColumn('action', function ($payment) {
                 if (auth()->user()->hasRole(['admin', 'demo_admin'])) {
-                    return set_admin_approved_cash($payment->id) . ' ' . view('payment.cashaction', compact('payment'))->render();
+                    // Show a single Verify button; avoid duplicate helper button
+                    return view('payment.cashaction', compact('payment'))->render();
                 }
                 return '';
             })
