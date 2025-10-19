@@ -20,6 +20,7 @@ use Yajra\DataTables\DataTables;
 use App\Models\Booking;
 use App\Models\CommissionEarning;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\MailMailableSend;
 
@@ -1079,6 +1080,41 @@ class PaymentController extends Controller
 
             // Mark all related commission earnings as paid
             CommissionEarning::where('booking_id', $booking->id)->update(['commission_status' => 'paid']);
+
+            // Update payouts to paid (provider and handymen) where applicable
+            if (Schema::hasTable('provider_payouts')) {
+                $providerUpdate = ['status' => 'paid'];
+                if (Schema::hasColumn('provider_payouts', 'paid_date')) {
+                    $providerUpdate['paid_date'] = Carbon::now();
+                }
+                $providerQuery = ProviderPayout::where('provider_id', $booking->provider_id);
+                if (Schema::hasColumn('provider_payouts', 'booking_id')) {
+                    $providerQuery->where('booking_id', $booking->id);
+                } elseif (Schema::hasColumn('provider_payouts', 'payment_id')) {
+                    $providerQuery->where('payment_id', $id);
+                }
+                $providerQuery->update($providerUpdate);
+            }
+
+            if (Schema::hasTable('handyman_payouts') && Schema::hasColumn('handyman_payouts','status')) {
+                $handymanUpdate = ['status' => 'paid'];
+                if (Schema::hasColumn('handyman_payouts', 'paid_date')) {
+                    $handymanUpdate['paid_date'] = Carbon::now();
+                }
+                $handymanQuery = HandymanPayout::query();
+                if (Schema::hasColumn('handyman_payouts', 'booking_id')) {
+                    $handymanQuery->where('booking_id', $booking->id);
+                } else {
+                    // Fallback: mark all for handymen attached to this booking if mapping exists
+                    $handymanIds = \App\Models\BookingHandymanMapping::where('booking_id', $booking->id)->pluck('handyman_id');
+                    if ($handymanIds->count() > 0) {
+                        $handymanQuery->whereIn('handyman_id', $handymanIds);
+                    } else {
+                        $handymanQuery->whereRaw('1=0');
+                    }
+                }
+                $handymanQuery->update($handymanUpdate);
+            }
         } else {
             // Default case: Treat as full payment (backward compatibility)
             $paymentdata->payment_status = 'paid';
@@ -1091,6 +1127,40 @@ class PaymentController extends Controller
 
             // Mark all related commission earnings as paid
             CommissionEarning::where('booking_id', $booking->id)->update(['commission_status' => 'paid']);
+
+            // Also mark payouts as paid in default case
+            if (Schema::hasTable('provider_payouts')) {
+                $providerUpdate = ['status' => 'paid'];
+                if (Schema::hasColumn('provider_payouts', 'paid_date')) {
+                    $providerUpdate['paid_date'] = Carbon::now();
+                }
+                $providerQuery = ProviderPayout::where('provider_id', $booking->provider_id);
+                if (Schema::hasColumn('provider_payouts', 'booking_id')) {
+                    $providerQuery->where('booking_id', $booking->id);
+                } elseif (Schema::hasColumn('provider_payouts', 'payment_id')) {
+                    $providerQuery->where('payment_id', $id);
+                }
+                $providerQuery->update($providerUpdate);
+            }
+
+            if (Schema::hasTable('handyman_payouts') && Schema::hasColumn('handyman_payouts','status')) {
+                $handymanUpdate = ['status' => 'paid'];
+                if (Schema::hasColumn('handyman_payouts', 'paid_date')) {
+                    $handymanUpdate['paid_date'] = Carbon::now();
+                }
+                $handymanQuery = HandymanPayout::query();
+                if (Schema::hasColumn('handyman_payouts', 'booking_id')) {
+                    $handymanQuery->where('booking_id', $booking->id);
+                } else {
+                    $handymanIds = \App\Models\BookingHandymanMapping::where('booking_id', $booking->id)->pluck('handyman_id');
+                    if ($handymanIds->count() > 0) {
+                        $handymanQuery->whereIn('handyman_id', $handymanIds);
+                    } else {
+                        $handymanQuery->whereRaw('1=0');
+                    }
+                }
+                $handymanQuery->update($handymanUpdate);
+            }
         }
 
 		// Send email notifications to provider and customer about approval
