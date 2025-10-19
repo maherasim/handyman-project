@@ -2,7 +2,7 @@
     <div class="container py-3">
         <div class="d-flex align-items-center mb-3">
             <h5 class="mb-0">Messages</h5>
-            <a href="{{ route('chat.unread.ping') }}" class="ms-auto btn btn-sm btn-outline-secondary">Refresh</a>
+            <button type="button" id="refreshUnreadBtn" class="ms-auto btn btn-sm btn-outline-secondary" aria-label="Refresh" title="Refresh"><i class="fas fa-sync-alt"></i></button>
         </div>
         <div class="card">
             <div class="list-group list-group-flush">
@@ -30,17 +30,28 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function(){
-            const last = sessionStorage.getItem('chat_toast_last_id') || '0';
-            fetch('{{ route('chat.unread.ping') }}').then(r=>r.json()).then(j=>{
-                if (j && j.latest && j.latest.id && j.latest.id.toString() !== last.toString()){
-                    sessionStorage.setItem('chat_toast_last_id', j.latest.id);
-                    if (j.latest.sender_name){
+            const endpoint = '{{ route('chat.unread.ping') }}';
+            const lastKey = 'chat_toast_last_id';
+            function handlePingResponse(j, forceToast){
+                const last = sessionStorage.getItem(lastKey) || '0';
+                if (j && j.latest && j.latest.id) {
+                    const isNew = j.latest.id.toString() !== last.toString();
+                    if (isNew) sessionStorage.setItem(lastKey, j.latest.id);
+                    if ((isNew || forceToast) && j.latest.sender_name){
                         const text = `${j.latest.sender_name}: ${j.latest.snippet || ''}`;
                         if (window.Swal){ Swal.fire({ toast:true, position:'bottom-end', timer:3500, showConfirmButton:false, icon:'info', title: text }); }
                         if (window.__playChatNotify) window.__playChatNotify();
                     }
                 }
-            }).catch(()=>{});
+            }
+            function fetchUnread(forceToast){
+                fetch(endpoint).then(r=>r.json()).then(j=>handlePingResponse(j, !!forceToast)).catch(()=>{});
+            }
+            // Initial ping
+            fetchUnread(false);
+            // Manual refresh button
+            const btn = document.getElementById('refreshUnreadBtn');
+            if (btn) btn.addEventListener('click', function(e){ e.preventDefault(); fetchUnread(true); });
         });
     </script>
 </x-master-layout>
