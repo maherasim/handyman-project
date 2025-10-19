@@ -528,7 +528,61 @@ class ChatController extends Controller
         $uid = (int) auth()->id();
         abort_unless($uid > 0, 401);
 
-        // Get ONLY standalone conversations for this user
+        $user = auth()->user();
+        $isAdmin = $user && ($user->hasRole('admin') || $user->hasRole('demo_admin'));
+
+        // Admin: list all users (excluding self), allow starting chat with anyone
+        if ($isAdmin) {
+            $q = \App\Models\User::where('id', '!=', $uid)->where('status', 1);
+            $search = trim((string) $request->query('search', ''));
+            if ($search !== '') {
+                $q->where(function($qq) use ($search){
+                    $qq->where('display_name', 'like', "%{$search}%")
+                       ->orWhere('first_name', 'like', "%{$search}%")
+                       ->orWhere('last_name', 'like', "%{$search}%");
+                });
+            }
+            $users = $q->select('id','display_name','first_name','last_name')->orderBy('display_name')->limit(500)->get();
+
+            $items = [];
+            foreach ($users as $u) {
+                // All conversations between admin and this user (any type)
+                $convIds = ChatConversation::where(function($cq) use ($uid, $u){
+                        $cq->where('user_one_id', $uid)->where('user_two_id', $u->id);
+                    })->orWhere(function($cq) use ($uid, $u){
+                        $cq->where('user_one_id', $u->id)->where('user_two_id', $uid);
+                    })
+                    ->pluck('id');
+
+                $last = null; $unread = 0; $lastAt = null; $snippet = '';
+                if ($convIds->isNotEmpty()) {
+                    $last = ChatMessage::whereIn('conversation_id', $convIds)->orderByDesc('id')->first();
+                    $unread = ChatMessage::whereIn('conversation_id', $convIds)
+                        ->whereNull('read_at')
+                        ->where('sender_id', '!=', $uid)
+                        ->count();
+                }
+                if ($last) {
+                    $lastAt = $last->created_at?->toDateTimeString();
+                    $snippet = $last->contains_pii ? 'Message hidden due to policy violation' : ($last->message ? mb_substr($last->message, 0, 80) : 'Attachment');
+                }
+
+                $items[] = [
+                    'conversation_id' => null,
+                    'url' => route('chat.view.user', $u->id),
+                    'title' => 'Direct Message with ' . ($u->display_name ?: trim(($u->first_name.' '.$u->last_name))),
+                    'other_name' => $u->display_name ?: trim(($u->first_name.' '.$u->last_name)),
+                    'other_avatar' => getSingleMedia($u, 'profile_image', null),
+                    'unread' => $unread,
+                    'last_snippet' => $snippet,
+                    'last_at' => $lastAt,
+                ];
+            }
+
+            return view('chat.index', [ 'items' => $items ]);
+        }
+
+        // Non-admin: show user's standalone conversations list (unchanged)
         $conversations = ChatConversation::where(function ($q) use ($uid) {
                 $q->where('user_one_id', $uid)->orWhere('user_two_id', $uid);
             })
@@ -549,7 +603,6 @@ class ChatController extends Controller
             $otherId = ($c->user_one_id === $uid) ? $c->user_two_id : $c->user_one_id;
             $other = $otherId === optional($c->userOne)->id ? $c->userOne : $c->userTwo;
 
-            // Simple standalone URL - no booking/bid logic
             $url = route('chat.view.user', $otherId);
             $title = 'Direct Message with ' . (optional($other)->display_name ?? 'Unknown');
 
@@ -561,8 +614,6 @@ class ChatController extends Controller
                 'conversation_id' => $c->id,
                 'url' => $url,
                 'title' => $title,
-                'bid_id' => null, // No bid dependency
-                'bid_title' => null, // No bid dependency
                 'other_name' => optional($other)->display_name,
                 'other_avatar' => getSingleMedia(optional($other), 'profile_image', null),
                 'unread' => $unread,
