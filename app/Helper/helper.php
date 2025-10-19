@@ -1564,7 +1564,7 @@ function set_admin_approved_cash($payment_id){
     $payment = \App\Models\Payment::find($payment_id);
     
     if($payment_status_check !== null || ($payment && $payment->payment_status == 'pending_by_admin')) {
-        $status = '<a class="btn btn-success btn-sm" href="'.route('cash.approve',$payment_id).'" onclick="return confirm(\'Are you sure you want to verify this payment?\')"><i class="fa fa-check"></i> Verify</a>';
+        $status = '<a class="btn btn-success btn-sm" href="'.route('cash.approve',$payment_id).'" data-approve-cash="1"><i class="fa fa-check"></i> Verify</a>';
     } else {
         $status = '<span class="text-muted">Verified</span>';
     }
