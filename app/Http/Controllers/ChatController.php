@@ -604,7 +604,8 @@ class ChatController extends Controller
             $other = $otherId === optional($c->userOne)->id ? $c->userOne : $c->userTwo;
 
             $url = route('chat.view.user', $otherId);
-            $title = 'Direct Message with ' . (optional($other)->display_name ?? 'Unknown');
+            $title = $other->user_type ?? 'Unknown';
+
 
             $maskedSnippet = '';
             if ($last) {
