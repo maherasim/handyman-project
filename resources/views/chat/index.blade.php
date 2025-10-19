@@ -147,10 +147,11 @@
                 }
             }
             function fetchUnread(forceToast){
-                fetch(endpoint).then(r=>r.json()).then(j=>handlePingResponse(j, !!forceToast)).catch(()=>{});
+                const url = forceToast ? (endpoint + '?first=1') : endpoint;
+                fetch(url).then(r=>r.json()).then(j=>handlePingResponse(j, !!forceToast)).catch(()=>{});
             }
             // Initial ping
-            fetchUnread(false);
+            fetchUnread(true);
             // Manual refresh button
             const btn = document.getElementById('refreshUnreadBtn');
             if (btn) btn.addEventListener('click', function(e){ e.preventDefault(); fetchUnread(true); });

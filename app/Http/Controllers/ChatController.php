@@ -496,13 +496,16 @@ class ChatController extends Controller
 
         $count = (clone $baseQuery)->count();
 
-        // Only surface a toast for messages newer than user's last acknowledged notification id
+        // First load can request to ignore the persisted last seen, so initial toast appears
+        $ignoreLastSeen = (bool) $request->boolean('first');
         $lastSeenId = (int) optional(auth()->user())->last_notification_seen;
-        $latest = (clone $baseQuery)
-            ->where('id', '>', $lastSeenId)
+        $latestQuery = (clone $baseQuery)
             ->with(['sender:id,display_name', 'conversation.userOne:id,display_name', 'conversation.userTwo:id,display_name'])
-            ->latest('id')
-            ->first();
+            ->latest('id');
+        if (!$ignoreLastSeen && $lastSeenId > 0) {
+            $latestQuery->where('id', '>', $lastSeenId);
+        }
+        $latest = $latestQuery->first();
 
         $latestMeta = null;
         if ($latest) {
