@@ -973,5 +973,7 @@
     'submit_service_proof' => 'Submit Service Proof',
     'service_proof' => 'Service Proof',
     'advance_pay' => 'Advance Pay',
+    'service_proof_submitted_successfully' => 'Your service proof has been submitted successfully.',
+    'upload_multiple_images' => 'You can upload multiple images.',
 
 );
