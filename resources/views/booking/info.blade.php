@@ -1332,7 +1332,7 @@
                                     <tr>
                                         <td class="text-wrap ps-lg-3">
                                             <div class="d-flex flex-column">
-                                                <a href=""
+                                                <a href="{{ route('service.detail', $bookingdata->service_id) }}#{{ \Illuminate\Support\Str::slug($addonservice->name) }}"
                                                     class="booking-service-link fw-bold">{{ $addonservice->name }}</a>
                                             </div>
                                         </td>
