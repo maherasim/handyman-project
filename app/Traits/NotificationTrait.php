@@ -666,6 +666,11 @@ trait NotificationTrait
             }
 
 
+            // Fallback: if no recipients configured, ensure providers are notified for job requests
+            if ((empty($mails) || !is_array($mails)) && $notification_type === 'job_requested') {
+                $mails = ['provider'];
+            }
+
             foreach ($mails as $key => $mailTo) {
 
                 switch ($mailTo) {

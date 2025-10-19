@@ -1901,15 +1901,31 @@ $(document).ready(function() {
             contentType: false,
             success: function(response) {
                 console.log('Service Proof Response:', response);
-                $('#serviceProofModal').modal('hide');
+                // Close modal (Bootstrap 5 API with jQuery fallback)
+                try {
+                    var modalEl = document.getElementById('serviceProofModal');
+                    var modal = window.bootstrap ? (window.bootstrap.Modal.getInstance(modalEl) || new window.bootstrap.Modal(modalEl)) : null;
+                    if(modal){ modal.hide(); } else { $('#serviceProofModal').modal('hide'); }
+                } catch(e) { $('#serviceProofModal').modal('hide'); }
                 $('#serviceProofForm')[0].reset();
                 $('#imagePreview').empty();
                 
-                // Show success message
-                alert('{{ __("messages.service_proof_submitted_successfully") }}');
-                
-                // Reload page to show updated service proof
-                location.reload();
+                // Show non-blocking toast then reload
+                if (typeof Swal !== 'undefined' && Swal.fire) {
+                    Swal.fire({
+                        toast: true,
+                        position: 'top-end',
+                        icon: 'success',
+                        title: '{{ __("messages.service_proof_submitted_successfully") }}',
+                        showConfirmButton: false,
+                        timer: 1600,
+                        timerProgressBar: true
+                    }).then(function(){
+                        location.reload();
+                    });
+                } else {
+                    setTimeout(function(){ location.reload(); }, 1200);
+                }
             },
             error: function(xhr) {
                 console.error('Error:', xhr);
