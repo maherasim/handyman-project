@@ -47,7 +47,7 @@
                 </div>
             </a>
             @else
-            <a href="#" class="">
+            <a href="{{ isset($data['link']) ? $data['link'] : '#' }}" class="">
                 <div class="list-item d-flex justify-content-start align-items-start">
                     <div class="list-style-detail ms-2 me-2">
                         <h6 class="fw-bold mb-1"># {{ ($nid ?? '-') ." ". str_replace("_"," ",ucfirst($ntype)) }}</h6>

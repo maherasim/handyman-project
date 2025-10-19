@@ -620,8 +620,11 @@ trait NotificationTrait
             $notification_data['credit_debit_amount'] = isset($data['credit_debit_amount']) ? getPriceFormat($data['credit_debit_amount']) : '';
 			$notification_data['job_id'] = isset($job_id) ? $job_id: '';
 			// Provide a clickable link for web notifications when a job request is created
-			if ($notification_type === 'job_requested' && !empty($job_id)) {
-				$notification_data['link'] = route('post-job-request.bids', ['id' => $job_id]);
+			if ($notification_type === 'job_requested') {
+				$targetId = $notification_data['job_id'] ?? null;
+				if (!empty($targetId)) {
+					$notification_data['link'] = route('post-job-request.bids', ['id' => $targetId]);
+				}
 			}
             $notification_data['job_request_id'] = isset( $job_request_id) ? $job_request_id : '';
             $notification_data['job_name'] = isset($post_job->title) ? $post_job->title : '';
