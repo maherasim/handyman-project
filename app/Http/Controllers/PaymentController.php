@@ -1066,13 +1066,8 @@ class PaymentController extends Controller
             $admin_commission_amount = ($paymentdata->total_amount * $admin_commission_percentage) / 100;
             Wallet::firstOrCreate(['user_id' => $admin_user_id])->increment('amount', $admin_commission_amount);
     
-            CommissionEarning::create([
-                'booking_id' => $booking->id,
-                'user_type' => 'admin',
-                'employee_id' => $admin_user_id,
-                'commission_amount' => $admin_commission_amount,
-                'commission_status' => 'paid',
-            ]);
+            CommissionEarning::where('booking_id', $booking->id)->update(['commission_status' => 'paid']);
+
         } else {
             // ✅ Remaining / Full Payment Approval
             $paymentdata->payment_status = 'paid';
