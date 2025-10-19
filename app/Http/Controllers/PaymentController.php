@@ -20,6 +20,8 @@ use Yajra\DataTables\DataTables;
 use App\Models\Booking;
 use App\Models\CommissionEarning;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\MailMailableSend;
 
 class PaymentController extends Controller
 {
@@ -1089,6 +1091,40 @@ class PaymentController extends Controller
             // Mark all related commission earnings as paid
             CommissionEarning::where('booking_id', $booking->id)->update(['commission_status' => 'paid']);
         }
+
+		// Send email notifications to provider and customer about approval
+		try {
+			$amount = getPriceFormat((float)$paymentdata->total_amount);
+			$bookingIdText = $booking ? ('#' . $booking->id) : '';
+			$subject = __('messages.cash_approved_subject') ?? 'Cash Payment Approved';
+			$body = __('messages.cash_approved', ['amount' => $amount, 'name' => get_user_name(admin_id())]);
+
+			// Notify provider
+			if ($booking && $booking->provider_id) {
+				$provider = User::find($booking->provider_id);
+				if ($provider && !empty($provider->email)) {
+					Mail::to($provider->email)->send(
+						(new MailMailableSend(null, [
+							'message' => $body . ' ' . __('messages.booking_id') . ' ' . $bookingIdText,
+						]))->subject($subject)
+					);
+				}
+			}
+
+			// Notify customer (sender)
+			if (!empty($paymentdata->customer_id)) {
+				$customer = User::find($paymentdata->customer_id);
+				if ($customer && !empty($customer->email)) {
+					Mail::to($customer->email)->send(
+						(new MailMailableSend(null, [
+							'message' => $body . ' ' . __('messages.booking_id') . ' ' . $bookingIdText,
+						]))->subject($subject)
+					);
+				}
+			}
+		} catch (\Throwable $e) {
+			\Log::error('Cash approval email send failed: ' . $e->getMessage());
+		}
 
         $msg = __('messages.approve_successfully');
         return redirect()->back()->withSuccess($msg);
