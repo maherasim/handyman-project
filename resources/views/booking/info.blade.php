@@ -1901,19 +1901,15 @@ $(document).ready(function() {
             contentType: false,
             success: function(response) {
                 console.log('Service Proof Response:', response);
-                if (response.status) {
-                    $('#serviceProofModal').modal('hide');
-                    $('#serviceProofForm')[0].reset();
-                    $('#imagePreview').empty();
-                    
-                    // Show success message
-                    alert('{{ __("messages.service_proof_submitted_successfully") }}');
-                    
-                    // Reload page to show updated service proof
-                    location.reload();
-                } else {
-                    alert('{{ __("messages.error_occurred") }}');
-                }
+                $('#serviceProofModal').modal('hide');
+                $('#serviceProofForm')[0].reset();
+                $('#imagePreview').empty();
+                
+                // Show success message
+                alert('{{ __("messages.service_proof_submitted_successfully") }}');
+                
+                // Reload page to show updated service proof
+                location.reload();
             },
             error: function(xhr) {
                 console.error('Error:', xhr);
