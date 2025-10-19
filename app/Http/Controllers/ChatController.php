@@ -541,11 +541,29 @@ class ChatController extends Controller
                        ->orWhere('first_name', 'like', "%{$search}%")
                        ->orWhere('last_name', 'like', "%{$search}%")
                        ->orWhere('user_type', 'like', "%{$search}%");
-
-                       
                 });
             }
-            $users = $q->select('id','display_name','first_name','last_name','user_type')->orderBy('display_name')->limit(500)->get();
+
+            // Admin filters: user_type, country, state, city
+            $filters = [
+                'user_type' => $request->query('user_type'),
+                'country_id' => $request->query('country_id'),
+                'state_id' => $request->query('state_id'),
+                'city_id' => $request->query('city_id'),
+            ];
+
+            $allowedTypes = ['user','provider','handyman'];
+            if (!empty($filters['user_type']) && in_array($filters['user_type'], $allowedTypes, true)) {
+                $q->where('user_type', $filters['user_type']);
+            }
+            if (!empty($filters['country_id'])) { $q->where('country_id', (int) $filters['country_id']); }
+            if (!empty($filters['state_id'])) { $q->where('state_id', (int) $filters['state_id']); }
+            if (!empty($filters['city_id'])) { $q->where('city_id', (int) $filters['city_id']); }
+
+            $users = $q->select('id','display_name','first_name','last_name','user_type','country_id','state_id','city_id')
+                ->orderBy('display_name')->limit(500)->get();
+
+            $countries = \App\Models\Country::orderBy('name')->get(['id','name']);
 
             $items = [];
             foreach ($users as $u) {
@@ -582,7 +600,11 @@ class ChatController extends Controller
                 ];
             }
 
-            return view('chat.index', [ 'items' => $items ]);
+            return view('chat.index', [
+                'items' => $items,
+                'countries' => $countries,
+                'filters' => $filters,
+            ]);
         }
 
         // Non-admin: show user's standalone conversations list (unchanged)
