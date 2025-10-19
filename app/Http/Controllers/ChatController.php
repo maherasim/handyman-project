@@ -193,6 +193,9 @@ class ChatController extends Controller
             'flagged_at' => $containsPii ? now() : null,
         ]);
 
+        // Ensure this conversation floats to the top in lists
+        $conversation->touch();
+
         // Send notification to the recipient
         \Log::info('Sending notification for message ' . $msg->id . ' in conversation ' . $conversation->id);
         $this->sendMessageNotification($conversation, $msg);
@@ -445,15 +448,16 @@ class ChatController extends Controller
         // Prevent users from chatting with themselves
         abort_if($currentUser->id === $userId, 403, 'Cannot chat with yourself');
         
-        // Find or create conversation between these two users - completely standalone
+        // Find or create conversation between these two users
+        // Prefer the most recently active conversation between these two users (any type)
         $conversation = ChatConversation::where(function($query) use ($currentUser, $userId) {
             $query->where('user_one_id', $currentUser->id)
                   ->where('user_two_id', $userId);
         })->orWhere(function($query) use ($currentUser, $userId) {
             $query->where('user_one_id', $userId)
                   ->where('user_two_id', $currentUser->id);
-        })->whereNull('booking_id')
-          ->whereNull('post_job_bid_id')
+        })
+          ->orderByDesc('updated_at')
           ->first();
         
         if (!$conversation) {
@@ -477,14 +481,10 @@ class ChatController extends Controller
         $uid = (int) auth()->id();
         abort_unless($uid > 0, 401);
         
-        // Get ONLY standalone conversations for this user
+        // Include all conversations (standalone or legacy) for this user
         $conversationIds = ChatConversation::where(function($query) use ($uid) {
             $query->where('user_one_id', $uid)->orWhere('user_two_id', $uid);
-        })
-        ->whereNull('booking_id')
-        ->whereNull('post_job_bid_id')
-        ->where('conversation_type', 'standalone')
-        ->pluck('id');
+        })->pluck('id');
 
         if ($conversationIds->isEmpty()) {
             return response()->json(['status' => true, 'count' => 0]);
