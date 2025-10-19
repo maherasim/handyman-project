@@ -9,7 +9,7 @@ $auth_user= authSession();
 
         {{-- Verify Button - Only show for pending payments --}}
         @if($payment_status_check !== null && $payment_status_check->status == 'pending_by_admin') 
-            <a class="btn btn-success btn-sm me-2" href="{{ route('cash.approve', $payment->id) }}" onclick="return confirm('Are you sure you want to verify this payment?')">
+            <a class="btn btn-success btn-sm me-2" href="{{ route('cash.approve', $payment->id) }}" data-approve-cash="1">
                 <i class="fa fa-check"></i> Verify
             </a>
         @endif
