@@ -1022,14 +1022,15 @@ class PaymentController extends Controller
         // Approve a cash payment reported by provider; admin is verifying here
         $sitesetup = Setting::where('type', 'site-setup')->where('key', 'site-setup')->first();
         $admin = json_decode($sitesetup->value);
-        $paymentdata = Payment::where('id', $id)->first();
+        $paymentdata = Payment::find($id);
     
         if (!$paymentdata) {
             return redirect()->back()->withError(__('messages.payment_not_found'));
         }
     
         $parent_payment_history = PaymentHistory::where('status', 'pending_by_admin')
-            ->where('payment_id', $id)->first();
+            ->where('payment_id', $id)
+            ->first();
     
         // ✅ Update payment history
         if ($parent_payment_history) {
@@ -1041,7 +1042,7 @@ class PaymentController extends Controller
             $parent_payment_history->save();
         }
     
-        $booking = Booking::where('id', $paymentdata->booking_id)->first();
+        $booking = Booking::find($paymentdata->booking_id);
         if (!$booking) {
             return redirect()->back()->withError(__('messages.booking_not_found'));
         }
@@ -1084,19 +1085,17 @@ class PaymentController extends Controller
             // Mark commissions as paid
             CommissionEarning::where('booking_id', $booking->id)->update(['commission_status' => 'paid']);
     
-            // ✅ Mark Provider & Handyman Payouts as PAID (based on payment_id)
-            ProviderPayout::where('booking_id', $booking->id)
+            // ✅ Mark Provider & Handyman Payouts as PAID (using payment_id)
+            ProviderPayout::where('payment_id', $paymentdata->id)
                 ->where('status', 'pending')
                 ->update([
                     'status' => 'paid',
-                    'payment_id' => $paymentdata->id,
                 ]);
     
-            HandymanPayout::where('booking_id', $booking->id)
+            HandymanPayout::where('payment_id', $paymentdata->id)
                 ->where('status', 'pending')
                 ->update([
                     'status' => 'paid',
-                    'payment_id' => $paymentdata->id,
                 ]);
         }
     
