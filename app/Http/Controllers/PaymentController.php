@@ -657,8 +657,7 @@ class PaymentController extends Controller
         // if (!$request->order) { 
         //     $query->orderBy('created_at', 'DESC');
         // } 
-        $filter = $request->filter;
-
+        $filter = $request->filter
         if (isset($filter)) {
             if (isset($filter['column_status'])) {
                 $query->where('payment_status', $filter['column_status']);
