@@ -26,9 +26,12 @@ class NotificationController extends Controller
             $type = isset($data['type']) ? $data['type'] : '';
             $id = isset($data['id']) ? $data['id'] : null;
             $label = str_replace("_"," ", ucfirst($type ?: ''));
+            $link = isset($data['link']) ? $data['link'] : null;
 
             if (isset($data['check_booking_type']) && $id) {
                 return '<a class="btn-link btn-link-hover notify-table-link" href="'.route('booking.show', $id) .'" >'.$label.'</a>';
+            } elseif (!empty($link)) {
+                return '<a class="btn-link btn-link-hover notify-table-link" href="'.$link.'" >'.$label.'</a>';
             } else {
                 return '<a class="btn-link btn-link-hover notify-table-link" href="#" >'.$label.'</a>';
             }
@@ -53,8 +56,11 @@ class NotificationController extends Controller
         ->editColumn('action', function ($row) {
             $data = is_array($row->data) ? $row->data : [];
             $id = isset($data['id']) ? $data['id'] : null;
+            $link = isset($data['link']) ? $data['link'] : null;
             if (isset($data['check_booking_type']) && $id) {
                 return '<a href="'.route('booking.show', $id) .'"><span class="iq-bg-info mr-2"><i class="far fa-eye text-secondary"></i></span></a>';
+            } elseif (!empty($link)) {
+                return '<a href="'.$link.'"><span class="iq-bg-info mr-2"><i class="far fa-eye text-secondary"></i></span></a>';
             } else {
                 return '<a href="#"><span class="iq-bg-info mr-2"><i class="far fa-eye text-secondary"></i></span></a>';
             }
