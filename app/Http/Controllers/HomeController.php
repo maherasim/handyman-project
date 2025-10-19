@@ -24,6 +24,7 @@ use App\Models\BookingRating;
 use App\Models\CommissionEarning;
 use App\Models\SubscriptionTransaction;
 use App\Models\HelpDesk;
+use Illuminate\Support\Facades\Schema;
 use DB;
 
 class HomeController extends Controller
@@ -131,6 +132,7 @@ class HomeController extends Controller
         $revenuedata = ProviderPayout::selectRaw('sum(amount) as total , DATE_FORMAT(updated_at , "%m") as month')
             ->where('provider_id', $user->id)
             ->whereYear('updated_at', date('Y'))
+            ->where('status', 'paid')
             ->groupBy('month')
             ->get()->toArray();
 
@@ -149,7 +151,7 @@ class HomeController extends Controller
         })
         ->sum('final_total_tax') ?? 0;
 
-    $data['total_earning'] = CommissionEarning::whereIn('user_type',['admin', 'demo_admin'])
+        $data['total_earning'] = CommissionEarning::whereIn('user_type',['admin', 'demo_admin'])
         ->whereIn('commission_status', ['unpaid','paid'])
         ->sum('commission_amount') ?? 0;
 
@@ -194,11 +196,22 @@ $data['remaining_payout'] = round($providerRemainingPayout, $digitafter_decimal_
 
 
 
-        $data['total_earning'] = ProviderPayout::where('provider_id', $user->id)->sum('amount') ?? 0;
+        $data['total_earning'] = ProviderPayout::where('provider_id', $user->id)
+            ->where('status', 'paid')
+            ->sum('amount') ?? 0;
 
     } elseif ($user->hasRole('handyman')) {
         $data['remaining_payout'] = CommissionEarning::where('employee_id', $user->id)->where('commission_status', 'unpaid')->sum('commission_amount') ?? 0;
-        $data['total_earning'] = HandymanPayout::where('handyman_id', $user->id)->sum('amount') ?? 0;
+        if (Schema::hasColumn('handyman_payouts', 'status')) {
+            $data['total_earning'] = HandymanPayout::where('handyman_id', $user->id)
+                ->where('status', 'paid')
+                ->sum('amount') ?? 0;
+        } else {
+            $data['total_earning'] = CommissionEarning::where('user_type', 'handyman')
+                ->where('employee_id', $user->id)
+                ->where('commission_status', 'paid')
+                ->sum('commission_amount') ?? 0;
+        }
     }
 
     $sitesetup = Setting::where('type','site-setup')->where('key', 'site-setup')->first();

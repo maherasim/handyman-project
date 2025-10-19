@@ -31,6 +31,7 @@ use App\Models\{
     LiveLocation,
     CommissionEarning,
 };
+use Illuminate\Support\Facades\Schema;
 use App\Http\Resources\API\{
     BookingResource,
     ServiceResource,
@@ -205,7 +206,9 @@ class DashboardController extends Controller
 
         $handyman = UserResource::collection(User::myUsers()->where('status', 1)->take(4)->get());
 
-        $total_revenue    = ProviderPayout::where('provider_id',$provider->id)->sum('amount') ?? 0;
+        $total_revenue    = ProviderPayout::where('provider_id',$provider->id)
+            ->where('status','paid')
+            ->sum('amount') ?? 0;
 
         $handymanIds = User::with('providerHandyman')
         ->where('provider_id', $provider->id)
@@ -233,6 +236,7 @@ class DashboardController extends Controller
         $revenuedata = ProviderPayout::selectRaw('sum(amount) as total , DATE_FORMAT(updated_at , "%m") as month')
                 ->where('provider_id', $user->id)
                 ->whereYear('updated_at', date('Y'))
+                ->where('status', 'paid')
                 // ->whereIn('commission_status', ['paid'])
                 ->groupBy('month');
         $revenuedata= $revenuedata->get();
@@ -329,12 +333,24 @@ class DashboardController extends Controller
 
         $commission = HandymanType::where('id',$handyman->handymantype_id)->first();
 
-        $total_revenue    = HandymanPayout::where('handyman_id',auth()->user()->id)->sum('amount') ?? 0;
+        if (Schema::hasColumn('handyman_payouts', 'status')) {
+            $total_revenue = HandymanPayout::where('handyman_id', auth()->user()->id)
+                ->where('status', 'paid')
+                ->sum('amount') ?? 0;
+        } else {
+            $total_revenue = CommissionEarning::where('user_type', 'handyman')
+                ->where('employee_id', auth()->user()->id)
+                ->where('commission_status', 'paid')
+                ->sum('commission_amount') ?? 0;
+        }
         $remaining_payout  = CommissionEarning::where('employee_id',$handyman->id)->where('commission_status', 'unpaid')->sum('commission_amount') ?? 0;
 
         $revenuedata = HandymanPayout::selectRaw('sum(amount) as total , DATE_FORMAT(updated_at , "%m") as month' )
                         ->where('handyman_id',auth()->user()->id)
                         ->whereYear('updated_at',date('Y'))
+                        ->when(Schema::hasColumn('handyman_payouts','status'), function ($q) {
+                            $q->where('status','paid');
+                        })
                         // ->whereIn('commission_status', ['unpaid', 'paid'])
                         ->groupBy('month');
         $revenuedata= $revenuedata->get();

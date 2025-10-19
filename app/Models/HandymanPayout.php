@@ -10,7 +10,7 @@ class HandymanPayout extends Model
     use HasFactory;
     protected $table = 'handyman_payouts';
     protected $fillable = [
-        'handyman_id', 'payment_method', 'description','amount'
+        'handyman_id', 'payment_method', 'description','amount','status'
     ];
 
     protected $casts = [
