@@ -509,28 +509,12 @@
                                 @endhasanyrole
 
                                 @php
-                                    $authUser = auth()->user();
-                                    $isBookParticipant = $authUser && (
-                                        ($authUser->hasRole('provider') && ($authUser->id ?? 0) === ($bookingdata->provider_id ?? 0)) ||
-                                        ($authUser->hasRole('user') && ($authUser->id ?? 0) === ($bookingdata->customer_id ?? 0))
-                                    );
-                                    $advancePaidForBooking = false;
-                                    if (isset($payment)) {
-                                        if (($payment->payment_type ?? null) === 'bank_transfer') {
-                                            $advancePaidForBooking = (int) ($payment->status ?? 0) === 1;
-                                        } else {
-                                            // Any non-bank-transfer payment implies funds captured
-                                            $advancePaidForBooking = true;
-                                        }
-                                    }
+                                    $currentUser = auth()->user();
+                                    $isProvider = $currentUser && $currentUser->id == ($bookingdata->provider_id ?? 0);
+                                    $isCustomer = $currentUser && $currentUser->id == ($bookingdata->customer_id ?? 0);
+                                    $isHandyman = $currentUser && ($bookingdata->handymanAdded && $bookingdata->handymanAdded->contains('handyman_id', $currentUser->id));
                                 @endphp
-                                @if ($isBookParticipant && $advancePaidForBooking)
-                                    @php
-                                        $currentUser = auth()->user();
-                                        $isProvider = $currentUser && $currentUser->id == $bookingdata->provider_id;
-                                        $isCustomer = $currentUser && $currentUser->id == $bookingdata->customer_id;
-                                        $isHandyman = $currentUser && $bookingdata->handymanAdded->contains('handyman_id', $currentUser->id);
-                                    @endphp
+                                @if ($isProvider || $isCustomer || $isHandyman)
                                     
                                     @if($isCustomer)
                                         {{-- Customer sees: Chat with Provider and Chat with Handyman --}}
