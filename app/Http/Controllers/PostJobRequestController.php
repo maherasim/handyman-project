@@ -1838,6 +1838,16 @@ class PostJobRequestController extends Controller
             $result->postServiceMapping()->insert($services);
         }
 
+        // Fire provider notifications when a job is created or updated
+        try {
+            $this->sendNotification([
+                'activity_type' => 'job_requested',
+                'post_job' => $result,
+            ]);
+        } catch (\Throwable $e) {
+            // Silent fail; do not block the flow on notification issues
+        }
+
         $message = $result->wasRecentlyCreated ? __('messages.save_form', ['form' => __('messages.postrequest')])
             : __('messages.update_form', ['form' => __('messages.postrequest')]);
 

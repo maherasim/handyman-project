@@ -336,26 +336,35 @@ trait NotificationTrait
             case "job_requested":
                 $data['activity_message'] = __('messages.post_request_message', ['name' => $post_job->customer->display_name,]);
                 $data['activity_type'] =  __('messages.post_request_title');
-                $customerLatitude = 50.930557;
-                $customerLongitude = -102.80777;
-                $radius = 50;
                 $job_id= isset($post_job->id) ? $post_job->id :'';
 
-                $providers = \App\Models\ProviderAddressMapping::selectRaw("id, provider_id, address, latitude, longitude,
-                                ( 6371 * acos( cos( radians($customerLatitude) ) *
-                                cos( radians( latitude ) )
-                                * cos( radians( longitude ) - radians($customerLongitude)
-                                ) + sin( radians($customerLatitude) ) *
-                                sin( radians( latitude ) ) )
-                                ) AS distance")
-                    ->having("distance", "<=", $radius)
-                    ->orderBy("distance", 'asc')
-                    ->get();
-                $providerId = $providers->pluck('providers.id')->toArray();
-                $data['provider_name'] = $post_job->provider->display_name ?? null;
+                // Try proximity-based provider notification if we have coordinates
+                $providerId = [];
+                if (!empty($post_job->latitude) && !empty($post_job->longitude)) {
+                    $customerLatitude = (float) $post_job->latitude;
+                    $customerLongitude = (float) $post_job->longitude;
+                    $radius = 50; // km
+                    $providers = \App\Models\ProviderAddressMapping::selectRaw("id, provider_id, address, latitude, longitude,
+                                    ( 6371 * acos( cos( radians(?) ) *
+                                    cos( radians( latitude ) )
+                                    * cos( radians( longitude ) - radians(?) )
+                                    + sin( radians(?) ) *
+                                    sin( radians( latitude ) ) )
+                                    ) AS distance", [$customerLatitude, $customerLongitude, $customerLatitude])
+                        ->having("distance", "<=", $radius)
+                        ->orderBy("distance", 'asc')
+                        ->get();
+                    $providerId = $providers->pluck('provider_id')->toArray();
+                }
+
+                // Fallback: notify all active providers if none resolved by proximity
+                if (empty($providerId)) {
+                    $providerId = \App\Models\User::where('user_type', 'provider')->where('status', 1)->pluck('id')->toArray();
+                }
+
                 $data['user_name'] = isset($post_job->customer) ? $post_job->customer->display_name : '';
                 $activity_data = [
-                    'post_request_id' => $post_job->post_request_id,
+                    'post_request_id' => $post_job->id,
                     'post_job_name' => $post_job->title,
                     'customer_id' => $post_job->customer_id,
                     'customer_name' => isset($post_job->customer) ? $post_job->customer->display_name : '',
@@ -363,8 +372,6 @@ trait NotificationTrait
 
                 $data['activity_data'] = json_encode($activity_data);
                 \App\Models\BookingActivity::create($data);
-
-
                 break;
             case "user_accept_bid":
 
