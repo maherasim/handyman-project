@@ -46,6 +46,93 @@
             color: #6c757d;
             margin-top: 2px;
         }
+        
+<style>
+   .price-box {
+      background-color: #007bff; /* Blue background */
+      color: white; /* White text for better visibility */
+      font-size: 18px; /* Increased text size */
+      font-weight: bold;
+      color: red; /* Red text for price */
+      text-align: center;
+      padding: 10px 15px; /* Added consistent padding */
+      border-radius: 10px; /* Rounded corners */
+      display: inline-block;
+      radius: 15%;
+      width: 180px; /* Increased width */
+      margin: 5px 0; /* Optional: Adds spacing around the box */
+   }
+   .service-asim {
+            height: 10.5rem !important;
+            object-fit: cover;
+        }
+        .provider-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+}
+
+.provider-name {
+    display: inline-block;
+    line-height: 1.2;
+    word-break: break-word;
+}
+
+.provider-name span {
+    display: block;
+}
+
+/* Card polish */
+.service-box-card { 
+    border: 1px solid #eef0f2; 
+    transition: box-shadow .2s ease, transform .2s ease; 
+    background: #fff; 
+    padding: 15px;
+    border-radius: 12px;
+}
+.service-box-card:hover { 
+    box-shadow: 0 10px 24px rgba(18,38,63,.08); 
+    transform: translateY(-2px); 
+}
+.social-share img, .social-share svg { 
+    width: 28px; 
+    height: 28px; 
+    border-radius: 6px; 
+}
+
+/* Statistics section improvements */
+.stats-section {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 12px 8px;
+    margin: 12px 0;
+}
+
+.stats-item {
+    text-align: center;
+    padding: 4px;
+}
+
+.stats-icon {
+    width: 16px;
+    height: 16px;
+    margin-right: 4px;
+}
+
+.stats-value {
+    font-weight: 600;
+    font-size: 14px;
+    color: #2c3e50;
+}
+
+.stats-label {
+    font-size: 11px;
+    color: #6c757d;
+    margin-top: 2px;
+}
+
+</style>
     </style>
     <!-- Banner -->
     <div class="padding-top-bottom-90 bg-light">
