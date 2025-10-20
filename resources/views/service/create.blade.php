@@ -1,5 +1,9 @@
 <x-master-layout>
-    <script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+    <link rel="stylesheet" href="https://cdn.quilljs.com/1.3.7/quill.snow.css">
+    <script src="https://cdn.quilljs.com/1.3.7/quill.min.js"></script>
+    <style>
+        .ql-editor { min-height: 250px; }
+    </style>
 
     <div class="container-fluid">
         <div class="row">
@@ -913,18 +917,41 @@
 
         <script>
             document.addEventListener('DOMContentLoaded', function () {
-                // Fallback: ensure TinyMCE is loaded before init
-                function initEditors() {
-                    if (!window.tinymce) return setTimeout(initEditors, 100);
-                    tinymce.init({
-                        selector: 'textarea#description, textarea#cancellation_policy',
-                        plugins: 'lists link image preview code',
-                        toolbar: 'undo redo | bold italic underline | bullist numlist | link | preview | code',
-                        menubar: false,
-                        height: 250,
+                // Replace textareas with Quill editors and sync to hidden fields for submit
+                function mountQuill(textareaId) {
+                    var textarea = document.getElementById(textareaId);
+                    if (!textarea) return;
+
+                    // Create container for Quill
+                    var container = document.createElement('div');
+                    container.id = textareaId + '_quill';
+                    container.innerHTML = textarea.value || '';
+                    textarea.classList.add('d-none');
+                    textarea.parentNode.insertBefore(container, textarea.nextSibling);
+
+                    var quill = new Quill('#' + container.id, {
+                        theme: 'snow',
+                        modules: {
+                            toolbar: [
+                                ['bold', 'italic', 'underline'],
+                                [{ list: 'ordered' }, { list: 'bullet' }],
+                                ['link'],
+                                ['clean']
+                            ]
+                        }
                     });
+
+                    // On form submit, copy HTML back into original textarea for backend
+                    var form = textarea.closest('form');
+                    if (form) {
+                        form.addEventListener('submit', function () {
+                            textarea.value = quill.root.innerHTML;
+                        });
+                    }
                 }
-                initEditors();
+
+                mountQuill('description');
+                mountQuill('cancellation_policy');
             });
         </script>
     @endsection
