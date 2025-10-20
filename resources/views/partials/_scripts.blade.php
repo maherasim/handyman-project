@@ -120,7 +120,51 @@
 
  <!-- slider JavaScript -->
  <!-- <script src="{{ asset('js/slider.js')}}"></script> -->
- 
+
+ <!-- Emoji picker -->
+ <script src="{{ asset('vendor/emoji-picker-element/index.js')}}" type="module"></script>
+ @if(isset($assets) && (in_array('datatable',$assets) || in_array('datatable_builder',$assets)))
+    <script src="{{ asset('vendor/datatables/js/jquery.dataTables.min.js') }}"></script>
+    <script src="{{ asset('vendor/datatables/js/dataTables.bootstrap4.min.js') }}"></script>
+    <script src="{{ asset('vendor/datatables/js/dataTables.buttons.min.js') }}"></script>
+    <script src="{{ asset('vendor/datatables/js/buttons.bootstrap4.min.js') }}"></script>
+    <script src="{{ asset('vendor/datatables/buttons.server-side.js') }}"></script>
+    <script src="{{ asset('vendor/datatables/js/dataTables.select.min.js') }}"></script>
+@endif
+    <script src="{{ asset('vendor/fullcalendar/core/main.js') }}"></script>
+    <script src="{{ asset('vendor/fullcalendar/interaction/main.js') }}"></script>
+    <script src="{{ asset('vendor/fullcalendar/daygrid/main.js') }}"></script>
+    <script src="{{ asset('vendor/fullcalendar/timegrid/main.js') }}"></script>
+    <script src="{{ asset('vendor/fullcalendar/list/main.js') }}"></script>
+    <script src="{{ asset('vendor/fullcalendar/bootstrap/main.js') }}"></script>
  <!-- app JavaScript -->
    <script src="{{ asset('js/app.js')}}"></script>
- @include('helper.app_message') 
+ @include('helper.app_message')
+<script>
+// Global SweetAlert handler for cash approval links
+$(document).on('click', 'a[data-approve-cash="1"]', function(e){
+    e.preventDefault();
+    var href = $(this).attr('href');
+    var doRedirect = function(){ window.location.href = href; };
+
+    if (typeof Swal !== 'undefined' && Swal.fire) {
+        Swal.fire({
+            title: 'Approve Cash Payment?',
+            text: 'This will mark the payment as approved and update related records.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, approve',
+            cancelButtonText: 'Cancel'
+        }).then(function(result){ if(result.isConfirmed){ doRedirect(); } });
+    } else if (typeof swal !== 'undefined') {
+        swal({
+            title: 'Approve Cash Payment?',
+            text: 'This will mark the payment as approved and update related records.',
+            icon: 'warning',
+            buttons: ['Cancel', 'Yes, approve']
+        }).then(function(willApprove){ if(willApprove){ doRedirect(); } });
+    } else {
+        if (confirm('Approve Cash Payment?')) { doRedirect(); }
+    }
+});
+</script>
