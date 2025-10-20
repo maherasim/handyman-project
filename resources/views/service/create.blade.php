@@ -1,6 +1,5 @@
 <x-master-layout>
-    <script src="https://cdn.tiny.cloud/1/m5d82gd2rwdlg96hsxpx0e5wwmfrl2zzkcw35ys8o3glilgq/tinymce/5/tinymce.min.js"
-        referrerpolicy="origin"></script>
+    <script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
 
     <div class="container-fluid">
         <div class="row">
@@ -313,11 +312,11 @@
                         <div class="row">
                             <div class="form-group col-md-6">
                                 {{ html()->label(__('messages.description'), 'description')->class('form-control-label') }}
-                                {{ html()->textarea('description', old('description', $servicedata->description))->class('form-control textarea')->rows(3)->placeholder(__('messages.description')) }}
+                                {{ html()->textarea('description', old('description', $servicedata->description))->class('form-control textarea js-richtext')->rows(3)->placeholder(__('messages.description'))->id('description') }}
                             </div>
                             <div class="form-group col-md-6">
                                 {{ html()->label(__('Cancellation Policy & Fees'), 'cancellation_policy')->class('form-control-label') }}
-                                {{ html()->textarea('cancellation_policy', old('cancellation_policy', $servicedata->cancellation_policy))->class('form-control textarea')->rows(3)->placeholder(__('cancellation_policy')) }}
+                                {{ html()->textarea('cancellation_policy', old('cancellation_policy', $servicedata->cancellation_policy))->class('form-control textarea js-richtext')->rows(3)->placeholder(__('cancellation_policy'))->id('cancellation_policy') }}
                             </div>
                             @if (!empty($slotservice) && $slotservice == 1)
                                 <div class="form-group col-md-3">
@@ -913,20 +912,20 @@
 
 
         <script>
-            tinymce.init({
-                selector: '#description', // Target the ID of your textarea
-                plugins: 'lists link image preview', // Add any plugins you want to use
-                toolbar: 'undo redo | bold italic | bullist numlist | link image preview',
-                menubar: false
-            })
-        </script>
-        <script>
-            tinymce.init({
-                selector: '#cancellation_policy', // Target the ID of your textarea
-                plugins: 'lists link image preview', // Add any plugins you want to use
-                toolbar: 'undo redo | bold italic | bullist numlist | link image preview',
-                menubar: false
-            })
+            document.addEventListener('DOMContentLoaded', function () {
+                // Fallback: ensure TinyMCE is loaded before init
+                function initEditors() {
+                    if (!window.tinymce) return setTimeout(initEditors, 100);
+                    tinymce.init({
+                        selector: 'textarea#description, textarea#cancellation_policy',
+                        plugins: 'lists link image preview code',
+                        toolbar: 'undo redo | bold italic underline | bullist numlist | link | preview | code',
+                        menubar: false,
+                        height: 250,
+                    });
+                }
+                initEditors();
+            });
         </script>
     @endsection
 </x-master-layout>
