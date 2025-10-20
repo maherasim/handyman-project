@@ -686,9 +686,20 @@
                                             </div>
                                         </ul>
 
+                                        @php
+                                            $fullTitle = trim($data->name ?? '');
+                                            $words = preg_split('/\s+/', $fullTitle, -1, PREG_SPLIT_NO_EMPTY);
+                                            $shortTitle = implode(' ', array_slice($words, 0, 4));
+                                            $hasMoreTitle = count($words) > 4;
+                                        @endphp
                                         <a href="{{ route('service.detail', $data->id) }}" class="service-heading mt-2 d-block p-0 text-decoration-none">
-                                            <h5 class="service-title font-size-18 line-count-2">{{ $data->name }}</h5>
+                                            <h5 class="service-title font-size-18 line-count-2">
+                                                <span id="s3-title-{{ $data->id }}" class="service-title-text" data-expanded="0" data-short-title="{{ $shortTitle }}" data-full-title="{{ $fullTitle }}">{{ $hasMoreTitle ? $shortTitle : $fullTitle }}</span>
+                                            </h5>
                                         </a>
+                                        @if($hasMoreTitle)
+                                            <button type="button" class="btn btn-link p-0 ms-1 see-more-title" data-target="#s3-title-{{ $data->id }}">{{ __('See more') }}</button>
+                                        @endif
                                         <h5 class="mt-0 mb-0 text-truncate" style="font-size:12px;">
                                             <span style="font-size: 12px;">{{ optional($data->city)->name ?? 'City' }}, {{ optional($data->country)->name ?? 'Country' }}</span>
                                         </h5>
@@ -895,9 +906,20 @@
                                     </div>
                                     
 
+                                    @php
+                                        $fullTitle = trim($data->name ?? '');
+                                        $words = preg_split('/\s+/', $fullTitle, -1, PREG_SPLIT_NO_EMPTY);
+                                        $shortTitle = implode(' ', array_slice($words, 0, 4));
+                                        $hasMoreTitle = count($words) > 4;
+                                    @endphp
                                     <a href="{{ route('service.detail', $data->id) }}" class="service-heading mt-2 d-block p-0 text-decoration-none">
-                                        <h5 class="service-title font-size-18 line-count-2">{{ $data->name }}</h5>
+                                        <h5 class="service-title font-size-18 line-count-2">
+                                            <span id="s4-title-{{ $data->id }}" class="service-title-text" data-expanded="0" data-short-title="{{ $shortTitle }}" data-full-title="{{ $fullTitle }}">{{ $hasMoreTitle ? $shortTitle : $fullTitle }}</span>
+                                        </h5>
                                     </a>
+                                    @if($hasMoreTitle)
+                                        <button type="button" class="btn btn-link p-0 ms-1 see-more-title" data-target="#s4-title-{{ $data->id }}">{{ __('See more') }}</button>
+                                    @endif
                                     <h5 class="mt-0 mb-0 text-truncate" style="font-size:12px;">
                                         <span style="font-size: 12px;">{{ optional($data->city)->name ?? 'City' }}, {{ optional($data->country)->name ?? 'Country' }}</span>
                                     </h5>
@@ -1335,6 +1357,26 @@
     <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function() {
+            // Toggle service title see more/less without navigating
+            jQuery(document).on('click', '.see-more-title', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                const target = jQuery(this).data('target');
+                const $el = jQuery(target);
+                if ($el.length === 0) return;
+                const expanded = $el.data('expanded') === 1;
+                const shortTitle = $el.data('short-title');
+                const fullTitle = $el.data('full-title');
+                if (expanded) {
+                    $el.text(shortTitle);
+                    $el.data('expanded', 0);
+                    jQuery(this).text("{{ __('See more') }}");
+                } else {
+                    $el.text(fullTitle);
+                    $el.data('expanded', 1);
+                    jQuery(this).text("{{ __('See less') }}");
+                }
+            });
             var $sliders = jQuery(document).find('.iq-team-slider');
             if ($sliders.length > 0) {
                 $sliders.each(function() {
