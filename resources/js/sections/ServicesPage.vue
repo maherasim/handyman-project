@@ -22,14 +22,7 @@
             </select>
 
           </div>
-          <div class="col-lg-2 col-md-4 col-sm-6 mt-sm-0 mt-3">
-            <select :key="'prov-'+(provider_data?.length || 0)" ref="providerDropdownRef" id="providerDropdown" v-model="selectedProvider"
-              class="me-5 form-select select2" :disabled="isEmpty">
-              <option value="">{{ $t('landingpage.all_providers') }}</option>
-              <option v-for="providers in provider_data" :key="providers.id" :value="providers.id">{{
-                providers.display_name || providers.first_name || providers.name }}</option>
-            </select>
-          </div>
+          
           <div class="col-lg-2 col-md-4 col-sm-6 mt-sm-0 mt-3">
             <select :key="'country-'+(countries?.length || 0)" ref="countryDropdownRef" id="countryDropdown" v-model="selectedCountry"
               class="me-5 form-select select2">
@@ -98,11 +91,11 @@ const CURRENCY_SYMBOL = ref(window.defaultCurrencySymbol)
 
 const categoryDropdownRef = ref(null);
 const subCategoryDropdownRef = ref(null);
-const providerDropdownRef = ref(null);
+// const providerDropdownRef = ref(null);
 const countryDropdownRef = ref(null);
 const cityDropdownRef = ref(null);
 const priceDropdownRef = ref(null);
-const sortOptionRef = ref(null);
+// const sortOptionRef = ref(null);
 const props = defineProps(['link', 'isEmpty', 'service']);
 
 const isEmpty = props.isEmpty;
@@ -122,14 +115,14 @@ watch(() => selectedCategory.value, () => ajaxReload())
 const selectedSubCategory = ref('')
 watch(() => selectedSubCategory.value, () => ajaxReload())
 
-const selectedProvider = ref('')
-watch(() => selectedProvider.value, () => ajaxReload())
+// const selectedProvider = ref('')
+// watch(() => selectedProvider.value, () => ajaxReload())
 
 const selectedPriceRange = ref('')
 watch(() => selectedPriceRange.value, () => ajaxReload())
 
-const selectedSortOption = ref('')
-watch(() => selectedSortOption.value, () => ajaxReload())
+// const selectedSortOption = ref('')
+// watch(() => selectedSortOption.value, () => ajaxReload())
 
 const search = ref('')
 watch(() => search.value, () => ajaxReload())
@@ -150,11 +143,11 @@ useDataTable({
     return {
       selectedCategory: selectedCategory.value,
         selectedSubCategory: selectedSubCategory.value,
-      selectedProvider: selectedProvider.value,
+      // selectedProvider: selectedProvider.value,
       selectedCountry: selectedCountry.value,
       selectedCity: selectedCity.value,
       selectedPriceRange: selectedPriceRange.value,
-      selectedSortOption: selectedSortOption.value,
+      // selectedSortOption: selectedSortOption.value,
       search: search.value,
     }
   }
@@ -164,7 +157,7 @@ const store = useSection();
 const service_data = computed(() => store.service_list_data);
 const featured_category_data = computed(() => store.featured_category_list_data);
 const category_data = computed(() => store.categries_list_data.data);
-const provider_data = computed(() => store.provider_list_data);
+// const provider_data = computed(() => store.provider_list_data);
 
 const minPrice = computed(() => Math.min(...service_data.value.map(item => item.price)));
 const maxPrice = computed(() => Math.max(...service_data.value.map(item => item.price)));
@@ -194,11 +187,11 @@ const loadCategoryData = async () => {
   } catch (e) { console.error('load_categories failed', e); }
 }
 
-const loadProviderData = async () => {
-  try {
-    await store.get_provider_list({ per_page: 'all', user_type: 'provider' });
-  } catch (e) { console.error('load_providers failed', e); }
-}
+// const loadProviderData = async () => {
+//   try {
+//     await store.get_provider_list({ per_page: 'all', user_type: 'provider' });
+//   } catch (e) { console.error('load_providers failed', e); }
+// }
 
 const loadFeaturedCategoryData = async () => {
   try {
@@ -222,11 +215,10 @@ onMounted(() => {
   setTimeout(() => {
     initSelect2(categoryDropdownRef.value);
     initSelect2(subCategoryDropdownRef.value);
-    initSelect2(providerDropdownRef.value);
     initSelect2(countryDropdownRef.value);
     initSelect2(cityDropdownRef.value);
     initSelect2(priceDropdownRef.value);
-    if (sortOptionRef.value) initSelect2(sortOptionRef.value);
+    // if (sortOptionRef.value) initSelect2(sortOptionRef.value);
   });
 
   $(categoryDropdownRef.value).on('change', function () {
@@ -236,9 +228,7 @@ onMounted(() => {
   $(subCategoryDropdownRef.value).on('change', function () {
     selectedSubCategory.value = $(this).val();
   });
-  $(providerDropdownRef.value).on('change', function () {
-    selectedProvider.value = $(this).val();
-  });
+  // provider filter removed
 
   $(countryDropdownRef.value).on('change', function () {
     selectedCountry.value = $(this).val();
@@ -257,14 +247,11 @@ onMounted(() => {
   $(priceDropdownRef.value).on('change', function () {
     selectedPriceRange.value = $(this).val();
   });
-  $(sortOptionRef.value).on('change', function () {
-    selectedSortOption.value = $(this).val();
-  });
+  // sort filter removed
 
   // Load filters first so dropdowns have data before select2 initializes options rendering
   Promise.all([
     loadCategoryData(),
-    loadProviderData(),
     loadCountries()
   ]).then(() => {
     // Optionally load dependent datasets
