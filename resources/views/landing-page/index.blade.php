@@ -850,7 +850,7 @@
                                         
 
 
-                                        <div class="d-flex mt-0 " style="gap: 18px; justify-content: center;">
+                                        <div class="d-flex mt-3 " style="gap: 18px; justify-content: center;">
                                             <a href="#"><img
                                                     src="https://static.vecteezy.com/system/resources/previews/016/716/481/original/facebook-icon-free-png.png"
                                                     style="width: 30px; border-radius: 8px;" alt=""></a>
@@ -1060,7 +1060,7 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="d-flex mt-0 " style="gap: 18px; justify-content: center;">
+                                            <div class="d-flex mt-3 " style="gap: 18px; justify-content: center;">
                                                 <a href="#"><img
                                                         src="https://static.vecteezy.com/system/resources/previews/016/716/481/original/facebook-icon-free-png.png"
                                                         style="width: 30px; border-radius: 8px;" alt=""></a>
