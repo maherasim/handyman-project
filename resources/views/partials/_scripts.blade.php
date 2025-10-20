@@ -120,23 +120,7 @@
 
  <!-- slider JavaScript -->
  <!-- <script src="{{ asset('js/slider.js')}}"></script> -->
-
- <!-- Emoji picker -->
- <script src="{{ asset('vendor/emoji-picker-element/index.js')}}" type="module"></script>
- @if(isset($assets) && (in_array('datatable',$assets) || in_array('datatable_builder',$assets)))
-    <script src="{{ asset('vendor/datatables/js/jquery.dataTables.min.js') }}"></script>
-    <script src="{{ asset('vendor/datatables/js/dataTables.bootstrap4.min.js') }}"></script>
-    <script src="{{ asset('vendor/datatables/js/dataTables.buttons.min.js') }}"></script>
-    <script src="{{ asset('vendor/datatables/js/buttons.bootstrap4.min.js') }}"></script>
-    <script src="{{ asset('vendor/datatables/buttons.server-side.js') }}"></script>
-    <script src="{{ asset('vendor/datatables/js/dataTables.select.min.js') }}"></script>
-@endif
-    <script src="{{ asset('vendor/fullcalendar/core/main.js') }}"></script>
-    <script src="{{ asset('vendor/fullcalendar/interaction/main.js') }}"></script>
-    <script src="{{ asset('vendor/fullcalendar/daygrid/main.js') }}"></script>
-    <script src="{{ asset('vendor/fullcalendar/timegrid/main.js') }}"></script>
-    <script src="{{ asset('vendor/fullcalendar/list/main.js') }}"></script>
-    <script src="{{ asset('vendor/fullcalendar/bootstrap/main.js') }}"></script>
+ 
  <!-- app JavaScript -->
    <script src="{{ asset('js/app.js')}}"></script>
  @include('helper.app_message') 
