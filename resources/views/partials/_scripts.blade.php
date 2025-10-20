@@ -1,13 +1,8 @@
-  <!-- app JavaScript -->
-  <script src="{{ asset('js/app.js')}}"></script>
-  @include('helper.app_message')
-  <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-      tooltipTriggerList.forEach(function (tooltipTriggerEl) {
-        if (window.bootstrap && bootstrap.Tooltip) {
-          new bootstrap.Tooltip(tooltipTriggerEl)
-        }
-      })
-    });
-  </script>
+ <!-- Backend Bundle JavaScript -->
+ <script src="{{ asset('js/backend-bundle.min.js')}}"></script>
+<script src="{{ asset('vendor/tinymce/js/tinymce/tinymce.min.js') }}"></script>
+<script src="{{ asset('vendor/tinymce/js/tinymce/jquery.tinymce.min.js') }}"></script>
+<link href="{{ asset('css/dragula.css') }}" rel="stylesheet">
+<script src="{{ asset('js/dragula.min.js') }}"></script>
+<script src="{{ asset('js/swiper-bundle.min.js') }}"></script>
+
