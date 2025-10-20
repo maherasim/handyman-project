@@ -608,7 +608,7 @@
                                             <a href="{{ route('service.detail', $data->id) }}" class="service-img">
                                                 <img src="{{ getSingleMedia($data, 'service_attachment', null) }}"
                                                     alt="service"
-                                                    class="service-img w-100 object-cover img-fluid rounded-3">
+                                                    class="service-asim w-100 object-cover img-fluid rounded-3">
                                             </a>
 
                                             @if (auth()->check() && auth()->user()->hasRole('user'))
@@ -676,9 +676,22 @@
                                                 </form>
                                             @endif
                                         </div>
-                                        <a href="{{ route('service.detail', $data->id) }}" class="service-heading mt-4 d-block p-0">
+                                        <ul>
+                                            <div class="service d-flex justify-content-center" style="position:relative; z-index:1111; margin:auto; background-image: url('{{ asset('images/icon/banner2.jpg') }}'); background-size: cover; width:85% ; margin-top:-32px;  background-repeat: no-repeat; background-position: center; padding: 10px 20px; color: white; font-weight: 600; font-size: 18px; border-radius: 10px; border: 3px solid #E1DCDD;">
+                                                @if($data->price==0)
+                                                    <li class="text-primary fw-500 d-inline-block position-relative font-size-18">Free</li>
+                                                @else
+                                                    <li class="text-white fw-500 d-inline-block position-relative font-size-18">{{ getPriceFormat($data->price) }} @if(!empty($data->type)) / {{ $data->type }} @endif</li>
+                                                @endif
+                                            </div>
+                                        </ul>
+
+                                        <a href="{{ route('service.detail', $data->id) }}" class="service-heading mt-2 d-block p-0 text-decoration-none">
                                             <h5 class="service-title font-size-18 line-count-2">{{ $data->name }}</h5>
                                         </a>
+                                        <h5 class="mt-0 mb-0 text-truncate" style="font-size:12px;">
+                                            <span style="font-size: 12px;">{{ optional($data->city)->name ?? 'City' }}, {{ optional($data->country)->name ?? 'Country' }}</span>
+                                        </h5>
                                         <ul class="list-inline p-0 mt-1 mb-0 price-content">
                                             <li class="text-primary fw-500 d-inline-block position-relative font-size-18">
                                                 @if ($data->price > 0)
@@ -727,19 +740,38 @@
                                             </div>
                                         </div>
                                         
-                                        <div class="d-flex align-items-center mt-2 gap-3"> 
-                                            <div class="d-flex align-items-center gap-2 flex-wrap ml-2">
-                                                <div class="star-rating">
-                                                    <rating-component :readonly="true" :showrating="false" :ratingvalue="1" />
+                                        <div class="stats-section">
+                                            <div class="row g-2 text-center">
+                                                <div class="col-4">
+                                                    <div class="stats-item">
+                                                        <div class="d-flex align-items-center justify-content-center mb-1">
+                                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" class="stats-icon text-warning" xmlns=" "><path d="M12 2L15.09 8.26L22 9L17 14L18.18 21L12 17.77L5.82 21L7 14L2 9L8.91 8.26L12 2Z" fill="currentColor"/></svg>
+                                                            <span class="stats-value">{{ round($data->avg_rating ?? 0, 1) }}</span>
+                                                        </div>
+                                                        <div class="stats-label">
+                                                            <a href="{{ route('rating.all', ['service_id' => $data->id]) }}" class="text-decoration-none text-muted">({{ $data->total_reviews ?? 0 }} {{ ($data->total_reviews ?? 0) > 1 ? __('messages.reviews') : __('messages.review') }})</a>
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                                <h6 class="lh-sm mb-0">{{  $data->avg_rating }}</h6>
-                                                <a href="{{ route('rating.all', ['service_id' => $data->id]) }}">({{  $data->total_reviews }} {{ __('messages.reviews') }})</a>
+                                                <div class="col-4">
+                                                    <div class="stats-item">
+                                                        <div class="d-flex align-items-center justify-content-center mb-1">
+                                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" class="stats-icon text-success" xmlns=" "><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                                            <span class="stats-value">{{ $data->booking_count ?? 0 }}</span>
+                                                        </div>
+                                                        <div class="stats-label">Bookings</div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-4">
+                                                    <div class="stats-item">
+                                                        <div class="d-flex align-items-center justify-content-center mb-1">
+                                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" class="stats-icon text-info" xmlns=" "><path d="M12 5c-7.633 0-10 7-10 7s2.367 7 10 7 10-7 10-7-2.367-7-10-7Zm0 12a5 5 0 1 1 0-10 5 5 0 0 1 0 10Zm0-8a3 3 0 1 0 .002 6.002A3 3 0 0 0 12 9Z" fill="currentColor"/></svg>
+                                                            <span class="stats-value">{{ $data->total_views ?? 0 }}</span>
+                                                        </div>
+                                                        <div class="stats-label">Views</div>
+                                                    </div>
+                                                </div>
                                             </div>
-                                            <p class="mb-0">{{ $data->booking_count }} Bookings</p>
-                                            <span class="ms-2 d-inline-flex align-items-center" title="Views">
-                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns=" "><path d="M12 5c-7.633 0-10 7-10 7s2.367 7 10 7 10-7 10-7-2.367-7-10-7Zm0 12a5 5 0 1 1 0-10 5 5 0 0 1 0 10Zm0-8a3 3 0 1 0 .002 6.002A3 3 0 0 0 12 9Z" fill="currentColor"/></svg>
-                                                <span class="ms-1">{{ $data->total_views ?? 0 }}</span>
-                                            </span>
                                         </div>
                                         
 
