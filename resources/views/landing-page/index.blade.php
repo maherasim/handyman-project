@@ -807,10 +807,27 @@
                                                 </a>
                                             </div>
                                             <div class="d-flex align-items-center justify-content-end">
-                                                <img src="{{ asset('images/icon/freeicon.jpg') }}" alt="icon"
-                                                    style="width: 26px; height: 26px; margin-right: 10px;">
-                                                <img src="{{ asset('images/icon/verifiedpng.png') }}" alt="icon"
-                                                    style="width: 26px; height: 26px;">
+                                                @php
+                                                    $plan_icon = asset('images/freepng.png');
+                                                    $provider = $data->providers;
+                                                    if ($provider && $provider->providerSubscription) {
+                                                        $rawPlan = strtolower(trim($provider->providerSubscription->plan_type ?? $provider->providerSubscription->title ?? ''));
+                                                        if (str_contains($rawPlan, 'silver')) {
+                                                            $plan_icon = asset('images/icon/silverpng.png');
+                                                        } elseif (str_contains($rawPlan, 'gold')) {
+                                                            $plan_icon = asset('images/goldpng.png');
+                                                        }
+                                                    }
+
+                                                    $providerId = optional($data->providers)->id;
+                                                    $isAllVerified = $providerId && function_exists('verify_provider_document') ? verify_provider_document($providerId) : false;
+                                                @endphp
+                                                <img src="{{ $plan_icon }}" alt="plan" style="width: 26px; height: 26px; margin-right: 10px;">
+                                                @if ($isAllVerified)
+                                                    <img src="{{ asset('images/icon/verified.jpg') }}" alt="verified" style="width: 26px; height: 26px;">
+                                                @else
+                                                    <img src="{{ asset('images/icon/notverifiedpng.png') }}" alt="not verified" style="width: 26px; height: 26px;">
+                                                @endif
                                             </div>
                                         </div>
                                         
@@ -1022,10 +1039,27 @@
                                                 </a>
                                             </div>
                                             <div class="d-flex align-items-center justify-content-end">
-                                                <img src="{{ asset('images/icon/freeicon.jpg') }}" alt="icon"
-                                                    style="width: 26px; height: 26px; margin-right: 10px;">
-                                                <img src="{{ asset('images/icon/verifiedpng.png') }}" alt="icon"
-                                                    style="width: 26px; height: 26px;">
+                                                @php
+                                                    $plan_icon = asset('images/freepng.png');
+                                                    $provider = $data->providers;
+                                                    if ($provider && $provider->providerSubscription) {
+                                                        $rawPlan = strtolower(trim($provider->providerSubscription->plan_type ?? $provider->providerSubscription->title ?? ''));
+                                                        if (str_contains($rawPlan, 'silver')) {
+                                                            $plan_icon = asset('images/icon/silverpng.png');
+                                                        } elseif (str_contains($rawPlan, 'gold')) {
+                                                            $plan_icon = asset('images/goldpng.png');
+                                                        }
+                                                    }
+
+                                                    $providerId = optional($data->providers)->id;
+                                                    $isAllVerified = $providerId && function_exists('verify_provider_document') ? verify_provider_document($providerId) : false;
+                                                @endphp
+                                                <img src="{{ $plan_icon }}" alt="plan" style="width: 26px; height: 26px; margin-right: 10px;">
+                                                @if ($isAllVerified)
+                                                    <img src="{{ asset('images/icon/verified.jpg') }}" alt="verified" style="width: 26px; height: 26px;">
+                                                @else
+                                                    <img src="{{ asset('images/icon/notverifiedpng.png') }}" alt="not verified" style="width: 26px; height: 26px;">
+                                                @endif
                                             </div>
                                             <div class="stats-section">
                                                 <div class="row g-2 text-center">
