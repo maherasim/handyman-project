@@ -339,17 +339,17 @@
                     @endif
                     <div class="form-group col-md-12">
                         {{ html()->label(__('experience'), 'experience')->class('form-control-label') }}
-                        {{ html()->textarea('experience', $user_data->experience)->class('form-control textarea')->rows(2)->placeholder(__('experience')) }}
+                        {{ html()->textarea('experience', $user_data->experience)->class('form-control textarea')->rows(2)->placeholder(__('experience'))->id('experience') }}
                     </div>
                     <div class="form-group col-md-12">
                         {{ html()->label(__('About Me'))->class('form-control-label')->for('about_me') }}
-                        {{ html()->textarea('about_me', $user_data->about_me)->class('form-control textarea')->rows(2)->placeholder(__('about_me')) }}
+                        {{ html()->textarea('about_me', $user_data->about_me)->class('form-control textarea')->rows(2)->placeholder(__('about_me'))->id('about_me') }}
                     </div>
 
 
                     <div class="form-group col-md-12">
                         {{ html()->label(__('messages.address'), 'address')->class('form-control-label') }}
-                        {{ html()->textarea('address', $user_data->address)->class('form-control textarea')->rows(2)->placeholder(__('messages.address')) }}
+                        {{ html()->textarea('address', $user_data->address)->class('form-control textarea')->rows(2)->placeholder(__('messages.address'))->id('address') }}
                     </div>
 
                     @if ($user_data->user_type == 'provider')
@@ -366,7 +366,7 @@
 
                         <div class="form-group col-md-12">
                             {{ html()->label(__('messages.description'))->class('form-control-label')->for('about_description') }}
-                            {{ html()->textarea('about_description', $user_data->about_description)->class('form-control textarea')->rows(2)->placeholder(__('messages.description')) }}
+                            {{ html()->textarea('about_description', $user_data->about_description)->class('form-control textarea')->rows(2)->placeholder(__('messages.description'))->id('about_description') }}
                         </div>
 
 
@@ -428,7 +428,10 @@
         </div>
     </div>
 </div>
- <script>
+<link rel="stylesheet" href="https://cdn.quilljs.com/1.3.7/quill.snow.css">
+<script src="https://cdn.quilljs.com/1.3.7/quill.min.js"></script>
+<style>.ql-editor{min-height:200px}</style>
+<script>
     $(document).ready(function () {
         $('.select2js').select2({
             width: '100%',
@@ -618,5 +621,27 @@
             $('#tax_country_id').append(initialOption).trigger('change');
             $('input[name="tax_country_id"]').val(initialTaxCountryId);
         }
+    });
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        function mountQuill(textareaId) {
+            var textarea = document.getElementById(textareaId);
+            if (!textarea) return;
+            var container = document.createElement('div');
+            container.id = textareaId + '_quill';
+            container.innerHTML = textarea.value || '';
+            textarea.classList.add('d-none');
+            textarea.parentNode.insertBefore(container, textarea.nextSibling);
+            var quill = new Quill('#' + container.id, {
+                theme: 'snow',
+                modules: { toolbar: [['bold','italic','underline'],[{list:'ordered'},{list:'bullet'}],['link'],['clean']] }
+            });
+            var form = textarea.closest('form');
+            if (form) {
+                form.addEventListener('submit', function(){ textarea.value = quill.root.innerHTML; });
+            }
+        }
+        ['experience','about_me','address','about_description'].forEach(mountQuill);
     });
 </script>
