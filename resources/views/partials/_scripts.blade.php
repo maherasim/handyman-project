@@ -2,7 +2,7 @@
  <script src="{{ asset('js/backend-bundle.min.js')}}"></script>
 <script src="{{ asset('vendor/tinymce/js/tinymce/tinymce.min.js') }}"></script>
 <script src="{{ asset('vendor/tinymce/js/tinymce/jquery.tinymce.min.js') }}"></script>
-<link href="{{ asset('css/dragula.css') }}" rel="stylesheet">
+ 
 <script src="{{ asset('js/dragula.min.js') }}"></script>
 <script src="{{ asset('js/swiper-bundle.min.js') }}"></script>
 
@@ -140,3 +140,31 @@
  <!-- app JavaScript -->
    <script src="{{ asset('js/app.js')}}"></script>
  @include('helper.app_message')
+<script>
+// Global SweetAlert handler for cash approval links
+$(document).on('click', 'a[data-approve-cash="1"]', function(e){
+    e.preventDefault();
+    var href = $(this).attr('href');
+    var doRedirect = function(){ window.location.href = href; };
+
+    if (typeof Swal !== 'undefined' && Swal.fire) {
+        Swal.fire({
+            title: 'Approve Cash Payment?',
+            text: 'This will mark the payment as approved and update related records.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, approve',
+            cancelButtonText: 'Cancel'
+        }).then(function(result){ if(result.isConfirmed){ doRedirect(); } });
+    } else if (typeof swal !== 'undefined') {
+        swal({
+            title: 'Approve Cash Payment?',
+            text: 'This will mark the payment as approved and update related records.',
+            icon: 'warning',
+            buttons: ['Cancel', 'Yes, approve']
+        }).then(function(willApprove){ if(willApprove){ doRedirect(); } });
+    } else {
+        if (confirm('Approve Cash Payment?')) { doRedirect(); }
+    }
+});
+</script>
