@@ -3,8 +3,8 @@
 
     <div class="row align-items-center">
       <div class="col-lg-12">
-        <div class="row gx-1">
-          <div class="col-sm-2">
+        <div class="row gx-2 align-items-end">
+          <div class="col-lg-2 col-md-4 col-sm-6">
             <select ref="categoryDropdownRef" id="categoryDropdown" v-model="selectedCategory"
               class="me-5 form-select select2" :disabled="isEmpty">
               <option value="">{{ $t('landingpage.all_categories') }}</option>
@@ -13,7 +13,7 @@
             </select>
 
           </div>
-          <div class="col-sm-2">
+          <div class="col-lg-2 col-md-4 col-sm-6">
             <select ref="subCategoryDropdownRef" id="subCategoryDropdown" v-model="selectedSubCategory"
               class="me-5 form-select select2" :disabled="isEmpty">
               <option value="">{{ $t('Sub Categories') }}</option>
@@ -22,7 +22,7 @@
             </select>
 
           </div>
-          <div class="col-sm-2 mt-sm-0 mt-3">
+          <div class="col-lg-2 col-md-4 col-sm-6 mt-sm-0 mt-3">
             <select ref="providerDropdownRef" id="providerDropdown" v-model="selectedProvider"
               class="me-5 form-select select2" :disabled="isEmpty">
               <option value="">{{ $t('landingpage.all_providers') }}</option>
@@ -30,7 +30,7 @@
                 providers.first_name }}</option>
             </select>
           </div>
-          <div class="col-sm-2 mt-sm-0 mt-3">
+          <div class="col-lg-2 col-md-4 col-sm-6 mt-sm-0 mt-3">
             <select ref="countryDropdownRef" id="countryDropdown" v-model="selectedCountry"
               class="me-5 form-select select2">
               <option value="">{{ $t('Filter by Country') }}</option>
@@ -39,7 +39,7 @@
           </div>
 
 
-          <div class="col-sm-2 mt-sm-0 mt-3">
+          <div class="col-lg-2 col-md-4 col-sm-6 mt-sm-0 mt-3">
             <select ref="cityDropdownRef" id="cityDropdown" v-model="selectedCity"
               class="me-5 form-select select2" :disabled="isEmpty">
               <option value="">{{ $t('Filter by City') }}</option>
@@ -51,7 +51,7 @@
 
 
 
-          <div class="col-sm-2 mt-sm-0 mt-3">
+          <div class="col-lg-auto col-md-4 col-sm-6 mt-sm-0 mt-3 ms-lg-auto">
             <select ref="priceDropdownRef" id="priceDropdown" v-model="selectedPriceRange"
               class="me-5 form-select select2" :disabled="isEmpty">
               <option value="">{{ $t('landingpage.all_price') }}</option>
