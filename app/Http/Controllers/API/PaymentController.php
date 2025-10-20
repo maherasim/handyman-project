@@ -315,8 +315,8 @@ class PaymentController extends Controller
             return comman_message_response(__('messages.booking_not_found'), 404);
         }
     
-        $isAdvance = $request->type === 'advance_payment';
-        $isRemaining = $request->type === 'remaining';
+        $isAdvance = $request->type === 'advance_payment';       
+        $isRemaining = !$isAdvance; // anything else is remaining
     
         $admin_commission_percentage = Setting::getValueByKey('admin_commission_percentage', 'site-setup')->value ?? 10;
         $admin_user_id = User::where('user_type', 'admin')->value('id');
