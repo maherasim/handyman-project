@@ -1,16 +1,5 @@
 <!-- Backend Bundle JavaScript -->
-<script src="{{ asset('js/backend-bundle.min.js') }}"></script>
 
-<!-- TinyMCE -->
-<script src="{{ asset('vendor/tinymce/js/tinymce/tinymce.min.js') }}"></script>
-<script src="{{ asset('vendor/tinymce/js/tinymce/jquery.tinymce.min.js') }}"></script>
-
-<!-- Drag & Drop -->
-<link href="{{ asset('css/dragula.css') }}" rel="stylesheet">
-<script src="{{ asset('js/dragula.min.js') }}"></script>
-
-<!-- Swiper -->
-<script src="{{ asset('js/swiper-bundle.min.js') }}"></script>
 
 <script>
 @if(!empty($assets) && (in_array('tinymce', $assets) || true))
