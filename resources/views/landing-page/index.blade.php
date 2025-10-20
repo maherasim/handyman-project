@@ -26,6 +26,7 @@
             border-radius: 8px;
             padding: 12px 8px;
             margin: 12px 0;
+            border: 1px solid #eef0f2;
         }
         .stats-item {
             text-align: center;
@@ -686,7 +687,7 @@
                         <div class="row">
                             @foreach ($servicerequest as $data)
                                 <div class="col-md-3"> <!-- Changed from col-md-4 to col-md-3 -->
-                                    <div class="service-box-card bg-light rounded-3 mb-5"
+                                    <div class="service-box-card bg-white rounded-3 mb-5 shadow-sm"
                                         data-service-id="{{ $data->id }}">
                                         <div class="iq-image position-relative">
                                             @if ($data->visit_type == 'ONLINE')
@@ -914,7 +915,7 @@
                     <div class="row">
                         @foreach ($featuredrequest  as $data)
                             <div class="col-md-3"> <!-- Changed from col-md-4 to col-md-3 -->
-                                <div class="service-box-card bg-light rounded-3 mb-5"
+                                <div class="service-box-card bg-white rounded-3 mb-5 shadow-sm"
                                     data-service-id="{{ $data->id }}">
                                     <div class="iq-image position-relative">
                                         @if ($data->visit_type == 'ONLINE')
@@ -1019,6 +1020,12 @@
                                                 <a href="{{ route('provider.detail', $data->providers->id) }}">
                                                     <span class="font-size-14 service-user-name">{{ $data->providers->display_name }}</span>
                                                 </a>
+                                            </div>
+                                            <div class="d-flex align-items-center justify-content-end">
+                                                <img src="{{ asset('images/icon/freeicon.jpg') }}" alt="icon"
+                                                    style="width: 26px; height: 26px; margin-right: 10px;">
+                                                <img src="{{ asset('images/icon/verifiedpng.png') }}" alt="icon"
+                                                    style="width: 26px; height: 26px;">
                                             </div>
                                             <div class="stats-section">
                                                 <div class="row g-2 text-center">
