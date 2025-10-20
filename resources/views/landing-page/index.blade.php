@@ -692,32 +692,7 @@
                                         <h5 class="mt-0 mb-0 text-truncate" style="font-size:12px;">
                                             <span style="font-size: 12px;">{{ optional($data->city)->name ?? 'City' }}, {{ optional($data->country)->name ?? 'Country' }}</span>
                                         </h5>
-                                        <ul class="list-inline p-0 mt-1 mb-0 price-content">
-                                            <li class="text-primary fw-500 d-inline-block position-relative font-size-18">
-                                                @if ($data->price > 0)
-                                                    {{ getPriceFormat($data->price) }} 
-                                                    @if ($data->discount && $data->discount > 0)
-                                                        <span>({{ $data->discount }}% off)</span>
-                                                    @endif
-                                                @else
-                                                    Free
-                                                @endif
-                                            </li>
-                                            @if ($data->duration && $data->duration !== '00:00')
-                                                <li class="d-inline-block fw-500 position-relative service-price">
-                                                    @php
-                                                        $durationParts = explode(':', $data->duration);
-                                                        $hours = (int)$durationParts[0];
-                                                        $minutes = (int)$durationParts[1];
-                                                    @endphp
-                                                    @if ($hours > 0)
-                                                        ({{ $hours }} {{ __('landingpage.hrs') }} {{ $minutes }} {{ __('landingpage.min') }})
-                                                    @else
-                                                        ({{ $minutes }} {{ __('landingpage.min') }})
-                                                    @endif
-                                                </li>
-                                            @endif
-                                        </ul>
+                                         
 
 
 
@@ -918,15 +893,7 @@
                                             </form>
                                         @endif
                                     </div>
-                                    <ul>
-                                        <div class="service d-flex justify-content-center" style="position:relative; z-index:1111; margin:auto; background-image: url('{{ asset('images/icon/banner2.jpg') }}'); background-size: cover; width:85% ; margin-top:-32px;  background-repeat: no-repeat; background-position: center; padding: 10px 20px; color: white; font-weight: 600; font-size: 18px; border-radius: 10px; border: 3px solid #E1DCDD;">
-                                            @if($data->price==0)
-                                                <li class="text-primary fw-500 d-inline-block position-relative font-size-18">Free</li>
-                                            @else
-                                                <li class="text-white fw-500 d-inline-block position-relative font-size-18">{{ getPriceFormat($data->price) }} @if(!empty($data->type)) / {{ $data->type }} @endif</li>
-                                            @endif
-                                        </div>
-                                    </ul>
+                                    
 
                                     <a href="{{ route('service.detail', $data->id) }}" class="service-heading mt-2 d-block p-0 text-decoration-none">
                                         <h5 class="service-title font-size-18 line-count-2">{{ $data->name }}</h5>
