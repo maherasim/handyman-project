@@ -1,9 +1,6 @@
 <x-master-layout>
 
-    <head>
-        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-        <script type="text/javascript" src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
-    </head>
+    
     <div class="container-fluid">
         <div class="row">
             <div class="col-lg-12">
@@ -25,9 +22,10 @@
                         <form action="{{ route('payment.bulk-action') }}" id="quick-action-form"
                             class="form-disabled d-flex gap-3 align-items-center">
                             @csrf
+                            <input type="hidden" name="rowIds" id="rowIds" value="">
                             @if (auth()->user()->hasAnyRole(['admin']))
                                 <select name="action_type" class="form-control select2" id="quick-action-type"
-                                    style="width:100%" disabled>
+                                    style="width:100%">
                                     <option value="">{{ __('messages.no_action') }}</option>
                                     <option value="change-status">{{ __('messages.status') }}</option>
                                     <option value="delete">{{ __('messages.delete') }}</option>
@@ -41,7 +39,7 @@
                                 </div>
 
                                 <button id="quick-action-apply" class="btn btn-primary" data-ajax="true"
-                                    data--submit="{{ route('payment.bulk-action') }}" data-datatable="reload"
+                                    data-submit="{{ route('payment.bulk-action') }}" data-datatable="reload"
                                     data-confirmation='true'
                                     data-title="{{ __('cash payment list', ['form' => __('cash payment list')]) }}"
                                     title="{{ __('cash payment list', ['form' => __('cash payment list')]) }}"
@@ -52,7 +50,7 @@
 
                     </form>
                 </div>
-                <div class="col-md-6 col-lg-4 col-xl-3">
+                {{-- <div class="col-md-6 col-lg-4 col-xl-3">
                     <div class="d-flex align-items-center gap-3 justify-content-end">
                         <div class="d-flex justify-content-end gap-3">
                             <div class="datatable-filter ml-auto">
@@ -81,7 +79,7 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                </div> --}}
                 <div class="table-responsive">
                     <table id="datatable" class="table table-striped border">
                     </table>
@@ -92,7 +90,8 @@
     <script>
         document.addEventListener('DOMContentLoaded', (event) => {
 
-            window.renderedDataTable = $('#datatable').DataTable({
+            var tableEl = $('#datatable');
+            window.renderedDataTable = tableEl.DataTable({
                 processing: true,
                 serverSide: true,
                 autoWidth: false,
@@ -120,13 +119,7 @@
                             orderable: false,
                             searchable: false,
                         },
-                    @endif () {
-                        data: 'updated_at',
-                        name: 'updated_at',
-                        title: "{{ __('product.lbl_update_at') }}",
-                        orderable: true,
-                        visible: false,
-                    },
+                    @endif
                     {
                         data: 'id',
                         name: 'id',
@@ -176,14 +169,15 @@
                             searchable: false,
                             title: "{{ __('messages.action') }}"
                         }
-                    @endif ()
+                         
+                    @endif
 
                 ],
                 order: [
                     @if (auth()->user()->hasAnyRole(['admin']))
-                        [5, 'desc']
+                        [6, 'desc']
                     @else
-                        [4, 'desc']
+                        [5, 'desc']
                     @endif
                 ],
                 language: {
@@ -224,6 +218,44 @@
             }
         }
 
+        function collectSelectedRowIds(){
+            var ids = [];
+            $('#datatable').find('tbody input[type="checkbox"]').each(function(){
+                var $cb = $(this);
+                if($cb.is(':checked')){
+                    var val = $cb.val() || $cb.data('id') || $cb.data('row-id');
+                    if(val){ ids.push(val); }
+                }
+            });
+            $('#rowIds').val(ids.join(','));
+        }
+
+        function updateBulkControls(){
+            collectSelectedRowIds();
+            var anyChecked = $('#rowIds').val().length > 0;
+            $('#quick-action-type').prop('disabled', !anyChecked);
+            if(!anyChecked){
+                $('#quick-action-apply').attr('disabled', true);
+                $('.quick-action-field').addClass('d-none');
+                $('#quick-action-type').val('');
+            }
+        }
+
+        window.selectAllTable = function(el){
+            var checked = $(el).is(':checked');
+            $('#datatable').find('tbody input[type="checkbox"]').prop('checked', checked);
+            updateBulkControls();
+        }
+
+        $(document).on('change', '#datatable tbody input[type="checkbox"]', function(){
+            updateBulkControls();
+        });
+
+        // After table redraw, ensure events and state
+        window.renderedDataTable.on('draw', function(){
+            updateBulkControls();
+        });
+
         $('#quick-action-type').change(function() {
             resetQuickAction()
         });
@@ -240,17 +272,37 @@
             if (confirmation === 'true') {
                 const message = button.data('message');
                 if (confirm(message)) {
+                    collectSelectedRowIds();
                     const submitUrl = button.data('submit');
                     const form = button.closest('form');
                     form.attr('action', submitUrl);
                     form.submit();
                 }
             } else {
+                collectSelectedRowIds();
                 const submitUrl = button.data('submit');
                 const form = button.closest('form');
                 form.attr('action', submitUrl);
                 form.submit();
             }
+        });
+
+        // Intercept Approve Cash links with SweetAlert confirm
+        $(document).on('click', 'a[data-approve-cash="1"]', function(e){
+            e.preventDefault();
+            const href = $(this).attr('href');
+            Swal.fire({
+                title: 'Approve Cash Payment?',
+                text: 'This will mark the payment as approved and update related records.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, approve',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if(result.isConfirmed){
+                    window.location.href = href;
+                }
+            });
         });
     </script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
