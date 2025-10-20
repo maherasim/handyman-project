@@ -1010,32 +1010,7 @@
                                     <h5 class="mt-0 mb-0 text-truncate" style="font-size:12px;">
                                         <span style="font-size: 12px;">{{ optional($data->city)->name ?? 'City' }}, {{ optional($data->country)->name ?? 'Country' }}</span>
                                     </h5>
-                                    <ul class="list-inline p-0 mt-1 mb-0 price-content">
-                                        <li class="text-primary fw-500 d-inline-block position-relative font-size-18">
-                                            @if ($data->price > 0)
-                                                {{ getPriceFormat($data->price) }} 
-                                                @if ($data->discount && $data->discount > 0)
-                                                    <span>({{ $data->discount }}% off)</span>
-                                                @endif
-                                            @else
-                                                Free
-                                            @endif
-                                        </li>
-                                        @if ($data->duration && $data->duration !== '00:00')
-                                            <li class="d-inline-block fw-500 position-relative service-price">
-                                                @php
-                                                    $durationParts = explode(':', $data->duration);
-                                                    $hours = (int)$durationParts[0];
-                                                    $minutes = (int)$durationParts[1];
-                                                @endphp
-                                                @if ($hours > 0)
-                                                    ({{ $hours }} {{ __('landingpage.hrs') }} {{ $minutes }} {{ __('landingpage.min') }})
-                                                @else
-                                                    ({{ $minutes }} {{ __('landingpage.min') }})
-                                                @endif
-                                            </li>
-                                        @endif
-                                    </ul>
+                                    
 
 
                                         <div class="mt-3">
