@@ -27,7 +27,7 @@
               class="me-5 form-select select2" :disabled="isEmpty">
               <option value="">{{ $t('landingpage.all_providers') }}</option>
               <option v-for="providers in provider_data" :key="providers.id" :value="providers.id">{{
-                providers.first_name }}</option>
+                providers.display_name || providers.first_name || providers.name }}</option>
             </select>
           </div>
           <div class="col-lg-2 col-md-4 col-sm-6 mt-sm-0 mt-3">
@@ -182,20 +182,28 @@ const priceRanges = computed(() => {
   return ranges.map(range => `${range.min}-${range.max}`);
 });
 
-const loadServiceData = () => {
-  store.get_service_list({ per_page: 'all' });
+const loadServiceData = async () => {
+  try {
+    await store.get_service_list({ per_page: 'all' });
+  } catch (e) { console.error('load_service_list failed', e); }
 };
 
-const loadCategoryData = () => {
-  store.get_categries_list({ per_page: 'all' });
+const loadCategoryData = async () => {
+  try {
+    await store.get_categries_list({ per_page: 'all' });
+  } catch (e) { console.error('load_categories failed', e); }
 }
 
-const loadProviderData = () => {
-  store.get_provider_list({ per_page: 'all', user_type: 'provider' });
+const loadProviderData = async () => {
+  try {
+    await store.get_provider_list({ per_page: 'all', user_type: 'provider' });
+  } catch (e) { console.error('load_providers failed', e); }
 }
 
-const loadFeaturedCategoryData = () => {
-  store.get_featured_category_list({ is_featured: 1 });
+const loadFeaturedCategoryData = async () => {
+  try {
+    await store.get_featured_category_list({ is_featured: 1 });
+  } catch (e) { console.error('load_featured_categories failed', e); }
 };
 
 
@@ -216,14 +224,11 @@ onMounted(() => {
   initSelect2(countryDropdownRef.value);
   initSelect2(cityDropdownRef.value);
   initSelect2(priceDropdownRef.value);
-  initSelect2(sortOptionRef.value);
+  if (sortOptionRef.value) initSelect2(sortOptionRef.value);
 
   $(categoryDropdownRef.value).on('change', function () {
     selectedCategory.value = $(this).val();
-      console.log(
-          'wprlo'
-      );
-      loadSubCategories($(this).val());
+    loadSubCategories($(this).val());
   });
   $(subCategoryDropdownRef.value).on('change', function () {
     selectedSubCategory.value = $(this).val();
@@ -247,11 +252,16 @@ onMounted(() => {
     selectedSortOption.value = $(this).val();
   });
 
-  loadServiceData();
-  loadCategoryData();
-  loadProviderData();
-  loadFeaturedCategoryData();
-  loadCountries(); // ✅ Add this line to fetch countries on mount
+  // Load filters first so dropdowns have data before select2 initializes options rendering
+  Promise.all([
+    loadCategoryData(),
+    loadProviderData(),
+    loadCountries()
+  ]).then(() => {
+    // Optionally load dependent datasets
+    loadFeaturedCategoryData();
+    loadServiceData();
+  });
 });
 
 
