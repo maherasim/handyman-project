@@ -821,7 +821,7 @@
                                                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" class="stats-icon text-warning" xmlns=" "><path d="M12 2L15.09 8.26L22 9L17 14L18.18 21L12 17.77L5.82 21L7 14L2 9L8.91 8.26L12 2Z" fill="currentColor"/></svg>
                                                             <span class="stats-value">{{ round($data->avg_rating ?? 0, 1) }}</span>
                                                         </div>
-                                                        <div class="stats-label">
+                                                        <div class="stats-label" style="font-size: 11px;">
                                                             <a href="{{ route('rating.all', ['service_id' => $data->id]) }}" class="text-decoration-none text-muted">({{ $data->total_reviews ?? 0 }} {{ ($data->total_reviews ?? 0) > 1 ? __('messages.reviews') : __('messages.review') }})</a>
                                                         </div>
                                                     </div>
@@ -832,7 +832,7 @@
                                                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" class="stats-icon text-success" xmlns=" "><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
                                                             <span class="stats-value">{{ $data->booking_count ?? 0 }}</span>
                                                         </div>
-                                                        <div class="stats-label">Bookings</div>
+                                                        <div class="stats-label" style="font-size: 11px;">Bookings</div>
                                                     </div>
                                                 </div>
                                                 <div class="col-4">
@@ -841,7 +841,7 @@
                                                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" class="stats-icon text-info" xmlns=" "><path d="M12 5c-7.633 0-10 7-10 7s2.367 7 10 7 10-7 10-7-2.367-7-10-7Zm0 12a5 5 0 1 1 0-10 5 5 0 0 1 0 10Zm0-8a3 3 0 1 0 .002 6.002A3 3 0 0 0 12 9Z" fill="currentColor"/></svg>
                                                             <span class="stats-value">{{ $data->total_views ?? 0 }}</span>
                                                         </div>
-                                                        <div class="stats-label">Views</div>
+                                                        <div class="stats-label" style="font-size: 11px;">Views</div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -1028,7 +1028,7 @@
                                                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" class="stats-icon text-warning" xmlns=" "><path d="M12 2L15.09 8.26L22 9L17 14L18.18 21L12 17.77L5.82 21L7 14L2 9L8.91 8.26L12 2Z" fill="currentColor"/></svg>
                                                                 <span class="stats-value">{{ round($data->avg_rating ?? 0, 1) }}</span>
                                                             </div>
-                                                            <div class="stats-label">
+                                                            <div class="stats-label" style="font-size: 11px;">
                                                                 <a href="{{ route('rating.all', ['service_id' => $data->id]) }}" class="text-decoration-none text-muted">({{ $data->total_reviews ?? 0 }} {{ ($data->total_reviews ?? 0) > 1 ? __('messages.reviews') : __('messages.review') }})</a>
                                                             </div>
                                                         </div>
@@ -1039,7 +1039,7 @@
                                                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" class="stats-icon text-success" xmlns=" "><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
                                                                 <span class="stats-value">{{ $data->booking_count ?? 0 }}</span>
                                                             </div>
-                                                            <div class="stats-label">Bookings</div>
+                                                            <div class="stats-label" style="font-size: 11px;">Bookings</div>
                                                         </div>
                                                     </div>
                                                     <div class="col-4">
@@ -1048,7 +1048,7 @@
                                                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" class="stats-icon text-info" xmlns=" "><path d="M12 5c-7.633 0-10 7-10 7s2.367 7 10 7 10-7 10-7-2.367-7-10-7Zm0 12a5 5 0 1 1 0-10 5 5 0 0 1 0 10Zm0-8a3 3 0 1 0 .002 6.002A3 3 0 0 0 12 9Z" fill="currentColor"/></svg>
                                                                 <span class="stats-value">{{ $data->total_views ?? 0 }}</span>
                                                             </div>
-                                                            <div class="stats-label">Views</div>
+                                                            <div class="stats-label" style="font-size: 11px;">Views</div>
                                                         </div>
                                                     </div>
                                                 </div>
