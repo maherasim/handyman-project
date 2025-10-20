@@ -36,11 +36,52 @@ class PostJobRequestDetailResource extends JsonResource
             'provider_id'       => $this->provider_id,
             'status'            => $this->status,
             'start_date'        => $this->start_date,
+            'benefits'          => $this->benefits,
+            'duties'            => $this->duties,
+            'education_level'   => $this->education_level,
+            'career_level'      => $this->career_level,
+            'remote_work_level' => $this->remote_work_level,
+            'job_schedule'      => $this->job_schedule,
+            'working_address'   => $this->working_address,
+            'street_address'    => $this->street_address,
+            'house_number'      => $this->house_number,
+            'total_budget'      => $this->total_budget,
+            'price_type'        => $this->price_type,
+            'image'             => $this->image,
+            'images'            => $this->images,
+            'accepted_bid_id'   => $this->accepted_bid_id,
+            'advance_percent'   => $this->advance_percent,
+            'remaining_percent' => $this->remaining_percent,
+            'reason'            => $this->reason,
+            'job_price'         => $this->job_price,
             'end_date'          => $this->end_date,
             'total_hours'       => $this->total_hours,
             'total_days'       => $this->total_days,
             'country_id'       => $this->country_id,
+            'country' => optional($this->country)->name,
             'city_id'          => $this->city_id,
+            'city'    => optional($this->city)->name,
+       'images' => (function () {
+    $images = [];
+
+    if (!empty($this->images)) {
+        if (is_string($this->images)) {
+            $decoded = json_decode($this->images, true);
+            if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                $images = $decoded;
+            }
+        } elseif (is_array($this->images)) {
+            $images = $this->images;
+        }
+    }
+
+    return collect($images)
+        ->filter()
+        ->map(fn($img) => asset('storage/' . ltrim($img, '/')))
+        ->values();
+})(),
+
+            'state_id'          => $this->state_id,
             'requirement'      => $this->requirement,
             'type'             => $this->type,
             'category_id'       => $this->category_id,

@@ -120,6 +120,7 @@ public function apiIndex(Request $request)
              'post_request_id' => 'required|integer|exists:post_job_requests,id',
              'provider_id' => 'nullable|integer',
              'price' => 'required|numeric',
+             'why_choose_me' => 'required|string',
              'duration' => 'nullable|string',
              'status' => 'nullable|string',
          ]);
@@ -133,8 +134,11 @@ public function apiIndex(Request $request)
              $data['customer_id'] = $customer->customer_id;
              $data['provider_id'] = auth()->user()->id;
      
-             // Update or create PostJobBid
-             $result = PostJobBid::updateOrCreate(['id' => $request->id ?? 0], $data);
+             // Update or create PostJobBid using provider_id + post_request_id as unique keys
+             $result = PostJobBid::updateOrCreate([
+                 'provider_id'     => $data['provider_id'],
+                 'post_request_id' => $data['post_request_id'],
+             ], $data);
      
              $activity_data = [
                  'activity_type' => 'provider_send_bid',

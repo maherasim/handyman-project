@@ -18,6 +18,7 @@
     'back' => 'Back',
     'close' => 'Close',
     'save' => 'Save',
+    'publish' => 'Publish',
     'notification' => 'Notification',
     'list_form_title' => ':form List',
     'pending_list_form_title' => 'Pending :form',
@@ -61,6 +62,7 @@
     'site_name' => 'Site Name',
     'category' => 'Category',
     'service' => 'Service',
+    'post_job_request' => 'Post Job Request',
     'price' => 'Price',
     'appointment' => 'Appointment',
     'date' => 'Date',
@@ -162,6 +164,7 @@
     'failed' => 'Failed',
     'refunded' => 'Refunded',
     'payment_completed' => 'Your payment has been successfully completed',
+    'payment_pending_admin_approval' => 'Payment pending approval by admin. Please wait for verification.',
     'payment_message' => 'Your payment is :status',
     'timezone' => 'Timezone',
     'default_notification_body' => 'You have new notification',
@@ -970,5 +973,7 @@
     'submit_service_proof' => 'Submit Service Proof',
     'service_proof' => 'Service Proof',
     'advance_pay' => 'Advance Pay',
+    'service_proof_submitted_successfully' => 'Your service proof has been submitted successfully.',
+    'upload_multiple_images' => 'You can upload multiple images.',
 
 );

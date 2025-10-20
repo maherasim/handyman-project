@@ -1,6 +1,10 @@
 
 <?php
 $language_option = sitesetupSession('get')->language_option ?? ["nl","fr","it","pt","es","en"];
+// Ensure German appears as an option even if not configured yet
+if (is_array($language_option)) {
+    $language_option = array_values(array_unique(array_merge($language_option, ['de'])));
+}
 $language_array = languagesArray($language_option);
 $files = ["auth", "messages", "pagination", "passwords","validation","landingpage"];
 ?>

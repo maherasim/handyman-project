@@ -59,26 +59,13 @@
                                         @endif
                                     </span>
                                     @php
-                                        $providerDocuments = $providerData['document_detail'] ?? null;
-                                        $allVerified = true; // Flag to check if all documents are verified
+                                        $allVerified = function_exists('verify_provider_document') ? verify_provider_document($providerData['data']['id']) : false;
                                     @endphp
 
-                                    @if ($providerDocuments)
-                                        @foreach ($providerDocuments as $document)
-                                            @if (!isset($document['is_verified']) || !$document['is_verified'])
-                                                @php
-                                                    $allVerified = false; // If any document is not verified, set flag to false
-                                                @endphp
-                                            @endif
-                                        @endforeach
-                                    @endif
-
                                     @if ($allVerified)
-                                        <!-- Show verified icon if all documents are verified -->
-                                        <img src="{{ asset('images/icon/verifiedpng.png') }}" alt="Verified Icon"
+                                        <img src="{{ asset('images/icon/verified.jpg') }}" alt="Verified Icon"
                                             style="width: 14%; height: 23%; margin-right: 10px;">
                                     @else
-                                        <!-- Show non-verified icon if not all documents are verified -->
                                         <img src="{{ asset('images/icon/notverifiedpng.png') }}" alt="Non-Verified Icon"
                                             style="width: 14%; height: 23%; margin-right: 10px;">
                                     @endif
@@ -224,15 +211,24 @@
                 </div>
                 <div class="col-lg-8 mt-lg-0 mt-5">
                     <h3 class="text-capitalize mb-3">{{ __('landingpage.provider_personal_info') }}</h3>
-                    <div class="mt-0 mb-3">
-                        <h5>{{ __('About Me') }}</h5>
-                        {!! $providerData['data']['about_me'] !!}
-                    </div>
+                   
 
                     <p class="mt-0 mb-3">
                     <h5>{{ __('Skills') }}</h5>
                     {{ $providerData['data']['skills'] }}
                     </p>
+                    <p class="mt-0 mb-3">
+                        <h5>{{ __('Location') }}</h5>
+                        @if(isset($providerData['data']['city_name']) && isset($providerData['data']['country_name']))
+                            {{ $providerData['data']['city_name'] }}, {{ $providerData['data']['country_name'] }}
+                        @elseif(isset($providerData['data']['city_name']))
+                            {{ $providerData['data']['city_name'] }}
+                        @elseif(isset($providerData['data']['country_name']))
+                            {{ $providerData['data']['country_name'] }}
+                        @else
+                            {{ __('N/A') }}
+                        @endif
+                        </p>
                     <p class="mt-0 mb-3">
                     <h5>{{ __('Experince') }}</h5>
                     {{ $providerData['data']['experience'] }}
@@ -256,7 +252,10 @@
 
                     </p>
 
-
+                    <div class="mt-0 mb-3">
+                        <h5>{{ __('About Me') }}</h5>
+                        {!! $providerData['data']['about_me'] !!}
+                    </div>
 
 
 

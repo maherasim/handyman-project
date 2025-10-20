@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>{{ env('APP_NAME') }}</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<style type="text/css">
+		@page { margin: 12mm 10mm; }
+		body { margin: 0; padding: 0; background: #ffffff; color: #222; font-family: DejaVu Sans, Helvetica, Arial, sans-serif; font-size: 12px; line-height: 1.45; }
+		.container { width: 100%; max-width: 900px; margin: 0 auto; }
+		.card { border: 1px solid #e5e7eb; border-radius: 6px; }
+		.section { padding: 12px 14px; }
+		.border-b { border-bottom: 1px solid #e5e7eb; }
+		.text-right { text-align: right; }
+		.text-muted { color: #6b7280; }
+		.fw-bold { font-weight: 700; }
+		.title { font-size: 18px; font-weight: 700; }
+		table { width: 100%; border-collapse: collapse; }
+		th, td { padding: 8px; border-bottom: 1px solid #e5e7eb; vertical-align: top; }
+		thead th { background: #fafafa; font-size: 11px; text-transform: uppercase; letter-spacing: .2px; }
+		.no-border td { border: 0; padding: 2px 0; }
+		.small { font-size: 11px; }
+		.compact td { padding: 6px 8px; }
+		.totals { width: 420px; margin-left: auto; border: 1px solid #e5e7eb; border-radius: 6px; }
+		.totals td { border-bottom: 1px solid #e5e7eb; }
+		.totals tr:last-child td { border-bottom: 0; font-weight: 700; font-size: 13px; }
+		.logo { height: 40px; width: auto; }
+	</style>
+</head>
+<?php
+use App\Models\Setting;
+$settings = Setting::whereIn('type', ['site-setup', 'general-setting'])
+	->whereIn('key', ['site-setup', 'general-setting'])
+	->get()
+	->keyBy('key');
+
+$app = isset($settings['site-setup']) ? json_decode($settings['site-setup']->value) : null;
+$generaldata = isset($settings['general-setting']) ? json_decode($settings['general-setting']->value) : null;
+$logoPath = public_path('assets/frobster logo.png');
+?>
+@php
+	// Inputs expected: $bid (App\Models\PostJobBid), optional $payment (PaymentPostJOb)
+	$unitPrice = (float) ($bid->price ?? 0);
+    $hasExtraLines = ($bid->relationLoaded('extraCharges') && $bid->extraCharges && $bid->extraCharges->count() > 0);
+    $extraChargeUnit = (float) ($bid->extra_charges ?? 0);
+    $extraChargeQty = (int) ($bid->quantity ?? 0);
+
+	$priceType = strtolower((string)($bid->postrequest->price_type ?? $bid->postrequest->job_price ?? 'fixed'));
+	if ($priceType === 'hourly') {
+		$quantity = (float) ($bid->postrequest->total_hours ?? 0);
+	} elseif ($priceType === 'daily') {
+		$quantity = (float) ($bid->postrequest->total_days ?? 0);
+	} else {
+		$quantity = 1.0; // fixed
+	}
+
+	$baseTotal = $unitPrice * $quantity;
+    $extraChargeTotal = 0.0;
+    if ($hasExtraLines) {
+        foreach ($bid->extraCharges as $ec) {
+            $lineAmount = (float) ($ec->amount ?? 0);
+            $lineQty = (int) ($ec->quantity ?? 0);
+            $extraChargeTotal += ($lineAmount * $lineQty);
+        }
+        $extraChargeQty = (int) $bid->extraCharges->sum('quantity');
+    } else {
+        $extraChargeTotal = $extraChargeUnit * $extraChargeQty;
+    }
+	$subTotal = $baseTotal + $extraChargeTotal;
+
+	$countryName = optional($bid->postrequest->country)->name ?? '';
+	$taxRate = 0;
+	$taxTitle = '';
+	$countryId = $bid->postrequest->country_id ?? null;
+	if ($countryId) {
+		$taxModel = \App\Models\Tax::find($countryId);
+		$taxRate  = (float) ($taxModel->value ?? 0);
+		$taxTitle = (string) ($taxModel->title ?? $countryName);
+	}
+	$taxAmount = ($subTotal * $taxRate) / 100;
+	$grandTotal = $subTotal + $taxAmount;
+	$netAmount = $subTotal - $taxAmount;
+
+	$advancePercent = (float) ($bid->advance_percent ?? 0);
+	$advancePaid = $advancePercent > 0 ? ($baseTotal * $advancePercent / 100.0) : 0;
+	$remainingAmount = $subTotal - $advancePaid;
+
+	$fmt = function ($n) { return getPriceFormat((float)$n); };
+@endphp
+<body>
+<div class="container">
+	<div class="card">
+		<div class="section border-b">
+			<table class="no-border">
+				<tr>
+					<td style="width: 60%; border: 0;">
+						<div class="title">{{ __('Invoice') }}</div>
+						<div class="text-muted small">{{ __('Invoice No:') }} #{{ $bid->id }}</div>
+						<div class="text-muted small">{{ __('Currency:') }} {{ $bid->currency ?? 'EUR' }}</div>
+						<div class="text-muted small">{{ __('Date Issued:') }} {{ optional($bid->created_at)->format('d M Y') }}</div>
+					</td>
+					<td class="text-right" style="width: 40%; border: 0;">
+						@if (file_exists($logoPath))
+							<img src="{{ $logoPath }}" alt="logo" class="logo">
+						@endif
+						<div class="text-muted small">{{ $generaldata->inquriy_email ?? '' }}</div>
+						@if(!empty($generaldata->helpline_number))
+							<div class="text-muted small">{{ $generaldata->helpline_number }}</div>
+						@endif
+					</td>
+				</tr>
+			</table>
+		</div>
+
+		<div class="section border-b">
+			<table class="no-border">
+				<tr>
+					<td style="width: 50%; border: 0;">
+						<div class="fw-bold">{{ __('Bill From') }}</div>
+						<div>{{ optional($bid->provider)->display_name ?? '-' }}</div>
+						<div class="text-muted small">{{ optional($bid->provider)->address ?? '-' }}</div>
+						<div class="text-muted small">{{ __('VAT Number:') }} {{ optional($bid->provider)->vat_number ?? '-' }}</div>
+					</td>
+					<td style="width: 50%; border: 0;">
+						<div class="fw-bold">{{ __('Bill To') }}</div>
+						<div>{{ optional($bid->customer)->display_name ?? '-' }}</div>
+						<div class="text-muted small">{{ optional($bid->customer)->address ?? '-' }}</div>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2" style="border: 0; padding-top: 6px;">
+						<div class="fw-bold">{{ __('Job Request') }}</div>
+						<div class="text-muted small">{{ optional($bid->postrequest)->title ?? '-' }}</div>
+					</td>
+				</tr>
+			</table>
+		</div>
+
+		<div class="section">
+            <table class="compact">
+				<thead>
+				<tr>
+					<th style="width: 60%">{{ __('Description') }}</th>
+					<th style="width: 10%" class="text-right">{{ __('Qty') }}</th>
+					<th style="width: 15%" class="text-right">{{ __('Unit Price') }}</th>
+					<th style="width: 15%" class="text-right">{{ __('Amount') }}</th>
+				</tr>
+				</thead>
+				<tbody>
+                <tr>
+                    <td>{{ optional($bid->postrequest)->title ?? '-' }} ({{ strtoupper($priceType) }})</td>
+                    <td class="text-right">{{ $quantity }}</td>
+                    <td class="text-right">{{ $fmt($unitPrice) }}</td>
+                    <td class="text-right">{{ $fmt($baseTotal) }}</td>
+                </tr>
+                @if($hasExtraLines)
+                    @foreach($bid->extraCharges as $line)
+                        <tr>
+                            <td>{{ $line->title }}</td>
+                            <td class="text-right">{{ (int)($line->quantity ?? 0) }}</td>
+                            <td class="text-right">{{ $fmt((float)($line->amount ?? 0)) }}</td>
+                            <td class="text-right">{{ $fmt(((float)($line->amount ?? 0)) * ((int)($line->quantity ?? 0))) }}</td>
+                        </tr>
+                    @endforeach
+                @else
+                    <tr>
+                        <td>{{ __('Extra Charges') }}</td>
+                        <td class="text-right">{{ $extraChargeQty }}</td>
+                        <td class="text-right">{{ $fmt($extraChargeUnit) }}</td>
+                        <td class="text-right">{{ $fmt($extraChargeTotal) }}</td>
+                    </tr>
+                @endif
+				</tbody>
+			</table>
+
+			<table class="totals" cellspacing="0" cellpadding="0" style="margin-top: 12px;">
+				<tbody>
+				<tr>
+					<td>{{ __('Rate (Unit Price)') }}</td>
+					<td class="text-right">{{ $fmt($unitPrice) }}</td>
+				</tr>
+				<tr>
+					<td>{{ __('Quantity (Packages / Hours / Days)') }}</td>
+					<td class="text-right">{{ $quantity }}</td>
+				</tr>
+				<tr>
+					<td>{{ __('Total Amount') }}</td>
+					<td class="text-right">{{ $fmt($baseTotal) }}</td>
+				</tr>
+                <tr>
+                    <td>
+                        @if($hasExtraLines)
+                            {{ __('Extra Charges (items)') }}
+                        @else
+                            {{ __('Extra Charges') }} ({{ $extraChargeQty }} × {{ number_format($extraChargeUnit, 2) }})
+                        @endif
+                    </td>
+                    <td class="text-right">{{ $fmt($extraChargeTotal) }}</td>
+                </tr>
+				<tr>
+					<td>{{ __('Subtotal') }}</td>
+					<td class="text-right">{{ $fmt($subTotal) }}</td>
+				</tr>
+				<tr>
+					<td>{{ __('Net Amount (Subtotal - Tax)') }}</td>
+					<td class="text-right">{{ $fmt($netAmount) }}</td>
+				</tr>
+				<tr>
+					<td>{{ __('Tax') }} ({{ number_format($taxRate, 0) }}%) {{ $taxTitle ?: $countryName }}</td>
+					<td class="text-right">{{ $fmt($taxAmount) }}</td>
+				</tr>
+				<tr>
+					<td>{{ __('Grand Total') }}</td>
+					<td class="text-right">{{ $fmt($subTotal) }}</td>
+				</tr>
+				<tr>
+					<td>{{ __('Advance Payment') }} ({{ number_format($advancePercent, 0) }}%)</td>
+					<td class="text-right">{{ $fmt($advancePaid) }}</td>
+				</tr>
+				<tr>
+					<td>{{ __('Remaining Amount') }}</td>
+					<td class="text-right">{{ $fmt($remainingAmount) }}</td>
+				</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
+</body>
+</html>

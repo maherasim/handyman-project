@@ -6,6 +6,7 @@ use App\Http\Controllers;
 use App\Http\Resources\CountryResource;
 use App\Http\Controllers\API;
 use App\Http\Controllers\PayPalController;
+use App\Http\Controllers\API\ChatApiController;
 
 
 /*
@@ -73,6 +74,30 @@ Route::get('post-job-status', [ API\PostJobRequestController::class, 'postReques
 // Route::get('booking-list', [ API\BookingController::class, 'getBookingList' ] );
 
 Route::group(['middleware' => ['auth:sanctum']], function () {
+    // ===== Chat API (Mobile/Web) =====
+    // Open or create conversation by bid id
+    Route::post('chat/open-by-bid', [ChatApiController::class, 'openByBid']);
+    Route::post('chat/open-by-booking', [ChatApiController::class, 'openByBooking']);
+    // Standalone chat - open or create conversation with another user
+    Route::post('chat/open-with-user', [ChatApiController::class, 'openWithUser']);
+    // Get list of users for starting conversations
+    Route::get('chat/users', [ChatApiController::class, 'getUsers']);
+    // List all user's conversations with unread counts (paginated)
+    Route::get('chat/conversations', [ChatApiController::class, 'conversations']);
+    // Get unread summary across conversations
+    Route::get('chat/unread', [ChatApiController::class, 'unread']);
+    // Fetch messages with pagination (before_id/after_id/limit)
+    Route::get('chat/{conversationId}/messages', [ChatApiController::class, 'listMessages']);
+    // Send message with optional attachment
+    Route::post('chat/{conversationId}/send', [ChatApiController::class, 'sendMessage']);
+    // Mark messages as read (optionally up to a specific message id)
+    Route::post('chat/{conversationId}/read', [ChatApiController::class, 'markRead']);
+    // Download attachment (protected)
+    Route::get('chat/download/{messageId}', [ChatApiController::class, 'download'])->name('api.chat.download');
+    // PII moderation APIs
+    Route::get('chat/flagged/ping', [ChatApiController::class, 'flaggedPing']);
+    Route::get('chat/flagged/list', [ChatApiController::class, 'flaggedList']);
+    Route::post('chat/detect-text', [ChatApiController::class, 'detectText']);
     Route::post('service-save', [ App\Http\Controllers\ServiceController::class, 'store' ] );
     //Route::post('service-save', [ App\Http\Controllers\ServiceController::class, 'store' ] );
     Route::post('service-delete/{id}', [ App\Http\Controllers\ServiceController::class, 'destroy' ] );
@@ -162,10 +187,22 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 
     Route::get('get-post-job',[ API\PostJobRequestController::class, 'getPostRequestList' ]);
     Route::post('get-post-job-detail',[ API\PostJobRequestController::class, 'getPostRequestDetail' ]);
+    Route::get('post-job-request/{id}/editjob', [Api\PostJobRequestController::class, 'editpostjob'])->name('post-job-requestjob.edit');
 
     Route::post('save-bid',[  App\Http\Controllers\PostJobBidController::class, 'store' ]);
     Route::get('get-bid-list',[  API\PostJobBidController::class, 'getPostBidList' ]);
 
+    Route::post('/post-job-request/{id}/status', [API\PostJobRequestController::class, 'updateBidStatus'])->name('postjob.updateStatus');
+    Route::post('adjustpayment/{id}/split-advance', [API\PostJobRequestController::class, 'startWork']);
+
+    // payment
+    Route::post('paythrough/wallet/{id}', [App\Http\Controllers\PostJobRequestController::class, 'payAdvance'])->name('post-job-request.pay-advance');
+    Route::post('postjob/stripe/create/{id}', [App\Http\Controllers\PostJobRequestController::class, 'createPostJobStripePayment'])->name('postjob.stripe.create');
+    Route::post('postjob/paypal/create/{id}', [App\Http\Controllers\PostJobRequestController::class, 'createPostJobPayPalPayment'])->name('postjob.paypal.create');
+    Route::post('postjob/bank-transfer/{id}', [App\Http\Controllers\PostJobRequestController::class, 'createPostJobBankTransfer'])->name('postjob.bank.transfer');
+    Route::post('postjob-bid/{id}/extra-charges', [App\Http\Controllers\PostJobRequestController::class, 'addExtraCharges'])->name('postjob.addExtraCharges');
+    Route::get('/post-job-bid/by-bid/{bidId}', [Api\PostJobRequestController::class, 'showBidById'])->name('post-job-bid.showByBid');
+    Route::get('post-job-request/{id}/invoice', [Api\PostJobRequestController::class, 'invoice']);
 
     Route::get('get-post-job-bid-data',[  App\Http\Controllers\PostJobBidController::class, 'PostJobBidData' ]);
     Route::get('/job-requests/provider', [API\PostJobBidController::class, 'apiIndex']);

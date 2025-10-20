@@ -19,14 +19,20 @@
         @if(isset($notifications) && count($notifications) > 0)
         @foreach($notifications->sortByDesc('created_at')->take(5) as $notification)
         <li class="dropdown-item-1 float-none p-3 {{ $notification->read_at ? '':'notify-list-bg'}} ">
-            @if(isset($notification->data['check_booking_type']))
-            <a href="{{ route('booking.show', $notification->data['id']) }}" class="">
+            @php
+                $data = is_array($notification->data ?? null) ? $notification->data : [];
+                $nid = $data['id'] ?? null;
+                $ntype = $data['type'] ?? '';
+                $nmsg = $data['message'] ?? __('messages.booking');
+            @endphp
+            @if(isset($data['check_booking_type']) && $nid)
+            <a href="{{ route('booking.show', $nid) }}" class="">
                 <div class="list-item d-flex justify-content-start align-items-start">
                     <div class="list-style-detail ms-2 me-2">
-                        <h6 class="fw-bold mb-1">Booking # {{ $notification->data['id'] ." ". str_replace("_"," ",ucfirst($notification->data['type'])) }}</h6>
+                        <h6 class="fw-bold mb-1">Booking # {{ $nid ." ". str_replace("_"," ",ucfirst($ntype)) }}</h6>
                         <p class="mb-1">
                             <small class="text-secondary">
-                                {!! isset($notification->data['message']) ? $notification->data['message'] : __('messages.booking') !!}
+                                {!! $nmsg !!}
                             </small>
                         </p>
                         <p class="m-0">
@@ -41,12 +47,12 @@
                 </div>
             </a>
             @else
-            <a href="#" class="">
+            <a href="{{ isset($data['link']) ? $data['link'] : '#' }}" class="">
                 <div class="list-item d-flex justify-content-start align-items-start">
                     <div class="list-style-detail ms-2 me-2">
-                        <h6 class="fw-bold mb-1"># {{ $notification->data['id'] ." ". str_replace("_"," ",ucfirst($notification->data['type'])) }}</h6>
+                        <h6 class="fw-bold mb-1"># {{ ($nid ?? '-') ." ". str_replace("_"," ",ucfirst($ntype)) }}</h6>
                         <p class="mb-1">
-                            <small class="text-secondary">{!! isset($notification->data['message']) ? $notification->data['message'] : __('messages.booking') !!}</small>
+                            <small class="text-secondary">{!! $nmsg !!}</small>
                         </p>
                         <p class="m-0">
                             <small class="text-secondary">

@@ -177,7 +177,7 @@
                             searchable: false,
                             title: "{{ __('messages.action') }}"
                         }
-                    @endif ()
+                    @endif
 
                 ],
                 order: [

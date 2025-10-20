@@ -162,4 +162,6 @@ return [
     'data_deletion_request' => 'طلب حذف البيانات',
     'linked_in' => 'لينكد إن',
     'admin_login'=>'بوابة المشرف',
+    'total_services' => 'إجمالي الخدمات',
+    'total_bookings' => 'إجمالي الحجوزات'
 ];

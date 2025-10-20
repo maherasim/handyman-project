@@ -10,7 +10,7 @@ class Payment extends Model
 {
     use HasFactory,SoftDeletes;
     protected $table = 'payments';
-    protected $fillable = [ 'customer_id', 'booking_id', 'datetime', 'discount', 'total_amount', 'payment_type', 'txn_id', 'payment_status', 'other_transaction_detail' ];
+    protected $fillable = [ 'customer_id', 'booking_id', 'datetime', 'post_job_request_id', 'discount', 'total_amount', 'payment_type', 'txn_id', 'payment_status', 'status', 'other_transaction_detail' ];
 
     protected $casts = [
         'booking_id'    => 'integer',
@@ -29,38 +29,41 @@ class Payment extends Model
 {
     return $this->hasMany(CommissionEarning::class, 'booking_id', 'booking_id');
 }
+ public function postJobRequest(){
+        return $this->belongsTo(PostJobRequest::class, 'post_job_request_id', 'id');
+    }
 public function handymanEarning()
 {
     return $this->hasOne(CommissionEarning::class, 'booking_id', 'booking_id')->where('user_type', 'handyman') ->where('commission_status', 'paid');
 }
 
-    public function scopeMyPayment($query)
-    {
-        $user = auth()->user();
-        if($user->hasAnyRole(['admin', 'demo_admin'])){
-            return $query;
-        }
-
-        if($user->hasRole('provider')) {
-            return $query->whereHas('booking', function($q) use($user) {
-                $q->where('provider_id', '=', $user->id);
-            });
-        }
-
-        if($user->hasRole('user')) {
-            return $query->where('payments.customer_id', $user->id);
-        }
-
-        if($user->hasRole('handyman')) {
-            return $query->whereHas('booking',function ($q) use($user) {
-                $q->whereHas('handymanAdded',function($handyman) use($user){
-                    $handyman->where('handyman_id',$user->id);
-                });
-            });
-        }
-
+public function scopeMyPayment($query)
+{
+    $user = auth()->user();
+    if($user->hasAnyRole(['admin', 'demo_admin'])){
         return $query;
     }
+
+    if($user->hasRole('provider')) {
+        return $query->whereHas('booking', function($q) use($user) {
+            $q->where('provider_id', '=', $user->id);
+        });
+    }
+
+    if($user->hasRole('user')) {
+        return $query->where('payments.customer_id', $user->id);
+    }
+
+    if($user->hasRole('handyman')) {
+        return $query->whereHas('booking',function ($q) use($user) {
+            $q->whereHas('handymanAdded',function($handyman) use($user){
+                $handyman->where('handyman_id',$user->id);
+            });
+        });
+    }
+
+    return $query;
+}
     public function paymentHistory(){
         return $this->hasMany(PaymentHistory::class, 'payment_id','id');
     }

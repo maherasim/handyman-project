@@ -77,7 +77,9 @@
                             orderable: false,
                             searchable: false,
                         },
-                    @endif () {
+                    @endif
+                    ,
+                    {
                         data: 'updated_at',
                         name: 'updated_at',
                         title: "{{ __('product.lbl_update_at') }}",

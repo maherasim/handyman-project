@@ -19,7 +19,7 @@
               <label class="form-check-label h6 fw-normal text-capitalize" for="paypal">{{ $t('PayPal') }}</label>
             </div>
             <div class="form-check">
-              <input class="form-check-input" type="radio" name="payment_method" v-model="payment_method" id="bank_transfer" value="bank_transfer" @change="showBankInfoModal" />
+              <input class="form-check-input" type="radio" name="payment_method" v-model="payment_method" id="bank_transfer" value="bank_transfer" @change="onPaymentMethodChange" />
               <label class="form-check-label h6 fw-normal text-capitalize" for="bank_transfer">{{ $t('Bank Transfer') || 'Bank Transfer' }}</label>
             </div>
           </div>
@@ -44,20 +44,20 @@
   </div>
 
   <!-- Bank Transfer Info Modal -->
-  <div class="modal fade" id="bankTransferModal" tabindex="-1" aria-labelledby="bankTransferModalLabel" aria-hidden="true">
+  <div class="modal fade" id="bankTransferModal" ref="bankModalRef" tabindex="-1" aria-labelledby="bankTransferModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
       <div class="modal-content shadow-lg border-0 rounded-4">
         <div class="modal-header bg-primary text-white rounded-top-4">
           <h5 class="modal-title" id="bankTransferModalLabel">
             <i class="bi bi-bank2 me-2"></i> {{ $t('Bank Transfer Details') || 'Bank Transfer Details' }}
           </h5>
-          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+          <button type="button" class="btn-close btn-close-white" aria-label="Close" @click.stop.prevent="hideBankInfoModal"></button>
         </div>
         <div class="modal-body p-4">
           <div class="mb-4">
             <p class="fs-6 mb-0">
               <strong>
-                Please pay the amount of <span class="text-success">{{ formatCurrencyVue(remainingAmount) }}</span>
+                Please pay the amount of <span class="text-success">{{ formatCurrencyVue(paymentDisplayAmount) }}</span>
                 via bank transfer using the details below:
               </strong>
             </p>
@@ -88,7 +88,7 @@
           </div>
         </div>
         <div class="modal-footer border-top-0 px-4 pb-4">
-          <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-secondary rounded-pill px-4" @click.stop.prevent="hideBankInfoModal">Close</button>
         </div>
       </div>
     </div>
@@ -96,7 +96,8 @@
 </template>
 
 <script setup>
-import { ref, defineProps, computed, onMounted } from 'vue'
+import { ref, defineProps, computed, onMounted, onBeforeUnmount } from 'vue'
+import { Modal } from 'bootstrap'
 import * as yup from 'yup'
 import { useField, useForm } from 'vee-validate'
 import {
@@ -121,7 +122,10 @@ const paymentDisplayAmount = computed(() => {
         const advancePaid = props.total_advance_paid_amount || 0;
         return props.total_booking_amount - advancePaid;
     } else {
-        return props.total_booking_amount * props.advance_percentage / 100;
+        const bookedAdvance = Number(props.total_advance_paid_amount) || 0;
+        return bookedAdvance > 0
+            ? bookedAdvance
+            : (props.total_booking_amount * props.advance_percentage) / 100;
     }
 });
 
@@ -179,16 +183,23 @@ const { value: payment_method } = useField('payment_method')
 const errorMessages = ref({})
 
 const formSubmit = handleSubmit(async (values) => {
-   let advance_payment = (props.total_booking_amount * props.advance_percentage) / 100;
+   let advance_payment = (Number(props.total_advance_paid_amount) && Number(props.total_advance_paid_amount) > 0)
+       ? Number(props.total_advance_paid_amount)
+       : (props.total_booking_amount * props.advance_percentage) / 100;
   values.booking_id = props.booking_id
   values.customer_id = props.customer_id
   values.discount = props.discount
   values.payment_type = values.payment_method
   values.wallet_amount = props.wallet_amount
-  values.total_amount = props.payment_type == 'paid' ? props.total_booking_amount : advance_payment
+  // Calculate remaining amount for remaining payments
+  const remaining_amount = props.payment_type == 'paid' 
+    ? (props.total_booking_amount - (Number(props.total_advance_paid_amount) || 0))
+    : advance_payment
+  
+  values.total_amount = remaining_amount
   values.advance_paid_amount = props.payment_type == 'paid' ? null : advance_payment
 
-  values.type = props.payment_type == 'paid' ? 'full_payment' : 'advance_payment'
+  values.type = props.payment_type == 'paid' ? 'remaining' : 'advance_payment'
   values.total_amount = Number(values.total_amount).toFixed(2)
 
   const csrfToken = document.querySelector('meta[name="csrf-token"]').content
@@ -357,13 +368,46 @@ const Openstripepayment = async (data) => {
   }
 }
 
+const bankModalRef = ref(null)
+let bankModalInstance = null
+const isBankModalOpen = ref(false)
+
+const getBankModalInstance = () => {
+  const modalEl = bankModalRef.value || document.getElementById('bankTransferModal')
+  if (!modalEl) return null
+  if (bankModalInstance) return bankModalInstance
+  bankModalInstance = Modal.getOrCreateInstance ? Modal.getOrCreateInstance(modalEl) : new Modal(modalEl)
+  // Track open/close state to avoid double inits and help with logic
+  modalEl.addEventListener('shown.bs.modal', () => { isBankModalOpen.value = true })
+  modalEl.addEventListener('hidden.bs.modal', () => { isBankModalOpen.value = false })
+  return bankModalInstance
+}
+
 const showBankInfoModal = () => {
+  if (payment_method.value !== 'bank_transfer') return
+  const modal = getBankModalInstance()
+  if (modal && !isBankModalOpen.value) modal.show()
+}
+
+const forceCloseBankModal = () => {
+  // Fallback cleanup in case backdrop/body gets stuck due to version conflicts
+  document.querySelectorAll('.modal-backdrop').forEach(el => el.parentNode && el.parentNode.removeChild(el))
+  document.body.classList.remove('modal-open')
+  document.body.style.removeProperty('padding-right')
+}
+
+const hideBankInfoModal = () => {
+  const modal = getBankModalInstance()
+  if (modal) modal.hide()
+  // Ensure cleanup after animation completes
+  setTimeout(forceCloseBankModal, 300)
+}
+
+const onPaymentMethodChange = () => {
   if (payment_method.value === 'bank_transfer') {
-    const modalEl = document.getElementById('bankTransferModal')
-    if (modalEl) {
-      const modal = new bootstrap.Modal(modalEl)
-      modal.show()
-    }
+    showBankInfoModal()
+  } else {
+    hideBankInfoModal()
   }
 }
 

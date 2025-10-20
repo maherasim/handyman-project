@@ -14,6 +14,14 @@ $auth_user= authSession();
         data-message='{{ __("messages.delete_msg") }}'>
         <i class="far fa-trash-alt text-danger"></i>
     </a>
+    {{-- <a class="me-3" href="{{ route('bulk.cashApprove', $payment->id) }}" data--submit="payment.cashApprove{{$payment->id}}" 
+        data-ajax="true"
+        data-datatable="reload"
+        data-title="{{ __('messages.bulk_approve_form_title',['form'=>  __('messages.cash_history') ]) }}"
+        title="{{ __('messages.bulk_approve_form_title',['form'=>  __('messages.cash_history') ]) }}"
+        data-message='{{ __("messages.bulk_approve_msg") }}'>
+        <i class="far fa-check-circle text-success"></i>
+    </a>  --}}
 @endif
 </div>
 {{ html()->form()->close() }}

@@ -12,7 +12,7 @@ class ServiceProof extends Model implements  HasMedia
 
     protected $table = 'service_proofs';
     protected $fillable = [
-        'title', 'description', 'service_id','booking_id' ,'user_id'
+        'title', 'description', 'service_id', 'booking_id', 'user_id'
     ];
 
     protected $appends = ['proof_attachments'];

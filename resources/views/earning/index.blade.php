@@ -69,7 +69,7 @@
                     {
                         data: 'total_bookings',
                         name: 'total_bookings',
-                        title: "{{ __('messages.booking') }}",
+                        title: "{{ __('messages.booking') }} / {{ __('messages.post_job_request') }}",
                         orderable: false,
                     },
                     {

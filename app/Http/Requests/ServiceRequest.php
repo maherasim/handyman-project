@@ -26,13 +26,23 @@ class ServiceRequest extends FormRequest
     public function rules()
     {
         $id = request()->id;
-        return [
+        $rules = [
             'name'                           => 'required|unique:services,name,'.$id,
             'category_id'                    => 'required',
             'type'                           => 'required',
             'price'                          => 'required|min:0',
-            'status'                         => 'required',  
+            'status'                         => 'required',
+            'remote_work_level'              => 'required|in:onsite,25_remote,50_remote,75_remote,100_remote',
+            'career_level'                   => 'required|in:intern,entry,junior,mid,senior,lead,manager',
+            'travel_required'                => 'required|in:0,1',
         ];
+
+        // Require at least one attachment when creating via web (non-API)
+        if (empty($id) && !$this->is('api/*')) {
+            $rules['service_attachment'] = 'required';
+        }
+
+        return $rules;
     }
     public function messages()
     {

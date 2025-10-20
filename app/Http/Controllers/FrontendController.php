@@ -424,7 +424,19 @@ class FrontendController extends Controller
 
                 $col = 3;
 
-                return view('service.datatable-card', compact('data', 'totalReviews', 'totalRating', 'favouriteService', 'completedBookingCount', 'col'));
+                // Compute provider plan icon (free/silver/gold)
+                $plan_icon = asset('images/freepng.png');
+                $provider = $data->providers;
+                if ($provider && $provider->providerSubscription) {
+                    $rawPlan = strtolower(trim($provider->providerSubscription->plan_type ?? $provider->providerSubscription->title ?? ''));
+                    if (str_contains($rawPlan, 'silver')) {
+                        $plan_icon = asset('images/icon/silverpng.png');
+                    } elseif (str_contains($rawPlan, 'gold')) {
+                        $plan_icon = asset('images/goldpng.png');
+                    }
+                }
+
+                return view('service.datatable-card', compact('data', 'totalReviews', 'totalRating', 'favouriteService', 'completedBookingCount', 'col', 'plan_icon'));
             })
             ->order(function ($query) {
                 $query->orderBy('id', 'desc');
@@ -489,13 +501,16 @@ class FrontendController extends Controller
         $subscription = ProviderSubscription::where('user_id', (int)$provider_id)->first();
 
         // dd(  $subscription);
-        // Determine image path based on subscription
-        $imagePath = 'images/icon/freepng.png'; // Default free icon
+        // Determine image path based on subscription (path per requirements)
+        $imagePath = 'images/freepng.png'; // Default free icon at /public/images/freepng.png
         if ($subscription) {
-            if (trim($subscription->plan_type) === 'Silver plan') {
+            $rawPlan = strtolower(trim($subscription->plan_type ?? $subscription->title ?? ''));
+            if (str_contains($rawPlan, 'silver')) {
                 $imagePath = 'images/icon/silverpng.png';
-            } elseif ($subscription->plan_type === 'Gold plan') {
-                $imagePath = 'images/icon/goldpng.png';
+            } elseif (str_contains($rawPlan, 'gold')) {
+                $imagePath = 'images/goldpng.png';
+            } else {
+                $imagePath = 'images/freepng.png';
             }
         }
         // dd( $imagePath);
@@ -575,13 +590,29 @@ class FrontendController extends Controller
             $knownLanguageArray = [];
         }
 
+        // Compute provider plan icon for service detail
+        $providerPlanIcon = 'images/freepng.png';
+        if (isset($serviceData['provider']['id'])) {
+            $sub = ProviderSubscription::where('user_id', (int)$serviceData['provider']['id'])->first();
+            if ($sub) {
+                $rawPlan = strtolower(trim($sub->plan_type ?? $sub->title ?? ''));
+                if (str_contains($rawPlan, 'silver')) {
+                    $providerPlanIcon = 'images/icon/silverpng.png';
+                } elseif (str_contains($rawPlan, 'gold')) {
+                    $providerPlanIcon = 'images/goldpng.png';
+                }
+            }
+        }
+
         $price = $serviceData['service_detail']['price'] ?? 0;
         $discount = $serviceData['service_detail']['discount'] ?? 0;
         $subtotal = $discount != 0 ? ($price - ($price * $discount / 100)) : $price;
 
 
-        $total_ratings = BookingRating::where('service_id', $serviceData['service_detail']['id'])->get();
-        return view('landing-page.ServiceDetail', compact('serviceData', 'favouriteService', 'date_time', 'completed_services', 'knownLanguageArray', 'subtotal', 'total_ratings', 'favouriteServiceData', 'userId'));
+        // $total_ratings = BookingRating::where('service_id', $serviceData['service_detail']['id'])->get();
+        $serviceIdForRatings = (int)($serviceData['service_detail']['id'] ?? 0);
+        $total_ratings = $serviceIdForRatings > 0 ? BookingRating::where('service_id', $serviceIdForRatings)->get() : collect();
+        return view('landing-page.ServiceDetail', compact('serviceData', 'favouriteService', 'date_time', 'completed_services', 'knownLanguageArray', 'subtotal', 'total_ratings', 'favouriteServiceData', 'userId', 'providerPlanIcon'));
     }
 
 
@@ -726,6 +757,13 @@ class FrontendController extends Controller
         $jobrequest = PostJobRequest::with(['city', 'country', 'state', 'category', 'subCategory', 'provider', 'customer.city', 'customer.country', 'postBidList'])->find($id);
         if (!$jobrequest) {
             abort(404);
+        }
+
+        // Increment view count
+        try {
+            $jobrequest->increment('total_views');
+        } catch (\Throwable $e) {
+            // Silent fail - view tracking shouldn't break the page
         }
 
         // Build attachments array similar to service detail
@@ -1077,7 +1115,19 @@ class FrontendController extends Controller
                     ->where('status', 'completed')  // Only count completed bookings
                     ->count();
 
-                return view('service.datatable-card', compact('data', 'totalReviews', 'totalRating', 'favouriteService', 'completedBookingCount'));
+                // Compute provider plan icon (free/silver/gold)
+                $plan_icon = asset('images/freepng.png');
+                $provider = $data->providers;
+                if ($provider && $provider->providerSubscription) {
+                    $rawPlan = strtolower(trim($provider->providerSubscription->plan_type ?? $provider->providerSubscription->title ?? ''));
+                    if (str_contains($rawPlan, 'silver')) {
+                        $plan_icon = asset('images/icon/silverpng.png');
+                    } elseif (str_contains($rawPlan, 'gold')) {
+                        $plan_icon = asset('images/goldpng.png');
+                    }
+                }
+
+                return view('service.datatable-card', compact('data', 'totalReviews', 'totalRating', 'favouriteService', 'completedBookingCount', 'plan_icon'));
             })
             ->order(function ($query) {
                 $query->orderBy('id', 'desc');
@@ -1131,23 +1181,17 @@ class FrontendController extends Controller
                     $providers_service_rating = (float)number_format(max($data->getServiceRating->avg('rating'), 0), 2);
                 }
 
-                // Default to free plan icon
-                $plan_icon = asset('images/icon/freepng.png');
+                // Default to free plan icon (path per requirements)
+                $plan_icon = asset('images/freepng.png');
 
                 if ($data->providerSubscription) {
-
-                    $plan_type = strtolower($data->providerSubscription->plan_type);
-                    switch ($plan_type) {
-                        case 'silver plan':
-                            $plan_icon = asset('images/icon/silverpng.png');
-                            break;
-                        case 'gold plan':
-                            $plan_icon = asset('images/icon/goldpng.png');
-                            break;
-                        case 'free plan':
-                        default:
-                            $plan_icon = asset('images/icon/freepng.png');
-                            break;
+                    $rawPlan = strtolower(trim($data->providerSubscription->plan_type ?? $data->providerSubscription->title ?? ''));
+                    if (str_contains($rawPlan, 'silver')) {
+                        $plan_icon = asset('images/icon/silverpng.png');
+                    } elseif (str_contains($rawPlan, 'gold')) {
+                        $plan_icon = asset('images/goldpng.png');
+                    } else {
+                        $plan_icon = asset('images/freepng.png');
                     }
                 }
 
@@ -1173,21 +1217,20 @@ class FrontendController extends Controller
             });
         }
         if (isset($filter['booking_date_range'])) {
-            $startDate = explode(' to ', $filter['booking_date_range'])[0];
-
-            $startDate = \Carbon\Carbon::createFromFormat('d/m/Y', $startDate)->format('Y-m-d');
-            $startDate = \Carbon\Carbon::parse($startDate);
-            $startDate = $startDate->format('Y-m-d');
-
-            $endDate = explode(' to ', $filter['booking_date_range'])[1];
-            $endDate = \Carbon\Carbon::createFromFormat('d/m/Y', $endDate)->format('Y-m-d');
-            $endDate = \Carbon\Carbon::parse($endDate);
-            $endDate = $endDate->format('Y-m-d');
-
-            $query->whereHas('slots', function ($q) use ($startDate, $endDate) {
-                $q->whereDate('date', '>=', $startDate)
-                    ->whereDate('date', '<=', $endDate);
-            });
+            $dateRange = explode(' to ', $filter['booking_date_range']);
+            
+            if (count($dateRange) === 2) {
+                $startDate = trim($dateRange[0]);
+                $endDate = trim($dateRange[1]);
+                
+                // Validate date format (Y-m-d)
+                if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $startDate) && preg_match('/^\d{4}-\d{2}-\d{2}$/', $endDate)) {
+                    // Show booking if ANY slot falls within the date range
+                    $query->whereHas('slots', function ($q) use ($startDate, $endDate) {
+                        $q->whereBetween('date', [$startDate, $endDate]);
+                    });
+                }
+            }
         }
 
         if (isset($filter['status'])) {
@@ -1320,7 +1363,18 @@ class FrontendController extends Controller
                 } else {
                     $favouriteService = collect();
                 }
-                return view('service.datatable-card', compact('data', 'totalReviews', 'totalRating', 'favouriteService'));
+                // Compute provider plan icon (free/silver/gold)
+                $plan_icon = asset('images/freepng.png');
+                $provider = $data->providers;
+                if ($provider && $provider->providerSubscription) {
+                    $rawPlan = strtolower(trim($provider->providerSubscription->plan_type ?? $provider->providerSubscription->title ?? ''));
+                    if (str_contains($rawPlan, 'silver')) {
+                        $plan_icon = asset('images/icon/silverpng.png');
+                    } elseif (str_contains($rawPlan, 'gold')) {
+                        $plan_icon = asset('images/goldpng.png');
+                    }
+                }
+                return view('service.datatable-card', compact('data', 'totalReviews', 'totalRating', 'favouriteService', 'plan_icon'));
             });
 
         return $datatable->rawColumns(['name'])

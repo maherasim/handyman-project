@@ -48,6 +48,7 @@ use App\Http\Controllers\FrontendSettingController;
 use App\Http\Controllers\MailTemplatesController;
 use App\Http\Controllers\VerificationController;
 use App\Http\Controllers\HelpDeskController;
+use App\Http\Controllers\ChatController;
 
 
 use App\Http\Controllers\Installer\WelcomeController;
@@ -109,6 +110,17 @@ Route::get('lang/{locale}', [HomeController::class, 'lang'])->name('switch-langu
 Route::get('/verify/{id}', [VerificationController::class, 'verify'])->name('verify');
 
 Route::group(['middleware' => ['auth', 'verified']], function () {
+        // Completely standalone chat system - NO booking/bid dependencies
+        Route::get('/messages/user/{userId}', [ChatController::class, 'viewWithUser'])->name('chat.view.user');
+        Route::get('/chat/{conversationId}/messages', [ChatController::class, 'messages'])->name('chat.messages');
+        Route::post('/chat/{conversationId}/send', [ChatController::class, 'send'])->name('chat.send');
+        Route::get('/chat/download/{messageId}', [ChatController::class, 'download'])->name('chat.download');
+        Route::get('/chat/unread/ping', [ChatController::class, 'unreadPing'])->name('chat.unread.ping');
+        Route::get('/chat/flagged/ping', [ChatController::class, 'flaggedPing'])->name('chat.flagged.ping');
+        Route::get('/messages', [ChatController::class, 'index'])->name('chat.index');
+        Route::post('/chat/unread/ack', [ChatController::class, 'unreadAck'])->name('chat.unread.ack');
+        Route::get('/messages/flagged', [ChatController::class, 'flaggedIndex'])->name('chat.flagged.index');
+        Route::post('/messages/flagged/{id}/warn', [ChatController::class, 'sendWarningEmail'])->name('chat.flagged.warn');
     Route::get('/home', [HomeController::class, 'index'])->name('home');
     Route::group(['namespace' => '', 'middleware' => ['permission:permission list']], function () {
         Route::resource('permission', PermissionController::class);
@@ -162,6 +174,14 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
 
 
     Route::post('/upgrade/free-plan', [ProviderController::class, 'upgradeFreePlan'])->name('upgrade.free.plan');
+    
+    // Subscription payment routes
+    Route::post('subscription/wallet/payment', [ProviderController::class, 'walletPayment'])->name('subscription.wallet.payment');
+    Route::post('subscription/paypal/create', [ProviderController::class, 'paypalCreate'])->name('subscription.paypal.create');
+    Route::get('subscription/paypal/success/{id}', [PayPalController::class, 'subscriptionSuccess'])->name('subscription.paypal.success');
+    Route::post('subscription/bank/transfer', [ProviderController::class, 'bankTransfer'])->name('subscription.bank.transfer');
+    Route::post('subscription/stripe/create', [ProviderController::class, 'createSubscriptionStripePayment'])->name('subscription.stripe.create');
+    Route::get('subscription/stripe/save/{id}', [ProviderController::class, 'saveSubscriptionStripePayment'])->name('subscription.stripe.save');
 
     Route::post('provider-save-slot', [ProviderSlotController::class, 'store'])->name('providerslot.store');
     Route::group(['middleware' => ['permission:provider list']], function () {
@@ -242,10 +262,24 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
     Route::get('cash/history/{id?}', [PaymentController::class, 'cashIndex'])->name('cash.index');
     Route::get('paymenthistory-index-data/{id}', [PaymentController::class, 'paymenthistory_index_data'])->name('paymenthistory.index_data');
     Route::get('cash/approve/{id}', [PaymentController::class, 'cashApprove'])->name('cash.approve');
+    
+    // Service Proof Routes
+    Route::post('service-proof/store', [App\Http\Controllers\API\BookingController::class, 'uploadServiceProof'])->name('service.proof.store');
 
     Route::post('save-payment', [App\Http\Controllers\API\PaymentController::class, 'savePayment'])->name('payment.save');
     Route::get('save-stripe-payment/{id}', [App\Http\Controllers\BookingController::class, 'saveStripePayment']);
-
+    Route::get('paymentjobrequest', [PaymentController::class, 'paymentjobrequest'])->name('paymentjobrequest');
+    Route::get('paymentjobrequest-index-data', [PaymentController::class, 'paymentjobrequest_index_data'])->name('paymentjobrequest.index_data');
+    Route::get('paymentjobrequest/history/{id}', [PaymentController::class, 'paymentjobrequest_history'])->name('paymentjobrequest.history');
+    Route::get('paymentjobrequest/history_data/{id}', [PaymentController::class, 'paymentjobrequest_history_data'])->name('paymentjobrequest.history_data');
+    Route::get('paymentjobrequest/cash-index-data', [PaymentController::class, 'postjobcashIndex'])->name('paymentjobrequest.cash.index');
+    Route::get('paymentjobrequest/cash/history/{id?}', [PaymentController::class, 'postjobcash_index_data'])->name('paymentjobrequest.cash.index_data');
+   // Route::get('paymentjobrequest/cash/approve', [PaymentController::class, 'postjobcashApprove'])->name('paymentjobrequest.cash.approve');
+    Route::post('/paymentjobrequest/cash/approve', [PaymentController::class, 'postjobcashApprove'])->name('paymentjobrequest.cash.approve');
+    //wallet
+    
+    Route::get('paymentjobrequest/wallet-index', [PaymentController::class, 'postjobwalletIndex'])->name('paymentjobrequest.wallet.index');
+    Route::get('paymentjobrequest/wallet-index-data', [PaymentController::class, 'postjobwallet_index_data'])->name('paymentjobrequest.wallet.index_data');
 
 
     Route::get('user-change-password', [CustomerController::class, 'getChangePassword'])->name('user.getchangepassword');
@@ -444,6 +478,18 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
         Route::post('subcategory/{id}', [SubCategoryController::class, 'destroy'])->name('subcategory.destroy');
     });
 
+    // Subscription Transactions Routes - No Middleware
+    Route::get('subscription-transactions', [App\Http\Controllers\Admin\SubscriptionTransactionController::class, 'index'])->name('admin.subscription-transactions.index');
+    Route::get('subscription-transactions/data', [App\Http\Controllers\Admin\SubscriptionTransactionController::class, 'indexData'])->name('admin.subscription-transactions.data');
+    Route::post('subscription-transactions/{id}/verify', [App\Http\Controllers\Admin\SubscriptionTransactionController::class, 'verifyPayment'])->name('admin.subscription-transactions.verify');
+    Route::get('subscription-transactions/debug', [App\Http\Controllers\Admin\SubscriptionTransactionController::class, 'debug'])->name('admin.subscription-transactions.debug');
+    
+    // Test routes
+    Route::get('test-subscription-controller', [App\Http\Controllers\Admin\SubscriptionTransactionController::class, 'test'])->name('test.subscription.controller');
+    Route::get('test-subscription-data', [App\Http\Controllers\Admin\SubscriptionTransactionController::class, 'indexData'])->name('test.subscription.data');
+    Route::get('test-verify/{id}', [App\Http\Controllers\Admin\SubscriptionTransactionController::class, 'verifyPayment'])->name('test.verify');
+    
+
     Route::group(['middleware' => ['permission:plan list']], function () {
         Route::resource('plans', PlanController::class);
         Route::get('plans-index-data', [PlanController::class, 'index_data'])->name('plans.index_data');
@@ -474,7 +520,20 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
         Route::post('post-job-request-save',[PostJobRequestController::class,'store'])->name('postJobRequest.save');
         Route::get('postrequest-index-data/{id}', [PostJobRequestController::class, 'postrequest_index_data'])->name('postrequest.index_data');
     });
-
+    Route::post('adjustpayment/{id}/set-advance', [PostJobRequestController::class, 'startWork'])->name('adjustpayment.start-work');
+    Route::get('/post-job-bid/{id}', [PostJobRequestController::class, 'showbid'])->name('post-job-bid.show');
+    Route::get('/post-job-bid/by-bid/{bidId}', [PostJobRequestController::class, 'showBidById'])->name('post-job-bid.showByBid');
+    Route::post('postjob/stripe/create/{id}', [PostJobRequestController::class, 'createPostJobStripePayment'])->name('postjob.stripe.create');
+    Route::get('postjob/save-stripe-payment/{id}', [PostJobRequestController::class, 'savePostJobStripePayment'])->name('postjob.stripe.save');
+    Route::post('pay-advance/{id}', [PostJobRequestController::class, 'payAdvance'])->name('post-job-request.pay-advance');
+    Route::post('/post-job-request/{id}/status', [PostJobRequestController::class, 'updateBidStatus'])->name('postjob.updateStatus');
+    Route::get('post-job-request/{id}/editjob', [PostJobRequestController::class, 'editpostjob'])->name('post-job-requestjob.edit');
+    Route::get('post-job-request/{id}/invoice', [PostJobRequestController::class, 'invoice'])->name('postrequest.invoice');
+    Route::post('postjob/paypal/create/{id}', [PostJobRequestController::class, 'createPostJobPayPalPayment'])->name('postjob.paypal.create');
+    Route::get('postjob/paypal-success/{id}', [PostJobRequestController::class, 'postJobPayPalSuccess'])->name('postjob.paypal.success');
+    Route::get('postjob/paypal-cancel', [PostJobRequestController::class, 'postJobPayPalCancel'])->name('postjob.paypal.cancel');
+    Route::get('postjob/bank-details/{id}', [PostJobRequestController::class, 'getPostJobBankDetails'])->name('postjob.bank.details');
+    Route::post('postjob/bank-transfer/{id}', [PostJobRequestController::class, 'createPostJobBankTransfer'])->name('postjob.bank.transfer');
     Route::group(['middleware' => ['permission:servicepackage list']], function () {
         Route::resource('servicepackage', ServicePackageController::class);
         Route::get('servicepackage/list/{packageid?}', [ServiceController::class, 'index'])->name('servicepackage.service');
@@ -548,7 +607,18 @@ Route::group(['middleware' => ['permission:helpdesk list']], function () {
 });
 
 Route::get('bidsshow',[PostJobRequestController::class,'bidshowindex'])->name('bidsshow');
+Route::get('post-job-request/{id}/bids', [PostJobRequestController::class, 'viewPostBids'])->name('post-job-request.bids');
 Route::get('bidsindex',[PostJobRequestController::class,'bidshow'])->name('bidsshowjson');
+Route::post('postjob-bid/{id}/extra-charges', [App\Http\Controllers\PostJobRequestController::class, 'addExtraCharges'])->name('postjob.addExtraCharges');
+Route::post('/bids/accept/{id}', [PostJobRequestController::class, 'acceptBid'])->name('bids.accept');
+ 
+Route::post('/post-job-request/{id}/set-advance', [PostJobRequestController::class, 'setAdvanceSplit']);
+
+
+// routes/web.php
+Route::post('/post-job-request/{id}/start-work', [PostJobRequestController::class, 'startWork'])->name('postjob.startwork');
+
+
 // my favriout Service
 
 Route::get('my-service',[ServiceController::class,'myindex'])->name('myservice');

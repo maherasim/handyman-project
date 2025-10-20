@@ -36,9 +36,53 @@
 }
 
 /* Card polish */
-.service-box-card { border: 1px solid #eef0f2; transition: box-shadow .2s ease, transform .2s ease; background: #fff; }
-.service-box-card:hover { box-shadow: 0 10px 24px rgba(18,38,63,.08); transform: translateY(-2px); }
-.social-share img, .social-share svg { width: 28px; height: 28px; border-radius: 6px; }
+.service-box-card { 
+    border: 1px solid #eef0f2; 
+    transition: box-shadow .2s ease, transform .2s ease; 
+    background: #fff; 
+    padding: 15px;
+    border-radius: 12px;
+}
+.service-box-card:hover { 
+    box-shadow: 0 10px 24px rgba(18,38,63,.08); 
+    transform: translateY(-2px); 
+}
+.social-share img, .social-share svg { 
+    width: 28px; 
+    height: 28px; 
+    border-radius: 6px; 
+}
+
+/* Statistics section improvements */
+.stats-section {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 12px 8px;
+    margin: 12px 0;
+}
+
+.stats-item {
+    text-align: center;
+    padding: 4px;
+}
+
+.stats-icon {
+    width: 16px;
+    height: 16px;
+    margin-right: 4px;
+}
+
+.stats-value {
+    font-weight: 600;
+    font-size: 14px;
+    color: #2c3e50;
+}
+
+.stats-label {
+    font-size: 11px;
+    color: #6c757d;
+    margin-top: 2px;
+}
 
 </style>
 <div class="service-box-card bg-white rounded-3 mb-0 shadow-sm h-100" data-service-id="{{ $data->id }}">
@@ -140,10 +184,19 @@
        </a>
    </div>
    <div class="d-flex align-items-center justify-content-end">
-       <img src="{{ asset('images/icon/freeicon.jpg') }}" alt="icon"
+       <img src="{{ isset($plan_icon) ? $plan_icon : asset('images/freepng.png') }}" alt="plan"
            style="width: 26px; height: 26px; margin-right: 10px;">
-       <img src="{{ asset('images/icon/verifiedpng.png') }}" alt="icon"
-           style="width: 26px; height: 26px;">
+       @php
+           $providerId = optional($data->providers)->id;
+           $isAllVerified = $providerId && function_exists('verify_provider_document') ? verify_provider_document($providerId) : false;
+       @endphp
+       @if ($isAllVerified)
+           <img src="{{ asset('images/icon/verified.jpg') }}" alt="verified"
+               style="width: 26px; height: 26px;">
+       @else
+           <img src="{{ asset('images/icon/notverifiedpng.png') }}" alt="not verified"
+               style="width: 26px; height: 26px;">
+       @endif
    </div>
 </div>
 
@@ -163,23 +216,52 @@
       
          
         
-      <div class="d-flex align-items-center gap-1 f-none">
-         <svg xmlns=" " width="12" height="12" viewBox="0 0 12 12" fill="none"
-            class="service-rating">
-            <path
-               d="M6.58578 0.85525L7.92167 3.44562C8.02009 3.63329 8.20793 3.76362 8.42458 3.79259L11.4252 4.21427C11.6005 4.23802 11.7595 4.32723 11.8669 4.46335C11.9731 4.59773 12.0187 4.76803 11.9929 4.93543C11.9719 5.07445 11.9041 5.20304 11.8003 5.30151L9.62603 7.33523C9.467 7.47714 9.39498 7.68741 9.43339 7.89304L9.96871 10.7522C10.0257 11.0974 9.78867 11.4229 9.43339 11.4884C9.28696 11.511 9.13693 11.4872 9.0049 11.4224L6.32833 10.0768C6.12968 9.98005 5.89503 9.98005 5.69639 10.0768L3.01982 11.4224C2.69094 11.5909 2.28346 11.4762 2.10042 11.1634C2.0326 11.0389 2.0086 10.897 2.0308 10.7585L2.56612 7.89883C2.60453 7.69378 2.53191 7.48236 2.37348 7.34044L0.19921 5.30788C-0.0594455 5.06692 -0.0672472 4.67014 0.181806 4.42048C0.187207 4.41527 0.193209 4.40948 0.19921 4.40369C0.302432 4.30232 0.438061 4.23802 0.584493 4.22123L3.58514 3.79896C3.80118 3.76942 3.98902 3.64025 4.08805 3.45141L5.37592 0.85525C5.49055 0.632821 5.7282 0.494383 5.98625 0.500175H6.06667C6.29052 0.526241 6.48556 0.660046 6.58578 0.85525Z"
-               fill="currentColor" />
-         </svg>
-         <h6 class="font-size-14">{{ round($totalRating, 1) }}
-              <a href="{{ route('rating.all', ['service_id' => $data->id]) }}" class="text-body ms-1">({{$totalReviews }} {{__('messages.reviews')}})</a>
-         </h6>
-
-         <strong class="px-3">{{ $completedBookingCount }} Bookings</strong>
-
-         <span class="px-2" title="Views">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns=" "><path d="M12 5c-7.633 0-10 7-10 7s2.367 7 10 7 10-7 10-7-2.367-7-10-7Zm0 12a5 5 0 1 1 0-10 5 5 0 0 1 0 10Zm0-8a3 3 0 1 0 .002 6.002A3 3 0 0 0 12 9Z" fill="currentColor"/></svg>
-            <span class="ms-1">{{ $data->total_views ?? 0 }}</span>
-         </span>
+      <!-- Statistics Section - Optimized Layout -->
+      <div class="stats-section">
+         <div class="row g-2 text-center">
+            <!-- Reviews Section -->
+            <div class="col-4">
+               <div class="stats-item">
+                  <div class="d-flex align-items-center justify-content-center mb-1">
+                     <svg xmlns=" " width="16" height="16" viewBox="0 0 12 12" fill="none" class="stats-icon text-warning">
+                        <path d="M6.58578 0.85525L7.92167 3.44562C8.02009 3.63329 8.20793 3.76362 8.42458 3.79259L11.4252 4.21427C11.6005 4.23802 11.7595 4.32723 11.8669 4.46335C11.9731 4.59773 12.0187 4.76803 11.9929 4.93543C11.9719 5.07445 11.9041 5.20304 11.8003 5.30151L9.62603 7.33523C9.467 7.47714 9.39498 7.68741 9.43339 7.89304L9.96871 10.7522C10.0257 11.0974 9.78867 11.4229 9.43339 11.4884C9.28696 11.511 9.13693 11.4872 9.0049 11.4224L6.32833 10.0768C6.12968 9.98005 5.89503 9.98005 5.69639 10.0768L3.01982 11.4224C2.69094 11.5909 2.28346 11.4762 2.10042 11.1634C2.0326 11.0389 2.0086 10.897 2.0308 10.7585L2.56612 7.89883C2.60453 7.69378 2.53191 7.48236 2.37348 7.34044L0.19921 5.30788C-0.0594455 5.06692 -0.0672472 4.67014 0.181806 4.42048C0.187207 4.41527 0.193209 4.40948 0.19921 4.40369C0.302432 4.30232 0.438061 4.23802 0.584493 4.22123L3.58514 3.79896C3.80118 3.76942 3.98902 3.64025 4.08805 3.45141L5.37592 0.85525C5.49055 0.632821 5.7282 0.494383 5.98625 0.500175H6.06667C6.29052 0.526241 6.48556 0.660046 6.58578 0.85525Z" fill="currentColor" />
+                     </svg>
+                     <span class="stats-value">{{ round($totalRating, 1) }}</span>
+                  </div>
+                  <div class="stats-label">
+                     <a href="{{ route('rating.all', ['service_id' => $data->id]) }}" class="text-decoration-none text-muted">
+                        ({{ $totalReviews }} {{ __('messages.reviews') }})
+                     </a>
+                  </div>
+               </div>
+            </div>
+            
+            <!-- Bookings Section -->
+            <div class="col-4">
+               <div class="stats-item">
+                  <div class="d-flex align-items-center justify-content-center mb-1">
+                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns=" " class="stats-icon text-success">
+                        <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                     </svg>
+                     <span class="stats-value">{{ $completedBookingCount }}</span>
+                  </div>
+                  <div class="stats-label">Bookings</div>
+               </div>
+            </div>
+            
+            <!-- Views Section -->
+            <div class="col-4">
+               <div class="stats-item">
+                  <div class="d-flex align-items-center justify-content-center mb-1">
+                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns=" " class="stats-icon text-info">
+                        <path d="M12 5c-7.633 0-10 7-10 7s2.367 7 10 7 10-7 10-7-2.367-7-10-7Zm0 12a5 5 0 1 1 0-10 5 5 0 0 1 0 10Zm0-8a3 3 0 1 0 .002 6.002A3 3 0 0 0 12 9Z" fill="currentColor"/>
+                     </svg>
+                     <span class="stats-value">{{ $data->total_views ?? 0 }}</span>
+                  </div>
+                  <div class="stats-label">Views</div>
+               </div>
+            </div>
+         </div>
       </div>  
       <div class="d-flex social-share" style="gap: 14px; justify-content: center;">
          <a href="#" class="social-share-btn" data-platform="facebook" data-service-id="{{ $data->id }}" style="cursor: pointer;">
@@ -206,152 +288,7 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.1/dist/sweetalert2.all.min.js"></script>
-
-<!-- Social Media Sharing Script -->
-<script>
-$(document).ready(function () {
-    // Social Media Sharing Functionality
-    $('.social-share-btn').on('click', function(e) {
-        e.preventDefault();
-        
-        const platform = $(this).data('platform');
-        const serviceId = $(this).data('service-id');
-        const serviceCard = $(this).closest('.service-box-card');
-        
-        // Get service information from the card
-        const serviceName = serviceCard.find('.service-heading').text().trim() || 'Amazing Service';
-        const servicePrice = serviceCard.find('.price-box').text().trim() || 'Check Price';
-        const serviceImage = serviceCard.find('.service-img img').attr('src');
-        const serviceUrl = window.location.origin + '/service-detail/' + serviceId;
-        const providerName = serviceCard.find('.provider-name').text().trim() || 'Professional Provider';
-        const rating = serviceCard.find('.font-size-14').text().trim() || '5.0';
-        const bookings = serviceCard.find('strong').text().trim() || '0 Bookings';
-        const views = serviceCard.find('span[title="Views"] span').text().trim() || '0';
-        
-        // Enhanced shareable content with more details
-        const shareContent = {
-            title: serviceName,
-            description: `🚀 **${serviceName}**\n\n👨‍💼 **Provider:** ${providerName}\n💰 **Price:** ${servicePrice}\n⭐ **Rating:** ${rating}\n📊 **Stats:** ${bookings} • ${views} Views\n\n🔍 **Service Details:**\nThis professional service offers top-quality solutions with excellent customer satisfaction.\n\n📱 **Book Now:** ${serviceUrl}\n\n#services #professional #quality #recommended #handyman #expert`,
-            url: serviceUrl,
-            image: serviceImage,
-            hashtags: 'services,professional,quality,recommended,handyman,expert'
-        };
-        
-        // Share based on platform
-        switch(platform) {
-            case 'facebook':
-                shareToFacebook(shareContent);
-                break;
-            case 'twitter':
-                shareToTwitter(shareContent);
-                break;
-            case 'instagram':
-                shareToInstagram(shareContent);
-                break;
-            case 'linkedin':
-                shareToLinkedIn(shareContent);
-                break;
-            // removed whatsapp and copy link
-        }
-    });
-    
-    // Facebook Sharing
-    function shareToFacebook(content) {
-        const fbUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(content.url)}&quote=${encodeURIComponent(content.description)}`;
-        openShareWindow(fbUrl, 'facebook-share', 600, 400);
-        Swal.fire('Sharing to Facebook!', 'Facebook sharing window opened. Complete your post there.', 'info');
-    }
-    
-    // Twitter Sharing
-    function shareToTwitter(content) {
-        const tweetText = `${content.description}\n\n${content.url}`;
-        const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}&hashtags=${content.hashtags}`;
-        openShareWindow(twitterUrl, 'twitter-share', 600, 400);
-        Swal.fire('Sharing to Twitter!', 'Twitter sharing window opened. Complete your tweet there.', 'info');
-    }
-    
-    // Instagram Sharing (Note: Instagram doesn't support direct sharing via URL)
-    function shareToInstagram(content) {
-        // Create a modal with Instagram sharing instructions
-        Swal.fire({
-            title: 'Share to Instagram',
-            html: `
-                <div class="text-center">
-                    <p><strong>Instagram doesn't support direct sharing via links.</strong></p>
-                    <p>Here's what you can copy and paste:</p>
-                    <div class="bg-light p-3 rounded mb-3">
-                        <strong>Caption:</strong><br>
-                        <textarea class="form-control mt-2" rows="4" readonly>${content.description}</textarea>
-                    </div>
-                    <div class="bg-light p-3 rounded">
-                        <strong>Service URL:</strong><br>
-                        <input type="text" class="form-control mt-2" value="${content.url}" readonly>
-                    </div>
-                </div>
-            `,
-            icon: 'info',
-            confirmButtonText: 'Copy & Close',
-            showCancelButton: true,
-            cancelButtonText: 'Close'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                // Copy caption to clipboard
-                navigator.clipboard.writeText(content.description + '\n\n' + content.url);
-                Swal.fire('Copied!', 'Content copied to clipboard. You can now paste it on Instagram.', 'success');
-            }
-        });
-    }
-    
-    // LinkedIn Sharing
-    function shareToLinkedIn(content) {
-        const linkedinUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(content.url)}&title=${encodeURIComponent(content.title)}&summary=${encodeURIComponent(content.description)}`;
-        openShareWindow(linkedinUrl, 'linkedin-share', 600, 500);
-        Swal.fire('Sharing to LinkedIn!', 'LinkedIn sharing window opened. Complete your post there.', 'info');
-    }
-    
-    // removed WhatsApp and copy link functionality
-    
-    // Helper function to open share windows
-    function openShareWindow(url, name, width, height) {
-        const left = (screen.width - width) / 2;
-        const top = (screen.height - height) / 2;
-        
-        window.open(url, name, 
-            `width=${width},height=${height},left=${left},top=${top},` +
-            'toolbar=0,location=0,menubar=0,directories=0,scrollbars=0'
-        );
-    }
-    
-    // Enhanced sharing with clipboard fallback
-    function copyToClipboard(text) {
-        if (navigator.clipboard && window.isSecureContext) {
-            navigator.clipboard.writeText(text).then(() => {
-                Swal.fire('Copied!', 'Content copied to clipboard!', 'success');
-            });
-        } else {
-            // Fallback for older browsers
-            const textArea = document.createElement('textarea');
-            textArea.value = text;
-            textArea.style.position = 'fixed';
-            textArea.style.left = '-999999px';
-            textArea.style.top = '-999999px';
-            document.body.appendChild(textArea);
-            textArea.focus();
-            textArea.select();
-            
-            try {
-                document.execCommand('copy');
-                Swal.fire('Copied!', 'Content copied to clipboard!', 'success');
-            } catch (err) {
-                Swal.fire('Error', 'Could not copy to clipboard', 'error');
-            }
-            
-            document.body.removeChild(textArea);
-        }
-    }
-});
-
-</script>
+ 
 <script>
   document.addEventListener('DOMContentLoaded', function () {
     if (window.bootstrap && bootstrap.Tooltip) {

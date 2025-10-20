@@ -74,7 +74,9 @@
                                         </li> --}}
                                         <li>
                                             <i class="ri-map-2-line"></i>
-                                            <span class="contact-info-text">{{ !empty($handymandata->address) ?$handymandata->address : '-' }}</span>
+ <span class="contact-info-text">
+    {{ !empty($handymandata->address) ? strip_tags($handymandata->address) : '-' }}
+</span>
                                         </li>
                                     </ul>
                                 </div>

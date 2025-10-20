@@ -60,6 +60,20 @@
             </select>
           </div>
 
+          <!-- Clear Filters Button -->
+          <div class="col-sm-2 mt-sm-0 mt-3">
+            <button 
+              @click="clearAllFilters" 
+              class="form-select text-start"
+              :disabled="!hasActiveFilters"
+              :title="$t('Clear all filters')"
+              style="background-color: transparent; border: 1px solid #ced4da; cursor: pointer;"
+            >
+              <i class="fas fa-times me-2"></i>
+              {{ $t('Clear Filters') }}
+            </button>
+          </div>
+
         </div>
       </div>
 
@@ -186,13 +200,23 @@ const loadFeaturedCategoryData = () => {
 
 
 onMounted(() => {
-  $(categoryDropdownRef.value).select2();
-  $(subCategoryDropdownRef.value).select2();
-  $(providerDropdownRef.value).select2();
-  $(countryDropdownRef.value).select2();
-  $(cityDropdownRef.value).select2();
-  $(priceDropdownRef.value).select2();
-  $(sortOptionRef.value).select2();
+  // Initialize Select2 only if not already initialized
+  const initSelect2 = (element) => {
+    if (element && !$(element).hasClass('select2-hidden-accessible')) {
+      $(element).select2({
+        width: '100%',
+        dropdownParent: $(element).parent()
+      });
+    }
+  };
+
+  initSelect2(categoryDropdownRef.value);
+  initSelect2(subCategoryDropdownRef.value);
+  initSelect2(providerDropdownRef.value);
+  initSelect2(countryDropdownRef.value);
+  initSelect2(cityDropdownRef.value);
+  initSelect2(priceDropdownRef.value);
+  initSelect2(sortOptionRef.value);
 
   $(categoryDropdownRef.value).on('change', function () {
     selectedCategory.value = $(this).val();
@@ -268,8 +292,43 @@ const checkDropdowns = computed(() => {
   return selectedProvider.value || selectedPriceRange.value || selectedSortOption.value || selectedCity.value
 });
 
+// Check if any filters are active
+const hasActiveFilters = computed(() => {
+  return selectedCategory.value || 
+         selectedSubCategory.value || 
+         selectedProvider.value || 
+         selectedCountry.value || 
+         selectedCity.value || 
+         selectedPriceRange.value || 
+         selectedSortOption.value || 
+         search.value;
+});
+
 const clearSearch = () => {
   search.value = '';
+}
+
+// Clear all filters function
+const clearAllFilters = () => {
+  // Reset all filter values
+  selectedCategory.value = '';
+  selectedSubCategory.value = '';
+  selectedProvider.value = '';
+  selectedCountry.value = '';
+  selectedCity.value = '';
+  selectedPriceRange.value = '';
+  selectedSortOption.value = '';
+  search.value = '';
+  
+  // Reset dropdowns using existing function
+  refreshDropdowns();
+  
+  // Clear subcategories and cities when clearing filters
+  sub_category_data.value = [];
+  cities.value = [];
+  
+  // Reload the data table
+  ajaxReload();
 }
 
 </script>

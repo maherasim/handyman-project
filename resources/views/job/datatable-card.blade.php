@@ -304,6 +304,23 @@
                              <option value="2">Price: High to Low</option>
                          </select>
                      </div>
+
+                     <!-- Clear Filters Button -->
+                     <div class="col-lg-2 col-md-4 col-6">
+                         <button class="form-select filter-select" id="clear-filters-btn" style="
+                             border: none;
+                             border-radius: 12px;
+                             padding: 12px 16px;
+                             font-weight: 500;
+                             background: rgba(255, 255, 255, 0.95);
+                             backdrop-filter: blur(10px);
+                             transition: all 0.3s ease;
+                             cursor: pointer;
+                             text-align: left;
+                         ">
+                             <i class="fas fa-times me-2"></i>Clear Filters
+                         </button>
+                     </div>
                  </div>
              </div>
          </div>
@@ -353,7 +370,7 @@
                                      padding: 4px 8px;
                                      border-radius: 12px;
                                      font-weight: 600;
-                                     font-size: 10px;
+                                     font-size: 15px;
                                      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
                                      backdrop-filter: blur(10px);
                                  ">
@@ -421,6 +438,20 @@
                                              font-weight: 400;
                                          ">
                                              {{ $jobRequest->created_at->diffForHumans() }}
+                                         </span>
+                                     </div>
+                                 </div>
+
+                                 <!-- Views Count -->
+                                 <div class="views-info" style="margin-bottom: 8px;">
+                                     <div class="d-flex align-items-center" style="gap: 5px;">
+                                         <i class='bx bx-show' style="color: #8e8e93; font-size: 11px;"></i>
+                                         <span style="
+                                             font-size: 11px;
+                                             color: #8e8e93;
+                                             font-weight: 400;
+                                         ">
+                                             {{ number_format($jobRequest->total_views ?? 0) }} views
                                          </span>
                                      </div>
                                  </div>
@@ -567,10 +598,15 @@
 
          <script>
              $(document).ready(function() {
-                 // When the category dropdown changes
+                 // When the category dropdown changes - ONLY load subcategories, don't apply filters
                  $('#category-select').on('change', function() {
-                     var categoryId = $(this).val(); // Get the selected category ID
+                     var categoryId = $(this).val();
+                     
+                     // Reset subcategory dropdown
+                     $('#subcategory-select').empty();
+                     $('#subcategory-select').append('<option selected>Sub-Category</option>');
 
+                     if (categoryId && categoryId !== 'Category') {
                      // Make AJAX request to fetch subcategories
                      $.ajax({
                          url: '{{ route('subcategory.listforgood') }}',
@@ -579,11 +615,6 @@
                              category_id: categoryId
                          },
                          success: function(response) {
-                             // Clear the existing options in the subcategory dropdown
-                             $('#subcategory-select').empty();
-                             $('#subcategory-select').append(
-                                 '<option selected>Filter by Sub-Category</option>');
-
                              // Populate the subcategory dropdown with the new options
                              $.each(response, function(key, subcategory) {
                                  $('#subcategory-select').append('<option value="' +
@@ -595,42 +626,23 @@
                              console.error('AJAX request failed:', status, error);
                          }
                      });
+                     }
                  });
 
-             });
-
-             document.addEventListener('DOMContentLoaded', function() {
-                 // Add event listeners to dropdowns
-                 const dropdowns = ['category-select', 'subcategory-select', 'customer-select', 'country-select',
-                     'city-select', 'sort-select'
-                 ];
-
-                 dropdowns.forEach(id => {
-                     const dropdown = document.getElementById(id);
-                     dropdown.addEventListener('change', function() {
-                         // Submit the form or reload the page with selected filters
-                         const params = new URLSearchParams(window.location.search);
-                         params.set(id.replace('-select', '_id'), dropdown.value);
-                         window.location.search = params.toString();
-                     });
-                 });
-             });
-             $(document).ready(function() {
-                 // When the country dropdown changes
+                 // When the country dropdown changes - ONLY load cities, don't apply filters
                  $('#country-select').on('change', function() {
-                     var countryId = $(this).val(); // Get the selected country ID
+                     var countryId = $(this).val();
+                     
+                     // Reset city dropdown
+                     $('#city-select').empty();
+                     $('#city-select').append('<option selected>City</option>');
 
-                     if (countryId) {
+                     if (countryId && countryId !== 'Country') {
                          // Make AJAX request to fetch cities based on the selected country
                          $.ajax({
                              url: '/ajax-cities/' + countryId,
                              method: 'GET',
                              success: function(response) {
-                                 // Clear the existing options in the city dropdown
-                                 $('#city-select').empty();
-                                 $('#city-select').append(
-                                 '<option selected>Filter by City</option>');
-
                                  // Populate the city dropdown with the new options
                                  $.each(response, function(key, city) {
                                      $('#city-select').append('<option value="' + city.id +
@@ -641,12 +653,88 @@
                                  console.error('AJAX request failed:', status, error);
                              }
                          });
-                     } else {
-                         // If no country is selected, reset the city dropdown
-                         $('#city-select').empty();
-                         $('#city-select').append('<option selected>Filter by City</option>');
                      }
                  });
+
+                 // Apply filters only when final selections are made
+                 $('#subcategory-select, #customer-select, #city-select, #sort-select').on('change', function() {
+                     // Small delay to ensure all dropdowns are updated
+                     setTimeout(function() {
+                         applyFilters();
+                     }, 100);
+                 });
+
+                 // Clear Filters functionality
+                 $('#clear-filters-btn').on('click', function() {
+                     clearAllFilters();
+                 });
+
+                 // Function to apply filters
+                 function applyFilters() {
+                     const params = new URLSearchParams(window.location.search);
+                     
+                     // Get all filter values
+                     const categoryId = $('#category-select').val();
+                     const subcategoryId = $('#subcategory-select').val();
+                     const customerId = $('#customer-select').val();
+                     const countryId = $('#country-select').val();
+                     const cityId = $('#city-select').val();
+                     const sortValue = $('#sort-select').val();
+
+                     // Set parameters only if they have actual values (not default text)
+                     if (categoryId && categoryId !== 'Category') {
+                         params.set('category_id', categoryId);
+                     } else {
+                         params.delete('category_id');
+                     }
+
+                     if (subcategoryId && subcategoryId !== 'Sub-Category') {
+                         params.set('subcategory_id', subcategoryId);
+                     } else {
+                         params.delete('subcategory_id');
+                     }
+
+                     if (customerId && customerId !== 'Customer') {
+                         params.set('customer_id', customerId);
+                     } else {
+                         params.delete('customer_id');
+                     }
+
+                     if (countryId && countryId !== 'Country') {
+                         params.set('country_id', countryId);
+                     } else {
+                         params.delete('country_id');
+                     }
+
+                     if (cityId && cityId !== 'City') {
+                         params.set('city_id', cityId);
+                     } else {
+                         params.delete('city_id');
+                     }
+
+                     if (sortValue && sortValue !== 'Sort by') {
+                         params.set('sort', sortValue);
+                     } else {
+                         params.delete('sort');
+                     }
+
+                     // Reload page with new parameters
+                     window.location.search = params.toString();
+                 }
+
+                 // Function to clear all filters
+                 function clearAllFilters() {
+                     // Reset all dropdowns to default
+                     $('#category-select').val('Category');
+                     $('#subcategory-select').empty().append('<option selected>Sub-Category</option>');
+                     $('#customer-select').val('Customer');
+                     $('#country-select').val('Country');
+                     $('#city-select').empty().append('<option selected>City</option>');
+                     $('#sort-select').val('Sort by');
+
+                     // Clear URL parameters
+                     window.location.search = '';
+                 }
              });
          </script>
      </body>

@@ -97,10 +97,20 @@
 
   
   onMounted(() => {
-    $(categoryDropdownRef.value).select2();
-    $(providerDropdownRef.value).select2();
-    $(priceDropdownRef.value).select2();
-    $(sortOptionRef.value).select2();
+    // Initialize Select2 only if not already initialized
+    const initSelect2 = (element) => {
+      if (element && !$(element).hasClass('select2-hidden-accessible')) {
+        $(element).select2({
+          width: '100%',
+          dropdownParent: $(element).parent()
+        });
+      }
+    };
+
+    initSelect2(categoryDropdownRef.value);
+    initSelect2(providerDropdownRef.value);
+    initSelect2(priceDropdownRef.value);
+    initSelect2(sortOptionRef.value);
     $(categoryDropdownRef.value).on('change', function() {
       selectedCategory.value = $(this).val();
     });

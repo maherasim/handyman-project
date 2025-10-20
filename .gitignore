@@ -1,10 +1,28 @@
+<<<<<<< HEAD
 # ─── Node & Composer ───────────────────────────────────────────────
 node_modules/
 vendor/
 
 # ─── Laravel Environment ───────────────────────────────────────────
+=======
+# Laravel & Framework
+/vendor
+/node_modules
+/public/hot
+/public/storage
+/storage/*.key
+/storage/logs/*
+/storage/framework/cache/*
+/storage/framework/sessions/*
+/storage/framework/views/*
+/bootstrap/cache/*.php
+
+# Environment & Config Files
+>>>>>>> bb2befa13dbbb818c6dac9472baaa8cb986dec93
 .env
+.env.*
 .env.backup
+<<<<<<< HEAD
 
 # ─── Laravel Generated Files ───────────────────────────────────────
 /public/hot
@@ -48,3 +66,48 @@ npm-debug.log
 docker-compose.override.yml
 Homestead.json
 Homestead.yaml
+=======
+Homestead.json
+Homestead.yaml
+docker-compose.override.yml
+
+# IDEs & Editors
+/.idea
+/.vscode
+*.sublime-project
+*.sublime-workspace
+
+# System Files
+.DS_Store
+Thumbs.db
+*.cache
+
+# Test & Logs
+npm-debug.log
+yarn-error.log
+phpunit.result.cache
+
+# Composer & NPM Locks (optional)
+composer.lock
+package-lock.json
+
+# Keys & Certificates
+*.key
+*.pem
+
+# Public Assets (only keep placeholders)
+# If you generate CSS/JS via Laravel Mix, don't commit build outputs
+/public/css/*
+!/public/css/.gitkeep
+/public/js/*
+!/public/js/.gitkeep
+/public/modules/*
+!/public/modules/.gitkeep
+/public/mix-manifest.json
+
+# Media Library (Laravel Media Library uploads)
+/storage/media-library/**/*
+
+# Local JSON files (optional)
+/*.json
+>>>>>>> bb2befa13dbbb818c6dac9472baaa8cb986dec93

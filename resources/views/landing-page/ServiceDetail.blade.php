@@ -7,6 +7,166 @@
     .mt-2 {
     margin-top: 2.5rem !important;
 }
+    .readmore-text {
+        max-height: 120px;
+        overflow: hidden;
+    }
+    .readmore-text.expanded {
+        max-height: none;
+    }
+
+    /* Service Detail Tabs Styling - Matching Job Details Design */
+    .service-details-tabs {
+        margin-top: 2rem;
+    }
+    
+    .tab-navigation {
+        background: #f8f9fa;
+        border-radius: 8px 8px 0 0;
+        border-bottom: 1px solid #e9ecef;
+    }
+    
+    .tab-btn {
+        position: relative;
+        z-index: 1;
+        border-radius: 0 !important;
+        width: 100%;
+        padding: 14px 12px;
+        border: none !important;
+        border-bottom: 3px solid transparent !important;
+        background: #f8f9fa !important;
+        color: #6c757d !important;
+        font-weight: 500;
+        font-size: 14px;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        outline: none !important;
+        box-shadow: none !important;
+    }
+    
+    .tab-btn:focus {
+        outline: none !important;
+        box-shadow: none !important;
+        border: none !important;
+        border-bottom: 3px solid transparent !important;
+    }
+    
+    .tab-btn:active {
+        outline: none !important;
+        box-shadow: none !important;
+        border: none !important;
+        border-bottom: 3px solid transparent !important;
+    }
+    
+    .tab-btn:hover {
+        background: #e9ecef !important;
+        color: #495057 !important;
+        border-bottom-color: #007bff !important;
+        outline: none !important;
+        box-shadow: none !important;
+    }
+    
+    .tab-btn.active {
+        background: #fff !important;
+        color: #007bff !important;
+        border-bottom-color: #007bff !important;
+        font-weight: 600;
+        box-shadow: 0 -2px 4px rgba(0,0,0,0.1) !important;
+        outline: none !important;
+    }
+    
+    .tab-btn.active:focus {
+        outline: none !important;
+        box-shadow: 0 -2px 4px rgba(0,0,0,0.1) !important;
+    }
+    
+    .tab-content {
+        display: none;
+        background: #fff;
+        padding: 24px 0;
+        animation: fadeIn 0.3s ease-in-out;
+    }
+    
+    .tab-content.active {
+        display: block;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .tab-content-container {
+        background: #fff;
+        border-radius: 0 0 8px 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        border: 1px solid #e9ecef;
+        border-top: none;
+    }
+    
+    .service-content, .cancellation-content {
+        line-height: 1.7;
+        color: #495057;
+        font-size: 15px;
+    }
+    
+    .service-content p, .cancellation-content p {
+        margin-bottom: 1.2rem;
+    }
+    
+    .service-content ul, .service-content ol, .cancellation-content ul, .cancellation-content ol {
+        margin-bottom: 1.2rem;
+        padding-left: 1.8rem;
+    }
+    
+    .service-content li, .cancellation-content li {
+        margin-bottom: 0.6rem;
+    }
+    
+    .service-content h1, .service-content h2, .service-content h3, .service-content h4, .service-content h5, .service-content h6,
+    .cancellation-content h1, .cancellation-content h2, .cancellation-content h3, .cancellation-content h4, .cancellation-content h5, .cancellation-content h6 {
+        color: #212529;
+        margin-bottom: 1rem;
+        margin-top: 1.5rem;
+    }
+    
+    .service-content h1:first-child, .service-content h2:first-child, .service-content h3:first-child,
+    .cancellation-content h1:first-child, .cancellation-content h2:first-child, .cancellation-content h3:first-child {
+        margin-top: 0;
+    }
+    
+    .no-content {
+        text-align: center;
+        color: #6c757d;
+        font-style: italic;
+        padding: 2rem 0;
+    }
+    
+    /* Override Bootstrap button defaults */
+    .service-details-tabs button.tab-btn {
+        border: none !important;
+        outline: none !important;
+        box-shadow: none !important;
+        background: #f8f9fa !important;
+        color: #6c757d !important;
+    }
+    
+    .service-details-tabs button.tab-btn:focus,
+    .service-details-tabs button.tab-btn:active,
+    .service-details-tabs button.tab-btn:focus-visible {
+        border: none !important;
+        outline: none !important;
+        box-shadow: none !important;
+        background: #f8f9fa !important;
+        color: #6c757d !important;
+    }
+    
+    .service-details-tabs button.tab-btn.active {
+        background: #fff !important;
+        color: #007bff !important;
+        border-bottom: 3px solid #007bff !important;
+        box-shadow: 0 -2px 4px rgba(0,0,0,0.1) !important;
+    }
 </style>
 
     <div class="section-padding service-detail">
@@ -79,17 +239,134 @@
                             </p>
                         </div>
                     @endif
+                    <!-- Tabbed Service Information Section -->
+                    <div class="service-details-tabs mt-4">
+                        <!-- Tab Navigation -->
+                        <div class="tab-navigation mb-4">
+                            <div class="row g-0">
+                                <div class="col-4">
+                                    <button class="tab-btn active" data-tab="about-services">
+                                        About Services
+                                    </button>
+                                </div>
+                                <div class="col-4">
+                                    <button class="tab-btn" data-tab="about-provider">
+                                        About Provider
+                                    </button>
+                                </div>
+                                <div class="col-4">
+                                    <button class="tab-btn" data-tab="cancellation-policy">
+                                        Cancellation Policy
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tab Content -->
+                        <div class="tab-content-container">
+                            <!-- About Services Tab -->
+                            <div class="tab-content active" id="about-services-content">
+                                <div class="px-4">
                     @if (!empty($serviceData['service_detail']['description']))
-                        <div class="mt-5 pt-lg-5 pt-3">
-                            <h5 class="mb-3">{{ __('landingpage.about_service') }}</h5>
-                            <p class="m-0">
-                            <div class="m-0">
+                                        <div class="service-content">
                                 {!! $serviceData['service_detail']['description'] !!}
+                                        </div>
+                                    @else
+                                        <div class="no-content text-muted text-center py-4">
+                                            <i class="fas fa-info-circle me-2"></i>
+                                            No service description available.
+                                        </div>
+                                    @endif
+                                </div>
                             </div>
 
-                            </p>
+                            <!-- About Provider Tab -->
+                            <div class="tab-content" id="about-provider-content" style="display: none;">
+                                <div class="px-4">
+                                    <div class="about-provider-box">
+                                        <div class="mb-4 pb-4 border-bottom d-flex align-items-sm-center aling-items-start flex-sm-row flex-column gap-5">
+                                            <div class="flex-shrink-0 provider-image-container">
+                                                <img src="{{ $serviceData['provider']['profile_image'] }}" alt="provider-user"
+                                                    class="img-fluid w-100">
+                                            </div>
+                                            <div>
+                                                <a href="{{ route('provider.detail', $serviceData['provider']['id']) }}">
+                                                    <h5 class="text-capitalize mb-1">{{ $serviceData['provider']['display_name'] }}</h5>
+                                                </a>
+                                                <div class="d-flex align-items-center gap-2">
+                                                    <img src="{{ asset($providerPlanIcon) }}" alt="plan" style="width: 26px; height: 26px;">
+                                                    @php
+                                                        $aboutVerified = function_exists('verify_provider_document') ? verify_provider_document($serviceData['provider']['id']) : false;
+                                                    @endphp
+                                                    @if ($aboutVerified)
+                                                        <img src="{{ asset('images/icon/verified.jpg') }}" alt="verified" style="width: 26px; height: 26px;">
+                                                    @else
+                                                        <img src="{{ asset('images/icon/notverifiedpng.png') }}" alt="not verified" style="width: 26px; height: 26px;">
+                                                    @endif
+                                                </div>
+
+                                                @php
+                                                    $provDesignation = $serviceData['provider']['designation'] ?? '';
+                                                    $provCity = $serviceData['provider']['city_name'] ?? data_get($serviceData['provider'], 'city.name');
+                                                    $provCountry = $serviceData['provider']['country_name'] ?? data_get($serviceData['provider'], 'country.name');
+                                                @endphp
+                                                <div class="d-flex align-items-center gap-2 mt-1">
+                                                    @if(!empty($provDesignation))
+                                                        <span class="text-body">{{ $provDesignation }}</span>
+                                                    @endif
+                                                    @if(!empty($provCity) || !empty($provCountry))
+                                                        <span class="text-body">• {{ $provCity }}{{ !empty($provCity) && !empty($provCountry) ? ', ' : '' }}{{ $provCountry }}</span>
+                                                    @endif
+                                                </div>
+
+                                                <div class="d-flex align-items-center gap-2 flex-wrap">
+                                                    <div class="star-rating">
+                                                        <rating-component :readonly="true" :showrating="false" :ratingvalue="{{ $serviceData['provider']['providers_service_rating'] }}" />
+                                                    </div>
+                                                    <h6 class="lh-sm">{{ round($serviceData['provider']['providers_service_rating'], 1) }}</h6>
+                                                    <a href="{{ route('rating.all', ['provider_id' => $serviceData['provider']['id']]) }}">({{ $serviceData['provider']['total_service_rating'] }} {{ __('messages.reviews') }})</a>
+                                                </div>
+
+                                                <p class="mt-3 mb-0">
+                                                    {{ $serviceData['provider']['description'] }}
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-4 col-sm-6">
+                                                <h6 class="mb-1">{{ __('landingpage.member_since') }}:</h6>
+                                                <p class="m-0">{{ date("$date_time->date_format", strtotime($serviceData['provider']['created_at'])) }}</p>
+                                            </div>
+                                            <div class="col-md-4 col-sm-6 mt-sm-0 mt-3">
+                                                <h6 class="mb-1">{{ __('landingpage.total_services') }}:</h6>
+                                                <p class="m-0">{{ $serviceData['provider']['total_services'] ?? 0 }}</p>
+                                            </div>
+                                            <div class="col-md-4 col-sm-6 mt-sm-0 mt-3">
+                                                <h6 class="mb-1">{{ __('landingpage.total_bookings') }}:</h6>
+                                                <p class="m-0">{{ $serviceData['provider']['total_bookings'] ?? 0 }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Cancellation Policy Tab -->
+                            <div class="tab-content" id="cancellation-policy-content" style="display: none;">
+                                <div class="px-4">
+                                    @if (!empty($serviceData['service_detail']['cancellation_policy']))
+                                        <div class="cancellation-content">
+                                            {!! $serviceData['service_detail']['cancellation_policy'] !!}
+                                        </div>
+                                    @else
+                                        <div class="no-content text-muted text-center py-4">
+                                            <i class="fas fa-file-contract me-2"></i>
+                                            No cancellation policy available.
                         </div>
                     @endif
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
 
 
@@ -347,60 +624,6 @@
                             </div>
                         </div>
                     @endif
-                    <div class="mt-5 pt-lg-5 pt-3">
-                        <h5 class="mb-3">{{ __('landingpage.about_provider') }}</h5>
-                        <div class="p-5 border rounded-3 about-provider-box">
-                            <div
-                                class="mb-4 pb-4 border-bottom d-flex align-items-sm-center aling-items-start flex-sm-row flex-column gap-5">
-                                <div class="flex-shrink-0 provider-image-container">
-                                    <img src="{{ $serviceData['provider']['profile_image'] }}" alt="provider-user"
-                                        class="img-fluid w-100">
-                                </div>
-                                <div>
-                                    <a href="{{ route('provider.detail', $serviceData['provider']['id']) }}">
-                                        <h5 class="text-capitalize mb-1">{{ $serviceData['provider']['display_name'] }}
-                                        </h5>
-                                    </a>
-
-                                    <div class="d-flex align-items-center gap-2 flex-wrap">
-                                        <div class="star-rating">
-                                            <rating-component :readonly="true" :showrating="false"
-                                                :ratingvalue="{{ $serviceData['provider']['providers_service_rating'] }}" />
-                                        </div>
-                                        <h6 class="lh-sm">
-                                            {{ round($serviceData['provider']['providers_service_rating'], 1) }}</h6><a
-                                            href="{{ route('rating.all', ['provider_id' => $serviceData['provider']['id']]) }}">({{ $serviceData['provider']['total_service_rating'] }}
-                                            {{ __('messages.reviews') }})</a>
-                                    </div>
-
-                                    <p class="mt-3 mb-0">
-                                        {{ $serviceData['provider']['description'] }}
-                                    </p>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-4 col-sm-6">
-                                    <h6 class="mb-1">{{ __('landingpage.member_since') }}:</h6>
-                                    <p class="m-0">
-                                        {{ date("$date_time->date_format", strtotime($serviceData['provider']['created_at'])) }}
-                                    </p>
-                                </div>
-                                <div class="col-md-4 col-sm-6 mt-sm-0 mt-3">
-
-                                    <h6 class="mb-1">{{ __('landingpage.complet_project') }}:</h6>
-                                    <p class="m-0">{{ $completed_services }}
-                                        {{ __('landingpage.msg_complete_project') }}</p>
-                                </div>
-
-                                @if (!empty($knownLanguageArray))
-                                    <div class="col-md-4 mt-md-0 mt-3">
-                                        <h6 class="mb-1">{{ __('landingpage.languages') }}:</h6>
-                                        <p class="m-0">{{ implode(', ', $knownLanguageArray) }}</p>
-                                    </div>
-                                @endif
-                            </div>
-                        </div>
-                    </div>
                     @if ($total_ratings->isNotEmpty())
                         <div class="section-padding px-0 pb-0">
                             <div class="row align-items-center mb-5">
@@ -454,9 +677,6 @@
                             </ul>
                         </div>
                     @endif
-
-                    <h5 class="mb-3" style="margin-top: 20px;">Cancellation Policy</h5>
-                    {!! $serviceData['service_detail']['cancellation_policy'] !!}
                     
 
                     <div class="mt-5 pt-lg-5 pt-3">
@@ -569,7 +789,7 @@
                         </div>
                         @if (!empty($serviceData['service_detail']['description']))
                             <p class="m-0 readmore-text">
-                                {{ strip_tags($serviceData['service_detail']['description']) }}
+                                {{ html_entity_decode(strip_tags($serviceData['service_detail']['description'])) }}
                             </p>
 
                             <a href="javascript:void(0);" class="readmore-btn">{{ __('landingpage.read_more') }}</a>
@@ -598,7 +818,7 @@
                                     style="width: 30px; border-radius: 8px;" alt="">
                             </a>
                             <a href="#">
-                                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRokEYt0yyh6uNDKL8uksVLlhZ35laKNQgZ9g&s"
+                                <img src="https://static.vecteezy.com/system/resources/previews/016/716/481/original/facebook-icon-free-png.png"
                                     style="width: 30px; border-radius: 8px;" alt="">
                             </a>
                         </div>
@@ -648,10 +868,33 @@
                                 style="width: 80%; height: 80%; object-fit: cover; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 2;">
                         </div>
 
-                        <div class="d-flex align-items-center  mt-2 justify-content-evenly">
+                        {{-- Provider Location --}}
+                        <div class="text-center mt-2">
+                            <p class="mb-1" style="color: red; font-size: 14px; font-weight: 500;">
+                                @if(isset($serviceData['provider']['city']['name']) && isset($serviceData['provider']['country']['name']))
+                                    {{ $serviceData['provider']['city']['name'] }} - {{ $serviceData['provider']['country']['name'] }}
+                                @elseif(isset($serviceData['provider']['city']['name']))
+                                    {{ $serviceData['provider']['city']['name'] }}
+                                @elseif(isset($serviceData['provider']['country']['name']))
+                                    {{ $serviceData['provider']['country']['name'] }}
+                                @else
+                                    City - Country
+                                @endif
+                            </p>
+                        </div>
 
-                            <img src="{{ asset('images/icon/verifiedpng.png') }}" alt="icon"
-                                style="width: 26px; height: 26px; margin-right: 10px;">
+                        <div class="d-flex align-items-center  mt-2 justify-content-evenly">
+                            @php
+                                $providerId = $serviceData['provider']['id'] ?? null;
+                                $isAllVerified = $providerId && function_exists('verify_provider_document') ? verify_provider_document($providerId) : false;
+                            @endphp
+                            @if ($isAllVerified)
+                                <img src="{{ asset('images/icon/verified.jpg') }}" alt="icon"
+                                    style="width: 26px; height: 26px; margin-right: 10px;">
+                            @else
+                                <img src="{{ asset('images/icon/notverifiedpng.png') }}" alt="icon"
+                                    style="width: 26px; height: 26px; margin-right: 10px;">
+                            @endif
 
 
                             <div class="d-flex align-items-center gap-2 flex-wrap">
@@ -668,7 +911,7 @@
 
 
 
-                            <img src="{{ asset('images/icon/freeicon.jpg') }}" alt="icon"
+                            <img src="{{ asset($providerPlanIcon) }}" alt="icon"
                                 style="width: 26px; height: 26px;">
 
 
@@ -790,6 +1033,60 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.1/dist/sweetalert2.all.min.js"></script>
     <script>
         $(document).ready(function() {
+            // Initialize tab buttons with clean styling
+            $('.service-details-tabs .tab-btn').each(function() {
+                if (!$(this).hasClass('active')) {
+                    $(this).css({
+                        'border': 'none',
+                        'border-bottom': '3px solid transparent',
+                        'background': '#f8f9fa',
+                        'color': '#6c757d',
+                        'font-weight': '500',
+                        'outline': 'none',
+                        'box-shadow': 'none'
+                    });
+                }
+            });
+            
+            // Tab switching functionality - matching job details style
+            $('.service-details-tabs .tab-btn').on('click', function() {
+                const targetTab = $(this).data('tab');
+                
+                // Remove active class from all service detail buttons
+                $('.service-details-tabs .tab-btn').each(function() {
+                    $(this).removeClass('active');
+                    $(this).css({
+                        'border': 'none',
+                        'border-bottom': '3px solid transparent',
+                        'background': '#f8f9fa',
+                        'color': '#6c757d',
+                        'font-weight': '500',
+                        'outline': 'none',
+                        'box-shadow': 'none'
+                    });
+                });
+                
+                // Add active class to clicked button
+                $(this).addClass('active');
+                $(this).css({
+                    'border': 'none',
+                    'border-bottom': '3px solid #007bff',
+                    'background': '#fff',
+                    'color': '#007bff',
+                    'font-weight': '600',
+                    'outline': 'none',
+                    'box-shadow': '0 -2px 4px rgba(0,0,0,0.1)'
+                });
+                
+                // Hide all service detail tab contents
+                $('.service-details-tabs .tab-content').each(function() {
+                    $(this).hide().removeClass('active');
+                });
+                
+                // Show target tab content
+                $('#' + targetTab + '-content').show().addClass('active');
+            });
+
             $('.service-addon-checkbox').on('change', function() {
                 updateContinueButtonHref();
             });
@@ -873,13 +1170,23 @@
         });
 
         document.addEventListener("DOMContentLoaded", function() {
-            var description = document.querySelector('.readmore-text');
             var readmoreBtn = document.querySelector('.readmore-btn');
+            var aboutSection = document.getElementById('about-service');
 
-            if (description.offsetHeight < description.scrollHeight) {
-                readmoreBtn.style.display = 'block';
-            } else {
-                readmoreBtn.style.display = 'none';
+            if (readmoreBtn) {
+                // Show the button only if the destination section exists
+                readmoreBtn.style.display = aboutSection ? 'inline-block' : 'none';
+
+                // Smooth scroll to the About Service section
+                readmoreBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    if (aboutSection && typeof aboutSection.scrollIntoView === 'function') {
+                        aboutSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    } else if (aboutSection) {
+                        // Fallback without smooth behavior
+                        window.location.hash = '#about-service';
+                    }
+                });
             }
         });
     </script>

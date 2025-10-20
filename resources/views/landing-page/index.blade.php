@@ -171,6 +171,96 @@
 
     {{-- JOb Requests --}}
     @if ($sectionData && isset($sectionData['section_10']) && $sectionData['section_10']['section_10'] == 1)
+        <style>
+            /* Professional Job Card Styling */
+            .job-card {
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            }
+
+            .job-card:hover {
+                transform: translateY(-8px);
+                box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+                border-color: #667eea;
+            }
+
+            .job-card:hover .image-container img {
+                transform: scale(1.05);
+            }
+
+            .heart-icon:hover {
+                background: #667eea !important;
+                transform: scale(1.1);
+            }
+
+            .heart-icon:hover i {
+                color: white !important;
+            }
+
+            .social-link:hover {
+                background: #667eea !important;
+                transform: translateY(-2px);
+            }
+
+            .social-link:hover img {
+                filter: brightness(0) invert(1);
+            }
+
+            .price-badge {
+                animation: fadeInUp 0.6s ease-out;
+            }
+
+            .status-badge {
+                animation: fadeInRight 0.6s ease-out;
+            }
+
+            @keyframes fadeInUp {
+                from {
+                    opacity: 0;
+                    transform: translateY(20px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            @keyframes fadeInRight {
+                from {
+                    opacity: 0;
+                    transform: translateX(20px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateX(0);
+                }
+            }
+
+            /* Responsive adjustments */
+            @media (max-width: 768px) {
+                .job-card {
+                    margin-bottom: 20px;
+                }
+                
+                .card-content {
+                    padding: 20px !important;
+                }
+                
+                .job-title {
+                    font-size: 16px !important;
+                    min-height: 44px !important;
+                }
+            }
+
+            @media (max-width: 576px) {
+                .col-12 {
+                    padding: 0 10px;
+                }
+                
+                .card-content {
+                    padding: 16px !important;
+                }
+            }
+        </style>
         <div class="section-padding">
             <div class="container">
                 <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
@@ -191,80 +281,252 @@
                         class="btn btn-link p-0 text-capitalize flex-shrink-0 font-size-14">{{ __('messages.view_all') }}</a>
                 </div>
 
-                <!-- Display Job Requests Cards Similar to Category Section -->
+                <!-- Display Job Requests Cards with Professional Design -->
                 <div class="row">
                     @foreach ($jobRequests as $jobRequest)
-                        <div class="col-lg-3 col-md-4 col-12 mb-0">
-                            <a href="{{ route('job.details', $jobRequest->id) }}" class="card-link">
-                                <div class="card mt-5 p-3"
-                                    style="position: relative; background: #FAF9FF; border-radius: 10px; height: 400px; display: flex; flex-direction: column; ">
-                                    <!-- Card Image -->
-                                    <div class="card-imgd" style="position: relative;">
-                                        <img class="card-img-top"
+                        <div class="col-lg-3 col-md-6 col-12 mb-3">
+                            <a href="{{ route('job.details', $jobRequest->id) }}" class="card-link text-decoration-none">
+                                <div class="job-card h-100" style="
+                                    background: #FFFFFF;
+                                    border: 1px solid #E8E9EC;
+                                    border-radius: 16px;
+                                    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+                                    transition: all 0.3s ease;
+                                    overflow: hidden;
+                                    position: relative;
+                                ">
+                                    <!-- Card Image Container -->
+                                    <div class="image-container" style="position: relative; height: 120px; overflow: hidden;">
+                                        @if(!empty($jobRequest->image))
+                                            <img src="{{ asset('storage/' . $jobRequest->image) }}" alt="Job Image"
+                                                 style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease;">
+                                        @else
+                                            <img class="default-image" 
                                             src="{{ asset('images/post-job/ac_refresh_and_revive.png') }}"
-                                            alt="Card image cap"
-                                            style="border-radius: 10px; width: 100%; height: 200px; object-fit: cover;">
-                                        <!-- Price Overlay -->
-                                        <div
-                                            style="position: absolute; bottom: -20px; left: 50%; transform: translateX(-50%); width:68%; background-image: url('{{ asset('images/icon/newbanner.jpg') }}'); background-size: cover; background-repeat: no-repeat; background-position: center; padding: 10px 20px; color: #fff; font-weight: 600; font-size: 18px; border-radius: 10px; border: 3px solid #E1DCDD;">
-                                            € {{ $jobRequest->price }}  / {{ $jobRequest->type }}
+                                                 alt="Default Image"
+                                                 style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease;">
+                                        @endif
+                                        
+                                        <!-- Price Badge -->
+                                        <div class="price-badge" style="
+                                            position: absolute;
+                                            bottom: 8px;
+                                            left: 8px;
+                                            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                                            color: white;
+                                            padding: 4px 8px;
+                                            border-radius: 12px;
+                                            font-weight: 600;
+                                            font-size: 15px;
+                                            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+                                            backdrop-filter: blur(10px);
+                                        ">
+                                            €{{ number_format($jobRequest->price) }} / {{ ucfirst($jobRequest->price_type ?? 'fixed') }}
                                         </div>
+                                        
                                         <!-- Heart Icon -->
-                                        <i class='bx bx-heart'
-                                            style="position: absolute; top: 10px; right: 10px; padding: 7px; color: #8384AE; border-radius: 50%;"></i>
+                                        <div class="heart-icon" style="
+                                            position: absolute;
+                                            top: 8px;
+                                            right: 8px;
+                                            width: 28px;
+                                            height: 28px;
+                                            background: rgba(255, 255, 255, 0.9);
+                                            border-radius: 50%;
+                                            display: flex;
+                                            align-items: center;
+                                            justify-content: center;
+                                            backdrop-filter: blur(10px);
+                                            transition: all 0.3s ease;
+                                        ">
+                                            <i class='bx bx-heart' style="color: #667eea; font-size: 14px;"></i>
                                     </div>
+                                    </div>
+                                    
                                     <!-- Card Content -->
-                                    <div class="card-body p-2"
-                                        style="flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; p">
-                                        <!-- Title and Social Icons -->
-                                        <div class="d-flex justify-content-between align-items-center mt-3">
-                                            <h5 class="categories-name text-capitalize " style="font-size: 15px;">
-                                                <b>{{ $jobRequest->title }}</b>
+                                    <div class="card-content" style="padding: 12px;">
+                                        <!-- Job Title -->
+                                        <h5 class="job-title" style="
+                                            font-size: 14px;
+                                            font-weight: 700;
+                                            color: #1a1a1a;
+                                            margin-bottom: 6px;
+                                            line-height: 1.2;
+                                            display: -webkit-box;
+                                            -webkit-line-clamp: 2;
+                                            -webkit-box-orient: vertical;
+                                            overflow: hidden;
+                                            min-height: 34px;
+                                        ">
+                                            {{ $jobRequest->title }}
                                             </h5>
                                            
-                                        </div>
                                         <!-- Location -->
-                                        <h5 class="mt-0 mb-0 text-truncate">
-                                            <span style="font-size: 12px;">
-                                                @if ($jobRequest->city && $jobRequest->country)
-                                                    {{ $jobRequest->city->name }} - {{ $jobRequest->country->name }}
-                                                @else
-                                                    N/A
-                                                @endif
+                                        <div class="location-info" style="margin-bottom: 8px;">
+                                            <div class="d-flex align-items-center" style="gap: 5px;">
+                                                <i class='bx bx-map-pin' style="color: #667eea; font-size: 12px;"></i>
+                                                <span style="
+                                                    font-size: 12px;
+                                                    color: #666;
+                                                    font-weight: 500;
+                                                ">
+                                                    {{ $jobRequest->city ? $jobRequest->city->name : 'City' }}, {{ $jobRequest->country ? $jobRequest->country->name : 'Country' }}
                                             </span>
-                                        </h5>
-                                        <!-- Published Info -->
-                                        <p class="mb-0" style="font-weight: 60;">Published at:
-                                            {{ $jobRequest->created_at->toDateString() }}</p>
-
-
-                                        <div class="d-flex align-items-center gap-2">
-                                            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQnnM0ib-pYCZg4DbbB_T5_mfxpqrDHYXFLy208bjvHjIM5q1FF4lzLvNFp2qZ5Eo11orA&usqp=CAU"
-                                                alt="Provider" style="width: 35px; border-radius: 50%;">
-                                            <p style="margin: 0; color: #8081dc;">
-                                                {{ $jobRequest->provider->username ?? 'Unknown' }}</p>
+                                            </div>
                                         </div>
-                                        <!-- Status -->
-                                        <h6 style="font-weight: 100;">Status: <span
-                                                style="font-weight: 100; font-size: 13px;">{{ $jobRequest->status }}</span>
-                                        </h6>
-                                        <div class="d-flex align-items-center gap-2">
-                                            <a href="#"><img
-                                                    src="https://static.vecteezy.com/system/resources/previews/016/716/481/original/facebook-icon-free-png.png"
-                                                    alt="Facebook"
-                                                    style="width: 20px; height: 20px; border-radius: 8px;"></a>
-                                            <a href="#"><img
-                                                    src="https://upload.wikimedia.org/wikipedia/commons/9/95/Instagram_logo_2022.svg"
-                                                    alt="Instagram"
-                                                    style="width: 20px; height: 20px; border-radius: 8px;"></a>
-                                            <a href="#"><img
-                                                    src="https://cdn.pixabay.com/photo/2015/03/10/17/30/twitter-667462_640.png"
-                                                    alt="Twitter"
-                                                    style="width: 20px; height: 20px; border-radius: 8px;"></a>
-                                            <a href="#"><img
-                                                    src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRokEYt0yyh6uNDKL8uksVLlhZ35laKNQgZ9g&s"
-                                                    alt="LinkedIn"
-                                                    style="width: 20px; height: 20px; border-radius: 8px;"></a>
+                                        
+                                        <!-- Published Date -->
+                                        <div class="published-info" style="margin-bottom: 8px;">
+                                            <div class="d-flex align-items-center" style="gap: 5px;">
+                                                <i class='bx bx-calendar' style="color: #8e8e93; font-size: 11px;"></i>
+                                                <span style="
+                                                    font-size: 11px;
+                                                    color: #8e8e93;
+                                                    font-weight: 400;
+                                                ">
+                                                    {{ $jobRequest->created_at->diffForHumans() }}
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        <!-- Views Count -->
+                                        <div class="views-info" style="margin-bottom: 8px;">
+                                            <div class="d-flex align-items-center" style="gap: 5px;">
+                                                <i class='bx bx-show' style="color: #8e8e93; font-size: 11px;"></i>
+                                                <span style="
+                                                    font-size: 11px;
+                                                    color: #8e8e93;
+                                                    font-weight: 400;
+                                                ">
+                                                    {{ number_format($jobRequest->total_views ?? 0) }} views
+                                                </span>
+                                        </div>
+                                        </div>
+                                        
+                                        <!-- Customer Info -->
+                                        <div class="customer-info" style="margin-bottom: 8px;">
+                                            <div class="d-flex align-items-center" style="gap: 6px;">
+                                                <div class="customer-avatar" style="
+                                                    width: 28px;
+                                                    height: 28px;
+                                                    border-radius: 50%;
+                                                    overflow: hidden;
+                                                    border: 2px solid #f0f0f0;
+                                                ">
+                                                    <img src="{{ getSingleMedia($jobRequest->customer,'profile_image', null) ?? 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQnnM0ib-pYCZg4DbbB_T5_mfxpqrDHYXFLy208bjvHjIM5q1FF4lzLvNFp2qZ5Eo11orA&usqp=CAU' }}"
+                                                        alt="Customer" style="width: 100%; height: 100%; object-fit: cover;">
+                                    </div>
+                                                <div class="customer-details">
+                                                    <div style="
+                                                        font-size: 12px;
+                                                        font-weight: 600;
+                                                        color: #1a1a1a;
+                                                        margin-bottom: 1px;
+                                                    ">
+                                                        {{ $jobRequest->customer->display_name ?? $jobRequest->customer->username ?? 'Unknown' }}
+                                                    </div>
+                                                    <div style="
+                                                        font-size: 10px;
+                                                        color: #8e8e93;
+                                                        font-weight: 400;
+                                                    ">
+                                                        Job Poster
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Status Badge -->
+                                        <div class="status-section" style="margin-bottom: 8px;">
+                                            <div class="d-flex align-items-center justify-content-between">
+                                                <span style="
+                                                    font-size: 10px;
+                                                    color: #8e8e93;
+                                                    font-weight: 500;
+                                                    text-transform: uppercase;
+                                                    letter-spacing: 0.5px;
+                                                ">
+                                                    Status
+                                                </span>
+                                                <span class="status-badge" style="
+                                                    padding: 3px 6px;
+                                                    border-radius: 8px;
+                                                    font-size: 9px;
+                                                    font-weight: 600;
+                                                    text-transform: uppercase;
+                                                    letter-spacing: 0.5px;
+                                                    background: {{ $jobRequest->status === 'active' ? '#e8f5e8' : '#fff3cd' }};
+                                                    color: {{ $jobRequest->status === 'active' ? '#2d5a2d' : '#856404' }};
+                                                ">
+                                                    {{ ucfirst($jobRequest->status ?? 'Pending') }}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Social Icons -->
+                                        <div class="social-icons" style="
+                                            display: flex;
+                                            align-items: center;
+                                            gap: 6px;
+                                            padding-top: 8px;
+                                            border-top: 1px solid #f0f0f0;
+                                        ">
+                                            <a href="#" class="social-link" style="
+                                                width: 24px;
+                                                height: 24px;
+                                                border-radius: 5px;
+                                                background: #f8f9fa;
+                                                display: flex;
+                                                align-items: center;
+                                                justify-content: center;
+                                                transition: all 0.3s ease;
+                                                text-decoration: none;
+                                            ">
+                                                <img src="https://static.vecteezy.com/system/resources/previews/016/716/481/original/facebook-icon-free-png.png"
+                                                    alt="Facebook" style="width: 12px; height: 12px;">
+                                            </a>
+                                            <a href="#" class="social-link" style="
+                                                width: 24px;
+                                                height: 24px;
+                                                border-radius: 5px;
+                                                background: #f8f9fa;
+                                                display: flex;
+                                                align-items: center;
+                                                justify-content: center;
+                                                transition: all 0.3s ease;
+                                                text-decoration: none;
+                                            ">
+                                                <img src="https://upload.wikimedia.org/wikipedia/commons/9/95/Instagram_logo_2022.svg"
+                                                    alt="Instagram" style="width: 12px; height: 12px;">
+                                            </a>
+                                            <a href="#" class="social-link" style="
+                                                width: 24px;
+                                                height: 24px;
+                                                border-radius: 5px;
+                                                background: #f8f9fa;
+                                                display: flex;
+                                                align-items: center;
+                                                justify-content: center;
+                                                transition: all 0.3s ease;
+                                                text-decoration: none;
+                                            ">
+                                                <img src="https://cdn.pixabay.com/photo/2015/03/10/17/30/twitter-667462_640.png"
+                                                    alt="Twitter" style="width: 12px; height: 12px;">
+                                            </a>
+                                            <a href="#" class="social-link" style="
+                                                width: 24px;
+                                                height: 24px;
+                                                border-radius: 5px;
+                                                background: #f8f9fa;
+                                                transition: all 0.3s ease;
+                                                text-decoration: none;
+                                                display: flex;
+                                                align-items: center;
+                                                justify-content: center;
+                                            ">
+                                                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRokEYt0yyh6uNDKL8uksVLlhZ35laKNQgZ9g&s"
+                                                    alt="LinkedIn" style="width: 12px; height: 12px;">
+                                            </a>
                                         </div>
                                     </div>
                                 </div>
@@ -312,7 +574,7 @@
                         <div class="row">
                             @foreach ($servicerequest as $data)
                                 <div class="col-md-3"> <!-- Changed from col-md-4 to col-md-3 -->
-                                    <div class="service-box-card bg-light rounded-3 mb-3"
+                                    <div class="service-box-card bg-light rounded-3 mb-5"
                                         data-service-id="{{ $data->id }}">
                                         <div class="iq-image position-relative">
                                             @if ($data->visit_type == 'ONLINE')
@@ -321,7 +583,7 @@
                                             <a href="{{ route('service.detail', $data->id) }}" class="service-img">
                                                 <img src="{{ getSingleMedia($data, 'service_attachment', null) }}"
                                                     alt="service"
-                                                    class="service-asim w-100 object-cover img-fluid rounded-3">
+                                                    class="service-img w-100 object-cover img-fluid rounded-3">
                                             </a>
 
                                             @if (auth()->check() && auth()->user()->hasRole('user'))
@@ -389,36 +651,37 @@
                                                 </form>
                                             @endif
                                         </div>
-                                        <ul class="list-inline p-0 mt-0 mb-0 price-content">
-                                            <div class="service d-flex justify-content-center "
-                                                style="position:relative; z-index:1111; margin:auto; background-image: url('{{ asset('images/icon/banner2.jpg') }}'); background-size: cover; width:68% ; margin-top:-32px;  background-repeat: no-repeat; background-position: center; padding: 10px 20px; color: white; font-weight: 600; font-size: 18px; border-radius: 10px; border: 3px solid #E1DCDD;">
-
-                                                @if ($data->price == 0)
-                                                    <li
-                                                        class="text-white fw-500 d-inline-block position-relative font-size-18">
-                                                        Free</li>
+                                        <a href="{{ route('service.detail', $data->id) }}" class="service-heading mt-4 d-block p-0">
+                                            <h5 class="service-title font-size-18 line-count-2">{{ $data->name }}</h5>
+                                        </a>
+                                        <ul class="list-inline p-0 mt-1 mb-0 price-content">
+                                            <li class="text-primary fw-500 d-inline-block position-relative font-size-18">
+                                                @if ($data->price > 0)
+                                                    {{ getPriceFormat($data->price) }} 
+                                                    @if ($data->discount && $data->discount > 0)
+                                                        <span>({{ $data->discount }}% off)</span>
+                                                    @endif
                                                 @else
-                                                    <li
-                                                        class="text-white fw-500 d-inline-block position-relative font-size-18">
-                                                        {{ getPriceFormat($data->price) }}/{{ $data->type }}
-                                                    </li>
+                                                    Free
                                                 @endif
-                                            </div>
+                                            </li>
+                                            @if ($data->duration && $data->duration !== '00:00')
+                                                <li class="d-inline-block fw-500 position-relative service-price">
+                                                    @php
+                                                        $durationParts = explode(':', $data->duration);
+                                                        $hours = (int)$durationParts[0];
+                                                        $minutes = (int)$durationParts[1];
+                                                    @endphp
+                                                    @if ($hours > 0)
+                                                        ({{ $hours }} {{ __('landingpage.hrs') }} {{ $minutes }} {{ __('landingpage.min') }})
+                                                    @else
+                                                        ({{ $minutes }} {{ __('landingpage.min') }})
+                                                    @endif
+                                                </li>
+                                            @endif
                                         </ul>
 
 
-                                        <a href="{{ route('service.detail', $data->id) }}"
-                                            class="service-heading mt-2 d-block p-0">
-                                            <h5 class="service-heading text-capitalize"style="font-size:15px">
-                                                <b>{{ $data->name }}</b> </h5>
-
-                                                
-                                        </a>
-
-
-                                        <p class="mt-0 mb-0" style="font-size: 10;  ">
-                                            {{ $data->city ? $data->city->name : 'City' }}-{{ $data->country ? $data->country->name : 'Country' }}
-                                        </p>
 
 
                                         <div class="d-flex align-items-center justify-content-between w-100">
@@ -521,7 +784,7 @@
                     <div class="row">
                         @foreach ($featuredrequest  as $data)
                             <div class="col-md-3"> <!-- Changed from col-md-4 to col-md-3 -->
-                                <div class="service-box-card bg-light rounded-3 mb-3"
+                                <div class="service-box-card bg-light rounded-3 mb-5"
                                     data-service-id="{{ $data->id }}">
                                     <div class="iq-image position-relative">
                                         @if ($data->visit_type == 'ONLINE')
@@ -530,7 +793,7 @@
                                         <a href="{{ route('service.detail', $data->id) }}" class="service-img">
                                             <img src="{{ getSingleMedia($data, 'service_attachment', null) }}"
                                                 alt="service"
-                                                class="service-asim w-100 object-cover img-fluid rounded-3">
+                                                class="service-img w-100 object-cover img-fluid rounded-3">
                                         </a>
 
                                         @if (auth()->check() && auth()->user()->hasRole('user'))
@@ -598,90 +861,98 @@
                                             </form>
                                         @endif
                                     </div>
-                                    <ul class="list-inline p-0 mt-0 mb-0 price-content">
-                                        <div class="service d-flex justify-content-center "
-                                            style="position:relative; z-index:1111; margin:auto; background-image: url('{{ asset('images/icon/newbanner.jpg') }}'); background-size: cover; width:68% ; margin-top:-32px;  background-repeat: no-repeat; background-position: center; padding: 10px 20px; color: white; font-weight: 600; font-size: 18px; border-radius: 10px; border: 3px solid #E1DCDD;">
-
-                                            @if ($data->price == 0)
-                                                <li
-                                                    class="text-white fw-500 d-inline-block position-relative font-size-18">
-                                                    Free</li>
+                                    <a href="{{ route('service.detail', $data->id) }}" class="service-heading mt-4 d-block p-0">
+                                        <h5 class="service-title font-size-18 line-count-2">{{ $data->name }}</h5>
+                                    </a>
+                                    <ul class="list-inline p-0 mt-1 mb-0 price-content">
+                                        <li class="text-primary fw-500 d-inline-block position-relative font-size-18">
+                                            @if ($data->price > 0)
+                                                {{ getPriceFormat($data->price) }} 
+                                                @if ($data->discount && $data->discount > 0)
+                                                    <span>({{ $data->discount }}% off)</span>
+                                                @endif
                                             @else
-                                                <li
-                                                    class="text-white fw-500 d-inline-block position-relative font-size-18">
-                                                    {{ getPriceFormat($data->price) }}/{{ $data->type }}
-                                                </li>
+                                                Free
                                             @endif
-                                        </div>
+                                        </li>
+                                        @if ($data->duration && $data->duration !== '00:00')
+                                            <li class="d-inline-block fw-500 position-relative service-price">
+                                                @php
+                                                    $durationParts = explode(':', $data->duration);
+                                                    $hours = (int)$durationParts[0];
+                                                    $minutes = (int)$durationParts[1];
+                                                @endphp
+                                                @if ($hours > 0)
+                                                    ({{ $hours }} {{ __('landingpage.hrs') }} {{ $minutes }} {{ __('landingpage.min') }})
+                                                @else
+                                                    ({{ $minutes }} {{ __('landingpage.min') }})
+                                                @endif
+                                            </li>
+                                        @endif
                                     </ul>
 
 
-                                    <a href="{{ route('service.detail', $data->id) }}"
-                                        class="service-heading mt-2 d-block p-0">
-                                        <h5 class="service-heading text-capitalize"style="font-size:15px">
-                                           <b>{{ $data->name }}</b> </h5>
-
-                                           
-
-
-
-
-                                    </a>
-
-
-                                    <p class="mt-0 mb-0" style="font-size: 10;  ">
-                                        {{ $data->city ? $data->city->name : 'City' }}-{{ $data->country ? $data->country->name : 'Country' }}
-                                    </p>
-
-
-                                    <div class="d-flex align-items-center justify-content-between w-100">
-                                        <div class="d-flex align-items-center flex-nowrap">
-                                            <img src="{{ getSingleMedia($data->providers, 'profile_image', null) }}"
-                                                alt="service" class="img-fluid rounded-3 object-cover avatar-24">
-                                            <a href="{{ route('provider.detail', $data->providers->id) }}" class="ml-2">
-                                                <span class="font-size-14 service-user-name" style="white-space: nowrap;">
-                                                    {{ $data->providers->display_name }}
-                                                </span>
-                                            </a>
-                                        </div>
-                                        <div class="d-flex align-items-center justify-content-end">
-                                            <img src="{{ asset('images/icon/freeicon.jpg') }}" alt="icon"
-                                                style="width: 26px; height: 26px; margin-right: 10px;">
-                                            <img src="{{ asset('images/icon/verifiedpng.png') }}" alt="icon"
-                                                style="width: 26px; height: 26px;">
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="d-flex align-items-center mt-2 gap-3"> 
-                                        <div class="d-flex align-items-center gap-2 flex-wrap ml-2">
-                                            <div class="star-rating">
-                                                <rating-component :readonly="true" :showrating="false" :ratingvalue="1" />
+                                        <div class="mt-3">
+                                            <div class="d-flex align-items-center gap-2">
+                                                <img src="{{ getSingleMedia($data->providers, 'profile_image', null) }}" alt="service" class="img-fluid rounded-3 object-cover avatar-24">
+                                                <a href="{{ route('provider.detail', $data->providers->id) }}">
+                                                    <span class="font-size-14 service-user-name">{{ $data->providers->display_name }}</span>
+                                                </a>
                                             </div>
-                                            <h6 class="lh-sm mb-0">{{  $data->avg_rating }}</h6>
-                                            <a href="{{ route('rating.all', ['service_id' => $data->id]) }}">({{  $data->total_reviews }} {{ __('messages.reviews') }})</a>
+                                            <div class="d-flex align-items-center justify-content-between mt-2">
+                                                <div class="d-flex align-items-center gap-2">
+                                                    <div class="d-flex align-items-center">
+                                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="text-warning me-1">
+                                                            <path d="M12 2L15.09 8.26L22 9L17 14L18.18 21L12 17.77L5.82 21L7 14L2 9L8.91 8.26L12 2Z" fill="currentColor"/>
+                                                        </svg>
+                                                        <span class="font-size-14 fw-500">{{ $data->avg_rating }}</span>
+                                                    </div>
+                                                    <div class="d-flex align-items-center">
+                                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="text-success me-1">
+                                                            <path d="M9 12L11 14L15 10M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                                        </svg>
+                                                        <span class="font-size-14 fw-500">{{ $data->booking_count ?? 0 }}</span>
+                                                    </div>
+                                                    <div class="d-flex align-items-center">
+                                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="text-primary me-1">
+                                                            <path d="M12 5c-7.633 0-10 7-10 7s2.367 7 10 7 10-7 10-7-2.367-7-10-7Zm0 12a5 5 0 1 1 0-10 5 5 0 0 1 0 10Zm0-8a3 3 0 1 0 .002 6.002A3 3 0 0 0 12 9Z" fill="currentColor"/>
+                                                        </svg>
+                                                        <span class="font-size-14 fw-500">{{ $data->total_views ?? 0 }}</span>
+                                                    </div>
+                                                </div>
+                                                <div class="d-flex align-items-center">
+                                                    <a href="{{ route('rating.all', ['service_id' => $data->id]) }}" class="text-body font-size-12">
+                                                        @if ($data->total_reviews > 1)
+                                                            ({{ $data->total_reviews }} {{ __('messages.reviews') }})
+                                                        @else
+                                                            ({{ $data->total_reviews }} {{ __('messages.review') }})
+                                                        @endif
+                                                    </a>
+                                                </div>
+                                            </div>
+                                            <div class="d-flex align-items-center justify-content-center mt-3 gap-3">
+                                                <a href="#" class="text-decoration-none">
+                                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="text-primary">
+                                                        <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" fill="currentColor"/>
+                                                    </svg>
+                                                </a>
+                                                <a href="#" class="text-decoration-none">
+                                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="text-info">
+                                                        <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z" fill="currentColor"/>
+                                                    </svg>
+                                                </a>
+                                                <a href="#" class="text-decoration-none">
+                                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="text-danger">
+                                                        <path d="M12.017 0C5.396 0 .029 5.367.029 11.987c0 5.079 3.158 9.417 7.618 11.174-.105-.949-.199-2.403.041-3.439.219-.937 1.406-5.957 1.406-5.957s-.359-.72-.359-1.781c0-1.663.967-2.911 2.168-2.911 1.024 0 1.518.769 1.518 1.688 0 1.029-.653 2.567-.992 3.992-.285 1.193.6 2.165 1.775 2.165 2.128 0 3.768-2.245 3.768-5.487 0-2.861-2.063-4.869-5.008-4.869-3.41 0-5.409 2.562-5.409 5.199 0 1.033.394 2.143.889 2.741.099.12.112.225.085.345-.09.375-.293 1.199-.334 1.363-.053.225-.172.271-.402.165-1.495-.69-2.433-2.878-2.433-4.646 0-3.776 2.748-7.252 7.92-7.252 4.158 0 7.392 2.967 7.392 6.923 0 4.135-2.607 7.462-6.233 7.462-1.214 0-2.357-.629-2.746-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24.009 12.017 24.009c6.624 0 11.99-5.367 11.99-11.988C24.007 5.367 18.641.001 12.017.001z" fill="currentColor"/>
+                                                    </svg>
+                                                </a>
+                                                <a href="#" class="text-decoration-none">
+                                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="text-primary">
+                                                        <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" fill="currentColor"/>
+                                                    </svg>
+                                                </a>
+                                            </div>
                                         </div>
-                                        <p class="mb-0">{{ $data->booking_count }} Bookings</p>
-                                        <span class="ms-2 d-inline-flex align-items-center" title="Views">
-                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns=" "><path d="M12 5c-7.633 0-10 7-10 7s2.367 7 10 7 10-7 10-7-2.367-7-10-7Zm0 12a5 5 0 1 1 0-10 5 5 0 0 1 0 10Zm0-8a3 3 0 1 0 .002 6.002A3 3 0 0 0 12 9Z" fill="currentColor"/></svg>
-                                            <span class="ms-1">{{ $data->total_views ?? 0 }}</span>
-                                        </span>
-                                    </div>
-
-
-                                    <div class="d-flex mt-0 " style="gap: 18px; justify-content: center;">
-                                        <a href="#"><img
-                                                src="https://static.vecteezy.com/system/resources/previews/016/716/481/original/facebook-icon-free-png.png"
-                                                style="width: 30px; border-radius: 8px;" alt=""></a>
-                                        <a href="#"><img
-                                                src="https://upload.wikimedia.org/wikipedia/commons/9/95/Instagram_logo_2022.svg"
-                                                style="width: 30px; border-radius: 8px;" alt=""></a>
-                                        <a href="#"><img
-                                                src="https://cdn.pixabay.com/photo/2015/03/10/17/30/twitter-667462_640.png"
-                                                style="width: 30px; border-radius: 8px;" alt=""></a>
-                                        <a href="#"><img
-                                                src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRokEYt0yyh6uNDKL8uksVLlhZ35laKNQgZ9g&s"
-                                                style="width: 30px; border-radius: 8px;" alt=""></a>
-                                    </div>
 
                                 </div>
                             </div>

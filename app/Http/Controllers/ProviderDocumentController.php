@@ -177,6 +177,22 @@ class ProviderDocumentController extends Controller
         }
         $data['is_verified'] = !empty($data['is_verified']) ? $data['is_verified']: 0;
         $data['provider_id'] = !empty( $data['provider_id'] ) ?  $data['provider_id'] : auth()->user()->id;
+        
+        // Additional check: Prevent duplicate document_id for same provider (when creating new)
+        if (!$request->id) {
+            $existingDoc = ProviderDocument::where('provider_id', $data['provider_id'])
+                ->where('document_id', $request->document_id)
+                ->first();
+            
+            if ($existingDoc) {
+                $errorMessage = 'This document type has already been uploaded. Please delete the existing one first or upload a different document type.';
+                if($request->is('api/*')) {
+                    return comman_message_response($errorMessage, 400);
+                }
+                return redirect()->back()->withErrors($errorMessage);
+            }
+        }
+        
         $result = ProviderDocument::updateOrCreate(['id' => $request->id ],$data);
         storeMediaFile($result,$request->provider_document, 'provider_document');
 

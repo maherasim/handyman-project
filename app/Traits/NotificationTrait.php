@@ -336,26 +336,35 @@ trait NotificationTrait
             case "job_requested":
                 $data['activity_message'] = __('messages.post_request_message', ['name' => $post_job->customer->display_name,]);
                 $data['activity_type'] =  __('messages.post_request_title');
-                $customerLatitude = 50.930557;
-                $customerLongitude = -102.80777;
-                $radius = 50;
                 $job_id= isset($post_job->id) ? $post_job->id :'';
 
-                $providers = \App\Models\ProviderAddressMapping::selectRaw("id, provider_id, address, latitude, longitude,
-                                ( 6371 * acos( cos( radians($customerLatitude) ) *
-                                cos( radians( latitude ) )
-                                * cos( radians( longitude ) - radians($customerLongitude)
-                                ) + sin( radians($customerLatitude) ) *
-                                sin( radians( latitude ) ) )
-                                ) AS distance")
-                    ->having("distance", "<=", $radius)
-                    ->orderBy("distance", 'asc')
-                    ->get();
-                $providerId = $providers->pluck('providers.id')->toArray();
-                $data['provider_name'] = $post_job->provider->display_name ?? null;
+                // Try proximity-based provider notification if we have coordinates
+                $providerId = [];
+                if (!empty($post_job->latitude) && !empty($post_job->longitude)) {
+                    $customerLatitude = (float) $post_job->latitude;
+                    $customerLongitude = (float) $post_job->longitude;
+                    $radius = 50; // km
+                    $providers = \App\Models\ProviderAddressMapping::selectRaw("id, provider_id, address, latitude, longitude,
+                                    ( 6371 * acos( cos( radians(?) ) *
+                                    cos( radians( latitude ) )
+                                    * cos( radians( longitude ) - radians(?) )
+                                    + sin( radians(?) ) *
+                                    sin( radians( latitude ) ) )
+                                    ) AS distance", [$customerLatitude, $customerLongitude, $customerLatitude])
+                        ->having("distance", "<=", $radius)
+                        ->orderBy("distance", 'asc')
+                        ->get();
+                    $providerId = $providers->pluck('provider_id')->toArray();
+                }
+
+                // Fallback: notify all active providers if none resolved by proximity
+                if (empty($providerId)) {
+                    $providerId = \App\Models\User::where('user_type', 'provider')->where('status', 1)->pluck('id')->toArray();
+                }
+
                 $data['user_name'] = isset($post_job->customer) ? $post_job->customer->display_name : '';
                 $activity_data = [
-                    'post_request_id' => $post_job->post_request_id,
+                    'post_request_id' => $post_job->id,
                     'post_job_name' => $post_job->title,
                     'customer_id' => $post_job->customer_id,
                     'customer_name' => isset($post_job->customer) ? $post_job->customer->display_name : '',
@@ -363,8 +372,6 @@ trait NotificationTrait
 
                 $data['activity_data'] = json_encode($activity_data);
                 \App\Models\BookingActivity::create($data);
-
-
                 break;
             case "user_accept_bid":
 
@@ -373,7 +380,21 @@ trait NotificationTrait
                 $data['provider_name'] = $post_job->provider->display_name ?? null;
                 $data['user_name'] = $post_job->customer->display_name ?? null;
                 $job_request_id= isset($post_job->id) ?  $post_job->id :'';
-                $data['job_price'] = isset(optional($data['post_job'])->job_price) ? optional($data['post_job'])->job_price : '';
+                // Resolve price: prefer explicitly passed job_price, then price, else fall back to PostJobRequest price
+                $resolvedPrice = null;
+                if (!empty($data['job_price'])) {
+                    $resolvedPrice = $data['job_price'];
+                } elseif (isset($data['price'])) {
+                    $resolvedPrice = $data['price'];
+                } elseif (isset($post_job->price)) {
+                    $resolvedPrice = $post_job->price;
+                }
+                if ($resolvedPrice !== null && $resolvedPrice !== '') {
+                    // If numeric, format; if already formatted string, keep as is
+                    $data['job_price'] = is_numeric($resolvedPrice) ? getPriceFormat($resolvedPrice) : $resolvedPrice;
+                } else {
+                    $data['job_price'] = '';
+                }
                 $activity_data = [
                     'post_request_id' => $post_job->post_request_id,
                     'customer_id' => $post_job->customer_id,
@@ -597,10 +618,24 @@ trait NotificationTrait
             $notification_data['wallet_transaction_type'] = isset($data['transaction_type']) ? $data['transaction_type'] : '';
             $notification_data['wallet_amount'] = isset($data['wallet']->amount) ? getPriceFormat($data['wallet']->amount) : '';
             $notification_data['credit_debit_amount'] = isset($data['credit_debit_amount']) ? getPriceFormat($data['credit_debit_amount']) : '';
-            $notification_data['job_id'] = isset($job_id) ? $job_id: '';
+			$notification_data['job_id'] = isset($job_id) ? $job_id: '';
+			// Provide a clickable link for web notifications when a job request is created
+			if ($notification_type === 'job_requested') {
+				$targetId = $notification_data['job_id'] ?? null;
+				if (!empty($targetId)) {
+					$notification_data['link'] = route('post-job-request.bids', ['id' => $targetId]);
+				}
+			}
             $notification_data['job_request_id'] = isset( $job_request_id) ? $job_request_id : '';
             $notification_data['job_name'] = isset($post_job->title) ? $post_job->title : '';
-            $notification_data['job_price'] = isset($data['job_price']) ? getPriceFormat($data['job_price']) : '';
+            // Avoid double-formatting: if value is numeric, format; else assume it's already formatted
+            if (isset($data['job_price'])) {
+                $notification_data['job_price'] = is_numeric($data['job_price'])
+                    ? getPriceFormat($data['job_price'])
+                    : $data['job_price'];
+            } else {
+                $notification_data['job_price'] = '';
+            }
             $notification_data['customer_name'] = isset($data['user_name']) ? $data['user_name'] : '';
             $notification_data['job_description'] = isset($data['postjob_data']->description) ? $data['postjob_data']->description : '';
             $notification_data['bid_amount'] = isset($bid_amount) ? $bid_amount: '';
@@ -637,6 +672,18 @@ trait NotificationTrait
                 $mails = [$notification_data['receiver_type']];
             }
 
+
+            // Fallback: if no recipients configured, ensure providers are notified for job requests
+            if ($notification_type === 'job_requested') {
+                // Normalize to array
+                if (!is_array($mails)) {
+                    $mails = (array) $mails;
+                }
+                // Ensure 'provider' is included exactly once
+                if (!in_array('provider', $mails, true)) {
+                    $mails[] = 'provider';
+                }
+            }
 
             foreach ($mails as $key => $mailTo) {
 

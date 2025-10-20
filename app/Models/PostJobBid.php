@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Models;
-
+use App\Models\PostJobRequest;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -9,7 +9,7 @@ class PostJobBid extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'post_request_id', 'provider_id', 'price' ,'duration','customer_id','title'
+        'post_request_id', 'provider_id', 'why_choose_me','extra_charges', 'price' ,'duration','customer_id','title','status','advance_percent','remaining_percent ', 'hold_reason','quantity'
     ];
 
     protected $casts = [
@@ -19,9 +19,15 @@ class PostJobBid extends Model
         'price' => 'double',
     ];
 
+        public function request()
+{
+    return $this->belongsTo(PostJobRequest::class, 'post_request_id');
+}
     public function provider(){
         return $this->belongsTo(User::class,'provider_id', 'id')->withTrashed();
     }
+
+
     public function customer(){
         return $this->belongsTo(User::class, 'customer_id', 'id')->withTrashed();
     }
@@ -41,5 +47,9 @@ class PostJobBid extends Model
     }
     public function postrequest(){
         return $this->belongsTo(PostJobRequest::class,'post_request_id', 'id');
+    }
+    public function extraCharges()
+    {
+        return $this->hasMany(PostJobExtraCharge::class, 'post_job_bid_id');
     }
 }

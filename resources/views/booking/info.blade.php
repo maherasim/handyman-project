@@ -130,7 +130,7 @@
         </tr>
     </tbody>
 </table>
-<div class="container-fluid">
+<div class="container-fluid booking-info-container">
     <div class="row">
         <div class="col-md-8">
             <div class="card">
@@ -159,7 +159,7 @@
                                         @endhasanyrole
                                     @endif
                                   @if ($bookingdata->status === 'pending')
-                                   @hasanyrole('user')
+                                   @hasanyrole('user|provider')
                                         <div class="w3-third">
                                             <button class="float-end btn btn-primary update-booking" id="cancel-booking"
                                                 data-id="{{ $bookingdata->id }}"
@@ -247,12 +247,45 @@
 
                                         @hasanyrole('user')
                                             @if (!isset($bookingdata->payment) && $is_enable_advance_payment == 1)
+                                                @php
+                                                    // Calculate advance amount using same logic as billing table
+                                                    $baseTotal = $bookingdata->amount * $bookingdata->quantity;
+                                                    $subTotal = $baseTotal;
+                                                    if ($bookingdata->discount > 0) {
+                                                        $subTotal -= $bookingdata->final_discount_amount;
+                                                    }
+                                                    if ($bookingdata->couponAdded) {
+                                                        $subTotal -= $bookingdata->final_coupon_discount_amount;
+                                                    }
+                                                    $addonTotal = $bookingdata->bookingAddonService->sum('price');
+                                                    $extraChargeTotal = $bookingdata->bookingExtraCharge->sum(function ($item) {
+                                                        return $item->price * $item->qty;
+                                                    });
+                                                    $totalBeforeTax = $subTotal + $addonTotal + $extraChargeTotal;
+                                                    $serviceTaxId = $bookingdata->service->tax_country_id ?? null;
+                                                    $taxRate = 0;
+                                                    if ($serviceTaxId) {
+                                                        $tax = \App\Models\Tax::find($serviceTaxId);
+                                                        $taxRate = $tax->value ?? 0;
+                                                    }
+                                                    $taxAmount = ($totalBeforeTax * $taxRate) / 100;
+                                                    $grandTotal = $totalBeforeTax + $taxAmount;
+                                                    $advancePaidAmount = $bookingdata->advance_paid_amount;
+                                                    if ($advancePaidAmount <= 0 && isset($advanceservice) && $advanceservice > 0) {
+                                                        $advancePaidAmount = ($grandTotal * $advanceservice) / 100;
+                                                    }
+                                                    $advanceAmount = $advancePaidAmount;
+                                                @endphp
                                                 <div class="w3-third">
-                                                    <a class="float-end btn btn-primary"
+                                                    <a class="float-end btn btn-primary d-flex align-items-center gap-2"
                                                         href="{{ route('book.service', ['id' => $bookingdata->service_id, 'booking_id' => $bookingdata->id, 'payment_type' => 'advance_paid']) }}"
-                                                        target="_blank" data-id="{{ $bookingdata->id }}">
+                                                        target="_blank" data-id="{{ $bookingdata->id }}"
+                                                        style="background: linear-gradient(135deg, #28a745, #20c997); border: none; box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);">
                                                         <i class="las la-credit-card"></i>
-                                                        {{ __('messages.advance_pay') }}
+                                                        <span>{{ __('messages.advance_pay') }}</span>
+                                                        <span class="badge bg-light text-dark px-2 py-1 rounded-pill">
+                                                            <i class="fas fa-euro-sign me-1"></i>{{ getPriceFormat($advanceAmount) }}
+                                                        </span>
                                                     </a>
                                                 </div>
                                             @endif
@@ -407,21 +440,53 @@
                                             </button>
                                         </div>
                                         @if (isset($payment) && $payment->payment_status != 'paid')
+                                            @php
+                                                // Calculate remaining amount using same logic as billing table
+                                                $baseTotal = $bookingdata->amount * $bookingdata->quantity;
+                                                $subTotal = $baseTotal;
+                                                if ($bookingdata->discount > 0) {
+                                                    $subTotal -= $bookingdata->final_discount_amount;
+                                                }
+                                                if ($bookingdata->couponAdded) {
+                                                    $subTotal -= $bookingdata->final_coupon_discount_amount;
+                                                }
+                                                $addonTotal = $bookingdata->bookingAddonService->sum('price');
+                                                $extraChargeTotal = $bookingdata->bookingExtraCharge->sum(function ($item) {
+                                                    return $item->price * $item->qty;
+                                                });
+                                                $totalBeforeTax = $subTotal + $addonTotal + $extraChargeTotal;
+                                                $serviceTaxId = $bookingdata->service->tax_country_id ?? null;
+                                                $taxRate = 0;
+                                                if ($serviceTaxId) {
+                                                    $tax = \App\Models\Tax::find($serviceTaxId);
+                                                    $taxRate = $tax->value ?? 0;
+                                                }
+                                                $taxAmount = ($totalBeforeTax * $taxRate) / 100;
+                                                $grandTotal = $totalBeforeTax + $taxAmount;
+                                                $advancePaidAmount = $bookingdata->advance_paid_amount;
+                                                if ($advancePaidAmount <= 0 && isset($advanceservice) && $advanceservice > 0) {
+                                                    $advancePaidAmount = ($grandTotal * $advanceservice) / 100;
+                                                }
+                                                $remainingAmount = $grandTotal - $advancePaidAmount;
+                                            @endphp
                                             <div class="w3-third d-flex align-items-end">
-                                                <a class="float-end btn btn-warning"
+                                                <a class="float-end btn btn-warning d-flex align-items-center gap-2"
                                                     href="{{ route('book.service', ['id' => $bookingdata->service_id, 'booking_id' => $bookingdata->id, 'payment_type' => 'full_payment']) }}"
-                                                    target="_blank" data-id="{{ $bookingdata->id }}">
+                                                    target="_blank" data-id="{{ $bookingdata->id }}"
+                                                    style="background: linear-gradient(135deg, #fd7e14, #ffc107); border: none; box-shadow: 0 4px 12px rgba(253, 126, 20, 0.3);">
                                                     <i class="las la-credit-card"></i>
-                                                    <!-- Changed to a star icon (Line Awesome) -->
-                                                    {{ __('Pay now') }}
+                                                    <span>{{ __('Pay Remaining') }}</span>
+                                                    <span class="badge bg-light text-dark px-2 py-1 rounded-pill">
+                                                        <i class="fas fa-euro-sign me-1"></i>{{ getPriceFormat($remainingAmount) }}
+                                                    </span>
                                                 </a>
                                             </div>
                                         @endif
                                     @endhasanyrole
                                 @endif
 
-                                @if ($bookingdata->status === 'completed' && isset($payment) && $payment->payment_status == 'paid')
-                                    @hasanyrole('handyman')
+                                @if (($bookingdata->status === 'completed' || $bookingdata->status === 'paid') && isset($payment) && $payment->payment_status == 'paid')
+                                    @hasanyrole(['handyman', 'provider'])
                                         <div class="w3-third d-flex align-items-end">
                                             <button class="float-end btn btn-primary" id="service-proof-btn"
                                                 data-id="{{ $bookingdata->id }}"
@@ -443,12 +508,131 @@
                                     @endif
                                 @endhasanyrole
 
+                                @php
+                                    $currentUser = auth()->user();
+                                    $isProvider = $currentUser && $currentUser->id == ($bookingdata->provider_id ?? 0);
+                                    $isCustomer = $currentUser && $currentUser->id == ($bookingdata->customer_id ?? 0);
+                                    $isHandyman = $currentUser && ($bookingdata->handymanAdded && $bookingdata->handymanAdded->contains('handyman_id', $currentUser->id));
+                                @endphp
+                                @if ($isProvider || $isCustomer || $isHandyman)
+                                    
+                                    @php $__chatAllowed = isset($payment) && in_array(strtolower($payment->payment_status ?? ''), ['advanced_paid','paid'], true); @endphp
+                                    @if($__chatAllowed)
+                                        @if($isCustomer)
+                                            {{-- Customer sees: Chat with Provider and Chat with Handyman --}}
+                                            <a href="{{ route('chat.view.user', $bookingdata->provider_id) }}" class="btn btn-outline-primary">
+                                                <i class="fas fa-comments"></i> {{ __('Chat with Provider') }}
+                                            </a>
+                                            @if($bookingdata->handymanAdded && $bookingdata->handymanAdded->count())
+                                                @php $firstHandyman = optional($bookingdata->handymanAdded->first())->handyman_id; @endphp
+                                                @if($firstHandyman)
+                                                    <a href="{{ route('chat.view.user', $firstHandyman) }}" class="btn btn-outline-secondary">
+                                                        <i class="fas fa-user-cog"></i> {{ __('Chat with Handyman') }}
+                                                    </a>
+                                                @endif
+                                            @endif
+                                        @elseif($isProvider)
+                                            {{-- Provider sees: Chat with Customer and Chat with Handyman --}}
+                                            <a href="{{ route('chat.view.user', $bookingdata->customer_id) }}" class="btn btn-outline-primary">
+                                                <i class="fas fa-comments"></i> {{ __('Chat with Customer') }}
+                                            </a>
+                                            @if($bookingdata->handymanAdded && $bookingdata->handymanAdded->count())
+                                                @php $firstHandyman = optional($bookingdata->handymanAdded->first())->handyman_id; @endphp
+                                                @if($firstHandyman)
+                                                    <a href="{{ route('chat.view.user', $firstHandyman) }}" class="btn btn-outline-secondary">
+                                                        <i class="fas fa-user-cog"></i> {{ __('Chat with Handyman') }}
+                                                    </a>
+                                                @endif
+                                            @endif
+                                        @elseif($isHandyman)
+                                            {{-- Handyman sees: Chat with Provider and Chat with Customer --}}
+                                            <a href="{{ route('chat.view.user', $bookingdata->provider_id) }}" class="btn btn-outline-primary">
+                                                <i class="fas fa-comments"></i> {{ __('Chat with Provider') }}
+                                            </a>
+                                            <a href="{{ route('chat.view.user', $bookingdata->customer_id) }}" class="btn btn-outline-secondary">
+                                                <i class="fas fa-user"></i> {{ __('Chat with Customer') }}
+                                            </a>
+                                        @endif
+                                    @endif
+                                @endif
+
                             </div>
                         </div>
+
+                        {{-- Dynamic Next-Step Marquee --}}
+                        @php
+                            $status = (string) ($bookingdata->status ?? '');
+                            $nextActor = null; // 'provider' | 'user' | 'handyman' | null
+                            $nextText = null;
+
+                            switch ($status) {
+                                case 'pending':
+                                    $nextActor = 'provider';
+                                    $nextText = 'Waiting for provider to accept the booking';
+                                    break;
+                                case 'accept':
+                                    if ($is_enable_advance_payment == 1 && (!isset($payment) || $payment->payment_status != 'advanced_paid')) {
+                                        $nextActor = 'user';
+                                        $nextText = 'Waiting for customer to pay advance payment';
+                                    } else {
+                                        $nextActor = 'provider';
+                                        $nextText = 'Waiting for provider to assign handyman';
+                                    }
+                                    break;
+                                case 'on_going':
+                                    $nextActor = 'user';
+                                    $nextText = 'Waiting for customer to confirm "Let\'s Start Work"';
+                                    break;
+                                case 'in_progress':
+                                    $nextActor = 'handyman';
+                                    $nextText = 'Work in progress — waiting for handyman to complete or put on hold';
+                                    break;
+                                case 'hold':
+                                    $nextActor = 'handyman';
+                                    $nextText = 'Work is on hold — waiting for handyman to resume';
+                                    break;
+                                case 'pending_approval':
+                                    $nextActor = 'user';
+                                    $nextText = 'Waiting for customer to confirm work is done';
+                                    break;
+                                case 'confirm':
+                                    $nextActor = 'handyman';
+                                    $nextText = 'Waiting for handyman to mark booking as completed';
+                                    break;
+                                case 'completed':
+                                    if (isset($payment) && $payment->payment_status != 'paid') {
+                                        $nextActor = 'user';
+                                        $nextText = 'Waiting for customer to pay remaining amount';
+                                    } else {
+                                        $nextActor = null;
+                                        $nextText = 'Booking completed successfully! You can download the invoice.';
+                                    }
+                                    break;
+                                case 'cancelled':
+                                    $nextActor = null;
+                                    $nextText = 'This booking has been cancelled.';
+                                    break;
+                                default:
+                                    $nextActor = null;
+                                    $nextText = null;
+                            }
+                        @endphp
+
+                        @if ($nextText)
+                            <div class="w-100 px-3 mb-4">
+                                <div class="marquee-banner {{ $nextActor === 'provider' ? 'marquee-provider' : ($nextActor === 'user' ? 'marquee-user' : ($nextActor === 'handyman' ? 'marquee-handyman' : 'marquee-neutral')) }}">
+                                    <marquee behavior="scroll" direction="left" scrollamount="6">
+                                        <i class="fas fa-info-circle me-2"></i>
+                                        {{ $nextText }}
+                                    </marquee>
+                                </div>
+                            </div>
+                        @endif
+
                         <!-- Main Content Row -->
                         <div class="row ">
-                            <div class="col-md-4 ">
-                                <div class="card h-100">
+                            <div class="col-md-4 mb-3">
+                                <div class="card h-100 soft-shadow hover-lift">
                                     <div class="card-body">
                                         <p class="opacity-75 fz-12">{{ __('messages.book_placed') }}</p>
                                         <p class="mb-0">
@@ -459,8 +643,8 @@
                             </div>
 
 
-                            <div class="col-md-4">
-                                <div class="card h-100">
+                            <div class="col-md-4 mb-3">
+                                <div class="card h-100 soft-shadow hover-lift">
                                     <div class="card-body">
                                         <p class="opacity-75 fz-12">{{ __('messages.booking_status') }}</p>
                                         <p class="mb-0 text-primary" id="booking_status__span">
@@ -468,10 +652,10 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-4">
-                                <div class="card h-100">
+                            <div class="col-md-4 mb-3">
+                                <div class="card h-100 soft-shadow hover-lift">
                                     <div class="card-body">
-                                        <p class="opacity-75 fz-12">{{ __('Location') }}</p>
+                                        <p class="opacity-75 fz-12">{{ __('Standort') }}</p>
                                         <p class="mb-0 text-primary">
                                             {{ optional($bookingdata->service->city)->name ?? '-' }},
                                             {{ optional($bookingdata->service->country)->name ?? '-' }}
@@ -480,8 +664,8 @@
                                 </div>
                             </div>
                             @hasanyrole(['user', 'provider', 'admin'])
-                                <div class="col-md-4">
-                                    <div class="card h-100">
+                                <div class="col-md-4 mb-3">
+                                    <div class="card h-100 soft-shadow hover-lift">
                                         <div class="card-body">
                                             <p class="opacity-75 fz-12">{{ __('messages.total_amount') }}</p>
                                             <p class="mb-0 text-primary">
@@ -491,8 +675,8 @@
                                     </div>
                                 </div>
                             @endhasanyrole
-                            <div class="col-md-4">
-                                <div class="card h-100">
+                            <div class="col-md-4 mb-3">
+                                <div class="card h-100 soft-shadow hover-lift">
                                     <div class="card-body">
                                         <p class="opacity-75 fz-12">{{ __('messages.payment_method') }}</p>
                                         <p class="mb-0 text-primary">
@@ -504,12 +688,12 @@
                                 @if (
                                     (isset($payment) && $payment->payment_type === 'bank_transfer' && $payment->status == 1) ||
                                         (isset($payment) && $payment->payment_type !== 'bank_transfer'))
-                                    <div class="col-md-4">
-                                        <div class="card h-65 border-0 shadow"
+                                    <div class="col-md-4 mb-3">
+                                        <div class="card h-65 border-0 soft-shadow hover-lift"
                                             style="background: linear-gradient(135deg, #f7c59f, #ff9a9e); color: #fff;">
                                             <div class="card-body">
                                                 <p class="mb-1 fw-bold text-uppercase" style="opacity: 0.9;">
-                                                    {{ __('Advance Payment') }}
+                                                    {{ __('Anzahlung') }}
                                                 </p>
                                                 <p class="mb-0 fs-5 fw-bold" id="service_schedule__span">
                                                     {{ getPriceFormat($bookingdata->advance_paid_amount) }}
@@ -520,20 +704,8 @@
                                 @endif
                             @endhasanyrole
 
-                            <div class="col-md-4">
-                                <div class="card h-100">
-                                    <div class="card-body">
-                                        <p class="opacity-75 fz-12">{{ __('Booking Slots') }}</p>
-                                        @foreach ($bookingdata->slots as $slot)
-                                            <p class="mb-0 text-primary">
-                                                {{ date("$datetime->date_format", strtotime($slot->date)) ?? '-' }}
-                                                / {{ $slot->start_time }} -> {{ $slot->end_time }}</p>
-                                        @endforeach
-                                    </div>
-                                </div>
-                            </div>
-                           <div class="col-md-4">  
-    <div class="card h-100">
+                           <div class="col-md-4 mb-3">  
+    <div class="card h-100 soft-shadow hover-lift">
         @php
             // If booking is cancelled, override payment status
             if (isset($bookingdata) && $bookingdata->status === 'cancelled') {
@@ -578,10 +750,10 @@
 
                             
 
-                        <div class="col-md-4">
-                                <div class="card h-100">
+                        <div class="col-md-4 mb-3">
+                                <div class="card h-100 soft-shadow hover-lift">
                                     <div class="card-body">
-                                        <p class="opacity-75 fz-12">{{ __('Working Address') }}</p>
+                                        <p class="opacity-75 fz-12">{{ __('Arbeitsadresse') }}</p>
                                         <p class="mb-0 text-primary" id="booking_status__span">
                                             {{ str_replace('_', ' ', ucfirst($bookingdata->address)) }}</p>
                                     </div>
@@ -595,8 +767,8 @@
 
                             <!-- Add Cancellation Reason Card -->
                             @if ($bookingdata->status === 'cancelled')
-                                <div class="col-md-4">
-                                    <div class="card h-100">
+                                <div class="col-md-4 mb-3">
+                                    <div class="card h-100 soft-shadow hover-lift">
                                         <div class="card-body">
                                             <p class="opacity-75 fz-12">{{ __('landingpage.cancel_reason') }}</p>
                                             <p class="mb-0 text-danger">
@@ -606,15 +778,50 @@
                                     </div>
                                 </div>
                             @endif
+
+                            <!-- Booking Schedule Card - Moved to the end -->
+                            <div class="col-md-4 mb-3">
+                                <div class="card h-100 soft-shadow hover-lift">
+                                    <div class="card-body">
+                                        <p class="opacity-75 fz-12 mb-3">{{ __('Buchungsplan') }}</p>
+                                        @if($bookingdata->slots && count($bookingdata->slots) > 0)
+                                            <div class="booking-slots-container">
+                                                @foreach ($bookingdata->slots as $index => $slot)
+                                                    <div class="slot-item d-flex align-items-center mb-2 p-2 rounded" 
+                                                         style="background: linear-gradient(135deg, #f8f9fa, #e9ecef); border-left: 3px solid #007bff;">
+                                                        <div class="flex-shrink-0 me-2">
+                                                            <i class="ri-calendar-check-line text-primary" style="font-size: 16px;"></i>
+                                                        </div>
+                                                        <div class="flex-grow-1">
+                                                            <div class="fw-semibold text-dark small">
+                                                                {{ date("M d, Y", strtotime($slot->date)) ?? '-' }}
+                                                            </div>
+                                                            <div class="text-muted small">
+                                                                <i class="ri-time-line me-1"></i>
+                                                                {{ date('g:i A', strtotime($slot->start_time)) }} - {{ date('g:i A', strtotime($slot->end_time)) }}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                @endforeach
+                                            </div>
+                                        @else
+                                            <div class="text-muted text-center py-3">
+                                                <i class="ri-calendar-line" style="font-size: 24px; opacity: 0.5;"></i>
+                                                <p class="mb-0 small mt-2">No slots scheduled</p>
+                                            </div>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- Order information section  -->
-            <div class="row">
+            <div class="row mt-4">
                 <div class="col-md-4">
-                    <div class="card">
+                    <div class="card soft-shadow hover-lift role-card role-customer">
                         <div class="card-body">
                             <div class="d-flex align-items-start gap-3">
                                 <div class="flex-shrink-0">
@@ -629,7 +836,7 @@
                                     @endif
                                 </div>
                                 <div class="flex-grow-1">
-                                    <p class="mb-1 text-primary">{{ __('messages.customer') }}</p>
+                                    <p class="mb-1 text-primary d-flex align-items-center"><i class="ri-user-line role-icon me-1"></i> {{ __('messages.customer') }}</p>
                                     <h5 class="mb-2">{{ optional($bookingdata->customer)->display_name ?? '-' }}
                                     </h5>
                                 </div>
@@ -659,7 +866,7 @@
                 </div>
                 <!-- Provider Information -->
                 <div class="col-md-4">
-                    <div class="card">
+                    <div class="card soft-shadow hover-lift role-card role-provider">
                         <div class="card-body">
                             <div class="d-flex align-items-start gap-3">
                                 <div class="flex-shrink-0">
@@ -674,7 +881,7 @@
                                     @endif
                                 </div>
                                 <div class="flex-grow-1">
-                                    <p class="mb-1 text-primary">{{ __('messages.provider') }}</p>
+                                    <p class="mb-1 text-primary d-flex align-items-center"><i class="ri-briefcase-line role-icon me-1"></i> {{ __('Employer') }}</p>
                                     <h5 class="mb-2">{{ optional($bookingdata->provider)->display_name ?? '-' }}
                                     </h5>
                                 </div>
@@ -703,7 +910,7 @@
                 </div>
                 <!-- Handyman Information -->
                 <div class="col-md-4">
-                    <div class="card">
+                    <div class="card soft-shadow hover-lift role-card role-handyman">
                         @if (count($bookingdata->handymanAdded) > 0)
                             @foreach ($bookingdata->handymanAdded as $booking)
                                 <div class="card-body">
@@ -720,7 +927,7 @@
                                             @endif
                                         </div>
                                         <div class="flex-grow-1">
-                                            <p class="mb-1 text-primary">{{ __('messages.handyman') }}</p>
+                                            <p class="mb-1 text-primary d-flex align-items-center"><i class="ri-tools-line role-icon me-1"></i> {{ __('Worker') }}</p>
                                             <h5 class="mb-2 ">
                                                 {{ optional($booking->handyman)->display_name ?? '-' }}
                                             </h5>
@@ -762,7 +969,7 @@
 
         <!-- billing section -->
         @hasanyrole(['user', 'provider', 'admin'])
-            <div class="col-md-4">
+            <div class="col-md-4 mt-4">
                 <div class="card">
                     <div class="card-body">
                         <div class="table-responsive">
@@ -926,11 +1133,28 @@
 
     <!-- Extra Charges table -->
     @if (count($bookingdata->bookingExtraCharge) > 0)
-        <div class="col-md-12">
+        <div class="col-md-12 mt-4">
             <div class="card">
+                @php
+                $extraChargeTotal = $bookingdata->bookingExtraCharge->sum(function ($charge) {
+                    return $charge->price * $charge->qty;
+                });
+                @endphp
+                <div class="card-header bg-primary text-white">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">
+                            <i class="fas fa-plus-circle me-2"></i>
+                            {{ __('messages.extra_charge') }}
+                        </h5>
+                        <div class="text-end">
+                            <span class="badge bg-light text-dark fs-6">
+                                {{ __('Total Extra Charges') }}: <strong>{{ getPriceFormat($extraChargeTotal) }}</strong>
+                            </span>
+                        </div>
+                    </div>
+                </div>
                 <div class="card-body">
                     <div class="table-responsive mb-4">
-                        <h4 class="mb-3">{{ __('messages.extra_charge') }}</h4>
                         <table class="table table-bordered">
                             <thead>
                                 <tr>
@@ -939,6 +1163,8 @@
                                     <th>{{ __('messages.quantity') }}</th>
                                     <th class="text-end">{{ __('messages.total_amount') }}</th>
                                 </tr>
+                               
+                               
                             </thead>
                             <tbody>
                                 @foreach ($bookingdata->bookingExtraCharge as $charge)
@@ -959,7 +1185,7 @@
     @endif
 
     @if (count($bookingdata->bookingRating) > 0)
-        <div class="col-md-12">
+        <div class="col-md-12 mt-4">
             <div class="card">
                 <div class="card-body">
                     <div class="table-responsive mb-4">
@@ -991,7 +1217,7 @@
     @endif
 
     @if (!empty($customer_review))
-        <div class="col-md-12">
+        <div class="col-md-12 mt-4">
             <div class="card">
                 <div class="card-body">
                     <div class="table-responsive mb-4">
@@ -1034,7 +1260,7 @@
     @endif
 
     @if (!empty($serviceProof) && count($serviceProof) > 0)
-        <div class="col-md-12">
+        <div class="col-md-12 mt-4">
             <div class="card">
                 <div class="card-body">
                     <div class="table-responsive mb-4">
@@ -1072,12 +1298,20 @@
                 </div>
             </div>
         </div>
+    @else
+        <!-- Debug: Show if no service proof found -->
+        <div class="col-md-12 mt-4">
+            <div class="alert alert-info">
+                <strong>Debug:</strong> No service proof found for this booking. 
+                ServiceProof count: {{ isset($serviceProof) ? count($serviceProof) : 'Not set' }}
+            </div>
+        </div>
     @endif
 
 
     <!-- Addon  Charges table -->
     @if ($bookingdata->bookingAddonService->count() > 0)
-        <div class="col-md-12">
+        <div class="col-md-12 mt-4">
             <div class="card">
                 <div class="card-body">
                     <div class="table-responsive mb-4">
@@ -1101,7 +1335,7 @@
                                     <tr>
                                         <td class="text-wrap ps-lg-3">
                                             <div class="d-flex flex-column">
-                                                <a href=""
+                                                <a href="{{ route('service.detail', $bookingdata->service_id) }}#{{ \Illuminate\Support\Str::slug($addonservice->name) }}"
                                                     class="booking-service-link fw-bold">{{ $addonservice->name }}</a>
                                             </div>
                                         </td>
@@ -1122,48 +1356,39 @@
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
- <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
 <script>
-    var baseUrl = "{{ env('APP_URL') }}";
+    var baseUrl = "{{ url('/') }}";
+    var csrfToken = "{{ csrf_token() }}";
 
     $(document).ready(function () {
         // Handle booking status dropdown
         $(document).on('change', '.bookingstatus', function () {
             var status = $(this).val();
             var id = $(this).attr('data-id');
-
-            $.ajax({
-                type: "POST",
-                dataType: "json",
-                url: "{{ route('bookingStatus.update') }}",
-                data: {
-                    'status': status,
-                    'bookingId': id
+            fetch("{{ route('bookingStatus.update') }}", {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': csrfToken,
+                    'Content-Type': 'application/json'
                 },
-                success: function (data) {
-                    // success handling
-                }
-            });
+                body: JSON.stringify({ status: status, bookingId: id })
+            }).then(r=>r.json()).then(() => {})
+            .catch(()=>{});
         });
 
         // Handle payment status dropdown
         $(document).on('change', '.paymentStatus', function () {
             var status = $(this).val();
             var id = $(this).attr('data-id');
-
-            $.ajax({
-                type: "POST",
-                dataType: "json",
-                url: "{{ route('bookingStatus.update') }}",
-                data: {
-                    'status': status,
-                    'bookingId': id
+            fetch("{{ route('bookingStatus.update') }}", {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': csrfToken,
+                    'Content-Type': 'application/json'
                 },
-                success: function (data) {
-                    // success handling
-                }
-            });
+                body: JSON.stringify({ status: status, bookingId: id })
+            }).then(r=>r.json()).then(() => {})
+            .catch(()=>{});
         });
 
         // Assign provider button
@@ -1181,29 +1406,18 @@
                 confirmButtonText: 'Yes, assign it!',
                 cancelButtonText: 'No, cancel'
             }).then((willAssign) => {
-                if (willAssign.isConfirmed) {
-                    $.ajax({
-                        url: '{{ route('booking.assigned') }}',
-                        type: 'POST',
-                        data: {
-                            id: bookingId,
-                            'handyman_id[]': handymanIds,
-                            _token: '{{ csrf_token() }}'
-                        },
-                        success: function (response) {
-                            Swal.fire("Success!", response.message, "success");
-                            // Inline feedback: mark provider assigned without full reload
-                            $('.assign-provider-btn, .assign-provider').prop('disabled', true);
-                            $('.assign-provider-btn, .assign-provider').addClass('disabled');
-                            // Optionally update any UI badges here if needed
-                        },
-                        error: function (xhr) {
-                            Swal.fire("Error!", xhr.responseText, "error");
-                        }
-                    });
-                } else {
-                    Swal.fire("Assignment canceled!", "The provider was not assigned.", "info");
-                }
+                if (!willAssign.isConfirmed) return;
+                fetch('{{ route('booking.assigned') }}', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': csrfToken,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ id: bookingId, 'handyman_id[]': handymanIds })
+                }).then(r=>r.json()).then(response => {
+                    Swal.fire('Success!', response.message || 'Assigned', 'success');
+                    $('.assign-provider-btn, .assign-provider').prop('disabled', true).addClass('disabled');
+                }).catch(() => Swal.fire('Error!', 'Unable to assign provider', 'error'));
             });
         });
 
@@ -1269,24 +1483,24 @@
             };
 
             let api_url = baseUrl + '/api/booking-update';
-            // Show busy state on all status buttons to prevent double clicks
             setButtonsPending(true);
-            $.ajax({
-                url: api_url,
-                type: 'POST',
-                data: requestPayload,
-                success: function (response) {
-                    // Update status text inline
-                    const label = humanizeStatus(newStatus);
-                    $('#booking_status__span').text(label);
-                    setButtonsPending(false);
-                    disableStatusActions();
-                    window.location.reload();
+            fetch(api_url, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': csrfToken,
+                    'Content-Type': 'application/json'
                 },
-                error: function (xhr) {
-                    Swal.fire("Error!", xhr.responseText, "error");
-                    setButtonsPending(false);
-                }
+                body: JSON.stringify(requestPayload)
+            }).then(r => r.json()).then(response => {
+                const label = humanizeStatus(newStatus);
+                $('#booking_status__span').text(label);
+                setButtonsPending(false);
+                disableStatusActions();
+                Swal.fire('Updated', 'Booking updated successfully', 'success')
+                    .then(() => window.location.reload());
+            }).catch(err => {
+                Swal.fire('Error', 'Something went wrong', 'error');
+                setButtonsPending(false);
             });
         }
         function humanizeStatus(val){
@@ -1306,36 +1520,23 @@
             $('.update-booking, .confirm-booking, .hold-booking, #complete-booking').prop('disabled', true).addClass('disabled');
         }
 
-        // Hold booking
+        // Hold booking via SweetAlert textarea (fast, like show.blade.php)
         $(document).on('click', '.hold-booking', function () {
             const bookingId = $(this).data('id');
-            const newStatus = $(this).data('status');
-
-            $('#bookingId').val(bookingId);
-            $('#newStatus').val(newStatus);
-            $('#reasonInput').val('');
-            $('#reasonModal').modal('show');
-        });
-
-        $('#reasonForm').on('submit', function (e) {
-            e.preventDefault();
-
-            const bookingId = $('#bookingId').val();
-            const newStatus = $('#newStatus').val();
-            const reason = $('#reasonInput').val();
-
             Swal.fire({
-                title: 'Are you sure?',
-                text: 'Are you sure you want to hold this booking?',
-                icon: 'warning',
+                title: 'Put on Hold',
+                input: 'textarea',
+                inputLabel: 'Provide hold reason',
+                inputPlaceholder: 'Type your reason here... (max 500 chars)',
                 showCancelButton: true,
-                confirmButtonText: 'Yes!',
-                cancelButtonText: 'No, cancel'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    updateBookingStatus(bookingId, newStatus, 1, reason);
-                    $('#reasonModal').modal('hide');
+                confirmButtonText: 'Submit',
+                preConfirm: (value) => {
+                    if (!value || value.trim().length === 0) return Swal.showValidationMessage('Hold reason is required');
+                    if (value.length > 500) return Swal.showValidationMessage('Reason too long (max 500 chars)');
+                    return value;
                 }
+            }).then((result) => {
+                if (result.isConfirmed) updateBookingStatus(bookingId, 'hold', 1, result.value);
             });
         });
 
@@ -1539,3 +1740,203 @@
 
     });
 </script>
+<style>
+	.soft-shadow {
+		box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+		transition: transform 0.25s ease, box-shadow 0.25s ease;
+		border-radius: 12px;
+		border: 1px solid rgba(0,0,0,0.04);
+	}
+	.hover-lift:hover {
+		transform: translateY(-4px);
+		box-shadow: 0 12px 24px rgba(0,0,0,0.12);
+	}
+	.role-card {
+		border-left: 4px solid transparent;
+	}
+	.role-card .role-icon { font-size: 18px; }
+	.role-customer { border-left-color: #3b82f6; }
+	.role-provider { border-left-color: #16a34a; }
+	.role-handyman { border-left-color: #f59e0b; }
+	.role-customer .role-icon { color: #3b82f6; }
+	.role-provider .role-icon { color: #16a34a; }
+	.role-handyman .role-icon { color: #f59e0b; }
+	.booking-info-container .card-body p.fz-12,
+	.booking-info-container .card-body .opacity-75 {
+		opacity: 0.75 !important;
+		font-size: 12px !important;
+		margin-bottom: 6px;
+	}
+	.booking-info-container .card-body .text-primary {
+		font-weight: 600;
+	}
+	
+	/* Marquee Banner Styles */
+	.marquee-banner {
+		border-radius: 6px;
+		padding: 8px 12px;
+		margin: 8px 0 4px 0;
+		box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+		border-left: 4px solid transparent;
+	}
+	.marquee-provider {
+		background: #fff8e1;
+		color: #7a5d00;
+		border-left-color: #ffc107;
+	}
+	.marquee-user {
+		background: #e7f1ff;
+		color: #084298;
+		border-left-color: #0d6efd;
+	}
+	.marquee-handyman {
+		background: #f0f9ff;
+		color: #0c4a6e;
+		border-left-color: #0ea5e9;
+	}
+	.marquee-neutral {
+		background: #f1f1f1;
+		color: #333;
+		border-left-color: #6c757d;
+	}
+</style>
+
+<!-- Service Proof Modal -->
+<div class="modal fade" id="serviceProofModal" tabindex="-1" aria-labelledby="serviceProofModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="serviceProofModalLabel">{{ __('messages.service_proof') }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="serviceProofForm" enctype="multipart/form-data">
+                    @csrf
+                    <input type="hidden" id="proof_booking_id" name="booking_id">
+                    <input type="hidden" id="proof_service_id" name="service_id">
+                    <input type="hidden" id="proof_user_id" name="user_id">
+                    
+                    <div class="mb-3">
+                        <label for="proof_title" class="form-label">{{ __('messages.title') }}</label>
+                        <input type="text" class="form-control" id="proof_title" name="title" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="proof_description" class="form-label">{{ __('messages.description') }}</label>
+                        <textarea class="form-control" id="proof_description" name="description" rows="3"></textarea>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="proof_images" class="form-label">{{ __('messages.upload_images') }}</label>
+                        <input type="file" class="form-control" id="proof_images" name="images[]" multiple accept="image/*" required>
+                        <div class="form-text">{{ __('messages.upload_multiple_images') }}</div>
+                    </div>
+                    
+                    <div id="imagePreview" class="mb-3"></div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('messages.cancel') }}</button>
+                <button type="button" class="btn btn-primary" id="submitServiceProof">{{ __('messages.submit') }}</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+$(document).ready(function() {
+    // Service Proof Button Click
+    $('#service-proof-btn').click(function() {
+        var bookingId = $(this).data('id');
+        var serviceId = $(this).data('service-id');
+        var userId = $(this).data('user-id');
+        
+        $('#proof_booking_id').val(bookingId);
+        $('#proof_service_id').val(serviceId);
+        $('#proof_user_id').val(userId);
+        
+        $('#serviceProofModal').modal('show');
+    });
+    
+    // Image Preview
+    $('#proof_images').change(function() {
+        var files = this.files;
+        var preview = $('#imagePreview');
+        preview.empty();
+        
+        for (var i = 0; i < files.length; i++) {
+            var file = files[i];
+            if (file.type.startsWith('image/')) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.append('<img src="' + e.target.result + '" class="img-thumbnail me-2 mb-2" style="width: 100px; height: 100px; object-fit: cover;">');
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+    });
+    
+    // Submit Service Proof
+    $('#submitServiceProof').click(function() {
+        var formData = new FormData();
+        
+        // Add form fields
+        formData.append('_token', $('meta[name="csrf-token"]').attr('content'));
+        formData.append('booking_id', $('#proof_booking_id').val());
+        formData.append('service_id', $('#proof_service_id').val());
+        formData.append('user_id', $('#proof_user_id').val());
+        formData.append('title', $('#proof_title').val());
+        formData.append('description', $('#proof_description').val());
+        
+        // Add images with correct naming convention
+        var files = $('#proof_images')[0].files;
+        formData.append('attachment_count', files.length);
+        
+        for (var i = 0; i < files.length; i++) {
+            formData.append('booking_attachment_' + i, files[i]);
+        }
+        
+        $.ajax({
+            url: '{{ route("service.proof.store") }}',
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(response) {
+                console.log('Service Proof Response:', response);
+                // Close modal (Bootstrap 5 API with jQuery fallback)
+                try {
+                    var modalEl = document.getElementById('serviceProofModal');
+                    var modal = window.bootstrap ? (window.bootstrap.Modal.getInstance(modalEl) || new window.bootstrap.Modal(modalEl)) : null;
+                    if(modal){ modal.hide(); } else { $('#serviceProofModal').modal('hide'); }
+                } catch(e) { $('#serviceProofModal').modal('hide'); }
+                $('#serviceProofForm')[0].reset();
+                $('#imagePreview').empty();
+                
+                // Show non-blocking toast then reload
+                if (typeof Swal !== 'undefined' && Swal.fire) {
+                    Swal.fire({
+                        toast: true,
+                        position: 'top-end',
+                        icon: 'success',
+                        title: '{{ __("messages.service_proof_submitted_successfully") }}',
+                        showConfirmButton: false,
+                        timer: 1600,
+                        timerProgressBar: true
+                    }).then(function(){
+                        location.reload();
+                    });
+                } else {
+                    setTimeout(function(){ location.reload(); }, 1200);
+                }
+            },
+            error: function(xhr) {
+                console.error('Error:', xhr);
+                alert('{{ __("messages.error_occurred") }}');
+            }
+        });
+    });
+});
+</script>
+
+<!-- reverted: removed inline modal/iframe logic to restore redirect behavior -->

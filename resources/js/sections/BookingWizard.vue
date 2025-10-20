@@ -281,7 +281,7 @@
 
                                 <!-- Remove Button -->
                                 <div class="col-md-1 text-center">
-                                    <button class="btn btn-outline-danger mt-4" @click="removeSlot(index)" v-if="dateSlots.length > 1">
+                                    <button type="button" class="btn btn-outline-danger mt-4" @click="removeSlot(index)" v-if="dateSlots.length > 1">
                                         🗑️
                                     </button>
                                 </div>
@@ -289,7 +289,7 @@
 
                             <!-- Add Button -->
                             <div class="mb-4">
-                                <button class="btn btn-outline-primary" @click="addMoreDates">
+                                <button type="button" class="btn btn-outline-primary" @click="addMoreDates">
                                     ➕ Add More Dates
                                 </button>
                             </div>
@@ -536,7 +536,7 @@
                           </td>
                           <td class="border-bottom-0 pe-0 pt-3">
                             <h5 class="m-0 text-end">
-                              {{ formatCurrencyVue(totalAmount - advance_payment_amount) }}
+                              {{ formatCurrencyVue(remaining_amount) }}
                             </h5>
                           </td>
                         </tr>
@@ -558,7 +558,7 @@
 <!--                      <button type="submit" v-if="service.is_enable_advance_payment == 1" class="btn btn-primary"> <span-->
 <!--                          v-if="IsLoading == 1" class="spinner-border spinner-border-sm" role="status"-->
 <!--                          aria-hidden="true"></span><span v-else>{{ $t('landingpage.pay_advance') }}</span></button>-->
-                      <button type="submit" class="btn btn-primary"> <span v-if="IsLoading == 1"
+                      <button type="submit" class="btn btn-primary" :disabled="!isFormValid || IsLoading == 1"> <span v-if="IsLoading == 1"
                           class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span><span
                           v-else>{{ $t('messages.book_now') }}</span></button>
                     </div>
@@ -566,7 +566,7 @@
                 </div>
               </div>
               <div class="col-lg-12 text-end" v-else>
-                <button type="submit" class="btn btn-primary"> <span v-if="IsLoading == 1"
+                <button type="submit" class="btn btn-primary" :disabled="!isFormValid || IsLoading == 1"> <span v-if="IsLoading == 1"
                     class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span><span v-else>{{
                       $t('messages.book_now') }}</span></button>
               </div>
@@ -1129,7 +1129,25 @@ const advance_payment_amount = computed(() => {
   const rawValue = totalAmount.value * props.service.advance_payment_amount / 100;
   const roundedValue = Number(rawValue).toFixed(2);
   return parseFloat(roundedValue);
+});
 
+const remaining_amount = computed(() => {
+  const rawValue = totalAmount.value - advance_payment_amount.value;
+  const roundedValue = Number(rawValue).toFixed(2);
+  return parseFloat(roundedValue);
+});
+
+const isFormValid = computed(() => {
+  // Check if all required fields are filled
+  const hasAddress = address.value && address.value.trim() !== '';
+  
+  // Check if at least one date slot has date filled
+  const hasDate = dateSlots.value.some(slot => slot.date && slot.date !== '');
+  
+  // For slot services, check if at least one slot has start_time
+  const hasStartTime = props.service.is_slot !== 1 || dateSlots.value.some(slot => slot.startTime && slot.startTime !== '');
+  
+  return hasAddress && hasDate && hasStartTime;
 });
 const taxRatesDisplay = computed(() => {
   if (!props.taxes || props.taxes.length === 0) return '0%';
@@ -1222,11 +1240,13 @@ const validationSchema = yup.object({
 
 })
 
-const { handleSubmit, errors, resetForm, setValues } = useForm({
+const { handleSubmit, errors, resetForm, setValues, meta } = useForm({
   validationSchema,
 })
 const { value: address } = useField('address')
 const { value: date } = useField('date')
+const { value: start_time } = useField('start_time')
+const { value: end_time } = useField('end_time')
 const isLoading = ref(false);
 const getCurrentLocation = async () => {
   isLoading.value = true;
@@ -1275,7 +1295,7 @@ const formSubmit = handleSubmit(async (values) => {
   let note = '';
 
   // Add note about cancellation charge if applicable
-  if (cancellationCharge > 0) {
+  if (cancellationCharge > 0 && cancellation['cancellation_charge'] == 1) {
     note = `A ${formatCurrencyVue(cancellationCharge)} fee applies for cancellation within ${cancellation['cancellation_charge_hours']} hours of the scheduled service.`;
   }
 

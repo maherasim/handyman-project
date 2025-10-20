@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class ServiceSlot extends Model
 {
+    protected $table = 'service_slots';
     protected $guarded = [];
 
     public function booking()

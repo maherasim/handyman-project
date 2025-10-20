@@ -31,6 +31,11 @@ class ProviderDocumentController extends Controller
         $provider_document = $provider_document->orderBy('created_at','desc')->paginate($per_page);
         $items = ProviderDocumentResource::collection($provider_document);
 
+        // Get uploaded document IDs to help mobile app filter available documents
+        $uploadedDocumentIds = ProviderDocument::where('provider_id', $provider_id)
+            ->pluck('document_id')
+            ->toArray();
+
         $response = [
             'pagination' => [
                 'total_items' => $items->total(),
@@ -43,6 +48,7 @@ class ProviderDocumentController extends Controller
                 'previous_page' => $items->previousPageUrl(),
             ],
             'data' => $items,
+            'uploaded_document_ids' => $uploadedDocumentIds, // Helper for mobile app to exclude already uploaded documents
         ];
         
         return comman_custom_response($response);

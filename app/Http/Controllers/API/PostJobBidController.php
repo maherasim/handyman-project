@@ -15,7 +15,7 @@ class PostJobBidController extends Controller
         $post_request = PostJobBid::myPostJobBid();
         $per_page = config('constant.PER_PAGE_LIMIT');
 
-        $orderBy = $request->orderby ? $request->orderby: 'asc';
+		// Always show latest bids first
 
         if( $request->has('per_page') && !empty($request->per_page)){
             if(is_numeric($request->per_page)){
@@ -26,7 +26,7 @@ class PostJobBidController extends Controller
             }
         }
 
-        $post_request = $post_request->orderBy('id',$orderBy)->paginate($per_page);
+		$post_request = $post_request->orderBy('created_at','desc')->orderBy('id','desc')->paginate($per_page);
         $items = PostJobBiderResource::collection($post_request);
 
         $response = [
@@ -45,32 +45,81 @@ class PostJobBidController extends Controller
 
         return comman_custom_response($response);
     }
-public function apiIndex(Request $request)
-{
-    $query = PostJobRequest::query();
-
-    // Role-based visibility
-    if (!auth()->user()->hasAnyRole(['admin']) && auth()->user()->user_type !== 'provider') {
-        $query->where('customer_id', auth()->id());
+ 
+    public function apiIndex(Request $request)
+    {
+        $query = PostJobRequest::query();
+    
+        // Role-based visibility
+        if (!auth()->user()->hasAnyRole(['admin']) && auth()->user()->user_type !== 'provider') {
+            $query->where('customer_id', auth()->id());
+        }
+    
+        if ($request->filled('category_id')) {
+            $query->where('category_id', $request->category_id);
+        }
+    
+        // Eager load relationships and count proposals
+        $query->with([
+            'customer.city',
+            'customer.state',
+            'customer.country',
+            'category',
+            'city',
+            'state',
+            'country'
+        ])->withCount('proposals'); // ✅ proposals_count will be available
+    
+		$perPage = $request->input('per_page', 10);
+		// Newest posts first for provider view
+		$data = $query->orderBy('created_at', 'desc')->orderBy('id', 'desc')->paginate($perPage);
+    
+        $data->getCollection()->transform(function ($item) {
+            $item->image = $item->image ? asset('storage/' . ltrim($item->image, '/')) : null;
+    
+            $images = [];
+    
+            if (!empty($item->images)) {
+                if (is_string($item->images)) {
+                    $decoded = json_decode($item->images, true);
+                    if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                        $images = $decoded;
+                    }
+                } elseif (is_array($item->images)) {
+                    $images = $item->images;
+                }
+            }
+    
+            $item->images = collect($images)
+                ->filter()
+                ->map(fn($img) => asset('storage/' . ltrim($img, '/')))
+                ->values();
+    
+            // Location names
+            $item->city_name = optional($item->city)->name;
+            $item->state_name = optional($item->state)->name;
+            $item->country_name = optional($item->country)->name;
+    
+            // Customer location names
+            if ($item->customer) {
+                $item->customer->city_name = optional($item->customer->city)->name;
+                $item->customer->state_name = optional($item->customer->state)->name;
+                $item->customer->country_name = optional($item->customer->country)->name;
+            }
+    
+            // Proposal count (already available from withCount)
+            $item->proposals_count = $item->proposals_count ?? 0;
+    
+            return $item;
+        });
+    
+        return response()->json([
+            'success' => true,
+            'data'    => $data,
+        ]);
     }
-
-    // Optional filtering (status, category, etc.)
-    if ($request->filled('status')) {
-        $query->where('status', $request->status);
-    }
-
-    if ($request->filled('category_id')) {
-        $query->where('category_id', $request->category_id);
-    }
-
-    // Eager-load related models
-    $query->with(['customer', 'category']);
-
-    // Return paginated response
-    return response()->json([
-        'success' => true,
-        'data' => $query->paginate(10),
-    ]);
-}
+    
+    
+    
 
 }

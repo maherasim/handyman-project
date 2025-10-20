@@ -181,69 +181,6 @@
                         <small class="help-block with-errors text-danger"></small>
                     </div>
                     <div class="form-group col-md-6">
-                        {{ html()->label(__('Company Name') . ' <span class="text-danger">*</span>')->class('form-control-label')->for('company_name') }}
-                        {{ html()->text('company_name', $user_data->company_name)->placeholder(__('Company Name'))->class('form-control')->required() }}
-                        <small class="help-block with-errors text-danger"></small>
-                    </div>
-
-                    <div class="form-group col-md-6">
-                        {{ html()->label(__('Vat Number') . ' <span class="text-danger">*</span>')->class('form-control-label')->for('company_name') }}
-                        {{ html()->text('vat_number', $user_data->vat_number)->placeholder(__('Vat Number'))->class('form-control')->required() }}
-                        <small class="help-block with-errors text-danger"></small>
-                    </div>
-
-
-                    <div class="form-group col-md-6">
-                        {{ html()->label(__('skills') . ' <span class="text-danger">*</span>')->class('form-control-label')->for('skills') }}
-                        {{ html()->text('skills', $user_data->skills)->placeholder(__('skills'))->class('form-control')->required() }}
-                        <small class="help-block with-errors text-danger"></small>
-                    </div>
-
-                    <div class="form-group col-md-6">
-                        {{ html()->label(__('Education') . ' <span class="text-danger">*</span>')->class('form-control-label')->for('education') }}
-                        {{ html()->text('education', $user_data->education)->placeholder(__('education'))->class('form-control')->required() }}
-                        <small class="help-block with-errors text-danger"></small>
-                    </div>
-
-                    <div class="form-group col-md-6">
-                        {{ html()->label(__('Certification') . ' <span class="text-danger">*</span>')->class('form-control-label')->for('certification') }}
-                        {{ html()->text('certification', $user_data->certification)->placeholder(__('Certification'))->class('form-control')->required() }}
-                        <small class="help-block with-errors text-danger"></small>
-                    </div>
-
-                    <div class="form-group col-md-6">
-                        {{ html()->label(__('Availability') . ' <span class="text-danger">*</span>')->class('form-control-label')->for('availability') }}
-                        {{ html()->select(
-                                'availability',
-                                [
-                                    'Full-time' => 'Full-time',
-                                    'Part-time' => 'Part-time',
-                                ],
-                                $user_data->availability,
-                            )->class('form-control')->required()->placeholder(__('Select Availability')) }}
-                        <small class="help-block with-errors text-danger"></small>
-                    </div>
-
-                    <div class="form-group col-md-6">
-                        {{ html()->label(__('Mobility') . ' <span class="text-danger">*</span>')->class('form-control-label')->for('mobility') }}
-                        {{ html()->text('mobility', $user_data->mobility)->placeholder(__('Mobility'))->class('form-control')->required() }}
-                        <small class="help-block with-errors text-danger"></small>
-                    </div>
-
-
-
-
-
-
-
-                    @if (auth()->user()->hasRole('provider'))
-                        <div class="form-group col-md-6">
-                            {{ html()->label(__('messages.designation') . ' <span class="text-danger">*</span>')->class('form-control-label')->for('designation') }}
-                            {{ html()->text('designation', $user_data->designation)->placeholder(__('messages.designation'))->class('form-control')->required() }}
-                            <small class="help-block with-errors text-danger"></small>
-                        </div>
-                    @endif
-                    <div class="form-group col-md-6">
                         {{ html()->label(__('messages.select_name', ['select' => __('messages.country')]), 'country_id')->class('form-control-label') }}
                         <br />
                         {{ html()->select(
@@ -337,6 +274,69 @@
                                 for="profile_image">{{ __('messages.profile_image') }}</label>
                         </div>
                     </div>
+                    <div class="form-group col-md-6">
+                        {{ html()->label(__('Company Name') . ' <span class="text-danger">*</span>')->class('form-control-label')->for('company_name') }}
+                        {{ html()->text('company_name', $user_data->company_name)->placeholder(__('Company Name'))->class('form-control')->required() }}
+                        <small class="help-block with-errors text-danger"></small>
+                    </div>
+
+                    <div class="form-group col-md-6">
+                        {{ html()->label(__('Vat Number') . ' <span class="text-danger">*</span>')->class('form-control-label')->for('company_name') }}
+                        {{ html()->text('vat_number', $user_data->vat_number)->placeholder(__('Vat Number'))->class('form-control')->required() }}
+                        <small class="help-block with-errors text-danger"></small>
+                    </div>
+
+
+                    <div class="form-group col-md-6">
+                        {{ html()->label(__('skills') . ' <span class="text-danger">*</span>')->class('form-control-label')->for('skills') }}
+                        {{ html()->text('skills', $user_data->skills)->placeholder(__('skills'))->class('form-control')->required() }}
+                        <small class="help-block with-errors text-danger"></small>
+                    </div>
+
+                    <div class="form-group col-md-6">
+                        {{ html()->label(__('Education') . ' <span class="text-danger">*</span>')->class('form-control-label')->for('education') }}
+                        {{ html()->text('education', $user_data->education)->placeholder(__('education'))->class('form-control')->required() }}
+                        <small class="help-block with-errors text-danger"></small>
+                    </div>
+
+                    <div class="form-group col-md-6">
+                        {{ html()->label(__('Certification') . ' <span class="text-danger">*</span>')->class('form-control-label')->for('certification') }}
+                        {{ html()->text('certification', $user_data->certification)->placeholder(__('Certification'))->class('form-control')->required() }}
+                        <small class="help-block with-errors text-danger"></small>
+                    </div>
+
+                    <div class="form-group col-md-6">
+                        {{ html()->label(__('Availability') . ' <span class="text-danger">*</span>')->class('form-control-label')->for('availability') }}
+                        {{ html()->select(
+                                'availability',
+                                [
+                                    'Full-time' => 'Full-time',
+                                    'Part-time' => 'Part-time',
+                                ],
+                                $user_data->availability,
+                            )->class('form-control')->required()->placeholder(__('Select Availability')) }}
+                        <small class="help-block with-errors text-danger"></small>
+                    </div>
+
+                    <div class="form-group col-md-6">
+                        {{ html()->label(__('Mobility') . ' <span class="text-danger">*</span>')->class('form-control-label')->for('mobility') }}
+                        {{ html()->text('mobility', $user_data->mobility)->placeholder(__('Mobility'))->class('form-control')->required() }}
+                        <small class="help-block with-errors text-danger"></small>
+                    </div>
+
+
+
+
+
+
+
+                    @if (auth()->user()->hasRole('provider'))
+                        <div class="form-group col-md-6">
+                            {{ html()->label(__('messages.designation') . ' <span class="text-danger">*</span>')->class('form-control-label')->for('designation') }}
+                            {{ html()->text('designation', $user_data->designation)->placeholder(__('messages.designation'))->class('form-control')->required() }}
+                            <small class="help-block with-errors text-danger"></small>
+                        </div>
+                    @endif
                     <div class="form-group col-md-12">
                         {{ html()->label(__('experience'), 'experience')->class('form-control-label') }}
                         {{ html()->textarea('experience', $user_data->experience)->class('form-control textarea')->rows(2)->placeholder(__('experience')) }}

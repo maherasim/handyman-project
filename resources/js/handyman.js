@@ -162,9 +162,14 @@ $(window).scroll(function () {
     });
   });
 
-  // select2
-  $(".select2").select2({
-    width: '100%'
+  // select2 - Initialize only if not already initialized
+  $(".select2").each(function() {
+    if (!$(this).hasClass('select2-hidden-accessible')) {
+      $(this).select2({
+        width: '100%',
+        dropdownParent: $(this).parent()
+      });
+    }
   });
 
   $('.select2-container').addClass('wide');

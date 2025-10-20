@@ -466,17 +466,11 @@ function getPriceFormat($price){
     $price = (double)$price;
 
     $setting = App\Models\Setting::getValueByKey('site-setup','site-setup');
-    // $sitesetup = App\Models\Setting::where('type','site-setup')->where('key', 'site-setup')->first();
-    // $sitesetupdata = $sitesetup ? json_decode($sitesetup->value) : null;
-    $currencyId = $setting ? $setting->default_currency : "231";
     $currency_position = $setting ? $setting->currency_position : "left";
     $afterdecimalpoint = $setting ? $setting->digitafter_decimal_point : "2";
-    $country = App\Models\Country::find($currencyId);
-
-    $symbol = '$';
-    if (!empty($country)) {
-        $symbol = $country->symbol;
-    }
+    
+    // Always use EUR currency regardless of country settings
+    $symbol = '€';
 
     $position = 'left';
     if( !empty($currency_position) ){
@@ -1560,12 +1554,19 @@ function get_user_name($user_id){
 }
 
 function set_admin_approved_cash($payment_id){
-    $payment_status_check =  \App\Models\PaymentHistory::where('payment_id',$payment_id)
-    ->where('action','provider_send_admin')->where('status','pending_by_admin')->first();
-    if($payment_status_check !== null){
-        $status = '<a class="btn-sm text-white btn-success "  href='.route('cash.approve',$payment_id).'><i class="fa fa-check"></i>Approve</a>';
-    }else{
-        $status = '-';
+    // Check if payment is pending by admin
+    $payment_status_check = \App\Models\PaymentHistory::where('payment_id',$payment_id)
+        ->where('action','provider_send_admin')
+        ->where('status','pending_by_admin')
+        ->first();
+    
+    // Also check the main payment status
+    $payment = \App\Models\Payment::find($payment_id);
+    
+    if($payment_status_check !== null || ($payment && $payment->payment_status == 'pending_by_admin')) {
+        $status = '<a class="btn btn-success btn-sm" href="'.route('cash.approve',$payment_id).'" data-approve-cash="1"><i class="fa fa-check"></i> Verify</a>';
+    } else {
+        $status = '<span class="text-muted">Verified</span>';
     }
     return $status;
 }
@@ -1992,7 +1993,7 @@ function  getPaymentMethodkey($type){
 }
 
 function getstripepayments($data){
-    $baseURL = env('APP_URL');
+    $baseURL = config('app.url') ?: 'https://frobster.com';
 
     $stripe_key_data = getPaymentMethodkey($data['payment_type']);
 
@@ -2002,11 +2003,12 @@ function getstripepayments($data){
 
     try {
         if ($data['type'] == 'full_payment'){
-            $total_amount = $booking->total_amount - $booking->advance_paid_amount;
+            $total_amount = $booking->total_amount - ($booking->advance_paid_amount ?? 0);
         }else{
             $total_amount = $data['total_amount'];
         }
-
+        // Normalize to integer minor units
+        $unit_amount = stripe_unit_amount_from_decimal($total_amount, $data['currency_code']);
         $stripe = new \Stripe\StripeClient($stripe_secret);
         $checkout_session = $stripe->checkout->sessions->create([
 
@@ -2020,7 +2022,7 @@ function getstripepayments($data){
                         'product_data' => [
                             'name' => $booking->service->name,
                         ],
-                        'unit_amount' => $total_amount * 100,
+                        'unit_amount' => $unit_amount,
                     ],
                     'quantity' => 1,
                 ],
@@ -2029,7 +2031,6 @@ function getstripepayments($data){
         ]);
     } catch (\Exception $e) {
         $message = $e->getMessage();
-
         $checkout_session = [
             'message' => $message,
             'status' => false,
@@ -2057,7 +2058,7 @@ function default_user_name(){
 
 function addWalletAmount($data){
 
-    $baseURL = env('APP_URL');
+    $baseURL = config('app.url') ?: 'https://frobster.com';
 
     // Retrieve the Stripe secret key
     $stripe_key_data = getPaymentMethodkey($data['payment_type']);
@@ -2077,7 +2078,7 @@ function addWalletAmount($data){
                 [
                     'price_data' => [
                         'currency' => $data['currency_code'],
-                        'unit_amount' => $data['amount'] * 100, // Amount in cents
+                        'unit_amount' => stripe_unit_amount_from_decimal($data['amount'], $data['currency_code']), // Amount in minor units
                         'product_data' => [
                             'name' => 'Wallet Top-Up', // Change this if needed
                         ],
@@ -2195,8 +2196,48 @@ function dbConnectionStatus(): bool
         return false;
     }
 }
+
 function formatString($input)
         {
             // Replace underscores with spaces, capitalize each word, and remove spaces
             return ucfirst(str_replace('_', ' ', $input));
         }
+
+function sendBankTransferConfirmationEmail($user, $subscription, $transaction) {
+    try {
+        \Mail::to($user->email)->send(new \App\Mail\BankTransferInstructionsMail($user, $subscription, $transaction));
+        \Log::info('Bank transfer instructions email sent successfully to: ' . $user->email);
+        return true;
+    } catch (\Exception $e) {
+        \Log::error('Failed to send bank transfer instructions email: ' . $e->getMessage());
+        return false;
+    }
+}
+
+function sendSubscriptionUpgradeEmail($user, $subscription, $paymentMethod, $transactionId) {
+    try {
+        \Mail::to($user->email)->send(new \App\Mail\SubscriptionUpgradeMail($user, $subscription, $paymentMethod, $transactionId));
+        \Log::info('Subscription upgrade email sent successfully to: ' . $user->email);
+        return true;
+    } catch (\Exception $e) {
+        \Log::error('Failed to send subscription upgrade email: ' . $e->getMessage());
+        return false;
+    }
+}
+
+function stripe_unit_amount_from_decimal($amountDecimal, $currencyCode){
+    // Stripe expects integer minor units. Some currencies are zero-decimal.
+    $currency = strtoupper($currencyCode);
+    $zeroDecimalCurrencies = [
+        'BIF','CLP','DJF','GNF','JPY','KMF','KRW','MGA','PYG','RWF','UGX','VND','VUV','XAF','XOF','XPF'
+    ];
+
+    if (in_array($currency, $zeroDecimalCurrencies, true)) {
+        // Round to nearest whole
+        return (int) round((float) $amountDecimal);
+    }
+
+    // Default 2-decimal currencies
+    // Avoid float precision: multiply then round to int
+    return (int) round(((float) $amountDecimal) * 100);
+}

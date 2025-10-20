@@ -195,10 +195,16 @@
       td{
         padding-left: 0;
         padding-right: 0;
-        height: 100%;
+        padding-top: 1.5rem;
+        padding-bottom: 1.5rem;
+        height: auto;
+        vertical-align: top;
+        border: none;
 
         .service-box-card{
-          height: calc(100% - 2rem);
+          height: auto;
+          margin-bottom: 0;
+          transition: all 0.3s ease;
         }
       }
     }
@@ -209,4 +215,9 @@
       height: 13.5rem;
     }
   }
+}
+
+// Additional spacing for better card separation
+.service-card-table tbody tr:not(:last-child) td {
+  border-bottom: 1rem solid transparent;
 }
