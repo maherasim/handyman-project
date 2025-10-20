@@ -1,6 +1,9 @@
 <x-master-layout>
-    <script src="https://cdn.tiny.cloud/1/m5d82gd2rwdlg96hsxpx0e5wwmfrl2zzkcw35ys8o3glilgq/tinymce/5/tinymce.min.js"
-        referrerpolicy="origin"></script>
+    <link rel="stylesheet" href="https://cdn.quilljs.com/1.3.7/quill.snow.css">
+    <script src="https://cdn.quilljs.com/1.3.7/quill.min.js"></script>
+    <style>
+        .ql-editor { min-height: 220px; }
+    </style>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
 
@@ -650,35 +653,36 @@ function calculateDays() {
 
             })(jQuery);
         </script>
-         <script>
-            if (window.tinymce) {
-                tinymce.init({
-                    selector: '#description',
-                    plugins: 'lists link image preview',
-                    toolbar: 'undo redo | bold italic | bullist numlist | link image preview',
-                    menubar: false
-                });
-            }
-        </script>
         <script>
-            if (window.tinymce) {
-                tinymce.init({
-                    selector: '#requirement, #duties, #benefits',
-                    plugins: 'lists link image preview',
-                    toolbar: 'undo redo | bold italic | bullist numlist | link image preview',
-                    menubar: false
-                });
-            }
-        </script>
-         <script>
-            if (window.tinymce) {
-                tinymce.init({
-                    selector: '#working_address',
-                    plugins: 'lists link image preview',
-                    toolbar: 'undo redo | bold italic | bullist numlist | link image preview',
-                    menubar: false
-                });
-            }
+            document.addEventListener('DOMContentLoaded', function () {
+                function mountQuill(textareaId) {
+                    var textarea = document.getElementById(textareaId);
+                    if (!textarea) return;
+                    var container = document.createElement('div');
+                    container.id = textareaId + '_quill';
+                    container.innerHTML = textarea.value || '';
+                    textarea.classList.add('d-none');
+                    textarea.parentNode.insertBefore(container, textarea.nextSibling);
+                    var quill = new Quill('#' + container.id, {
+                        theme: 'snow',
+                        modules: {
+                            toolbar: [
+                                ['bold', 'italic', 'underline'],
+                                [{ list: 'ordered' }, { list: 'bullet' }],
+                                ['link'],
+                                ['clean']
+                            ]
+                        }
+                    });
+                    var form = textarea.closest('form');
+                    if (form) {
+                        form.addEventListener('submit', function () {
+                            textarea.value = quill.root.innerHTML;
+                        });
+                    }
+                }
+                ['description','requirement','duties','benefits'].forEach(mountQuill);
+            });
         </script>
     @endsection
 </x-master-layout>
