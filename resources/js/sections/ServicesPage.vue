@@ -295,18 +295,16 @@ const loadSubCategories = async (cat_id) => {
   }
 };
 const checkDropdowns = computed(() => {
-  return selectedProvider.value || selectedPriceRange.value || selectedSortOption.value || selectedCity.value
+  return selectedPriceRange.value || selectedCity.value
 });
 
 // Check if any filters are active
 const hasActiveFilters = computed(() => {
   return selectedCategory.value || 
          selectedSubCategory.value || 
-         selectedProvider.value || 
          selectedCountry.value || 
          selectedCity.value || 
          selectedPriceRange.value || 
-         selectedSortOption.value || 
          search.value;
 });
 
@@ -319,11 +317,9 @@ const clearAllFilters = () => {
   // Reset all filter values
   selectedCategory.value = '';
   selectedSubCategory.value = '';
-  selectedProvider.value = '';
   selectedCountry.value = '';
   selectedCity.value = '';
   selectedPriceRange.value = '';
-  selectedSortOption.value = '';
   search.value = '';
   
   // Reset dropdowns using existing function
