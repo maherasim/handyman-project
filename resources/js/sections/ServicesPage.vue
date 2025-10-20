@@ -5,7 +5,7 @@
       <div class="col-lg-12">
         <div class="row gx-2 align-items-end">
           <div class="col-lg-2 col-md-4 col-sm-6">
-            <select ref="categoryDropdownRef" id="categoryDropdown" v-model="selectedCategory"
+            <select :key="'cat-'+(category_data?.length || 0)" ref="categoryDropdownRef" id="categoryDropdown" v-model="selectedCategory"
               class="me-5 form-select select2" :disabled="isEmpty">
               <option value="">{{ $t('landingpage.all_categories') }}</option>
               <option v-for="category in category_data" :key="category.id" :value="category.id">{{ category.name }}
@@ -14,7 +14,7 @@
 
           </div>
           <div class="col-lg-2 col-md-4 col-sm-6">
-            <select ref="subCategoryDropdownRef" id="subCategoryDropdown" v-model="selectedSubCategory"
+            <select :key="'subcat-'+(sub_category_data?.length || 0)" ref="subCategoryDropdownRef" id="subCategoryDropdown" v-model="selectedSubCategory"
               class="me-5 form-select select2" :disabled="isEmpty">
               <option value="">{{ $t('Sub Categories') }}</option>
               <option v-for="category in sub_category_data" :key="category.id" :value="category.id">{{ category.name }}
@@ -23,7 +23,7 @@
 
           </div>
           <div class="col-lg-2 col-md-4 col-sm-6 mt-sm-0 mt-3">
-            <select ref="providerDropdownRef" id="providerDropdown" v-model="selectedProvider"
+            <select :key="'prov-'+(provider_data?.length || 0)" ref="providerDropdownRef" id="providerDropdown" v-model="selectedProvider"
               class="me-5 form-select select2" :disabled="isEmpty">
               <option value="">{{ $t('landingpage.all_providers') }}</option>
               <option v-for="providers in provider_data" :key="providers.id" :value="providers.id">{{
@@ -31,7 +31,7 @@
             </select>
           </div>
           <div class="col-lg-2 col-md-4 col-sm-6 mt-sm-0 mt-3">
-            <select ref="countryDropdownRef" id="countryDropdown" v-model="selectedCountry"
+            <select :key="'country-'+(countries?.length || 0)" ref="countryDropdownRef" id="countryDropdown" v-model="selectedCountry"
               class="me-5 form-select select2">
               <option value="">{{ $t('Filter by Country') }}</option>
               <option v-for="country in countries" :key="country.id" :value="country.id">{{ country.name }}</option>
@@ -40,7 +40,7 @@
 
 
           <div class="col-lg-2 col-md-4 col-sm-6 mt-sm-0 mt-3">
-            <select ref="cityDropdownRef" id="cityDropdown" v-model="selectedCity"
+            <select :key="'city-'+(cities?.length || 0)" ref="cityDropdownRef" id="cityDropdown" v-model="selectedCity"
               class="me-5 form-select select2" :disabled="isEmpty">
               <option value="">{{ $t('Filter by City') }}</option>
               <option v-for="city in cities" :key="city.id" :value="city.id">{{
@@ -52,7 +52,7 @@
 
 
           <div class="col-lg-auto col-md-4 col-sm-6 mt-sm-0 mt-3 ms-lg-auto">
-            <select ref="priceDropdownRef" id="priceDropdown" v-model="selectedPriceRange"
+            <select :key="'price-'+(priceRanges?.length || 0)" ref="priceDropdownRef" id="priceDropdown" v-model="selectedPriceRange"
               class="me-5 form-select select2" :disabled="isEmpty">
               <option value="">{{ $t('landingpage.all_price') }}</option>
               <option :value="price" v-for="price in priceRanges" :key="price">{{ CURRENCY_SYMBOL }} {{ price }}
@@ -218,13 +218,16 @@ onMounted(() => {
     }
   };
 
-  initSelect2(categoryDropdownRef.value);
-  initSelect2(subCategoryDropdownRef.value);
-  initSelect2(providerDropdownRef.value);
-  initSelect2(countryDropdownRef.value);
-  initSelect2(cityDropdownRef.value);
-  initSelect2(priceDropdownRef.value);
-  if (sortOptionRef.value) initSelect2(sortOptionRef.value);
+  // Initialize select2 after a tick so Vue renders new options
+  setTimeout(() => {
+    initSelect2(categoryDropdownRef.value);
+    initSelect2(subCategoryDropdownRef.value);
+    initSelect2(providerDropdownRef.value);
+    initSelect2(countryDropdownRef.value);
+    initSelect2(cityDropdownRef.value);
+    initSelect2(priceDropdownRef.value);
+    if (sortOptionRef.value) initSelect2(sortOptionRef.value);
+  });
 
   $(categoryDropdownRef.value).on('change', function () {
     selectedCategory.value = $(this).val();
@@ -239,7 +242,13 @@ onMounted(() => {
 
   $(countryDropdownRef.value).on('change', function () {
     selectedCountry.value = $(this).val();
-    loadCities($(this).val());
+    if ($(this).val()) {
+      loadCities($(this).val());
+    } else {
+      cities.value = [];
+      selectedCity.value = '';
+      $(cityDropdownRef.value).val('').trigger('change');
+    }
   });
   $(cityDropdownRef.value).on('change', function () {
     selectedCity.value = $(this).val();
