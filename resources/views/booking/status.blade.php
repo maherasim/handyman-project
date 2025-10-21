@@ -381,7 +381,15 @@ $timezone = getTimeZone();
                             </li> -->
                             <li class="d-flex align-items-center">
                                 <i class="ri-map-pin-line me-2"></i>
-                                <span class="text-wrap">{{ ($__loc = implode(' - ', array_filter([optional($bookingdata->provider)->city ?? null, optional($bookingdata->provider)->country ?? null]))) ?: '-' }}</span>
+
+
+                                <span class="text-wrap">
+                                    {{ $bookingdata->provider ? trim(($bookingdata->provider->city ?? '') . ' - ' . ($bookingdata->provider->country ?? ''), ' -') ?: '-' : '-' }}
+                                </span>
+                                
+                            
+                            
+                            
                             </li>
                         </ul>
                     </div>
@@ -421,7 +429,11 @@ $timezone = getTimeZone();
                                                 </li> --}}
                                                 <li class="d-flex align-items-center">
                                                     <i class="ri-map-pin-line me-2"></i>
-                                                    <span class="text-wrap">{{ ($__loc = implode(' - ', array_filter([strip_tags(optional($booking->handyman)->city ?? null), strip_tags(optional($booking->handyman)->country ?? null)]))) ?: '-' }}</span>
+                                                    <span class="text-wrap">
+                                                        {{ $booking->handyman ? trim(($booking->handyman->city ?? '') . ' - ' . ($booking->handyman->country ?? ''), ' -') ?: '-' : '-' }}
+                                                    </span>
+                                                    
+                                                    
                                                 </li>
                                             </ul>
                                     @endforeach
