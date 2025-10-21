@@ -1092,7 +1092,18 @@
             postBidSelectedRating = 0;
             $('.postbid-star').removeClass('selected');
             $('#postBidReviewText').val('');
-            $('#postBidRatingModal').modal('show');
+            const modalEl = document.getElementById('postBidRatingModal');
+            try {
+                if (window.bootstrap && modalEl) {
+                    let modal = window.bootstrap.Modal.getInstance(modalEl);
+                    if (!modal) modal = new window.bootstrap.Modal(modalEl);
+                    modal.show();
+                } else {
+                    $('#postBidRatingModal').modal('show');
+                }
+            } catch(e) {
+                $('#postBidRatingModal').modal('show');
+            }
         });
 
         $(document).on('click', '.postbid-star', function(){
