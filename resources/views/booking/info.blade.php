@@ -755,7 +755,9 @@
                                     <div class="card-body">
                                         <p class="opacity-75 fz-12">{{ __('Arbeitsadresse') }}</p>
                                         <p class="mb-0 text-primary" id="booking_status__span">
-                                            {{ str_replace('_', ' ', ucfirst($bookingdata->address)) }}</p>
+                                            {{ str_replace('_', ' ', ucfirst($bookingdata->city->name ?? '')) }}</p>
+                                            {{ str_replace('_', ' ', ucfirst($bookingdata->country->name ?? '')) }}
+                                            </p>
                                     </div>
                                 </div>
                         </div>
@@ -858,7 +860,9 @@
                                 <li class="d-flex align-items-center">
                                     <i class="ri-map-pin-line me-2"></i>
                                     <span
-                                        class="text-wrap">{{ strip_tags(optional($bookingdata->customer)->address) ?? '-' }}</span>
+                                        class="text-wrap">{{ strip_tags(optional($bookingdata->customer)->city->name ?? '') ?? '-' }}</span>
+                                        {{ strip_tags(optional($bookingdata->customer)->country->name ?? '') ?? '-' }}
+                                        </span>
                                 </li>
                             </ul>
                         </div>
@@ -902,7 +906,9 @@
                                 <li class="d-flex align-items-center">
                                     <i class="ri-map-pin-line me-2"></i>
                                     <span
-                                        class="text-wrap">{{ optional($bookingdata->provider)->address ?? '-' }}</span>
+                                        class="text-wrap">{{ optional($bookingdata->provider)->city->name ?? '-' }}</span>
+                                        {{ optional($bookingdata->provider)->country->name ?? '-' }}
+                                        </span>
                                 </li>
                             </ul>
                         </div>
@@ -944,7 +950,9 @@
                                         <li class="d-flex align-items-center">
                                             <i class="ri-map-pin-line me-2"></i>
                                             <span
-                                                class="text-wrap">{{ strip_tags(optional($booking->handyman)->address) ?? '-' }}</span>
+                                                class="text-wrap">{{ strip_tags(optional($booking->handyman)->city->name ?? '') ?? '-' }}</span>
+                                                {{ strip_tags(optional($booking->handyman)->country->name ?? '') ?? '-' }}
+                                                </span>
                                         </li>
                                     </ul>
                                 </div>
