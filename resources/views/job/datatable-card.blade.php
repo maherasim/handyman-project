@@ -476,15 +476,9 @@
                                                  color: #1a1a1a;
                                                  margin-bottom: 1px;
                                              ">
-                                                 {{ $jobRequest->customer->display_name ?? $jobRequest->customer->username ?? 'Unknown' }}
+                                                 {{ $jobRequest->customer->city->name ?? $jobRequest->customer->country->name ?? 'Unknown' }}
                                              </div>
-                                             <div style="
-                                                 font-size: 10px;
-                                                 color: #8e8e93;
-                                                 font-weight: 400;
-                                             ">
-                                                 Job Poster
-                                             </div>
+                                           
                                          </div>
                                      </div>
                                  </div>
