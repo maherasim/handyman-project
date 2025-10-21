@@ -362,12 +362,12 @@
                         @endphp
                         <h4 class="text-primary mb-2">€ {{ number_format($jobrequest->price, 2) }} <span class="text-dark"><b>{{ $priceLabel }}</b></span></h4>
                         <p class="mb-0 text-muted" id="description">
-                            {{ Str::words(strip_tags($jobrequest->descraiption), 10, '...') }}
+                            {{ Str::words(strip_tags($jobrequest->description), 10, '...') }}
                         </p>
                         
                         <button id="readMoreBtn" class="btn btn-link p-0 mt-2" style="display: none;">Read More</button>
                         <p id="fullDescription" class="mb-0 mt-2" style="display: none;">
-                            {{ Str::words(strip_tags($jobrequest->descraiption), 10, '...') }}
+                            {{ Str::words(strip_tags($jobrequest->description), 10, '...') }}
                         </p>
                     </div>
 
