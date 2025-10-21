@@ -473,6 +473,20 @@
                         </table>
                     </div>
                 </div>
+
+                @php
+                    $canRatePostBid = auth()->user()->user_type === 'user' && (int)auth()->id() === (int)($bid->customer_id ?? 0) && in_array(strtolower((string)$bid->status), ['confirm_done','completed']);
+                @endphp
+                @if($canRatePostBid)
+                <div class="card shadow-sm border-0 mt-3">
+                    <div class="card-body d-flex justify-content-between align-items-center">
+                        <div class="text-muted">How was your experience?</div>
+                        <button class="btn btn-warning" id="postbid-rate-now-btn" data-id="{{ $bid->id }}">
+                            <i class="las la-star"></i> Rate Now
+                        </button>
+                    </div>
+                </div>
+                @endif
             </div>
 
 
@@ -513,9 +527,43 @@
                             @endforeach
                         </tbody>
                     </table>
-                    </div>
+        </div>
                 </div>
             </div>
+
+<div class="modal fade" id="postBidRatingModal" tabindex="-1" aria-labelledby="postBidRatingModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="postBidRatingModalLabel">Rate Provider</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="postBidRatingForm">
+            <input type="hidden" id="postBidIdForRating" value="{{ $bid->id }}">
+            <div class="mb-3 text-center">
+                <span class="postbid-star" data-value="1">★</span>
+                <span class="postbid-star" data-value="2">★</span>
+                <span class="postbid-star" data-value="3">★</span>
+                <span class="postbid-star" data-value="4">★</span>
+                <span class="postbid-star" data-value="5">★</span>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Comments (optional)</label>
+                <textarea id="postBidReviewText" class="form-control" rows="3" placeholder="Share your experience"></textarea>
+            </div>
+            <div class="text-end">
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <style>
+    .postbid-star{cursor:pointer;font-size:28px;color:#ccc;margin:0 2px}
+    .postbid-star.selected{color:#f1c40f}
+  </style>
+</div>
         </div>
     </div>
     @endif
@@ -1028,6 +1076,51 @@
                 });
             });
 
+        });
+    </script>
+
+    <script>
+        // Post Bid Rating (mirrors booking rating behavior)
+        let postBidSelectedRating = 0;
+
+        $(document).on('click', '#postbid-rate-now-btn', function(){
+            postBidSelectedRating = 0;
+            $('.postbid-star').removeClass('selected');
+            $('#postBidReviewText').val('');
+            $('#postBidRatingModal').modal('show');
+        });
+
+        $(document).on('click', '.postbid-star', function(){
+            postBidSelectedRating = $(this).data('value');
+            $('.postbid-star').removeClass('selected');
+            $(this).prevAll().addBack().addClass('selected');
+        });
+
+        $('#postBidRatingForm').on('submit', function(e){
+            e.preventDefault();
+            if(postBidSelectedRating === 0){
+                return Swal.fire('Error','Please select a star rating.','warning');
+            }
+            const payload = {
+                post_job_bid_id: $('#postBidIdForRating').val(),
+                provider_id: '{{ $bid->provider_id }}',
+                customer_id: '{{ $bid->customer_id }}',
+                rating: postBidSelectedRating,
+                review: ($('#postBidReviewText').val() || '').trim()
+            };
+            $.ajax({
+                url: '{{ url('/api/postbid/rating/save') }}',
+                type: 'POST',
+                data: payload,
+                success: function(){
+                    Swal.fire('Thank you!','Your rating has been submitted.','success');
+                    $('#postBidRatingModal').modal('hide');
+                    window.location.reload();
+                },
+                error: function(){
+                    Swal.fire('Error','Failed to submit rating.','error');
+                }
+            });
         });
     </script>
     
