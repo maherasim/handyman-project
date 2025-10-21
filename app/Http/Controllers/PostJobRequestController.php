@@ -1961,12 +1961,14 @@ class PostJobRequestController extends Controller
                 $label = $type === 'hourly' ? 'hourly' : ($type === 'daily' ? 'daily' : ($type === 'fixed' ? 'fixed' : $type));
                 return trim($amount . ' ' . $label);
             })
-            // Start Date / End Date
+            // Start Date / End Date (date-only)
             ->addColumn('start_date', function ($bid) {
-                return optional($bid->postrequest)->start_date ?? '-';
+                $d = optional($bid->postrequest)->start_date;
+                return $d ? \Carbon\Carbon::parse($d)->format('Y-m-d') : '-';
             })
             ->addColumn('end_date', function ($bid) {
-                return optional($bid->postrequest)->end_date ?? '-';
+                $d = optional($bid->postrequest)->end_date;
+                return $d ? \Carbon\Carbon::parse($d)->format('Y-m-d') : '-';
             })
             // Provider name
             ->addColumn('provider', function ($bid) {
