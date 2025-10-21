@@ -101,6 +101,7 @@
     <style>
         .hover-bg:hover { background: #f8f9fa; }
         .cursor-pointer { cursor: pointer; }
+        .policy-warning-bubble { box-shadow: 0 0 0 2px rgba(220,53,69,.1) inset; }
     </style>
 
     <script>
@@ -166,15 +167,17 @@
                 const mine = m.sender_id === currentUserId;
                 wrap.className = 'd-flex mb-2 ' + (mine ? 'justify-content-end' : 'justify-content-start');
                 const bubble = document.createElement('div');
-                bubble.className = 'p-2 rounded ' + (mine ? 'bg-primary text-white' : 'bg-white border');
+                const isViolation = !!(m.hidden && m.policy_violation);
+                const bubbleCls = isViolation ? 'bg-white border border-danger policy-warning-bubble' : (mine ? 'bg-primary text-white' : 'bg-white border');
+                bubble.className = 'p-2 rounded ' + bubbleCls;
                 let html = '';
                 const name = safe(m.sender_name || 'User');
                 const avatar = safe(m.sender_avatar_url || '{{ $fallbackAvatar }}');
-                html += `<div class="d-flex align-items-center mb-1">`+
+                html += `<div class="d-flex align-items-center mb-1 ${isViolation ? 'text-danger' : ''}">`+
                     `<img src="${avatar}" class="rounded-circle me-2" style="width:22px;height:22px;object-fit:cover;">`+
                     `<span class="small fw-bold">${name}</span>`+
                     `</div>`;
-                if (m.hidden && m.policy_violation) {
+                if (isViolation) {
                     const reason = (m.pii_types && m.pii_types.length) ? m.pii_types.join(', ') : 'policy violation';
                     html += `<div class="small text-danger"><i class="fas fa-shield-alt"></i> Message hidden due to ${safe(reason)}.</div>`;
                     // Also surface a top composer warning for immediate feedback
@@ -343,6 +346,20 @@
                                 warn.textContent = 'Your message was hidden due to policy violation' + list + '.';
                                 warn.classList.remove('d-none');
                             }
+                            // Immediately render a local warning bubble so user sees it without waiting for poll
+                            renderMessage({
+                                id: (new Date().getTime()),
+                                sender_id: currentUserId,
+                                sender_name: '{{ $auth->display_name }}',
+                                sender_avatar_url: '{{ getSingleMedia(optional($auth), 'profile_image', null) ?? $fallbackAvatar }}',
+                                message: null,
+                                created_at: new Date().toISOString().slice(0,19).replace('T',' '),
+                                read: true,
+                                attachment: null,
+                                policy_violation: true,
+                                hidden: true,
+                                pii_types: j.pii_types || []
+                            });
                             if (window.Swal) {
                                 Swal.fire({ icon:'info', title:'Message hidden', text:'Your message contained personal contact information and was hidden for both users.' });
                             }
