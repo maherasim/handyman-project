@@ -207,6 +207,9 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('get-post-job-bid-data',[  App\Http\Controllers\PostJobBidController::class, 'PostJobBidData' ]);
     Route::get('/job-requests/provider', [API\PostJobBidController::class, 'apiIndex']);
 
+    // Post Job Bid Ratings
+    Route::post('postbid/rating/save', [ API\PostJobBidRatingController::class, 'save' ]);
+    Route::post('postbid/rating/delete', [ API\PostJobBidRatingController::class, 'delete' ]);
 
 
     Route::post('save-provider-slot', [ API\ProviderSlotController::class, 'store'] );

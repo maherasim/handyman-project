@@ -195,6 +195,24 @@
                 <i class="fas fa-comments"></i> Chat
             </a>
         @endif
+        @php
+        $canRatePostBid = auth()->user()->user_type === 'user' && (int)auth()->id() === (int)($bid->customer_id ?? 0) && in_array(strtolower((string)$bid->status), ['confirm_done','completed']);
+    @endphp
+    @if($canRatePostBid)
+    <div class="card shadow-sm border-0 mt-3">
+        <div class="card-body d-flex justify-content-between align-items-center">
+            
+            <button class="btn btn-warning" id="postbid-rate-now-btn" data-id="{{ $bid->id }}">
+                <i class="las la-star"></i> Rate Now
+            </button>
+        </div>
+    </div>
+    @endif
+
+
+
+
+
 
         {{-- Customer Actions --}}
         @if ($auth_user->user_type === 'user' && $auth_user->id == $bid->customer_id)
@@ -474,19 +492,7 @@
                     </div>
                 </div>
 
-                @php
-                    $canRatePostBid = auth()->user()->user_type === 'user' && (int)auth()->id() === (int)($bid->customer_id ?? 0) && in_array(strtolower((string)$bid->status), ['confirm_done','completed']);
-                @endphp
-                @if($canRatePostBid)
-                <div class="card shadow-sm border-0 mt-3">
-                    <div class="card-body d-flex justify-content-between align-items-center">
-                        <div class="text-muted">How was your experience?</div>
-                        <button class="btn btn-warning" id="postbid-rate-now-btn" data-id="{{ $bid->id }}">
-                            <i class="las la-star"></i> Rate Now
-                        </button>
-                    </div>
-                </div>
-                @endif
+               
             </div>
 
 
