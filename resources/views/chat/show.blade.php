@@ -91,6 +91,7 @@
                         <input type="text" id="textInput" class="form-control" placeholder="Type a message...">
                         <button class="btn btn-primary" id="sendBtn" type="submit"><i class="fas fa-paper-plane"></i></button>
                     </form>
+                    <div id="policyWarning" class="alert alert-warning py-2 px-3 d-none mt-2" role="alert"></div>
                     <div id="attachmentPreview" class="mt-2" style="display:none;"></div>
                 </div>
             </div>
@@ -176,6 +177,12 @@
                 if (m.hidden && m.policy_violation) {
                     const reason = (m.pii_types && m.pii_types.length) ? m.pii_types.join(', ') : 'policy violation';
                     html += `<div class="small text-danger"><i class="fas fa-shield-alt"></i> Message hidden due to ${safe(reason)}.</div>`;
+                    // Also surface a top composer warning for immediate feedback
+                    const warn = document.getElementById('policyWarning');
+                    if (warn) {
+                        warn.textContent = 'Your last message was hidden because it contained personal contact information (e.g., phone/email/social).';
+                        warn.classList.remove('d-none');
+                    }
                 } else if (m.message) {
                     html += `<div class="small">${safe(m.message)}</div>`;
                 }
@@ -306,7 +313,13 @@
                 }
                 const phoneSpelled = count >= 7;
 
-                if (text && (emailRe.test(text) || emailObfuscated || mentionsEmailProviders || (phoneRe.test(text) && hasMinDigits) || phoneSpelled || isWhats || lower.includes('telegram') || lower.includes('t.me/') || mentionsInstagram || mentionsFacebook)) {
+                const violate = text && (emailRe.test(text) || emailObfuscated || mentionsEmailProviders || (phoneRe.test(text) && hasMinDigits) || phoneSpelled || isWhats || lower.includes('telegram') || lower.includes('t.me/') || mentionsInstagram || mentionsFacebook);
+                if (violate) {
+                    const warn = document.getElementById('policyWarning');
+                    if (warn) {
+                        warn.textContent = 'Sharing personal contact info (email/phone/social) is not allowed. Your message may be hidden and reported.';
+                        warn.classList.remove('d-none');
+                    }
                     if (window.Swal) {
                         Swal.fire({ icon:'warning', title:'Policy Warning', text:'Sharing personal contact info is not allowed. Your message may be hidden and reported.', confirmButtonText:'OK' });
                     }
@@ -323,8 +336,16 @@
                         if (fileInput) fileInput.value = '';
                         previewEl.style.display = 'none';
                         previewEl.innerHTML = '';
-                        if (j.flagged && window.Swal) {
-                            Swal.fire({ icon:'info', title:'Message sent', text:'Your message appears to contain personal info and may be hidden for the recipient.' });
+                        if (j.flagged) {
+                            const warn = document.getElementById('policyWarning');
+                            if (warn) {
+                                const list = (j.pii_types && j.pii_types.length) ? ' (' + j.pii_types.join(', ') + ')' : '';
+                                warn.textContent = 'Your message was hidden due to policy violation' + list + '.';
+                                warn.classList.remove('d-none');
+                            }
+                            if (window.Swal) {
+                                Swal.fire({ icon:'info', title:'Message hidden', text:'Your message contained personal contact information and was hidden for both users.' });
+                            }
                         }
                         pollNewer();
                     }
