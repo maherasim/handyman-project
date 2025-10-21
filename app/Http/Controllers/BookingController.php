@@ -248,7 +248,28 @@ class BookingController extends Controller
             //     return bookingstatus(BookingStatus::bookingStatus($query->status));
             // })
             ->editColumn('status', function ($query) {
-                return $query->status;
+                $statusKey = strtolower((string) $query->status);
+                $statusMap = [
+                    'pending' => ['Pending', 'badge bg-secondary text-white'],
+                    'accept' => ['Accepted', 'badge bg-info text-white'],
+                    'on_going' => ['On Going', 'badge bg-primary text-white'],
+                    'in_progress' => ['In Progress', 'badge bg-primary text-white'],
+                    'pending_approval' => ['Pending Approval', 'badge bg-warning text-dark'],
+                    'confirm' => ['Confirmed', 'badge bg-success text-white'],
+                    'hold' => ['On Hold', 'badge bg-warning text-dark'],
+                    'completed' => ['Completed', 'badge bg-success text-white'],
+                    'cancelled' => ['Cancelled', 'badge bg-danger text-white'],
+                    'rejected' => ['Rejected', 'badge bg-danger text-white'],
+                ];
+
+                if (isset($statusMap[$statusKey])) {
+                    [$label, $classes] = $statusMap[$statusKey];
+                } else {
+                    $label = str_replace('_', ' ', ucfirst((string) $query->status));
+                    $classes = 'badge bg-secondary text-white';
+                }
+
+                return '<span class="' . $classes . '">' . e($label) . '</span>';
             })
 
             ->editColumn('payment_id', function ($query) {
