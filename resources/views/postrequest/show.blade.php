@@ -301,7 +301,7 @@
                             <div class="card-body text-center">
                                 <i class="far fa-calendar-check fa-2x text-info mb-2"></i>
                                 <h6 class="fw-bold mb-1">Start Date</h6>
-                                <p class="mb-0">{{ $bid->postrequest->start_date ?? '-' }}</p>
+                                <p class="mb-0">{{ optional($bid->postrequest->start_date ? \Carbon\Carbon::parse($bid->postrequest->start_date) : null)?->format('Y-m-d') ?? '-' }}</p>
                             </div>
                         </div>
                     </div>
@@ -311,7 +311,7 @@
                             <div class="card-body text-center">
                                 <i class="far fa-calendar-times fa-2x text-danger mb-2"></i>
                                 <h6 class="fw-bold mb-1">End Date</h6>
-                                <p class="mb-0">{{ $bid->postrequest->end_date ?? '-' }}</p>
+                                <p class="mb-0">{{ optional($bid->postrequest->end_date ? \Carbon\Carbon::parse($bid->postrequest->end_date) : null)?->format('Y-m-d') ?? '-' }}</p>
                             </div>
                         </div>
                     </div>
@@ -339,10 +339,11 @@
                                 <h6 class="fw-bold mb-1">Total Budget</h6>
                                 <p class="mb-0">
                                     {{ isset($bid->postrequest->total_budget)
-                                        ? number_format($bid->postrequest->total_budget, 2, '.', '') . ' €'
+                                        ? '€' . number_format($bid->postrequest->total_budget, 2)
                                         : '-' }}
                                 </p>
                             </div>
+                            
                         </div>
                     </div>
 
@@ -443,7 +444,7 @@
                                 </tr>
 
                                 <tr class="fw-bold">
-                                    <td>Net Amount (Subtotal - Tax)</td>
+                                    <td>Net Amount </td>
                                     <td class="text-end">€{{ number_format($netAmount, 2) }}</td>
                                 </tr>
                                 <tr>
