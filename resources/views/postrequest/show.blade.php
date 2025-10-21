@@ -383,22 +383,26 @@
                             <div class="card-body text-center">
                                 <i class="fas fa-flag fa-2x text-info mb-2"></i>
                                 <h6 class="fw-bold mb-1">Status</h6>
-                                @switch($bid->status)
-                                    @case('pending')
-                                        <span class="badge px-3 py-2 bg-warning text-dark">{{ $bid->status }}</span>
-                                    @break
-
-                                    @case('accepted')
-                                        <span class="badge px-3 py-2 bg-success">{{ $bid->status }}</span>
-                                    @break
-
-                                    @case('in_progress')
-                                        <span class="badge px-3 py-2 bg-primary">In Progress</span>
-                                    @break
-
-                                    @default
-                                        <span class="badge px-3 py-2 bg-secondary">{{ $bid->status }}</span>
-                                @endswitch
+                                @php
+                                    $statusKey = strtolower((string)($bid->status ?? ''));
+                                    $statusMap = [
+                                        'requested' => ['Requested', 'bg-secondary text-white'],
+                                        'pending' => ['Pending', 'bg-warning text-dark'],
+                                        'accepted' => ['Accepted', 'bg-info text-white'],
+                                        'advance_paid' => ['Advance Paid', 'bg-primary text-white'],
+                                        'in_progress' => ['IN Progress', 'bg-primary text-white'],
+                                        'in_process' => ['IN Process', 'bg-primary text-white'],
+                                        'done' => ['Done', 'bg-success text-white'],
+                                        'confirm_done' => ['Confirm Done', 'bg-success text-white'],
+                                        'completed' => ['Completed', 'bg-success text-white'],
+                                        'remaining_paid' => ['Remaining Paid', 'bg-primary text-white'],
+                                        'hold' => ['On Hold', 'bg-warning text-dark'],
+                                        'cancelled' => ['Cancelled', 'bg-danger text-white'],
+                                        'rejected' => ['Rejected', 'bg-danger text-white'],
+                                    ];
+                                    [$label, $cls] = $statusMap[$statusKey] ?? [ucwords(str_replace('_',' ', (string)($bid->status ?? '-'))), 'bg-secondary text-white'];
+                                @endphp
+                                <span class="badge px-3 py-2 {{ $cls }}">{{ $label }}</span>
                             </div>
                         </div>
                     </div>

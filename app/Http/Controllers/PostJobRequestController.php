@@ -59,20 +59,12 @@ class PostJobRequestController extends Controller
                 $label = 'IN process';
                 $class = 'badge bg-info';
                 break;
-            case 'pending_approval':
-                $label = 'Pending Approval';
-                $class = 'badge bg-warning text-dark';
-                break;
             case 'advance_payment':
                 $label = 'Advance Payment';
                 $class = 'badge bg-warning text-dark';
                 break;
             case 'advance_paid':
                 $label = 'Advance Paid';
-                $class = 'badge bg-success';
-                break;
-            case 'remaining_paid':
-                $label = 'Remaining Paid';
                 $class = 'badge bg-success';
                 break;
             case 'assigned':
@@ -88,20 +80,12 @@ class PostJobRequestController extends Controller
                 $label = 'Done';
                 $class = 'badge bg-success';
                 break;
-            case 'confirm_done':
-                $label = 'Confirm Done';
-                $class = 'badge bg-success';
-                break;
             case 'completed':
                 $label = 'Completed';
                 $class = 'badge bg-success';
                 break;
             case 'cancelled':
                 $label = 'Cancelled';
-                $class = 'badge bg-danger';
-                break;
-            case 'rejected':
-                $label = 'Rejected';
                 $class = 'badge bg-danger';
                 break;
             default:
