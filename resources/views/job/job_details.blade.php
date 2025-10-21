@@ -373,7 +373,7 @@
 
                     <!-- Continue Button -->
                     <button id="continueBtn" class="btn btn-primary w-100 mb-4" style="background: #5F60BA; padding: 12px;">
-                        Continue
+                        Continue as
                     </button>
 
                     <!-- Social Sharing -->
