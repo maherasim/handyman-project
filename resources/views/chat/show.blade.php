@@ -168,7 +168,7 @@
                 wrap.className = 'd-flex mb-2 ' + (mine ? 'justify-content-end' : 'justify-content-start');
                 const bubble = document.createElement('div');
                 const isViolation = !!(m.hidden && m.policy_violation);
-                const bubbleCls = isViolation ? 'bg-white border border-danger policy-warning-bubble' : (mine ? 'bg-primary text-white' : 'bg-white border');
+                const bubbleCls = isViolation ? 'bg-white border border-danger policy-warning-bubble text-danger' : (mine ? 'bg-primary text-white' : 'bg-white border');
                 bubble.className = 'p-2 rounded ' + bubbleCls;
                 let html = '';
                 const name = safe(m.sender_name || 'User');
@@ -179,7 +179,7 @@
                     `</div>`;
                 if (isViolation) {
                     const reason = (m.pii_types && m.pii_types.length) ? m.pii_types.join(', ') : 'policy violation';
-                    html += `<div class="small text-danger"><i class="fas fa-shield-alt"></i> Message hidden due to ${safe(reason)}.</div>`;
+                    html += `<div class="small"><i class="fas fa-shield-alt"></i> Message hidden due to ${safe(reason)}.</div>`;
                     // Also surface a top composer warning for immediate feedback
                     const warn = document.getElementById('policyWarning');
                     if (warn) {
@@ -350,8 +350,8 @@
                             renderMessage({
                                 id: (new Date().getTime()),
                                 sender_id: currentUserId,
-                                sender_name: '{{ $auth->display_name }}',
-                                sender_avatar_url: '{{ getSingleMedia(optional($auth), 'profile_image', null) ?? $fallbackAvatar }}',
+                                sender_name: @json($auth->display_name),
+                                sender_avatar_url: @json(getSingleMedia(optional($auth), 'profile_image', null) ?? $fallbackAvatar),
                                 message: null,
                                 created_at: new Date().toISOString().slice(0,19).replace('T',' '),
                                 read: true,
