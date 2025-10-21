@@ -200,12 +200,11 @@
     @endphp
     @if($canRatePostBid)
     <div class="card shadow-sm border-0 mt-3">
-        <div class="card-body d-flex justify-content-between align-items-center">
-            
+         
             <button class="btn btn-warning" id="postbid-rate-now-btn" data-id="{{ $bid->id }}">
                 <i class="las la-star"></i> Rate Now
             </button>
-        </div>
+       
     </div>
     @endif
 
