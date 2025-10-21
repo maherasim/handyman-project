@@ -201,7 +201,7 @@
     @if($canRatePostBid)
     <div class="card shadow-sm border-0 mt-3">
          
-            <button class="btn btn-warning" id="postbid-rate-now-btn" data-id="{{ $bid->id }}">
+                        <button type="button" class="btn btn-warning" id="postbid-rate-now-btn" data-id="{{ $bid->id }}" data-bs-toggle="modal" data-bs-target="#postBidRatingModal">
                 <i class="las la-star"></i> Rate Now
             </button>
        
