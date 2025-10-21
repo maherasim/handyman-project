@@ -92,6 +92,9 @@
                     url: @json(route('postrequest.index_data', $id)),
                     type: 'GET'
                 },
+                columnDefs: [
+                    { targets: [2,4,5], className: 'text-nowrap' }, // Posted at, Start Date, End Date
+                ],
                 columns: [
                     { data: 'id', name: 'id' },
                     { data: 'title', name: 'title' },
