@@ -291,7 +291,7 @@
                             <div class="tab-content active" id="description-content">
                                 <div class="content-section">
                                     @if(!empty($jobrequest->description))
-                                        <div class="job-content">
+                                        <div class="job-content" id="fullDescriptionSection">
                                             {!! $jobrequest->description !!}
                                         </div>
                                     @else
@@ -362,7 +362,7 @@
                         @endphp
                         <h4 class="text-primary mb-2">€ {{ number_format($jobrequest->price, 2) }} <span class="text-dark"><b>{{ $priceLabel }}</b></span></h4>
                         <p class="mb-0 text-muted" id="description">
-                            {{ Str::words(strip_tags($jobrequest->description), 15, '...') }}
+                            {{ Str::words(strip_tags($jobrequest->description), 10, '...') }}
                         </p>
                         
                         <button id="readMoreBtn" class="btn btn-link p-0 mt-2" style="display: none;">Read More</button>
@@ -642,6 +642,26 @@
                     fullDescription.style.display = 'block';
                     readMoreBtn.style.display = 'none';
                 });
+            });
+        </script>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const continueBtn = document.getElementById('continueBtn');
+                const descriptionTabBtn = document.querySelector('[data-tab="description"]');
+                const descriptionSection = document.getElementById('description-content');
+                if (continueBtn && descriptionTabBtn && descriptionSection) {
+                    continueBtn.addEventListener('click', function() {
+                        // Activate Description tab
+                        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+                        descriptionTabBtn.classList.add('active');
+                        document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
+                        descriptionSection.style.display = 'block';
+                        descriptionSection.classList.add('active');
+                        // Smooth scroll to description tab
+                        descriptionSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    });
+                }
             });
         </script>
 
