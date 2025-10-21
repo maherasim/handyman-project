@@ -476,7 +476,7 @@
                                                  color: #1a1a1a;
                                                  margin-bottom: 1px;
                                              ">
-                                                 {{ $jobRequest->customer->city->name ?? $jobRequest->customer->country->name ?? 'Unknown' }}
+                                                 {{ $jobRequest->customer->city->name ??}}-{{ $jobRequest->customer->country->name ?? 'Unknown' }}
                                              </div>
                                            
                                          </div>
