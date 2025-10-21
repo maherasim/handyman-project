@@ -367,13 +367,13 @@
                         
                         <button id="readMoreBtn" class="btn btn-link p-0 mt-2" style="display: none;">Read More</button>
                         <p id="fullDescription" class="mb-0 mt-2" style="display: none;">
-                            {!! $jobrequest->description !!}
+                            {{ Str::words(strip_tags($jobrequest->descraiption), 10, '...') }}
                         </p>
                     </div>
 
                     <!-- Continue Button -->
                     <button id="continueBtn" class="btn btn-primary w-100 mb-4" style="background: #5F60BA; padding: 12px;">
-                        Continue as
+                        Continue
                     </button>
 
                     <!-- Social Sharing -->
