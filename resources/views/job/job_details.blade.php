@@ -543,16 +543,16 @@
                                     </div>
                                     <div class="detail-item mb-2">
                                         <span class="detail-label"><b>Location:</b></span>
-                                        <span class="detail-value">{{ optional($jobrequest->customer->city)->name ?? 'N/A' }} - {{ optional($jobrequest->customer->country)->name ?? 'N/A' }}</span>
+                                        <span class="detail-value"> {{ optional($jobrequest->customer->city)->name ?? 'N/A' }} - {{ optional($jobrequest->customer->country)->name ?? 'N/A' }}</span>
                                     </div>
                                     <div class="detail-item mb-2">
                                         <span class="detail-label"><b>Jobs Published:</b></span>
                                         <span class="detail-value"> {{ $jobsPublishedCount ?? 0 }}</span>
                                     </div>
-                                    <div class="detail-item mb-2">
+                                    {{-- <div class="detail-item mb-2">
                                         <span class="detail-label"><b>Location:</b></span>
                                         <span class="detail-value"> {{ $jobrequest->city->name ?? 'N/A' }}-{{ $jobrequest->country->name ?? 'N/A' }}</span>
-                                    </div>
+                                    </div> --}}
                                     <div class="detail-item mb-2">
                                         <span class="detail-label"><b>Category:</b></span>
                                         <span class="detail-value"> {{ $jobrequest->category->name ?? 'N/A' }}</span>
