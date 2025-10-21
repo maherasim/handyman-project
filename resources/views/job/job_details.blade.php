@@ -479,7 +479,12 @@
                                     </div>
                                     <div class="detail-item mb-2">
                                         <span class="detail-label"><b>Remote Level:</b></span>
-                                        <span class="detail-value"> {{ ucfirst($jobrequest->remote_work_level ?? 'N/A') }}</span>
+                                        @php
+                                            $remoteLevelRaw = $jobrequest->remote_work_level ?? null;
+                                            $remoteLevelPercent = $remoteLevelRaw ? (int) preg_replace('/\D+/', '', $remoteLevelRaw) : null;
+                                            $remoteLevelDisplay = is_null($remoteLevelPercent) ? 'N/A' : ($remoteLevelPercent === 100 ? 'Remote 100%' : "{$remoteLevelPercent}% remote");
+                                        @endphp
+                                        <span class="detail-value"> {{ $remoteLevelDisplay }}</span>
                                     </div>
                                     <div class="detail-item mb-2">
                                         <span class="detail-label"><b>Career Level:</b></span>
@@ -578,7 +583,12 @@
                                     </div>
                                     <div class="detail-item mb-2">
                                         <span class="detail-label"><b>Remote level:</b></span>
-                                        <span class="detail-value"> {{ $jobrequest->remote_work_level ?? 'N/A' }}</span>
+                                        @php
+                                            $remoteLevelRaw = $jobrequest->remote_work_level ?? null;
+                                            $remoteLevelPercent = $remoteLevelRaw ? (int) preg_replace('/\D+/', '', $remoteLevelRaw) : null;
+                                            $remoteLevelDisplay = is_null($remoteLevelPercent) ? 'N/A' : ($remoteLevelPercent === 100 ? 'Remote 100%' : "{$remoteLevelPercent}% remote");
+                                        @endphp
+                                        <span class="detail-value"> {{ $remoteLevelDisplay }}</span>
                                     </div>
                                     <div class="detail-item mb-2">
                                         <span class="detail-label"><b>Career level:</b></span>
