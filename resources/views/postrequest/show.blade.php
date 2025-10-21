@@ -477,7 +477,7 @@
         <div class="col-12">
             <div class="card shadow-sm border-0">
                 <div class="card-header bg-secondary text-white fw-bold">
-                    Extra Charges
+                    Extra Charges <span class="ms-2 badge bg-light text-dark">€{{ number_format($extraChargesTotal, 2) }}</span>
                 </div>
                 <div class="card-body">
                     <table id="extra-charges-table" class="table table-striped table-bordered table-sm align-middle">
