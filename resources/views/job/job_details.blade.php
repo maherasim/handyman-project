@@ -522,19 +522,19 @@
                                 <div class="customer-details-list">
                                     <div class="detail-item mb-2">
                                         <span class="detail-label"><b>Full Name:</b></span>
-                                        <span class="detail-value">{{ $jobrequest->customer->display_name ?? $jobrequest->customer->username ?? 'N/A' }}</span>
+                                        <span class="detail-value"> {{ $jobrequest->customer->display_name ?? $jobrequest->customer->username ?? 'N/A' }}</span>
                                     </div>
                                     <div class="detail-item mb-2">
                                         <span class="detail-label"><b>Position:</b></span>
-                                        <span class="detail-value">{{ $jobrequest->customer->designation ?? 'N/A' }}</span>
+                                        <span class="detail-value"> {{ $jobrequest->customer->designation ?? 'N/A' }}</span>
                                     </div>
                                     <div class="detail-item mb-2">
                                         <span class="detail-label"><b>Member Since:</b></span>
-                                        <span class="detail-value">{{ optional($jobrequest->customer->created_at)->format('M d, Y') ?? 'N/A' }}</span>
+                                        <span class="detail-value"> {{ optional($jobrequest->customer->created_at)->format('M d, Y') ?? 'N/A' }}</span>
                                     </div>
                                     <div class="detail-item mb-2">
                                         <span class="detail-label"><b>Languages:</b></span>
-                                        <span class="detail-value">{{ is_array($jobrequest->customer->languages ?? null) ? implode(', ', $jobrequest->customer->languages) : ($jobrequest->customer->languages ?? 'N/A') }}</span>
+                                        <span class="detail-value"> {{ is_array($jobrequest->customer->languages ?? null) ? implode(', ', $jobrequest->customer->languages) : ($jobrequest->customer->languages ?? 'N/A') }}</span>
                                     </div>
                                     <div class="detail-item mb-2">
                                         <span class="detail-label"><b>Location:</b></span>
