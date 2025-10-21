@@ -1927,7 +1927,8 @@ class PostJobRequestController extends Controller
     // }
     public function postrequest_index_data(DataTables $datatable, $id)
     {
-        $query = PostJobBid::where('post_request_id', $id);
+        $query = PostJobBid::where('post_request_id', $id)
+            ->with(['provider', 'customer', 'postrequest']);
 
         if (auth()->user()->hasAnyRole(['admin'])) {
             $query->newquery();
@@ -1988,6 +1989,12 @@ class PostJobRequestController extends Controller
                 return '<a href="' . $url . '" class="btn btn-sm btn-outline-primary"><i class="far fa-eye"></i> View Job</a>';
             })
             ->addIndexColumn()
+            ->editColumn('provider_id', function ($bid) {
+                return optional($bid->provider)->display_name ?? ($bid->provider_id ?: '-');
+            })
+            ->editColumn('customer_id', function ($bid) {
+                return optional($bid->customer)->display_name ?? ($bid->customer_id ?: '-');
+            })
             ->rawColumns(['action'])
             ->toJson();
     }
