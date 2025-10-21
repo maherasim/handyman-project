@@ -475,18 +475,22 @@
     @if($bid->extraCharges && $bid->extraCharges->count() > 0)
     <div class="row mt-3">
         <div class="col-12">
-            <div class="card shadow-sm border-0">
-                <div class="card-header bg-secondary text-white fw-bold">
-                    Extra Charges <span class="ms-2 badge bg-light text-dark">€{{ number_format($extraChargesTotal, 2) }}</span>
+            <div class="card shadow-sm border-0 extra-charges-card">
+                <div class="card-header text-white fw-bold py-2">
+                    <div class="d-flex align-items-center gap-2">
+                        <span>Extra Charges</span>
+                        <span class="badge rounded-pill bg-light text-dark border">€{{ number_format($extraChargesTotal, 2) }}</span>
+                    </div>
                 </div>
-                <div class="card-body">
-                    <table id="extra-charges-table" class="table table-striped table-bordered table-sm align-middle">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                    <table id="extra-charges-table" class="table table-hover table-sm align-middle mb-0 extra-charges-table">
                         <thead>
                             <tr>
                                 <th>Title</th>
                                 <th class="text-end">Quantity</th>
                                 <th class="text-end">Unit Amount</th>
-                                <th class="text-end"> Total</th>
+                                <th class="text-end">Total</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -500,6 +504,7 @@
                             @endforeach
                         </tbody>
                     </table>
+                    </div>
                 </div>
             </div>
         </div>
@@ -507,6 +512,28 @@
     @endif
 
     <style>
+        .extra-charges-card .card-header {
+            background: linear-gradient(180deg, #7d8fb3 0%, #8fa1c4 100%);
+            border-bottom: 1px solid rgba(255,255,255,0.25);
+        }
+        .extra-charges-table thead tr {
+            background: #5755d9;
+            color: #ffffff;
+        }
+        .extra-charges-table thead th {
+            font-weight: 600;
+            letter-spacing: .2px;
+            border-bottom: none;
+        }
+        .extra-charges-table tbody tr td {
+            vertical-align: middle;
+        }
+        .extra-charges-table tbody tr:not(:last-child) td {
+            border-bottom: 1px solid #eef1f5;
+        }
+        .extra-charges-table tbody tr:hover {
+            background: #f9fbff;
+        }
         .marquee-banner {
             border-radius: 6px;
             padding: 8px 12px;
