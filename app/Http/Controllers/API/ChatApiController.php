@@ -199,7 +199,12 @@ class ChatApiController extends Controller
             'flagged_at' => $containsPii ? now() : null,
         ]);
         $conversation->touch();
-        return response()->json(['status' => true, 'id' => $msg->id]);
+        return response()->json([
+            'status' => true,
+            'id' => $msg->id,
+            'flagged' => (bool) $containsPii,
+            'pii_types' => $containsPii ? $piiTypes : [],
+        ]);
     }
 
     /**
