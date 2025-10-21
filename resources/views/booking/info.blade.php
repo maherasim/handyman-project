@@ -516,7 +516,7 @@
                                 @endphp
                                 @if ($isProvider || $isCustomer || $isHandyman)
                                     
-                                    @php $__chatAllowed = isset($payment) && in_array(strtolower($payment->payment_status ?? ''), ['advanced_paid','paid'], true); @endphp
+                                    @php $__chatAllowed = ($bookingdata->status !== 'cancelled') && isset($payment) && in_array(strtolower($payment->payment_status ?? ''), ['advanced_paid','paid'], true); @endphp
                                     @if($__chatAllowed)
                                         @if($isCustomer)
                                             {{-- Customer sees: Chat with Provider and Chat with Handyman --}}
