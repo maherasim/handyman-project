@@ -1982,6 +1982,24 @@ class PostJobRequestController extends Controller
                 $label = $type === 'hourly' ? 'hourly' : ($type === 'daily' ? 'daily' : ($type === 'fixed' ? 'fixed' : $type));
                 return trim($amount . ' ' . $label);
             })
+            // Status label with colors
+            ->addColumn('status', function ($bid) {
+                $key = strtolower((string)($bid->status ?? ''));
+                $map = [
+                    'requested' => ['Requested', 'badge bg-secondary text-white'],
+                    'accepted' => ['Accepted', 'badge bg-info text-white'],
+                    'advance_paid' => ['Advance Paid', 'badge bg-primary text-white'],
+                    'in_progress' => ['In Progress', 'badge bg-primary text-white'],
+                    'confirm_done' => ['Confirmed', 'badge bg-success text-white'],
+                    'completed' => ['Completed', 'badge bg-success text-white'],
+                    'cancelled' => ['Cancelled', 'badge bg-danger text-white'],
+                    'rejected' => ['Rejected', 'badge bg-danger text-white'],
+                    'hold' => ['On Hold', 'badge bg-warning text-dark'],
+                ];
+                if (isset($map[$key])) { [$label,$cls] = $map[$key]; }
+                else { $label = ucfirst(str_replace('_',' ', (string)$bid->status)); $cls='badge bg-secondary text-white'; }
+                return '<span class="'.$cls.'">'.e($label).'</span>';
+            })
             // Action: View Job (go to the specific bid details)
             ->addColumn('action', function ($bid) {
                 $bidId = $bid->id;
@@ -1995,7 +2013,7 @@ class PostJobRequestController extends Controller
             ->editColumn('customer_id', function ($bid) {
                 return optional($bid->customer)->display_name ?? ($bid->customer_id ?: '-');
             })
-            ->rawColumns(['action'])
+            ->rawColumns(['action','status'])
             ->toJson();
     }
 

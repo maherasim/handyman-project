@@ -39,7 +39,7 @@
                                 <th>Post</th>
                                 <th>Provider</th>
                                 <th>Customer</th>
-                                <th>Price</th>
+                                <th>Budget</th>
                                 <th>Duration</th>
                                 <th>Status</th>
                                 <th>Actions</th>
