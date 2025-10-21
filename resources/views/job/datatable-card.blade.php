@@ -470,11 +470,23 @@
                                                  alt="Customer" style="width: 100%; height: 100%; object-fit: cover;">
                                          </div>
                                          <div class="customer-details">
-                                            <div style="font-size:12px;font-weight:600;color:#1a1a1a;margin-bottom:1px;">
-                                                {{ data_get($jobRequest, 'customer.city.name', 'Unknown') }} - {{ data_get($jobRequest, 'customer.country.name', 'Unknown') }}
-                                            </div>
-                                        </div>
-                                        
+                                             <div style="
+                                                 font-size: 12px;
+                                                 font-weight: 600;
+                                                 color: #1a1a1a;
+                                                 margin-bottom: 1px;
+                                             ">
+                                                 {{ $jobRequest->customer->display_name ?? $jobRequest->customer->username ?? 'Unknown' }}
+                                             </div>
+                                             <div style="
+                                                 font-size: 10px;
+                                                 color: #8e8e93;
+                                                 font-weight: 400;
+                                             ">
+           {{ data_get($jobRequest, 'customer.city.name', 'Unknown') }} - {{ data_get($jobRequest, 'customer.country.name', 'Unknown') }}
+
+                                             </div>
+                                         </div>
                                      </div>
                                  </div>
                                  
