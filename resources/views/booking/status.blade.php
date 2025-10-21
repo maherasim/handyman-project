@@ -384,7 +384,7 @@ $timezone = getTimeZone();
 
 
                                 <span class="text-wrap">
-                                    {{ $bookingdata->provider ? trim(($bookingdata->provider->city ?? '') . ' - ' . ($bookingdata->provider->country ?? ''), ' -') ?: '-' : '-' }}
+                                    {{ $bookingdata->provider ? trim(($bookingdata->provider->city->name ?? '') . ' - ' . ($bookingdata->provider->country->name ?? ''), ' -') ?: '-' : '-' }}
                                 </span>
                                 
                             
