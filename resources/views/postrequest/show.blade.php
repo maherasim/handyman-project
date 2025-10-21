@@ -181,11 +181,13 @@
 
         @endif
 
-        {{-- Show Chat button for all participants --}}
+        {{-- Chat button visible only after advance payment --}}
         @php
             $isParticipant = ($auth_user->user_type === 'provider' && $auth_user->id == ($bid->provider_id ?? 0)) || ($auth_user->user_type === 'user' && $auth_user->id == ($bid->customer_id ?? 0));
+            $statusKey = strtolower((string) ($bid->status ?? ''));
+            $advancePaid = in_array($statusKey, ['advance_paid','in_progress','done','confirm_done','completed','remaining_paid']);
         @endphp
-        @if($isParticipant)
+        @if($isParticipant && $advancePaid)
             @php
                 $chatUserId = ($auth_user->user_type === 'provider') ? $bid->customer_id : $bid->provider_id;
             @endphp
