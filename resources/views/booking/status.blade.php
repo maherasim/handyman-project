@@ -430,7 +430,7 @@ $timezone = getTimeZone();
                                                 <li class="d-flex align-items-center">
                                                     <i class="ri-map-pin-line me-2"></i>
                                                     <span class="text-wrap">
-                                                        {{ $booking->handyman ? trim(($booking->handyman->city ?? '') . ' - ' . ($booking->handyman->country ?? ''), ' -') ?: '-' : '-' }}
+                                                        {{ $booking->handyman ? trim(($booking->handyman->city->name ?? '') . ' - ' . ($booking->handyman->country->name ?? ''), ' -') ?: '-' : '-' }}
                                                     </span>
                                                     
                                                     
