@@ -326,12 +326,22 @@
         }
 
         function openBidModal(postRequestId, authUserId) {
-	$('.postrequestid').val(postRequestId);
+    $('.postrequestid').val(postRequestId);
 
-	// Store the postRequestId in the modal for later use
-	$('#bidModal').data('post-request-id', postRequestId);
+    // Proactively clear previous values before any async fill
+    $('#bidId').val('');
+    $('#bidAmount').val('');
+    if (window.tinymce && tinymce.get('why_choose_me')) {
+        tinymce.get('why_choose_me').setContent('');
+    }
+    $('#why_choose_me').val('');
+    $('.bid-button-submit').prop('disabled', false).text('Submit Bid');
+    $('#bidModalLabel').text('Place Bid');
 
-	// Make an AJAX call here
+    // Store the postRequestId in the modal for later use
+    $('#bidModal').data('post-request-id', postRequestId);
+
+    // Make an AJAX call here
 	$.ajax({
 		url: 'api/get-post-job-bid-data',
 		type: 'GET',
@@ -345,7 +355,7 @@
 		},
 		success: function(response) {
 			// Populate form for update or create
-			if (response && response.price !== undefined) {
+            if (response && response.price !== undefined) {
 				$('#bidId').val(response.id || '');
 				$('#bidAmount').val(response.price);
 				$('#bidAmount').prop('disabled', false);
@@ -374,6 +384,16 @@
 				$('#bidAmount').prop('disabled', false);
 				$('.bid-button-submit').prop('disabled', false).text('Submit Bid');
 				$('#bidModalLabel').text('Place Bid');
+                // Ensure Why Choose Me is blank for new bid (editor or textarea)
+                if (window.tinymce && tinymce.get('why_choose_me')) {
+                    tinymce.get('why_choose_me').setContent('');
+                }
+                $('#why_choose_me').val('');
+                $('#bidModal').one('shown.bs.modal', function(){
+                    if (window.tinymce && tinymce.get('why_choose_me')) {
+                        tinymce.get('why_choose_me').setContent('');
+                    }
+                });
 			}
 		},
 		error: function(error) {
@@ -382,7 +402,7 @@
 	});
 
 	// Open the modal manually
-	$('#bidModal').modal('show');
+    $('#bidModal').modal('show');
 }
 
 
@@ -395,7 +415,7 @@
             $('.bid-button-submit').text('Submit Bid');
             $('#bidModalLabel').text('Place Bid');
             if (window.tinymce && tinymce.get('why_choose_me')) {
-                tinymce.get('why_choose_me').remove();
+        tinymce.get('why_choose_me').setContent('');
             }
             $('#why_choose_me').val('');
             $('#whyChooseMeError').html('');
