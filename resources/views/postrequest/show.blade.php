@@ -476,16 +476,18 @@
     <div class="row mt-3">
         <div class="col-12">
             <div class="card shadow-sm border-0 extra-charges-card">
-                <div class="card-header text-white fw-bold py-2">
-                    <div class="d-flex align-items-center gap-2">
-                        <span>Extra Charges</span>
-                        <span class="badge rounded-pill bg-light text-dark border">€{{ number_format($extraChargesTotal, 2) }}</span>
-                    </div>
-                </div>
                 <div class="card-body p-0">
                     <div class="table-responsive">
                     <table id="extra-charges-table" class="table table-hover table-sm align-middle mb-0 extra-charges-table">
                         <thead>
+                            <tr class="extra-charges-heading">
+                                <th colspan="4">
+                                    <div class="d-flex align-items-center justify-content-between">
+                                        <span class="fw-bold">Extra Charges</span>
+                                        <span class="badge rounded-pill bg-light text-dark border">€{{ number_format($extraChargesTotal, 2) }}</span>
+                                    </div>
+                                </th>
+                            </tr>
                             <tr>
                                 <th>Title</th>
                                 <th class="text-end">Quantity</th>
@@ -515,6 +517,11 @@
         .extra-charges-card .card-header {
             background: linear-gradient(180deg, #7d8fb3 0%, #8fa1c4 100%);
             border-bottom: 1px solid rgba(255,255,255,0.25);
+        }
+        .extra-charges-table thead .extra-charges-heading th {
+            background: linear-gradient(180deg, #7d8fb3 0%, #8fa1c4 100%);
+            color: #fff;
+            border-bottom: none;
         }
         .extra-charges-table thead tr {
             background: #5755d9;
