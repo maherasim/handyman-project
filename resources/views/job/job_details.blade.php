@@ -542,55 +542,55 @@
                                     </div>
                                     <div class="detail-item mb-2">
                                         <span class="detail-label"><b>Jobs Published:</b></span>
-                                        <span class="detail-value">{{ $jobsPublishedCount ?? 0 }}</span>
+                                        <span class="detail-value"> {{ $jobsPublishedCount ?? 0 }}</span>
                                     </div>
                                     <div class="detail-item mb-2">
                                         <span class="detail-label"><b>Location:</b></span>
-                                        <span class="detail-value">{{ $jobrequest->city->name ?? 'N/A' }}-{{ $jobrequest->country->name ?? 'N/A' }}</span>
+                                        <span class="detail-value"> {{ $jobrequest->city->name ?? 'N/A' }}-{{ $jobrequest->country->name ?? 'N/A' }}</span>
                                     </div>
                                     <div class="detail-item mb-2">
                                         <span class="detail-label"><b>Category:</b></span>
-                                        <span class="detail-value">{{ $jobrequest->category->name ?? 'N/A' }}</span>
+                                        <span class="detail-value"> {{ $jobrequest->category->name ?? 'N/A' }}</span>
                                     </div>
                                     <div class="detail-item mb-2">
                                         <span class="detail-label"><b>Total budget:</b></span>
-                                        <span class="detail-value">€{{ number_format($jobrequest->total_budget ?? $jobrequest->price, 2) }}</span>
+                                        <span class="detail-value"> €{{ number_format($jobrequest->total_budget ?? $jobrequest->price, 2) }}</span>
                                     </div>
                                     <div class="detail-item mb-2">
                                         <span class="detail-label"><b>Start date:</b></span>
-                                        <span class="detail-value">{{ $jobrequest->start_date ? \Carbon\Carbon::parse($jobrequest->start_date)->format('Y-m-d') : 'N/A' }}</span>
+                                        <span class="detail-value"> {{ $jobrequest->start_date ? \Carbon\Carbon::parse($jobrequest->start_date)->format('Y-m-d') : 'N/A' }}</span>
                                     </div>
                                     <div class="detail-item mb-2">
                                         <span class="detail-label"><b>End date:</b></span>
-                                        <span class="detail-value">{{ $jobrequest->end_date ? \Carbon\Carbon::parse($jobrequest->end_date)->format('Y-m-d') : 'N/A' }}</span>
+                                        <span class="detail-value"> {{ $jobrequest->end_date ? \Carbon\Carbon::parse($jobrequest->end_date)->format('Y-m-d') : 'N/A' }}</span>
                                     </div>
                                     <div class="detail-item mb-2">
                                         <span class="detail-label"><b>Total hours:</b></span>
-                                        <span class="detail-value">{{ $jobrequest->total_hours ?? 'N/A' }}</span>
+                                        <span class="detail-value"> {{ $jobrequest->total_hours ?? 'N/A' }}</span>
                                     </div>
                                     <div class="detail-item mb-2">
                                         <span class="detail-label"><b>Total days:</b></span>
-                                        <span class="detail-value">{{ $jobrequest->total_days ?? 'N/A' }}</span>
+                                        <span class="detail-value"> {{ $jobrequest->total_days ?? 'N/A' }}</span>
                                     </div>
                                     <div class="detail-item mb-2">
                                         <span class="detail-label"><b>Type:</b></span>
-                                        <span class="detail-value">{{ $jobrequest->type ?? 'N/A' }}</span>
+                                        <span class="detail-value"> {{ $jobrequest->type ?? 'N/A' }}</span>
                                     </div>
                                     <div class="detail-item mb-2">
                                         <span class="detail-label"><b>Remote level:</b></span>
-                                        <span class="detail-value">{{ $jobrequest->remote_work_level ?? 'N/A' }}</span>
+                                        <span class="detail-value"> {{ $jobrequest->remote_work_level ?? 'N/A' }}</span>
                                     </div>
                                     <div class="detail-item mb-2">
                                         <span class="detail-label"><b>Career level:</b></span>
-                                        <span class="detail-value">{{ $jobrequest->career_level ?? 'N/A' }}</span>
+                                        <span class="detail-value"> {{ $jobrequest->career_level ?? 'N/A' }}</span>
                                     </div>
                                     <div class="detail-item mb-2">
                                         <span class="detail-label"><b>Travel required:</b></span>
-                                        <span class="detail-value">{{ $jobrequest->travel_required ? 'Yes' : 'No' }}</span>
+                                        <span class="detail-value"> {{ $jobrequest->travel_required ? 'Yes' : 'No' }}</span>
                                     </div>
                                     <div class="detail-item mb-2">
                                         <span class="detail-label"><b>Education level:</b></span>
-                                        <span class="detail-value">{{ $jobrequest->education_level ?? 'N/A' }}</span>
+                                        <span class="detail-value"> {{ $jobrequest->education_level ?? 'N/A' }}</span>
                                     </div>
                                     <div class="detail-item mb-2">
                                         <span class="detail-label"><b>Status:</b></span>
@@ -602,11 +602,11 @@
                                     </div>
                                     <div class="detail-item mb-2">
                                         <span class="detail-label"><b>Total bids:</b></span>
-                                        <span class="detail-value">{{ $totalBids }}</span>
+                                        <span class="detail-value"> {{ $totalBids }}</span>
                                     </div>
                                     <div class="detail-item mb-2">
                                         <span class="detail-label"><b>Total views:</b></span>
-                                        <span class="detail-value">{{ $jobrequest->total_views ?? 0 }}</span>
+                                        <span class="detail-value"> {{ $jobrequest->total_views ?? 0 }}</span>
                                     </div>
                                 </div>
                             </div>
