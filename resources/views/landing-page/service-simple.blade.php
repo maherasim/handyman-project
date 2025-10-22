@@ -51,7 +51,7 @@
                     <select name="city_id" id="citySelect" class="form-select">
                         <option value="">All</option>
                         @foreach($cities as $cy)
-                        <option value="{{ $cy->id }}" data-country="{{ $cy->country_id }}" {{ (string)($filters['city_id'] ?? '') === (string)$cy->id ? 'selected' : '' }}>{{ $cy->name }}</option>
+                        <option value="{{ $cy->id }}" data-country="{{ $cy->country_id }}" data-state="{{ $cy->state_id ?? '' }}" {{ (string)($filters['city_id'] ?? '') === (string)$cy->id ? 'selected' : '' }}>{{ $cy->name }}</option>
                         @endforeach
                     </select>
                 </div>

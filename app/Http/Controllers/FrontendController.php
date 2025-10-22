@@ -211,7 +211,11 @@ class FrontendController extends Controller
             $subcategories = SubCategory::where('status', 1)->orderBy('name')->get(['id','name','category_id']);
             $providers     = User::where('user_type','provider')->where('status',1)->orderBy('display_name')->get(['id','display_name']);
             $countries     = Country::orderBy('name')->get(['id','name']);
-            $cities        = City::orderBy('name')->get(['id','name','country_id']);
+            // cities table doesn't have country_id; join states to fetch country_id for dependent dropdown
+            $cities        = City::query()
+                ->leftJoin('states', 'states.id', '=', 'cities.state_id')
+                ->orderBy('cities.name')
+                ->get(['cities.id', 'cities.name', 'cities.state_id', 'states.country_id']);
 
             $query = Service::where('service_type','service')->where('status',1);
             if (!empty($filters['q'])) {
