@@ -192,6 +192,67 @@ class FrontendController extends Controller
 
     public function serviceList(Request $request)
     {
+        // Simple Blade-based listing (no Vue) when mode=simple
+        if ($request->get('mode') === 'simple') {
+            $filters = [
+                'category_id'   => $request->get('category_id'),
+                'subcategory_id'=> $request->get('subcategory_id'),
+                'provider_id'   => $request->get('provider_id'),
+                'country_id'    => $request->get('country_id'),
+                'city_id'       => $request->get('city_id'),
+                'price_min'     => $request->get('price_min'),
+                'price_max'     => $request->get('price_max'),
+                'sort'          => $request->get('sort'), // price_asc, price_desc, newest
+                'q'             => $request->get('q'),
+            ];
+
+            $categories    = Category::where('status', 1)->orderBy('name')->get(['id','name']);
+            $subcategories = SubCategory::where('status', 1)->orderBy('name')->get(['id','name','category_id']);
+            $providers     = User::where('user_type','provider')->where('status',1)->orderBy('display_name')->get(['id','display_name']);
+            $countries     = Country::orderBy('name')->get(['id','name']);
+            $cities        = City::orderBy('name')->get(['id','name','country_id']);
+
+            $query = Service::where('service_type','service')->where('status',1);
+            if (!empty($filters['q'])) {
+                $query->where('name', 'like', "%{$filters['q']}%");
+            }
+            if (!empty($filters['category_id'])) {
+                $query->where('category_id', (int)$filters['category_id']);
+            }
+            if (!empty($filters['subcategory_id'])) {
+                $query->where('subcategory_id', (int)$filters['subcategory_id']);
+            }
+            if (!empty($filters['provider_id'])) {
+                $query->where('provider_id', (int)$filters['provider_id']);
+            }
+            if (!empty($filters['country_id'])) {
+                $query->where('country_id', (int)$filters['country_id']);
+            }
+            if (!empty($filters['city_id'])) {
+                $query->where('city_id', (int)$filters['city_id']);
+            }
+            if ($filters['price_min'] !== null && $filters['price_min'] !== '') {
+                $query->where('price', '>=', (float)$filters['price_min']);
+            }
+            if ($filters['price_max'] !== null && $filters['price_max'] !== '') {
+                $query->where('price', '<=', (float)$filters['price_max']);
+            }
+
+            if ($filters['sort'] === 'price_asc') {
+                $query->orderBy('price', 'asc');
+            } elseif ($filters['sort'] === 'price_desc') {
+                $query->orderBy('price', 'desc');
+            } else {
+                $query->orderBy('created_at', 'desc');
+            }
+
+            $services = $query->with(['providers','city','country'])->paginate(12)->withQueryString();
+
+            return view('landing-page.service-simple', compact(
+                'services', 'categories', 'subcategories', 'providers', 'countries', 'cities', 'filters'
+            ));
+        }
+
         $headerSection = FrontendSetting::where('key', 'heder-menu-setting')->first();
         $sectionData = $headerSection ? json_decode($headerSection->value, true) : null;
 

@@ -543,8 +543,7 @@
                                                         color: #8e8e93;
                                                         font-weight: 400;
                                                     ">
-                                                        Job Poster
-                                                    </div>
+                                                          {{ $jobRequest->customer->city->name ?? $jobRequest->customer->username ?? 'Unknown' }}, {{ $jobRequest->customer->country->name ?? $jobRequest->customer->username ?? 'Unknown' }} 
                                                 </div>
                                             </div>
                                         </div>
