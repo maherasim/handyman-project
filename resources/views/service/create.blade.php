@@ -3,10 +3,11 @@
     <script src="https://cdn.quilljs.com/1.3.7/quill.min.js"></script>
     <style>
         .ql-editor { min-height: 80px; }
+        .ql-container .ql-editor { min-height: 80px; }
         /* Add spacing so Quill editors don't touch adjacent rows */
-        .ql-container { margin-bottom: 1rem; }
+        .ql-container { margin-bottom: 0.75rem; }
         /* Ensure spacing even when wrapped in .form-group */
-        .quill-group { margin-bottom: 5.25rem; }
+        .quill-group { margin-bottom: 1rem; }
     </style>
 
     <div class="container-fluid">
