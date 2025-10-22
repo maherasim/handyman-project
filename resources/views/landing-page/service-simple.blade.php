@@ -72,7 +72,7 @@
                     </select>
                 </div>
                 <div class="col-12 col-md-2 text-md-end">
-                    <button type="submit" class="btn btn-primary w-100">Apply</button>
+                    <button id="applyBtn" type="submit" class="btn btn-primary w-100">Apply</button>
                 </div>
             </div>
         </form>
@@ -120,6 +120,7 @@ document.addEventListener('DOMContentLoaded', function(){
     const subcategorySelect = document.getElementById('subcategorySelect');
     const countrySelect = document.getElementById('countrySelect');
     const citySelect = document.getElementById('citySelect');
+    const filterForm = document.getElementById('serviceFilterForm');
 
     function filterDependent(child, attr, parentValue){
         const valueToKeep = '{{ $filters['subcategory_id'] ?? '' }}';
@@ -147,6 +148,19 @@ document.addEventListener('DOMContentLoaded', function(){
 
     applyCategory();
     applyCountry();
+
+    // Prevent implicit submits (Enter key or plugin behaviors)
+    filterForm.addEventListener('keydown', function(e){
+        if(e.key === 'Enter') { e.preventDefault(); }
+    });
+
+    // Only allow submit via the Apply button
+    filterForm.addEventListener('submit', function(e){
+        const submitter = e.submitter || null;
+        if(!submitter || submitter.id !== 'applyBtn') {
+            e.preventDefault();
+        }
+    });
 });
 </script>
 @endsection
