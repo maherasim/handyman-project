@@ -2,7 +2,7 @@
     <link rel="stylesheet" href="https://cdn.quilljs.com/1.3.7/quill.snow.css">
     <script src="https://cdn.quilljs.com/1.3.7/quill.min.js"></script>
     <style>
-        .ql-editor { min-height: 150px; }
+        .ql-editor { min-height: 80px; }
         /* Add spacing so Quill editors don't touch adjacent rows */
         .ql-container { margin-bottom: 1rem; }
         /* Ensure spacing even when wrapped in .form-group */
