@@ -6,7 +6,7 @@
         /* Space below each Quill editor to avoid rows touching */
         .ql-container { margin-bottom: 1rem; }
         /* Ensure spacing even when wrapped by .form-group overrides */
-        .quill-group { margin-bottom: 1.25rem; }
+        .quill-group { margin-bottom: 5.25rem; }
     </style>
     
     <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
