@@ -3,6 +3,10 @@
     <script src="https://cdn.quilljs.com/1.3.7/quill.min.js"></script>
     <style>
         .ql-editor { min-height: 250px; }
+        /* Add spacing so Quill editors don't touch adjacent rows */
+        .ql-container { margin-bottom: 1rem; }
+        /* Ensure spacing even when wrapped in .form-group */
+        .quill-group { margin-bottom: 5.25rem; }
     </style>
 
     <div class="container-fluid">
@@ -314,14 +318,15 @@
                         </div>
 
                         <div class="row">
-                            <div class="form-group col-md-6">
+                            <div class="form-group col-md-6 quill-group">
                                 {{ html()->label(__('messages.description'), 'description')->class('form-control-label') }}
                                 {{ html()->textarea('description', old('description', $servicedata->description))->class('form-control textarea js-richtext')->rows(3)->placeholder(__('messages.description'))->id('description') }}
                             </div>
-                            <div class="form-group col-md-6">
+                            <div class="form-group col-md-6 quill-group">
                                 {{ html()->label(__('Cancellation Policy & Fees'), 'cancellation_policy')->class('form-control-label') }}
                                 {{ html()->textarea('cancellation_policy', old('cancellation_policy', $servicedata->cancellation_policy))->class('form-control textarea js-richtext')->rows(3)->placeholder(__('cancellation_policy'))->id('cancellation_policy') }}
                             </div>
+                            
                             @if (!empty($slotservice) && $slotservice == 1)
                                 <div class="form-group col-md-3">
                                     <div class="custom-control custom-switch">
