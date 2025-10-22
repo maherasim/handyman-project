@@ -5,7 +5,7 @@
     <div class="container">
         <form method="GET" class="card shadow-sm mb-4 p-3" id="serviceFilterForm">
             <input type="hidden" name="mode" value="simple">
-            <div class="row g-2 align-items-end d-flex flex-nowrap overflow-auto bg-light border rounded px-2 py-2" style="gap:8px;">
+            <div class="row g-2 align-items-end d-flex flex-wrap bg-light border rounded px-2 py-2" style="gap:8px;">
                 <div class="col-auto">
                     <label class="form-label">Category</label>
                     <select name="category_id" id="categorySelect" class="form-select" style="min-width:200px;">
