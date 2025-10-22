@@ -327,6 +327,8 @@
                                 {{ html()->label(__('Cancellation Policy & Fees'), 'cancellation_policy')->class('form-control-label') }}
                                 {{ html()->textarea('cancellation_policy', old('cancellation_policy', $servicedata->cancellation_policy))->class('form-control textarea js-richtext')->rows(3)->placeholder(__('cancellation_policy'))->id('cancellation_policy') }}
                             </div>
+                        </div>
+                        <div class="row">
                             
                             @if (!empty($slotservice) && $slotservice == 1)
                                 <div class="form-group col-md-3">
