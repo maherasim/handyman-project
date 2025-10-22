@@ -543,7 +543,7 @@
                                                         color: #8e8e93;
                                                         font-weight: 400;
                                                     ">
-                                                          {{ $jobRequest->customer->city-> ?? $jobRequest->customer->username ?? 'Unknown' }}
+                                                          {{ $jobRequest->customer->city->name ?? $jobRequest->customer->username ?? 'Unknown' }}
                                                     </div>
                                                 </div>
                                             </div>
