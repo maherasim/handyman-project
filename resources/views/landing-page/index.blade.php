@@ -572,7 +572,7 @@
                                                 background: #e8f5e8;
                                                 color: #2d5a2d;
                                             ">
-                                                {{ ucfirst($jobRequest->job->type ?? 'N/A') }}
+                                                {{ ucfirst($jobRequest->type ?? 'N/A') }}
                                             </span>
                                             
                                             </div>
