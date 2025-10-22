@@ -48,10 +48,10 @@
                         @role('admin|demo_admin')
                         <li class="nav-item nav-icon">
                             <a href="{{ route('chat.flagged.index') }}" class="position-relative" title="Flagged messages">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" class="text-danger" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5v14m0-14h10l-2 4 2 4H4" />
-                                </svg>
-                                <span id="flaggedBadge" class="badge badge-pill bg-danger position-absolute" style="top:-6px; right:-8px; display:none;">0</span>
+                                <span class="d-inline-flex align-items-center justify-content-center rounded-circle" style="width:30px; height:30px; background-color: rgba(220, 53, 69, 0.12);">
+                                    <i class="ri-flag-2-fill text-danger" style="font-size:20px;"></i>
+                                </span>
+                                <span id="flaggedBadge" class="badge badge-pill bg-danger position-absolute" style="top:-4px; right:-6px; display:none;">0</span>
                             </a>
                         </li>
                         @endrole
