@@ -543,12 +543,12 @@
                                                         color: #8e8e93;
                                                         font-weight: 400;
                                                     ">
-                                                          {{ $jobRequest->customer->city->name ?? $jobRequest->customer->username ?? 'Unknown' }} - {{ $jobRequest->customer->country->name ?? $jobRequest->customer->username ?? 'Unknown' }}
+                                                          {{ $jobRequest->customer->city-> ?? $jobRequest->customer->username ?? 'Unknown' }}
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
-{{--                                         
+                                        
                                         <!-- Status Badge -->
                                         <div class="status-section" style="margin-bottom: 8px;">
                                             <div class="d-flex align-items-center justify-content-between">
@@ -559,23 +559,24 @@
                                                     text-transform: uppercase;
                                                     letter-spacing: 0.5px;
                                                 ">
-                                                    Status
+                                                    Job Type
                                                 </span>
                                                 <span class="status-badge" style="
-                                                    padding: 3px 6px;
-                                                    border-radius: 8px;
-                                                    font-size: 9px;
-                                                    font-weight: 600;
-                                                    text-transform: uppercase;
-                                                    letter-spacing: 0.5px;
-                                                    background: {{ $jobRequest->status === 'active' ? '#e8f5e8' : '#fff3cd' }};
-                                                    color: {{ $jobRequest->status === 'active' ? '#2d5a2d' : '#856404' }};
-                                                ">
-                                                    {{ ucfirst($jobRequest->status ?? 'Pending') }}
-                                                </span>
+                                                padding: 3px 6px;
+                                                border-radius: 8px;
+                                                font-size: 9px;
+                                                font-weight: 600;
+                                                text-transform: capitalize;
+                                                letter-spacing: 0.5px;
+                                                background: #e8f5e8;
+                                                color: #2d5a2d;
+                                            ">
+                                                {{ ucfirst($jobRequest->job->type ?? 'N/A') }}
+                                            </span>
+                                            
                                             </div>
                                         </div>
-                                         --}}
+                                        
                                         <!-- Social Icons -->
                                         <div class="social-icons" style="
                                             display: flex;
