@@ -548,7 +548,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        
+{{--                                         
                                         <!-- Status Badge -->
                                         <div class="status-section" style="margin-bottom: 8px;">
                                             <div class="d-flex align-items-center justify-content-between">
@@ -575,7 +575,7 @@
                                                 </span>
                                             </div>
                                         </div>
-                                        
+                                         --}}
                                         <!-- Social Icons -->
                                         <div class="social-icons" style="
                                             display: flex;
