@@ -192,8 +192,9 @@ class FrontendController extends Controller
 
     public function serviceList(Request $request)
     {
-        // Simple Blade-based listing (no Vue) when mode=simple
-        if ($request->get('mode') === 'simple') {
+        // Simple Blade-based listing (no Vue) is the default now.
+        // Pass mode=vue to see the old Vue page.
+        if ($request->get('mode') !== 'vue') {
             $filters = [
                 'category_id'   => $request->get('category_id'),
                 'subcategory_id'=> $request->get('subcategory_id'),
