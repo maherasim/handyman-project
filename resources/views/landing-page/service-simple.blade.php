@@ -138,11 +138,12 @@ document.addEventListener('DOMContentLoaded', function(){
         filterDependent(citySelect, 'data-country', countrySelect.value);
     }
 
-    categorySelect.addEventListener('change', () => { applyCategory(); document.getElementById('serviceFilterForm').submit(); });
-    countrySelect.addEventListener('change', () => { applyCountry(); document.getElementById('serviceFilterForm').submit(); });
-    subcategorySelect.addEventListener('change', () => document.getElementById('serviceFilterForm').submit());
-    citySelect.addEventListener('change', () => document.getElementById('serviceFilterForm').submit());
-    document.getElementById('providerSelect').addEventListener('change', () => document.getElementById('serviceFilterForm').submit());
+    // Update dependent options only; do not submit automatically
+    categorySelect.addEventListener('change', () => { applyCategory(); });
+    countrySelect.addEventListener('change', () => { applyCountry(); });
+    subcategorySelect.addEventListener('change', () => {});
+    citySelect.addEventListener('change', () => {});
+    document.getElementById('providerSelect').addEventListener('change', () => {});
 
     applyCategory();
     applyCountry();
