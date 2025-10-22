@@ -811,13 +811,10 @@
 
 
                                         <div class="d-flex align-items-center justify-content-between w-100">
-                                            <div class="d-flex align-items-center flex-nowrap">
-                                                <img src="{{ getSingleMedia($data->providers, 'profile_image', null) }}"
-                                                    alt="service" class="img-fluid rounded-3 object-cover avatar-24">
-                                                <a href="{{ route('provider.detail', $data->providers->id) }}" class="ml-2">
-                                                    <span class="font-size-14 service-user-name" style="white-space: nowrap;">
-                                                        {{ $data->providers->display_name }}
-                                                    </span>
+                                            <div class="d-flex align-items-center gap-2">
+                                                <img src="{{ getSingleMedia($data->providers, 'profile_image', null) }}" alt="service" class="img-fluid rounded-3 object-cover avatar-24">
+                                                <a href="{{ route('provider.detail', $data->providers->id) }}">
+                                                    <span class="font-size-14 service-user-name">{{ $data->providers->display_name }}</span>
                                                 </a>
                                             </div>
                                             <div class="d-flex align-items-center justify-content-end">
