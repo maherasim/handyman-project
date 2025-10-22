@@ -824,7 +824,7 @@
                                                 @endphp
                                                 <img src="{{ $plan_icon }}" alt="plan" style="width: 26px; height: 26px; margin-right: 10px;">
                                                 @if ($isAllVerified)
-                                                    <img src="{{ asset('images/icon/verified.jpg') }}" alt="verified" style="width: 26px; height: 26px;">
+                                                    <img src="{{ asset('images/icon/verifiedpng.png') }}" alt="verified" style="width: 26px; height: 26px;">
                                                 @else
                                                     <img src="{{ asset('images/icon/notverifiedpng.png') }}" alt="not verified" style="width: 26px; height: 26px;">
                                                 @endif
@@ -1056,7 +1056,7 @@
                                                 @endphp
                                                 <img src="{{ $plan_icon }}" alt="plan" style="width: 26px; height: 26px; margin-right: 10px;">
                                                 @if ($isAllVerified)
-                                                    <img src="{{ asset('images/icon/verified.jpg') }}" alt="verified" style="width: 26px; height: 26px;">
+                                                    <img src="{{ asset('images/icon/verifiedpng.png') }}" alt="verified" style="width: 26px; height: 26px;">
                                                 @else
                                                     <img src="{{ asset('images/icon/notverifiedpng.png') }}" alt="not verified" style="width: 26px; height: 26px;">
                                                 @endif

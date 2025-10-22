@@ -191,7 +191,7 @@
            $isAllVerified = $providerId && function_exists('verify_provider_document') ? verify_provider_document($providerId) : false;
        @endphp
        @if ($isAllVerified)
-           <img src="{{ asset('images/icon/verified.jpg') }}" alt="verified"
+           <img src="{{ asset('images/icon/verifiedpng.png') }}" alt="verified"
                style="width: 26px; height: 26px;">
        @else
            <img src="{{ asset('images/icon/notverifiedpng.png') }}" alt="not verified"

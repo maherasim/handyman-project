@@ -299,7 +299,7 @@
                                                         $aboutVerified = function_exists('verify_provider_document') ? verify_provider_document($serviceData['provider']['id']) : false;
                                                     @endphp
                                                     @if ($aboutVerified)
-                                                        <img src="{{ asset('images/icon/verified.jpg') }}" alt="verified" style="width: 26px; height: 26px;">
+                                                        <img src="{{ asset('images/icon/verifiedpng.png') }}" alt="verified" style="width: 26px; height: 26px;">
                                                     @else
                                                         <img src="{{ asset('images/icon/notverifiedpng.png') }}" alt="not verified" style="width: 26px; height: 26px;">
                                                     @endif
@@ -889,7 +889,7 @@
                                 $isAllVerified = $providerId && function_exists('verify_provider_document') ? verify_provider_document($providerId) : false;
                             @endphp
                             @if ($isAllVerified)
-                                <img src="{{ asset('images/icon/verified.jpg') }}" alt="icon"
+                                <img src="{{ asset('images/icon/verifiedpng.png') }}" alt="icon"
                                     style="width: 26px; height: 26px; margin-right: 10px;">
                             @else
                                 <img src="{{ asset('images/icon/notverifiedpng.png') }}" alt="icon"

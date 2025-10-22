@@ -13,7 +13,7 @@
      @endphp
       <!-- First icon -->
         @if ($allVerified)
-          <img src="{{ asset('images/icon/verified.jpg') }}" alt="verified icon"
+          <img src="{{ asset('images/icon/verifiedpng.png') }}" alt="verified icon"
                style="width: 14%; height: 23%; margin-right: 10px;">
       @else
           <img src="{{ asset('images/icon/notverifiedpng.png') }}" alt="not verified icon"

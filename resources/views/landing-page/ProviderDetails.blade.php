@@ -63,7 +63,7 @@
                                     @endphp
 
                                     @if ($allVerified)
-                                        <img src="{{ asset('images/icon/verified.jpg') }}" alt="Verified Icon"
+                                        <img src="{{ asset('images/icon/verifiedpng.png') }}" alt="Verified Icon"
                                             style="width: 14%; height: 23%; margin-right: 10px;">
                                     @else
                                         <img src="{{ asset('images/icon/notverifiedpng.png') }}" alt="Non-Verified Icon"
