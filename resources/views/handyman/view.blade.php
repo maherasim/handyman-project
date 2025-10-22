@@ -27,7 +27,7 @@
                                 </div>
                                 <div class="service-man-list__item_body">
                                     {{-- <a class="service-man-mail" href="mailto: {{$handyman->email}}">{{$handyman->email ?? '-' }}</a> --}}
-                                    <p class="service-man-address">{{$handyman->address ?? '-' }}</p>
+                                    <p class="service-man-address">{{$handyman->city->name ?? '-' }}-{{$handyman->country->name ?? '-' }}</p>
                                 </div>
                             </div>
                             @endforeach
