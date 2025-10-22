@@ -3,6 +3,8 @@
     <script src="https://cdn.quilljs.com/1.3.7/quill.min.js"></script>
     <style>
         .ql-editor { min-height: 220px; }
+        /* Give space below each Quill editor so rows don't touch */
+        .ql-container { margin-bottom: 1rem; }
     </style>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
