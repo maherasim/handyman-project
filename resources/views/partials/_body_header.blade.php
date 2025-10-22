@@ -27,14 +27,7 @@
                         </div>
                     </div>
                 </div>
-                @role('admin|demo_admin')
-                <a href="{{ route('chat.flagged.index') }}" class="ml-3 position-relative" title="Flagged messages">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" class="text-danger" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v4m0 4h.01M12 2a10 10 0 100 20 10 10 0 000-20z" />
-                    </svg>
-                    <span id="flaggedBadgeSun" class="badge badge-pill bg-danger position-absolute" style="top:-6px; right:-8px; display:none;">0</span>
-                </a>
-                @endrole
+                
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-label="Toggle navigation">
                     <svg xmlns="http://www.w3.org/2000/svg" class="text-secondary" width="30" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
@@ -52,6 +45,16 @@
                                 <span id="chatPulse" class="position-absolute chat-pulse-dot" style="top:-2px; right:-2px; display:none;"></span>
                             </a>
                         </li>
+                        @role('admin|demo_admin')
+                        <li class="nav-item nav-icon">
+                            <a href="{{ route('chat.flagged.index') }}" class="position-relative" title="Flagged messages">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" class="text-danger" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5v14m0-14h10l-2 4 2 4H4" />
+                                </svg>
+                                <span id="flaggedBadge" class="badge badge-pill bg-danger position-absolute" style="top:-6px; right:-8px; display:none;">0</span>
+                            </a>
+                        </li>
+                        @endrole
                         <li class="nav-item nav-icon dropdown">
                             <a href="#" class="search-toggle dropdown-toggle notification_list" id="notification-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" class="h-6 w-6 text-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -59,14 +62,6 @@
                                 </svg>
                                 <span class="bg-primary"></span>
                                 <span class="badge badge-pill badge-up notify_count count-mail d-none"></span>
-                                @role('admin|demo_admin')
-                                <a href="{{ route('chat.flagged.index') }}" class="ml-1 position-relative" title="Flagged messages">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" class="text-danger" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5v14m0-14h10l-2 4 2 4H4" />
-                                    </svg>
-                                    <span id="flaggedBadge" class="badge badge-pill bg-danger position-absolute" style="top:-6px; right:-8px; display:none;">0</span>
-                                </a>
-                                @endrole
                                 <span class=" dots d-none"></span>
                             </a>
                             <div class="iq-sub-dropdown dropdown-menu " aria-labelledby="notification-dropdown">
