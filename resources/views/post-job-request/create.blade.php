@@ -3,9 +3,7 @@
     <script src="https://cdn.quilljs.com/1.3.7/quill.min.js"></script>
     <style>
          
-        .form-group {
-    margin-bottom: 8rem !important;
-}
+         
     </style>
     
     <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
