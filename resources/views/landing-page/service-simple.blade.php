@@ -5,74 +5,75 @@
     <div class="container">
         <form method="GET" class="card shadow-sm mb-4 p-3" id="serviceFilterForm">
             <input type="hidden" name="mode" value="simple">
-            <div class="row g-3 align-items-end">
-                <div class="col-12 col-md-3">
+            <div class="row g-2 align-items-end d-flex flex-nowrap overflow-auto bg-light border rounded px-2 py-2" style="gap:8px;">
+                <div class="col-auto">
                     <label class="form-label">Category</label>
-                    <select name="category_id" id="categorySelect" class="form-select">
+                    <select name="category_id" id="categorySelect" class="form-select" style="min-width:200px;">
                         <option value="">All</option>
                         @foreach($categories as $c)
                         <option value="{{ $c->id }}" {{ (string)($filters['category_id'] ?? '') === (string)$c->id ? 'selected' : '' }}>{{ $c->name }}</option>
                         @endforeach
                     </select>
                 </div>
-                <div class="col-12 col-md-3">
+                <div class="col-auto">
                     <label class="form-label">Subcategory</label>
-                    <select name="subcategory_id" id="subcategorySelect" class="form-select">
+                    <select name="subcategory_id" id="subcategorySelect" class="form-select" style="min-width:200px;">
                         <option value="">All</option>
                         @foreach($subcategories as $sc)
                         <option value="{{ $sc->id }}" data-category="{{ $sc->category_id }}" {{ (string)($filters['subcategory_id'] ?? '') === (string)$sc->id ? 'selected' : '' }}>{{ $sc->name }}</option>
                         @endforeach
                     </select>
                 </div>
-                <div class="col-12 col-md-3">
+                <div class="col-auto">
                     <label class="form-label">Provider</label>
-                    <select name="provider_id" class="form-select" id="providerSelect">
+                    <select name="provider_id" class="form-select" id="providerSelect" style="min-width:200px;">
                         <option value="">All</option>
                         @foreach($providers as $p)
                         <option value="{{ $p->id }}" {{ (string)($filters['provider_id'] ?? '') === (string)$p->id ? 'selected' : '' }}>{{ $p->display_name }}</option>
                         @endforeach
                     </select>
                 </div>
-                <div class="col-12 col-md-3">
+                <div class="col-auto">
                     <label class="form-label">Search</label>
-                    <input type="text" class="form-control" name="q" value="{{ $filters['q'] ?? '' }}" placeholder="Search services">
+                    <input type="text" class="form-control" name="q" value="{{ $filters['q'] ?? '' }}" placeholder="Search services" style="min-width:200px;">
                 </div>
-                <div class="col-12 col-md-3">
+                <div class="col-auto">
                     <label class="form-label">Country</label>
-                    <select name="country_id" id="countrySelect" class="form-select">
+                    <select name="country_id" id="countrySelect" class="form-select" style="min-width:180px;">
                         <option value="">All</option>
                         @foreach($countries as $ct)
                         <option value="{{ $ct->id }}" {{ (string)($filters['country_id'] ?? '') === (string)$ct->id ? 'selected' : '' }}>{{ $ct->name }}</option>
                         @endforeach
                     </select>
                 </div>
-                <div class="col-12 col-md-3">
+                <div class="col-auto">
                     <label class="form-label">City</label>
-                    <select name="city_id" id="citySelect" class="form-select">
+                    <select name="city_id" id="citySelect" class="form-select" style="min-width:180px;">
                         <option value="">All</option>
                         @foreach($cities as $cy)
                         <option value="{{ $cy->id }}" data-country="{{ $cy->country_id }}" data-state="{{ $cy->state_id ?? '' }}" {{ (string)($filters['city_id'] ?? '') === (string)$cy->id ? 'selected' : '' }}>{{ $cy->name }}</option>
                         @endforeach
                     </select>
                 </div>
-                <div class="col-6 col-md-2">
+                <div class="col-auto">
                     <label class="form-label">Min price</label>
-                    <input type="number" step="0.01" class="form-control" name="price_min" value="{{ $filters['price_min'] ?? '' }}">
+                    <input type="number" step="0.01" class="form-control" name="price_min" value="{{ $filters['price_min'] ?? '' }}" style="min-width:120px;">
                 </div>
-                <div class="col-6 col-md-2">
+                <div class="col-auto">
                     <label class="form-label">Max price</label>
-                    <input type="number" step="0.01" class="form-control" name="price_max" value="{{ $filters['price_max'] ?? '' }}">
+                    <input type="number" step="0.01" class="form-control" name="price_max" value="{{ $filters['price_max'] ?? '' }}" style="min-width:120px;">
                 </div>
-                <div class="col-12 col-md-2">
+                <div class="col-auto">
                     <label class="form-label">Sort</label>
-                    <select name="sort" class="form-select">
+                    <select name="sort" class="form-select" style="min-width:160px;">
                         <option value="newest" {{ ($filters['sort'] ?? 'newest')==='newest' ? 'selected' : '' }}>Newest</option>
                         <option value="price_asc" {{ ($filters['sort'] ?? '')==='price_asc' ? 'selected' : '' }}>Price: Low to High</option>
                         <option value="price_desc" {{ ($filters['sort'] ?? '')==='price_desc' ? 'selected' : '' }}>Price: High to Low</option>
                     </select>
                 </div>
-                <div class="col-12 col-md-2 text-md-end">
-                    <button id="applyBtn" type="submit" class="btn btn-primary w-100">Apply</button>
+                <div class="col-auto text-md-end d-flex align-items-end" style="gap:8px;">
+                    <a href="{{ route('service.list') }}" class="btn btn-light border">Clear</a>
+                    <button id="applyBtn" type="submit" class="btn btn-primary">Apply</button>
                 </div>
             </div>
         </form>
