@@ -2,8 +2,11 @@
     <link rel="stylesheet" href="https://cdn.quilljs.com/1.3.7/quill.snow.css">
     <script src="https://cdn.quilljs.com/1.3.7/quill.min.js"></script>
     <style>
-         
-         
+        .ql-editor { min-height: 220px; }
+        /* Space below each Quill editor to avoid rows touching */
+        .ql-container { margin-bottom: 1rem; }
+        /* Ensure spacing even when wrapped by .form-group overrides */
+        .quill-group { margin-bottom: 1.25rem; }
     </style>
     
     <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
@@ -224,22 +227,22 @@
                             
 
                             <div class="row">
-                                <div class="form-group col-md-6">
+                                <div class="form-group col-md-6 quill-group">
                                     <label for="description">{{ __('messages.description') }}</label>
                                     <textarea name="description" id="description" class="form-control textarea editor-fixed" rows="6" placeholder="{{ __('messages.description') }}">{{ old('description', $postJob->description) }}</textarea>
                                 </div>
-                                <div class="form-group col-md-6">
+                                <div class="form-group col-md-6 quill-group">
                                     <label for="requirement">{{ __('Skills & Requirements') }} <span class="text-danger">*</span></label>
                                     <textarea name="requirement" id="requirement" class="form-control textarea editor-fixed" rows="6" placeholder="{{ __('requirements') }}" required>{{ old('requirement', $postJob->requirement) }}</textarea>
                                     <small class="help-block with-errors text-danger"></small>
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="form-group col-md-6">
+                                <div class="form-group col-md-6 quill-group">
                                     <label for="duties">{{ __('Duties & Responsibilities') }}</label>
                                     <textarea name="duties" id="duties" class="form-control textarea editor-fixed" rows="6" placeholder="{{ __('duties & responsibilities') }}">{{ old('duties', $postJob->duties) }}</textarea>
                                 </div>
-                                <div class="form-group col-md-6">
+                                <div class="form-group col-md-6 quill-group">
                                     <label for="benefits">{{ __('Benefits') }}</label>
                                     <textarea name="benefits" id="benefits" class="form-control textarea editor-fixed" rows="6" placeholder="{{ __('benefits') }}">{{ old('benefits', $postJob->benefits) }}</textarea>
                                 </div></div>
