@@ -560,7 +560,7 @@
                                                     text-transform: uppercase;
                                                     letter-spacing: 0.5px;
                                                 ">
-                                                    Job Type
+                                                    Job Type asi
                                                 </span>
                                                 <span class="status-badge" style="
                                                 padding: 3px 6px;
