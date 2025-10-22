@@ -3,11 +3,10 @@
     <script src="https://cdn.quilljs.com/1.3.7/quill.min.js"></script>
     <style>
         .ql-editor { min-height: 80px; }
-        .ql-container .ql-editor { min-height: 80px; }
         /* Add spacing so Quill editors don't touch adjacent rows */
-        .ql-container { margin-bottom: 0.75rem; }
+        .ql-container { margin-bottom: 1rem; }
         /* Ensure spacing even when wrapped in .form-group */
-        .quill-group { margin-bottom: 1rem; }
+        .quill-group { margin-bottom: 5.25rem; }
     </style>
 
     <div class="container-fluid">
@@ -327,8 +326,6 @@
                                 {{ html()->label(__('Cancellation Policy & Fees'), 'cancellation_policy')->class('form-control-label') }}
                                 {{ html()->textarea('cancellation_policy', old('cancellation_policy', $servicedata->cancellation_policy))->class('form-control textarea js-richtext')->rows(3)->placeholder(__('cancellation_policy'))->id('cancellation_policy') }}
                             </div>
-                        </div>
-                        <div class="row">
                             
                             @if (!empty($slotservice) && $slotservice == 1)
                                 <div class="form-group col-md-3">
