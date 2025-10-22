@@ -27,14 +27,14 @@
                         </div>
                     </div>
                 </div>
-                @role('admin|demo_admin')
+                {{-- @role('admin|demo_admin')
                 <a href="{{ route('chat.flagged.index') }}" class="ml-3 position-relative" title="Flagged messages">
                     <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" class="text-danger" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v4m0 4h.01M12 2a10 10 0 100 20 10 10 0 000-20z" />
                     </svg>
                     <span id="flaggedBadgeSun" class="badge badge-pill bg-danger position-absolute" style="top:-6px; right:-8px; display:none;">0</span>
                 </a>
-                @endrole
+                @endrole --}}
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-label="Toggle navigation">
                     <svg xmlns="http://www.w3.org/2000/svg" class="text-secondary" width="30" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
@@ -52,7 +52,7 @@
                                 <span id="chatPulse" class="position-absolute chat-pulse-dot" style="top:-2px; right:-2px; display:none;"></span>
                             </a>
                         </li>
-                        {{-- <li class="nav-item nav-icon dropdown">
+                        <li class="nav-item nav-icon dropdown">
                             <a href="#" class="search-toggle dropdown-toggle notification_list" id="notification-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" class="h-6 w-6 text-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
@@ -69,7 +69,7 @@
                             <div class="iq-sub-dropdown dropdown-menu " aria-labelledby="notification-dropdown">
                                 <div class="card shadow-none m-0 border-0 notification_data"></div>
                             </div>
-                        </li> --}}
+                        </li>
                         <li class="nav-item nav-icon dropdown">
                             <a href="#" class="search-toggle dropdown-toggle language-toggle" id="languageDropdownMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <?php
