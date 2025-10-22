@@ -1025,20 +1025,31 @@
                                     </div>
                                     
 
-                                    @php
+                                    {{-- @php
                                         $fullTitle = trim($data->name ?? '');
                                         $words = preg_split('/\s+/', $fullTitle, -1, PREG_SPLIT_NO_EMPTY);
                                         $shortTitle = implode(' ', array_slice($words, 0, 4));
                                         $hasMoreTitle = count($words) > 4;
-                                    @endphp
+                                    @endphp --}}
                                     <a href="{{ route('service.detail', $data->id) }}" class="service-heading mt-2 d-block p-0 text-decoration-none">
-                                        <h5 class="service-title font-size-18 line-count-2">
-                                            <span id="s4-title-{{ $data->id }}" class="service-title-text" data-expanded="0" data-short-title="{{ $shortTitle }}" data-full-title="{{ $fullTitle }}">{{ $hasMoreTitle ? $shortTitle : $fullTitle }}</span>
-                                        </h5>
+                                        <h5 class="job-title" style="
+                                            font-size: 14px;
+                                            font-weight: 700;
+                                            color: #1a1a1a;
+                                            margin-bottom: 6px;
+                                            line-height: 1.2;
+                                            display: -webkit-box;
+                                            -webkit-line-clamp: 2;
+                                            -webkit-box-orient: vertical;
+                                            overflow: hidden;
+                                            min-height: 34px;
+                                        ">
+                                            {{ $data->name }}
+                                            </h5>
                                     </a>
-                                    @if($hasMoreTitle)
+                                    {{-- @if($hasMoreTitle)
                                         <button type="button" class="btn btn-link p-0 ms-1 see-more-title" data-target="#s4-title-{{ $data->id }}">{{ __('See more') }}</button>
-                                    @endif
+                                    @endif --}}
                                     <h5 class="mt-0 mb-0 text-truncate" style="font-size:12px;">
                                         <span style="font-size: 12px;">{{ optional($data->city)->name ?? 'City' }}, {{ optional($data->country)->name ?? 'Country' }}</span>
                                     </h5>
