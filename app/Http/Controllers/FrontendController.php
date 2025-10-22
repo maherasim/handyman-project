@@ -207,15 +207,15 @@ class FrontendController extends Controller
                 'q'             => $request->get('q'),
             ];
 
-            $categories    = Category::where('status', 1)->orderBy('name')->get(['id','name']);
-            $subcategories = SubCategory::where('status', 1)->orderBy('name')->get(['id','name','category_id']);
-            $providers     = User::where('user_type','provider')->where('status',1)->orderBy('display_name')->get(['id','display_name']);
-            $countries     = Country::orderBy('name')->get(['id','name']);
+            $categories    = Category::where('status', 1)->orderBy('name')->get(['id','name'])->take(10);
+            $subcategories = SubCategory::where('status', 1)->orderBy('name')->get(['id','name','category_id'])->take(10);
+            $providers     = User::where('user_type','provider')->where('status',1)->orderBy('display_name')->get(['id','display_name'])->take(10);
+            $countries     = Country::orderBy('name')->get(['id','name'])->take(10);
             // cities table doesn't have country_id; join states to fetch country_id for dependent dropdown
             $cities        = City::query()
                 ->leftJoin('states', 'states.id', '=', 'cities.state_id')
                 ->orderBy('cities.name')
-                ->get(['cities.id', 'cities.name', 'cities.state_id', 'states.country_id']);
+                ->get(['cities.id', 'cities.name', 'cities.state_id', 'states.country_id'])->take(10);
 
             $query = Service::where('service_type','service')->where('status',1);
             if (!empty($filters['q'])) {
