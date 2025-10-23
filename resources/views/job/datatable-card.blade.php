@@ -554,7 +554,7 @@
                                      padding-top: 8px;
                                      border-top: 1px solid #f0f0f0;
                                  ">
-                                            <a href="#" class="social-link share-link" data-platform="facebook" data-job-id="{{ $jobRequest->id }}"
+                                            <span role="button" tabindex="0" class="social-link share-link" data-platform="facebook" data-job-id="{{ $jobRequest->id }}" data-share-url="{{ route('job.details', $jobRequest->id) }}"
                                                  style="
                                          width: 24px;
                                          height: 24px;
@@ -564,12 +564,12 @@
                                          align-items: center;
                                          justify-content: center;
                                          transition: all 0.3s ease;
-                                         text-decoration: none;
+                                          text-decoration: none; cursor: pointer;
                                      ">
                                                  <img src="https://static.vecteezy.com/system/resources/previews/016/716/481/original/facebook-icon-free-png.png"
                                                      alt="Facebook" style="width: 12px; height: 12px;">
-                                             </a>
-                                            <a href="#" class="social-link share-link" data-platform="instagram" data-job-id="{{ $jobRequest->id }}"
+                                            </span>
+                                            <span role="button" tabindex="0" class="social-link share-link" data-platform="instagram" data-job-id="{{ $jobRequest->id }}"
                                                  style="
                                          width: 24px;
                                          height: 24px;
@@ -579,12 +579,12 @@
                                          align-items: center;
                                          justify-content: center;
                                          transition: all 0.3s ease;
-                                         text-decoration: none;
+                                          text-decoration: none; cursor: pointer;
                                      ">
                                                  <img src="https://upload.wikimedia.org/wikipedia/commons/9/95/Instagram_logo_2022.svg"
                                                      alt="Instagram" style="width: 12px; height: 12px;">
-                                             </a>
-                                            <a href="#" class="social-link share-link" data-platform="twitter" data-share-url="{{ route('job.details', $jobRequest->id) }}" data-text="{{ $jobRequest->title }}"
+                                            </span>
+                                            <span role="button" tabindex="0" class="social-link share-link" data-platform="twitter" data-share-url="{{ route('job.details', $jobRequest->id) }}" data-text="{{ $jobRequest->title }}"
                                                  style="
                                          width: 24px;
                                          height: 24px;
@@ -594,26 +594,26 @@
                                          align-items: center;
                                          justify-content: center;
                                          transition: all 0.3s ease;
-                                         text-decoration: none;
+                                          text-decoration: none; cursor: pointer;
                                      ">
                                                  <img src="https://cdn.pixabay.com/photo/2015/03/10/17/30/twitter-667462_640.png"
                                                      alt="Twitter" style="width: 12px; height: 12px;">
-                                             </a>
-                                            <a href="#" class="social-link share-link" data-platform="linkedin" data-share-url="{{ route('job.details', $jobRequest->id) }}"
+                                            </span>
+                                            <span role="button" tabindex="0" class="social-link share-link" data-platform="linkedin" data-share-url="{{ route('job.details', $jobRequest->id) }}"
                                                  style="
                                          width: 24px;
                                          height: 24px;
                                          border-radius: 5px;
                                          background: #f8f9fa;
                                          transition: all 0.3s ease;
-                                         text-decoration: none;
+                                          text-decoration: none; cursor: pointer;
                                          display: flex;
                                          align-items: center;
                                          justify-content: center;
                                      ">
                                                  <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRokEYt0yyh6uNDKL8uksVLlhZ35laKNQgZ9g&s"
                                                      alt="LinkedIn" style="width: 12px; height: 12px;">
-                                             </a>
+                                            </span>
                                          </div>
                                      </div>
                                  </div>
