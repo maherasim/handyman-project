@@ -13,7 +13,7 @@
                             <h5 class="fw-bold">{{ $pageTitle ?? trans('messages.list') }}</h5>
                             @isset($walletBalance)
                             <div class="badge bg-primary" style="font-size: 14px;">
-                                {{ __('messages.wallet') }}: {{ getPriceFormat($walletBalance) }}
+                                {{ __('Wallet Balance') }}: {{ getPriceFormat($walletBalance) }}
                             </div>
                             @endisset
                         </div>
