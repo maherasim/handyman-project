@@ -62,6 +62,12 @@
   </div>
   <script>
       $(document).ready(function(event) {
+          if ($.fn.DataTable.isDataTable('#datatable')) {
+              try {
+                  $('#datatable').DataTable().clear().destroy();
+              } catch (e) {}
+              $('#datatable').empty();
+          }
 
           window.renderedDataTable = $('#datatable').DataTable({
               processing: true,
