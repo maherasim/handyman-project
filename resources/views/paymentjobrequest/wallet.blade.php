@@ -11,6 +11,11 @@
                     <div class="card-body p-0">
                         <div class="d-flex justify-content-between align-items-center p-3">
                             <h5 class="fw-bold">{{ $pageTitle ?? trans('messages.list') }}</h5>
+                            @isset($walletBalance)
+                            <div class="badge bg-primary" style="font-size: 14px;">
+                                {{ __('messages.wallet') }}: {{ getPriceFormat($walletBalance) }}
+                            </div>
+                            @endisset
                         </div>
                     </div>
                 </div>
@@ -89,7 +94,8 @@
                             orderable: false,
                             searchable: false,
                         },
-                    @endif () {
+                    @endif,
+                    {
                         data: 'updated_at',
                         name: 'updated_at',
                         title: "{{ __('product.lbl_update_at') }}",

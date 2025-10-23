@@ -93,9 +93,12 @@ class PaymentController extends Controller
     }
     public function postjobwalletIndex()
     {
-        $pageTitle = __('messages.list_form_title', ['form' => __('messages.wallet_history')]);
+        $user = auth()->user();
+        $userName = $user->display_name ?? ($user->username ?? $user->email);
+        $pageTitle = __('messages.wallet_history', ['user_name' => $userName]);
         $assets = ['datatable'];
-        return view('paymentjobrequest.wallet', compact('pageTitle', 'assets'));
+        $walletBalance = \App\Models\Wallet::where('user_id', $user->id)->value('amount') ?? 0;
+        return view('paymentjobrequest.wallet', compact('pageTitle', 'assets', 'walletBalance'));
     }
     public function postjobwallet_index_data(DataTables $datatable, Request $request)
     {
