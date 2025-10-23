@@ -405,24 +405,66 @@
                     </button>
 
                     <!-- Social Sharing -->
-                    <div class="d-flex align-items-center justify-content-center gap-3 mb-4">
-                        <a href="#" class="text-decoration-none">
+                    <div class="d-flex align-items-center justify-content-center gap-3 mb-4 social-icons">
+                        <span role="button" tabindex="0" class="social-link share-link" data-platform="facebook" data-share-url="{{ route('job.details', $jobrequest->id) }}?v={{ optional($jobrequest->updated_at)->timestamp ?? time() }}" data-quote="{{ $jobrequest->title }} • €{{ number_format($jobrequest->price) }} • {{ ucfirst($jobrequest->price_type ?? 'fixed') }} • {{ data_get($jobrequest,'city.name','City') }}, {{ data_get($jobrequest,'country.name','Country') }}" onclick="return window.__shareClickHandler(event, this);">
                             <img src="https://static.vecteezy.com/system/resources/previews/016/716/447/non_2x/facebook-icon-free-png.png" 
                                  style="width: 30px; border-radius: 8px;" alt="Facebook">
-                        </a>
-                        <a href="#" class="text-decoration-none">
+                        </span>
+                        <span role="button" tabindex="0" class="social-link share-link" data-platform="instagram" data-image-url="{{ !empty($attachments) && count($attachments) > 0 ? $attachments[0] : asset('images/post-job/ac_refresh_and_revive.png') }}" data-quote="{{ $jobrequest->title }} • €{{ number_format($jobrequest->price) }} • {{ ucfirst($jobrequest->price_type ?? 'fixed') }} • {{ data_get($jobrequest,'city.name','City') }}, {{ data_get($jobrequest,'country.name','Country') }} — {{ route('job.details', $jobrequest->id) }}" onclick="return window.__shareClickHandler(event, this);">
                             <img src="https://upload.wikimedia.org/wikipedia/commons/9/95/Instagram_logo_2022.svg" 
                                  style="width: 30px; border-radius: 8px;" alt="Instagram">
-                        </a>
-                        <a href="#" class="text-decoration-none">
+                        </span>
+                        <span role="button" tabindex="0" class="social-link share-link" data-platform="twitter" data-share-url="{{ route('job.details', $jobrequest->id) }}?v={{ optional($jobrequest->updated_at)->timestamp ?? time() }}" data-text="{{ $jobrequest->title }} • €{{ number_format($jobrequest->price) }} • {{ ucfirst($jobrequest->price_type ?? 'fixed') }} • {{ data_get($jobrequest,'city.name','City') }}, {{ data_get($jobrequest,'country.name','Country') }}" onclick="return window.__shareClickHandler(event, this);">
                             <img src="https://cdn.pixabay.com/photo/2015/03/10/17/30/twitter-667462_640.png" 
                                  style="width: 30px; border-radius: 8px;" alt="Twitter">
-                        </a>
-                        <a href="#" class="text-decoration-none">
+                        </span>
+                        <span role="button" tabindex="0" class="social-link share-link" data-platform="linkedin" data-share-url="{{ route('job.details', $jobrequest->id) }}?v={{ optional($jobrequest->updated_at)->timestamp ?? time() }}" onclick="return window.__shareClickHandler(event, this);">
                             <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRokEYt0yyh6uNDKL8uksVLlhZ35laKNQgZ9g&s" 
                                  style="width: 30px; border-radius: 8px;" alt="LinkedIn">
-                        </a>
+                        </span>
                     </div>
+
+                    <script>
+                        if (!window.__shareClickHandler) {
+                            window.__shareClickHandler = function(e, el) {
+                                try { e.preventDefault(); e.stopPropagation(); } catch (_) {}
+
+                                function openPopup(url) {
+                                    window.open(url, '_blank', 'noopener,noreferrer,width=600,height=600');
+                                }
+
+                                var platform = el.getAttribute('data-platform');
+                                var shareUrl = el.getAttribute('data-share-url');
+
+                                if (platform === 'facebook') {
+                                    var fbUrl = encodeURIComponent(shareUrl || window.location.href);
+                                    var quote = encodeURIComponent(el.getAttribute('data-quote') || '');
+                                    openPopup('https://www.facebook.com/sharer/sharer.php?u=' + fbUrl + (quote ? '&quote=' + quote : ''));
+                                } else if (platform === 'twitter') {
+                                    var text = encodeURIComponent(el.getAttribute('data-text') || '');
+                                    var url = encodeURIComponent(shareUrl || window.location.href);
+                                    openPopup('https://twitter.com/intent/tweet?url=' + url + '&text=' + text);
+                                } else if (platform === 'linkedin') {
+                                    var liUrl = encodeURIComponent(shareUrl || window.location.href);
+                                    openPopup('https://www.linkedin.com/sharing/share-offsite/?url=' + liUrl);
+                                } else if (platform === 'instagram') {
+                                    var quoteText = el.getAttribute('data-quote') || '';
+                                    if (navigator.share) {
+                                        try {
+                                            navigator.share({ text: quoteText, url: shareUrl || window.location.href })
+                                                .catch(function() {});
+                                        } catch (_) {
+                                            openPopup('https://www.instagram.com/');
+                                        }
+                                    } else {
+                                        openPopup('https://www.instagram.com/');
+                                    }
+                                }
+
+                                return false;
+                            };
+                        }
+                    </script>
 
                     <!-- Tabbed Job Details Section -->
                     <div class="bg-light rounded-3">
