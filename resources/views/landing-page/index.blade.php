@@ -96,11 +96,6 @@
     box-shadow: 0 10px 24px rgba(18,38,63,.08); 
     transform: translateY(-2px); 
 }
-.type-badge { background: #F1F5F9; color: #334155; padding: 4px 8px; border-radius: 999px; font-size: 12px; font-weight: 600; }
-.duration-text { color: #6B7280; font-size: 12px; }
-.price-chip { background: #EEF2FF; color: #4338CA; padding: 6px 10px; border-radius: 10px; font-weight: 700; font-size: 14px; }
-.price-chip.is-free { background: #ECFDF5; color: #065F46; }
-.discount-badge { background: #FEF2F2; color: #B91C1C; padding: 4px 6px; border-radius: 8px; font-size: 12px; font-weight: 700; }
 .social-share img, .social-share svg { 
     width: 28px; 
     height: 28px; 
@@ -750,34 +745,15 @@
                                                 </form>
                                             @endif
                                         </div>
-                                        <div class="meta-row d-flex align-items-center justify-content-between mt-2">
-                                            <div class="meta-left d-flex align-items-center" style="gap:8px;">
-                                                @if(!empty($data->visit_type))
-                                                    <span class="type-badge">{{ $data->visit_type === 'ONLINE' ? 'Online' : 'On-site' }}</span>
-                                                @endif
-                                                @if(!empty($data->duration) && $data->duration !== '00:00')
-                                                    @php
-                                                        $parts = explode(':', $data->duration);
-                                                        $h = (int)($parts[0] ?? 0);
-                                                        $m = (int)($parts[1] ?? 0);
-                                                        $durLabel = $h > 0 ? ($h.' '.__('landingpage.hrs').' '.$m.' '.__('landingpage.min')) : ($m.' '.__('landingpage.min'));
-                                                    @endphp
-                                                    <span class="duration-text">{{ $durLabel }}</span>
+                                        <ul>
+                                            <div class="service d-flex justify-content-center" style="position:relative; z-index:1111; margin:auto; background-image: url('{{ asset('images/icon/banner2.jpg') }}'); background-size: cover; width:85% ; margin-top:-32px;  background-repeat: no-repeat; background-position: center; padding: 10px 20px; color: white; font-weight: 600; font-size: 18px; border-radius: 10px; border: 3px solid #E1DCDD;">
+                                                @if($data->price==0)
+                                                    <li class="text-primary fw-500 d-inline-block position-relative font-size-18">Free</li>
+                                                @else
+                                                    <li class="text-white fw-500 d-inline-block position-relative font-size-18">{{ getPriceFormat($data->price) }} @if(!empty($data->type)) / {{ $data->type }} @endif</li>
                                                 @endif
                                             </div>
-                                            <div class="meta-right d-flex align-items-center" style="gap:8px;">
-                                                @if(!empty($data->discount) && $data->discount > 0)
-                                                    <span class="discount-badge">-{{ (int)$data->discount }}%</span>
-                                                @endif
-                                                <span class="price-chip {{ ($data->price ?? 0) > 0 ? '' : 'is-free' }}">
-                                                    @if(($data->price ?? 0) > 0)
-                                                        {{ getPriceFormat($data->price) }}
-                                                    @else
-                                                        Free
-                                                    @endif
-                                                </span>
-                                            </div>
-                                        </div>
+                                        </ul>
 
                                         {{-- @php
                                             $fullTitle = trim($data->name ?? '');
@@ -1062,34 +1038,6 @@
                                             {{ $data->name }}
                                             </h5>
                                     </a>
-                                    <div class="meta-row d-flex align-items-center justify-content-between mt-2">
-                                        <div class="meta-left d-flex align-items-center" style="gap:8px;">
-                                            @if(!empty($data->visit_type))
-                                                <span class="type-badge">{{ $data->visit_type === 'ONLINE' ? 'Online' : 'On-site' }}</span>
-                                            @endif
-                                            @if(!empty($data->duration) && $data->duration !== '00:00')
-                                                @php
-                                                    $parts = explode(':', $data->duration);
-                                                    $h = (int)($parts[0] ?? 0);
-                                                    $m = (int)($parts[1] ?? 0);
-                                                    $durLabel = $h > 0 ? ($h.' '.__('landingpage.hrs').' '.$m.' '.__('landingpage.min')) : ($m.' '.__('landingpage.min'));
-                                                @endphp
-                                                <span class="duration-text">{{ $durLabel }}</span>
-                                            @endif
-                                        </div>
-                                        <div class="meta-right d-flex align-items-center" style="gap:8px;">
-                                            @if(!empty($data->discount) && $data->discount > 0)
-                                                <span class="discount-badge">-{{ (int)$data->discount }}%</span>
-                                            @endif
-                                            <span class="price-chip {{ ($data->price ?? 0) > 0 ? '' : 'is-free' }}">
-                                                @if(($data->price ?? 0) > 0)
-                                                    {{ getPriceFormat($data->price) }}
-                                                @else
-                                                    Free
-                                                @endif
-                                            </span>
-                                        </div>
-                                    </div>
                                     {{-- @if($hasMoreTitle)
                                         <button type="button" class="btn btn-link p-0 ms-1 see-more-title" data-target="#s4-title-{{ $data->id }}">{{ __('See more') }}</button>
                                     @endif --}}
@@ -1162,38 +1110,19 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="d-flex mt-3 social-icons" style="gap: 18px; justify-content: center;">
-                                                <span role="button" tabindex="0" class="social-link share-link"
-                                                      data-platform="facebook"
-                                                      data-share-url="{{ route('service.detail', $data->id) }}?v={{ optional($data->updated_at)->timestamp ?? time() }}"
-                                                      data-quote="{{ Str::limit($data->name, 80) }} • {{ getPriceFormat($data->price) }} • {{ ucfirst($data->type) }} • {{ $data->city->name ?? 'City' }}, {{ $data->country->name ?? 'Country' }}"
-                                                      onclick="return window.__shareClickHandler(event, this);">
-                                                    <img src="https://static.vecteezy.com/system/resources/previews/016/716/481/original/facebook-icon-free-png.png"
-                                                         style="width: 30px; border-radius: 8px;" alt="Facebook">
-                                                </span>
-                                                <span role="button" tabindex="0" class="social-link share-link"
-                                                      data-platform="instagram"
-                                                      data-image-url="{{ getSingleMedia($data, 'service_attachment', null) }}"
-                                                      data-quote="{{ Str::limit($data->name, 80) }} • {{ getPriceFormat($data->price) }} • {{ ucfirst($data->type) }} • {{ $data->city->name ?? 'City' }}, {{ $data->country->name ?? 'Country' }} — {{ route('service.detail', $data->id) }}"
-                                                      onclick="return window.__shareClickHandler(event, this);">
-                                                    <img src="https://upload.wikimedia.org/wikipedia/commons/9/95/Instagram_logo_2022.svg"
-                                                         style="width: 30px; border-radius: 8px;" alt="Instagram">
-                                                </span>
-                                                <span role="button" tabindex="0" class="social-link share-link"
-                                                      data-platform="twitter"
-                                                      data-share-url="{{ route('service.detail', $data->id) }}?v={{ optional($data->updated_at)->timestamp ?? time() }}"
-                                                      data-text="{{ Str::limit($data->name, 80) }} • {{ getPriceFormat($data->price) }} • {{ ucfirst($data->type) }} • {{ $data->city->name ?? 'City' }}, {{ $data->country->name ?? 'Country' }}"
-                                                      onclick="return window.__shareClickHandler(event, this);">
-                                                    <img src="https://cdn.pixabay.com/photo/2015/03/10/17/30/twitter-667462_640.png"
-                                                         style="width: 30px; border-radius: 8px;" alt="Twitter">
-                                                </span>
-                                                <span role="button" tabindex="0" class="social-link share-link"
-                                                      data-platform="linkedin"
-                                                      data-share-url="{{ route('service.detail', $data->id) }}?v={{ optional($data->updated_at)->timestamp ?? time() }}"
-                                                      onclick="return window.__shareClickHandler(event, this);">
-                                                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRokEYt0yyh6uNDKL8uksVLlhZ35laKNQgZ9g&s"
-                                                         style="width: 30px; border-radius: 8px;" alt="LinkedIn">
-                                                </span>
+                                            <div class="d-flex mt-3 " style="gap: 18px; justify-content: center;">
+                                                <a href="#"><img
+                                                        src="https://static.vecteezy.com/system/resources/previews/016/716/481/original/facebook-icon-free-png.png"
+                                                        style="width: 30px; border-radius: 8px;" alt=""></a>
+                                                <a href="#"><img
+                                                        src="https://upload.wikimedia.org/wikipedia/commons/9/95/Instagram_logo_2022.svg"
+                                                        style="width: 30px; border-radius: 8px;" alt=""></a>
+                                                <a href="#"><img
+                                                        src="https://cdn.pixabay.com/photo/2015/03/10/17/30/twitter-667462_640.png"
+                                                        style="width: 30px; border-radius: 8px;" alt=""></a>
+                                                <a href="#"><img
+                                                        src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRokEYt0yyh6uNDKL8uksVLlhZ35laKNQgZ9g&s"
+                                                        style="width: 30px; border-radius: 8px;" alt=""></a>
                                             </div>
     
                                         </div>
