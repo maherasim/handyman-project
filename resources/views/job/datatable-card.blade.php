@@ -584,7 +584,7 @@
                                                  <img src="https://upload.wikimedia.org/wikipedia/commons/9/95/Instagram_logo_2022.svg"
                                                      alt="Instagram" style="width: 12px; height: 12px;">
                                             </span>
-                                            <span role="button" tabindex="0" class="social-link share-link" data-platform="twitter" data-share-url="{{ route('job.details', $jobRequest->id) }}?v={{ optional($jobRequest->updated_at)->timestamp ?? time() }}" data-text="{{ $jobRequest->title }}" onclick="return window.__shareClickHandler(event, this);"
+                                            <span role="button" tabindex="0" class="social-link share-link" data-platform="twitter" data-share-url="{{ route('job.details', $jobRequest->id) }}?v={{ optional($jobRequest->updated_at)->timestamp ?? time() }}" data-text="{{ $jobRequest->title }} • €{{ number_format($jobRequest->price) }} • {{ ucfirst($jobRequest->price_type ?? 'fixed') }} • {{ data_get($jobRequest,'city.name','City') }}, {{ data_get($jobRequest,'country.name','Country') }}" onclick="return window.__shareClickHandler(event, this);"
                                                  style="
                                          width: 24px;
                                          height: 24px;
