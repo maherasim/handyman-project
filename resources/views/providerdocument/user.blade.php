@@ -1,5 +1,8 @@
 @if(isset($query->providers))
-@if(auth()->user()->can('providerdocument edit'))
+@php
+    $allowEdit = auth()->user()->can('providerdocument edit') && !(auth()->user()->hasRole('provider') && (int)($query->is_verified) === 1);
+@endphp
+@if($allowEdit)
 <a href="{{ route('providerdocument.create', ['id' => $query->id,'providerdocument' => $query->provider_id]) }}">
   <div class="d-flex gap-3 align-items-center">
     <img src="{{ getSingleMedia(optional($query->providers),'profile_image', null) }}" alt="avatar" class="avatar avatar-40 rounded-pill">

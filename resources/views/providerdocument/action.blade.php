@@ -5,9 +5,10 @@
 {{ html()->form('DELETE', route('providerdocument.destroy', $provider_document->id))->attribute('data--submit', 'providerdocument'.$provider_document->id)->open() }}
 <div class="d-flex justify-content-end align-items-center ms-2">
     @if(!$provider_document->trashed())
- 
-
-        @if($auth_user->can('providerdocument delete'))
+        @php
+            $hideDeleteForVerifiedProvider = ($provider_document->is_verified == 1) && auth()->user()->hasRole('provider');
+        @endphp
+        @if($auth_user->can('providerdocument delete') && !$hideDeleteForVerifiedProvider)
         <a class="me-3" href="{{ route('providerdocument.destroy', $provider_document->id) }}" data--submit="providerdocument{{$provider_document->id}}" 
             data--confirmation='true' 
             data--ajax="true"
