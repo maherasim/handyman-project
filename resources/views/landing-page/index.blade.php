@@ -1110,19 +1110,38 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="d-flex mt-3 " style="gap: 18px; justify-content: center;">
-                                                <a href="#"><img
-                                                        src="https://static.vecteezy.com/system/resources/previews/016/716/481/original/facebook-icon-free-png.png"
-                                                        style="width: 30px; border-radius: 8px;" alt=""></a>
-                                                <a href="#"><img
-                                                        src="https://upload.wikimedia.org/wikipedia/commons/9/95/Instagram_logo_2022.svg"
-                                                        style="width: 30px; border-radius: 8px;" alt=""></a>
-                                                <a href="#"><img
-                                                        src="https://cdn.pixabay.com/photo/2015/03/10/17/30/twitter-667462_640.png"
-                                                        style="width: 30px; border-radius: 8px;" alt=""></a>
-                                                <a href="#"><img
-                                                        src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRokEYt0yyh6uNDKL8uksVLlhZ35laKNQgZ9g&s"
-                                                        style="width: 30px; border-radius: 8px;" alt=""></a>
+                                            <div class="d-flex mt-3 social-icons" style="gap: 18px; justify-content: center;">
+                                                <span role="button" tabindex="0" class="social-link share-link"
+                                                      data-platform="facebook"
+                                                      data-share-url="{{ route('service.detail', $data->id) }}?v={{ optional($data->updated_at)->timestamp ?? time() }}"
+                                                      data-quote="{{ Str::limit($data->name, 80) }} • {{ getPriceFormat($data->price) }} • {{ ucfirst($data->type) }} • {{ $data->city->name ?? 'City' }}, {{ $data->country->name ?? 'Country' }}"
+                                                      onclick="return window.__shareClickHandler(event, this);">
+                                                    <img src="https://static.vecteezy.com/system/resources/previews/016/716/481/original/facebook-icon-free-png.png"
+                                                         style="width: 30px; border-radius: 8px;" alt="Facebook">
+                                                </span>
+                                                <span role="button" tabindex="0" class="social-link share-link"
+                                                      data-platform="instagram"
+                                                      data-image-url="{{ getSingleMedia($data, 'service_attachment', null) }}"
+                                                      data-quote="{{ Str::limit($data->name, 80) }} • {{ getPriceFormat($data->price) }} • {{ ucfirst($data->type) }} • {{ $data->city->name ?? 'City' }}, {{ $data->country->name ?? 'Country' }} — {{ route('service.detail', $data->id) }}"
+                                                      onclick="return window.__shareClickHandler(event, this);">
+                                                    <img src="https://upload.wikimedia.org/wikipedia/commons/9/95/Instagram_logo_2022.svg"
+                                                         style="width: 30px; border-radius: 8px;" alt="Instagram">
+                                                </span>
+                                                <span role="button" tabindex="0" class="social-link share-link"
+                                                      data-platform="twitter"
+                                                      data-share-url="{{ route('service.detail', $data->id) }}?v={{ optional($data->updated_at)->timestamp ?? time() }}"
+                                                      data-text="{{ Str::limit($data->name, 80) }} • {{ getPriceFormat($data->price) }} • {{ ucfirst($data->type) }} • {{ $data->city->name ?? 'City' }}, {{ $data->country->name ?? 'Country' }}"
+                                                      onclick="return window.__shareClickHandler(event, this);">
+                                                    <img src="https://cdn.pixabay.com/photo/2015/03/10/17/30/twitter-667462_640.png"
+                                                         style="width: 30px; border-radius: 8px;" alt="Twitter">
+                                                </span>
+                                                <span role="button" tabindex="0" class="social-link share-link"
+                                                      data-platform="linkedin"
+                                                      data-share-url="{{ route('service.detail', $data->id) }}?v={{ optional($data->updated_at)->timestamp ?? time() }}"
+                                                      onclick="return window.__shareClickHandler(event, this);">
+                                                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRokEYt0yyh6uNDKL8uksVLlhZ35laKNQgZ9g&s"
+                                                         style="width: 30px; border-radius: 8px;" alt="LinkedIn">
+                                                </span>
                                             </div>
     
                                         </div>
