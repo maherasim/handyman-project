@@ -554,7 +554,7 @@
                                      padding-top: 8px;
                                      border-top: 1px solid #f0f0f0;
                                  ">
-                                            <span role="button" tabindex="0" class="social-link share-link" data-platform="facebook" data-job-id="{{ $jobRequest->id }}" data-share-url="{{ route('job.details', $jobRequest->id) }}" onclick="return window.__shareClickHandler(event, this);"
+                                            <span role="button" tabindex="0" class="social-link share-link" data-platform="facebook" data-job-id="{{ $jobRequest->id }}" data-share-url="{{ route('job.details', $jobRequest->id) }}?v={{ optional($jobRequest->updated_at)->timestamp ?? time() }}" data-quote="{{ $jobRequest->title }} • €{{ number_format($jobRequest->price) }} • {{ ucfirst($jobRequest->price_type ?? 'fixed') }} • {{ data_get($jobRequest,'city.name','City') }}, {{ data_get($jobRequest,'country.name','Country') }}" onclick="return window.__shareClickHandler(event, this);"
                                                  style="
                                          width: 24px;
                                          height: 24px;
@@ -584,7 +584,7 @@
                                                  <img src="https://upload.wikimedia.org/wikipedia/commons/9/95/Instagram_logo_2022.svg"
                                                      alt="Instagram" style="width: 12px; height: 12px;">
                                             </span>
-                                            <span role="button" tabindex="0" class="social-link share-link" data-platform="twitter" data-share-url="{{ route('job.details', $jobRequest->id) }}" data-text="{{ $jobRequest->title }}" onclick="return window.__shareClickHandler(event, this);"
+                                            <span role="button" tabindex="0" class="social-link share-link" data-platform="twitter" data-share-url="{{ route('job.details', $jobRequest->id) }}?v={{ optional($jobRequest->updated_at)->timestamp ?? time() }}" data-text="{{ $jobRequest->title }}" onclick="return window.__shareClickHandler(event, this);"
                                                  style="
                                          width: 24px;
                                          height: 24px;
@@ -599,7 +599,7 @@
                                                  <img src="https://cdn.pixabay.com/photo/2015/03/10/17/30/twitter-667462_640.png"
                                                      alt="Twitter" style="width: 12px; height: 12px;">
                                             </span>
-                                            <span role="button" tabindex="0" class="social-link share-link" data-platform="linkedin" data-share-url="{{ route('job.details', $jobRequest->id) }}" onclick="return window.__shareClickHandler(event, this);"
+                                            <span role="button" tabindex="0" class="social-link share-link" data-platform="linkedin" data-share-url="{{ route('job.details', $jobRequest->id) }}?v={{ optional($jobRequest->updated_at)->timestamp ?? time() }}" onclick="return window.__shareClickHandler(event, this);"
                                                  style="
                                          width: 24px;
                                          height: 24px;
@@ -788,7 +788,8 @@
 
                 if (platform === 'facebook') {
                     var fbUrl = encodeURIComponent(shareUrl || window.location.href);
-                    openPopup('https://www.facebook.com/sharer/sharer.php?u=' + fbUrl);
+                    var quote = encodeURIComponent(el.getAttribute('data-quote') || '');
+                    openPopup('https://www.facebook.com/sharer/sharer.php?u=' + fbUrl + (quote ? '&quote=' + quote : ''));
                 } else if (platform === 'twitter') {
                     var text = encodeURIComponent(el.getAttribute('data-text') || '');
                     var url = encodeURIComponent(shareUrl || window.location.href);
