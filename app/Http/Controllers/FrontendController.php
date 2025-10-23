@@ -207,6 +207,9 @@ class FrontendController extends Controller
                 'q'             => $request->get('q'),
             ];
 
+
+
+
             $categories    = Category::where('status', 1)->orderBy('name')->get(['id','name'])->take(10);
             $subcategories = SubCategory::where('status', 1)->orderBy('name')->get(['id','name','category_id'])->take(10);
             $providers     = User::where('user_type','provider')->where('status',1)->orderBy('display_name')->get(['id','display_name'])->take(10);

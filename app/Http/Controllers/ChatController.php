@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Mail;
+use App\Events\ChatMessageSent;
 
 class ChatController extends Controller
 {
@@ -195,6 +196,30 @@ class ChatController extends Controller
 
         // Ensure this conversation floats to the top in lists
         $conversation->touch();
+
+        // Broadcast realtime event
+        try {
+            $payload = [
+                'id' => (int) $msg->id,
+                'conversation_id' => (int) $conversation->id,
+                'sender_id' => (int) $msg->sender_id,
+                'sender_name' => optional($msg->sender)->display_name,
+                'sender_avatar_url' => getSingleMedia(optional($msg->sender), 'profile_image', null),
+                'message' => $msg->contains_pii ? null : $msg->message,
+                'created_at' => $msg->created_at?->toDateTimeString(),
+                'attachment' => $msg->contains_pii ? null : ($msg->attachment_path ? [
+                    'type' => $msg->attachment_type,
+                    'name' => basename($msg->attachment_path),
+                    'download_url' => route('chat.download', $msg->id)
+                ] : null),
+                'policy_violation' => (bool) $msg->contains_pii,
+                'hidden' => (bool) $msg->contains_pii,
+                'pii_types' => $msg->pii_types ? explode(',', $msg->pii_types) : [],
+            ];
+            broadcast(new ChatMessageSent((int) $conversation->id, $payload))->toOthers();
+        } catch (\Throwable $e) {
+            \Log::warning('Broadcast failed for message '.$msg->id.': '.$e->getMessage());
+        }
 
         // Send notification to the recipient
         \Log::info('Sending notification for message ' . $msg->id . ' in conversation ' . $conversation->id);

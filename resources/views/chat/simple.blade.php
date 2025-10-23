@@ -67,6 +67,24 @@
             let typingTimer = null;
             let lastRenderedDate = null;
 
+            // Realtime via Pusher (Laravel Echo)
+            try {
+                // Requires window.Echo to be bootstrapped globally once (in layout) or add minimal init here
+                if (!window.Echo && window.Pusher && window.EchoFactory) {
+                    window.Echo = window.EchoFactory();
+                }
+                if (window.Echo) {
+                    window.Echo.private(`chat.${conversationId}`).listen('.ChatMessageSent', (e) => {
+                        // Append the incoming message immediately
+                        if (e && typeof e === 'object') {
+                            maybeRenderDateSeparator(e.created_at);
+                            renderMessage(e);
+                            scrollToBottom();
+                        }
+                    });
+                }
+            } catch (err) { /* fallback to polling only */ }
+
             // Load messages
             function loadMessages() {
                 fetch(`/chat/${conversationId}/messages`)

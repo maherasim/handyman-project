@@ -155,6 +155,30 @@
             100% { box-shadow: 0 0 0 0 rgba(220,53,69, 0); }
         }
     </style>
+    <script>
+        // Minimal Echo factory for pages that need realtime and don't have a global bootstrap
+        window.EchoFactory = function() {
+            try {
+                if (!window.Pusher) { return null; }
+                // Lazy include pusher-js from CDN if not present
+            } catch(e) {}
+            try {
+                // Build a minimal Echo-like wrapper using Pusher directly (to avoid extra bundles)
+                const key = '{{ env('PUSHER_APP_KEY') }}';
+                const cluster = '{{ env('PUSHER_APP_CLUSTER') }}';
+                if (!key || !cluster) { return null; }
+                const pusher = new Pusher(key, { cluster: cluster, forceTLS: true, authEndpoint: '{{ url('/broadcasting/auth') }}', auth: { headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' } } });
+                return {
+                    private: function(channel){
+                        const ch = pusher.subscribe('private-' + channel);
+                        return {
+                            listen: function(event, cb){ ch.bind(event.startsWith('.') ? event.substring(1) : event, cb); return this; }
+                        };
+                    }
+                };
+            } catch(e) { return null; }
+        };
+    </script>
 </body>
 
 </html>
