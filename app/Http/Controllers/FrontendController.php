@@ -750,6 +750,8 @@ class FrontendController extends Controller
         $total_rating = optional($service->serviceRating)->sum('rating');
         $service->total_reviews = $total_reviews;
         $service->total_rating = $total_reviews > 0 ? number_format($total_rating / $total_reviews, 2) : 0;
+        // Total bookings of this service
+        $service->total_service_bookings = Booking::where('service_id', $service_id)->count();
         $serviceconfig = Setting::getValueByKey('service-configurations', 'service-configurations');
         $global_advance_payment = isset($serviceconfig->global_advance_payment) ? $serviceconfig->global_advance_payment : 0;
         $globalAdvancePaymentPercentage = $global_advance_payment == 1 ? $serviceconfig->advance_paynment_percantage : 0;

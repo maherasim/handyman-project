@@ -47,6 +47,7 @@
                     <span class="font-size-14 service-user-name">{{ service.provider_name }}</span>
                   </a>
                 </div>
+                <div class="text-muted small">{{ service.provider_city || 'City' }}, {{ service.provider_country || 'Country' }}</div>
                 <div>/</div>
                 <div class="d-flex align-items-center gap-1 flex-shrink-0">
                   <span class="text-warning">
@@ -59,6 +60,12 @@
                   </span>
                   <h6 class="font-size-14">{{ service.total_rating }}<span class="text-body"> ({{ service.total_reviews
                       }} {{ $t('messages.reviews') }})</span></h6>
+                </div>
+                <div class="w-100 mt-2 text-muted">
+                  <span class="me-2">Service location:</span>
+                  <strong>{{ service.service_city || 'City' }}, {{ service.service_country || 'Country' }}</strong>
+                  <span class="ms-3">|</span>
+                  <span class="ms-3">Bookings: <strong>{{ service.total_service_bookings || 0 }}</strong></span>
                 </div>
               </div>
             </div>
