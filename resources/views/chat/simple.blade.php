@@ -262,7 +262,24 @@
         .chat-name { font-weight: 600; font-size: 16px; line-height: 1.1; }
         .chat-sub { font-size: 12px; color: #6b7280; }
 
-        .chat-body { height: calc(100vh - 150px); overflow-y: auto; padding: 16px; background: #f7f9fb; }
+        .chat-body { 
+            height: calc(100vh - 150px); 
+            overflow-y: auto; 
+            padding: 16px; 
+            background-color: #f7f9fb;
+            background-image:
+                radial-gradient(36px 36px at 20% 12%, rgba(59, 130, 246, 0.08), rgba(59, 130, 246, 0) 70%),
+                radial-gradient(28px 28px at 82% 22%, rgba(99, 102, 241, 0.07), rgba(99, 102, 241, 0) 70%),
+                radial-gradient(40px 40px at 26% 86%, rgba(16, 185, 129, 0.08), rgba(16, 185, 129, 0) 70%),
+                radial-gradient(24px 24px at 90% 78%, rgba(234, 179, 8, 0.07), rgba(234, 179, 8, 0) 70%),
+                radial-gradient(1px 1px at 12% 10%, rgba(2, 6, 23, 0.06), transparent 60%),
+                radial-gradient(1px 1px at 60% 30%, rgba(2, 6, 23, 0.05), transparent 60%),
+                radial-gradient(1px 1px at 30% 70%, rgba(2, 6, 23, 0.05), transparent 60%),
+                radial-gradient(1px 1px at 78% 88%, rgba(2, 6, 23, 0.04), transparent 60%);
+            background-size: auto, auto, auto, auto, 180px 180px, 220px 220px, 200px 200px, 260px 260px;
+            background-repeat: no-repeat, no-repeat, no-repeat, no-repeat, repeat, repeat, repeat, repeat;
+            background-attachment: fixed;
+        }
         .chat-body { scrollbar-width: thin; }
         .chat-body::-webkit-scrollbar { width: 8px; }
         .chat-body::-webkit-scrollbar-track { background: transparent; }
