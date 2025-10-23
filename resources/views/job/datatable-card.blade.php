@@ -554,7 +554,7 @@
                                      padding-top: 8px;
                                      border-top: 1px solid #f0f0f0;
                                  ">
-                                            <span role="button" tabindex="0" class="social-link share-link" data-platform="facebook" data-job-id="{{ $jobRequest->id }}" data-share-url="{{ route('job.details', $jobRequest->id) }}"
+                                            <span role="button" tabindex="0" class="social-link share-link" data-platform="facebook" data-job-id="{{ $jobRequest->id }}" data-share-url="{{ route('job.details', $jobRequest->id) }}" onclick="return window.__shareClickHandler(event, this);"
                                                  style="
                                          width: 24px;
                                          height: 24px;
@@ -569,7 +569,7 @@
                                                  <img src="https://static.vecteezy.com/system/resources/previews/016/716/481/original/facebook-icon-free-png.png"
                                                      alt="Facebook" style="width: 12px; height: 12px;">
                                             </span>
-                                            <span role="button" tabindex="0" class="social-link share-link" data-platform="instagram" data-job-id="{{ $jobRequest->id }}"
+                                            <span role="button" tabindex="0" class="social-link share-link" data-platform="instagram" data-job-id="{{ $jobRequest->id }}" onclick="return window.__shareClickHandler(event, this);"
                                                  style="
                                          width: 24px;
                                          height: 24px;
@@ -584,7 +584,7 @@
                                                  <img src="https://upload.wikimedia.org/wikipedia/commons/9/95/Instagram_logo_2022.svg"
                                                      alt="Instagram" style="width: 12px; height: 12px;">
                                             </span>
-                                            <span role="button" tabindex="0" class="social-link share-link" data-platform="twitter" data-share-url="{{ route('job.details', $jobRequest->id) }}" data-text="{{ $jobRequest->title }}"
+                                            <span role="button" tabindex="0" class="social-link share-link" data-platform="twitter" data-share-url="{{ route('job.details', $jobRequest->id) }}" data-text="{{ $jobRequest->title }}" onclick="return window.__shareClickHandler(event, this);"
                                                  style="
                                          width: 24px;
                                          height: 24px;
@@ -599,7 +599,7 @@
                                                  <img src="https://cdn.pixabay.com/photo/2015/03/10/17/30/twitter-667462_640.png"
                                                      alt="Twitter" style="width: 12px; height: 12px;">
                                             </span>
-                                            <span role="button" tabindex="0" class="social-link share-link" data-platform="linkedin" data-share-url="{{ route('job.details', $jobRequest->id) }}"
+                                            <span role="button" tabindex="0" class="social-link share-link" data-platform="linkedin" data-share-url="{{ route('job.details', $jobRequest->id) }}" onclick="return window.__shareClickHandler(event, this);"
                                                  style="
                                          width: 24px;
                                          height: 24px;
@@ -773,36 +773,35 @@
          </script>
 
         <script>
-            (function() {
+            window.__shareClickHandler = function(e, el) {
+                try {
+                    e.preventDefault();
+                    e.stopPropagation();
+                } catch (_) {}
+
                 function openPopup(url) {
                     window.open(url, '_blank', 'noopener,noreferrer,width=600,height=600');
                 }
 
-                document.querySelectorAll('.social-icons .share-link').forEach(function(el) {
-                    el.addEventListener('click', function(e) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        var platform = this.getAttribute('data-platform');
-                        var jobId = this.getAttribute('data-job-id');
-                        var shareUrl = this.getAttribute('data-share-url');
+                var platform = el.getAttribute('data-platform');
+                var shareUrl = el.getAttribute('data-share-url');
 
-                        if (platform === 'facebook') {
-                            var fbUrl = encodeURIComponent(shareUrl || window.location.href);
-                            openPopup('https://www.facebook.com/sharer/sharer.php?u=' + fbUrl);
-                        } else if (platform === 'twitter') {
-                            var text = encodeURIComponent(this.getAttribute('data-text') || '');
-                            var url = encodeURIComponent(shareUrl || window.location.href);
-                            openPopup('https://twitter.com/intent/tweet?url=' + url + '&text=' + text);
-                        } else if (platform === 'linkedin') {
-                            var liUrl = encodeURIComponent(shareUrl || window.location.href);
-                            openPopup('https://www.linkedin.com/sharing/share-offsite/?url=' + liUrl);
-                        } else if (platform === 'instagram') {
-                            // Instagram does not support web share of links; open Instagram
-                            openPopup('https://www.instagram.com/');
-                        }
-                    });
-                });
-            })();
+                if (platform === 'facebook') {
+                    var fbUrl = encodeURIComponent(shareUrl || window.location.href);
+                    openPopup('https://www.facebook.com/sharer/sharer.php?u=' + fbUrl);
+                } else if (platform === 'twitter') {
+                    var text = encodeURIComponent(el.getAttribute('data-text') || '');
+                    var url = encodeURIComponent(shareUrl || window.location.href);
+                    openPopup('https://twitter.com/intent/tweet?url=' + url + '&text=' + text);
+                } else if (platform === 'linkedin') {
+                    var liUrl = encodeURIComponent(shareUrl || window.location.href);
+                    openPopup('https://www.linkedin.com/sharing/share-offsite/?url=' + liUrl);
+                } else if (platform === 'instagram') {
+                    openPopup('https://www.instagram.com/');
+                }
+
+                return false;
+            };
         </script>
      </body>
 
