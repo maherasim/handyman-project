@@ -263,23 +263,42 @@
             </div>
          </div>
       </div>  
-      <div class="d-flex social-share" style="gap: 14px; justify-content: center;">
-         <a href="#" class="social-share-btn" data-platform="facebook" data-service-id="{{ $data->id }}" style="cursor: pointer;">
+      <div class="d-flex social-share social-icons" style="gap: 14px; justify-content: center;">
+         <span role="button" tabindex="0" class="social-link share-link"
+               data-platform="facebook"
+               data-share-url="{{ route('service.detail', $data->id) }}?v={{ optional($data->updated_at)->timestamp ?? time() }}"
+               data-quote="{{ Str::limit($data->name, 80) }} • {{ getPriceFormat($data->price) }} • {{ ucfirst($data->type) }} • {{ $data->city->name ?? 'City' }}, {{ $data->country->name ?? 'Country' }}"
+               onclick="return window.__shareClickHandler(event, this);"
+               style="cursor: pointer;">
              <img src="https://static.vecteezy.com/system/resources/previews/016/716/481/original/facebook-icon-free-png.png"
                  style="width: 30px; border-radius: 8px;" alt="Share on Facebook">
-         </a>
-         <a href="#" class="social-share-btn" data-platform="twitter" data-service-id="{{ $data->id }}" style="cursor: pointer;">
+         </span>
+         <span role="button" tabindex="0" class="social-link share-link"
+               data-platform="twitter"
+               data-share-url="{{ route('service.detail', $data->id) }}?v={{ optional($data->updated_at)->timestamp ?? time() }}"
+               data-text="{{ Str::limit($data->name, 80) }} • {{ getPriceFormat($data->price) }} • {{ ucfirst($data->type) }} • {{ $data->city->name ?? 'City' }}, {{ $data->country->name ?? 'Country' }}"
+               onclick="return window.__shareClickHandler(event, this);"
+               style="cursor: pointer;">
              <img src="https://cdn.pixabay.com/photo/2015/03/10/17/30/twitter-667462_640.png"
                  style="width: 30px; border-radius: 8px;" alt="Share on Twitter">
-         </a>
-         <a href="#" class="social-share-btn" data-platform="instagram" data-service-id="{{ $data->id }}" style="cursor: pointer;">
+         </span>
+         <span role="button" tabindex="0" class="social-link share-link"
+               data-platform="instagram"
+               data-image-url="{{ getSingleMedia($data,'service_attachment', null) }}"
+               data-quote="{{ Str::limit($data->name, 80) }} • {{ getPriceFormat($data->price) }} • {{ ucfirst($data->type) }} • {{ $data->city->name ?? 'City' }}, {{ $data->country->name ?? 'Country' }} — {{ route('service.detail', $data->id) }}"
+               onclick="return window.__shareClickHandler(event, this);"
+               style="cursor: pointer;">
              <img src="https://upload.wikimedia.org/wikipedia/commons/9/95/Instagram_logo_2022.svg"
                  style="width: 30px; border-radius: 8px;" alt="Share on Instagram">
-         </a>
-         <a href="#" class="social-share-btn" data-platform="linkedin" data-service-id="{{ $data->id }}" style="cursor: pointer;">
+         </span>
+         <span role="button" tabindex="0" class="social-link share-link"
+               data-platform="linkedin"
+               data-share-url="{{ route('service.detail', $data->id) }}?v={{ optional($data->updated_at)->timestamp ?? time() }}"
+               onclick="return window.__shareClickHandler(event, this);"
+               style="cursor: pointer;">
              <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRokEYt0yyh6uNDKL8uksVLlhZ35laKNQgZ9g&s"
                  style="width: 30px; border-radius: 8px;" alt="Share on LinkedIn">
-         </a>
+         </span>
      </div>
      
    
@@ -399,4 +418,46 @@
     window.location.href = $(this).attr('href');
 });
 });
+</script>
+
+<script>
+    if (!window.__shareClickHandler) {
+        window.__shareClickHandler = function(e, el) {
+            try { e.preventDefault(); e.stopPropagation(); } catch (_) {}
+
+            function openPopup(url) {
+                window.open(url, '_blank', 'noopener,noreferrer,width=600,height=600');
+            }
+
+            var platform = el.getAttribute('data-platform');
+            var shareUrl = el.getAttribute('data-share-url');
+
+            if (platform === 'facebook') {
+                var fbUrl = encodeURIComponent(shareUrl || window.location.href);
+                var quote = encodeURIComponent(el.getAttribute('data-quote') || '');
+                openPopup('https://www.facebook.com/sharer/sharer.php?u=' + fbUrl + (quote ? '&quote=' + quote : ''));
+            } else if (platform === 'twitter') {
+                var text = encodeURIComponent(el.getAttribute('data-text') || '');
+                var url = encodeURIComponent(shareUrl || window.location.href);
+                openPopup('https://twitter.com/intent/tweet?url=' + url + '&text=' + text);
+            } else if (platform === 'linkedin') {
+                var liUrl = encodeURIComponent(shareUrl || window.location.href);
+                openPopup('https://www.linkedin.com/sharing/share-offsite/?url=' + liUrl);
+            } else if (platform === 'instagram') {
+                var quoteText = el.getAttribute('data-quote') || '';
+                if (navigator.share) {
+                    try {
+                        navigator.share({ text: quoteText, url: shareUrl || window.location.href })
+                            .catch(function() {});
+                    } catch (_) {
+                        openPopup('https://www.instagram.com/');
+                    }
+                } else {
+                    openPopup('https://www.instagram.com/');
+                }
+            }
+
+            return false;
+        };
+    }
 </script>
