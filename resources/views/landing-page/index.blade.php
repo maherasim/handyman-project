@@ -586,62 +586,41 @@
                                             padding-top: 8px;
                                             border-top: 1px solid #f0f0f0;
                                         ">
-                                            <a href="#" class="social-link" style="
-                                                width: 24px;
-                                                height: 24px;
-                                                border-radius: 5px;
-                                                background: #f8f9fa;
-                                                display: flex;
-                                                align-items: center;
-                                                justify-content: center;
-                                                transition: all 0.3s ease;
-                                                text-decoration: none;
-                                            ">
+                                            <span role="button" tabindex="0" class="social-link share-link"
+                                                  data-platform="facebook"
+                                                  data-share-url="{{ route('job.details', $jobRequest->id) }}?v={{ optional($jobRequest->updated_at)->timestamp ?? time() }}"
+                                                  data-quote="{{ $jobRequest->title }} • €{{ number_format($jobRequest->price) }} • {{ ucfirst($jobRequest->price_type ?? 'fixed') }} • {{ data_get($jobRequest,'city.name','City') }}, {{ data_get($jobRequest,'country.name','Country') }}"
+                                                  onclick="return window.__shareClickHandler(event, this);"
+                                                  style="width: 24px; height: 24px; border-radius: 5px; background: #f8f9fa; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; cursor: pointer;">
                                                 <img src="https://static.vecteezy.com/system/resources/previews/016/716/481/original/facebook-icon-free-png.png"
                                                     alt="Facebook" style="width: 12px; height: 12px;">
-                                            </a>
-                                            <a href="#" class="social-link" style="
-                                                width: 24px;
-                                                height: 24px;
-                                                border-radius: 5px;
-                                                background: #f8f9fa;
-                                                display: flex;
-                                                align-items: center;
-                                                justify-content: center;
-                                                transition: all 0.3s ease;
-                                                text-decoration: none;
-                                            ">
+                                            </span>
+                                            <span role="button" tabindex="0" class="social-link share-link"
+                                                  data-platform="instagram"
+                                                  data-image-url="{{ !empty($jobRequest->image) ? asset('storage/' . ltrim($jobRequest->image, '/')) : asset('images/post-job/ac_refresh_and_revive.png') }}"
+                                                  data-quote="{{ $jobRequest->title }} • €{{ number_format($jobRequest->price) }} • {{ ucfirst($jobRequest->price_type ?? 'fixed') }} • {{ data_get($jobRequest,'city.name','City') }}, {{ data_get($jobRequest,'country.name','Country') }} — {{ route('job.details', $jobRequest->id) }}"
+                                                  onclick="return window.__shareClickHandler(event, this);"
+                                                  style="width: 24px; height: 24px; border-radius: 5px; background: #f8f9fa; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; cursor: pointer;">
                                                 <img src="https://upload.wikimedia.org/wikipedia/commons/9/95/Instagram_logo_2022.svg"
                                                     alt="Instagram" style="width: 12px; height: 12px;">
-                                            </a>
-                                            <a href="#" class="social-link" style="
-                                                width: 24px;
-                                                height: 24px;
-                                                border-radius: 5px;
-                                                background: #f8f9fa;
-                                                display: flex;
-                                                align-items: center;
-                                                justify-content: center;
-                                                transition: all 0.3s ease;
-                                                text-decoration: none;
-                                            ">
+                                            </span>
+                                            <span role="button" tabindex="0" class="social-link share-link"
+                                                  data-platform="twitter"
+                                                  data-share-url="{{ route('job.details', $jobRequest->id) }}?v={{ optional($jobRequest->updated_at)->timestamp ?? time() }}"
+                                                  data-text="{{ $jobRequest->title }} • €{{ number_format($jobRequest->price) }} • {{ ucfirst($jobRequest->price_type ?? 'fixed') }} • {{ data_get($jobRequest,'city.name','City') }}, {{ data_get($jobRequest,'country.name','Country') }}"
+                                                  onclick="return window.__shareClickHandler(event, this);"
+                                                  style="width: 24px; height: 24px; border-radius: 5px; background: #f8f9fa; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; cursor: pointer;">
                                                 <img src="https://cdn.pixabay.com/photo/2015/03/10/17/30/twitter-667462_640.png"
                                                     alt="Twitter" style="width: 12px; height: 12px;">
-                                            </a>
-                                            <a href="#" class="social-link" style="
-                                                width: 24px;
-                                                height: 24px;
-                                                border-radius: 5px;
-                                                background: #f8f9fa;
-                                                transition: all 0.3s ease;
-                                                text-decoration: none;
-                                                display: flex;
-                                                align-items: center;
-                                                justify-content: center;
-                                            ">
+                                            </span>
+                                            <span role="button" tabindex="0" class="social-link share-link"
+                                                  data-platform="linkedin"
+                                                  data-share-url="{{ route('job.details', $jobRequest->id) }}?v={{ optional($jobRequest->updated_at)->timestamp ?? time() }}"
+                                                  onclick="return window.__shareClickHandler(event, this);"
+                                                  style="width: 24px; height: 24px; border-radius: 5px; background: #f8f9fa; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; cursor: pointer;">
                                                 <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRokEYt0yyh6uNDKL8uksVLlhZ35laKNQgZ9g&s"
                                                     alt="LinkedIn" style="width: 12px; height: 12px;">
-                                            </a>
+                                            </span>
                                         </div>
                                     </div>
                                 </div>
@@ -879,18 +858,33 @@
 
 
                                         <div class="d-flex mt-3 " style="gap: 18px; justify-content: center;">
-                                            <a href="#"><img
-                                                    src="https://static.vecteezy.com/system/resources/previews/016/716/481/original/facebook-icon-free-png.png"
-                                                    style="width: 30px; border-radius: 8px;" alt=""></a>
-                                            <a href="#"><img
-                                                    src="https://upload.wikimedia.org/wikipedia/commons/9/95/Instagram_logo_2022.svg"
-                                                    style="width: 30px; border-radius: 8px;" alt=""></a>
-                                            <a href="#"><img
-                                                    src="https://cdn.pixabay.com/photo/2015/03/10/17/30/twitter-667462_640.png"
-                                                    style="width: 30px; border-radius: 8px;" alt=""></a>
-                                            <a href="#"><img
-                                                    src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRokEYt0yyh6uNDKL8uksVLlhZ35laKNQgZ9g&s"
-                                                    style="width: 30px; border-radius: 8px;" alt=""></a>
+                                            <span role="button" tabindex="0" class="social-link share-link"
+                                                  data-platform="facebook"
+                                                  data-share-url="{{ route('service.detail', $data->id) }}?v={{ optional($data->updated_at)->timestamp ?? time() }}"
+                                                  data-quote="{{ Str::limit($data->name, 80) }} • {{ getPriceFormat($data->price) }} • {{ ucfirst($data->type) }} • {{ $data->city->name ?? 'City' }}, {{ $data->country->name ?? 'Country' }}"
+                                                  onclick="return window.__shareClickHandler(event, this);">
+                                                <img src="https://static.vecteezy.com/system/resources/previews/016/716/481/original/facebook-icon-free-png.png" style="width: 30px; border-radius: 8px;" alt="Facebook">
+                                            </span>
+                                            <span role="button" tabindex="0" class="social-link share-link"
+                                                  data-platform="instagram"
+                                                  data-image-url="{{ getSingleMedia($data, 'service_attachment', null) }}"
+                                                  data-quote="{{ Str::limit($data->name, 80) }} • {{ getPriceFormat($data->price) }} • {{ ucfirst($data->type) }} • {{ $data->city->name ?? 'City' }}, {{ $data->country->name ?? 'Country' }} — {{ route('service.detail', $data->id) }}"
+                                                  onclick="return window.__shareClickHandler(event, this);">
+                                                <img src="https://upload.wikimedia.org/wikipedia/commons/9/95/Instagram_logo_2022.svg" style="width: 30px; border-radius: 8px;" alt="Instagram">
+                                            </span>
+                                            <span role="button" tabindex="0" class="social-link share-link"
+                                                  data-platform="twitter"
+                                                  data-share-url="{{ route('service.detail', $data->id) }}?v={{ optional($data->updated_at)->timestamp ?? time() }}"
+                                                  data-text="{{ Str::limit($data->name, 80) }} • {{ getPriceFormat($data->price) }} • {{ ucfirst($data->type) }} • {{ $data->city->name ?? 'City' }}, {{ $data->country->name ?? 'Country' }}"
+                                                  onclick="return window.__shareClickHandler(event, this);">
+                                                <img src="https://cdn.pixabay.com/photo/2015/03/10/17/30/twitter-667462_640.png" style="width: 30px; border-radius: 8px;" alt="Twitter">
+                                            </span>
+                                            <span role="button" tabindex="0" class="social-link share-link"
+                                                  data-platform="linkedin"
+                                                  data-share-url="{{ route('service.detail', $data->id) }}?v={{ optional($data->updated_at)->timestamp ?? time() }}"
+                                                  onclick="return window.__shareClickHandler(event, this);">
+                                                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRokEYt0yyh6uNDKL8uksVLlhZ35laKNQgZ9g&s" style="width: 30px; border-radius: 8px;" alt="LinkedIn">
+                                            </span>
                                         </div>
 
                                     </div>
@@ -1471,6 +1465,48 @@
 
 
 @endsection
+
+<script>
+    if (!window.__shareClickHandler) {
+        window.__shareClickHandler = function(e, el) {
+            try { e.preventDefault(); e.stopPropagation(); } catch (_) {}
+
+            function openPopup(url) {
+                window.open(url, '_blank', 'noopener,noreferrer,width=600,height=600');
+            }
+
+            var platform = el.getAttribute('data-platform');
+            var shareUrl = el.getAttribute('data-share-url');
+
+            if (platform === 'facebook') {
+                var fbUrl = encodeURIComponent(shareUrl || window.location.href);
+                var quote = encodeURIComponent(el.getAttribute('data-quote') || '');
+                openPopup('https://www.facebook.com/sharer/sharer.php?u=' + fbUrl + (quote ? '&quote=' + quote : ''));
+            } else if (platform === 'twitter') {
+                var text = encodeURIComponent(el.getAttribute('data-text') || '');
+                var url = encodeURIComponent(shareUrl || window.location.href);
+                openPopup('https://twitter.com/intent/tweet?url=' + url + '&text=' + text);
+            } else if (platform === 'linkedin') {
+                var liUrl = encodeURIComponent(shareUrl || window.location.href);
+                openPopup('https://www.linkedin.com/sharing/share-offsite/?url=' + liUrl);
+            } else if (platform === 'instagram') {
+                var quoteText = el.getAttribute('data-quote') || '';
+                if (navigator.share) {
+                    try {
+                        navigator.share({ text: quoteText, url: shareUrl || window.location.href })
+                            .catch(function() {});
+                    } catch (_) {
+                        openPopup('https://www.instagram.com/');
+                    }
+                } else {
+                    openPopup('https://www.instagram.com/');
+                }
+            }
+
+            return false;
+        };
+    }
+</script>
 @section('bottom_script')
     <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
     <script>
