@@ -569,7 +569,7 @@
                                                  <img src="https://static.vecteezy.com/system/resources/previews/016/716/481/original/facebook-icon-free-png.png"
                                                      alt="Facebook" style="width: 12px; height: 12px;">
                                             </span>
-                                            <span role="button" tabindex="0" class="social-link share-link" data-platform="instagram" data-job-id="{{ $jobRequest->id }}" onclick="return window.__shareClickHandler(event, this);"
+                                            <span role="button" tabindex="0" class="social-link share-link" data-platform="instagram" data-job-id="{{ $jobRequest->id }}" data-quote="{{ $jobRequest->title }} • €{{ number_format($jobRequest->price) }} • {{ ucfirst($jobRequest->price_type ?? 'fixed') }} • {{ data_get($jobRequest,'city.name','City') }}, {{ data_get($jobRequest,'country.name','Country') }} — {{ route('job.details', $jobRequest->id) }}" data-image-url="{{ !empty($jobRequest->image) ? asset('storage/' . ltrim($jobRequest->image, '/')) : asset('images/post-job/ac_refresh_and_revive.png') }}" onclick="return window.__shareClickHandler(event, this);"
                                                  style="
                                          width: 24px;
                                          height: 24px;
@@ -798,7 +798,24 @@
                     var liUrl = encodeURIComponent(shareUrl || window.location.href);
                     openPopup('https://www.linkedin.com/sharing/share-offsite/?url=' + liUrl);
                 } else if (platform === 'instagram') {
-                    openPopup('https://www.instagram.com/');
+                    // Instagram does not support link share with prefilled text via web.
+                    // On mobile, try the Web Share API as a graceful fallback.
+                    var quote = el.getAttribute('data-quote') || '';
+                    var imageUrl = el.getAttribute('data-image-url') || '';
+                    var shareText = quote;
+
+                    if (navigator.share) {
+                        try {
+                            navigator.share({ text: shareText, url: shareUrl || window.location.href })
+                                .catch(function() { /* ignore */ });
+                        } catch (_) {
+                            // fallback
+                            openPopup('https://www.instagram.com/');
+                        }
+                    } else {
+                        // fallback open
+                        openPopup('https://www.instagram.com/');
+                    }
                 }
 
                 return false;
