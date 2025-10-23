@@ -45,16 +45,22 @@
       </div>
 
   </div>
-   <a :href="`${baseUrl}/service-detail/${service_id}`" class="service-heading mt-4 d-block p-0" @click="storeRecentlyViewed">
-     <h5 class="service-title font-size-18 line-count-2">{{title }}</h5>
-   </a>
-   <ul class="list-inline p-0 mt-1 mb-0 price-content">
-    <li class="text-primary fw-500 d-inline-block position-relative font-size-18">
-        <span v-if="price>0">{{ formatCurrencyVue(price) }} <span v-if="discount && discount > 0"> ({{ discount }}% off)</span></span>
+  <a :href="`${baseUrl}/service-detail/${service_id}`" class="service-heading mt-4 d-block p-0" @click="storeRecentlyViewed">
+    <h5 class="service-title font-size-18 line-count-2">{{title }}</h5>
+  </a>
+  <div class="meta-row d-flex align-items-center justify-content-between mt-2">
+    <div class="meta-left d-flex align-items-center gap-2">
+      <span v-if="visit_type" class="type-badge">{{ typeLabel }}</span>
+      <span v-if="duration && duration !== '00:00'" class="duration-text">{{ formattedDuration(duration) }}</span>
+    </div>
+    <div class="meta-right d-flex align-items-center gap-2">
+      <span v-if="discount && discount > 0" class="discount-badge">-{{ discount }}%</span>
+      <span class="price-chip" :class="{ 'is-free': !(price>0) }">
+        <span v-if="price>0">{{ formatCurrencyVue(price) }}</span>
         <span v-else>Free</span>
-    </li>
-    <li v-if="duration && duration !== '00:00'" class="d-inline-block fw-500 position-relative service-price">({{ formattedDuration(duration) }})</li>
-</ul>
+      </span>
+    </div>
+  </div>
   <div
      class="mt-3">
      <div class="d-flex align-items-center gap-2">
@@ -78,7 +84,7 @@
 </template>
 
 <script setup>
-import { ref ,onMounted} from 'vue';
+import { ref ,onMounted, computed } from 'vue';
 import axios from 'axios';
 import { SAVE_FAVOURITE_API, DELETE_FAVOURITE_API} from '../data/api';
 import Swal from 'sweetalert2';
@@ -216,4 +222,23 @@ const formattedDuration = () => {
         return ''; // or any default value you want to show if duration is not provided
     }
 }
+
+const typeLabel = computed(() => {
+    if (!props.visit_type) return '';
+    return props.visit_type === 'ONLINE' ? 'Online' : 'On-site';
+});
 </script>
+<style scoped>
+.service-box-card { transition: box-shadow .2s ease, transform .2s ease; border: 1px solid #E8E9EC; }
+.service-box-card:hover { box-shadow: 0 8px 24px rgba(16,24,40,.08); transform: translateY(-1px); }
+.iq-image { overflow: hidden; }
+.service-img { display: block; }
+.serv-whishlist { position: absolute; top: 10px; right: 10px; background: #fff; width: 32px; height: 32px; border-radius: 999px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(16,24,40,.12); }
+.online-service { position: absolute; left: 10px; top: 10px; width: 10px; height: 10px; background: #22c55e; border-radius: 50%; box-shadow: 0 0 0 3px rgba(34,197,94,.2); }
+.type-badge { background: #F1F5F9; color: #334155; padding: 4px 8px; border-radius: 999px; font-size: 12px; font-weight: 600; }
+.duration-text { color: #6B7280; font-size: 12px; }
+.price-chip { background: #EEF2FF; color: #4338CA; padding: 6px 10px; border-radius: 10px; font-weight: 700; font-size: 14px; }
+.price-chip.is-free { background: #ECFDF5; color: #065F46; }
+.discount-badge { background: #FEF2F2; color: #B91C1C; padding: 4px 6px; border-radius: 8px; font-size: 12px; font-weight: 700; }
+.service-title { margin-bottom: 0; }
+</style>
