@@ -733,12 +733,18 @@ class FrontendController extends Controller
     {
 
         $service_id = $request->id;
-        $service = Service::where('id', $service_id)->with('providers', 'category', 'serviceRating', 'serviceAddon')->first();
+        $service = Service::where('id', $service_id)
+            ->with(['providers.city','providers.country','category','serviceRating','serviceAddon','city','country'])
+            ->first();
 
         $service->service_image = getSingleMedia($service, 'service_attachment', null);
         $service->category_name = optional($service->category)->name;
         $service->subcategory_name = optional($service->subcategory)->name;
         $service->provider_name = optional($service->providers)->display_name;
+        $service->provider_city = optional(optional($service->providers)->city)->name;
+        $service->provider_country = optional(optional($service->providers)->country)->name;
+        $service->service_city = optional($service->city)->name;
+        $service->service_country = optional($service->country)->name;
         $service->provider_image = getSingleMedia($service->providers, 'profile_image', null);
         $total_reviews = optional($service->serviceRating)->count();
         $total_rating = optional($service->serviceRating)->sum('rating');
