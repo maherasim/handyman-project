@@ -12,20 +12,20 @@
           </div>
           <div class="col-lg-9 col-md-8 mt-md-0 mt-3">
             <div class="content flex-grow-1">
-              <div class="d-sm-flex align-items-center gap-3 justify-content-between">
+              <!-- Title + Price on right -->
+              <div class="d-flex align-items-start justify-content-between gap-3 flex-wrap">
                 <h4 class="mb-0">{{ service.name }}</h4>
-                <div class="flex-shrink-0 d-inline-flex align-items-center gap-2 mt-sm-0 mt-2">
-                  <span class="text-primary fw-500 d-inline-block position-relative h5">
+                <div class="text-end">
+                  <div class="h5 text-primary mb-0">
                     <span v-if="service.price > 0">{{ formatCurrencyVue(service.price) }}</span>
                     <span v-else>Free</span>
-                  </span>
-                  <span class="font-size-18" v-if="service.type">/</span>
-                  <span class="h5 text-body" v-if="service.type">
-                    {{ service.type }}
-                    <span v-if="service.duration">{{ formattedDuration(service.duration) }}</span>
-                  </span>
+                    <span v-if="service.type"> / {{ service.type }}</span>
+                    <span v-if="service.type && service.duration"> ({{ formattedDuration(service.duration).replace('(','').replace(')','') }})</span>
+                  </div>
                 </div>
               </div>
+
+              <!-- Category breadcrumb -->
               <div class="d-sm-flex gap-2 mt-3">
                 <h6 class="m-0 lh-1">{{ $t('messages.category') }}:</h6>
                 <ul class="list-inline mt-sm-0 mt-2 mb-0 p-0 d-flex align-items-center flex-wrap category-list lh-1">
@@ -33,27 +33,29 @@
                   <li v-if="service.subcategory_name">{{ service.subcategory_name }}</li>
                 </ul>
               </div>
-              <div class="d-flex align-items-center flex-wrap gap-2 mt-4">
-                <div class="d-inline-flex align-items-center gap-2 felx-shrink-0">
+
+              <!-- Info lines to match requested design -->
+              <div class="mt-3">
+                <div class="text-danger fw-600">{{ (service.service_city || 'City') }} - {{ (service.service_country || 'Country') }}</div>
+                <div class="text-danger fw-600">{{ $t('messages.bookings') || 'Bookings' }}: {{ service.total_service_bookings || 0 }}</div>
+                <div class="d-flex align-items-center gap-2 mt-1">
                   <div class="flex-shrink-0">
-                    <img :src="service.provider_image" alt="service" class="img-fluid rounded-3 object-cover avatar-24">
+                    <img :src="service.provider_image" alt="provider" class="img-fluid rounded-3 object-cover avatar-24">
                   </div>
-                  <a :href="`${baseUrl}/provider-detail/${service.provider_id}`">
+                  <a :href="`${baseUrl}/provider-detail/${service.provider_id}`" class="text-decoration-none">
                     <span class="font-size-14 service-user-name">{{ service.provider_name }}</span>
                   </a>
+                  <span class="mx-1">/</span>
+                  <div class="d-flex align-items-center gap-1">
+                    <span class="text-warning">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12" fill="none" class="service-rating">
+                        <path d="M6.58578 0.85525L7.92167 3.44562C8.02009 3.63329 8.20793 3.76362 8.42458 3.79259L11.4252 4.21427C11.6005 4.23802 11.7595 4.32723 11.8669 4.46335C11.9731 4.59773 12.0187 4.76803 11.9929 4.93543C11.9719 5.07445 11.9041 5.20304 11.8003 5.30151L9.62603 7.33523C9.467 7.47714 9.39498 7.68741 9.43339 7.89304L9.96871 10.7522C10.0257 11.0974 9.78867 11.4229 9.43339 11.4884C9.28696 11.511 9.13693 11.4872 9.0049 11.4224L6.32833 10.0768C6.12968 9.98005 5.89503 9.98005 5.69639 10.0768L3.01982 11.4224C2.69094 11.5909 2.28346 11.4762 2.10042 11.1634C2.0326 11.0389 2.0086 10.897 2.0308 10.7585L2.56612 7.89883C2.60453 7.69378 2.53191 7.48236 2.37348 7.34044L0.19921 5.30788C-0.0594455 5.06692 -0.0672472 4.67014 0.181806 4.42048C0.187207 4.41527 0.193209 4.40948 0.19921 4.40369C0.302432 4.30232 0.438061 4.23802 0.584493 4.22123L3.58514 3.79896C3.80118 3.76942 3.98902 3.64025 4.08805 3.45141L5.37592 0.85525C5.49055 0.632821 5.7282 0.494383 5.98625 0.500175H6.06667C6.29052 0.526241 6.48556 0.660046 6.58578 0.85525Z" fill="currentColor"></path>
+                      </svg>
+                    </span>
+                    <h6 class="font-size-14 m-0">{{ service.total_rating }}<span class="text-body"> ({{ service.total_reviews }} {{ $t('messages.reviews') }})</span></h6>
+                  </div>
                 </div>
-                <div>/</div>
-                <div class="d-flex align-items-center gap-1 flex-shrink-0">
-                  <span class="text-warning">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12" fill="none" class="service-rating">
-                      <path d="M6.58578 0.85525L7.92167 3.44562C8.02009 3.63329 8.20793 3.76362 8.42458 3.79259L11.4252 4.21427C11.6005 4.23802 11.7595 4.32723 11.8669 4.46335C11.9731 4.59773 12.0187 4.76803 11.9929 4.93543C11.9719 5.07445 11.9041 5.20304 11.8003 5.30151L9.62603 7.33523C9.467 7.47714 9.39498 7.68741 9.43339 7.89304L9.96871 10.7522C10.0257 11.0974 9.78867 11.4229 9.43339 11.4884C9.28696 11.511 9.13693 11.4872 9.0049 11.4224L6.32833 10.0768C6.12968 9.98005 5.89503 9.98005 5.69639 10.0768L3.01982 11.4224C2.69094 11.5909 2.28346 11.4762 2.10042 11.1634C2.0326 11.0389 2.0086 10.897 2.0308 10.7585L2.56612 7.89883C2.60453 7.69378 2.53191 7.48236 2.37348 7.34044L0.19921 5.30788C-0.0594455 5.06692 -0.0672472 4.67014 0.181806 4.42048C0.187207 4.41527 0.193209 4.40948 0.19921 4.40369C0.302432 4.30232 0.438061 4.23802 0.584493 4.22123L3.58514 3.79896C3.80118 3.76942 3.98902 3.64025 4.08805 3.45141L5.37592 0.85525C5.49055 0.632821 5.7282 0.494383 5.98625 0.500175H6.06667C6.29052 0.526241 6.48556 0.660046 6.58578 0.85525Z" fill="currentColor"></path>
-                    </svg>
-                  </span>
-                  <h6 class="font-size-14">{{ service.total_rating }}<span class="text-body"> ({{ service.total_reviews }} {{ $t('messages.reviews') }})</span></h6>
-                </div>
-                <div class="w-100 mt-2 text-muted small">
-                  {{ service.service_city || 'City' }}, {{ service.service_country || 'Country' }} • {{ $t('messages.bookings') || 'Bookings' }}: {{ service.total_service_bookings || 0 }} • {{ service.provider_city || 'City' }}, {{ service.provider_country || 'Country' }}
-                </div>
+                <div class="text-danger fw-600">{{ (service.provider_city || 'City') }} - {{ (service.provider_country || 'Country') }}</div>
               </div>
             </div>
           </div>
