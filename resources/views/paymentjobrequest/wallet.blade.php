@@ -86,15 +86,15 @@
                 },
                 columns: [
                     @if (auth()->user()->hasAnyRole(['admin']))
-                        {
-                            name: 'check',
-                            data: 'check',
-                            title: '<input type="checkbox" class="form-check-input" name="select_all_table" id="select-all-table" onclick="selectAllTable(this)">',
-                            exportable: false,
-                            orderable: false,
-                            searchable: false,
-                        },
-                    @endif,
+                    {
+                        name: 'check',
+                        data: 'check',
+                        title: '<input type="checkbox" class="form-check-input" name="select_all_table" id="select-all-table" onclick="selectAllTable(this)">',
+                        exportable: false,
+                        orderable: false,
+                        searchable: false
+                    },
+                    @endif
                     {
                         data: 'updated_at',
                         name: 'updated_at',
@@ -144,9 +144,9 @@
                             data: 'total_amount',
                             name: 'total_amount',
                             title: "{{ __('messages.total_paid_amount') }}"
-                        },
+                        }
                     @if (auth()->user()->hasAnyRole(['admin']))
-                        {
+                        ,{
                             data: 'action',
                             name: 'action',
                             orderable: false,
