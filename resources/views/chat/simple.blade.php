@@ -266,7 +266,8 @@
             height: calc(100vh - 150px); 
             overflow-y: auto; 
             padding: 16px; 
-            background-color: #3b1566;
+            background-color: rgb(59, 21, 102);
+
             background-image:
                 radial-gradient(36px 36px at 20% 12%, rgba(59, 130, 246, 0.08), rgba(59, 130, 246, 0) 70%),
                 radial-gradient(28px 28px at 82% 22%, rgba(99, 102, 241, 0.07), rgba(99, 102, 241, 0) 70%),
