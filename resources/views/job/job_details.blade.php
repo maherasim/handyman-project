@@ -15,11 +15,13 @@
     <meta property="og:description" content="{{ $shareDescription }}" />
     <meta property="og:url" content="{{ $shareUrl }}" />
     <meta property="og:image" content="{{ $shareImage }}" />
+    <meta property="og:image:secure_url" content="{{ $shareImage }}" />
     <meta property="og:site_name" content="{{ config('app.name') }}" />
     <meta property="og:locale" content="en_US" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta property="og:image:alt" content="{{ $shareTitle }}" />
+    <meta name="description" content="{{ $enrichedTitle }} — {{ $shareDescription }}" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="{{ $enrichedTitle }}" />
     <meta name="twitter:description" content="{{ $shareDescription }}" />
