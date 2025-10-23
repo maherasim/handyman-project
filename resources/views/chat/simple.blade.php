@@ -3,20 +3,20 @@
         $auth = auth()->user();
         $fallbackAvatar = asset('images/user/user.png');
     @endphp
-    <div class="container-fluid" style="min-height: 100vh;">
-        <div class="row">
-            <!-- Simple Chat Header -->
+    <div class="container-fluid chat-wrapper">
+        <div class="row g-0">
+            <!-- Chat Header -->
             <div class="col-12">
-                <div class="p-3 border-bottom bg-white">
+                <div class="chat-header">
                     <div class="d-flex align-items-center gap-3">
-                        <a href="javascript:history.back()" class="btn btn-outline-secondary btn-sm">
-                            <i class="fas fa-arrow-left"></i> Back
+                        <a href="javascript:history.back()" class="btn btn-light btn-sm rounded-pill px-3 shadow-none">
+                            <i class="fas fa-arrow-left me-1"></i> Back
                         </a>
                         <img src="{{ getSingleMedia($targetUser, 'profile_image', null) ?? $fallbackAvatar }}" 
-                             class="rounded-circle" style="width:40px;height:40px;object-fit:cover;">
+                             class="rounded-circle chat-avatar">
                         <div>
-                            <h5 class="mb-0">{{ $targetUser->display_name }}</h5>
-                            <small class="text-muted">{{ ucfirst($targetUser->user_type ?? 'User') }}</small>
+                            <div class="chat-name">{{ $targetUser->display_name }}</div>
+                            <div class="chat-sub">{{ ucfirst($targetUser->user_type ?? 'User') }}</div>
                         </div>
                         <div class="ms-auto">
                             <small class="text-muted" id="typingIndicator" style="display:none;">typing...</small>
@@ -24,21 +24,24 @@
                     </div>
                 </div>
             </div>
-            
-            <!-- Chat Messages Area -->
+
+            <!-- Messages Area -->
             <div class="col-12">
-                <div id="messagesContainer" class="bg-light p-3" style="min-height: 400px; max-height: 500px; overflow-y: auto;">
+                <div id="messagesContainer" class="chat-body">
                     <div id="messages"></div>
                 </div>
             </div>
-            
-            <!-- Message Input -->
+
+            <!-- Composer -->
             <div class="col-12">
-                <div class="border-top p-3 bg-white">
-                    <form id="messageForm" class="d-flex align-items-center gap-2">
-                        <input type="file" id="fileInput" class="form-control" style="max-width:200px;" accept="image/*,application/pdf,.doc,.docx">
-                        <input type="text" id="messageInput" class="form-control" placeholder="Type your message..." required>
-                        <button class="btn btn-primary" type="submit">
+                <div class="chat-composer">
+                    <form id="messageForm" class="composer-inner">
+                        <input type="file" id="fileInput" class="d-none" accept="image/*,application/pdf,.doc,.docx">
+                        <label for="fileInput" class="btn btn-light composer-btn" title="Attach">
+                            <i class="fas fa-paperclip"></i>
+                        </label>
+                        <input type="text" id="messageInput" class="composer-input" placeholder="Type a message" required>
+                        <button class="btn btn-primary composer-send" type="submit" aria-label="Send">
                             <i class="fas fa-paper-plane"></i>
                         </button>
                     </form>
@@ -62,6 +65,7 @@
 
             let pollTimer = null;
             let typingTimer = null;
+            let lastRenderedDate = null;
 
             // Load messages
             function loadMessages() {
@@ -69,7 +73,9 @@
                     .then(r => r.json())
                     .then(data => {
                         messagesEl.innerHTML = '';
+                        lastRenderedDate = null;
                         (data.messages || []).forEach(message => {
+                            maybeRenderDateSeparator(message.created_at);
                             renderMessage(message);
                         });
                         scrollToBottom();
@@ -80,35 +86,73 @@
             // Render a single message
             function renderMessage(message) {
                 const isOwn = message.sender_id === currentUserId;
-                const messageDiv = document.createElement('div');
-                messageDiv.className = `d-flex mb-3 ${isOwn ? 'justify-content-end' : 'justify-content-start'}`;
+                const row = document.createElement('div');
+                row.className = `chat-row ${isOwn ? 'is-own' : 'is-other'}`;
                 
                 const bubble = document.createElement('div');
-                bubble.className = `p-3 rounded ${isOwn ? 'bg-primary text-white' : 'bg-white border'}`;
-                bubble.style.maxWidth = '70%';
+                bubble.className = `chat-bubble ${isOwn ? 'own' : 'other'}`;
                 
                 let content = '';
                 
                 // Message text
                 if (message.message) {
-                    content += `<div class="mb-1">${escapeHtml(message.message)}</div>`;
+                    content += `<div class="chat-text">${escapeHtml(message.message)}</div>`;
                 }
                 
                 // File attachment
                 if (message.attachment) {
                     content += `<div class="mt-2">
-                        <a href="${message.attachment.download_url}" target="_blank" class="text-decoration-none ${isOwn ? 'text-white' : 'text-primary'}">
-                            <i class="fas fa-paperclip"></i> ${escapeHtml(message.attachment.name)}
+                        <a href="${message.attachment.download_url}" target="_blank" class="chat-attach ${isOwn ? 'text-white' : ''}">
+                            <i class="fas fa-paperclip me-1"></i> ${escapeHtml(message.attachment.name)}
                         </a>
                     </div>`;
                 }
                 
                 // Timestamp
-                content += `<div class="small opacity-75 mt-1">${escapeHtml(message.created_at)}</div>`;
+                content += `<div class="chat-time">${escapeHtml(message.created_at)}</div>`;
                 
                 bubble.innerHTML = content;
-                messageDiv.appendChild(bubble);
-                messagesEl.appendChild(messageDiv);
+                
+                if (!isOwn) {
+                    const avatar = document.createElement('img');
+                    avatar.src = message.sender_avatar_url || '{{ $fallbackAvatar }}';
+                    avatar.className = 'chat-mini-avatar';
+                    row.appendChild(avatar);
+                } else {
+                    const spacer = document.createElement('div');
+                    spacer.style.width = '36px';
+                    row.appendChild(spacer);
+                }
+                
+                row.appendChild(bubble);
+                messagesEl.appendChild(row);
+            }
+
+            // Render date separator when date changes
+            function maybeRenderDateSeparator(createdAtStr) {
+                try {
+                    const d = new Date(createdAtStr.replace(' ', 'T'));
+                    const key = isNaN(d.getTime()) ? createdAtStr.split(' ')[0] : d.toDateString();
+                    if (lastRenderedDate !== key) {
+                        lastRenderedDate = key;
+                        const sep = document.createElement('div');
+                        sep.className = 'chat-date-sep';
+                        sep.innerHTML = `<span>${escapeHtml(formatDateForSep(d, createdAtStr))}</span>`;
+                        messagesEl.appendChild(sep);
+                    }
+                } catch (_) {}
+            }
+            function formatDateForSep(d, fallback) {
+                if (!isNaN(d.getTime())) {
+                    const today = new Date();
+                    const isToday = d.toDateString() === today.toDateString();
+                    if (isToday) return 'Today';
+                    const yesterday = new Date();
+                    yesterday.setDate(today.getDate() - 1);
+                    if (d.toDateString() === yesterday.toDateString()) return 'Yesterday';
+                    return d.toLocaleDateString();
+                }
+                return fallback;
             }
 
             // Send message
@@ -156,10 +200,12 @@
                     const file = fileInput.files[0];
                     filePreview.style.display = 'block';
                     filePreview.innerHTML = `
-                        <div class="alert alert-info py-2">
-                            <i class="fas fa-paperclip"></i> 
-                            ${escapeHtml(file.name)} (${Math.round(file.size/1024)} KB)
-                            <button type="button" class="btn btn-sm btn-outline-danger ms-2" onclick="clearFile()">Remove</button>
+                        <div class="alert alert-info py-2 px-3 mb-0 rounded-pill d-inline-flex align-items-center">
+                            <i class="fas fa-paperclip me-2"></i> 
+                            <span>${escapeHtml(file.name)} (${Math.round(file.size/1024)} KB)</span>
+                            <button type="button" class="btn btn-sm btn-link text-danger ms-2 p-0" onclick="clearFile()" title="Remove">
+                                <i class="fas fa-times-circle"></i>
+                            </button>
                         </div>
                     `;
                 }
@@ -210,25 +256,38 @@
     </script>
 
     <style>
-        #messagesContainer {
-            scrollbar-width: thin;
-        }
-        
-        #messagesContainer::-webkit-scrollbar {
-            width: 6px;
-        }
-        
-        #messagesContainer::-webkit-scrollbar-track {
-            background: #f1f1f1;
-        }
-        
-        #messagesContainer::-webkit-scrollbar-thumb {
-            background: #c1c1c1;
-            border-radius: 3px;
-        }
-        
-        #messagesContainer::-webkit-scrollbar-thumb:hover {
-            background: #a8a8a8;
-        }
+        .chat-wrapper { min-height: 100vh; background: linear-gradient(180deg, #f1f5f9 0%, #ffffff 40%); }
+        .chat-header { position: sticky; top: 0; z-index: 2; padding: 12px 16px; background: #ffffff; border-bottom: 1px solid #eef1f4; }
+        .chat-avatar { width: 40px; height: 40px; object-fit: cover; }
+        .chat-name { font-weight: 600; font-size: 16px; line-height: 1.1; }
+        .chat-sub { font-size: 12px; color: #6b7280; }
+
+        .chat-body { height: calc(100vh - 150px); overflow-y: auto; padding: 16px; background: #f7f9fb; }
+        .chat-body { scrollbar-width: thin; }
+        .chat-body::-webkit-scrollbar { width: 8px; }
+        .chat-body::-webkit-scrollbar-track { background: transparent; }
+        .chat-body::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 8px; }
+
+        .chat-row { display: flex; gap: 10px; margin-bottom: 10px; align-items: flex-end; }
+        .chat-row.is-own { justify-content: flex-end; }
+        .chat-row.is-other { justify-content: flex-start; }
+        .chat-mini-avatar { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; }
+
+        .chat-bubble { max-width: 70%; padding: 10px 12px; border-radius: 14px; font-size: 14px; box-shadow: 0 1px 1px rgba(0,0,0,0.03); }
+        .chat-bubble.other { background: #ffffff; border: 1px solid #eef1f4; color: #111827; }
+        .chat-bubble.own { background: var(--bs-primary, #3b82f6); color: #ffffff; }
+        .chat-text { white-space: pre-wrap; word-break: break-word; }
+        .chat-attach { text-decoration: none; }
+        .chat-time { font-size: 11px; opacity: .8; margin-top: 6px; }
+
+        .chat-date-sep { display: flex; align-items: center; justify-content: center; margin: 14px 0; }
+        .chat-date-sep span { background: #e5e7eb; color: #374151; font-size: 12px; padding: 4px 10px; border-radius: 999px; }
+
+        .chat-composer { position: sticky; bottom: 0; z-index: 2; padding: 10px 16px; background: #ffffff; border-top: 1px solid #eef1f4; }
+        .composer-inner { display: flex; align-items: center; gap: 10px; background: #f3f4f6; border: 1px solid #e5e7eb; border-radius: 999px; padding: 8px 10px; }
+        .composer-btn { border-radius: 999px; box-shadow: none !important; color: #6b7280; }
+        .composer-input { flex: 1; border: none; outline: none; background: transparent; padding: 6px 4px; }
+        .composer-input:focus { outline: none; }
+        .composer-send { border-radius: 999px; padding: 8px 14px; }
     </style>
 </x-master-layout>
