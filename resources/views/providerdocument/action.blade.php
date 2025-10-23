@@ -7,7 +7,18 @@
     @if(!$provider_document->trashed())
         @php
             $hideDeleteForVerifiedProvider = ($provider_document->is_verified == 1) && auth()->user()->hasRole('provider');
+            $allowEditForProvider = auth()->user()->hasRole('provider') 
+                && (int)$provider_document->provider_id === (int)auth()->id()
+                && (int)$provider_document->is_verified !== 1
+                && auth()->user()->can('providerdocument add');
+            $allowEditForAdmin = auth()->user()->hasAnyRole(['admin','demo_admin']) && auth()->user()->can('providerdocument edit');
         @endphp
+        @if($allowEditForProvider || $allowEditForAdmin)
+        <a class="me-3" href="{{ route('providerdocument.create', ['id' => $provider_document->id, 'providerdocument' => $provider_document->provider_id]) }}"
+            title="{{ __('messages.update_form_title',['form'=>  __('messages.providerdocument') ]) }}">
+            <i class="far fa-edit text-primary"></i>
+        </a>
+        @endif
         @if($auth_user->can('providerdocument delete') && !$hideDeleteForVerifiedProvider)
         <a class="me-3" href="{{ route('providerdocument.destroy', $provider_document->id) }}" data--submit="providerdocument{{$provider_document->id}}" 
             data--confirmation='true' 
