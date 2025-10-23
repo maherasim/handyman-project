@@ -5,6 +5,7 @@ use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\FrontendController;
 use App\Http\Controllers\FrontendSettingController;
+use App\Http\Controllers\SocialShareController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Middleware\CheckInstallation;
 
@@ -82,6 +83,12 @@ Route::get('/provider-datatable', [FrontendController::class, 'providerDatatable
 Route::get('/job-datatable', [FrontendController::class, 'jobDatatable'])->name('job.data');
 
 Route::get('/job-details/{id}', [FrontendController::class, 'showdetails'])->name('job.details');
+
+// Social share/upload endpoints (restricted to authenticated users)
+Route::middleware(['auth'])->group(function () {
+    Route::post('/social/facebook/post-job/{id}', [SocialShareController::class, 'postJobToFacebook'])
+        ->name('social.facebook.post_job');
+});
 
 Route::get('/subcategory-list-forcategory', [FrontendController::class, 'subCatgeoryListfor'])->name('subcategory.listforgood');
 

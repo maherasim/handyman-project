@@ -112,6 +112,7 @@
                  opacity: 0;
                  transform: translateY(20px);
              }
+
              to {
                  opacity: 1;
                  transform: translateY(0);
@@ -123,6 +124,7 @@
                  opacity: 0;
                  transform: translateX(20px);
              }
+
              to {
                  opacity: 1;
                  transform: translateX(0);
@@ -134,11 +136,11 @@
              .job-card {
                  margin-bottom: 20px;
              }
-             
+
              .card-content {
                  padding: 20px !important;
              }
-             
+
              .job-title {
                  font-size: 16px !important;
                  min-height: 44px !important;
@@ -149,7 +151,7 @@
              .col-12 {
                  padding: 0 10px;
              }
-             
+
              .card-content {
                  padding: 16px !important;
              }
@@ -189,14 +191,16 @@
 
      <body>
          <div class="container mt-5">
-             <div class="filter-section" style="
+             <div class="filter-section"
+                 style="
                  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
                  border-radius: 20px;
                  padding: 30px;
                  margin-bottom: 40px;
                  box-shadow: 0 8px 32px rgba(102, 126, 234, 0.2);
              ">
-                 <h4 class="text-white text-center mb-4" style="
+                 <h4 class="text-white text-center mb-4"
+                     style="
                      font-weight: 700;
                      font-size: 24px;
                      margin-bottom: 30px;
@@ -205,10 +209,11 @@
                      <i class='bx bx-filter-alt' style="margin-right: 10px;"></i>
                      Find Your Perfect Job
                  </h4>
-                 
+
                  <div class="row g-3">
                      <div class="col-lg-2 col-md-4 col-6">
-                         <select class="form-select filter-select" id="category-select" aria-label="Filter by Category" style="
+                         <select class="form-select filter-select" id="category-select" aria-label="Filter by Category"
+                             style="
                              border: none;
                              border-radius: 12px;
                              padding: 12px 16px;
@@ -225,7 +230,9 @@
                      </div>
 
                      <div class="col-lg-2 col-md-4 col-6">
-                         <select class="form-select filter-select" id="subcategory-select" aria-label="Filter by Sub-Category" style="
+                         <select class="form-select filter-select" id="subcategory-select"
+                             aria-label="Filter by Sub-Category"
+                             style="
                              border: none;
                              border-radius: 12px;
                              padding: 12px 16px;
@@ -242,7 +249,8 @@
                      </div>
 
                      <div class="col-lg-2 col-md-4 col-6">
-                         <select class="form-select filter-select" id="customer-select" aria-label="Filter by Customer" style="
+                         <select class="form-select filter-select" id="customer-select" aria-label="Filter by Customer"
+                             style="
                              border: none;
                              border-radius: 12px;
                              padding: 12px 16px;
@@ -259,7 +267,8 @@
                      </div>
 
                      <div class="col-lg-2 col-md-4 col-6">
-                         <select class="form-select filter-select" id="country-select" aria-label="Filter by Country" style="
+                         <select class="form-select filter-select" id="country-select" aria-label="Filter by Country"
+                             style="
                              border: none;
                              border-radius: 12px;
                              padding: 12px 16px;
@@ -276,7 +285,8 @@
                      </div>
 
                      <div class="col-lg-2 col-md-4 col-6">
-                         <select class="form-select filter-select" id="city-select" aria-label="Filter by City" style="
+                         <select class="form-select filter-select" id="city-select" aria-label="Filter by City"
+                             style="
                              border: none;
                              border-radius: 12px;
                              padding: 12px 16px;
@@ -290,7 +300,8 @@
                      </div>
 
                      <div class="col-lg-2 col-md-4 col-6">
-                         <select class="form-select filter-select" id="sort-select" aria-label="Sort by Price" style="
+                         <select class="form-select filter-select" id="sort-select" aria-label="Sort by Price"
+                             style="
                              border: none;
                              border-radius: 12px;
                              padding: 12px 16px;
@@ -307,7 +318,8 @@
 
                      <!-- Clear Filters Button -->
                      <div class="col-lg-2 col-md-4 col-6">
-                         <button class="form-select filter-select" id="clear-filters-btn" style="
+                         <button class="form-select filter-select" id="clear-filters-btn"
+                             style="
                              border: none;
                              border-radius: 12px;
                              padding: 12px 16px;
@@ -335,11 +347,11 @@
                          </div>
                      </div>
                  @else
-
-                 @foreach ($jobrequest as $jobRequest)
-                 <div class="col-lg-3 col-md-6 col-12 mb-3">
-                     <a href="{{ route('job.details', $jobRequest->id) }}" class="card-link text-decoration-none">
-                         <div class="job-card h-100" style="
+                     @foreach ($jobrequest as $jobRequest)
+                         <div class="col-lg-3 col-md-6 col-12 mb-3">
+                             <a href="{{ route('job.details', $jobRequest->id) }}" class="card-link text-decoration-none">
+                                 <div class="job-card h-100"
+                                     style="
                              background: #FFFFFF;
                              border: 1px solid #E8E9EC;
                              border-radius: 16px;
@@ -348,20 +360,22 @@
                              overflow: hidden;
                              position: relative;
                          ">
-                             <!-- Card Image Container -->
-                             <div class="image-container" style="position: relative; height: 120px; overflow: hidden;">
-                                @if(!empty($jobRequest->image))
-                                <img src="{{ asset('storage/' . $jobRequest->image) }}" alt="Job Image"
-                                     style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease;">
-                            @else
-                                <img class="default-image" 
-                                     src="{{ asset('images/post-job/ac_refresh_and_revive.png') }}"
-                                     alt="Default Image"
-                                     style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease;">
-                            @endif
-                            
-                                 <!-- Price Badge -->
-                                 <div class="price-badge" style="
+                                     <!-- Card Image Container -->
+                                     <div class="image-container"
+                                         style="position: relative; height: 120px; overflow: hidden;">
+                                         @if (!empty($jobRequest->image))
+                                             <img src="{{ asset('storage/' . $jobRequest->image) }}" alt="Job Image"
+                                                 style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease;">
+                                         @else
+                                             <img class="default-image"
+                                                 src="{{ asset('images/post-job/ac_refresh_and_revive.png') }}"
+                                                 alt="Default Image"
+                                                 style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease;">
+                                         @endif
+
+                                         <!-- Price Badge -->
+                                         <div class="price-badge"
+                                             style="
                                      position: absolute;
                                      bottom: 8px;
                                      left: 8px;
@@ -374,11 +388,13 @@
                                      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
                                      backdrop-filter: blur(10px);
                                  ">
-                                     €{{ number_format($jobRequest->price) }} / {{ ucfirst($jobRequest->price_type ?? 'fixed') }}
-                                 </div>
-                                 
-                                 <!-- Heart Icon -->
-                                 <div class="heart-icon" style="
+                                             €{{ number_format($jobRequest->price) }} /
+                                             {{ ucfirst($jobRequest->price_type ?? 'fixed') }}
+                                         </div>
+
+                                         <!-- Heart Icon -->
+                                         <div class="heart-icon"
+                                             style="
                                      position: absolute;
                                      top: 8px;
                                      right: 8px;
@@ -392,14 +408,15 @@
                                      backdrop-filter: blur(10px);
                                      transition: all 0.3s ease;
                                  ">
-                                     <i class='bx bx-heart' style="color: #667eea; font-size: 14px;"></i>
-                                 </div>
-                             </div>
-                             
-                             <!-- Card Content -->
-                             <div class="card-content" style="padding: 12px;">
-                                 <!-- Job Title -->
-                                 <h5 class="job-title" style="
+                                             <i class='bx bx-heart' style="color: #667eea; font-size: 14px;"></i>
+                                         </div>
+                                     </div>
+
+                                     <!-- Card Content -->
+                                     <div class="card-content" style="padding: 12px;">
+                                         <!-- Job Title -->
+                                         <h5 class="job-title"
+                                             style="
                                      font-size: 14px;
                                      font-weight: 700;
                                      color: #1a1a1a;
@@ -411,98 +428,109 @@
                                      overflow: hidden;
                                      min-height: 34px;
                                  ">
-                                     {{ $jobRequest->title }}
-                                 </h5>
-                                 
-                                 <!-- Location -->
-                                 <div class="location-info" style="margin-bottom: 8px;">
-                                     <div class="d-flex align-items-center" style="gap: 5px;">
-                                         <i class='bx bx-map-pin' style="color: #667eea; font-size: 12px;"></i>
-                                         <span style="
+                                             {{ $jobRequest->title }}
+                                         </h5>
+
+                                         <!-- Location -->
+                                         <div class="location-info" style="margin-bottom: 8px;">
+                                             <div class="d-flex align-items-center" style="gap: 5px;">
+                                                 <i class='bx bx-map-pin' style="color: #667eea; font-size: 12px;"></i>
+                                                 <span
+                                                     style="
                                              font-size: 12px;
                                              color: #666;
                                              font-weight: 500;
                                          ">
-                                             {{ $jobRequest->city ? $jobRequest->city->name : 'City' }}, {{ $jobRequest->country ? $jobRequest->country->name : 'Country' }}
-                                         </span>
-                                     </div>
-                                 </div>
-                                 
-                                 <!-- Published Date -->
-                                 <div class="published-info" style="margin-bottom: 8px;">
-                                     <div class="d-flex align-items-center" style="gap: 5px;">
-                                         <i class='bx bx-calendar' style="color: #8e8e93; font-size: 11px;"></i>
-                                         <span style="
-                                             font-size: 11px;
-                                             color: #8e8e93;
-                                             font-weight: 400;
-                                         ">
-                                             {{ $jobRequest->created_at->diffForHumans() }}
-                                         </span>
-                                     </div>
-                                 </div>
+                                                     {{ $jobRequest->city ? $jobRequest->city->name : 'City' }},
+                                                     {{ $jobRequest->country ? $jobRequest->country->name : 'Country' }}
+                                                 </span>
+                                             </div>
+                                         </div>
 
-                                 <!-- Views Count -->
-                                 <div class="views-info" style="margin-bottom: 8px;">
-                                     <div class="d-flex align-items-center" style="gap: 5px;">
-                                         <i class='bx bx-show' style="color: #8e8e93; font-size: 11px;"></i>
-                                         <span style="
+                                         <!-- Published Date -->
+                                         <div class="published-info" style="margin-bottom: 8px;">
+                                             <div class="d-flex align-items-center" style="gap: 5px;">
+                                                 <i class='bx bx-calendar' style="color: #8e8e93; font-size: 11px;"></i>
+                                                 <span
+                                                     style="
                                              font-size: 11px;
                                              color: #8e8e93;
                                              font-weight: 400;
                                          ">
-                                             {{ number_format($jobRequest->total_views ?? 0) }} views
-                                         </span>
-                                     </div>
-                                 </div>
-                                 
-                                 <!-- Customer Info -->
-                                 <div class="customer-info" style="margin-bottom: 8px;">
-                                     <div class="d-flex align-items-center" style="gap: 6px;">
-                                         <div class="customer-avatar" style="
+                                                     {{ $jobRequest->created_at->diffForHumans() }}
+                                                 </span>
+                                             </div>
+                                         </div>
+
+                                         <!-- Views Count -->
+                                         <div class="views-info" style="margin-bottom: 8px;">
+                                             <div class="d-flex align-items-center" style="gap: 5px;">
+                                                 <i class='bx bx-show' style="color: #8e8e93; font-size: 11px;"></i>
+                                                 <span
+                                                     style="
+                                             font-size: 11px;
+                                             color: #8e8e93;
+                                             font-weight: 400;
+                                         ">
+                                                     {{ number_format($jobRequest->total_views ?? 0) }} views
+                                                 </span>
+                                             </div>
+                                         </div>
+
+                                         <!-- Customer Info -->
+                                         <div class="customer-info" style="margin-bottom: 8px;">
+                                             <div class="d-flex align-items-center" style="gap: 6px;">
+                                                 <div class="customer-avatar"
+                                                     style="
                                              width: 28px;
                                              height: 28px;
                                              border-radius: 50%;
                                              overflow: hidden;
                                              border: 2px solid #f0f0f0;
                                          ">
-                                             <img src="{{ getSingleMedia($jobRequest->customer,'profile_image', null) ?? 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQnnM0ib-pYCZg4DbbB_T5_mfxpqrDHYXFLy208bjvHjIM5q1FF4lzLvNFp2qZ5Eo11orA&usqp=CAU' }}"
-                                                 alt="Customer" style="width: 100%; height: 100%; object-fit: cover;">
-                                         </div>
-                                         <div class="customer-details">
-                                             <div style="
+                                                     <img src="{{ getSingleMedia($jobRequest->customer, 'profile_image', null) ?? 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQnnM0ib-pYCZg4DbbB_T5_mfxpqrDHYXFLy208bjvHjIM5q1FF4lzLvNFp2qZ5Eo11orA&usqp=CAU' }}"
+                                                         alt="Customer"
+                                                         style="width: 100%; height: 100%; object-fit: cover;">
+                                                 </div>
+                                                 <div class="customer-details">
+                                                     <div
+                                                         style="
                                                  font-size: 12px;
                                                  font-weight: 600;
                                                  color: #1a1a1a;
                                                  margin-bottom: 1px;
                                              ">
-                                                 {{ $jobRequest->customer->display_name ?? $jobRequest->customer->username ?? 'Unknown' }}
-                                             </div>
-                                             <div style="
+                                                         {{ $jobRequest->customer->display_name ?? ($jobRequest->customer->username ?? 'Unknown') }}
+                                                     </div>
+                                                     <div
+                                                         style="
                                                  font-size: 10px;
                                                  color: #8e8e93;
                                                  font-weight: 400;
                                              ">
-           {{ data_get($jobRequest, 'customer.city.name', 'Unknown') }} - {{ data_get($jobRequest, 'customer.country.name', 'Unknown') }}
+                                                         {{ data_get($jobRequest, 'customer.city.name', 'Unknown') }} -
+                                                         {{ data_get($jobRequest, 'customer.country.name', 'Unknown') }}
 
+                                                     </div>
+                                                 </div>
                                              </div>
                                          </div>
-                                     </div>
-                                 </div>
-                                 
-                                 <!-- Status Badge -->
-                                 <div class="status-section" style="margin-bottom: 8px;">
-                                     <div class="d-flex align-items-center justify-content-between">
-                                         <span style="
+
+                                         <!-- Status Badge -->
+                                         <div class="status-section" style="margin-bottom: 8px;">
+                                             <div class="d-flex align-items-center justify-content-between">
+                                                 <span
+                                                     style="
                                              font-size: 10px;
                                              color: #8e8e93;
                                              font-weight: 500;
                                              text-transform: uppercase;
                                              letter-spacing: 0.5px;
                                          ">
-                                             Status
-                                         </span>
-                                         <span class="status-badge" style="
+                                                     Status
+                                                 </span>
+                                                 <span class="status-badge"
+                                                     style="
                                              padding: 3px 6px;
                                              border-radius: 8px;
                                              font-size: 9px;
@@ -512,20 +540,22 @@
                                              background: {{ $jobRequest->status === 'active' ? '#e8f5e8' : '#fff3cd' }};
                                              color: {{ $jobRequest->status === 'active' ? '#2d5a2d' : '#856404' }};
                                          ">
-                                             {{ ucfirst($jobRequest->status ?? 'Pending') }}
-                                         </span>
-                                     </div>
-                                 </div>
-                                 
-                                 <!-- Social Icons -->
-                                 <div class="social-icons" style="
+                                                     {{ ucfirst($jobRequest->status ?? 'Pending') }}
+                                                 </span>
+                                             </div>
+                                         </div>
+
+                                         <!-- Social Icons -->
+                                        <div class="social-icons"
+                                             style="
                                      display: flex;
                                      align-items: center;
                                      gap: 6px;
                                      padding-top: 8px;
                                      border-top: 1px solid #f0f0f0;
                                  ">
-                                     <a href="#" class="social-link" style="
+                                            <a href="#" class="social-link share-link" data-platform="facebook" data-job-id="{{ $jobRequest->id }}"
+                                                 style="
                                          width: 24px;
                                          height: 24px;
                                          border-radius: 5px;
@@ -536,10 +566,11 @@
                                          transition: all 0.3s ease;
                                          text-decoration: none;
                                      ">
-                                         <img src="https://static.vecteezy.com/system/resources/previews/016/716/481/original/facebook-icon-free-png.png"
-                                             alt="Facebook" style="width: 12px; height: 12px;">
-                                     </a>
-                                     <a href="#" class="social-link" style="
+                                                 <img src="https://static.vecteezy.com/system/resources/previews/016/716/481/original/facebook-icon-free-png.png"
+                                                     alt="Facebook" style="width: 12px; height: 12px;">
+                                             </a>
+                                            <a href="#" class="social-link share-link" data-platform="instagram" data-job-id="{{ $jobRequest->id }}"
+                                                 style="
                                          width: 24px;
                                          height: 24px;
                                          border-radius: 5px;
@@ -550,10 +581,11 @@
                                          transition: all 0.3s ease;
                                          text-decoration: none;
                                      ">
-                                         <img src="https://upload.wikimedia.org/wikipedia/commons/9/95/Instagram_logo_2022.svg"
-                                             alt="Instagram" style="width: 12px; height: 12px;">
-                                     </a>
-                                     <a href="#" class="social-link" style="
+                                                 <img src="https://upload.wikimedia.org/wikipedia/commons/9/95/Instagram_logo_2022.svg"
+                                                     alt="Instagram" style="width: 12px; height: 12px;">
+                                             </a>
+                                            <a href="#" class="social-link share-link" data-platform="twitter" data-share-url="{{ route('job.details', $jobRequest->id) }}" data-text="{{ $jobRequest->title }}"
+                                                 style="
                                          width: 24px;
                                          height: 24px;
                                          border-radius: 5px;
@@ -564,10 +596,11 @@
                                          transition: all 0.3s ease;
                                          text-decoration: none;
                                      ">
-                                         <img src="https://cdn.pixabay.com/photo/2015/03/10/17/30/twitter-667462_640.png"
-                                             alt="Twitter" style="width: 12px; height: 12px;">
-                                     </a>
-                                     <a href="#" class="social-link" style="
+                                                 <img src="https://cdn.pixabay.com/photo/2015/03/10/17/30/twitter-667462_640.png"
+                                                     alt="Twitter" style="width: 12px; height: 12px;">
+                                             </a>
+                                            <a href="#" class="social-link share-link" data-platform="linkedin" data-share-url="{{ route('job.details', $jobRequest->id) }}"
+                                                 style="
                                          width: 24px;
                                          height: 24px;
                                          border-radius: 5px;
@@ -578,15 +611,15 @@
                                          align-items: center;
                                          justify-content: center;
                                      ">
-                                         <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRokEYt0yyh6uNDKL8uksVLlhZ35laKNQgZ9g&s"
-                                             alt="LinkedIn" style="width: 12px; height: 12px;">
-                                     </a>
+                                                 <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRokEYt0yyh6uNDKL8uksVLlhZ35laKNQgZ9g&s"
+                                                     alt="LinkedIn" style="width: 12px; height: 12px;">
+                                             </a>
+                                         </div>
+                                     </div>
                                  </div>
-                             </div>
+                             </a>
                          </div>
-                     </a>
-                 </div>
-             @endforeach
+                     @endforeach
                  @endif
              </div>
          </div>
@@ -597,43 +630,43 @@
          <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
          <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
-         <script>
+        <script>
              $(document).ready(function() {
                  // When the category dropdown changes - ONLY load subcategories, don't apply filters
                  $('#category-select').on('change', function() {
                      var categoryId = $(this).val();
-                     
+
                      // Reset subcategory dropdown
                      $('#subcategory-select').empty();
                      $('#subcategory-select').append('<option selected>Sub-Category</option>');
 
                      if (categoryId && categoryId !== 'Category') {
-                     // Make AJAX request to fetch subcategories
-                     $.ajax({
-                         url: '{{ route('subcategory.listforgood') }}',
-                         method: 'GET',
-                         data: {
-                             category_id: categoryId
-                         },
-                         success: function(response) {
-                             // Populate the subcategory dropdown with the new options
-                             $.each(response, function(key, subcategory) {
-                                 $('#subcategory-select').append('<option value="' +
-                                     subcategory.id + '">' + subcategory.name +
-                                     '</option>');
-                             });
-                         },
-                         error: function(xhr, status, error) {
-                             console.error('AJAX request failed:', status, error);
-                         }
-                     });
+                         // Make AJAX request to fetch subcategories
+                         $.ajax({
+                             url: '{{ route('subcategory.listforgood') }}',
+                             method: 'GET',
+                             data: {
+                                 category_id: categoryId
+                             },
+                             success: function(response) {
+                                 // Populate the subcategory dropdown with the new options
+                                 $.each(response, function(key, subcategory) {
+                                     $('#subcategory-select').append('<option value="' +
+                                         subcategory.id + '">' + subcategory.name +
+                                         '</option>');
+                                 });
+                             },
+                             error: function(xhr, status, error) {
+                                 console.error('AJAX request failed:', status, error);
+                             }
+                         });
                      }
                  });
 
                  // When the country dropdown changes - ONLY load cities, don't apply filters
                  $('#country-select').on('change', function() {
                      var countryId = $(this).val();
-                     
+
                      // Reset city dropdown
                      $('#city-select').empty();
                      $('#city-select').append('<option selected>City</option>');
@@ -673,7 +706,7 @@
                  // Function to apply filters
                  function applyFilters() {
                      const params = new URLSearchParams(window.location.search);
-                     
+
                      // Get all filter values
                      const categoryId = $('#category-select').val();
                      const subcategoryId = $('#subcategory-select').val();
@@ -738,6 +771,39 @@
                  }
              });
          </script>
+
+        <script>
+            (function() {
+                function openPopup(url) {
+                    window.open(url, '_blank', 'noopener,noreferrer,width=600,height=600');
+                }
+
+                document.querySelectorAll('.social-icons .share-link').forEach(function(el) {
+                    el.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        var platform = this.getAttribute('data-platform');
+                        var jobId = this.getAttribute('data-job-id');
+                        var shareUrl = this.getAttribute('data-share-url');
+
+                        if (platform === 'facebook') {
+                            var fbUrl = encodeURIComponent(shareUrl || window.location.href);
+                            openPopup('https://www.facebook.com/sharer/sharer.php?u=' + fbUrl);
+                        } else if (platform === 'twitter') {
+                            var text = encodeURIComponent(this.getAttribute('data-text') || '');
+                            var url = encodeURIComponent(shareUrl || window.location.href);
+                            openPopup('https://twitter.com/intent/tweet?url=' + url + '&text=' + text);
+                        } else if (platform === 'linkedin') {
+                            var liUrl = encodeURIComponent(shareUrl || window.location.href);
+                            openPopup('https://www.linkedin.com/sharing/share-offsite/?url=' + liUrl);
+                        } else if (platform === 'instagram') {
+                            // Instagram does not support web share of links; open Instagram
+                            openPopup('https://www.instagram.com/');
+                        }
+                    });
+                });
+            })();
+        </script>
      </body>
 
      </html>

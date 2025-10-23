@@ -37,4 +37,9 @@ return [
     //     'ONESIGNAL_REST_API_KEY_PROVIDER' => env('ONESIGNAL_REST_API_KEY_PROVIDER'),
     // ],
 
+    'facebook' => [
+        'page_id' => env('FACEBOOK_PAGE_ID'),
+        'access_token' => env('FACEBOOK_PAGE_ACCESS_TOKEN'),
+    ],
+
 ];

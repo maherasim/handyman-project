@@ -1,5 +1,27 @@
 @extends('landing-page.layouts.default')
 
+@section('before_head')
+    @php
+        $shareTitle = $jobrequest->title;
+        $shareDescription = trim(Str::limit(strip_tags($jobrequest->description ?? ''), 150));
+        $shareUrl = route('job.details', $jobrequest->id);
+        $shareImage = !empty($attachments) && count($attachments) > 0 ? $attachments[0] : asset('images/post-job/ac_refresh_and_revive.png');
+        $priceType = $jobrequest->price_type ?: 'fixed';
+        $locationText = trim((optional($jobrequest->city)->name ?? 'City') . ', ' . (optional($jobrequest->country)->name ?? 'Country'));
+        $enrichedTitle = $shareTitle . ' • €' . number_format($jobrequest->price) . ' • ' . ucfirst($priceType) . ' • ' . $locationText;
+    @endphp
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content="{{ $enrichedTitle }}" />
+    <meta property="og:description" content="{{ $shareDescription }}" />
+    <meta property="og:url" content="{{ $shareUrl }}" />
+    <meta property="og:image" content="{{ $shareImage }}" />
+    <meta property="og:image:alt" content="{{ $shareTitle }}" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="{{ $enrichedTitle }}" />
+    <meta name="twitter:description" content="{{ $shareDescription }}" />
+    <meta name="twitter:image" content="{{ $shareImage }}" />
+@endsection
+
 @section('content')
 
     <style>
