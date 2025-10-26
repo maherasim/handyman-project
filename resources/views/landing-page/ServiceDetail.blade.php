@@ -840,25 +840,25 @@
 
 
                     <div class="bg-light   pl-5 pr-5 pb-0 rounded-3 mt-0 pt-0 ">
-                        <div class="service d-flex justify-content-center"
-                            style="position: relative; z-index: 1111; margin: auto; 
-            background-image: url('{{ asset('images/icon/blueicon.jpg') }}'); 
-            background-size: cover; 
-            width: 60%; 
-            border-radius: 10px;  
-            background-repeat: no-repeat; 
-            background-position: center; 
-            padding: 10px 20px; 
-            color: #fff; 
-            font-weight: 600; 
-            font-size: 18px; 
-            border: 3px solid #E1DCDD;">
-                            <h3 class="fw-200 d-inline-block position-relative"
-                                style="color: white; font-size: 12px; font-weight: bold; text-align: center; 
-               padding: 10px 15px; display: inline-block; width: 90%; margin: auto;">
-                                Provider Details
-                            </h3>
-                        </div>
+                        <div style="
+                        position: absolute;
+                        bottom: 10px;
+                        left: 10px;
+                        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                        color: #fff;
+                        padding: 6px 12px;
+                        border-radius: 12px;
+                        font-weight: 700;
+                        font-size: 13px;
+                        box-shadow: 0 6px 18px rgba(102, 126, 234, 0.35);
+                        backdrop-filter: blur(8px);
+                    ">
+                        Provider Details
+                    </div>
+
+
+
+                        
 
                         {{-- <img src="{{ asset('images/frame_img.jpg') }}" alt="" class="d-flex m-auto" style="width: 164px;height:140px"> --}}
                         <div class="position-relative d-flex m-auto" style="width: 164px; height: 140px;">
