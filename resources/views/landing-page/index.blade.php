@@ -745,15 +745,26 @@
                                                 </form>
                                             @endif
                                         </div>
-                                        <ul>
-                                            <div class="service d-flex justify-content-center" style="position:relative; z-index:1111; margin:auto; background-image: url('{{ asset('images/icon/banner2.jpg') }}'); background-size: cover; width:85% ; margin-top:-32px;  background-repeat: no-repeat; background-position: center; padding: 10px 20px; color: white; font-weight: 600; font-size: 18px; border-radius: 10px; border: 3px solid #E1DCDD;">
-                                                @if($data->price==0)
-                                                    <li class="text-primary fw-500 d-inline-block position-relative font-size-18">Free</li>
-                                                @else
-                                                    <li class="text-white fw-500 d-inline-block position-relative font-size-18">{{ getPriceFormat($data->price) }} @if(!empty($data->type)) / {{ $data->type }} @endif</li>
-                                                @endif
-                                            </div>
-                                        </ul>
+                                        <!-- Reworked Price/Type Badge (removed image background) -->
+                                        <div style="
+                                            position: absolute;
+                                            bottom: 10px;
+                                            left: 10px;
+                                            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                                            color: #fff;
+                                            padding: 6px 12px;
+                                            border-radius: 12px;
+                                            font-weight: 700;
+                                            font-size: 13px;
+                                            box-shadow: 0 6px 18px rgba(102, 126, 234, 0.35);
+                                            backdrop-filter: blur(8px);
+                                        ">
+                                            @if($data->price==0)
+                                                Free
+                                            @else
+                                                {{ getPriceFormat($data->price) }} @if(!empty($data->type)) / {{ ucfirst($data->type) }} @endif
+                                            @endif
+                                        </div>
 
                                         {{-- @php
                                             $fullTitle = trim($data->name ?? '');
