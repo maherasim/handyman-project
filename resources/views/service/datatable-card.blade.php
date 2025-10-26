@@ -159,7 +159,7 @@
         Free
     @else
         {{ getPriceFormat($data->price) }} @if(!empty($data->type)) / {{ ucfirst($data->type) }} @endif
-    @endif
+    
 </div>
 
 </ul>
