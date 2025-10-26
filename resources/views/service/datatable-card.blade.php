@@ -139,31 +139,26 @@
             </button>
          </form>
       @endif
-
-   </div> 
-   <ul>
-    <div style="
-    position: absolute;
-    bottom: 10px;
-    left: 10px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: #fff;
-    padding: 6px 12px;
-    border-radius: 12px;
-    font-weight: 700;
-    font-size: 13px;
-    box-shadow: 0 6px 18px rgba(102, 126, 234, 0.35);
-    backdrop-filter: blur(8px);
-">
-    @if($data->price==0)
-        Free
-    @else
-        {{ getPriceFormat($data->price) }} @if(!empty($data->type)) / {{ ucfirst($data->type) }} @endif
-    
-</div>
-
-</ul>
-   @endif 
+      <div style="
+         position: absolute;
+         bottom: 10px;
+         left: 10px;
+         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+         color: #fff;
+         padding: 6px 12px;
+         border-radius: 12px;
+         font-weight: 700;
+         font-size: 13px;
+         box-shadow: 0 6px 18px rgba(102, 126, 234, 0.35);
+         backdrop-filter: blur(8px);
+      ">
+         @if($data->price==0)
+            Free
+         @else
+            {{ getPriceFormat($data->price) }} @if(!empty($data->type)) / {{ ucfirst($data->type) }} @endif
+         @endif
+      </div>
+   </div>
    <a href="{{ route('service.detail', $data->id) }}"
       class="service-heading mt-2 d-block p-0 text-decoration-none"
       data-bs-toggle="tooltip" data-bs-placement="top" title="{{ $data->name }}" aria-label="{{ $data->name }}">
