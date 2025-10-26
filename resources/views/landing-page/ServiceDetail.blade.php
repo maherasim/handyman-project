@@ -839,7 +839,7 @@
                     @endif --}}
 
 
-                    <div class="bg-light   pl-5 pr-5 pb-0 rounded-3 mt-0 pt-0 ">
+                    
                         <div style="
                         position: absolute;
                         bottom: 10px;
