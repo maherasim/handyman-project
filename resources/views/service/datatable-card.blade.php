@@ -226,10 +226,10 @@
                      <svg xmlns=" " width="16" height="16" viewBox="0 0 12 12" fill="none" class="stats-icon text-warning">
                         <path d="M6.58578 0.85525L7.92167 3.44562C8.02009 3.63329 8.20793 3.76362 8.42458 3.79259L11.4252 4.21427C11.6005 4.23802 11.7595 4.32723 11.8669 4.46335C11.9731 4.59773 12.0187 4.76803 11.9929 4.93543C11.9719 5.07445 11.9041 5.20304 11.8003 5.30151L9.62603 7.33523C9.467 7.47714 9.39498 7.68741 9.43339 7.89304L9.96871 10.7522C10.0257 11.0974 9.78867 11.4229 9.43339 11.4884C9.28696 11.511 9.13693 11.4872 9.0049 11.4224L6.32833 10.0768C6.12968 9.98005 5.89503 9.98005 5.69639 10.0768L3.01982 11.4224C2.69094 11.5909 2.28346 11.4762 2.10042 11.1634C2.0326 11.0389 2.0086 10.897 2.0308 10.7585L2.56612 7.89883C2.60453 7.69378 2.53191 7.48236 2.37348 7.34044L0.19921 5.30788C-0.0594455 5.06692 -0.0672472 4.67014 0.181806 4.42048C0.187207 4.41527 0.193209 4.40948 0.19921 4.40369C0.302432 4.30232 0.438061 4.23802 0.584493 4.22123L3.58514 3.79896C3.80118 3.76942 3.98902 3.64025 4.08805 3.45141L5.37592 0.85525C5.49055 0.632821 5.7282 0.494383 5.98625 0.500175H6.06667C6.29052 0.526241 6.48556 0.660046 6.58578 0.85525Z" fill="currentColor" />
                      </svg>
-                     <span class="stats-value">{{ round($totalRating, 1) }}</span>
+                     <span class="stats-value"style="font-size: 11px;">{{ round($totalRating, 1) }}</span>
                   </div>
                   <div class="stats-label">
-                     <a href="{{ route('rating.all', ['service_id' => $data->id]) }}" class="text-decoration-none text-muted">
+                     <a href="{{ route('rating.all', ['service_id' => $data->id]) }}" class="text-decoration-none text-muted"style="font-size: 11px;">
                         ({{ $totalReviews }} {{ __('messages.reviews') }})
                      </a>
                   </div>
@@ -243,9 +243,9 @@
                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns=" " class="stats-icon text-success">
                         <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                      </svg>
-                     <span class="stats-value">{{ $completedBookingCount }}</span>
+                     <span class="stats-value"style="font-size: 11px;">{{ $completedBookingCount }}</span>
                   </div>
-                  <div class="stats-label">Bookings</div>
+                  <div class="stats-label" style="font-size: 11px;">Bookings</div>
                </div>
             </div>
             
@@ -256,9 +256,9 @@
                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns=" " class="stats-icon text-info">
                         <path d="M12 5c-7.633 0-10 7-10 7s2.367 7 10 7 10-7 10-7-2.367-7-10-7Zm0 12a5 5 0 1 1 0-10 5 5 0 0 1 0 10Zm0-8a3 3 0 1 0 .002 6.002A3 3 0 0 0 12 9Z" fill="currentColor"/>
                      </svg>
-                     <span class="stats-value">{{ $data->total_views ?? 0 }}</span>
+                     <span class="stats-value"style="font-size: 11px;">{{ $data->total_views ?? 0 }}</span>
                   </div>
-                  <div class="stats-label">Views</div>
+                  <div class="stats-label" style="font-size: 11px;">Views</div>
                </div>
             </div>
          </div>
