@@ -839,22 +839,24 @@
                     @endif --}}
 
 
-                    
-                        <div style="
-                        position: absolute;
-                        bottom: 10px;
-                        left: 10px;
-                        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                        color: #fff;
-                        padding: 6px 12px;
-                        border-radius: 12px;
-                        font-weight: 700;
-                        font-size: 13px;
-                        box-shadow: 0 6px 18px rgba(102, 126, 234, 0.35);
-                        backdrop-filter: blur(8px);
-                    ">
-                        Provider Details
-                    </div>
+                    <div class="bg-light   pl-5 pr-5 pb-0 rounded-3 mt-0 pt-0 ">
+                        <div class="position-relative d-flex justify-content-center" style="margin: auto; width: 60%;">
+                            <div style="
+                                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                                color: #fff;
+                                padding: 10px 16px;
+                                border-radius: 12px;
+                                font-weight: 700;
+                                font-size: 14px;
+                                box-shadow: 0 6px 18px rgba(102, 126, 234, 0.35);
+                                backdrop-filter: blur(8px);
+                                text-align: center;
+                                width: 100%;
+                                max-width: 480px;
+                            ">
+                                Provider Details
+                            </div>
+                        </div>
 
 
 
