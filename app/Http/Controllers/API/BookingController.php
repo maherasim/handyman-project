@@ -209,13 +209,14 @@ class BookingController extends Controller
     public function getBookingDetail(Request $request){
 
         $id = $request->booking_id;
-Booking::with([
+
+$booking_data = Booking::with([
   'customer',
   'provider.city','provider.country',
-  'handymanAdded.handyman.city','handymanAdded.handyman.country', // ← not user
+  'handymanAdded.handyman.city','handymanAdded.handyman.country',
   'service','bookingRating','bookingPostJob','bookingAddonService',
-  'bookingPackage','payment','slots'
-])
+  'bookingPackage','payment','slots',
+])->where('id', $id)->first();
         if($booking_data == null){
             $message = __('messages.booking_not_found');
             return comman_message_response($message,400);

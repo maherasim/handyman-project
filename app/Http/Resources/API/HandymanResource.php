@@ -14,21 +14,19 @@ class HandymanResource extends JsonResource
      * @param  \Illuminate\Http\Request  $request
      * @return array
      */
-    public function toArray($request)
-    {
-        $booking_id = request()->booking_id;
-        $rating = null;
-        if($booking_id != null){
-            $rating = HandymanRating::where('booking_id',$booking_id)->where('handyman_id',$this->handyman->id)->first();
-            if($rating != null)
-            {
-                $rating = new HandymanRatingResource($rating);
-            }
-        }
-        $temp = new UserResource($this->handyman);
-        
-        $collection = collect($temp)->put('handyman_review', $rating);
-
-        return $collection;
+ public function toArray($request)
+{
+    $booking_id = request()->booking_id;
+    $rating = null;
+    if ($booking_id) {
+        $r = HandymanRating::where('booking_id', $booking_id)
+            ->where('handyman_id', $this->handyman->id)->first();
+        $rating = $r ? new HandymanRatingResource($r) : null;
     }
+
+    return [
+        'handyman'        => new UserResource($this->handyman), // includes city_name, country_name
+        'handyman_review' => $rating,
+    ];
+}
 }
