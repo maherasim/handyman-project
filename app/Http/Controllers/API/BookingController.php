@@ -37,7 +37,7 @@ class BookingController extends Controller
     use NotificationTrait;
     use EarningTrait;
     public function getBookingList(Request $request){
-        $booking = Booking::myBooking()->with('customer','provider','service','payment','handymanAdded');
+        $booking = Booking::myBooking()->with('customer','provider','service','payment','handymanAdded', 'service.city', 'service.country');
 
         if ($request->has('provider_id') && !empty($request->provider_id)) {
             $provider_ids = is_array($request->provider_id) ? $request->provider_id : explode(',', $request->provider_id);

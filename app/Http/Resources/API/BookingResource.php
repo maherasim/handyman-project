@@ -37,6 +37,8 @@ class BookingResource extends JsonResource
             'type'                  => optional($this->service)->type,
             'discount'              => optional($this->service)->discount,
             'status'                => $this->status,
+              'country_name' => optional($this->service->country)->name,
+        'city_name' => optional($this->service->city)->name,
             'status_label'          => BookingStatus::bookingStatus($this->status),
             'description'           => $this->description,
             'provider_name'         => optional($this->provider)->display_name,
