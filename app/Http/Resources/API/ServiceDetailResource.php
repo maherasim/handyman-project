@@ -69,8 +69,15 @@ class ServiceDetailResource extends JsonResource
             'attchments_array' => getAttachmentArray($this->getMedia('service_attachment'),null),
             'total_review'  => $this->serviceRating->count('id'),
             'total_rating'  => count($this->serviceRating) > 0 ? (float) number_format(max($this->serviceRating->avg('rating'),0), 2) : 0,
+            'total_booking_count' => $this->serviceBooking->count(),
+            'completed_booking_count' => $this->serviceBooking->where('status', 'completed')->count(),
             'is_favourite'  => $this->getUserFavouriteService->where('user_id',$user_id)->first() ? 1 : 0,
-            'service_address_mapping' => $this->providerServiceAddress,
+            'service_address_mapping' => $this->providerServiceAddress->map(function($mapping) {
+                return array_merge($mapping->toArray(), [
+                    'city_name' => optional($this->city)->name,
+                    'country_name' => optional($this->country)->name,
+                ]);
+            }),
             'attchment_extension' => $extention,
             'deleted_at' => $this->deleted_at,
             'is_slot'           => $this->is_slot,
