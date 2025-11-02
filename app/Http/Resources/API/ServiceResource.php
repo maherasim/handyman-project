@@ -4,6 +4,7 @@ namespace App\Http\Resources\API;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 use App\Models\Setting;
+use App\Models\Booking;
 
 class ServiceResource extends JsonResource
 {
