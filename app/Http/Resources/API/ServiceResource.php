@@ -72,7 +72,7 @@ class ServiceResource extends JsonResource
             'advance_payment_amount' => $this->is_enable_advance_payment 
                 ? ($this->advance_payment_amount === null ? 0 : (double) $this->advance_payment_amount) 
                 : (double) $advancePaymentPercentage,
-            'completed_booking_count' => $this->completed_booking_count ?? 2,
+            'completed_booking_count' => $this->completed_booking_count ?? Booking::where('service_id', $this->id)->where('status', 'completed')->count(),
             'total_views' => (int) ($this->total_views ?? 0),
         ];
     }
