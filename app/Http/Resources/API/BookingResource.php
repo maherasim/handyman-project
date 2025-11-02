@@ -56,8 +56,15 @@ class BookingResource extends JsonResource
             'customer_image'        => getSingleMedia($this->customer, 'profile_image',null),
             'service_name'          => optional($this->service)->name ?? null,
             'handyman'              => isset($this->handymanAdded) ? $this->handymanAdded->map(function($handymanMapping) {
-                $handymanMapping->handyman->handyman_image = getSingleMedia($handymanMapping->handyman, 'profile_image', null);
-                $handymanMapping->handyman->is_verified = $handymanMapping->handyman->is_verified ? 1 : 0;
+                $handyman = $handymanMapping->handyman;
+                // augment handyman object
+                $handyman->handyman_image = getSingleMedia($handyman, 'profile_image', null);
+                $handyman->is_verified = $handyman->is_verified ? 1 : 0;
+                // provide names directly and override ids as requested for handyman card
+                $handyman->city_name = optional($handyman->city)->name;
+                $handyman->country_name = optional($handyman->country)->name;
+                $handyman->city_id = $handyman->city_name;
+                $handyman->country_id = $handyman->country_name;
                 return $handymanMapping;
             }) : [],
             'service_attchments'    => getAttachments(optional($this->service)->getMedia('service_attachment'),null),
