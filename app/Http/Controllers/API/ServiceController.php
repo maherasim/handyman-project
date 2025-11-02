@@ -188,13 +188,13 @@ class ServiceController extends Controller
 
         if(auth()->user() !== null){
             if(auth()->user()->hasRole('admin')){
-                $service = Service::where('service_type','service')->withTrashed()->with('providers.city','providers.country','category','serviceRating','serviceAddon')->findorfail($id);
+                $service = Service::where('type','service')->withTrashed()->with('providers.city','providers.country','category','serviceRating','serviceAddon')->findorfail($id);
             }
             else{
-                $service = Service::where('service_type','service')->with('providers.city','providers.country','category','serviceRating','serviceAddon')->findorfail($id);
+                $service = Service::where('type','service')->with('providers.city','providers.country','category','serviceRating','serviceAddon')->findorfail($id);
             }
         }else{
-            $service = Service::where('service_type','service')->where('status',1)->with('providers.city','providers.country','category','serviceRating','serviceAddon')->find($id);
+            $service = Service::where('type','service')->where('status',1)->with('providers.city','providers.country','category','serviceRating','serviceAddon')->find($id);
         }
 
         if(empty($service)){
