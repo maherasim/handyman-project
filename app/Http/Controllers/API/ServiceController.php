@@ -338,7 +338,7 @@ if ($matchedTax) {
     {
         $user = auth()->user();
 
-        $favourite = UserFavouriteService::where('user_id',$user->id);
+        $favourite = UserFavouriteService::with('service.serviceBooking')->where('user_id',$user->id);
 
         $per_page = config('constant.PER_PAGE_LIMIT');
 

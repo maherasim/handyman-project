@@ -36,6 +36,12 @@ class UserFavouriteResource extends JsonResource {
             ? ( float ) number_format( max( $this->service->serviceRating->avg( 'rating' ), 0 ), 2 )
             : 0,
 
+            'total_views' => optional( $this->service )->total_views ?? 0,
+            
+            'completed_booking_count' => $this->service && $this->service->serviceBooking 
+            ? $this->service->serviceBooking->where('status', 'completed')->count() 
+            : 0,
+
             'category_name' => optional( optional( $this->service )->category )->name,
 
             'category_id'   => optional( $this->service )->category_id,
