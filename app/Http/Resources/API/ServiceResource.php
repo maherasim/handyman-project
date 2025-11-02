@@ -65,6 +65,9 @@ class ServiceResource extends JsonResource
             'is_slot'           => $this->is_slot,
             'slots'             => getServiceTimeSlot($this->provider_id),
             'visit_type'        => $this->visit_type,
+            'remote_work_level' => $this->remote_work_level,
+            'career_level'      => $this->career_level,
+            'travel_required'   => $this->travel_required,
             'is_enable_advance_payment' => $this->is_enable_advance_payment ? $this->is_enable_advance_payment : $global_advance_payment,
             'advance_payment_amount' => $this->is_enable_advance_payment 
                 ? ($this->advance_payment_amount === null ? 0 : (double) $this->advance_payment_amount) 
