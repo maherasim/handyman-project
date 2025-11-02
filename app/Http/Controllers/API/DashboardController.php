@@ -61,7 +61,7 @@ class DashboardController extends Controller
         $category_section = FrontendSetting::getValueByKey('section_2');
         $category= CategoryResource::collection( Category::whereIN( 'id' ,$category_section->category_id )->orderBy('name','asc')->paginate(8));
 
-        $service = Service::where('status',1)->where('service_type','service');
+        $service = Service::with('city', 'country')->where('status',1)->where('service_type','service');
         $service = $service->whereHas('providers', function ($a) use ($request) {
             $a->where('status', 1);
         });
@@ -93,7 +93,7 @@ class DashboardController extends Controller
 
             $locations = Service::locationService($request->latitude,$request->longitude,$get_distance,$get_unit);
             $service_in_location = ProviderServiceAddressMapping::whereIn('provider_address_id',$locations)->get()->pluck('service_id');
-            $service = Service::with('providerServiceAddress')->whereIn('id',$service_in_location)->orwhere('visit_type','online')->get();
+            $service = Service::with('providerServiceAddress', 'city', 'country')->whereIn('id',$service_in_location)->orwhere('visit_type','online')->get();
             $service = ServiceResource::collection($service);
         }
 
@@ -108,7 +108,7 @@ class DashboardController extends Controller
         $provider = UserResource::collection($provider->paginate($per_page));
 
         $featured_service_section = FrontendSetting::getValueByKey('section_4');
-        $featured_service= Service::whereIN( 'id' ,$featured_service_section->service_id );
+        $featured_service= Service::with('city', 'country')->whereIN( 'id' ,$featured_service_section->service_id );
         $featured_service = $featured_service->whereHas('providers', function ($a) use ($request) {
             $a->where('status', 1);
         });
@@ -125,7 +125,7 @@ class DashboardController extends Controller
 
             $locations = Service::locationService($request->latitude,$request->longitude,$get_distance,$get_unit);
             $service_in_location = ProviderServiceAddressMapping::whereIn('provider_address_id',$locations)->get()->pluck('service_id');
-            $featured_service = Service::with('providerServiceAddress')->whereIn('id',$service_in_location)->where('is_featured',1) ->get();
+            $featured_service = Service::with('providerServiceAddress', 'city', 'country')->whereIn('id',$service_in_location)->where('is_featured',1) ->get();
             $featuredServicePaginated = $featured_service->orderBy('id','desc')->paginate($per_page);
             $featured_service = ServiceResource::collection($featuredServicePaginated);
             

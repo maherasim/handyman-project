@@ -54,7 +54,12 @@ class ServiceResource extends JsonResource
                 ? (float) number_format(max($this->serviceRating->avg('rating'), 0), 2) 
                 : 0,
             'is_favourite'  => $this->getUserFavouriteService->where('user_id', $user_id)->first() ? 1 : 0,
-            'service_address_mapping' => $this->providerServiceAddress,
+            'service_address_mapping' => $this->providerServiceAddress->map(function($mapping) {
+                return array_merge($mapping->toArray(), [
+                    'city_name' => optional($this->city)->name,
+                    'country_name' => optional($this->country)->name,
+                ]);
+            }),
             'attchment_extension' => $extention, // true: for png, false: other
             'deleted_at'        => $this->deleted_at,
             'is_slot'           => $this->is_slot,
