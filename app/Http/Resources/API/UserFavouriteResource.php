@@ -25,6 +25,7 @@ class UserFavouriteResource extends JsonResource {
             'price'         => optional( $this->service )->price,
             'price_format'  => getPriceFormat( optional( $this->service )->price ),
             'type'          => optional( $this->service )->type,
+            'visit_type'    => optional( $this->service )->visit_type,
             'discount'      => optional( $this->service )->discount,
             'duration'      => optional( $this->service )->duration,
             'service_attchments' => getAttachments( optional( $this->service )->getMedia( 'service_attachment' ), null ),
