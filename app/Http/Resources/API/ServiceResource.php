@@ -46,6 +46,12 @@ class ServiceResource extends JsonResource
                 ? optional($this->providers)->social_image 
                 : getSingleMedia(optional($this->providers), 'profile_image', null),
             'city_id' => optional($this->providers)->city_id,
+            // provider location names for mobile UI
+            'city_name' => optional(optional($this->providers)->city)->name,
+            'country_name' => optional(optional($this->providers)->country)->name,
+            // service location names (if needed by some views)
+            'service_city_name' => optional($this->city)->name,
+            'service_country_name' => optional($this->country)->name,
             'category_name'  => optional($this->category)->name,
             'subcategory_name'  => optional($this->subcategory)->name,
             'attchments' => getAttachments($this->getMedia('service_attachment')),

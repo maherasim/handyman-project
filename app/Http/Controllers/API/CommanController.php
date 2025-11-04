@@ -95,8 +95,18 @@ class CommanController extends Controller
 
         return comman_custom_response($response);
     }
-    public function getSearchList(Request $request){
-        $service = Service::where('status',1)->where('service_type','service')->with(['providers','category','serviceRating'])->orderBy('created_at','desc');
+   public function getSearchList(Request $request){
+        $service = Service::where('status',1)
+            ->where('service_type','service')
+            ->with([
+                'providers',
+                'providers.city',
+                'providers.country',
+                'category',
+                'serviceRating',
+                'city',
+                'country'
+            ])->orderBy('created_at','desc');
         if($request->has('provider_id') && $request->provider_id != '' ){
             $service->whereIn('provider_id',explode(',',$request->provider_id));
         }
