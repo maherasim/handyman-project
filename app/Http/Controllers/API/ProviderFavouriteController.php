@@ -41,7 +41,8 @@ class ProviderFavouriteController extends Controller
     {
         $user = auth()->user();
 
-        $favourite = UserFavouriteProvider::where('user_id',$user->id);
+        $favourite = UserFavouriteProvider::where('user_id',$user->id)
+            ->with(['provider.getServiceRating']);
 
         $per_page = config('constant.PER_PAGE_LIMIT');
 

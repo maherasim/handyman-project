@@ -219,7 +219,7 @@ class BookingController extends Controller
 
         $id = $request->booking_id;
 
-$booking_data = Booking::with([
+$booking_data = Booking::withTrashed()->with([
   'customer',
   'provider.city','provider.country',
   'handymanAdded.handyman.city','handymanAdded.handyman.country',
