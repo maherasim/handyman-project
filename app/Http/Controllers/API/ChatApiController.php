@@ -35,6 +35,70 @@ class ChatApiController extends Controller
         abort_unless($uid && $conversation->includesUser($uid), 403);
     }
 
+    /**
+     * List current user's chat conversations (most recent first)
+     */
+    public function conversations(Request $request)
+    {
+        $uid = (int) Auth::id();
+        abort_unless($uid > 0, 401);
+
+        $page = max(1, (int) $request->query('page', 1));
+        $perPage = min(100, max(1, (int) $request->query('per_page', 20)));
+        $skip = ($page - 1) * $perPage;
+
+        $base = ChatConversation::where(function($q) use ($uid){
+                $q->where('user_one_id', $uid)->orWhere('user_two_id', $uid);
+            })
+            ->with(['userOne:id,display_name', 'userTwo:id,display_name'])
+            ->withCount([
+                'messages as unread_count' => function($q) use ($uid){
+                    $q->where('sender_id', '!=', $uid)->whereNull('read_at');
+                }
+            ])
+            ->orderByDesc('updated_at')
+            ->orderByDesc('id');
+
+        $total = (clone $base)->count();
+        $rows = (clone $base)->skip($skip)->take($perPage)->get();
+
+        $items = $rows->map(function(ChatConversation $c) use ($uid) {
+            $other = $c->user_one_id === $uid ? $c->userTwo : $c->userOne;
+            $latest = ChatMessage::where('conversation_id', $c->id)->latest('id')->with('sender:id,display_name')->first();
+            return [
+                'id' => $c->id,
+                'conversation_type' => $c->conversation_type,
+                'title' => $c->title,
+                'post_job_bid_id' => $c->post_job_bid_id,
+                'booking_id' => $c->booking_id,
+                'other_user' => $other ? [
+                    'id' => $other->id,
+                    'name' => $other->display_name,
+                    'avatar_url' => getSingleMedia($other, 'profile_image', null),
+                ] : null,
+                'last_message' => $latest ? [
+                    'id' => $latest->id,
+                    'sender_id' => $latest->sender_id,
+                    'sender_name' => optional($latest->sender)->display_name,
+                    'message' => $latest->contains_pii ? null : $latest->message,
+                    'created_at' => $latest->created_at?->toDateTimeString(),
+                    'has_attachment' => (bool) $latest->attachment_path,
+                    'flagged' => (bool) $latest->contains_pii,
+                ] : null,
+                'unread_count' => (int) $c->unread_count,
+                'updated_at' => $c->updated_at?->toDateTimeString(),
+            ];
+        });
+
+        return response()->json([
+            'status' => true,
+            'page' => $page,
+            'per_page' => $perPage,
+            'total' => $total,
+            'items' => $items,
+        ]);
+    }
+
     public function openByBid(Request $request)
     {
         $request->validate([
