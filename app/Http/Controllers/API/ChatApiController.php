@@ -369,7 +369,7 @@ class ChatApiController extends Controller
         
         $query = \App\Models\User::where('id', '!=', $uid)
             ->where('status', 1) // Only active users
-            ->select('id', 'display_name', 'first_name', 'last_name', 'user_type');
+            ->select('id', 'display_name', 'first_name', 'last_name', 'user_type', 'login_type', 'social_image');
         
         if ($search) {
             $query->where(function($q) use ($search) {
@@ -384,11 +384,22 @@ class ChatApiController extends Controller
             ->take($perPage)
             ->get()
             ->map(function($user) {
+                // Prefer social image when login_type is set; otherwise use stored media; fallback to default
+                $avatar = null;
+                if (!empty($user->login_type) && !empty($user->social_image)) {
+                    $avatar = $user->social_image;
+                }
+                if (!$avatar) {
+                    $avatar = getSingleMedia($user, 'profile_image', null);
+                }
+                if (!$avatar) {
+                    $avatar = asset('images/default.png');
+                }
                 return [
                     'id' => $user->id,
                     'name' => $user->display_name ?: ($user->first_name . ' ' . $user->last_name),
                     'user_type' => $user->user_type,
-                    'avatar_url' => getSingleMedia($user, 'profile_image', null),
+                    'avatar_url' => $avatar,
                 ];
             });
         
