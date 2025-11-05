@@ -47,45 +47,54 @@ class ChatApiController extends Controller
         $perPage = min(100, max(1, (int) $request->query('per_page', 20)));
         $skip = ($page - 1) * $perPage;
 
-        $base = ChatConversation::where(function($q) use ($uid){
+        // Mirror ChatController standalone listing logic by default
+        $base = ChatConversation::where(function ($q) use ($uid) {
                 $q->where('user_one_id', $uid)->orWhere('user_two_id', $uid);
             })
-            ->with(['userOne:id,display_name', 'userTwo:id,display_name'])
-            ->withCount([
-                'messages as unread_count' => function($q) use ($uid){
-                    $q->where('sender_id', '!=', $uid)->whereNull('read_at');
-                }
+            ->whereNull('booking_id')
+            ->whereNull('post_job_bid_id')
+            ->where('conversation_type', 'standalone')
+            ->with([
+                'userOne:id,display_name,user_type',
+                'userTwo:id,display_name,user_type',
             ])
-            ->orderByDesc('updated_at')
-            ->orderByDesc('id');
+            ->orderBy('updated_at', 'desc');
 
         $total = (clone $base)->count();
         $rows = (clone $base)->skip($skip)->take($perPage)->get();
 
-        $items = $rows->map(function(ChatConversation $c) use ($uid) {
-            $other = $c->user_one_id === $uid ? $c->userTwo : $c->userOne;
-            $latest = ChatMessage::where('conversation_id', $c->id)->latest('id')->with('sender:id,display_name')->first();
+        $items = $rows->map(function (ChatConversation $c) use ($uid) {
+            $last = ChatMessage::where('conversation_id', $c->id)->orderByDesc('id')->first();
+            $unread = ChatMessage::where('conversation_id', $c->id)
+                ->whereNull('read_at')
+                ->where('sender_id', '!=', $uid)
+                ->count();
+
+            $otherId = ($c->user_one_id === $uid) ? $c->user_two_id : $c->user_one_id;
+            $other = $otherId === optional($c->userOne)->id ? $c->userOne : $c->userTwo;
+
+            $maskedSnippet = '';
+            if ($last) {
+                $maskedSnippet = $last->contains_pii
+                    ? 'Message hidden due to policy violation'
+                    : ($last->message ? mb_substr($last->message, 0, 80) : 'Attachment');
+            }
+
             return [
                 'id' => $c->id,
                 'conversation_type' => $c->conversation_type,
-                'title' => $c->title,
+                'title' => optional($other)->user_type ?? 'Unknown',
                 'post_job_bid_id' => $c->post_job_bid_id,
                 'booking_id' => $c->booking_id,
                 'other_user' => $other ? [
                     'id' => $other->id,
                     'name' => $other->display_name,
                     'avatar_url' => getSingleMedia($other, 'profile_image', null),
+                    'user_type' => $other->user_type,
                 ] : null,
-                'last_message' => $latest ? [
-                    'id' => $latest->id,
-                    'sender_id' => $latest->sender_id,
-                    'sender_name' => optional($latest->sender)->display_name,
-                    'message' => $latest->contains_pii ? null : $latest->message,
-                    'created_at' => $latest->created_at?->toDateTimeString(),
-                    'has_attachment' => (bool) $latest->attachment_path,
-                    'flagged' => (bool) $latest->contains_pii,
-                ] : null,
-                'unread_count' => (int) $c->unread_count,
+                'unread_count' => (int) $unread,
+                'last_snippet' => $maskedSnippet,
+                'last_at' => $last?->created_at?->toDateTimeString(),
                 'updated_at' => $c->updated_at?->toDateTimeString(),
             ];
         });
