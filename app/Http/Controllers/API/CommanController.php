@@ -95,10 +95,9 @@ class CommanController extends Controller
 
         return comman_custom_response($response);
     }
-    public function getSearchList(Request $request)
-    {
-        $service = Service::where('status', 1)
-            ->where('service_type', 'service')
+   public function getSearchList(Request $request){
+        $service = Service::where('status',1)
+            ->where('service_type','service')
             ->with([
                 'providers',
                 'providers.city',
@@ -107,109 +106,63 @@ class CommanController extends Controller
                 'serviceRating',
                 'city',
                 'country'
-            ])->orderBy('created_at', 'desc');
-    
-        // Provider filter
-        if ($request->has('provider_id') && $request->provider_id != '') {
-            $service->whereIn('provider_id', explode(',', $request->provider_id));
+            ])->orderBy('created_at','desc');
+        if($request->has('provider_id') && $request->provider_id != '' ){
+            $service->whereIn('provider_id',explode(',',$request->provider_id));
         }
-    
-        // Category filter
-        if ($request->has('category_id') && $request->category_id != '') {
-            $service->whereIn('category_id', explode(',', $request->category_id));
+        if($request->has('category_id') && $request->category_id != ''){
+            $service->whereIn('category_id',explode(',',$request->category_id));
         }
-    
-        // Subcategory filter
-        if ($request->has('subcategory_id') && $request->subcategory_id != '') {
-            $service->whereIn('subcategory_id', explode(',', $request->subcategory_id));
+        if($request->has('subcategory_id') && $request->subcategory_id != ''){
+            $service->whereIn('subcategory_id',explode(',',$request->subcategory_id));
         }
-    
-        // Price range
-        if (
-            ($request->has('is_price_min') && $request->is_price_min != '') ||
-            ($request->has('is_price_max') && $request->is_price_max != '')
-        ) {
+        if($request->has('is_price_min') && $request->is_price_min != '' || $request->has('is_price_max') && $request->is_price_max != ''){
             $service->whereBetween('price', [$request->is_price_min, $request->is_price_max]);
         }
-    
-        // Text search
-        if ($request->has('search')) {
-            $service->where('name', 'like', "%{$request->search}%");
+        if($request->has('search')){
+            $service->where('name','like',"%{$request->search}%");
         }
-    
-        // Featured
-        if ($request->has('is_featured')) {
-            $service->where('is_featured', $request->is_featured);
+        if($request->has('is_featured')){
+            $service->where('is_featured',$request->is_featured);
         }
-    
-        // Type
-        if ($request->has('type')) {
-            $service->where('type', $request->type);
+        if($request->has('type')){
+            $service->where('type',$request->type);
         }
-    
-        // Provider must be active (and subscribed if subscription model)
-        if ($request->has('provider_id') && $request->provider_id != '') {
-            $service->whereHas('providers', function ($a) {
+        if($request->has('provider_id') && $request->provider_id != '' ){
+            $service->whereHas('providers', function ($a) use ($request) {
                 $a->where('status', 1);
             });
-        } else {
-            if (default_earning_type() === 'subscription') {
-                $service->whereHas('providers', function ($a) {
-                    $a->where('status', 1)->where('is_subscribe', 1);
+        }else{
+            if(default_earning_type() === 'subscription'){
+                $service->whereHas('providers', function ($a) use ($request) {
+                    $a->where('status', 1)->where('is_subscribe',1);
                 });
             }
         }
-    
-        // Country filter (matches service.country_id OR provider.country_id)
-        if ($request->has('country_id') && $request->country_id !== '') {
-            $countryIds = array_filter(explode(',', $request->country_id), 'strlen');
-            $service->where(function ($q) use ($countryIds) {
-                $q->whereIn('country_id', $countryIds)
-                  ->orWhereHas('providers', function ($p) use ($countryIds) {
-                      $p->whereIn('country_id', $countryIds);
-                  });
-            });
-        }
-    
-        // City filter (matches service.city_id OR provider.city_id)
-        if ($request->has('city_id') && $request->city_id !== '') {
-            $cityIds = array_filter(explode(',', $request->city_id), 'strlen');
-            $service->where(function ($q) use ($cityIds) {
-                $q->whereIn('city_id', $cityIds)
-                  ->orWhereHas('providers', function ($p) use ($cityIds) {
-                      $p->whereIn('city_id', $cityIds);
-                  });
-            });
-        }
-    
-        // Radius search (optional)
         if ($request->has('latitude') && !empty($request->latitude) && $request->has('longitude') && !empty($request->longitude)) {
-            $get_distance = getSettingKeyValue('site-setup', 'radious');
-            $get_unit = getSettingKeyValue('site-setup', 'distance_type');
-    
-            $locations = $service->locationService($request->latitude, $request->longitude, $get_distance, $get_unit);
-            $service_in_location = ProviderServiceAddressMapping::whereIn('provider_address_id', $locations)->get()->pluck('service_id');
-            $service->with('providerServiceAddress')->whereIn('id', $service_in_location);
+            $get_distance = getSettingKeyValue('site-setup','radious');
+            $get_unit = getSettingKeyValue('site-setup','distance_type');
+
+            $locations = $service->locationService($request->latitude,$request->longitude,$get_distance,$get_unit);
+            $service_in_location = ProviderServiceAddressMapping::whereIn('provider_address_id',$locations)->get()->pluck('service_id');
+            $service->with('providerServiceAddress')->whereIn('id',$service_in_location);
         }
-    
-        // Pagination setup
         $per_page = config('constant.PER_PAGE_LIMIT');
-        if ($request->has('per_page') && !empty($request->per_page)) {
-            if (is_numeric($request->per_page)) {
+        if( $request->has('per_page') && !empty($request->per_page)){
+            if(is_numeric($request->per_page)){
                 $per_page = $request->per_page;
             }
-            if ($request->per_page === 'all') {
+            if($request->per_page === 'all' ){
                 $per_page = $service->count();
             }
         }
-    
-        // Rating filter (supports multiple ratings, matches [rating, rating+0.9])
+
         if ($request->has('is_rating') && $request->is_rating != '') {
             $isRatings = array_map('floatval', explode(',', $request->is_rating));
-    
+
             $service->whereHas('serviceRating', function ($q) use ($isRatings) {
                 $conditions = implode(' OR ', array_fill(0, count($isRatings), '(AVG(rating) >= ? AND AVG(rating) <= ?)'));
-    
+
                 $q->select('service_id', \DB::raw('AVG(rating) as average_rating'))
                     ->groupBy('service_id')
                     ->havingRaw($conditions, array_reduce($isRatings, function ($carry, $item) {
@@ -217,27 +170,24 @@ class CommanController extends Controller
                     }, []));
             });
         }
-    
-        $service = $service->where('status', 1)->paginate($per_page);
-    
+
+        $service = $service->where('status',1)->paginate($per_page);
+
         $items = ServiceResource::collection($service);
-        $userservices = null;
-    
-        if ($request->customer_id != null) {
-            $user_service = Service::where('status', 1)->where('added_by', $request->customer_id)->get();
+        $userservices  = null;
+        if($request->customer_id != null){
+            $user_service = Service::where('status',1)->where('added_by',$request->customer_id)->get();
             $userservices = ServiceResource::collection($user_service);
         }
-    
         $maxprice = (int) round($service->max('price'));
         $minprice = (int) round($service->min('price'));
-    
         $response = [
             'data' => $items,
-            'max'  => $maxprice,
-            'min'  => $minprice,
-            'userservices' => $userservices,
+            'max'=> $maxprice,
+            'min'=> $minprice,
+            'userservices' => $userservices
         ];
-    
+
         return comman_custom_response($response);
     }
 
