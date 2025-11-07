@@ -323,8 +323,19 @@ $booking_data = Booking::withTrashed()->with([
         $data = $request->all();
 
         $id = $request->id;
-        $data['start_at'] = isset($request->start_at) ? date('Y-m-d H:i:s',strtotime($request->start_at)) : null;
-        $data['end_at'] = isset($request->end_at) ? date('Y-m-d H:i:s',strtotime($request->end_at)) : null;
+       
+
+        try {
+            $data['start_at'] = $request->filled('start_at')
+                ? Carbon::parse($request->start_at)->format('Y-m-d H:i:s')
+                : null;
+        } catch (\Throwable $e) { $data['start_at'] = null; }
+        
+        try {
+            $data['end_at'] = $request->filled('end_at')
+                ? Carbon::parse($request->end_at)->format('Y-m-d H:i:s')
+                : null;
+        } catch (\Throwable $e) { $data['end_at'] = null; }
         $data['cancellation_charge'] = isset($request->cancellation_charge) ? $request->cancellation_charge : 0;
         $data['cancellation_charge_amount'] = isset($request->cancellation_charge_amount) ? $request->cancellation_charge_amount : 0;
 
@@ -437,7 +448,7 @@ $booking_data = Booking::withTrashed()->with([
             }
         }
 
-        if(($data['status'] == 'rejected' || $data['status'] == 'cancelled') && (($clientPaymentStatus == 'advanced_paid') || (optional($paymentdata)->payment_status == 'advanced_paid'))){
+        if(($data['status'] == 'rejected' || $data['status'] == 'cancelled') && (($clientPaymentStatus == 'advance_paid') || (optional($paymentdata)->payment_status == 'advance_paid'))){
             $advance_paid_amount = $bookingdata->advance_paid_amount;
             $cancellation_charges = $data['cancellation_charge_amount'];
 
@@ -472,7 +483,7 @@ $booking_data = Booking::withTrashed()->with([
 
         $data['reason'] = isset($data['reason']) ? $data['reason'] : null;
 
-        if($data['status'] == 'cancelled' && $data['cancellation_charge_amount'] > 0 && $clientPaymentStatus !=='advanced_paid' && !$actorIsProvider){
+        if($data['status'] == 'cancelled' && $data['cancellation_charge_amount'] > 0 && $clientPaymentStatus !=='advance_paid' && !$actorIsProvider){
             $cancellation_charges = $data['cancellation_charge_amount'];
             $user_wallet->amount = $wallet_amount - $cancellation_charges;
             $user_wallet->update();
