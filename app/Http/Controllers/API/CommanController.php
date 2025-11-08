@@ -116,15 +116,33 @@ class CommanController extends Controller
         if($request->has('subcategory_id') && $request->subcategory_id != ''){
             $service->whereIn('subcategory_id',explode(',',$request->subcategory_id));
         }
-        // Location-based filters by IDs
+        // Location-based filters: match Service location OR Provider location
         if($request->has('country_id') && $request->country_id != ''){
-            $service->whereIn('country_id', explode(',', $request->country_id));
+            $countryIds = array_filter(explode(',', $request->country_id), function($v){ return $v !== ''; });
+            $service->where(function($q) use ($countryIds) {
+                $q->whereIn('country_id', $countryIds)
+                  ->orWhereHas('providers', function($p) use ($countryIds) {
+                      $p->whereIn('country_id', $countryIds);
+                  });
+            });
         }
         if($request->has('state_id') && $request->state_id != ''){
-            $service->whereIn('state_id', explode(',', $request->state_id));
+            $stateIds = array_filter(explode(',', $request->state_id), function($v){ return $v !== ''; });
+            $service->where(function($q) use ($stateIds) {
+                $q->whereIn('state_id', $stateIds)
+                  ->orWhereHas('providers', function($p) use ($stateIds) {
+                      $p->whereIn('state_id', $stateIds);
+                  });
+            });
         }
         if($request->has('city_id') && $request->city_id != ''){
-            $service->whereIn('city_id', explode(',', $request->city_id));
+            $cityIds = array_filter(explode(',', $request->city_id), function($v){ return $v !== ''; });
+            $service->where(function($q) use ($cityIds) {
+                $q->whereIn('city_id', $cityIds)
+                  ->orWhereHas('providers', function($p) use ($cityIds) {
+                      $p->whereIn('city_id', $cityIds);
+                  });
+            });
         }
         if($request->has('is_price_min') && $request->is_price_min != '' || $request->has('is_price_max') && $request->is_price_max != ''){
             $service->whereBetween('price', [$request->is_price_min, $request->is_price_max]);
