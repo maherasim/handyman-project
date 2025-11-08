@@ -116,6 +116,16 @@ class CommanController extends Controller
         if($request->has('subcategory_id') && $request->subcategory_id != ''){
             $service->whereIn('subcategory_id',explode(',',$request->subcategory_id));
         }
+        // Location-based filters by IDs
+        if($request->has('country_id') && $request->country_id != ''){
+            $service->whereIn('country_id', explode(',', $request->country_id));
+        }
+        if($request->has('state_id') && $request->state_id != ''){
+            $service->whereIn('state_id', explode(',', $request->state_id));
+        }
+        if($request->has('city_id') && $request->city_id != ''){
+            $service->whereIn('city_id', explode(',', $request->city_id));
+        }
         if($request->has('is_price_min') && $request->is_price_min != '' || $request->has('is_price_max') && $request->is_price_max != ''){
             $service->whereBetween('price', [$request->is_price_min, $request->is_price_max]);
         }
