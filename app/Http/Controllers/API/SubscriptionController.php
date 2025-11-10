@@ -100,17 +100,13 @@ class SubscriptionController extends Controller
             $provider_subscription->title = 'Free plan';
             $provider_subscription->plan_type = 'Free plan';
             $provider_subscription->type = 'weekly';
-            $provider_subscription->plan_type = 'weekly';
             $provider_subscription->amount = 0;
             $provider_subscription->start_at = date('Y-m-d H:i:s');
             $provider_subscription->end_at = null;
-            $plan_limitation = [
-                'service' => ['limit' => null],
-                'handyman' => ['limit' => null],
-                'featured_service' => ['limit' => null],
-            ];
-            $provider_subscription->plan_limitation = json_encode($plan_limitation);
+            $provider_subscription->plan_limitation = json_encode([]);
+            $provider_subscription->description = 'Basic free plan';
             $provider_subscription->save();
+            
             // Update user subscription status
             $user->is_subscribe = 0;
             $user->save();
