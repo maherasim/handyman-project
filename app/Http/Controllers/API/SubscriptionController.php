@@ -86,35 +86,52 @@ class SubscriptionController extends Controller
         return comman_custom_response($response);
     }
 
-    public function cancelSubscription(Request $request){
-        $user_id = $request->user_id ? $request->user_id : auth()->id();
-        $plan_id  = $request->id;
-        $provider_subscription = ProviderSubscription::where('id', $plan_id )->where('user_id',$user_id)->first();
-        $user = User::where('id', $user_id)->first();
-        
-        if($provider_subscription){
-            // Update existing subscription to Basic/Free plan
-            date_default_timezone_set(getTimeZone());
-            
-            $provider_subscription->status = 'active';
-            $provider_subscription->title = 'Free plan';
-            $provider_subscription->plan_type = 'Free plan';
-            $provider_subscription->type = 'weekly';
-            $provider_subscription->amount = 0;
-            $provider_subscription->start_at = date('Y-m-d H:i:s');
-            $provider_subscription->end_at = null;
-            $provider_subscription->plan_limitation = json_encode([]);
-            $provider_subscription->description = 'Basic free plan';
-            $provider_subscription->save();
-            
-            // Update user subscription status
-            $user->is_subscribe = 0;
-            $user->save();
-            
-            $message = __('messages.cancelled_plan',['plan'=> $provider_subscription->title]) . ' You have been moved to the Basic (Free) plan.';
-        }
-        return comman_message_response($message);
+   public function cancelSubscription(Request $request)
+{
+    $user_id = $request->user_id ? $request->user_id : auth()->id();
+    $plan_id  = $request->id;
+
+    $provider_subscription = ProviderSubscription::where('id', $plan_id)
+        ->where('user_id', $user_id)
+        ->first();
+
+    $user = User::where('id', $user_id)->first();
+
+    if ($provider_subscription) {
+        // Update existing subscription to Basic/Free plan
+        date_default_timezone_set(getTimeZone());
+
+        $provider_subscription->status = 'active';
+        $provider_subscription->title = 'Free plan';
+        $provider_subscription->plan_type = 'Free plan';
+        $provider_subscription->type = 'weekly';
+        $provider_subscription->amount = 0;
+        $provider_subscription->identifier = 'free';
+        $provider_subscription->start_at = date('Y-m-d H:i:s');
+        $provider_subscription->end_at = null;
+
+        // ✅ Set static plan limitation data
+        $plan_limitation = [
+            'service' => ['limit' => null],
+            'handyman' => ['limit' => null],
+            'featured_service' => ['limit' => null],
+        ];
+        $provider_subscription->plan_limitation = json_encode($plan_limitation);
+
+        $provider_subscription->description = 'Basic free plan';
+        $provider_subscription->save();
+
+        // Update user subscription status
+        $user->is_subscribe = 0;
+        $user->save();
+
+        $message = __('messages.cancelled_plan', ['plan' => $provider_subscription->title]) .
+                   ' You have been moved to the Basic (Free) plan.';
     }
+
+    return comman_message_response($message);
+}
+
 
     public function getHistory(Request $request){
         $user_id = auth()->id();
