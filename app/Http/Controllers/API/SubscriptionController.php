@@ -98,19 +98,19 @@ public function cancelSubscription(Request $request)
     $user = User::where('id', $user_id)->first();
 
     if ($provider_subscription) {
-        // Update existing subscription to Basic/Free plan
         date_default_timezone_set(getTimeZone());
+
+        $start_date = now(); // Current date-time
+        $end_date = $start_date->copy()->addWeek(); // Add 7 days for weekly plan
 
         $provider_subscription->status = 'active';
         $provider_subscription->title = 'Free plan';
         $provider_subscription->plan_type = 'Free plan';
         $provider_subscription->type = 'weekly';
-        $provider_subscription->identifier = 'free';
         $provider_subscription->amount = 0;
-        $provider_subscription->start_at = date('Y-m-d H:i:s');
-        $provider_subscription->end_at = null;
+        $provider_subscription->start_at = $start_date;
+        $provider_subscription->end_at = $end_date; // ✅ Set calculated end date
 
-        // ✅ Set static plan limitation data
         $plan_limitation = [
             'service' => ['limit' => null],
             'handyman' => ['limit' => null],
@@ -121,7 +121,6 @@ public function cancelSubscription(Request $request)
         $provider_subscription->description = 'Basic free plan';
         $provider_subscription->save();
 
-        // Update user subscription status
         $user->is_subscribe = 0;
         $user->save();
 
@@ -131,6 +130,7 @@ public function cancelSubscription(Request $request)
 
     return comman_message_response($message);
 }
+
 
 
     public function getHistory(Request $request){
