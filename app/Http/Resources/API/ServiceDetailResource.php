@@ -56,6 +56,7 @@ class ServiceDetailResource extends JsonResource
             'minimum_booking'      => $this->minimum_booking,
             'duration'      => $this->duration,
             'status'        => $this->status,
+            'views'        => $this->total_views,
             'travel_required' => $this->travel_required,
             'remote_work_level' => $this->remote_work_level,
             'career_level' => $this->career_level,
