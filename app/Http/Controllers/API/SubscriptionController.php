@@ -14,77 +14,91 @@ use App\Traits\NotificationTrait;
 class SubscriptionController extends Controller
 {
     use NotificationTrait;
-    public function providerSubscribe(ProviderSubscriptionRequest $request){
+public function providerSubscribe(ProviderSubscriptionRequest $request)
+{
+    $user_id = $request->user_id ? $request->user_id : auth()->id();
+    $user = User::find($user_id);
+    date_default_timezone_set(getTimeZone());
 
-        $user_id = $request->user_id ? $request->user_id :auth()->id();
+    $data = $request->all();
+    $data['user_id'] = $user_id;
+    $data['status'] = config('constant.SUBSCRIPTION_STATUS.PENDING');
+    $data['start_at'] = date('Y-m-d H:i:s');
 
-        $user = User::where('id',$user_id)->first();
+    $get_existing_plan = get_user_active_plan($user_id);
+    $active_plan_left_days = 0;
 
-        date_default_timezone_set(getTimeZone());
+    if ($get_existing_plan) {
+        $active_plan_left_days = check_days_left_plan($get_existing_plan, $data);
 
-        $data = $request->all();
-
-        $get_existing_plan = get_user_active_plan($user_id);
-
-        $active_plan_left_days = 0;
-
-        $data['user_id'] = $user_id;
-
-        $data['status'] = config('constant.SUBSCRIPTION_STATUS.PENDING');
-
-
-        $data['start_at'] = date('Y-m-d H:i:s');
-
-        if($get_existing_plan){
-            $active_plan_left_days  = check_days_left_plan($get_existing_plan,$data);
-            if($request->identifier  != $get_existing_plan->identifier){
-                $get_existing_plan->update([
-                    'status' => config('constant.SUBSCRIPTION_STATUS.INACTIVE')
-                ]);
-                $get_existing_plan->save();
-            }
+        // Only mark as inactive if switching to a different plan
+        if ($request->identifier != $get_existing_plan->identifier) {
+            $get_existing_plan->update([
+                'status' => config('constant.SUBSCRIPTION_STATUS.INACTIVE')
+            ]);
         }
-
-        $data['end_at'] = get_plan_expiration_date( $data['start_at'],$data['type'],$active_plan_left_days,$data['duration']);
-        if(isset($data['plan_limitation']) && !empty($data['plan_limitation'] )){
-            $data['plan_limitation'] = json_encode($data['plan_limitation']);
-        }
-        $result = ProviderSubscription::create($data);
-
-        if( $result ){
-            $payment_data =[
-                'subscription_plan_id' => $result->id,
-                'user_id' => $result->user_id,
-                'amount' => $result->amount,
-                'payment_status' => $request->payment_status,
-                'payment_type' => $request->payment_type
-            ];
-           $payment = SubscriptionTransaction::create($payment_data);
-
-           if($payment->payment_status == 'paid'){
-                $result->status = config('constant.SUBSCRIPTION_STATUS.ACTIVE');
-                $result->payment_id = $payment->id;
-                $result->save();
-                $user->is_subscribe = 1;
-                $user->save();
-                $message = __('messages.payment_completed');
-           }
-        }
-        
-        $items = new ProviderSubscribeResource($result);
-        
-        $response = [
-            'data' => $items,
-        ];
-
-        $activity_data = [
-            'activity_type' => 'subscription_add',
-            'subscription_data' => $result,
-        ];
-        $this->sendNotification($activity_data);
-
-        return comman_custom_response($response);
     }
+
+    $data['end_at'] = get_plan_expiration_date(
+        $data['start_at'],
+        $data['type'],
+        $active_plan_left_days,
+        $data['duration']
+    );
+
+    if (isset($data['plan_limitation']) && !empty($data['plan_limitation'])) {
+        $data['plan_limitation'] = json_encode($data['plan_limitation']);
+    }
+
+    // ✅ Check if there’s any existing subscription for the user (active/inactive)
+    $existing_subscription = ProviderSubscription::where('user_id', $user_id)->first();
+
+    if ($existing_subscription) {
+        // ✅ Update existing subscription
+        $existing_subscription->fill($data);
+        $existing_subscription->save();
+        $result = $existing_subscription;
+    } else {
+        // 🆕 Create a new subscription if none exists
+        $result = ProviderSubscription::create($data);
+    }
+
+    // Handle payment
+    if ($result) {
+        $payment_data = [
+            'subscription_plan_id' => $result->id,
+            'user_id' => $result->user_id,
+            'amount' => $result->amount,
+            'payment_status' => $request->payment_status,
+            'payment_type' => $request->payment_type,
+        ];
+
+        $payment = SubscriptionTransaction::create($payment_data);
+
+        if ($payment->payment_status == 'paid') {
+            $result->status = config('constant.SUBSCRIPTION_STATUS.ACTIVE');
+            $result->payment_id = $payment->id;
+            $result->save();
+
+            $user->is_subscribe = 1;
+            $user->save();
+
+            $message = __('messages.payment_completed');
+        }
+    }
+
+    $items = new ProviderSubscribeResource($result);
+    $response = ['data' => $items];
+
+    $activity_data = [
+        'activity_type' => 'subscription_add',
+        'subscription_data' => $result,
+    ];
+
+    $this->sendNotification($activity_data);
+
+    return comman_custom_response($response);
+}
 
 public function cancelSubscription(Request $request)
 {
