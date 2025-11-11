@@ -174,6 +174,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('save-subscription', [ API\SubscriptionController::class, 'providerSubscribe' ] );
     Route::post('cancel-subscription', [ API\SubscriptionController::class, 'cancelSubscription' ] );
     Route::get('subscription-history', [ API\SubscriptionController::class, 'getHistory' ] );
+    Route::post('subscription/bank-transfer', [ API\SubscriptionController::class, 'bankTransfer' ] );
     Route::get('wallet-history', [ API\WalletController::class, 'getHistory' ] );
     Route::post('wallet-top-up', [ API\WalletController::class, 'walletTopup' ] );
 

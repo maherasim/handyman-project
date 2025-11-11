@@ -7,9 +7,11 @@ use Illuminate\Http\Request;
 use App\Models\ProviderSubscription;
 use App\Models\User;
 use App\Models\SubscriptionTransaction;
+use App\Models\Plans;
 use App\Http\Resources\API\ProviderSubscribeResource;
 use App\Http\Requests\ProviderSubscriptionRequest; 
 use App\Traits\NotificationTrait;
+use Illuminate\Support\Facades\Log;
 
 class SubscriptionController extends Controller
 {
@@ -182,5 +184,136 @@ public function cancelSubscription(Request $request)
 
         return comman_custom_response($response);
 
+    }
+
+    /**
+     * Handle bank transfer payment for subscription
+     * 
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function bankTransfer(Request $request)
+    {
+        try {
+            $request->validate([
+                'plan_id' => 'required',
+                'plan_type' => 'required|string',
+                'plan_amount' => 'required|numeric',
+            ]);
+
+            // Get the new plan details
+            $newPlan = Plans::where('title', $request->plan_type)->first();
+            if (!$newPlan) {
+                return comman_message_response('Plan not found.', 404);
+            }
+
+            $user_id = auth()->id();
+            $user = User::find($user_id);
+            
+            if (!$user) {
+                return comman_message_response('User not found.', 404);
+            }
+            
+            // Find existing active subscription to update
+            $existing_subscription = ProviderSubscription::where('user_id', $user_id)
+                ->where('status', config('constant.SUBSCRIPTION_STATUS.ACTIVE'))
+                ->first();
+
+            if ($existing_subscription) {
+                // Update existing subscription instead of creating new one
+                $existing_subscription->update([
+                    'plan_id' => $newPlan->id,
+                    'title' => $newPlan->title,
+                    'identifier' => $newPlan->identifier,
+                    'type' => $newPlan->type,
+                    'amount' => $newPlan->amount,
+                    'duration' => $newPlan->duration,
+                    'description' => $newPlan->description,
+                    'plan_type' => $newPlan->plan_type,
+                    'plan_limitation' => $newPlan->planlimit ? json_encode($newPlan->planlimit->plan_limitation) : null,
+                    'status' => config('constant.SUBSCRIPTION_STATUS.PENDING'), // Bank transfer starts as pending
+                    'start_at' => now(),
+                    'end_at' => get_plan_expiration_date(now(), $newPlan->type, 0, $newPlan->duration), // Reset end date for new plan
+                ]);
+
+                // Create payment transaction with pending status
+                $payment_data = [
+                    'subscription_plan_id' => $existing_subscription->id,
+                    'user_id' => $existing_subscription->user_id,
+                    'amount' => $existing_subscription->amount,
+                    'payment_status' => 'pending',
+                    'payment_type' => 'bank_transfer',
+                    'txn_id' => 'BANK_' . time(),
+                ];
+                $payment = SubscriptionTransaction::create($payment_data);
+
+                // Update subscription with payment reference
+                $existing_subscription->payment_id = $payment->id;
+                $existing_subscription->save();
+
+                // Send bank transfer instructions email
+                sendBankTransferConfirmationEmail($user, $existing_subscription, $payment);
+
+                $subscriptionResource = new ProviderSubscribeResource($existing_subscription);
+                
+                return comman_custom_response([
+                    'data' => $subscriptionResource,
+                    'message' => 'Subscription upgrade recorded. Please send proof of payment to billing@frobster.com.'
+                ]);
+            } else {
+                // If no existing subscription, create new one
+                $data = [
+                    'plan_id' => $newPlan->id,
+                    'user_id' => $user_id,
+                    'title' => $newPlan->title,
+                    'identifier' => $newPlan->identifier,
+                    'type' => $newPlan->type,
+                    'amount' => $newPlan->amount,
+                    'status' => config('constant.SUBSCRIPTION_STATUS.PENDING'),
+                    'start_at' => now(),
+                    'end_at' => get_plan_expiration_date(now(), $newPlan->type, 0, $newPlan->duration),
+                    'duration' => $newPlan->duration,
+                    'description' => $newPlan->description,
+                    'plan_type' => $newPlan->plan_type,
+                    'plan_limitation' => $newPlan->planlimit ? json_encode($newPlan->planlimit->plan_limitation) : null,
+                ];
+
+                $result = ProviderSubscription::create($data);
+
+                if ($result) {
+                    // Create payment transaction with pending status
+                    $payment_data = [
+                        'subscription_plan_id' => $result->id,
+                        'user_id' => $result->user_id,
+                        'amount' => $result->amount,
+                        'payment_status' => 'pending',
+                        'payment_type' => 'bank_transfer',
+                        'txn_id' => 'BANK_' . time(),
+                    ];
+                    $payment = SubscriptionTransaction::create($payment_data);
+
+                    // Update subscription with payment reference
+                    $result->payment_id = $payment->id;
+                    $result->save();
+
+                    // Send bank transfer instructions email
+                    sendBankTransferConfirmationEmail($user, $result, $payment);
+
+                    $subscriptionResource = new ProviderSubscribeResource($result);
+                    
+                    return comman_custom_response([
+                        'data' => $subscriptionResource,
+                        'message' => 'Subscription created. Please send proof of payment to billing@frobster.com.'
+                    ]);
+                } else {
+                    return comman_message_response('Failed to create subscription.', 500);
+                }
+            }
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return comman_message_response($e->getMessage(), 422);
+        } catch (\Exception $e) {
+            Log::error('Bank transfer subscription payment failed: ' . $e->getMessage());
+            return comman_message_response('Bank transfer payment failed: ' . $e->getMessage(), 500);
+        }
     }
 }

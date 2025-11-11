@@ -33,7 +33,12 @@
                                     <label class="text-secondary">{{__('auth.login_password')}} <span class="text-danger">*</span></label>
                                     <!-- <label><a href="{{route('auth.recover-password')}}">{{__('auth.forgot_password')}}</a></label> -->
                                  </div>
-                                 <input class="form-control" type="password" value="{{request('password')}}" placeholder="{{ __('auth.enter_name',['name' => __('auth.login_password') ]) }}" name="password" required autocomplete="current-password">
+                                 <div class="input-group">
+                                    <input id="password" class="form-control" type="password" value="{{request('password')}}" placeholder="{{ __('auth.enter_name',['name' => __('auth.login_password') ]) }}" name="password" required autocomplete="current-password">
+                                    <span class="input-group-text" id="togglePassword" style="cursor: pointer;">
+                                       <i class="fa fa-eye-slash" aria-hidden="true"></i>
+                                    </span>
+                                 </div>
                                  <small class="help-block with-errors text-danger"></small>
                               </div>
                            </div>
@@ -56,4 +61,28 @@
          </div>
       </div>
    </section>
+
+   <script>
+      document.addEventListener('DOMContentLoaded', function() {
+         const togglePassword = document.getElementById('togglePassword');
+         const passwordInput = document.getElementById('password');
+         
+         if (togglePassword && passwordInput) {
+            togglePassword.addEventListener('click', function() {
+               const icon = this.querySelector('i');
+               const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+               passwordInput.setAttribute('type', type);
+               
+               // Toggle eye icon
+               if (type === 'password') {
+                  icon.classList.remove('fa-eye');
+                  icon.classList.add('fa-eye-slash');
+               } else {
+                  icon.classList.remove('fa-eye-slash');
+                  icon.classList.add('fa-eye');
+               }
+            });
+         }
+      });
+   </script>
 </x-guest-layout>
