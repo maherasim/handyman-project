@@ -118,8 +118,8 @@ class HomeController extends Controller
     
     $data['total_revenue'] = $data['CommissionEarning'] + $data['cancellationcharge'];
 
-    // Total subscription transactions amount (all types)
-    $data['versatile_earning'] = SubscriptionTransaction::sum('amount');
+    // Total subscription transactions amount (only paid transactions)
+    $data['versatile_earning'] = SubscriptionTransaction::where('payment_status', 'paid')->sum('amount');
 
     if ($user->hasAnyRole(['admin', 'demo_admin'])) {
         $data['revenueData'] = adminEarning();
