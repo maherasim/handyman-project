@@ -41,13 +41,13 @@ public function getProviderSlot(Request $request)
     return comman_custom_response($calendarSlots);
 }
 
+
 public function store(Request $request)
 {
     $request->validate([
         'slots' => 'nullable|array',
         'slots.*.day' => 'nullable|string|in:sun,mon,tue,wed,thu,fri,sat',
-        'slots.*.date' => 'nullable|date',
-        'slots.*.time' => 'nullable|array',
+   
     ]);
 
     $provider_id = $request->provider_id ?? auth()->user()->id;
@@ -58,17 +58,8 @@ public function store(Request $request)
     $isCreated = false;
 
     foreach ($request->slots as $slot) {
-        $day = $slot['day'] ?? null;
-        $date = $slot['date'] ?? null;
+        $day = $slot['day'];
         $times = $slot['time'] ?? [];
-
-        // Remove duplicates from time array
-        $times = array_unique($times);
-        
-        // Skip if no times provided
-        if (empty($times)) {
-            continue;
-        }
 
         foreach ($times as $time) {
             // Handle '24:00:00' gracefully
@@ -80,27 +71,14 @@ public function store(Request $request)
                 $start = \Carbon\Carbon::createFromFormat('H:i:s', $time);
                 $end = $start->copy()->addMinutes(60); // or 30 if desired
 
-                // Check if slot already exists for this provider, day, date, and time to prevent duplicates
-                $existingSlot = ProviderSlotMapping::where('provider_id', $provider_id)
-                    ->where('days', $day)
-                    ->when($date, function($query) use ($date) {
-                        return $query->where('date', $date);
-                    })
-                    ->where('start_at', $start->format('H:i'))
-                    ->first();
+                ProviderSlotMapping::create([
+                    'provider_id' => $provider_id,
+                    'days' => $day,
+                    'start_at' => $start->format('H:i'),
+                    'end_at' => $end->format('H:i'),
+                ]);
 
-                // Only create if it doesn't exist
-                if (!$existingSlot) {
-                    ProviderSlotMapping::create([
-                        'provider_id' => $provider_id,
-                        'days' => $day,
-                        'date' => $date, // Add date field if your table has it
-                        'start_at' => $start->format('H:i'),
-                        'end_at' => $end->format('H:i'),
-                    ]);
-
-                    $isCreated = true;
-                }
+                $isCreated = true;
             } catch (\Exception $e) {
                 // Optionally log $e->getMessage()
                 continue;
