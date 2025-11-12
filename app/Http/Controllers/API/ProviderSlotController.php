@@ -9,37 +9,48 @@ use App\Models\ProviderSlotMapping;
 
 class ProviderSlotController extends Controller
 {
-public function getProviderSlot(Request $request)
-{
-    $provider_id = $request->provider_id ?? auth()->user()->id;
 
-    // Set timezone
-    date_default_timezone_set('Asia/Dubai');
-
-    $startDate = \Carbon\Carbon::now();
-    $endDate = \Carbon\Carbon::now()->addDays(30); // Next 30 days
-
-    $calendarSlots = [];
-
-    for ($date = $startDate->copy(); $date <= $endDate; $date->addDay()) {
-        $dayCode = strtolower($date->format('D')); // mon, tue, etc.
-        $formattedDate = $date->format('Y-m-d');
-
+    public function getProviderSlot(Request $request)
+    {
+        $provider_id = $request->provider_id ?? auth()->user()->id;
+    
+        // Set timezone
+        date_default_timezone_set('Asia/Dubai');
+    
+        $startDate = \Carbon\Carbon::now();
+        $endDate = \Carbon\Carbon::now()->addDays(30);
+    
+        // Fetch all date-based slots for the provider within the date range
         $slots = ProviderSlotMapping::where('provider_id', $provider_id)
-            ->where('days', $dayCode)
+            ->whereNotNull('date')
+            ->whereBetween('date', [$startDate->format('Y-m-d'), $endDate->format('Y-m-d')])
+            ->orderBy('date', 'asc')
             ->orderBy('start_at', 'asc')
-            ->pluck('start_at')
-            ->toArray();
-
-        $calendarSlots[] = [
-            'date' => $formattedDate,
-            'day' => $dayCode,
-            'slots' => $slots,
-        ];
+            ->get();
+    
+        // Group slots by date
+        $groupedSlots = $slots->groupBy('date')->map(function ($dateSlots) {
+            return $dateSlots->map(function ($slot) {
+                $timeSlot = $slot->start_at;
+                if (strlen($timeSlot) == 5) {
+                    $timeSlot .= ':00';
+                }
+                return $timeSlot;
+            })->unique()->values()->toArray();
+        });
+    
+        // Format response - only dates with slots
+        $calendarSlots = $groupedSlots->map(function ($slots, $date) {
+            $dayCode = strtolower(\Carbon\Carbon::parse($date)->format('D'));
+            return [
+                'date' => $date,
+                'day' => $dayCode,
+                'slots' => $slots,
+            ];
+        })->values()->toArray();
+    
+        return comman_custom_response($calendarSlots);
     }
-
-    return comman_custom_response($calendarSlots);
-}
 
 
 

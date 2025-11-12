@@ -10,7 +10,7 @@ class ProviderSlotMapping extends Model
     use HasFactory;
     protected $table = 'provider_slot_mappings';
     protected $fillable = [
-       'provider_id', 'date','start_at','end_at','status'
+       'provider_id', 'date','start_at','end_at','status','days'
     ];
     protected $casts = [
         'provider_id' => 'integer',
