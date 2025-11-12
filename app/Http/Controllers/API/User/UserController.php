@@ -399,7 +399,7 @@ public function register(UserRequest $request)
 
     public function updateProfile(Request $request)
     {
-        dd($request->all());
+       // dd($request->all());
         $user = \Auth::user();
         if($request->has('id') && !empty($request->id)){
             $user = User::where('id',$request->id)->first();
