@@ -42,24 +42,48 @@ public function getProviderSlot(Request $request)
 }
 
 
+
 public function store(Request $request)
 {
     $request->validate([
         'slots' => 'nullable|array',
-        'slots.*.day' => 'nullable|string|in:sun,mon,tue,wed,thu,fri,sat',
-   
+        'slots.*.date' => 'nullable|date|date_format:Y-m-d',
+        'slots.*.day' => 'nullable|string|in:sun,mon,tue,wed,thu,fri,sat', // Keep for backward compatibility
+        'slots.*.time' => 'nullable|array',
     ]);
 
     $provider_id = $request->provider_id ?? auth()->user()->id;
 
-    // Delete existing slots
-    ProviderSlotMapping::where('provider_id', $provider_id)->delete();
+    // Delete existing slots for the specific dates being updated
+    // If slots contain dates, delete only those dates; otherwise delete all (for backward compatibility)
+    $datesToUpdate = [];
+    foreach ($request->slots as $slot) {
+        if (isset($slot['date'])) {
+            $datesToUpdate[] = $slot['date'];
+        }
+    }
+
+    if (!empty($datesToUpdate)) {
+        // Delete slots for specific dates
+        ProviderSlotMapping::where('provider_id', $provider_id)
+            ->whereIn('date', $datesToUpdate)
+            ->delete();
+    } else {
+        // Backward compatibility: if no dates provided, delete all slots (old behavior)
+        ProviderSlotMapping::where('provider_id', $provider_id)->delete();
+    }
 
     $isCreated = false;
 
     foreach ($request->slots as $slot) {
-        $day = $slot['day'];
+        $date = $slot['date'] ?? null;
+        $day = $slot['day'] ?? null;
         $times = $slot['time'] ?? [];
+
+        // Skip if neither date nor day is provided
+        if (!$date && !$day) {
+            continue;
+        }
 
         foreach ($times as $time) {
             // Handle '24:00:00' gracefully
@@ -71,16 +95,25 @@ public function store(Request $request)
                 $start = \Carbon\Carbon::createFromFormat('H:i:s', $time);
                 $end = $start->copy()->addMinutes(60); // or 30 if desired
 
-                ProviderSlotMapping::create([
+                $slotData = [
                     'provider_id' => $provider_id,
-                    'days' => $day,
                     'start_at' => $start->format('H:i'),
                     'end_at' => $end->format('H:i'),
-                ]);
+                ];
+
+                // Use date if available, otherwise fall back to day (backward compatibility)
+                if ($date) {
+                    $slotData['date'] = $date;
+                } else if ($day) {
+                    $slotData['days'] = $day;
+                }
+
+                ProviderSlotMapping::create($slotData);
 
                 $isCreated = true;
             } catch (\Exception $e) {
                 // Optionally log $e->getMessage()
+                \Log::error('Error creating slot: ' . $e->getMessage());
                 continue;
             }
         }
@@ -92,6 +125,5 @@ public function store(Request $request)
 
     return comman_message_response($message);
 }
-
 
 }
