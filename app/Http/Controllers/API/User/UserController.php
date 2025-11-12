@@ -240,12 +240,7 @@ public function register(UserRequest $request)
             $user_list = $user_list->where('status',$status);
         }
 
-        //Check if provider is subscribed when earning system is subscription
-        if($type == "filter_provider" || (auth()->user() !== null && !auth()->user()->hasRole(['admin','demo_admin']))){
-            if(default_earning_type() == "subscription" && $user_type == 'provider'){
-                $user_list = $user_list->where('is_subscribe',1);
-            }
-        }
+        // Removed subscription-based filtering so providers are not restricted by is_subscribe
         if(auth()->user() !== null && auth()->user()->hasRole(['admin', 'provider'])){
             $user_list = $user_list->withTrashed();
             if($request->has('keyword') && isset($request->keyword))
