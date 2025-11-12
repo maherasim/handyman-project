@@ -46,12 +46,19 @@ public function getProviderSlot(Request $request)
 public function store(Request $request)
 {
     $request->validate([
-        'slots' => 'nullable|array',
+        'slots' => 'required|array',
         'slots.*.date' => 'required|date|date_format:Y-m-d',
-        'slots.*.time' => 'nullable|array',
+        'slots.*.time' => 'required|array',
     ]);
 
     $provider_id = $request->provider_id ?? auth()->user()->id;
+
+    // Log incoming request for debugging
+    \Log::info('Time slot update request', [
+        'provider_id' => $provider_id,
+        'slots_count' => count($request->slots),
+        'slots' => $request->slots
+    ]);
 
     // Delete existing slots for the specific dates being updated
     $datesToUpdate = [];
@@ -62,6 +69,7 @@ public function store(Request $request)
     }
 
     if (!empty($datesToUpdate)) {
+        \Log::info('Deleting slots for dates', ['dates' => $datesToUpdate]);
         ProviderSlotMapping::where('provider_id', $provider_id)
             ->whereIn('date', $datesToUpdate)
             ->delete();
@@ -74,10 +82,12 @@ public function store(Request $request)
         $times = $slot['time'] ?? [];
 
         if (!$date) {
+            \Log::warning('Slot skipped: no date provided', ['slot' => $slot]);
             continue;
         }
 
         if (empty($times)) {
+            \Log::warning('Slot skipped: no times provided', ['date' => $date]);
             continue;
         }
 
@@ -90,16 +100,25 @@ public function store(Request $request)
                 $start = \Carbon\Carbon::createFromFormat('H:i:s', $time);
                 $end = $start->copy()->addMinutes(60);
 
-                ProviderSlotMapping::create([
+                $slotData = [
                     'provider_id' => $provider_id,
-                    'date' => $date,
+                    'date' => $date, // Make sure this is set
                     'start_at' => $start->format('H:i'),
                     'end_at' => $end->format('H:i'),
-                ]);
+                ];
+
+                \Log::info('Creating slot', ['slotData' => $slotData]);
+
+                ProviderSlotMapping::create($slotData);
 
                 $isCreated = true;
             } catch (\Exception $e) {
-                \Log::error('Error creating slot: ' . $e->getMessage());
+                \Log::error('Error creating slot', [
+                    'time' => $time,
+                    'date' => $date,
+                    'error' => $e->getMessage(),
+                    'trace' => $e->getTraceAsString()
+                ]);
                 continue;
             }
         }

@@ -10,11 +10,15 @@ class ProviderSlotMapping extends Model
     use HasFactory;
     protected $table = 'provider_slot_mappings';
     protected $fillable = [
-       'provider_id', 'days','start_at','end_at','status'
+       'provider_id', 'date','start_at','end_at','status','days'
     ];
     protected $casts = [
         'provider_id' => 'integer',
         'status' => 'integer',
+        'date' => 'date',
+        'start_at' => 'time',
+        'end_at' => 'time',
+        'days' => 'string',
     ];   
     public function providerslots(){
         return $this->belongsTo(User::class,'provider_id', 'id');
