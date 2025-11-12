@@ -400,6 +400,9 @@ public function register(UserRequest $request)
     public function updateProfile(Request $request)
     {
        // dd($request->all());
+        \Illuminate\Support\Facades\Log::info('API updateProfile request payload', [
+            'input' => $request->all()
+        ]);
         $user = \Auth::user();
         if($request->has('id') && !empty($request->id)){
             $user = User::where('id',$request->id)->first();
@@ -428,6 +431,24 @@ public function register(UserRequest $request)
         if ($request->hasFile('profile_image')) {
             $user->clearMediaCollection('profile_image');
             $user->addMediaFromRequest('profile_image')->toMediaCollection('profile_image');
+        } elseif ($request->filled('profile_image_base64')) {
+            $base64 = $request->input('profile_image_base64');
+            $normalized = $base64;
+            $extension = 'jpg';
+            if (preg_match('/^data:image\/(\w+);base64,/', $base64, $type)) {
+                $extension = strtolower($type[1]);
+            } else {
+                $normalized = 'data:image/jpeg;base64,' . $base64;
+            }
+            $filename = 'profile_' . $user->id . '_' . time() . '.' . $extension;
+            $user->clearMediaCollection('profile_image');
+            $user->addMediaFromBase64($normalized)->usingFileName($filename)->toMediaCollection('profile_image');
+        } elseif ($request->filled('profile_image_url')) {
+            $url = $request->input('profile_image_url');
+            if (filter_var($url, FILTER_VALIDATE_URL)) {
+                $user->clearMediaCollection('profile_image');
+                $user->addMediaFromUrl($url)->toMediaCollection('profile_image');
+            }
         }
 
         $user_data = User::find($user->id);
@@ -859,3 +880,4 @@ public function register(UserRequest $request)
     }
 
 }
+
