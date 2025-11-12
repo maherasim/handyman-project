@@ -738,11 +738,13 @@ trait NotificationTrait
                     case 'user':
                         if (isset($userId)) {
                             $user = \App\Models\User::find($userId);
-                            try {
-                                $notification_data['user_type'] = $mailTo;
-                                $user->notify(new \App\Notifications\CommonNotification($notification_type, $notification_data));
-                            } catch (\Exception $e) {
-                                Log::error($e);
+                            if ($user && isset($user->email)) {
+                                try {
+                                    $notification_data['user_type'] = $mailTo;
+                                    $user->notify(new \App\Notifications\CommonNotification($notification_type, $notification_data));
+                                } catch (\Exception $e) {
+                                    Log::error($e);
+                                }
                             }
                         }
                         break;
