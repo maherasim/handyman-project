@@ -222,7 +222,7 @@ class BookingController extends Controller
 
 $booking_data = Booking::withTrashed()->with([
   'customer',
-  'provider.city','provider.country',
+  'provider.city','provider.country','provider.providerSubscription',
   'handymanAdded.handyman.city','handymanAdded.handyman.country',
   'service','bookingRating','bookingPostJob','bookingAddonService',
   'bookingPackage','payment','slots',

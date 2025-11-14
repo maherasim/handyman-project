@@ -34,6 +34,26 @@ class BookingDetailResource extends JsonResource
                 ->whereJsonContains('activity_data->booking_id', $this->id)  // Match booking_id in JSON field
                 ->orderBy('created_at', 'desc')  // Get the most recent entry
                 ->first();
+
+        // Provider stickers: verified and membership
+        $provider = optional($this->provider);
+        $providerId = $provider ? $provider->id : null;
+        $isVerified = $providerId ? verify_provider_document($providerId) : false;
+        $verifiedIcon = $isVerified
+            ? asset('images/icon/verifiedpng.png')
+            : asset('images/icon/notverifiedpng.png');
+        $planIcon = asset('images/freepng.png');
+        $membership = 'free';
+        if ($provider && $provider->providerSubscription) {
+            $rawPlan = strtolower(trim($provider->providerSubscription->plan_type ?? $provider->providerSubscription->title ?? ''));
+            if (str_contains($rawPlan, 'silver')) {
+                $planIcon = asset('images/icon/silverpng.png');
+                $membership = 'silver';
+            } elseif (str_contains($rawPlan, 'gold')) {
+                $planIcon = asset('images/goldpng.png');
+                $membership = 'gold';
+            }
+        }
         $advancepaid = 0;
         if($this->status == 'cancelled'){
             $advancepaid = $this->advance_paid_amount == null ? 0:(double) $this->advance_paid_amount;
@@ -59,6 +79,11 @@ class BookingDetailResource extends JsonResource
             'description'        => $this->description,
             'reason'             => $this->reason,
             'provider_name'      => optional($this->provider)->display_name,
+            'provider_image'     => getSingleMedia($this->provider, 'profile_image', null),
+            'provider_verified'  => $isVerified ? 1 : 0,
+            'verified_sticker_icon' => $verifiedIcon,
+            'membership'            => $membership,
+            'membership_icon'       => $planIcon,
             'customer_name'      => optional($this->customer)->display_name,
             'service_name'       => optional($this->service)->name,
             'payment_status'     => optional($this->payment)->payment_status,
