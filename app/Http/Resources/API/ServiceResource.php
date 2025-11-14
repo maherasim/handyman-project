@@ -26,6 +26,25 @@ class ServiceResource extends JsonResource
         $advancePaymentPercentage = $serviceconfig->advance_paynment_percantage ?? 0;
         $global_advance_payment = $serviceconfig->global_advance_payment ?? 0;
 
+        $provider = optional($this->providers);
+        $isVerified = $provider ? verify_provider_document($provider->id) : false;
+        $verifiedIcon = $isVerified
+            ? asset('images/icon/verifiedpng.png')
+            : asset('images/icon/notverifiedpng.png');
+
+        $planIcon = asset('images/freepng.png');
+        $membership = 'free';
+        if ($provider && $provider->providerSubscription) {
+            $rawPlan = strtolower(trim($provider->providerSubscription->plan_type ?? $provider->providerSubscription->title ?? ''));
+            if (str_contains($rawPlan, 'silver')) {
+                $planIcon = asset('images/icon/silverpng.png');
+                $membership = 'silver';
+            } elseif (str_contains($rawPlan, 'gold')) {
+                $planIcon = asset('images/goldpng.png');
+                $membership = 'gold';
+            }
+        }
+
         return [
             'id'            => $this->id,
             'name'          => $this->name,
@@ -49,6 +68,11 @@ class ServiceResource extends JsonResource
             // provider location names for mobile UI
             'city_name' => optional(optional($this->providers)->city)->name,
             'country_name' => optional(optional($this->providers)->country)->name,
+            // provider verification & membership stickers
+            'provider_verified' => $isVerified ? 1 : 0,
+            'verified_sticker_icon' => $verifiedIcon,
+            'membership' => $membership,
+            'membership_icon' => $planIcon,
             // service location names (if needed by some views)
             'service_city_name' => optional($this->city)->name,
             'service_country_name' => optional($this->country)->name,
