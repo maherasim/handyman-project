@@ -25,6 +25,25 @@ class BookingResource extends JsonResource
         $sitesetup = Setting::where('type','site-setup')->where('key', 'site-setup')->first();
         $datetime = json_decode($sitesetup->value);
         $payment = $this->payment()->orderBy('id','desc')->first();
+        // Provider stickers: verified and membership
+        $provider = optional($this->provider);
+        $providerId = $provider ? $provider->id : null;
+        $isVerified = $providerId ? verify_provider_document($providerId) : false;
+        $verifiedIcon = $isVerified
+            ? asset('images/icon/verifiedpng.png')
+            : asset('images/icon/notverifiedpng.png');
+        $planIcon = asset('images/freepng.png');
+        $membership = 'free';
+        if ($provider && $provider->providerSubscription) {
+            $rawPlan = strtolower(trim($provider->providerSubscription->plan_type ?? $provider->providerSubscription->title ?? ''));
+            if (str_contains($rawPlan, 'silver')) {
+                $planIcon = asset('images/icon/silverpng.png');
+                $membership = 'silver';
+            } elseif (str_contains($rawPlan, 'gold')) {
+                $planIcon = asset('images/goldpng.png');
+                $membership = 'gold';
+            }
+        }
         return [
             'id'                    => $this->id,
             'address'               => $this->address,
@@ -52,7 +71,12 @@ class BookingResource extends JsonResource
             'provider_name'         => optional($this->provider)->display_name ?? null,
             'customer_name'         => optional($this->customer)->display_name ?? null,
             'provider_image'        => getSingleMedia($this->provider, 'profile_image',null),
-            'provider_is_verified'  => (bool) optional($this->provider)->is_verified,  
+            'provider_is_verified'  => (bool) optional($this->provider)->is_verified,
+            // new sticker fields
+            'provider_verified'     => $isVerified ? 1 : 0,
+            'verified_sticker_icon' => $verifiedIcon,
+            'membership'            => $membership,
+            'membership_icon'       => $planIcon,
             'customer_image'        => getSingleMedia($this->customer, 'profile_image',null),
             'service_name'          => optional($this->service)->name ?? null,
             'handyman'              => isset($this->handymanAdded) ? $this->handymanAdded->map(function($handymanMapping) {

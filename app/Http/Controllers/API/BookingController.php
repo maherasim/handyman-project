@@ -40,6 +40,7 @@ class BookingController extends Controller
         $booking = Booking::myBooking()->with(
             'customer',
             'provider',
+            'provider.providerSubscription',
             'service',
             'payment',
             'handymanAdded.handyman.city',
