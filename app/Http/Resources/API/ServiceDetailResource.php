@@ -39,6 +39,25 @@ class ServiceDetailResource extends JsonResource
         $global_advance_payment = $serviceconfig->global_advance_payment ?? 0;
 
 
+        // Provider stickers
+        $provider = optional($this->providers);
+        $isVerified = $provider ? verify_provider_document($provider->id) : false;
+        $verifiedIcon = $isVerified
+            ? asset('images/icon/verifiedpng.png')
+            : asset('images/icon/notverifiedpng.png');
+        $planIcon = asset('images/freepng.png');
+        $membership = 'free';
+        if ($provider && $provider->providerSubscription) {
+            $rawPlan = strtolower(trim($provider->providerSubscription->plan_type ?? $provider->providerSubscription->title ?? ''));
+            if (str_contains($rawPlan, 'silver')) {
+                $planIcon = asset('images/icon/silverpng.png');
+                $membership = 'silver';
+            } elseif (str_contains($rawPlan, 'gold')) {
+                $planIcon = asset('images/icon/goldpng.png');
+                $membership = 'gold';
+            }
+        }
+
         return [
             'id'            => $this->id,
             'name'          => $this->name,
@@ -64,6 +83,11 @@ class ServiceDetailResource extends JsonResource
             'cancellation_policy'   => $this->cancellation_policy,
             'is_featured'   => $this->is_featured,
             'provider_name' => optional($this->providers)->name,
+            // provider stickers
+            'provider_verified' => $isVerified ? 1 : 0,
+            'verified_sticker_icon' => $verifiedIcon,
+            'membership' => $membership,
+            'membership_icon' => $planIcon,
             'category_name'  => optional($this->category)->name,
             'subcategory_name'  => optional($this->subcategory)->name,
             'attchments' => getAttachments($this->getMedia('service_attachment'),null),
