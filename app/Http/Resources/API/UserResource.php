@@ -19,11 +19,27 @@ class UserResource extends JsonResource
         $handyman_rating = (float) 0;
         $total_service_rating = 0;
         $is_verify_provider = false;
+        $membership = 'free';
+        $membership_icon = asset('images/freepng.png');
+        $verified_sticker_icon = asset('images/icon/notverifiedpng.png');
         if($this->user_type == 'provider')
         {
             $providers_service_rating = (isset($this->getServiceRating) && count($this->getServiceRating) > 0 ) ? (float) number_format(max($this->getServiceRating->avg('rating'),0), 2) : 0;
             $total_service_rating = (isset($this->getServiceRating)) ? count($this->getServiceRating) : 0;
             $is_verify_provider = verify_provider_document($this->id);
+            $verified_sticker_icon = $is_verify_provider
+                ? asset('images/icon/verifiedpng.png')
+                : asset('images/icon/notverifiedpng.png');
+            if ($this->providerSubscription) {
+                $rawPlan = strtolower(trim($this->providerSubscription->plan_type ?? $this->providerSubscription->title ?? ''));
+                if (str_contains($rawPlan, 'silver')) {
+                    $membership = 'silver';
+                    $membership_icon = asset('images/icon/silverpng.png');
+                } elseif (str_contains($rawPlan, 'gold')) {
+                    $membership = 'gold';
+                    $membership_icon = asset('images/goldpng.png');
+                }
+            }
             $handyman_rating = (isset($this->handymanRating) && count($this->handymanRating) > 0 ) ? (float) number_format(max($this->handymanRating->avg('rating'),0), 2) : 0;
 
         }
@@ -73,6 +89,11 @@ class UserResource extends JsonResource
             'total_service_rating' => $total_service_rating,
             'handyman_rating' => $handyman_rating,
             'is_verify_provider' => (int) $is_verify_provider,
+            // provider stickers (for providers)
+            'provider_verified' => (int) $is_verify_provider,
+            'verified_sticker_icon' => $verified_sticker_icon,
+            'membership' => $membership,
+            'membership_icon' => $membership_icon,
             'isHandymanAvailable' =>  $this->is_available,
             'languages' =>  $this->languages,
             'about_me' =>  $this->about_me,
