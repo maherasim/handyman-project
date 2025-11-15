@@ -18,15 +18,26 @@ class SubscriptionController extends Controller
     use NotificationTrait;
 public function providerSubscribe(ProviderSubscriptionRequest $request)
 {
-    dd($request->all());
+   // dd($request->all());
     $user_id = $request->user_id ? $request->user_id : auth()->id();
     $user = User::find($user_id);
     date_default_timezone_set(getTimeZone());
 
-    $data = $request->all();
-    $data['user_id'] = $user_id;
-    $data['status'] = config('constant.SUBSCRIPTION_STATUS.PENDING');
-    $data['start_at'] = date('Y-m-d H:i:s');
+            $data = $request->all();
+            $data['user_id'] = $user_id;
+            $data['status'] = config('constant.SUBSCRIPTION_STATUS.PENDING');
+            $data['start_at'] = now()->format('Y-m-d H:i:s');
+
+        $effectiveType = strtolower($data['type'] ?? 'monthly');
+        $effectiveDuration = (int) ($data['duration'] ?? 1);
+
+        $data['end_at'] = get_plan_expiration_date(
+            $data['start_at'],
+            $effectiveType,
+            $active_plan_left_days,
+            $effectiveDuration
+        );
+
 
     // Resolve plan from reliable source (ignore client-supplied type/duration when possible)
     $plan = null;
