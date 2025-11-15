@@ -125,9 +125,10 @@ class SubscriptionController extends Controller
         | 6) Normalize plan_limitation (ensure encoded)
         |--------------------------------------------------------------------------
         */
-        if (isset($data['plan_limitation']) && !empty($data['plan_limitation'])) {
-            $data['plan_limitation'] = json_encode($data['plan_limitation']);
+        if (!empty($data['plan_limitation']) && is_string($data['plan_limitation'])) {
+            $data['plan_limitation'] = json_decode($data['plan_limitation'], true);
         }
+        
     
         /*
         |--------------------------------------------------------------------------
