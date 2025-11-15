@@ -16,137 +16,180 @@ use Illuminate\Support\Facades\Log;
 class SubscriptionController extends Controller
 {
     use NotificationTrait;
-public function providerSubscribe(ProviderSubscriptionRequest $request)
-{
-   // dd($request->all());
-    $user_id = $request->user_id ? $request->user_id : auth()->id();
-    $user = User::find($user_id);
-    date_default_timezone_set(getTimeZone());
-
-            $data = $request->all();
-            $data['user_id'] = $user_id;
-            $data['status'] = config('constant.SUBSCRIPTION_STATUS.PENDING');
-            $data['start_at'] = now()->format('Y-m-d H:i:s');
-
+    public function providerSubscribe(ProviderSubscriptionRequest $request)
+    {
+        $user_id = $request->user_id ?? auth()->id();
+        $user = User::find($user_id);
+    
+        date_default_timezone_set(getTimeZone());
+    
+        // Base request data
+        $data = $request->all();
+        $data['user_id'] = $user_id;
+        $data['status'] = config('constant.SUBSCRIPTION_STATUS.PENDING');
+        $data['start_at'] = now()->format('Y-m-d H:i:s');  // Always from today
+    
+        /*
+        |--------------------------------------------------------------------------
+        | 1) Resolve Plan (Priority: plan_id → identifier → plan_type → title)
+        |--------------------------------------------------------------------------
+        */
+        $plan = null;
+    
+        if ($request->filled('plan_id')) {
+            $plan = Plans::find($request->plan_id);
+        }
+    
+        if (!$plan && $request->filled('identifier')) {
+            $plan = Plans::where('identifier', $request->identifier)->first();
+        }
+    
+        if (!$plan && $request->filled('plan_type')) {
+            $plan = Plans::where('title', $request->plan_type)->first();
+        }
+    
+        if (!$plan && $request->filled('title')) {
+            $plan = Plans::where('title', $request->title)->first();
+        }
+    
+        /*
+        |--------------------------------------------------------------------------
+        | 2) Inject Plan Defaults If Found
+        |--------------------------------------------------------------------------
+        */
+        if ($plan) {
+            $data['plan_id'] = $plan->id;
+            $data['title'] = $plan->title;
+            $data['identifier'] = $plan->identifier;
+            $data['type'] = $plan->type;                  // daily/weekly/monthly/yearly
+            $data['duration'] = $plan->duration;          // integer duration
+            $data['amount'] = $plan->amount;
+            $data['description'] = $plan->description;
+            $data['plan_type'] = $plan->plan_type;        // Silver, Gold, Free, etc.
+            $data['plan_limitation'] = $plan->planlimit 
+                ? json_encode($plan->planlimit->plan_limitation) 
+                : null;
+        }
+    
+        /*
+        |--------------------------------------------------------------------------
+        | 3) Allow Client to Override type & duration (optional)
+        |--------------------------------------------------------------------------
+        */
+        if ($request->filled('type')) {
+            $data['type'] = strtolower($request->type);
+        }
+    
+        if ($request->filled('duration')) {
+            $data['duration'] = (int) $request->duration;
+        }
+    
+        /*
+        |--------------------------------------------------------------------------
+        | 4) Check If User has an Active Plan (for leftover days)
+        |--------------------------------------------------------------------------
+        */
+        $existing_plan = get_user_active_plan($user_id);
+        $active_plan_left_days = 0;
+    
+        if ($existing_plan) {
+    
+            // Calculate remaining active days
+            $active_plan_left_days = check_days_left_plan($existing_plan, $data);
+    
+            // If user is switching plan → mark old plan inactive
+            if ($request->identifier != $existing_plan->identifier) {
+                $existing_plan->update([
+                    'status' => config('constant.SUBSCRIPTION_STATUS.INACTIVE')
+                ]);
+            }
+        }
+    
+        /*
+        |--------------------------------------------------------------------------
+        | 5) Calculate Auto End Date Using Existing Helper
+        |--------------------------------------------------------------------------
+        */
         $effectiveType = strtolower($data['type'] ?? 'monthly');
         $effectiveDuration = (int) ($data['duration'] ?? 1);
-
+    
         $data['end_at'] = get_plan_expiration_date(
-            $data['start_at'],
-            $effectiveType,
-            $active_plan_left_days,
-            $effectiveDuration
+            $data['start_at'],          // always now/today
+            $effectiveType,             // monthly/weekly/yearly
+            $active_plan_left_days,     // leftover days
+            $effectiveDuration          // duration
         );
-
-
-    // Resolve plan from reliable source (ignore client-supplied type/duration when possible)
-    $plan = null;
-    if ($request->filled('plan_id')) {
-        $plan = Plans::find($request->plan_id);
-    }
-    if (!$plan && $request->filled('identifier')) {
-        $plan = Plans::where('identifier', $request->identifier)->first();
-    }
-    if (!$plan && $request->filled('plan_type')) {
-        // Some clients send title/plan_type as the visible label (e.g., Silver plan)
-        $plan = Plans::where('title', $request->plan_type)->first();
-    }
-    // If still not found, try title from 'title' field
-    if (!$plan && $request->filled('title')) {
-        $plan = Plans::where('title', $request->title)->first();
-    }
-    // If a plan is found, normalize subscription data from plan
-    if ($plan) {
-        $data['plan_id'] = $plan->id;
-        $data['title'] = $plan->title;
-        $data['identifier'] = $plan->identifier;
-        // Default from plan; may be overridden by explicit request below
-        $data['type'] = $plan->type;              // daily/weekly/monthly/yearly
-        $data['duration'] = $plan->duration;      // integer duration
-        $data['amount'] = $plan->amount;
-        $data['description'] = $plan->description;
-        $data['plan_type'] = $plan->plan_type;    // e.g., Free plan / Silver plan / Gold plan
-        $data['plan_limitation'] = $plan->planlimit ? json_encode($plan->planlimit->plan_limitation) : null;
-    }
-    // If client explicitly sends type/duration, honor it (monthly/weekly/yearly)
-    if ($request->filled('type')) {
-        $data['type'] = strtolower($request->type);
-    }
-    if ($request->filled('duration')) {
-        $data['duration'] = (int) $request->duration;
-    }
-
-    $get_existing_plan = get_user_active_plan($user_id);
-    $active_plan_left_days = 0;
-
-    if ($get_existing_plan) {
-        $active_plan_left_days = check_days_left_plan($get_existing_plan, $data);
-
-        // Only mark as inactive if switching to a different plan
-        if ($request->identifier != $get_existing_plan->identifier) {
-            $get_existing_plan->update([
-                'status' => config('constant.SUBSCRIPTION_STATUS.INACTIVE')
-            ]);
+    
+        /*
+        |--------------------------------------------------------------------------
+        | 6) Normalize plan_limitation (ensure encoded)
+        |--------------------------------------------------------------------------
+        */
+        if (isset($data['plan_limitation']) && !empty($data['plan_limitation'])) {
+            $data['plan_limitation'] = json_encode($data['plan_limitation']);
         }
-    }
-
-    $effectiveType = strtolower($data['type'] ?? ($plan ? $plan->type : 'monthly'));
-    $effectiveDuration = (int) ($data['duration'] ?? ($plan ? $plan->duration : 1));
-    $data['end_at'] = get_plan_expiration_date($data['start_at'], $effectiveType, $active_plan_left_days, $effectiveDuration);
-
-    if (isset($data['plan_limitation']) && !empty($data['plan_limitation'])) {
-        $data['plan_limitation'] = json_encode($data['plan_limitation']);
-    }
-
-    // ✅ Check if there’s any existing subscription for the user (active/inactive)
-    $existing_subscription = ProviderSubscription::where('user_id', $user_id)->first();
-
-    if ($existing_subscription) {
-        // ✅ Update existing subscription
-        $existing_subscription->fill($data);
-        $existing_subscription->save();
-        $result = $existing_subscription;
-    } else {
-        // 🆕 Create a new subscription if none exists
-        $result = ProviderSubscription::create($data);
-    }
-
-    // Handle payment
-    if ($result) {
-        $payment_data = [
-            'subscription_plan_id' => $result->id,
-            'user_id' => $result->user_id,
-            'amount' => $result->amount,
-            'payment_status' => $request->payment_status,
-            'payment_type' => $request->payment_type,
+    
+        /*
+        |--------------------------------------------------------------------------
+        | 7) Create or Update Subscription
+        |--------------------------------------------------------------------------
+        */
+        $existing_subscription = ProviderSubscription::where('user_id', $user_id)->first();
+    
+        if ($existing_subscription) {
+            $existing_subscription->fill($data)->save();
+            $subscription = $existing_subscription;
+        } else {
+            $subscription = ProviderSubscription::create($data);
+        }
+    
+        /*
+        |--------------------------------------------------------------------------
+        | 8) Process Payment (store transaction)
+        |--------------------------------------------------------------------------
+        */
+        if ($subscription) {
+    
+            $payment_data = [
+                'subscription_plan_id' => $subscription->id,
+                'user_id' => $subscription->user_id,
+                'amount' => $subscription->amount,
+                'payment_status' => $request->payment_status,
+                'payment_type' => $request->payment_type,
+            ];
+    
+            $payment = SubscriptionTransaction::create($payment_data);
+    
+            if ($payment->payment_status == 'paid') {
+                $subscription->status = config('constant.SUBSCRIPTION_STATUS.ACTIVE');
+                $subscription->payment_id = $payment->id;
+                $subscription->save();
+    
+                $user->is_subscribe = 1;
+                $user->save();
+    
+                $message = __('messages.payment_completed');
+            }
+        }
+    
+        /*
+        |--------------------------------------------------------------------------
+        | 9) Send Notifications
+        |--------------------------------------------------------------------------
+        */
+        $items = new ProviderSubscribeResource($subscription);
+        $response = ['data' => $items];
+    
+        $activity_data = [
+            'activity_type' => 'subscription_add',
+            'subscription_data' => $subscription,
         ];
-
-        $payment = SubscriptionTransaction::create($payment_data);
-
-        if ($payment->payment_status == 'paid') {
-            $result->status = config('constant.SUBSCRIPTION_STATUS.ACTIVE');
-            $result->payment_id = $payment->id;
-            $result->save();
-
-            $user->is_subscribe = 1;
-            $user->save();
-
-            $message = __('messages.payment_completed');
-        }
+    
+        $this->sendNotification($activity_data);
+    
+        return comman_custom_response($response);
     }
-
-    $items = new ProviderSubscribeResource($result);
-    $response = ['data' => $items];
-
-    $activity_data = [
-        'activity_type' => 'subscription_add',
-        'subscription_data' => $result,
-    ];
-
-    $this->sendNotification($activity_data);
-
-    return comman_custom_response($response);
-}
+    
 
 public function cancelSubscription(Request $request)
 {
