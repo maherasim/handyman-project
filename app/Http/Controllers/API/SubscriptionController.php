@@ -18,6 +18,7 @@ class SubscriptionController extends Controller
     use NotificationTrait;
 public function providerSubscribe(ProviderSubscriptionRequest $request)
 {
+    dd($request->all());
     $user_id = $request->user_id ? $request->user_id : auth()->id();
     $user = User::find($user_id);
     date_default_timezone_set(getTimeZone());
@@ -48,12 +49,20 @@ public function providerSubscribe(ProviderSubscriptionRequest $request)
         $data['plan_id'] = $plan->id;
         $data['title'] = $plan->title;
         $data['identifier'] = $plan->identifier;
+        // Default from plan; may be overridden by explicit request below
         $data['type'] = $plan->type;              // daily/weekly/monthly/yearly
         $data['duration'] = $plan->duration;      // integer duration
         $data['amount'] = $plan->amount;
         $data['description'] = $plan->description;
         $data['plan_type'] = $plan->plan_type;    // e.g., Free plan / Silver plan / Gold plan
         $data['plan_limitation'] = $plan->planlimit ? json_encode($plan->planlimit->plan_limitation) : null;
+    }
+    // If client explicitly sends type/duration, honor it (monthly/weekly/yearly)
+    if ($request->filled('type')) {
+        $data['type'] = strtolower($request->type);
+    }
+    if ($request->filled('duration')) {
+        $data['duration'] = (int) $request->duration;
     }
 
     $get_existing_plan = get_user_active_plan($user_id);
@@ -70,12 +79,9 @@ public function providerSubscribe(ProviderSubscriptionRequest $request)
         }
     }
 
-    $data['end_at'] = get_plan_expiration_date(
-        $data['start_at'],
-        $plan ? $plan->type : $data['type'],
-        $active_plan_left_days,
-        $plan ? $plan->duration : $data['duration']
-    );
+    $effectiveType = strtolower($data['type'] ?? ($plan ? $plan->type : 'monthly'));
+    $effectiveDuration = (int) ($data['duration'] ?? ($plan ? $plan->duration : 1));
+    $data['end_at'] = get_plan_expiration_date($data['start_at'], $effectiveType, $active_plan_left_days, $effectiveDuration);
 
     if (isset($data['plan_limitation']) && !empty($data['plan_limitation'])) {
         $data['plan_limitation'] = json_encode($data['plan_limitation']);
