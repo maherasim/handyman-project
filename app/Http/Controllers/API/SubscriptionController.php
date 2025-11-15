@@ -30,9 +30,9 @@ class SubscriptionController extends Controller
         $data['start_at'] = now()->format('Y-m-d H:i:s');  // Always from today
     
         /*
-        |--------------------------------------------------------------------------
+        |----------------------------------------------------------------------
         | 1) Resolve Plan (Priority: plan_id → identifier → plan_type → title)
-        |--------------------------------------------------------------------------
+        |----------------------------------------------------------------------
         */
         $plan = null;
     
@@ -53,9 +53,9 @@ class SubscriptionController extends Controller
         }
     
         /*
-        |--------------------------------------------------------------------------
+        |----------------------------------------------------------------------
         | 2) Inject Plan Defaults If Found
-        |--------------------------------------------------------------------------
+        |----------------------------------------------------------------------
         */
         if ($plan) {
             $data['plan_id'] = $plan->id;
@@ -72,9 +72,9 @@ class SubscriptionController extends Controller
         }
     
         /*
-        |--------------------------------------------------------------------------
+        |----------------------------------------------------------------------
         | 3) Allow Client to Override type & duration (optional)
-        |--------------------------------------------------------------------------
+        |----------------------------------------------------------------------
         */
         if ($request->filled('type')) {
             $data['type'] = strtolower($request->type);
@@ -85,55 +85,29 @@ class SubscriptionController extends Controller
         }
     
         /*
-        |--------------------------------------------------------------------------
-        | 4) Check If User has an Active Plan (for leftover days)
-        |--------------------------------------------------------------------------
-        */
-        $existing_plan = get_user_active_plan($user_id);
-        $active_plan_left_days = 0;
-    
-        if ($existing_plan) {
-    
-            // Calculate remaining active days
-            $active_plan_left_days = check_days_left_plan($existing_plan, $data);
-    
-            // If user is switching plan → mark old plan inactive
-            if ($request->identifier != $existing_plan->identifier) {
-                $existing_plan->update([
-                    'status' => config('constant.SUBSCRIPTION_STATUS.INACTIVE')
-                ]);
-            }
-        }
-    
-        /*
-        |--------------------------------------------------------------------------
-        | 5) Calculate Auto End Date Using Existing Helper
-        |--------------------------------------------------------------------------
+        |----------------------------------------------------------------------
+        | 4) Calculate Auto End Date
+        |----------------------------------------------------------------------
         */
         $effectiveType = strtolower($data['type'] ?? 'monthly');
         $effectiveDuration = (int) ($data['duration'] ?? 1);
     
-        $data['end_at'] = get_plan_expiration_date(
-            $data['start_at'],          // always now/today
-            $effectiveType,             // monthly/weekly/yearly
-            $active_plan_left_days,     // leftover days
-            $effectiveDuration          // duration
-        );
+        // Ignore leftover days
+        $data['end_at'] = $this->getPlanExpirationDate($data['start_at'], $effectiveType, $effectiveDuration);
     
         /*
-        |--------------------------------------------------------------------------
-        | 6) Normalize plan_limitation (ensure encoded)
-        |--------------------------------------------------------------------------
+        |----------------------------------------------------------------------
+        | 5) Normalize plan_limitation
+        |----------------------------------------------------------------------
         */
         if (!empty($data['plan_limitation']) && is_string($data['plan_limitation'])) {
             $data['plan_limitation'] = json_decode($data['plan_limitation'], true);
         }
-        
     
         /*
-        |--------------------------------------------------------------------------
-        | 7) Create or Update Subscription
-        |--------------------------------------------------------------------------
+        |----------------------------------------------------------------------
+        | 6) Create or Update Subscription
+        |----------------------------------------------------------------------
         */
         $existing_subscription = ProviderSubscription::where('user_id', $user_id)->first();
     
@@ -145,9 +119,9 @@ class SubscriptionController extends Controller
         }
     
         /*
-        |--------------------------------------------------------------------------
-        | 8) Process Payment (store transaction)
-        |--------------------------------------------------------------------------
+        |----------------------------------------------------------------------
+        | 7) Process Payment
+        |----------------------------------------------------------------------
         */
         if ($subscription) {
     
@@ -174,9 +148,9 @@ class SubscriptionController extends Controller
         }
     
         /*
-        |--------------------------------------------------------------------------
-        | 9) Send Notifications
-        |--------------------------------------------------------------------------
+        |----------------------------------------------------------------------
+        | 8) Send Notifications
+        |----------------------------------------------------------------------
         */
         $items = new ProviderSubscribeResource($subscription);
         $response = ['data' => $items];
@@ -190,6 +164,41 @@ class SubscriptionController extends Controller
     
         return comman_custom_response($response);
     }
+    
+    /**
+     * Helper to calculate end date ignoring leftover days
+     */
+    private function getPlanExpirationDate($start_date, $plan_type, $duration)
+    {
+        $start = \Carbon\Carbon::parse($start_date);
+        $type = strtolower(trim($plan_type));
+        $duration = (int) $duration;
+    
+        switch ($type) {
+            case 'day':
+            case 'daily':
+                $end = $start->copy()->addDays($duration);
+                break;
+            case 'week':
+            case 'weekly':
+                $end = $start->copy()->addWeeks($duration);
+                break;
+            case 'month':
+            case 'monthly':
+                $end = $start->copy()->addMonths($duration);
+                break;
+            case 'year':
+            case 'yearly':
+                $end = $start->copy()->addYears($duration);
+                break;
+            default:
+                $end = $start->copy()->addMonths($duration);
+                break;
+        }
+    
+        return $end->format('Y-m-d H:i:s');
+    }
+    
     
 
 public function cancelSubscription(Request $request)
