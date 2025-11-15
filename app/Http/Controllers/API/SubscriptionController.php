@@ -27,6 +27,35 @@ public function providerSubscribe(ProviderSubscriptionRequest $request)
     $data['status'] = config('constant.SUBSCRIPTION_STATUS.PENDING');
     $data['start_at'] = date('Y-m-d H:i:s');
 
+    // Resolve plan from reliable source (ignore client-supplied type/duration when possible)
+    $plan = null;
+    if ($request->filled('plan_id')) {
+        $plan = Plans::find($request->plan_id);
+    }
+    if (!$plan && $request->filled('identifier')) {
+        $plan = Plans::where('identifier', $request->identifier)->first();
+    }
+    if (!$plan && $request->filled('plan_type')) {
+        // Some clients send title/plan_type as the visible label (e.g., Silver plan)
+        $plan = Plans::where('title', $request->plan_type)->first();
+    }
+    // If still not found, try title from 'title' field
+    if (!$plan && $request->filled('title')) {
+        $plan = Plans::where('title', $request->title)->first();
+    }
+    // If a plan is found, normalize subscription data from plan
+    if ($plan) {
+        $data['plan_id'] = $plan->id;
+        $data['title'] = $plan->title;
+        $data['identifier'] = $plan->identifier;
+        $data['type'] = $plan->type;              // daily/weekly/monthly/yearly
+        $data['duration'] = $plan->duration;      // integer duration
+        $data['amount'] = $plan->amount;
+        $data['description'] = $plan->description;
+        $data['plan_type'] = $plan->plan_type;    // e.g., Free plan / Silver plan / Gold plan
+        $data['plan_limitation'] = $plan->planlimit ? json_encode($plan->planlimit->plan_limitation) : null;
+    }
+
     $get_existing_plan = get_user_active_plan($user_id);
     $active_plan_left_days = 0;
 
@@ -43,9 +72,9 @@ public function providerSubscribe(ProviderSubscriptionRequest $request)
 
     $data['end_at'] = get_plan_expiration_date(
         $data['start_at'],
-        $data['type'],
+        $plan ? $plan->type : $data['type'],
         $active_plan_left_days,
-        $data['duration']
+        $plan ? $plan->duration : $data['duration']
     );
 
     if (isset($data['plan_limitation']) && !empty($data['plan_limitation'])) {
