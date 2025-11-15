@@ -1149,23 +1149,36 @@ function getTimeZone(){
     return $timezone->time_zone ?? 'UTC';
 }
 
-function get_plan_expiration_date($plan_start_date = '',$plan_type = '',$left_days = 0, $plan_duration = 1){
-    $start_at = new \Carbon\Carbon( $plan_start_date);
-    $end_date = '';
+function get_plan_expiration_date($plan_start_date = '', $plan_type = '', $left_days = 0, $plan_duration = 1){
+    $start_at = new \Carbon\Carbon($plan_start_date);
+    $type = strtolower(trim((string) $plan_type));
+    $duration = (int) ($plan_duration ?: 1);
+    $carryDays = (int) ($left_days ?: 0);
 
-    if($plan_type === 'weekly'){
-       $getdays = App\Models\Plans::where('identifier','free')->first();
-       $getdays = $getdays->trial_period;
-       $days = $left_days + $getdays;
-       $end_date =  $start_at->addDays((int)$days);
+    switch ($type) {
+        case 'day':
+        case 'daily':
+            $end = $start_at->copy()->addDays($duration + $carryDays);
+            break;
+        case 'week':
+        case 'weekly':
+            $end = $start_at->copy()->addWeeks($duration)->addDays($carryDays);
+            break;
+        case 'month':
+        case 'monthly':
+            $end = $start_at->copy()->addMonths($duration)->addDays($carryDays);
+            break;
+        case 'year':
+        case 'yearly':
+            $end = $start_at->copy()->addYears($duration)->addDays($carryDays);
+            break;
+        default:
+            // Fallback: treat as monthly if unknown type
+            $end = $start_at->copy()->addMonths($duration)->addDays($carryDays);
+            break;
     }
-    if ($plan_type === 'monthly') {
-        $end_date = $start_at->addMonths((int)$plan_duration)->addDays((int)$left_days);
-    }
-    if($plan_type === 'yearly'){
-        $end_date =  $start_at->addYears((int)$plan_duration)->addDays((int)$left_days);
-    }
-    return $end_date->format('Y-m-d H:i:s');
+
+    return $end->format('Y-m-d H:i:s');
 }
 
 function get_user_active_plan($user_id){
@@ -1186,12 +1199,14 @@ function is_subscribed_user($user_id){
     return $value;
 }
 
-function check_days_left_plan($old_plan,$new_plan){
-    $previous_plan_start = $old_plan->start_at;
+function check_days_left_plan($old_plan, $new_plan){
     $previous_plan_end = new \Carbon\Carbon($old_plan->end_at);
-    $new_plan_start = new \Carbon\Carbon(date('Y-m-d H:i:s'));
-    $left_days = $previous_plan_end->diffInDays($new_plan_start);
-    return $left_days;
+    $now = \Carbon\Carbon::now();
+    // Only carry forward remaining days if the previous plan is still active (end date in the future)
+    if ($previous_plan_end->greaterThan($now)) {
+        return $previous_plan_end->diffInDays($now);
+    }
+    return 0;
 }
 
 function user_last_plan($user_id){
