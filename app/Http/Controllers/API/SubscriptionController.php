@@ -148,7 +148,7 @@ public function providerSubscribe(ProviderSubscriptionRequest $request)
             $user->is_subscribe = 1;
             $user->save();
 
-            $message = __('Payment completed and subscription is active');
+            $message = __('subscription Successfully activated');
         }
     }
 
