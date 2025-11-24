@@ -11,6 +11,7 @@ use App\Models\User;
 
 use App\Models\PostJobRequest;
 use App\Models\PostJobBid;
+use App\Models\PaymentPostJOb;
 use App\Http\Resources\API\PostJobRequestResource;
 use App\Http\Resources\API\PostJobBiderResource;
 use App\Http\Resources\API\PostJobRequestDetailResource;
@@ -226,11 +227,29 @@ class PostJobRequestController extends Controller
         // ✅ Fetch tax percent
         $tax = $countryId ? \App\Models\Tax::where('id', $countryId)->first() : null;
         $tax_percent = $tax ? $tax->value . '%' : null;
+
+        // ✅ Payment summary for bank transfer (from payment_post_jobs)
+        $payment = PaymentPostJOb::where('post_job_bid_request_id', $bid->id)
+            ->orderBy('id', 'desc')
+            ->first();
+        $bankTransfer = null;
+        if ($payment && $payment->payment_type === 'bank_transfer') {
+            $statusLabel = strtolower((string) $payment->payment_status);
+            $statusCode = ($statusLabel === 'paid' || $statusLabel === 'approved' || $statusLabel === 'confirmed') ? 1 : 0;
+            $bankTransfer = [
+                'is_bank_transfer' => 1,
+                'status_code' => $statusCode,        // 1=confirmed/paid, 0=pending
+                'status' => $payment->payment_status,
+                'txn_id' => $payment->txn_id,
+                'amount' => (float) $payment->total_amount,
+            ];
+        }
     
         return response()->json([
             'success' => true,
             'data' => $bid,
             'tax_percent' => $tax_percent, // ✅ Added tax percent
+            'bank_transfer' => $bankTransfer, // ✅ Added bank transfer status block (null if not bank transfer)
         ]);
     }
     
