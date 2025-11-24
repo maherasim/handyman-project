@@ -49,6 +49,7 @@ use App\Http\Controllers\MailTemplatesController;
 use App\Http\Controllers\VerificationController;
 use App\Http\Controllers\HelpDeskController;
 use App\Http\Controllers\ChatController;
+use App\Http\Controllers\StripeWebhookController;
 
 
 use App\Http\Controllers\Installer\WelcomeController;
@@ -75,6 +76,9 @@ use App\Http\Controllers\Installer\FinalController;
 
 require __DIR__ . '/auth.php';
 require __DIR__ . '/frontend.php';
+
+// Stripe Webhook (PaymentIntent/Checkout events)
+Route::post('/stripe/webhook', [StripeWebhookController::class, 'handle'])->name('stripe.webhook');
 
 Route::group(['prefix' => 'install'], function () {
 
