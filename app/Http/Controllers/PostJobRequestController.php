@@ -693,9 +693,9 @@ class PostJobRequestController extends Controller
             return response()->json(['status' => false, 'message' => 'Unauthorized'], 403);
         }
     
-        // Get type and amount from request (frontend sends it)
-        $type = strtolower((string)$request->input('type', 'advance')); // 'advance' or 'remaining'
-        $payAmount = (float)$request->input('amount'); // take exact value from frontend
+        // Validate payment type & amount
+        $type = strtolower((string)$request->input('type', 'advance')); // advance | remaining
+        $payAmount = (float)$request->input('amount');
     
         if ($payAmount <= 0) {
             return response()->json(['status' => false, 'message' => 'Invalid amount'], 422);
@@ -703,7 +703,7 @@ class PostJobRequestController extends Controller
     
         $metaType = $type;
     
-        // Get Stripe settings
+        // Get Stripe key
         $payment_geteway_value = getPaymentMethodkey('stripe');
         $stripe_secret = $payment_geteway_value['stripe_key'] ?? null;
     
@@ -713,14 +713,13 @@ class PostJobRequestController extends Controller
     
         $stripe = new \Stripe\StripeClient($stripe_secret);
     
-        $sitesetup = Setting::where('type', 'site-setup')->where('key', 'site-setup')->first();
-        $sitesetupdata = $sitesetup ? json_decode($sitesetup->value, true) : null;
-        // Always use EUR currency regardless of country
+        // Currency always EUR
         $currencyCode = 'EUR';
     
         $baseURL = config('app.url') ?: 'https://frobster.com';
     
         try {
+    
             $session = $stripe->checkout->sessions->create([
                 'success_url' => $baseURL . '/postjob/save-stripe-payment/' . $bid->id .
                     '?type=' . $metaType . '&session_id={CHECKOUT_SESSION_ID}',
@@ -731,7 +730,7 @@ class PostJobRequestController extends Controller
                     'price_data' => [
                         'currency' => $currencyCode,
                         'product_data' => [
-                            'name' => 'Post Job Bid #' . $bid->id . ' ' . ucfirst($metaType) . ' Payment',
+                            'name' => 'Post Job Bid #' . $bid->id . ' - ' . ucfirst($metaType) . ' Payment',
                         ],
                         'unit_amount' => stripe_unit_amount_from_decimal($payAmount, $currencyCode),
                     ],
@@ -740,11 +739,17 @@ class PostJobRequestController extends Controller
                 'mode' => 'payment',
             ]);
     
-            return response()->json(['status' => true, 'id' => $session->id, 'url' => $session->url]);
+            return response()->json([
+                'status' => true,
+                'id' => $session->id,
+                'url' => $session->url
+            ]);
+    
         } catch (\Exception $e) {
             return response()->json(['status' => false, 'message' => $e->getMessage()], 500);
         }
     }
+    
     
 
     public function savePostJobStripePayment(Request $request, $id)
