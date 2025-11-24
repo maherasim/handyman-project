@@ -716,35 +716,65 @@ class PostJobRequestController extends Controller
         // Currency always EUR
         $currencyCode = 'EUR';
     
-        $baseURL = config('app.url') ?: 'https://frobster.com';
-    
-        try {
-    
-            $session = $stripe->checkout->sessions->create([
-                'success_url' => $baseURL . '/postjob/save-stripe-payment/' . $bid->id .
-                    '?type=' . $metaType . '&session_id={CHECKOUT_SESSION_ID}',
-                'cancel_url' => $baseURL . '/postjob/bid/' . $bid->id,
-                'payment_method_types' => ['card'],
-                'billing_address_collection' => 'required',
-                'line_items' => [[
-                    'price_data' => [
-                        'currency' => $currencyCode,
-                        'product_data' => [
-                            'name' => 'Post Job Bid #' . $bid->id . ' - ' . ucfirst($metaType) . ' Payment',
+        // Support two flows: Checkout (web) and PaymentIntent (PaymentSheet for mobile)
+        if ($request->boolean('use_checkout')) {
+            $baseURL = config('app.url') ?: 'https://frobster.com';
+            try {
+                $session = $stripe->checkout->sessions->create([
+                    'success_url' => $baseURL . '/postjob/save-stripe-payment/' . $bid->id .
+                        '?type=' . $metaType . '&session_id={CHECKOUT_SESSION_ID}',
+                    'cancel_url' => $baseURL . '/postjob/bid/' . $bid->id,
+                    'payment_method_types' => ['card'],
+                    'billing_address_collection' => 'required',
+                    'line_items' => [[
+                        'price_data' => [
+                            'currency' => $currencyCode,
+                            'product_data' => [
+                                'name' => 'Post Job Bid #' . $bid->id . ' - ' . ucfirst($metaType) . ' Payment',
+                            ],
+                            'unit_amount' => stripe_unit_amount_from_decimal($payAmount, $currencyCode),
                         ],
-                        'unit_amount' => stripe_unit_amount_from_decimal($payAmount, $currencyCode),
+                        'quantity' => 1,
+                    ]],
+                    'mode' => 'payment',
+                    'metadata' => [
+                        'bid_id' => (string) $bid->id,
+                        'type' => $metaType,
+                        'customer_id' => (string) $bid->customer_id,
+                        'provider_id' => (string) $bid->provider_id,
                     ],
-                    'quantity' => 1,
-                ]],
-                'mode' => 'payment',
+                ]);
+        
+                return response()->json([
+                    'status' => true,
+                    'checkout_session_id' => $session->id,
+                    'url' => $session->url
+                ]);
+            } catch (\Exception $e) {
+                return response()->json(['status' => false, 'message' => $e->getMessage()], 500);
+            }
+        }
+    
+        // Default: PaymentIntent for mobile PaymentSheet
+        try {
+            $intent = $stripe->paymentIntents->create([
+                'amount' => stripe_unit_amount_from_decimal($payAmount, $currencyCode),
+                'currency' => $currencyCode,
+                'description' => 'Post Job Bid #' . $bid->id . ' - ' . ucfirst($metaType) . ' Payment',
+                'payment_method_types' => ['card'],
+                'metadata' => [
+                    'bid_id' => (string) $bid->id,
+                    'type' => $metaType,
+                    'customer_id' => (string) $bid->customer_id,
+                    'provider_id' => (string) $bid->provider_id,
+                ],
             ]);
     
             return response()->json([
                 'status' => true,
-                'id' => $session->id,
-                'url' => $session->url
+                'payment_intent_id' => $intent->id,
+                'client_secret' => $intent->client_secret,
             ]);
-    
         } catch (\Exception $e) {
             return response()->json(['status' => false, 'message' => $e->getMessage()], 500);
         }
@@ -754,7 +784,7 @@ class PostJobRequestController extends Controller
 
     public function savePostJobStripePayment(Request $request, $id)
     {
-        dd($request->all());
+       // dd($request->all());
         $type      = strtolower((string)$request->query('type', 'advance')); // advance | remaining
         $sessionId = $request->query('session_id'); // ✅ comes from Stripe success_url
 
@@ -874,6 +904,131 @@ class PostJobRequestController extends Controller
             ->withErrors('Stripe payment not completed.');
     }
 
+    /**
+     * JSON endpoint to confirm a PaymentIntent (PaymentSheet/mobile flow)
+     * Expects: payment_intent_id, optional type (advance|remaining)
+     */
+    public function confirmPostJobStripePaymentIntent(Request $request, $id)
+    {
+        $request->validate([
+            'payment_intent_id' => 'required|string',
+            'type' => 'nullable|in:advance,remaining'
+        ]);
+        $type = strtolower((string) $request->input('type', 'advance'));
+        $intentId = (string) $request->input('payment_intent_id');
+
+        $bid = PostJobBid::findOrFail($id);
+        $adminUser  = User::where('user_type', 'admin')->first();
+        $providerId = $bid->provider_id;
+
+        // Stripe client
+        $payment_geteway_value = getPaymentMethodkey('stripe');
+        $stripe_secret = $payment_geteway_value['stripe_key'] ?? null;
+        if (!$stripe_secret) {
+            return response()->json(['status' => false, 'message' => 'Stripe not configured'], 500);
+        }
+        $stripe = new \Stripe\StripeClient($stripe_secret);
+
+        try {
+            $intent = $stripe->paymentIntents->retrieve($intentId, []);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Stripe verification failed: ' . $e->getMessage(),
+            ], 422);
+        }
+
+        if (($intent->status ?? '') === 'succeeded') {
+            $txnId = $intent->id;
+            $payAmount = (float) (($intent->amount_received ?? $intent->amount ?? 0) / 100.0);
+
+            // Commission setup
+            $adminCommissionSetting = Setting::getValueByKey('admin_commission_percentage', 'site-setup');
+            $adminCommissionPercent = is_object($adminCommissionSetting) && isset($adminCommissionSetting->value)
+                ? (float) $adminCommissionSetting->value
+                : 10;
+            $adminCommissionAmount = ($payAmount * $adminCommissionPercent) / 100.0;
+            $providerEarningAmount = $payAmount - $adminCommissionAmount;
+
+            $finalPayment = PaymentPostJOb::create([
+                'customer_id' => $bid->customer_id,
+                'provider_id' => $bid->provider_id,
+                'post_job_bid_request_id' => $bid->id,
+                'total_amount' => $payAmount,
+                'discount' => 0,
+                'payment_type' => 'stripe',
+                'payment_status' => 'completed',
+                'status' => $type,
+                'txn_id' => $txnId,
+                'other_transaction_detail' => json_encode([
+                    'payment_intent_id' => $intentId,
+                    'admin_commission' => $adminCommissionAmount,
+                    'provider_earning' => $providerEarningAmount,
+                ]),
+            ]);
+
+            if ($adminCommissionAmount > 0) {
+                CommissionEarning::create([
+                    'post_job_bid_request_id' => $bid->id,
+                    'user_type'           => 'admin',
+                    'employee_id'         => $adminUser?->id ?? 1,
+                    'commission_amount'   => $adminCommissionAmount,
+                    'commission_status'   => 'paid',
+                    'payment_id'          => $finalPayment->id,
+                ]);
+            }
+            if ($providerEarningAmount > 0) {
+                CommissionEarning::create([
+                    'post_job_bid_request_id' => $bid->id,
+                    'user_type'           => 'provider',
+                    'employee_id'         => $providerId,
+                    'commission_amount'   => $providerEarningAmount,
+                    'commission_status'   => 'paid',
+                    'payment_id'          => $finalPayment->id,
+                ]);
+            }
+            ProviderPayout::create([
+                'provider_id'         => $providerId,
+                'amount'              => $providerEarningAmount,
+                'payment_method'      => 'Stripe',
+                'paid_date'           => now(),
+                'status'              => 'paid',
+                'booking_id'          => null,
+                'post_job_request_id' => $bid->id,
+                'payment_gateway'     => 'Stripe',
+            ]);
+            PaymentPostJObHistory::create([
+                'payment_id'  => $finalPayment->id,
+                'parent_id'   => null,
+                'action'      => 'customer_send_provider',
+                'status'      => 'completed',
+                'sender_id'   => $finalPayment->customer_id,
+                'receiver_id' => $providerId,
+                'datetime'    => now(),
+                'total_amount' => $finalPayment->total_amount,
+                'txn_id'      => $finalPayment->txn_id,
+                'type'        => 'stripe',
+                'text'        => __('messages.payment_transfer', [
+                    'from'   => get_user_name($finalPayment->customer_id),
+                    'to'     => get_user_name($providerId),
+                    'amount' => number_format((float) $finalPayment->total_amount, 2),
+                ]),
+                'other_transaction_detail' => null,
+            ]);
+            $bid->status = ($type === 'advance') ? 'advance_paid' : 'remaining_paid';
+            $bid->save();
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Stripe payment processed successfully. Commission and payouts recorded.',
+            ]);
+        }
+
+        return response()->json([
+            'status' => false,
+            'message' => 'Stripe payment not completed.',
+        ], 422);
+    }
     /**
      * JSON endpoint for apps: confirm Stripe Checkout and update bid status
      */

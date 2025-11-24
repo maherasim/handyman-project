@@ -199,6 +199,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     // payment
     Route::post('paythrough/wallet/{id}', [App\Http\Controllers\PostJobRequestController::class, 'payAdvance'])->name('post-job-request.pay-advance');
     Route::post('postjob/stripe/create/{id}', [App\Http\Controllers\PostJobRequestController::class, 'createPostJobStripePayment'])->name('postjob.stripe.create');
+    Route::post('postjob/stripe/confirm/{id}', [App\Http\Controllers\PostJobRequestController::class, 'confirmPostJobStripePaymentIntent'])->name('postjob.stripe.confirm');
     Route::post('postjob/paypal/create/{id}', [App\Http\Controllers\PostJobRequestController::class, 'createPostJobPayPalPayment'])->name('postjob.paypal.create');
     Route::post('postjob/bank-transfer/{id}', [App\Http\Controllers\PostJobRequestController::class, 'createPostJobBankTransfer'])->name('postjob.bank.transfer');
     Route::post('postjob-bid/{id}/extra-charges', [App\Http\Controllers\PostJobRequestController::class, 'addExtraCharges'])->name('postjob.addExtraCharges');
