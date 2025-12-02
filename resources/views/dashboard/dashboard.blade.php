@@ -21,12 +21,12 @@
                 <div class="row">
                     <div class="col-lg-3 col-md-6">
                         <a href="{{ route('service.index') }}">
-                            <div class="card total-booking-card">
-                                <div class="card-body">
+                            <div class="card total-booking-card rounded-3 border-0 shadow-sm h-100">
+                                <div class="card-body p-3">
                                     <div class="row">
                                         <div class="col">
                                             <div class="d-flex flex-wrap justify-content-start align-items-center">
-                                                <h4 class="mb-2 booking-text  fw-bold">{{ !empty($data['dashboard']['count_total_service']) ? $data['dashboard']['count_total_service']: 0 }} </h4>
+                                                <h4 class="mb-2 booking-text fw-bold fs-2">{{ !empty($data['dashboard']['count_total_service']) ? $data['dashboard']['count_total_service']: 0 }} </h4>
                                                 <!-- <h4 class="mb-2 booking-text  font-weight-bold text-break"> 000000000000 </h4> -->
                                             </div>
                                             <p class="mb-0 booking-text">{{ __('messages.total_name', ['name' => __('messages.service')]) }}</p>
@@ -45,12 +45,12 @@
                     </div>
                     <div class="col-lg-3 col-md-6">
 
-                            <div class="card total-service-card">
-                                <div class="card-body">
+                            <div class="card total-service-card rounded-3 border-0 shadow-sm h-100">
+                                <div class="card-body p-3">
                                     <div class="row">
                                         <div class="col">
                                             <div class="d-flex flex-wrap justify-content-start align-items-center">
-                                                <h4 class="mb-2 booking-text fw-bold">{{ !empty($data['total_tax']) ? getPriceFormat($data['total_tax']) : getPriceFormat(0) }}</h4>
+                                                <h4 class="mb-2 booking-text fw-bold fs-2">{{ !empty($data['total_tax']) ? getPriceFormat($data['total_tax']) : getPriceFormat(0) }}</h4>
                                             </div>
                                             <p class="mb-0 booking-text">{{ __('messages.total_name', ['name' => __('messages.Tax')]) }}</p>
                                         </div>
@@ -69,12 +69,12 @@
 
                     <div class="col-lg-3 col-md-6">
                         <a  href="{{ route('earning') }}">
-                            <div class="card total-revenue">
-                                <div class="card-body">
+                            <div class="card total-revenue rounded-3 border-0 shadow-sm h-100">
+                                <div class="card-body p-3">
                                     <div class="row">
                                         <div class="col">
                                             <div class="d-flex flex-wrap justify-content-start align-items-center">
-                                                <h4 class="mb-2 booking-text fw-bold">{{ getPriceFormat($data['total_earning']) }}</h4>
+                                                <h4 class="mb-2 booking-text fw-bold fs-2">{{ getPriceFormat($data['total_earning']) }}</h4>
                                                 <p class="mb-0 ml-3 text-danger fw-bold"></p>
                                             </div>
                                             <p class="mb-0 booking-text">{{ __('messages.my_earning') }}</p>
@@ -94,12 +94,12 @@
 
                     <div class="col-lg-3 col-md-6">
                         <a href="{{ route('admin.subscription-transactions.index') }}">
-                            <div class="card total-revenue">
-                                <div class="card-body">
+                            <div class="card total-revenue rounded-3 border-0 shadow-sm h-100">
+                                <div class="card-body p-3">
                                     <div class="row">
                                         <div class="col">
                                             <div class="d-flex flex-wrap justify-content-start align-items-center">
-                                                <h4 class="mb-2 booking-text fw-bold">{{ getPriceFormat($data['versatile_earning']) }}</h4>
+                                                <h4 class="mb-2 booking-text fw-bold fs-2">{{ getPriceFormat($data['versatile_earning']) }}</h4>
                                             </div>
                                             <p class="mb-0 booking-text">Other Earnings</p>
                                         </div>
@@ -123,7 +123,7 @@
                                     <div class="row">
                                         <div class="col">
                                             <div class="d-flex flex-wrap justify-content-start align-items-center">
-                                                <h4 class="mb-2 booking-text fw-bold">{{ getPriceFormat($data['total_revenue']) }}</h4>
+                                                <h4 class="mb-2 booking-text fw-bold fs-2">{{ getPriceFormat($data['total_revenue']) }}</h4>
                                                 <p class="mb-0 ml-3 text-danger fw-bold"></p>
                                             </div>
                                             <p class="mb-0 booking-text">{{ __('messages.total_name', ['name' => __('messages.revenue')]) }}</p>
@@ -144,38 +144,39 @@
                 </div>
             </div>
             <div class="col-md-12">
-                <div class="card">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center flex-wrap">
-                            <h4 class="">{{__('messages.monthly_revenue')}}</h4>
+                <div class="card rounded-3 border-0 shadow-sm">
+                    <div class="card-body p-3 p-md-4">
+                        <div class="d-flex justify-content-between align-items-center flex-wrap border-bottom pb-2 mb-3">
+                            <h4 class="mb-0">{{__('messages.monthly_revenue')}}</h4>
+                            <small>Last 12 months</small>
                         </div>
                         <div id="monthly-revenue" class="custom-chart"></div>
                     </div>
                 </div>
             </div>
             <div class="col-xl-4 col-sm-6">
-                <div class="card top-providers">
-                    <div class="card-header d-flex justify-content-between gap-10">
+                <div class="card top-providers rounded-3 border-0 shadow-sm h-100">
+                    <div class="card-header bg-transparent border-0 d-flex justify-content-between gap-10 py-3">
                         <h4 class="fw-bold">{{ __('messages.recent_provider') }} ({{$data['dashboard']['count_total_provider']}})</h4>
                             <a href="{{ route('provider.index') }}" class="btn-link btn-link-hover"><u>{{__('messages.view_all')}} </u></a>
                     </div>
                     <div class="card-body p-0">
-                        <ul class="common-list list-unstyled">
+                        <ul class="list-group list-group-flush">
                             @foreach($data['dashboard']['new_provider'] as $provider)
-                            <li style="pointer-events:none;">
-                                <div class="media gap-3">
+                            <li class="list-group-item d-flex align-items-center justify-content-between" style="pointer-events:none;">
+                                <div class="d-flex align-items-center gap-3">
                                     <div class="h-avatar is-medium h-5">
                                         <img class="avatar-50 rounded-circle bg-light" alt="user-icon" src="{{ getSingleMedia($provider,'profile_image', null) }}">
                                     </div>
-
-                                    <div class="media-body ">
-                                        <h5 class="mb-1"><span class="fw-bold">{{!empty($provider->display_name) ? $provider->display_name : '-'}}</span> </h5>
-                                            <span class="common-list_rating d-flex gap-1">
-                                                <i class="ri-star-s-fill"></i>
-                                                {{round($provider->getServiceRating->avg('rating'), 1)}}
-                                            </span>
+                                    <div class="media-body">
+                                        <h6 class="mb-1 fw-semibold mb-0">{{ !empty($provider->display_name) ? $provider->display_name : '-' }}</h6>
+                                        <span class="d-flex align-items-center gap-1 small">
+                                            <i class="ri-star-s-fill"></i>
+                                            {{ round($provider->getServiceRating->avg('rating'), 1) }}
+                                        </span>
                                     </div>
                                 </div>
+                                <i class="ri-arrow-right-s-line"></i>
                             </li>
                             @endforeach
                         </ul>
@@ -183,22 +184,22 @@
                 </div>
             </div>
             <div class="col-xl-4 col-sm-6">
-                <div class="card top-providers">
-                    <div class="card-header d-flex justify-content-between gap-10">
+                <div class="card top-providers rounded-3 border-0 shadow-sm h-100">
+                    <div class="card-header bg-transparent border-0 d-flex justify-content-between gap-10 py-3">
                         <h4 class="fw-bold">{{ __('messages.recent_customer') }}</h4>
                         <a href="{{ route('user.index') }}" class="btn-link btn-link-hover"><u>{{__('messages.view_all')}}</u></a>
                     </div>
                     <div class="card-body p-0">
-                        <ul class="common-list list-unstyled">
+                        <ul class="list-group list-group-flush">
                             @foreach($data['dashboard']['new_customer'] as $customer)
-                            <li style="pointer-events:none;">
-                                <div class="media gap-3">
+                            <li class="list-group-item d-flex align-items-center justify-content-between" style="pointer-events:none;">
+                                <div class="d-flex align-items-center gap-3">
                                     <div class="h-avatar is-medium h-5">
                                         <img class="avatar-50 rounded-circle bg-light" alt="user-icon" src="{{ getSingleMedia($customer,'profile_image', null) }}">
                                     </div>
-                                    <div class="media-body ">
-                                        <h5 class="mb-1"><span class="fw-bold">{{!empty($customer->display_name) ? $customer->display_name : '-'}}</span>  </h5>
-                                        <span>
+                                    <div class="media-body">
+                                        <h6 class="mb-1 fw-semibold">{{ !empty($customer->display_name) ? $customer->display_name : '-' }}</h6>
+                                        <span class="small d-inline-block">
                                             {{
                                                 optional($data['datetime'])->date_format && optional($data['datetime'])->time_format
                                                 ? \Carbon\Carbon::parse($customer->created_at)
@@ -207,10 +208,9 @@
                                                 : ''
                                             }}
                                         </span>
-
-
                                     </div>
                                 </div>
+                                <i class="ri-arrow-right-s-line"></i>
                             </li>
                             @endforeach
                         </ul>
@@ -218,31 +218,29 @@
                 </div>
             </div>
             <div class="col-xl-4 col-sm-12">
-                <div class="card recent-activities">
-                    <div class="card-header d-flex justify-content-between gap-10">
+                <div class="card recent-activities rounded-3 border-0 shadow-sm h-100">
+                    <div class="card-header bg-transparent border-0 d-flex justify-content-between gap-10 py-3">
                         <h4>{{__('messages.recent_booking')}} ({{$data['dashboard']['count_total_booking']}})</h4>
                         <a href="{{ route('booking.index') }}" class="btn-link btn-link-hover"><u>{{__('messages.view_all')}}</u></a>
                     </div>
                         <div class="card-body">
-                            <ul class="common-list p-0">
-
+                            <ul class="list-group list-group-flush">
                                 @foreach($data['dashboard']['upcomming_booking'] as $booking)
-                                    <li class="d-flex gap-3 align-items-start align-items-lg-center justify-content-between flex-column flex-sm-row "  style="pointer-events:none;">
-                                        <div class="media align-items-center gap-3">
-                                                <div class="h-avatar is-medium h-5">
-                                                    <img class="avatar-50 rounded-circle bg-light" alt="user-icon" src="{{ getSingleMedia($booking->customer,'profile_image', null) }}">
-                                                </div>
-                                                <div class="media-body ">
-                                                    <h5 class="mb-1">#{{$booking->id}}</h5>
-                                                    <span>{{
-        optional($data['datetime'])->date_format && optional($data['datetime'])->time_format
-        ? date(optional($data['datetime'])->date_format, strtotime($booking->date)) .'  '. date(optional($data['datetime'])->time_format, strtotime($booking->date))
-        : ''
-    }}</span>
-                                                    {{-- <span>{{(date("$data['datetime']->date_format $data['datetime']->time_format", strtotime($booking->date)))}}</span> --}}
-                                                </div>
+                                    <li class="list-group-item d-flex align-items-start justify-content-between flex-column flex-sm-row" style="pointer-events:none;">
+                                        <div class="d-flex align-items-center gap-3">
+                                            <div class="h-avatar is-medium h-5">
+                                                <img class="avatar-50 rounded-circle bg-light" alt="user-icon" src="{{ getSingleMedia($booking->customer,'profile_image', null) }}">
+                                            </div>
+                                            <div class="media-body">
+                                                <h6 class="mb-1 fw-semibold">#{{$booking->id}}</h6>
+                                                <span class="small">{{
+                                                    optional($data['datetime'])->date_format && optional($data['datetime'])->time_format
+                                                    ? date(optional($data['datetime'])->date_format, strtotime($booking->date)) .'  '. date(optional($data['datetime'])->time_format, strtotime($booking->date))
+                                                    : ''
+                                                }}</span>
+                                            </div>
                                         </div>
-                                        <span class="badge rounded-pill py-2 px-3 bg-primary-subtle text-capitalize">{{ucwords(str_replace('_', ' ', $booking->status))}}</span>
+                                        <span class="badge rounded-pill py-2 px-3 text-capitalize mt-2 mt-sm-0">{{ucwords(str_replace('_', ' ', $booking->status))}}</span>
                                     </li>
                                 @endforeach
                             </ul>

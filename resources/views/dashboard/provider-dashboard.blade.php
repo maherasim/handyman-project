@@ -5,12 +5,12 @@
                 <div class="row">
                     <div class="col-lg-3 col-md-6">
                         <a href="{{ route('booking.index') }}">
-                            <div class="card total-booking-card">
-                                <div class="card-body">
+                            <div class="card total-booking-card rounded-3 border-0 shadow-sm h-100">
+                                <div class="card-body p-3">
                                     <div class="row">
                                         <div class="col">
                                             <div class="d-flex flex-wrap justify-content-start align-items-center">
-                                                <h4 class="mb-2 booking-text  fw-bold">
+                                                <h4 class="mb-2 booking-text fw-bold fs-2">
                                                     {{ !empty($data['dashboard']['count_total_booking']) ? $data['dashboard']['count_total_booking'] : 0 }}
                                                 </h4>
                                             </div>
@@ -35,12 +35,12 @@
                     </div>
                     <div class="col-lg-3 col-md-6">
                         <a href="{{ route('service.index') }}">
-                            <div class="card total-service-card">
-                                <div class="card-body">
+                            <div class="card total-service-card rounded-3 border-0 shadow-sm h-100">
+                                <div class="card-body p-3">
                                     <div class="row">
                                         <div class="col">
                                             <div class="d-flex flex-wrap justify-content-start align-items-center">
-                                                <h4 class="mb-2 booking-text fw-bold">
+                                                <h4 class="mb-2 booking-text fw-bold fs-2">
                                                     {{ !empty($data['dashboard']['count_total_service']) ? $data['dashboard']['count_total_service'] : 0 }}
                                                 </h4>
                                             </div>
@@ -89,8 +89,8 @@
                     </div> -->
                     <div class="col-lg-3 col-md-6">
                         <!-- <a  href="javascript:void(0);"> -->
-                        <div class="card total-revenue">
-                            <div class="card-body">
+                        <div class="card total-revenue rounded-3 border-0 shadow-sm h-100">
+                            <div class="card-body p-3">
                                 <div class="row">
                                     <div class="col">
                                         <div class="d-flex flex-wrap justify-content-start align-items-center">
@@ -98,7 +98,7 @@
                                                 {{ getPriceFormat($data['remaining_payout']) }}</h4>
                                             <p class="mb-0 ml-3 text-danger fw-bold"></p>
                                         </div>
-                                        <p class="mb-0 booking-text">{{ __('messages.remaining_payout') }}</p>
+                                            <p class="mb-0 booking-text">{{ __('messages.remaining_payout') }}</p>
                                     </div>
                                     <div class="col-auto d-flex flex-column">
                                         <div
@@ -118,12 +118,12 @@
                     </div>
                     <div class="col-lg-3 col-md-6">
                         <a href="{{ route('providerpayout.show', auth()->user()->id) }}">
-                            <div class="card total-revenue">
-                                <div class="card-body">
+                            <div class="card total-revenue rounded-3 border-0 shadow-sm h-100">
+                                <div class="card-body p-3">
                                     <div class="row">
                                         <div class="col">
                                             <div class="d-flex flex-wrap justify-content-start align-items-center">
-                                                <h4 class="mb-2 booking-text fw-bold">
+                                                <h4 class="mb-2 booking-text fw-bold fs-2">
                                                     {{ getPriceFormat($data['total_earning']) }}</h4>
                                                 <p class="mb-0 ml-3 text-danger fw-bold"></p>
                                             </div>
@@ -149,8 +149,8 @@
                 </div>
             </div>
             <div class="col-md-12">
-                <div class="card">
-                    <div class="card-body">
+                <div class="card rounded-3 border-0 shadow-sm">
+                    <div class="card-body p-3 p-md-4">
                         <div class="d-flex justify-content-between align-items-center flex-wrap">
                             <h4 class="">{{ __('messages.monthly_revenue') }}</h4>
                         </div>
@@ -159,8 +159,8 @@
                 </div>
             </div>
             <div class="col-md-6 col-sm-6">
-                <div class="card top-providers">
-                    <div class="card-header d-flex justify-content-between gap-10">
+                <div class="card top-providers rounded-3 border-0 shadow-sm h-100">
+                    <div class="card-header bg-transparent border-0 d-flex justify-content-between gap-10 py-3">
                         <h4 class="fw-bold">{{ __('messages.top_handyman') }}</h4>
                         <a href="{{ route('handyman.show', auth()->user()->id) }}"
                             class="btn-link btn-link-hover"><u>{{ __('messages.view_all') }}</u></a>
@@ -195,8 +195,8 @@
                 </div>
             </div>
             <div class="col-md-6 col-sm-6">
-                <div class="card recent-activities">
-                    <div class="card-header d-flex justify-content-between gap-10">
+                <div class="card recent-activities rounded-3 border-0 shadow-sm h-100">
+                    <div class="card-header bg-transparent border-0 d-flex justify-content-between gap-10 py-3">
                         <h4>{{ __('messages.recent_booking') }}</h4>
                         <a href="{{ route('booking.index') }}"
                             class="btn-link btn-link-hover"><u>{{ __('messages.view_all') }}</u></a>

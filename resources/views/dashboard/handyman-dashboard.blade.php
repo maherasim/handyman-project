@@ -5,12 +5,12 @@
                 <div class="row">
                     <div class="col-lg-3 col-md-6">
                         <a href="{{ route('booking.index') }}">
-                            <div class="card total-booking-card">
-                                <div class="card-body">
+                            <div class="card total-booking-card rounded-3 border-0 shadow-sm h-100">
+                                <div class="card-body p-3">
                                     <div class="row">
                                         <div class="col">
                                             <div class="d-flex flex-wrap justify-content-start align-items-center">
-                                                <h4 class="mb-2 booking-text  fw-bold">
+                                                <h4 class="mb-2 booking-text fw-bold fs-2">
                                                     {{ !empty($data['dashboard']['count_total_booking']) ? $data['dashboard']['count_total_booking'] : 0 }}
                                                 </h4>
                                             </div>
@@ -58,12 +58,12 @@
                     </div> -->
                     <div class="col-lg-3 col-md-6">
                         <a href="{{ route('booking.index', ['status' => 'completed']) }}">
-                            <div class="card total-provider-card">
-                                <div class="card-body">
+                            <div class="card total-provider-card rounded-3 border-0 shadow-sm h-100">
+                                <div class="card-body p-3">
                                     <div class="row">
                                         <div class="col">
                                             <div class="d-flex flex-wrap justify-content-start align-items-center">
-                                                <h4 class="mb-2 booking-text fw-bold">
+                                                <h4 class="mb-2 booking-text fw-bold fs-2">
                                                     {{ !empty($data['dashboard']['count_handyman_complete_booking']) ? $data['dashboard']['count_handyman_complete_booking'] : 0 }}
                                                 </h4>
                                                 <p class="mb-0 ml-3 text-danger fw-bold"></p>
@@ -89,8 +89,8 @@
                     </div>
                     <div class="col-lg-3 col-md-6">
                         <!-- <a  href="{{ route('payment.index') }}"> -->
-                        <div class="card total-revenue">
-                            <div class="card-body">
+                        <div class="card total-revenue rounded-3 border-0 shadow-sm h-100">
+                            <div class="card-body p-3">
                                 <div class="row">
                                     <div class="col">
                                         <div class="d-flex flex-wrap justify-content-start align-items-center">
@@ -98,7 +98,7 @@
                                                 {{ getPriceFormat($data['remaining_payout']) }}</h4>
                                             <p class="mb-0 ml-3 text-danger fw-bold"></p>
                                         </div>
-                                        <p class="mb-0 booking-text">{{ __('messages.remaining_payout') }}</p>
+                                            <p class="mb-0 booking-text">{{ __('messages.remaining_payout') }}</p>
                                     </div>
                                     <div class="col-auto d-flex flex-column">
                                         <div
@@ -118,12 +118,12 @@
                     </div>
                     <div class="col-lg-3 col-md-6">
                         <a href="{{ route('handymanpayout.show', auth()->user()->id) }}">
-                            <div class="card total-revenue">
-                                <div class="card-body">
+                            <div class="card total-revenue rounded-3 border-0 shadow-sm h-100">
+                                <div class="card-body p-3">
                                     <div class="row">
                                         <div class="col">
                                             <div class="d-flex flex-wrap justify-content-start align-items-center">
-                                                <h4 class="mb-2 booking-text fw-bold">
+                                                <h4 class="mb-2 booking-text fw-bold fs-2">
                                                     {{ getPriceFormat($data['total_earning']) }}</h4>
                                                 <p class="mb-0 ml-3 text-danger fw-bold"></p>
                                             </div>
@@ -149,8 +149,8 @@
                 </div>
             </div>
             <div class="col-lg-12 col-md-12">
-                <div class="card">
-                    <div class="card-body">
+                <div class="card rounded-3 border-0 shadow-sm">
+                    <div class="card-body p-3 p-md-4">
                         <div id='calendar'></div>
                     </div>
                 </div>

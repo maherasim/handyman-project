@@ -695,10 +695,28 @@ class PostJobRequestController extends Controller
     
         // Validate payment type & amount
         $type = strtolower((string)$request->input('type', 'advance')); // advance | remaining
-        $payAmount = (float)$request->input('amount');
+        $payAmount = (float)$request->input('amount', 0);
     
+        // Compute payable server-side if not provided or invalid
         if ($payAmount <= 0) {
-            return response()->json(['status' => false, 'message' => 'Invalid amount'], 422);
+            $quantity      = (int) ($bid->quantity ?? 1);
+            $quantity      = $quantity > 0 ? $quantity : 1;
+            $baseAmount    = (float) ($bid->price ?? 0) * $quantity;
+            $extrasTotal   = (float) $bid->extraCharges()->get()->reduce(function($carry, $charge) {
+                $q = (int) ($charge->quantity ?? 1);
+                return $carry + ((float) $charge->amount * ($q > 0 ? $q : 1));
+            }, 0.0);
+            $totalDue      = $baseAmount + $extrasTotal;
+            $advancePct    = (float) ($bid->advance_percent ?? 0);
+            $remainingPct  = (float) ($bid->remaining_percent ?? 0);
+    
+            if ($type === 'advance' && $advancePct > 0) {
+                $payAmount = round(($totalDue * $advancePct) / 100.0, 2);
+            } elseif ($type === 'remaining' && $remainingPct > 0) {
+                $payAmount = round(($totalDue * $remainingPct) / 100.0, 2);
+            } else {
+                $payAmount = round($totalDue, 2);
+            }
         }
     
         $metaType = $type;
@@ -912,10 +930,12 @@ class PostJobRequestController extends Controller
     {
         $request->validate([
             'payment_intent_id' => 'required|string',
+            'payment_method_id' => 'nullable|string',
             'type' => 'nullable|in:advance,remaining'
         ]);
         $type = strtolower((string) $request->input('type', 'advance'));
         $intentId = (string) $request->input('payment_intent_id');
+        $paymentMethodId = (string) $request->input('payment_method_id', '');
 
         $bid = PostJobBid::findOrFail($id);
         $adminUser  = User::where('user_type', 'admin')->first();
@@ -936,6 +956,21 @@ class PostJobRequestController extends Controller
                 'status' => false,
                 'message' => 'Stripe verification failed: ' . $e->getMessage(),
             ], 422);
+        }
+        
+        // If not yet confirmed and a payment_method_id is supplied, confirm server-side
+        if (in_array(($intent->status ?? ''), ['requires_confirmation', 'requires_payment_method', 'requires_action']) && !empty($paymentMethodId)) {
+            try {
+                $intent = $stripe->paymentIntents->confirm($intentId, [
+                    'payment_method' => $paymentMethodId,
+                ]);
+            } catch (\Exception $e) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Stripe confirm failed: ' . $e->getMessage(),
+                    'intent_status' => $intent->status ?? null,
+                ], 422);
+            }
         }
 
         if (($intent->status ?? '') === 'succeeded') {

@@ -2,8 +2,8 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-lg-12 col-md-12">
-                <div class="card">
-                    <div class="card-body">
+                <div class="card rounded-3 border-0 shadow-sm">
+                    <div class="card-body p-3 p-md-4">
                         <div id='calendar'></div>
                     </div>
                 </div>
