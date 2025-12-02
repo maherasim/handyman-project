@@ -468,9 +468,15 @@ function getPriceFormat($price){
     $setting = App\Models\Setting::getValueByKey('site-setup','site-setup');
     $currency_position = $setting ? $setting->currency_position : "left";
     $afterdecimalpoint = $setting ? $setting->digitafter_decimal_point : "2";
-    
-    // Always use EUR currency regardless of country settings
-    $symbol = '€';
+
+    // Resolve currency symbol from default currency (Country) dynamically
+    try {
+        $currencyId = $setting ? $setting->default_currency : null;
+        $country = $currencyId ? App\Models\Country::find($currencyId) : null;
+        $symbol = !empty($country) && !empty($country->symbol) ? $country->symbol : '€';
+    } catch (\Throwable $e) {
+        $symbol = '€';
+    }
 
     $position = 'left';
     if( !empty($currency_position) ){

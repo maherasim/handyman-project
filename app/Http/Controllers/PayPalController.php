@@ -54,12 +54,23 @@ class PayPalController extends Controller
         }
 
         $order = new OrdersCreateRequest();
+
+        // Resolve currency dynamically from settings (site-setup -> default_currency -> Country)
+        try {
+            $sitesetup = Setting::where('type', 'site-setup')->where('key', 'site-setup')->first();
+            $sitesetupdata = $sitesetup ? json_decode($sitesetup->value, true) : null;
+            $countryId = $sitesetupdata['default_currency'] ?? null;
+            $country = $countryId ? \App\Models\Country::find($countryId) : null;
+            $currencyCode = strtoupper((string)($country->currency_code ?? 'EUR'));
+        } catch (\Throwable $e) {
+            $currencyCode = 'EUR';
+        }
         $order->prefer('return=representation');
         $order->body = [
             'intent' => 'CAPTURE',
             'purchase_units' => [[
                 'amount' => [
-                    'currency_code' => 'EUR',
+                    'currency_code' => $currencyCode,
                     'value' => $amount
                 ],
                 'description' => 'Payment for Booking #' . $request->booking_id
@@ -96,11 +107,22 @@ class PayPalController extends Controller
 
         $order = new OrdersCreateRequest();
         $order->prefer('return=representation');
+
+        // Resolve currency dynamically from settings (site-setup -> default_currency -> Country)
+        try {
+            $sitesetup = Setting::where('type', 'site-setup')->where('key', 'site-setup')->first();
+            $sitesetupdata = $sitesetup ? json_decode($sitesetup->value, true) : null;
+            $countryId = $sitesetupdata['default_currency'] ?? null;
+            $country = $countryId ? \App\Models\Country::find($countryId) : null;
+            $currencyCode = strtoupper((string)($country->currency_code ?? 'EUR'));
+        } catch (\Throwable $e) {
+            $currencyCode = 'EUR';
+        }
         $order->body = [
             'intent' => 'CAPTURE',
             'purchase_units' => [[
                 'amount' => [
-                    'currency_code' => 'EUR',
+                    'currency_code' => $currencyCode,
                     'value' => $amount
                 ],
                 'description' => 'Subscription Plan: ' . $request->plan_type

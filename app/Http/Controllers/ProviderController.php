@@ -1394,9 +1394,14 @@ public function getProviderTimeSlot(Request $request)
 
         $sitesetup = Setting::where('type', 'site-setup')->where('key', 'site-setup')->first();
         $sitesetupdata = $sitesetup ? json_decode($sitesetup->value, true) : null;
-        $country_id = $sitesetupdata['default_currency'] ?? null;
-        // Always use EUR currency regardless of country
-        $currencyCode = 'EUR';
+        // Resolve currency code dynamically from default_currency (Country)
+        try {
+            $countryId = $sitesetupdata['default_currency'] ?? null;
+            $country = $countryId ? \App\Models\Country::find($countryId) : null;
+            $currencyCode = strtoupper((string)($country->currency_code ?? 'EUR'));
+        } catch (\Throwable $e) {
+            $currencyCode = 'EUR';
+        }
 
         Log::info('Currency code set to EUR (forced)');
 

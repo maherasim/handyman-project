@@ -21,18 +21,23 @@ class CurrencyChange
         $sitesetup = Setting::where('type','site-setup')->where('key', 'site-setup')->first();
         $sitesetupdata = $sitesetup ? json_decode($sitesetup->value, true) : null;
 
-        // Always use EUR currency regardless of country settings
-        $this->CurrencyId = null; // Not needed since we're forcing EUR
-        $this->CurrencyPosition = $sitesetupdata['currency_position'] ?? null;
-        $this->afterdecimalpoint = $sitesetupdata['digitafter_decimal_point'] ?? null;
-        
-        // Create EUR currency object
+        // Resolve currency dynamically from Site Setup -> default_currency (Country)
+        $this->CurrencyId = $sitesetupdata['default_currency'] ?? null;
+        $this->CurrencyPosition = $sitesetupdata['currency_position'] ?? 'left';
+        $this->afterdecimalpoint = $sitesetupdata['digitafter_decimal_point'] ?? 2;
+
+        $country = $this->CurrencyId ? Country::find($this->CurrencyId) : null;
+        $code = $country->currency_code ?? 'EUR';
+        $symbol = $country->symbol ?? '€';
+        $name = $country->name ?? 'Euro';
+        $countryCode = $country->short_code ?? 'EU';
+
         $this->defaultCurrency = (object) [
-            'id' => 1,
-            'name' => 'Euro',
-            'currency_code' => 'EUR',
-            'symbol' => '€',
-            'country_code' => 'EU'
+            'id' => (int)($this->CurrencyId ?? 0),
+            'name' => $name,
+            'currency_code' => strtoupper($code),
+            'symbol' => $symbol,
+            'country_code' => strtoupper($countryCode),
         ];
     }
 

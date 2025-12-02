@@ -1151,9 +1151,15 @@ public function bookingAssigned(Request $request)
 //        }
         $sitesetup = Setting::where('type', 'site-setup')->where('key', 'site-setup')->first();
         $sitesetupdata = $sitesetup ? json_decode($sitesetup->value, true) : null;
-
-        // Always use EUR currency regardless of country
-        $data['currency_code'] = "EUR";
+        // Derive currency code dynamically from default_currency (Country)
+        try {
+            $countryId = $sitesetupdata['default_currency'] ?? null;
+            $country = $countryId ? \App\Models\Country::find($countryId) : null;
+            $currencyCode = strtoupper((string)($country->currency_code ?? 'EUR'));
+        } catch (\Throwable $e) {
+            $currencyCode = 'EUR';
+        }
+        $data['currency_code'] = $currencyCode;
 
         switch ($data['payment_type']) {
             case 'stripe':
