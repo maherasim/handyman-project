@@ -8,7 +8,8 @@
         $shareImage = !empty($attachments) && count($attachments) > 0 ? $attachments[0] : asset('images/post-job/ac_refresh_and_revive.png');
         $priceType = $jobrequest->price_type ?: 'fixed';
         $locationText = trim((optional($jobrequest->city)->name ?? 'City') . ', ' . (optional($jobrequest->country)->name ?? 'Country'));
-        $enrichedTitle = $shareTitle . ' • €' . number_format($jobrequest->price) . ' • ' . ucfirst($priceType) . ' • ' . $locationText;
+        $priceFormatted = getPriceFormat($jobrequest->price);
+        $enrichedTitle = $shareTitle . ' • ' . $priceFormatted . ' • ' . ucfirst($priceType) . ' • ' . $locationText;
     @endphp
     <meta property="og:type" content="article" />
     <meta property="og:title" content="{{ $enrichedTitle }}" />
@@ -228,6 +229,15 @@
                              class="img-fluid" 
                              style="border-radius: 12px; width: 100%; height: auto; max-height: 400px; object-fit: cover;">
                     @endif
+
+                    @if (strtolower((string)($jobrequest->status ?? '')) !== 'requested')
+                        <div class="text-center mt-4">
+                            @php $statusLabel = ucfirst((string)($jobrequest->status ?? 'unknown')); @endphp
+                            <div class="alert alert-info d-inline-block text-start" role="alert" style="max-width: 640px; border-radius: 12px;">
+                                This job is currently <strong>Reserved</strong>. New applications are not being accepted at this time.
+                            </div>
+                        </div>
+                    @endif
                 
                     <!-- Tabbed Job Details Section -->
                     <div class="job-details-tabs mt-4">
@@ -388,7 +398,7 @@
                         @php
                             $priceLabel = $jobrequest->price_type === 'fixed' ? 'Fixed Price' : ($jobrequest->price_type === 'daily' ? '/ Day' : '/ Hour');
                         @endphp
-                        <h4 class="text-primary mb-2">€ {{ number_format($jobrequest->price, 2) }} <span class="text-dark"><b>{{ $priceLabel }}</b></span></h4>
+                        <h4 class="text-primary mb-2">{{ getPriceFormat($jobrequest->price) }} <span class="text-dark"><b>{{ $priceLabel }}</b></span></h4>
                         <p class="mb-0 text-muted" id="description">
                             {{ Str::words(strip_tags($jobrequest->description), 10, '...') }}
                         </p>
@@ -406,15 +416,15 @@
 
                     <!-- Social Sharing -->
                     <div class="d-flex align-items-center justify-content-center gap-3 mb-4 social-icons">
-                        <span role="button" tabindex="0" class="social-link share-link" data-platform="facebook" data-share-url="{{ route('job.details', $jobrequest->id) }}?v={{ optional($jobrequest->updated_at)->timestamp ?? time() }}" data-quote="{{ $jobrequest->title }} • €{{ number_format($jobrequest->price) }} • {{ ucfirst($jobrequest->price_type ?? 'fixed') }} • {{ data_get($jobrequest,'city.name','City') }}, {{ data_get($jobrequest,'country.name','Country') }}" onclick="return window.__shareClickHandler(event, this);">
+                        <span role="button" tabindex="0" class="social-link share-link" data-platform="facebook" data-share-url="{{ route('job.details', $jobrequest->id) }}?v={{ optional($jobrequest->updated_at)->timestamp ?? time() }}" data-quote="{{ $jobrequest->title }} • {{ getPriceFormat($jobrequest->price) }} • {{ ucfirst($jobrequest->price_type ?? 'fixed') }} • {{ data_get($jobrequest,'city.name','City') }}, {{ data_get($jobrequest,'country.name','Country') }}" onclick="return window.__shareClickHandler(event, this);">
                             <img src="https://static.vecteezy.com/system/resources/previews/016/716/447/non_2x/facebook-icon-free-png.png" 
                                  style="width: 30px; border-radius: 8px;" alt="Facebook">
                         </span>
-                        <span role="button" tabindex="0" class="social-link share-link" data-platform="instagram" data-image-url="{{ !empty($attachments) && count($attachments) > 0 ? $attachments[0] : asset('images/post-job/ac_refresh_and_revive.png') }}" data-quote="{{ $jobrequest->title }} • €{{ number_format($jobrequest->price) }} • {{ ucfirst($jobrequest->price_type ?? 'fixed') }} • {{ data_get($jobrequest,'city.name','City') }}, {{ data_get($jobrequest,'country.name','Country') }} — {{ route('job.details', $jobrequest->id) }}" onclick="return window.__shareClickHandler(event, this);">
+                        <span role="button" tabindex="0" class="social-link share-link" data-platform="instagram" data-image-url="{{ !empty($attachments) && count($attachments) > 0 ? $attachments[0] : asset('images/post-job/ac_refresh_and_revive.png') }}" data-quote="{{ $jobrequest->title }} • {{ getPriceFormat($jobrequest->price) }} • {{ ucfirst($jobrequest->price_type ?? 'fixed') }} • {{ data_get($jobrequest,'city.name','City') }}, {{ data_get($jobrequest,'country.name','Country') }} — {{ route('job.details', $jobrequest->id) }}" onclick="return window.__shareClickHandler(event, this);">
                             <img src="https://upload.wikimedia.org/wikipedia/commons/9/95/Instagram_logo_2022.svg" 
                                  style="width: 30px; border-radius: 8px;" alt="Instagram">
                         </span>
-                        <span role="button" tabindex="0" class="social-link share-link" data-platform="twitter" data-share-url="{{ route('job.details', $jobrequest->id) }}?v={{ optional($jobrequest->updated_at)->timestamp ?? time() }}" data-text="{{ $jobrequest->title }} • €{{ number_format($jobrequest->price) }} • {{ ucfirst($jobrequest->price_type ?? 'fixed') }} • {{ data_get($jobrequest,'city.name','City') }}, {{ data_get($jobrequest,'country.name','Country') }}" onclick="return window.__shareClickHandler(event, this);">
+                        <span role="button" tabindex="0" class="social-link share-link" data-platform="twitter" data-share-url="{{ route('job.details', $jobrequest->id) }}?v={{ optional($jobrequest->updated_at)->timestamp ?? time() }}" data-text="{{ $jobrequest->title }} • {{ getPriceFormat($jobrequest->price) }} • {{ ucfirst($jobrequest->price_type ?? 'fixed') }} • {{ data_get($jobrequest,'city.name','City') }}, {{ data_get($jobrequest,'country.name','Country') }}" onclick="return window.__shareClickHandler(event, this);">
                             <img src="https://cdn.pixabay.com/photo/2015/03/10/17/30/twitter-667462_640.png" 
                                  style="width: 30px; border-radius: 8px;" alt="Twitter">
                         </span>
@@ -525,7 +535,7 @@
                                     </div>
                                     <div class="detail-item mb-2">
                                         <span class="detail-label"><b>Total Budget:</b></span>
-                                        <span class="detail-value"> €{{ number_format($jobrequest->total_budget ?? $jobrequest->price, 2) }}</span>
+                                        <span class="detail-value"> {{ getPriceFormat($jobrequest->total_budget ?? $jobrequest->price) }}</span>
                                     </div>
                                     <div class="detail-item mb-2">
                                         <span class="detail-label"><b>Start Date:</b></span>
@@ -629,7 +639,7 @@
                                     </div>
                                     <div class="detail-item mb-2">
                                         <span class="detail-label"><b>Total budget:</b></span>
-                                        <span class="detail-value"> €{{ number_format($jobrequest->total_budget ?? $jobrequest->price, 2) }}</span>
+                                        <span class="detail-value"> {{ getPriceFormat($jobrequest->total_budget ?? $jobrequest->price) }}</span>
                                     </div>
                                     <div class="detail-item mb-2">
                                         <span class="detail-label"><b>Start date:</b></span>
@@ -694,13 +704,15 @@
                     </div>
 
                     <!-- Apply Now Button -->
-                    <div class="text-center mt-4">
-                        <a href="{{ auth()->check() ? route('post-job-request.index') : route('login') }}"
-                           class="btn btn-success btn-lg"
-                           style="background: #59E054; color: #fff; border: 5px solid #F0F0F0; padding: 12px 30px; border-radius: 50px; font-weight: 800; text-decoration: none;">
-                            APPLY NOW
-                        </a>
-                    </div>
+                    @if (strtolower((string)($jobrequest->status ?? '')) === 'requested')
+                        <div class="text-center mt-4">
+                            <a href="{{ auth()->check() ? route('post-job-request.index') : route('login') }}"
+                               class="btn btn-success btn-lg"
+                               style="background: #59E054; color: #fff; border: 5px solid #F0F0F0; padding: 12px 30px; border-radius: 50px; font-weight: 800; text-decoration: none;">
+                                APPLY NOW
+                            </a>
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>

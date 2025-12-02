@@ -29,11 +29,19 @@ class PayPalController extends Controller
 
     public function __construct()
     {
-        // Always read credentials from settings to avoid invalid_client
+        // Read credentials strictly from settings
         $paymentGatewayValue = getPaymentMethodkey('paypal');
-        $clientId = $paymentGatewayValue['paypal_client_id'] ?? env('PAYPAL_CLIENT_ID');
-        $clientSecret = $paymentGatewayValue['paypal_secret_key'] ?? env('PAYPAL_CLIENT_SECRET');
-        $mode = $paymentGatewayValue['mode'] ?? env('PAYPAL_MODE', 'sandbox');
+        $clientId = $paymentGatewayValue['paypal_client_id'] ?? null;
+        $clientSecret = $paymentGatewayValue['paypal_secret_key'] ?? null;
+        $mode = $paymentGatewayValue['mode'] ?? 'sandbox';
+
+        // Fail fast if not configured
+        if (!$clientId || !$clientSecret) {
+            // Create a dummy client to avoid null refs; calls will fail gracefully later
+            $environment = new SandboxEnvironment('invalid', 'invalid');
+            $this->client = new PayPalHttpClient($environment);
+            return;
+        }
 
         $environment = $mode === 'live'
             ? new ProductionEnvironment($clientId, $clientSecret)

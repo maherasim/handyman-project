@@ -1,4 +1,9 @@
 <x-master-layout>
+    @php
+        $__currency = Currency::getDefaultCurrency(true);
+        $__currencySymbol = data_get($__currency, 'defaultCurrency.symbol', Currency::defaultSymbol());
+        $__currencyCode = strtoupper((string) data_get($__currency, 'defaultCurrency.currency_code', ''));
+    @endphp
 
     <head>
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -108,8 +113,11 @@
                 <div class="modal-body">
 
                     <!-- Bid Amount -->
-                    <label for="bidAmount">Bid Amount:</label>
-                    <input type="number" id="bidAmount" name="bidAmount" class="form-control" required>
+                    <label for="bidAmount">Bid Amount @if($__currencyCode)<small class="text-muted">({{ $__currencyCode }})</small>@endif:</label>
+                    <div class="input-group">
+                        <span class="input-group-text">{{ $__currencySymbol }}</span>
+                        <input type="number" id="bidAmount" name="bidAmount" class="form-control" min="1" step="any" required>
+                    </div>
                     <div id="bidAmountError"></div>
 
                     <!-- Why Choose Me -->

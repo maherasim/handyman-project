@@ -52,4 +52,9 @@ class PostJobBid extends Model
     {
         return $this->hasMany(PostJobExtraCharge::class, 'post_job_bid_id');
     }
+
+    public function ratings()
+    {
+        return $this->hasMany(PostJobBidRating::class, 'post_job_bid_id');
+    }
 }

@@ -126,6 +126,7 @@ class PostJobRequestController extends Controller
             'postrequest.country:id,name',
             'postrequest.postBidList:id,post_request_id',
             'extraCharges',
+            'ratings',
         ])->where('post_request_id', $postRequestId);
 
         // Try to get bid matching the post's current status
@@ -162,6 +163,7 @@ class PostJobRequestController extends Controller
             'postrequest.country:id,name',
             'postrequest.postBidList:id,post_request_id',
             'extraCharges',
+            'ratings',
         ])->findOrFail($bidId);
  
         return view('postrequest.show', compact('bid'));
@@ -382,26 +384,27 @@ class PostJobRequestController extends Controller
         $payAmount = $requestedAmount;
     
         // Prepare variables based on payment type
+        $formattedAmount = getPriceFormat($payAmount);
         if ($paymentType === 'remaining') {
            // dd($payAmount,'remaing');
             $txnPrefix = 'REM-';
-            $customerActivity = "Remaining payment of €" . number_format($payAmount, 2) . " for Bid #{$post->id} has been paid";
+            $customerActivity = "Remaining payment of {$formattedAmount} for Bid #{$post->id} has been paid";
 
-            $providerActivity = "Remaining payment of €" . number_format($payAmount, 2) . " for Bid #{$post->id} has been paid";
+            $providerActivity = "Remaining payment of {$formattedAmount} for Bid #{$post->id} has been paid";
             $paymentMetaType = 'remaining';
             $payoutStatus = 'remaining paid';
             $newPostStatus = 'remaining_paid';
-            $successMsg = "Remaining payment of €" . number_format($payAmount, 2) . " successful";
+            $successMsg = "Remaining payment of {$formattedAmount} successful";
         } else {
            // dd($payAmount,'advance');
             $txnPrefix = 'ADV-';
-            $customerActivity = "Advance payment of €" . number_format($payAmount, 2) . " for Bid #{$post->id} has been paid";
+            $customerActivity = "Advance payment of {$formattedAmount} for Bid #{$post->id} has been paid";
 
-            $providerActivity = "Advance payment of €" . number_format($payAmount, 2) . " for Bid #{$post->id} has been paid";
+            $providerActivity = "Advance payment of {$formattedAmount} for Bid #{$post->id} has been paid";
             $paymentMetaType = 'advance';
             $payoutStatus = 'advance paid';
             $newPostStatus = 'advance_paid';
-            $successMsg = "Advance payment of €" . number_format($payAmount, 2) . " successful";
+            $successMsg = "Advance payment of {$formattedAmount} successful";
         }
     
         // Check wallet balance
@@ -731,8 +734,15 @@ class PostJobRequestController extends Controller
     
         $stripe = new \Stripe\StripeClient($stripe_secret);
     
-        // Currency always EUR
-        $currencyCode = 'EUR';
+        // Resolve currency dynamically from settings
+        try {
+            $sitesetupdata = Setting::getValueByKey('site-setup', 'site-setup');
+            $countryId = is_object($sitesetupdata) ? ($sitesetupdata->default_currency ?? null) : ($sitesetupdata['default_currency'] ?? null);
+            $country = $countryId ? \App\Models\Country::find($countryId) : null;
+            $currencyCode = strtoupper((string) ($country->currency_code ?? 'EUR'));
+        } catch (\Throwable $e) {
+            $currencyCode = 'EUR';
+        }
     
         // Support two flows: Checkout (web) and PaymentIntent (PaymentSheet for mobile)
         if ($request->boolean('use_checkout')) {
@@ -1269,6 +1279,16 @@ class PostJobRequestController extends Controller
             // Base URL
             $baseURL = config('app.url') ?: 'https://frobster.com';
     
+            // Resolve currency dynamically from settings
+            try {
+                $sitesetupdata = Setting::getValueByKey('site-setup', 'site-setup');
+                $countryId = is_object($sitesetupdata) ? ($sitesetupdata->default_currency ?? null) : ($sitesetupdata['default_currency'] ?? null);
+                $country = $countryId ? \App\Models\Country::find($countryId) : null;
+                $currencyCode = strtoupper((string) ($country->currency_code ?? 'EUR'));
+            } catch (\Throwable $e) {
+                $currencyCode = 'EUR';
+            }
+
             // Create PayPal order
             $order = new OrdersCreateRequest();
             $order->prefer('return=representation');
@@ -1276,7 +1296,7 @@ class PostJobRequestController extends Controller
                 'intent' => 'CAPTURE',
                 'purchase_units' => [[
                     'amount' => [
-                        'currency_code' => 'EUR',
+                        'currency_code' => $currencyCode,
                         'value' => number_format($payAmount, 2, '.', '')
                     ],
                     'description' => 'Payment for Post Job Bid #' . $bid->id . ' (' . $type . ')'
@@ -1573,7 +1593,7 @@ class PostJobRequestController extends Controller
             'text' => __('messages.payment_transfer', [
                 'from' => get_user_name($user->id),
                 'to' => get_user_name($provider_id),
-                'amount' => number_format($provider_earning, 2)
+                'amount' => getPriceFormat($provider_earning)
             ]),
             'other_transaction_detail' => json_encode([
                 'admin_commission' => $admin_commission_amount,

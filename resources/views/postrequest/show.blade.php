@@ -191,21 +191,22 @@
             @php
                 $chatUserId = ($auth_user->user_type === 'provider') ? $bid->customer_id : $bid->provider_id;
             @endphp
-            <a href="{{ route('chat.view.user', $chatUserId) }}" class="btn btn-outline-primary">
-                <i class="fas fa-comments"></i> Chat
+            <a href="{{ route('chat.view.user', $chatUserId) }}" class="btn btn-outline-secondary rounded-pill px-4 py-2 shadow-sm me-2 d-inline-flex align-items-center gap-2">
+                <i class="fas fa-comments"></i>
+                <span>Chat</span>
             </a>
         @endif
         @php
-        $canRatePostBid = auth()->user()->user_type === 'user' && (int)auth()->id() === (int)($bid->customer_id ?? 0) && in_array(strtolower((string)$bid->status), ['confirm_done','completed']);
+        $canRatePostBid = auth()->user()->user_type === 'user'
+            && (int)auth()->id() === (int)($bid->customer_id ?? 0)
+            && in_array(strtolower((string)$bid->status), ['remaining_paid']);
     @endphp
     @if($canRatePostBid)
-    <div class="card shadow-sm border-0 mt-3">
-         
-                        <button type="button" class="btn btn-warning" id="postbid-rate-now-btn" data-id="{{ $bid->id }}" data-bs-toggle="modal" data-bs-target="#postBidRatingModal">
-                <i class="las la-star"></i> Rate Now
-            </button>
-       
-    </div>
+        <button type="button" class="btn btn-warning rounded-pill px-4 py-2 shadow-sm me-2 d-inline-flex align-items-center gap-2 mt-2"
+                id="postbid-rate-now-btn" data-id="{{ $bid->id }}" data-bs-toggle="modal" data-bs-target="#postBidRatingModal">
+            <i class="las la-star"></i>
+            <span>Rate Now</span>
+        </button>
     @endif
 
 
@@ -236,16 +237,17 @@
                     <i class="fas fa-file-download"></i> Download Invoice
                 </a>
             @elseif($bid->status === 'Advance Payment Pending')
-                <button class="btn btn-success payAdvanceBtn" data-post-id="{{ $bid->id }}"
+                <button class="btn btn-success rounded-pill px-4 py-2 shadow-sm payAdvanceBtn d-inline-flex align-items-center gap-2" data-post-id="{{ $bid->id }}"
                     data-amount="{{ $advAmount }}">
-                    <i class="fas fa-wallet"></i> Pay Advance €{{ number_format($advAmount, 2) }}
+                    <i class="fas fa-wallet"></i>
+                    <span>Pay Advance {{ getPriceFormat($advAmount) }}</span>
                     ({{ $advPct }}%)
                 </button>
             @elseif($bid->status === 'completed' && !$bid->has_advance_paid)
-                <button class="btn btn-primary payRemainingBtn" data-post-id="{{ $bid->id }}"
+                <button class="btn btn-primary rounded-pill px-4 py-2 shadow-sm payRemainingBtn d-inline-flex align-items-center gap-2" data-post-id="{{ $bid->id }}"
                     data-amount="{{ number_format($remaining, 2, '.', '') }}">
-
-                    <i class="fas fa-credit-card"></i> Pay Remaining €{{ number_format($remaining, 2) }}
+                    <i class="fas fa-credit-card"></i>
+                    <span>Pay Remaining {{ getPriceFormat($remaining) }}</span>
                 </button>
             @elseif($bid->status === 'hold')
                 <div class="alert alert-warning d-flex align-items-start shadow-sm border rounded p-3 mt-2">
@@ -355,9 +357,7 @@
                                 <i class="fas fa-wallet fa-2x text-secondary mb-2"></i>
                                 <h6 class="fw-bold mb-1">Total Budget</h6>
                                 <p class="mb-0">
-                                    {{ isset($bid->postrequest->total_budget)
-                                        ? '€' . number_format($bid->postrequest->total_budget, 2)
-                                        : '-' }}
+                                    {{ isset($bid->postrequest->total_budget) ? getPriceFormat($bid->postrequest->total_budget) : '-' }}
                                 </p>
                             </div>
                             
@@ -439,7 +439,7 @@
                             <tbody>
                                 <tr>
                                     <td>Rate (Unit Price)</td>
-                                    <td class="text-end">€{{ number_format($unitPrice, 2) }}</td>
+                                    <td class="text-end">{{ getPriceFormat($unitPrice) }}</td>
                                 </tr>
                                 <tr>
                                     <td>Quantity (Packages / Hours / Days)</td>
@@ -447,44 +447,44 @@
                                 </tr>
                                 <tr>
                                     <td>Total Amount</td>
-                                    <td class="text-end">€{{ number_format($totalAmount, 2) }}</td>
+                                    <td class="text-end">{{ getPriceFormat($totalAmount) }}</td>
                                 </tr>
                                 <tr>
                                     <td>
                                         @if($hasExtraLines)
                                             Extra Charges ({{ $extraChargesCount }} items)
                                         @else
-                                            Extra Charges ({{ $extraChargeQty }} × {{ number_format($extraChargeUnit, 2) }})
+                                            Extra Charges ({{ $extraChargeQty }} × {{ getPriceFormat($extraChargeUnit) }})
                                         @endif
                                     </td>
-                                    <td class="text-end">€{{ number_format($extraChargesTotal, 2) }}</td>
+                                    <td class="text-end">{{ getPriceFormat($extraChargesTotal) }}</td>
                                 </tr>
                                 <tr class="fw-bold">
                                     <td>Subtotal</td>
-                                    <td class="text-end">€{{ number_format($subTotal, 2) }}</td>
+                                    <td class="text-end">{{ getPriceFormat($subTotal) }}</td>
                                 </tr>
 
                                 <tr class="fw-bold">
                                     <td>Net Amount </td>
-                                    <td class="text-end">€{{ number_format($netAmount, 2) }}</td>
+                                    <td class="text-end">{{ getPriceFormat($netAmount) }}</td>
                                 </tr>
                                 <tr>
                                     <td>Tax ({{ number_format($taxRate, 0) }}%) {{ $taxTitle }}</td>
-                                    <td class="text-end">€{{ number_format($taxAmount, 2) }}</td>
+                                    <td class="text-end">{{ getPriceFormat($taxAmount) }}</td>
                                 </tr>
 
                                 <tr class="fw-bold">
                                     <td>Grand Total</td>
-                                    <td class="text-end">€{{ number_format($subTotal, 2) }}</td>
+                                    <td class="text-end">{{ getPriceFormat($subTotal) }}</td>
                                 </tr>
                                 <tr>
                                     <td>Advance Payment ({{ $advPct }}%)</td>
-                                    <td class="text-end">€{{ number_format($advAmount, 2) }}</td>
+                                    <td class="text-end">{{ getPriceFormat($advAmount) }}</td>
                                 </tr>
                                 <tr class="fw-bold">
                                     <td>Remaining Amount</td>
 
-                                    <td class="text-end">€{{ number_format($remaining, 2) }}</td>
+                                    <td class="text-end">{{ getPriceFormat($remaining) }}</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -509,15 +509,24 @@
                             <tr class="extra-charges-heading">
                                 <th colspan="4">
                                     <div class="d-flex align-items-center justify-content-between">
-                                        <span class="fw-bold">Extra Charges</span>
-                                        <span class="badge rounded-pill bg-light text-dark border">€{{ number_format($extraChargesTotal, 2) }}</span>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <i class="las la-receipt"></i>
+                                            <span class="fw-semibold">Extra Charges</span>
+                                            <span class="badge bg-light text-dark border">
+                                                {{ $extraChargesCount }} {{ \Illuminate\Support\Str::plural('item', $extraChargesCount) }}
+                                            </span>
+                                        </div>
+                                        <div class="text-end">
+                                            <span class="small text-white-50 me-2">Total</span>
+                                            <span class="badge rounded-pill bg-light text-dark border">{{ getPriceFormat($extraChargesTotal) }}</span>
+                                        </div>
                                     </div>
                                 </th>
                             </tr>
                             <tr>
                                 <th>Title</th>
                                 <th class="text-end">Quantity</th>
-                                <th class="text-end">Unit Amount</th>
+                                <th class="text-end">Unit Price</th>
                                 <th class="text-end">Total</th>
                             </tr>
                         </thead>
@@ -526,8 +535,8 @@
                                 <tr>
                                     <td>{{ $line->title }}</td>
                                     <td class="text-end">{{ (int) ($line->quantity ?? 0) }}</td>
-                                    <td class="text-end">€{{ number_format((float) ($line->amount ?? 0), 2) }}</td>
-                                    <td class="text-end">€{{ number_format(((float) ($line->amount ?? 0)) * ((int) ($line->quantity ?? 0)), 2) }}</td>
+                                    <td class="text-end">{{ getPriceFormat((float) ($line->amount ?? 0)) }}</td>
+                                    <td class="text-end">{{ getPriceFormat(((float) ($line->amount ?? 0)) * ((int) ($line->quantity ?? 0))) }}</td>
                                 </tr>
                             @endforeach
                         </tbody>
@@ -540,7 +549,7 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="postBidRatingModalLabel">Rate Provider</h5>
+        <h5 class="modal-title" id="postBidRatingModalLabel">Rate {{ $bid->provider->display_name ?? __('Provider') }}</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
@@ -573,13 +582,54 @@
     </div>
     @endif
 
+    @if($bid->ratings && $bid->ratings->count() > 0)
+    <div class="container py-3">
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="card shadow-sm border-0">
+                    <div class="card-header bg-primary text-white fw-bold">
+                        Ratings
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Customer</th>
+                                        <th class="text-center">Rating</th>
+                                        <th>Review</th>
+                                        <th class="text-end">Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($bid->ratings as $r)
+                                        <tr>
+                                            <td>{{ $bid->customer->display_name ?? ('#'.$r->customer_id) }}</td>
+                                            <td class="text-center">
+                                                @php $stars = max(1, min(5, (int)($r->rating ?? 0))); @endphp
+                                                <span class="text-warning">{!! str_repeat('★', $stars) !!}</span>
+                                                <span class="text-muted">{!! str_repeat('☆', 5 - $stars) !!}</span>
+                                            </td>
+                                            <td>{{ $r->review ?: '-' }}</td>
+                                            <td class="text-end">{{ optional($r->created_at)->format('Y-m-d') ?? '-' }}</td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @endif
     <style>
         .extra-charges-card .card-header {
-            background: linear-gradient(180deg, #7d8fb3 0%, #8fa1c4 100%);
+            background: linear-gradient(180deg, #0d6efd 0%, #3751d7 100%);
             border-bottom: 1px solid rgba(255,255,255,0.25);
         }
         .extra-charges-table thead .extra-charges-heading th {
-            background: linear-gradient(180deg, #7d8fb3 0%, #8fa1c4 100%);
+            background: linear-gradient(180deg, #0d6efd 0%, #3751d7 100%);
             color: #fff;
             border-bottom: none;
         }
@@ -645,6 +695,21 @@
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
     <script>
+        // Dynamic currency for this page
+        const DEFAULT_CURRENCY = @json(Currency::getDefaultCurrency(true));
+        const DECIMALS = DEFAULT_CURRENCY?.afterdecimalpoint ?? 2;
+        const POSITION = DEFAULT_CURRENCY?.defaultPosition ?? 'left';
+        const CURRENCY_SYMBOL = DEFAULT_CURRENCY?.defaultCurrency?.symbol ?? '€';
+        function formatCurrencyJS(amount) {
+            const n = Number(amount || 0).toFixed(DECIMALS);
+            switch (String(POSITION)) {
+                case 'left_with_space': return `${CURRENCY_SYMBOL} ${n}`;
+                case 'right': return `${n}${CURRENCY_SYMBOL}`;
+                case 'right_with_space': return `${n} ${CURRENCY_SYMBOL}`;
+                case 'left':
+                default: return `${CURRENCY_SYMBOL}${n}`;
+            }
+        }
         document.addEventListener('DOMContentLoaded', function() {
             document.querySelectorAll('.acceptBid').forEach(btn => {
                 btn.addEventListener('click', function() {
@@ -726,7 +791,7 @@
                         title: isRemaining ? 'Pay Remaining' : 'Pay Advance',
                         html: `
                             <div class="text-start">
-                                <p class="mb-2">Amount: <strong>€${formattedAmount}</strong></p>
+                                <p class="mb-2">Amount: <strong>${formatCurrencyJS(formattedAmount)}</strong></p>
                                 <label class="form-label fw-bold">Choose Payment Method</label>
                                 <div class="d-grid gap-2">
                                     <button class="btn btn-outline-primary" id="walletPayBtn"><i class="fas fa-wallet me-1"></i> Wallet</button>
@@ -785,12 +850,12 @@
                                             body: JSON.stringify({
                                                 amount: amount,
                                                 type: isRemaining ?
-                                                    'remaining' : 'advance'
+                                                    'remaining' : 'advance',
+                                                use_checkout: true
                                             })
                                         }).then(res => res.json())
                                     .then(session => {
-                                        if (session && session.status && session
-                                            .url) {
+                                        if (session && session.status && session.url) {
                                             window.location.href = session.url;
                                         } else {
                                             Swal.fire('Error', session
@@ -818,6 +883,7 @@
                                         const infoHtml = `
                  <div class="text-start">
   <h6 class="mb-2">Bank Information</h6>
+  <div class="mb-2"><strong>Amount:</strong> ${formatCurrencyJS(formattedAmount)}</div>
   <div><strong>Bank Name:</strong> Norisbank</div>
   <div><strong>Country:</strong> Germany</div>
   <div><strong>Account Number:</strong> 4776167</div>

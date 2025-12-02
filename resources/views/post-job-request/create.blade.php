@@ -27,7 +27,12 @@
             </div>
             <div class="col-lg-12">
                 <div class="card">
-                    <div class="card-body">
+                    <div class="card-body pb-5">
+                        @php
+                            $__currency = Currency::getDefaultCurrency(true);
+                            $__currencySymbol = data_get($__currency, 'defaultCurrency.symbol', Currency::defaultSymbol());
+                            $__currencyCode = strtoupper((string) data_get($__currency, 'defaultCurrency.currency_code', ''));
+                        @endphp
                         <form method="POST" action="{{ route('postJobRequest.save') }}" enctype="multipart/form-data"
                             id="postJob" data-toggle="validator">
                             @csrf
@@ -100,8 +105,11 @@
                                     </select>
                                 </div>
                                 <div class="form-group col-md-4" id="price_div">
-                                    <label for="price">{{ __('messages.price') }} <span class="text-danger">*</span></label>
-                                    <input type="number" name="price" id="price" class="form-control" min="1" step="any" placeholder="{{ __('messages.price') }}" required value="{{ old('price', $postJob->price) }}">
+                                    <label for="price">{{ __('messages.price') }} <span class="text-danger">*</span> @if($__currencyCode)<small class="text-muted">({{ $__currencyCode }})</small>@endif</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">{{ $__currencySymbol }}</span>
+                                        <input type="number" name="price" id="price" class="form-control" min="1" step="any" placeholder="{{ __('messages.price') }}" required value="{{ old('price', $postJob->price) }}">
+                                    </div>
                                     <small class="help-block with-errors text-danger"></small>
                                 </div>
                             </div>
@@ -137,8 +145,11 @@
                                     <small class="help-block with-errors text-danger"></small>
                                 </div>
                                 <div class="form-group col-md-4" id="total_budget_div">
-                                    <label for="total_budget">{{ __('Total Budget') }} <span class="text-danger">*</span></label>
-                                    <input type="number" name="total_budget" id="total_budget" class="form-control" min="0" step="any" placeholder="{{ __('Total Budget') }}" value="{{ old('total_budget', $postJob->total_budget) }}" readonly>
+                                    <label for="total_budget">{{ __('Total Budget') }} <span class="text-danger">*</span> @if($__currencyCode)<small class="text-muted">({{ $__currencyCode }})</small>@endif</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">{{ $__currencySymbol }}</span>
+                                        <input type="number" name="total_budget" id="total_budget" class="form-control" min="0" step="any" placeholder="{{ __('Total Budget') }}" value="{{ old('total_budget', $postJob->total_budget) }}" readonly>
+                                    </div>
                                     <small class="help-block with-errors text-danger"></small>
                                 </div>
                                 <div class="form-group col-md-4">
@@ -260,9 +271,9 @@
                                         style="display: none;">Show More</button>
                                 </div>
                             </div>
-                            <div class="row mt-4">
+                            <div class="row mt-4 mb-4">
                                 <div class="col-md-12 d-flex justify-content-end">
-                                    <button type="submit" class="btn btn-md btn-primary">{{ __('messages.publish') }}</button>
+                                    <button type="submit" class="btn btn-md btn-primary px-4 py-2 me-3">{{ __('messages.publish') }}</button>
                                 </div>
                             </div>
                         </form>

@@ -388,7 +388,7 @@
                                      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
                                      backdrop-filter: blur(10px);
                                  ">
-                                             €{{ number_format($jobRequest->price) }} /
+                                            {{ getPriceFormat($jobRequest->price) }} /
                                              {{ ucfirst($jobRequest->price_type ?? 'fixed') }}
                                          </div>
 
@@ -554,7 +554,7 @@
                                      padding-top: 8px;
                                      border-top: 1px solid #f0f0f0;
                                  ">
-                                            <span role="button" tabindex="0" class="social-link share-link" data-platform="facebook" data-job-id="{{ $jobRequest->id }}" data-share-url="{{ route('job.details', $jobRequest->id) }}?v={{ optional($jobRequest->updated_at)->timestamp ?? time() }}" data-quote="{{ $jobRequest->title }} • €{{ number_format($jobRequest->price) }} • {{ ucfirst($jobRequest->price_type ?? 'fixed') }} • {{ data_get($jobRequest,'city.name','City') }}, {{ data_get($jobRequest,'country.name','Country') }}" onclick="return window.__shareClickHandler(event, this);"
+                                            <span role="button" tabindex="0" class="social-link share-link" data-platform="facebook" data-job-id="{{ $jobRequest->id }}" data-share-url="{{ route('job.details', $jobRequest->id) }}?v={{ optional($jobRequest->updated_at)->timestamp ?? time() }}" data-quote="{{ $jobRequest->title }} • {{ getPriceFormat($jobRequest->price) }} • {{ ucfirst($jobRequest->price_type ?? 'fixed') }} • {{ data_get($jobRequest,'city.name','City') }}, {{ data_get($jobRequest,'country.name','Country') }}" onclick="return window.__shareClickHandler(event, this);"
                                                  style="
                                          width: 24px;
                                          height: 24px;
@@ -569,7 +569,7 @@
                                                  <img src="https://static.vecteezy.com/system/resources/previews/016/716/481/original/facebook-icon-free-png.png"
                                                      alt="Facebook" style="width: 12px; height: 12px;">
                                             </span>
-                                            <span role="button" tabindex="0" class="social-link share-link" data-platform="instagram" data-job-id="{{ $jobRequest->id }}" data-quote="{{ $jobRequest->title }} • €{{ number_format($jobRequest->price) }} • {{ ucfirst($jobRequest->price_type ?? 'fixed') }} • {{ data_get($jobRequest,'city.name','City') }}, {{ data_get($jobRequest,'country.name','Country') }} — {{ route('job.details', $jobRequest->id) }}" data-image-url="{{ !empty($jobRequest->image) ? asset('storage/' . ltrim($jobRequest->image, '/')) : asset('images/post-job/ac_refresh_and_revive.png') }}" onclick="return window.__shareClickHandler(event, this);"
+                                            <span role="button" tabindex="0" class="social-link share-link" data-platform="instagram" data-job-id="{{ $jobRequest->id }}" data-quote="{{ $jobRequest->title }} • {{ getPriceFormat($jobRequest->price) }} • {{ ucfirst($jobRequest->price_type ?? 'fixed') }} • {{ data_get($jobRequest,'city.name','City') }}, {{ data_get($jobRequest,'country.name','Country') }} — {{ route('job.details', $jobRequest->id) }}" data-image-url="{{ !empty($jobRequest->image) ? asset('storage/' . ltrim($jobRequest->image, '/')) : asset('images/post-job/ac_refresh_and_revive.png') }}" onclick="return window.__shareClickHandler(event, this);"
                                                  style="
                                          width: 24px;
                                          height: 24px;
@@ -584,7 +584,7 @@
                                                  <img src="https://upload.wikimedia.org/wikipedia/commons/9/95/Instagram_logo_2022.svg"
                                                      alt="Instagram" style="width: 12px; height: 12px;">
                                             </span>
-                                            <span role="button" tabindex="0" class="social-link share-link" data-platform="twitter" data-share-url="{{ route('job.details', $jobRequest->id) }}?v={{ optional($jobRequest->updated_at)->timestamp ?? time() }}" data-text="{{ $jobRequest->title }} • €{{ number_format($jobRequest->price) }} • {{ ucfirst($jobRequest->price_type ?? 'fixed') }} • {{ data_get($jobRequest,'city.name','City') }}, {{ data_get($jobRequest,'country.name','Country') }}" onclick="return window.__shareClickHandler(event, this);"
+                                            <span role="button" tabindex="0" class="social-link share-link" data-platform="twitter" data-share-url="{{ route('job.details', $jobRequest->id) }}?v={{ optional($jobRequest->updated_at)->timestamp ?? time() }}" data-text="{{ $jobRequest->title }} • {{ getPriceFormat($jobRequest->price) }} • {{ ucfirst($jobRequest->price_type ?? 'fixed') }} • {{ data_get($jobRequest,'city.name','City') }}, {{ data_get($jobRequest,'country.name','Country') }}" onclick="return window.__shareClickHandler(event, this);"
                                                  style="
                                          width: 24px;
                                          height: 24px;

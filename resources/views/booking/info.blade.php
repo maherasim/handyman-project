@@ -284,7 +284,7 @@
                                                         <i class="las la-credit-card"></i>
                                                         <span>{{ __('messages.advance_pay') }}</span>
                                                         <span class="badge bg-light text-dark px-2 py-1 rounded-pill">
-                                                            <i class="fas fa-euro-sign me-1"></i>{{ getPriceFormat($advanceAmount) }}
+                                                            {{ getPriceFormat($advanceAmount) }}
                                                         </span>
                                                     </a>
                                                 </div>
@@ -477,7 +477,7 @@
                                                     <i class="las la-credit-card"></i>
                                                     <span>{{ __('Pay Remaining') }}</span>
                                                     <span class="badge bg-light text-dark px-2 py-1 rounded-pill">
-                                                        <i class="fas fa-euro-sign me-1"></i>{{ getPriceFormat($remainingAmount) }}
+                                                        {{ getPriceFormat($remainingAmount) }}
                                                     </span>
                                                 </a>
                                             </div>
@@ -1309,10 +1309,10 @@
     @else
         <!-- Debug: Show if no service proof found -->
         <div class="col-md-12 mt-4">
-            <div class="alert alert-info">
+            {{-- <div class="alert alert-info">
                 <strong>Debug:</strong> No service proof found for this booking. 
                 ServiceProof count: {{ isset($serviceProof) ? count($serviceProof) : 'Not set' }}
-            </div>
+            </div> --}}
         </div>
     @endif
 
