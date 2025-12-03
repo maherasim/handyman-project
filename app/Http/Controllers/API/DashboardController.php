@@ -445,11 +445,20 @@ class DashboardController extends Controller
         $refund_policy = Setting::getValueByKey('refund_cancellation_policy','refund_cancellation_policy');
         $data_deletion_request = Setting::getValueByKey('data_deletion_request','data_deletion_request');
         $earning_setting = Setting::getValueByKey('earning-setting','earning-setting');
-        // Always use EUR currency regardless of country
-        $country_obj = (object) [
-            'symbol' => '€',
-            'currency_code' => 'EUR'
-        ];
+        // Resolve currency dynamically from site setup default_currency (Country)
+        try {
+            $currencyId = isset($sitesetup->default_currency) ? $sitesetup->default_currency : null;
+            $country = $currencyId ? Country::find($currencyId) : null;
+            $country_obj = (object) [
+                'symbol' => !empty($country) && !empty($country->symbol) ? $country->symbol : '€',
+                'currency_code' => strtoupper((string) (!empty($country) && !empty($country->currency_code) ? $country->currency_code : 'EUR')),
+            ];
+        } catch (\Throwable $e) {
+            $country_obj = (object) [
+                'symbol' => '€',
+                'currency_code' => 'EUR'
+            ];
+        }
         $user = User::withTrashed()->where('id', (int)$request->input('user_id'))->first();
         $is_user_authorized = false;
         if (!empty($user)) {
@@ -479,7 +488,7 @@ class DashboardController extends Controller
             "provider_appstore_url"=> $sitesetup->provider_appstore_url,
             "provider_playstore_url"=> $sitesetup->provider_playstore_url,
 
-            "currency_country_code"=> "EUR",
+            "currency_country_code"=> $country_obj->currency_code,
             "currency_position"=> $sitesetup->currency_position,
             "currency_symbol"=> $country_obj->symbol,
             "currency_code"=> $country_obj->currency_code,

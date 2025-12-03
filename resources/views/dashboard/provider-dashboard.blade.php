@@ -98,7 +98,7 @@
                                                 {{ getPriceFormat($data['remaining_payout']) }}</h4>
                                             <p class="mb-0 ml-3 text-danger fw-bold"></p>
                                         </div>
-                                            <p class="mb-0 booking-text">{{ __('messages.remaining_payout') }}</p>
+                                        <p class="mb-0 booking-text">{{ __('messages.remaining_payout') }}</p>
                                     </div>
                                     <div class="col-auto d-flex flex-column">
                                         <div

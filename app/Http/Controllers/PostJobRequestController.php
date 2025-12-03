@@ -741,7 +741,7 @@ class PostJobRequestController extends Controller
             $country = $countryId ? \App\Models\Country::find($countryId) : null;
             $currencyCode = strtoupper((string) ($country->currency_code ?? 'EUR'));
         } catch (\Throwable $e) {
-            $currencyCode = 'EUR';
+        $currencyCode = 'EUR';
         }
     
         // Support two flows: Checkout (web) and PaymentIntent (PaymentSheet for mobile)
@@ -1288,7 +1288,7 @@ class PostJobRequestController extends Controller
             } catch (\Throwable $e) {
                 $currencyCode = 'EUR';
             }
-
+    
             // Create PayPal order
             $order = new OrdersCreateRequest();
             $order->prefer('return=representation');
