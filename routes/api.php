@@ -28,8 +28,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 require __DIR__.'/admin-api.php';
 
 
-    Route::post('/api/paypal/create-payment', [PayPalController::class, 'createPayment'])->name('paypal.payment');
-
+Route::post('/api/paypal/create-payment', [PayPalController::class, 'createPayment'])->name('paypal.payment');
 Route::get('category-list',[API\CategoryController::class,'getCategoryList']);
 Route::get('subcategory-list',[API\SubCategoryController::class,'getSubCategoryList']);
 Route::get('service-list',[API\ServiceController::class,'getServiceList']);
