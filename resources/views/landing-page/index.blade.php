@@ -145,8 +145,7 @@
                             <div class="iq-title-box mb-5">
                                 <div class="iq-title-box">
                                     <h2 class="text-capitalize line-count-3">
-                                        {{ $sectionData['section_1']['title'] }}
-                                        <!-- Your Instant Connection to Right -->
+                                        Find Expert Frosbter Services
                                         <span class="highlighted-text">
                                             <span class="highlighted-text-swipe"></span>
                                             <span class="highlighted-image">
@@ -160,7 +159,7 @@
                                         </span>
                                     </h2>
                                     <p class="iq-title-desc line-count-3 text-body mt-3 mb-0">
-                                        {{ $sectionData['section_1']['description'] ?? null }}
+                                        Connect with skilled professionals for all your repair, maintenance, and home improvement needs. Book trusted handymen and get quality service delivered right to your doorstep.
                                     </p>
                                 </div>
                             </div>
@@ -188,10 +187,13 @@
                                 @endphp
                                 @if ($user)
                                     <div class="swiper-slide">
-                                        <div class="provider-banner-item">
+                                        <div class="provider-banner-item position-relative">
                                             <img src="{{ getSingleMedia($user, 'profile_image', null) }}"
                                                 alt="{{ $user->display_name ?? 'Provider' }}"
                                                 class="provider-banner-image">
+                                            <div class="provider-banner-name position-absolute bottom-0 start-0 end-0 text-center p-3" style="background: transparent !important; padding: 25px 15px !important;">
+                                                <h5 class="provider-name-text text-white mb-0 fw-bold" style="display: inline-block !important; background: linear-gradient(135deg, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.75) 100%) !important; padding: 12px 30px !important; border-radius: 50px !important; font-size: 1.4rem !important; letter-spacing: 0.8px !important; font-weight: 600 !important; text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6) !important; backdrop-filter: blur(8px) !important; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1) inset !important; border: 1px solid rgba(255, 255, 255, 0.15) !important; color: #ffffff !important; margin: 0 !important;">{{ $user->display_name ?? 'Provider' }}</h5>
+                                            </div>
                                         </div>
                                     </div>
                                 @endif
@@ -1229,126 +1231,467 @@
         @endif
     @endif
 
-    <!-- Provider -->
-
+    <!-- Provider Contact Section - Modern Design -->
     @if ($sectionData && isset($sectionData['section_5']) && $sectionData['section_5']['section_5'] == 1)
-        <div class="bg-primary-subtle overflow-hidden">
-            <div class="container provider-section position-relative">
-                @php
-                    $images = Spatie\MediaLibrary\MediaCollections\Models\Media::where(
-                        'collection_name',
-                        'section5_attachment',
-                    )->get();
-                @endphp
-
-                @if (isset($images[0]))
-                    <img src="{{ $images[0]->getUrl() }}" alt="service"
-                        class="img-fluid position-absolute provider provider-1">
-                @else
-                    <img src="{{ asset('landing-images/service/1.webp') }}" alt="service"
-                        class="img-fluid position-absolute provider provider-1">
-                @endif
-
-                @if (isset($images[1]))
-                    <img src="{{ $images[1]->getUrl() }}" alt="service"
-                        class="img-fluid position-absolute provider provider-6">
-                @else
-                    <img src="{{ asset('landing-images/service/2.webp') }}" alt="service"
-                        class="img-fluid position-absolute provider provider-6">
-                @endif
-
-                <div class="row align-items-center">
-                    <div class="col-md-2"></div>
-                    <div class="col-lg-8 col-md-12">
-                        <div class="iq-title-box mb-5 text-center px-3">
-                            <h2 class="text-capitalize line-count-2">{{ $sectionData['section_5']['title'] }}</h2>
-                            <p class="iq-title-desc line-count-3 text-body mt-3 mb-0">
-                                {{ $sectionData['section_5']['description'] ?? null }}</p>
+    <div class="provider-contact-section py-5" style="background: linear-gradient(135deg, rgba(255, 0, 0, 0.05) 0%, rgba(95, 96, 185, 0.05) 100%) !important; padding: 80px 0 !important;">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-10 col-xl-8">
+                    <div class="provider-contact-card text-center p-5 rounded-4 shadow-lg" style="background: #ffffff !important; border: 1px solid #e9ecef !important; position: relative !important; overflow: hidden !important;">
+                        <div class="mb-4">
+                            <div class="contact-icon-wrapper mb-4" style="display: flex !important; justify-content: center !important;">
+                                <div class="contact-icon-circle" style="width: 100px !important; height: 100px !important; border-radius: 50% !important; background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important; display: flex !important; align-items: center !important; justify-content: center !important; box-shadow: 0 10px 30px rgba(255, 0, 0, 0.2) !important;">
+                                    <i class="ri-customer-service-2-line" style="font-size: 2.5rem !important; color: #fff !important;"></i>
+                                </div>
+                            </div>
+                            <h2 class="fw-bold mb-3" style="font-size: 2.5rem !important; color: #333 !important;">
+                                Need Help? Get in Touch
+                            </h2>
+                            <p class="text-muted mb-4" style="font-size: 1.1rem !important; line-height: 1.6 !important;">
+                                Have questions or need assistance? Our support team is here to help you. Reach out to us via email or phone, and we'll get back to you as soon as possible.
+                            </p>
                         </div>
-                        <div
-                            class="text-center d-flex justify-content-center align-items-center pt-3 flex-column flex-md-row px-3">
-                            <a class="bg-primary py-3 px-5 fw-bolder text-white rounded-3 letter-spacing-64"
-                                href="mailto:{{ $sectionData['section_5']['email'] }}">{{ $sectionData['section_5']['email'] }}</a>
-                            <span class="px-3">Or</span>
-                            <a href="tel:{{ $sectionData['section_5']['contact_number'] }}">
-                                <h6 class="text-decoration-underline">{{ $sectionData['section_5']['contact_number'] }}
-                                </h6>
+                        
+                        <div class="contact-buttons-wrapper d-flex flex-column flex-md-row gap-3 justify-content-center align-items-center" style="margin-top: 2rem !important;">
+                            <a href="mailto:{{ $sectionData['section_5']['email'] ?? 'support@example.com' }}" 
+                               class="contact-btn contact-btn-email" style="display: inline-flex !important; align-items: center !important; padding: 15px 35px !important; border-radius: 50px !important; text-decoration: none !important; font-weight: 600 !important; font-size: 1.1rem !important; background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important; color: #fff !important; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1) !important; transition: all 0.3s ease !important;">
+                                <i class="ri-mail-line me-2"></i>
+                                <span>{{ $sectionData['section_5']['email'] ?? 'support@example.com' }}</span>
+                            </a>
+                            
+                            <span class="contact-divider d-none d-md-inline" style="color: #6c757d !important; font-weight: 500 !important; font-size: 1rem !important;">or</span>
+                            
+                            <a href="tel:{{ $sectionData['section_5']['contact_number'] ?? '+1234567890' }}" 
+                               class="contact-btn contact-btn-phone" style="display: inline-flex !important; align-items: center !important; padding: 15px 35px !important; border-radius: 50px !important; text-decoration: none !important; font-weight: 600 !important; font-size: 1.1rem !important; background: #fff !important; color: #333 !important; border: 2px solid #e9ecef !important; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1) !important; transition: all 0.3s ease !important;">
+                                <i class="ri-phone-line me-2"></i>
+                                <span>{{ $sectionData['section_5']['contact_number'] ?? '+1234567890' }}</span>
                             </a>
                         </div>
                     </div>
-                    <div class="col-md-2"></div>
                 </div>
-
-                @if (isset($images[2]))
-                    <img src="{{ $images[2]->getUrl() }}" alt="service"
-                        class="img-fluid position-absolute provider provider-5">
-                @else
-                    <img src="{{ asset('landing-images/service/5.webp') }}" alt="service"
-                        class="img-fluid position-absolute provider provider-5">
-                @endif
-
-                @if (isset($images[3]))
-                    <img src="{{ $images[3]->getUrl() }}" alt="service"
-                        class="img-fluid position-absolute provider provider-3">
-                @else
-                    <img src="{{ asset('landing-images/service/3.webp') }}" alt="service"
-                        class="img-fluid position-absolute provider provider-3">
-                @endif
-
-                @if (isset($images[4]))
-                    <img src="{{ $images[4]->getUrl() }}" alt="service"
-                        class="img-fluid position-absolute provider provider-4">
-                @else
-                    <img src="{{ asset('landing-images/service/4.webp') }}" alt="service"
-                        class="img-fluid position-absolute provider provider-4">
-                @endif
             </div>
         </div>
-    @endif
+    </div>
+    
+    <style>
+        /* Provider Contact Section - High Specificity with !important */
+        body .provider-contact-section {
+            background: linear-gradient(135deg, rgba(255, 0, 0, 0.05) 0%, rgba(95, 96, 185, 0.05) 100%) !important;
+            padding: 80px 0 !important;
+        }
+        
+        body .provider-contact-card {
+            background: #ffffff !important;
+            border: 1px solid #e9ecef !important;
+            position: relative !important;
+            overflow: hidden !important;
+        }
+        
+        body .provider-contact-card::before {
+            content: '' !important;
+            position: absolute !important;
+            top: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            height: 5px !important;
+            background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important;
+            z-index: 1 !important;
+        }
+        
+        body .contact-icon-wrapper {
+            display: flex !important;
+            justify-content: center !important;
+        }
+        
+        body .contact-icon-circle {
+            width: 100px !important;
+            height: 100px !important;
+            border-radius: 50% !important;
+            background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            box-shadow: 0 10px 30px rgba(255, 0, 0, 0.2) !important;
+        }
+        
+        body .contact-icon-circle i {
+            font-size: 2.5rem !important;
+            color: #fff !important;
+        }
+        
+        body .contact-buttons-wrapper {
+            margin-top: 2rem !important;
+        }
+        
+        body .contact-btn {
+            display: inline-flex !important;
+            align-items: center !important;
+            padding: 15px 35px !important;
+            border-radius: 50px !important;
+            text-decoration: none !important;
+            font-weight: 600 !important;
+            font-size: 1.1rem !important;
+            transition: all 0.3s ease !important;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1) !important;
+        }
+        
+        body .contact-btn-email {
+            background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important;
+            color: #fff !important;
+        }
+        
+        body .contact-btn-email:hover {
+            background: linear-gradient(135deg, #cc0000 0%, #4a4d94 100%) !important;
+            color: #fff !important;
+            transform: translateY(-2px) !important;
+            box-shadow: 0 6px 20px rgba(255, 0, 0, 0.3) !important;
+        }
+        
+        body .contact-btn-phone {
+            background: #fff !important;
+            color: #333 !important;
+            border: 2px solid #e9ecef !important;
+        }
+        
+        body .contact-btn-phone:hover {
+            background: linear-gradient(135deg, rgba(255, 0, 0, 0.05) 0%, rgba(95, 96, 185, 0.05) 100%) !important;
+            border-color: #5F60B9 !important;
+            color: #5F60B9 !important;
+            transform: translateY(-2px) !important;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1) !important;
+        }
+        
+        body .contact-divider {
+            color: #6c757d !important;
+            font-weight: 500 !important;
+            font-size: 1rem !important;
+        }
+        
+        @media (max-width: 768px) {
+            body .provider-contact-section {
+                padding: 60px 0 !important;
+            }
+            
+            body .provider-contact-card {
+                padding: 2.5rem 1.5rem !important;
+            }
+            
+            body .contact-icon-circle {
+                width: 80px !important;
+                height: 80px !important;
+            }
+            
+            body .contact-icon-circle i {
+                font-size: 2rem !important;
+            }
+            
+            body .provider-contact-card h2 {
+                font-size: 2rem !important;
+            }
+            
+            body .contact-btn {
+                padding: 12px 25px !important;
+                font-size: 1rem !important;
+                width: 100% !important;
+                justify-content: center !important;
+            }
+        }
+    </style>
+@endif
+    
 
     @if ($sectionData && isset($sectionData['section_9']) && $sectionData['section_9']['section_9'] == 1)
-        <div class="section-padding bg-light px-0">
-            <div class="container-fluid px-xxl-3">
-                <div class="row">
+        <div class="testimonial-section-modern py-5" style="background: linear-gradient(135deg, rgba(255, 0, 0, 0.03) 0%, rgba(95, 96, 185, 0.03) 100%) !important; padding: 100px 0 !important; position: relative !important; overflow: hidden !important;">
+            <!-- Decorative Background Elements -->
+            <div class="testimonial-bg-decoration" style="position: absolute !important; top: -50px !important; right: -50px !important; width: 300px !important; height: 300px !important; background: linear-gradient(135deg, rgba(255, 0, 0, 0.05) 0%, rgba(95, 96, 185, 0.05) 100%) !important; border-radius: 50% !important; filter: blur(60px) !important; z-index: 0 !important;"></div>
+            <div class="testimonial-bg-decoration" style="position: absolute !important; bottom: -50px !important; left: -50px !important; width: 250px !important; height: 250px !important; background: linear-gradient(135deg, rgba(95, 96, 185, 0.05) 0%, rgba(255, 0, 0, 0.05) 100%) !important; border-radius: 50% !important; filter: blur(60px) !important; z-index: 0 !important;"></div>
+            
+            <div class="container" style="position: relative !important; z-index: 1 !important;">
+                <div class="row justify-content-center">
                     <div class="col-12">
-                        <div class="iq-title-box text-center center mb-2">
-                            <h3 class="text-capitalize line-count-1">{{ $sectionData['section_9']['title'] }}
-                                <span class="highlighted-text">
-                                    <!-- <span class="highlighted-text-swipe">our trusted clients</span> -->
-                                    <span class="highlighted-image">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="130" height="11"
-                                            viewBox="0 0 130 11" fill="none">
-                                            <path d="M2 9C2.5625 8.76081 66.125 -2.95948 128 4.4554" stroke="currentColor"
-                                                stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
-                                        </svg>
-                                    </span>
-                                </span>
-                            </h3>
+                        <!-- Title Section with Icon -->
+                        <div class="text-center mb-5">
+                            <div class="testimonial-icon-wrapper mb-4" style="display: inline-flex !important; align-items: center !important; justify-content: center !important; width: 80px !important; height: 80px !important; background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important; border-radius: 50% !important; box-shadow: 0 10px 30px rgba(255, 0, 0, 0.2) !important; margin-bottom: 1.5rem !important;">
+                                <i class="ri-star-fill" style="font-size: 2.5rem !important; color: #fff !important;"></i>
+                            </div>
+                            <h2 class="testimonial-title fw-bold mb-3" style="font-size: 2.75rem !important; color: #1a1a1a !important; margin-bottom: 1rem !important; letter-spacing: -0.5px !important;">
+                                {{ $sectionData['section_9']['title'] }}
+                            </h2>
+                            <div class="title-underline mx-auto mb-4" style="width: 150px !important; height: 5px !important; background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important; border-radius: 3px !important; margin-bottom: 2rem !important;"></div>
                         </div>
 
-
+                        <!-- Enhanced Rating Card -->
                         <div class="text-center mb-5">
-                            <div
-                                class="d-inline-flex align-items-center flex-sm-row flex-column bg-body py-3 px-5 rounded-5 gap-2">
-                                <div class="vertical-center lh-1">
-                                    <rating-component :readonly="true" :showrating="false"
-                                        :ratingvalue="{{ $totalRating }}" />
-                                    {{-- {{>components/widgets/filter-rating rating="4"}} --}}
+                            <div class="testimonial-rating-card-wrapper position-relative d-inline-block" style="position: relative !important;">
+                                <div class="testimonial-rating-card d-inline-flex align-items-center flex-sm-row flex-column gap-4 px-5 py-4 rounded-5 shadow-lg" style="background: #ffffff !important; border: 2px solid transparent !important; border-image: linear-gradient(135deg, rgba(255, 0, 0, 0.2) 0%, rgba(95, 96, 185, 0.2) 100%) 1 !important; box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12) !important; padding: 25px 40px !important; border-radius: 20px !important; position: relative !important; overflow: hidden !important;">
+                                    <!-- Gradient Top Border -->
+                                    <div style="position: absolute !important; top: 0 !important; left: 0 !important; right: 0 !important; height: 4px !important; background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important;"></div>
+                                    
+                                    <div class="vertical-center lh-1">
+                                        <rating-component :readonly="true" :showrating="false"
+                                            :ratingvalue="{{ $totalRating }}" />
+                                    </div>
+                                    @if (isset($sectionData['section_9']['overall_rating']) && $sectionData['section_9']['overall_rating'] == 'on')
+                                        <div class="d-flex flex-column align-items-center gap-1">
+                                            <h3 class="mb-0 fw-bold" style="color: #1a1a1a !important; font-size: 2.25rem !important; background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important; -webkit-background-clip: text !important; -webkit-text-fill-color: transparent !important; background-clip: text !important;">{{ round($totalRating, 1) }}</h3>
+                                            <h6 class="mb-0 text-muted fw-semibold" style="font-size: 0.95rem !important; font-weight: 600 !important; color: #6c757d !important; text-transform: uppercase !important; letter-spacing: 0.5px !important;">{{ __('landingpage.overall_rating') }}</h6>
+                                        </div>
+                                    @endif
                                 </div>
-                                @if (isset($sectionData['section_9']['overall_rating']) && $sectionData['section_9']['overall_rating'] == 'on')
-                                    <h5>{{ round($totalRating, 1) }}</h5>
-                                    <h6>{{ __('landingpage.overall_rating') }}</h6>
-                                @endif
                             </div>
-                            <h6 class="mt-4"> {{ $sectionData['section_9']['description'] ?? null }}</h6>
+                            @if (!empty($sectionData['section_9']['description']))
+                                <p class="testimonial-description mt-5 mb-0" style="font-size: 1.15rem !important; color: #555 !important; line-height: 1.8 !important; max-width: 750px !important; margin-left: auto !important; margin-right: auto !important; font-weight: 400 !important;">
+                                    {{ $sectionData['section_9']['description'] }}
+                                </p>
+                            @endif
                         </div>
                     </div>
-                    <div class="col-12">
+                    <div class="col-12 mt-4">
                         <testimonial-section />
                     </div>
                 </div>
             </div>
         </div>
+        
+        <style>
+            /* Testimonial Section - Premium Enhanced Design */
+            body .testimonial-section-modern {
+                background: linear-gradient(135deg, rgba(255, 0, 0, 0.03) 0%, rgba(95, 96, 185, 0.03) 100%) !important;
+                padding: 100px 0 !important;
+                position: relative !important;
+                overflow: hidden !important;
+            }
+            
+            body .testimonial-icon-wrapper {
+                display: inline-flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                width: 80px !important;
+                height: 80px !important;
+                background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important;
+                border-radius: 50% !important;
+                box-shadow: 0 10px 30px rgba(255, 0, 0, 0.2) !important;
+                animation: pulse 2s ease-in-out infinite !important;
+            }
+            
+            @keyframes pulse {
+                0%, 100% {
+                    transform: scale(1);
+                    box-shadow: 0 10px 30px rgba(255, 0, 0, 0.2);
+                }
+                50% {
+                    transform: scale(1.05);
+                    box-shadow: 0 15px 40px rgba(255, 0, 0, 0.3);
+                }
+            }
+            
+            body .testimonial-title {
+                font-size: 2.75rem !important;
+                color: #1a1a1a !important;
+                margin-bottom: 1rem !important;
+                font-weight: 700 !important;
+                letter-spacing: -0.5px !important;
+            }
+            
+            body .title-underline {
+                width: 150px !important;
+                height: 5px !important;
+                background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important;
+                border-radius: 3px !important;
+                margin-bottom: 2rem !important;
+                animation: expandWidth 1s ease-out !important;
+            }
+            
+            @keyframes expandWidth {
+                from {
+                    width: 0;
+                }
+                to {
+                    width: 150px;
+                }
+            }
+            
+            body .testimonial-rating-card {
+                background: #ffffff !important;
+                border: 2px solid transparent !important;
+                box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12) !important;
+                padding: 25px 40px !important;
+                border-radius: 20px !important;
+                position: relative !important;
+                overflow: hidden !important;
+                transition: all 0.3s ease !important;
+            }
+            
+            body .testimonial-rating-card:hover {
+                transform: translateY(-3px) !important;
+                box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15) !important;
+            }
+            
+            body .testimonial-rating-card::before {
+                content: '' !important;
+                position: absolute !important;
+                top: 0 !important;
+                left: 0 !important;
+                right: 0 !important;
+                height: 4px !important;
+                background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important;
+            }
+            
+            body .testimonial-description {
+                font-size: 1.15rem !important;
+                color: #555 !important;
+                line-height: 1.8 !important;
+                max-width: 750px !important;
+                margin-left: auto !important;
+                margin-right: auto !important;
+                font-weight: 400 !important;
+            }
+            
+            /* Enhanced Testimonial Slider Navigation */
+            body .ratingSlider .swiper-button-next,
+            body .ratingSlider .swiper-button-prev {
+                background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important;
+                width: 50px !important;
+                height: 50px !important;
+                border-radius: 50% !important;
+                box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25) !important;
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+                border: 2px solid rgba(255, 255, 255, 0.2) !important;
+            }
+            
+            body .ratingSlider .swiper-button-next:hover,
+            body .ratingSlider .swiper-button-prev:hover {
+                transform: scale(1.15) translateY(-2px) !important;
+                box-shadow: 0 8px 25px rgba(255, 0, 0, 0.4) !important;
+            }
+            
+            body .ratingSlider .swiper-button-next::after,
+            body .ratingSlider .swiper-button-prev::after {
+                font-size: 20px !important;
+                color: #fff !important;
+                font-weight: bold !important;
+            }
+            
+            /* Premium Testimonial Cards Enhancement */
+            body .iq-testimonial {
+                border: 1px solid #e9ecef !important;
+                box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1) !important;
+                transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+                border-radius: 20px !important;
+                background: #ffffff !important;
+                position: relative !important;
+                overflow: hidden !important;
+            }
+            
+            body .iq-testimonial::before {
+                content: '' !important;
+                position: absolute !important;
+                top: 0 !important;
+                left: 0 !important;
+                right: 0 !important;
+                height: 3px !important;
+                background: linear-gradient(135deg, rgba(255, 0, 0, 0.3) 0%, rgba(95, 96, 185, 0.3) 100%) !important;
+                transform: scaleX(0) !important;
+                transition: transform 0.4s ease !important;
+            }
+            
+            body .iq-testimonial:hover::before {
+                transform: scaleX(1) !important;
+            }
+            
+            body .iq-testimonial:hover {
+                transform: translateY(-8px) scale(1.02) !important;
+                box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15) !important;
+                border-color: rgba(255, 0, 0, 0.2) !important;
+            }
+            
+            body .iq-testimonial .quote {
+                background: linear-gradient(135deg, rgba(255, 0, 0, 0.1) 0%, rgba(95, 96, 185, 0.1) 100%) !important;
+                transition: all 0.3s ease !important;
+            }
+            
+            body .iq-testimonial:hover .quote {
+                background: linear-gradient(135deg, rgba(255, 0, 0, 0.15) 0%, rgba(95, 96, 185, 0.15) 100%) !important;
+                transform: scale(1.1) !important;
+            }
+            
+            body .iq-testimonial .about-review-title {
+                color: #1a1a1a !important;
+                font-weight: 600 !important;
+                font-size: 1.1rem !important;
+            }
+            
+            body .iq-testimonial .testimonial-content {
+                color: #555 !important;
+                line-height: 1.7 !important;
+                font-size: 0.95rem !important;
+            }
+            
+            body .iq-testimonial .testimonial-user {
+                color: #1a1a1a !important;
+                font-weight: 600 !important;
+                font-size: 1rem !important;
+            }
+            
+            body .iq-testimonial .testimonial-user-image img {
+                border: 3px solid rgba(255, 0, 0, 0.1) !important;
+                transition: all 0.3s ease !important;
+            }
+            
+            body .iq-testimonial:hover .testimonial-user-image img {
+                border-color: rgba(255, 0, 0, 0.3) !important;
+                transform: scale(1.05) !important;
+            }
+            
+            /* Swiper Pagination Enhancement */
+            body .ratingSlider .swiper-pagination-bullet {
+                background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important;
+                width: 12px !important;
+                height: 12px !important;
+                opacity: 0.4 !important;
+                transition: all 0.3s ease !important;
+            }
+            
+            body .ratingSlider .swiper-pagination-bullet-active {
+                opacity: 1 !important;
+                transform: scale(1.3) !important;
+                box-shadow: 0 2px 8px rgba(255, 0, 0, 0.4) !important;
+            }
+            
+            @media (max-width: 768px) {
+                body .testimonial-section-modern {
+                    padding: 70px 0 !important;
+                }
+                
+                body .testimonial-icon-wrapper {
+                    width: 60px !important;
+                    height: 60px !important;
+                }
+                
+                body .testimonial-icon-wrapper i {
+                    font-size: 2rem !important;
+                }
+                
+                body .testimonial-title {
+                    font-size: 2rem !important;
+                }
+                
+                body .testimonial-rating-card {
+                    padding: 20px 25px !important;
+                }
+                
+                body .testimonial-description {
+                    font-size: 1rem !important;
+                    padding: 0 15px !important;
+                }
+                
+                body .ratingSlider .swiper-button-next,
+                body .ratingSlider .swiper-button-prev {
+                    width: 40px !important;
+                    height: 40px !important;
+                }
+            }
+        </style>
     @endif
 
     @if ($sectionData && isset($sectionData['section_6']) && $sectionData['section_6']['section_6'] == 1)
@@ -1664,6 +2007,36 @@
             object-fit: cover;
             border-radius: 20px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .provider-banner-name {
+            padding: 25px 15px !important;
+            background: transparent !important;
+        }
+        
+        .provider-banner-name h5.provider-name-text,
+        .provider-name-text {
+            display: inline-block !important;
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.75) 100%) !important;
+            padding: 12px 30px !important;
+            border-radius: 50px !important;
+            font-size: 1.4rem !important;
+            letter-spacing: 0.8px !important;
+            font-weight: 600 !important;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6) !important;
+            backdrop-filter: blur(8px) !important;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1) inset !important;
+            border: 1px solid rgba(255, 255, 255, 0.15) !important;
+            transition: all 0.3s ease !important;
+            color: #ffffff !important;
+            margin: 0 !important;
+        }
+        
+        .provider-banner-name h5.provider-name-text:hover,
+        .provider-name-text:hover {
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.8) 100%) !important;
+            transform: translateY(-2px) !important;
+            box-shadow: 0 6px 25px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.2) inset !important;
         }
 
         /* Navigation Arrows - Red-Blue Gradient */
