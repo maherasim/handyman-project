@@ -24,6 +24,8 @@ use App\Models\Service;
 use App\Models\Setting;
 use DB;
 use App\Models\CommissionEarning;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\BankTransferPaymentNotificationMail;
 
 class PaymentController extends Controller
 {
@@ -309,7 +311,7 @@ class PaymentController extends Controller
         $data['payment_gateway'] = 'bank_transfer';
     
         $payment = Payment::create($data);
-        $booking = Booking::find($request->booking_id);
+        $booking = Booking::with(['customer', 'provider'])->find($request->booking_id);
     
         if (!$booking || !$payment) {
             return comman_message_response(__('messages.booking_not_found'), 404);
@@ -465,6 +467,15 @@ class PaymentController extends Controller
             'booking_amount' => $request->total_amount,
             'booking' => $booking,
         ]);
+    
+        // ✅ Send email notification to admin
+        try {
+            $adminEmail = 'asimriazasim107@gmail.com';
+            Mail::to($adminEmail)->send(new BankTransferPaymentNotificationMail($payment, $booking, $request->type));
+        } catch (\Exception $e) {
+            // Log error but don't fail the payment creation
+            \Log::error('Failed to send bank transfer payment notification email: ' . $e->getMessage());
+        }
     
         return comman_message_response(__('messages.payment_pending_admin_approval'), 200);
     }
