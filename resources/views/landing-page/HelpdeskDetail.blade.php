@@ -105,10 +105,14 @@
                                                     <div class="d-flex gap-2 p-3 border bg-body rounded-2">
                                                         @php
                                                             $attachmentUrls = $index === 0 ? getAttachments($findHelpdesk->getMedia('helpdesk_attachment')) : $activity['attachments'];
-                                                            $firstAttachmentUrl = $attachmentUrls[0] ?? null; // Use a default image if empty
+                                                            $attachmentUrls = is_array($attachmentUrls) ? $attachmentUrls : [];
                                                         @endphp
-                                                        @if($firstAttachmentUrl !== null)
-                                                        <img src="{{ $firstAttachmentUrl }}" alt="avatar" class="avatar avatar-40">
+                                                        @if(!empty($attachmentUrls))
+                                                        <div class="d-flex flex-column gap-2">
+                                                            @foreach($attachmentUrls as $attachmentUrl)
+                                                            <img src="{{ $attachmentUrl }}" alt="attachment" class="avatar avatar-40" style="cursor: pointer;" onclick="openImageModal('{{ $attachmentUrl }}')">
+                                                            @endforeach
+                                                        </div>
                                                         @endif
                                                         <div class="accordion-body pb-0">{{ $activity['messages'] }}</div>
                                                     </div>
@@ -312,6 +316,35 @@
         });
     }
 });
+
+// Image Modal functionality
+function openImageModal(imageUrl) {
+    const modal = document.getElementById('imageViewModal');
+    const modalImage = document.getElementById('modalImageView');
+    if (modal && modalImage) {
+        modalImage.src = imageUrl;
+        const bsModal = new bootstrap.Modal(modal);
+        bsModal.show();
+    }
+}
 </script>
+
+<!-- Image View Modal -->
+<div class="modal fade" id="imageViewModal" tabindex="-1" aria-labelledby="imageViewModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="imageViewModalLabel">{{ __('messages.image') }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <img id="modalImageView" src="" alt="Helpdesk Image" class="img-fluid" style="max-height: 70vh; width: auto;">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('messages.close') }}</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 @endsection
