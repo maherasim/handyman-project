@@ -1,4 +1,50 @@
 <x-master-layout>
+<style>
+    /* Red-Blue Gradient for Primary Colors */
+    .btn-primary,
+    button.btn-primary,
+    a.btn-primary {
+        background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important;
+        border: none !important;
+        color: #fff !important;
+    }
+    .btn-primary:hover,
+    button.btn-primary:hover,
+    a.btn-primary:hover {
+        background: linear-gradient(135deg, #cc0000 0%, #4a4d94 100%) !important;
+    }
+    .text-primary,
+    a.text-primary {
+        background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    .bg-primary,
+    .badge.bg-primary {
+        background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important;
+        color: #fff !important;
+    }
+    .table thead th,
+    .handydata-table thead th,
+    table thead th,
+    .table-color-heading th {
+        background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important;
+        color: #fff !important;
+        border-color: transparent !important;
+    }
+    /* DataTables pagination */
+    .dataTables_wrapper .dataTables_paginate .paginate_button.current,
+    .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
+        background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important;
+        border: none !important;
+        color: #fff !important;
+    }
+    .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+        background: linear-gradient(135deg, rgba(255, 0, 0, 0.1) 0%, rgba(95, 96, 185, 0.1) 100%) !important;
+        border: none !important;
+    }
+</style>
 <div class="container-fluid">
     <div class="row">
         <div class="col-lg-12">

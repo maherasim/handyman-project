@@ -3,6 +3,69 @@
     <head>
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <script type="text/javascript" src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
+        <style>
+            /* Red-Blue Gradient for Primary Colors */
+            .btn-primary,
+            button.btn-primary,
+            a.btn-primary,
+            .btn-outline-primary.active,
+            .btn-outline-primary:active,
+            .btn-outline-primary:focus {
+                background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important;
+                border: none !important;
+                color: #fff !important;
+            }
+            .btn-primary:hover,
+            button.btn-primary:hover,
+            a.btn-primary:hover {
+                background: linear-gradient(135deg, #cc0000 0%, #4a4d94 100%) !important;
+            }
+            .text-primary,
+            a.text-primary {
+                background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+            }
+            .bg-primary,
+            .badge.bg-primary,
+            .badge.bg-primary-subtle {
+                background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important;
+                color: #fff !important;
+            }
+            .table-primary,
+            .table > :not(caption) > * > * {
+                background-color: transparent !important;
+            }
+            .table thead th,
+            #datatable thead th,
+            table thead th {
+                background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important;
+                color: #fff !important;
+                border-color: transparent !important;
+            }
+            .filter-button.active {
+                background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important;
+                color: #fff !important;
+                border: none !important;
+            }
+            /* DataTables pagination */
+            .dataTables_wrapper .dataTables_paginate .paginate_button.current,
+            .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
+                background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important;
+                border: none !important;
+                color: #fff !important;
+            }
+            .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+                background: linear-gradient(135deg, rgba(255, 0, 0, 0.1) 0%, rgba(95, 96, 185, 0.1) 100%) !important;
+                border: none !important;
+            }
+            /* Select2 primary colors */
+            .select2-container--default .select2-results__option--highlighted[aria-selected] {
+                background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important;
+                color: #fff !important;
+            }
+        </style>
     </head>
     <div class="container-fluid">
         <div class="row">

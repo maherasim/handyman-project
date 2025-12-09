@@ -286,79 +286,43 @@ tr.iq-product-border {
 	padding: 0;
 }
 
-// Dashboard 
+// Dashboard - Red-Blue Gradient
 .card {
 	&.total-booking-card {
-		background: var(--bs-primary);
+		background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important;
 		position: relative;
 		z-index: 1;
 		overflow: hidden;	
 		&::after {
-			position: absolute;
-			inset-inline-start: 0;
-			inset-block-end: 0;
-			background-color: var(--bs-primary-bg-subtle);
-			opacity: 0.1;
-			content: "";
-			block-size: 100%;
-			inline-size: 8.125rem;
-			z-index: -1;
-			border-end-end-radius: 100%;
+			display: none; /* Remove overlay to keep gradient clear and vibrant */
 		}
 	}
 	&.total-service-card {
-		background: var(--bs-primary);
+		background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important;
 		position: relative;
 		z-index: 1;
 		overflow: hidden;
 		&::after {
-			position: absolute;
-			inset-inline-start: 0;
-			inset-block-end: 0;
-			background-color: var(--bs-gray-900);
-			opacity: 0.1;
-			content: "";
-			block-size: 100%;
-			inline-size: 8.125rem;
-			z-index: -1;
-			border-end-end-radius: 100%;
+			display: none; /* Remove overlay to keep gradient clear and vibrant */
 		}
 	}
 	&.total-provider-card {
-		background: var(--bs-primary);
+		background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important;
 		position: relative;
 		z-index: 1;
 		overflow: hidden;
 	
 		&::after {
-			position: absolute;
-			inset-inline-start: 0;
-			inset-block-end: 0;
-			background-color: var(--bs-gray-900);
-			opacity: 0.1;
-			content: "";
-			block-size: 100%;
-			inline-size: 8.125rem;
-			z-index: -1;
-			border-end-end-radius: 100%;
+			display: none; /* Remove overlay to keep gradient clear and vibrant */
 		}
 	}	
 	&.total-revenue {
-		background: var(--bs-primary);
+		background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important;
 		position: relative;
 		z-index: 1;
 		overflow: hidden;
 		&::after {
-			position: absolute;
-			inset-inline-start: 0;
-			inset-block-end: 0;
-			background-color: var(--bs-gray-900);
-			opacity: 0.1;
-			content: "";
-			block-size: 100%;
-			inline-size: 8.125rem;
-			z-index: -1;
-			border-end-end-radius: 100%;
+			display: none; /* Remove overlay to keep gradient clear and vibrant */
 		}
 	}
 }
@@ -372,7 +336,7 @@ tr.iq-product-border {
 	line-height: 60px;
 	text-align: center;
 	font-size: 22px;
-	background-color: var(--bs-primary-hover-bg);
+	background-color: rgba(255, 255, 255, 0.2) !important;
 }
 
 

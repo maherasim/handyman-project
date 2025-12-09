@@ -5,7 +5,7 @@
                 <div class="row">
                     <div class="col-lg-3 col-md-6">
                         <a href="{{ route('booking.index') }}">
-                            <div class="card total-booking-card rounded-3 border-0 shadow-sm h-100">
+                            <div class="card total-booking-card rounded-3 border-0 shadow-sm h-100" style="background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important; color: #fff !important;">
                                 <div class="card-body p-3">
                                     <div class="row">
                                         <div class="col">
@@ -19,7 +19,7 @@
                                         </div>
                                         <div class="col-auto d-flex align-items-center flex-column">
                                             <div
-                                                class="iq-card-icon iq-card-icon-booking icon-shape  rounded-circle shadow">
+                                                class="iq-card-icon iq-card-icon-booking icon-shape  rounded-circle shadow" style="background-color: rgba(255, 255, 255, 0.2) !important;">
                                                 <svg width="20" height="20" viewBox="0 0 20 20" fill="none"
                                                     xmlns="http://www.w3.org/2000/svg">
                                                     <path
@@ -58,7 +58,7 @@
                     </div> -->
                     <div class="col-lg-3 col-md-6">
                         <a href="{{ route('booking.index', ['status' => 'completed']) }}">
-                            <div class="card total-provider-card rounded-3 border-0 shadow-sm h-100">
+                            <div class="card total-provider-card rounded-3 border-0 shadow-sm h-100" style="background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important; color: #fff !important;">
                                 <div class="card-body p-3">
                                     <div class="row">
                                         <div class="col">
@@ -73,7 +73,7 @@
                                         </div>
                                         <div class="col-auto d-flex flex-column">
                                             <div
-                                                class="iq-card-icon iq-card-icon-provider icon-shape  text-white rounded-circle shadow">
+                                                class="iq-card-icon iq-card-icon-provider icon-shape  text-white rounded-circle shadow" style="background-color: rgba(255, 255, 255, 0.2) !important;">
                                                 <svg width="20" height="20" viewBox="0 0 20 20" fill="none"
                                                     xmlns="http://www.w3.org/2000/svg">
                                                     <path
@@ -89,7 +89,7 @@
                     </div>
                     <div class="col-lg-3 col-md-6">
                         <!-- <a  href="{{ route('payment.index') }}"> -->
-                        <div class="card total-revenue rounded-3 border-0 shadow-sm h-100">
+                        <div class="card total-revenue rounded-3 border-0 shadow-sm h-100" style="background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important; color: #fff !important;">
                             <div class="card-body p-3">
                                 <div class="row">
                                     <div class="col">
@@ -102,7 +102,7 @@
                                     </div>
                                     <div class="col-auto d-flex flex-column">
                                         <div
-                                            class="iq-card-icon iq-card-icon-revenue icon-shape text-white rounded-circle shadow">
+                                            class="iq-card-icon iq-card-icon-revenue icon-shape text-white rounded-circle shadow" style="background-color: rgba(255, 255, 255, 0.2) !important;">
                                             <svg width="20" height="20" viewBox="0 0 20 20" fill="none"
                                                 xmlns="http://www.w3.org/2000/svg">
                                                 <path
@@ -118,7 +118,7 @@
                     </div>
                     <div class="col-lg-3 col-md-6">
                         <a href="{{ route('handymanpayout.show', auth()->user()->id) }}">
-                            <div class="card total-revenue rounded-3 border-0 shadow-sm h-100">
+                            <div class="card total-revenue rounded-3 border-0 shadow-sm h-100" style="background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important; color: #fff !important;">
                                 <div class="card-body p-3">
                                     <div class="row">
                                         <div class="col">

@@ -172,7 +172,7 @@
                 </div>
 
                 <div class="col-xl-6 px-xl-0 mt-xl-0 mt-5">
-                    <div class="position-relative swiper iq-team-slider overflow-hidden mySwiper">
+                    <div class="position-relative swiper provider-banner-slider overflow-hidden">
                         <div class="swiper-wrapper">
                             @foreach ($sectionData['section_1']['provider_id'] as $providerId)
                                 @php
@@ -188,40 +188,17 @@
                                 @endphp
                                 @if ($user)
                                     <div class="swiper-slide">
-                                        <div class="mt-5 justify-content-center service-slide-items-4">
-                                            <div class="col">
-                                                <div class="iq-banner-img position-relative">
-                                                    <img src="{{ getSingleMedia($user, 'profile_image', null) }}"
-                                                        alt="provider-image"
-                                                        class="img-fluid border-radius-12 position-relative">
-                                                    <div class="position-relative d-flex justify-content-center card-box">
-                                                        <div class="card-description d-inline-block text-center rounded-3">
-                                                            <div class="cart-content">
-                                                                <h6 class="heading text-capitalize fw-500">
-                                                                    {{ $user->display_name ?? null }}</h6>
-                                                                <span
-                                                                    class="desc text-white d-flex align-items-center justify-content-center mt-2">
-                                                                    <div class="d-flex align-items-center gap-1 flex-wrap">
-                                                                        <div class="star-rating">
-                                                                            <rating-component :readonly="true"
-                                                                                :showrating="false"
-                                                                                :ratingvalue="{{ $providers_service_rating }}" />
-                                                                        </div>
-                                                                        <h6 class="m-0 font-size-12 rating-text lh-1">
-                                                                            ({{ round($providers_service_rating, 1) }})
-                                                                        </h6>
-                                                                    </div>
-                                                                </span>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
+                                        <div class="provider-banner-item">
+                                            <img src="{{ getSingleMedia($user, 'profile_image', null) }}"
+                                                alt="{{ $user->display_name ?? 'Provider' }}"
+                                                class="provider-banner-image">
                                         </div>
                                     </div>
                                 @endif
                             @endforeach
                         </div>
+                        <div class="swiper-button-next provider-nav-next"></div>
+                        <div class="swiper-button-prev provider-nav-prev"></div>
                     </div>
                 </div>
             </div>
@@ -254,25 +231,57 @@
 
 
 
-                <div style="display: flex; flex-wrap: wrap; gap: 30px; justify-content: center; margin-top: 40px;">
+                <div class="category-grid-container" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; margin-top: 30px;">
                     @foreach ($categoryrequest as $items)
-                        <a href="{{ route('category.detail', $items->id) }}"
-                            style="flex: 1 1 22%; max-width: 22%; text-decoration: none;">
-                            <div
-                                style="padding: 30px; text-align: center; background-color: #f8f9fa; border-radius: 12px; box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1); transition: transform 0.3s ease, box-shadow 0.3s ease;">
-                                <div
-                                    style="width: 100%; height: 200px; background-color: #e0e0e0; border-radius: 12px; display: flex; justify-content: center; align-items: center;">
+                        <a href="{{ route('category.detail', $items->id) }}" class="category-card-link" style="text-decoration: none;">
+                            <div class="category-card-item"
+                                style="padding: 18px; text-align: center; background-color: #fff; border: 1px solid #e9ecef; border-radius: 10px; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06); transition: all 0.2s ease; height: 100%; display: flex; flex-direction: column;">
+                                <div class="category-image-wrapper"
+                                    style="width: 100%; height: 130px; background: linear-gradient(135deg, rgba(255, 0, 0, 0.05) 0%, rgba(95, 96, 185, 0.05) 100%); border-radius: 8px; display: flex; justify-content: center; align-items: center; margin-bottom: 12px; flex-shrink: 0;">
                                     <img src="{{ getSingleMedia($items, 'category_image', null) }}" alt="icon"
-                                        class="img-fluid avatar-100" style="max-width: 100px; max-height: 100px;">
+                                        class="img-fluid" style="max-width: 70px; max-height: 70px; object-fit: contain;">
                                 </div>
-                                <h5 class="categories-name text-capitalize mt-4 mb-2 line-count-1"
-                                    style="font-size: 20px; font-weight: bold; color: #333;">{{ $items->name }}</h5>
+                                <h5 class="categories-name text-capitalize mb-1 line-count-1"
+                                    style="font-size: 15px; font-weight: 600; color: #2c3e50; margin: 0; flex-grow: 0;">{{ $items->name }}</h5>
                                 <p class="categories-desc mb-0 text-capitalize line-count-2"
-                                    style="font-size: 14px; color: #555;">{{ $items->description }}</p>
+                                    style="font-size: 12px; color: #6c757d; line-height: 1.4; margin-top: 6px; flex-grow: 1;">{{ $items->description }}</p>
                             </div>
                         </a>
                     @endforeach
                 </div>
+
+                <style>
+                    .category-card-link:hover .category-card-item {
+                        transform: translateY(-4px);
+                        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+                        border-color: transparent;
+                        background: linear-gradient(135deg, rgba(255, 0, 0, 0.02) 0%, rgba(95, 96, 185, 0.02) 100%);
+                    }
+
+                    .category-card-link:hover .category-image-wrapper {
+                        background: linear-gradient(135deg, rgba(255, 0, 0, 0.1) 0%, rgba(95, 96, 185, 0.1) 100%);
+                    }
+
+                    @media (max-width: 768px) {
+                        .category-grid-container {
+                            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                            gap: 15px;
+                        }
+                        .category-card-item {
+                            padding: 15px !important;
+                        }
+                        .category-image-wrapper {
+                            height: 110px !important;
+                        }
+                    }
+
+                    @media (max-width: 480px) {
+                        .category-grid-container {
+                            grid-template-columns: repeat(2, 1fr);
+                            gap: 12px;
+                        }
+                    }
+                </style>
 
 
 
@@ -1621,6 +1630,99 @@
                 });
                 jQuery(document).trigger('after_slider_init');
             }
+
+            // Initialize Provider Banner Slider - One at a time with navigation arrows
+            if (document.querySelector('.provider-banner-slider')) {
+                var providerBannerSwiper = new Swiper('.provider-banner-slider', {
+                    slidesPerView: 1,
+                    spaceBetween: 0,
+                    loop: true,
+                    navigation: {
+                        nextEl: '.provider-nav-next',
+                        prevEl: '.provider-nav-prev',
+                    },
+                });
+            }
         });
     </script>
+
+    <style>
+        /* Provider Banner Slider Styles */
+        .provider-banner-slider {
+            width: 100%;
+            position: relative;
+        }
+
+        .provider-banner-item {
+            width: 100%;
+            height: 100%;
+        }
+
+        .provider-banner-image {
+            width: 100%;
+            height: 500px;
+            object-fit: cover;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Navigation Arrows - Red-Blue Gradient */
+        .provider-nav-next,
+        .provider-nav-prev {
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 50%;
+            background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%);
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .provider-nav-next::after,
+        .provider-nav-prev::after {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .provider-nav-next:hover,
+        .provider-nav-prev:hover {
+            background: linear-gradient(135deg, #cc0000 0%, #4a4d94 100%);
+            color: #fff;
+            transform: scale(1.1);
+        }
+
+        .provider-nav-next {
+            right: 20px;
+        }
+
+        .provider-nav-prev {
+            left: 20px;
+        }
+
+        @media (max-width: 767px) {
+            .provider-banner-image {
+                height: 350px;
+            }
+
+            .provider-nav-next,
+            .provider-nav-prev {
+                width: 40px;
+                height: 40px;
+            }
+
+            .provider-nav-next::after,
+            .provider-nav-prev::after {
+                font-size: 16px;
+            }
+
+            .provider-nav-next {
+                right: 10px;
+            }
+
+            .provider-nav-prev {
+                left: 10px;
+            }
+        }
+    </style>
 @endsection

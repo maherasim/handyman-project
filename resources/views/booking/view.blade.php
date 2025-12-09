@@ -10,6 +10,37 @@
         .star-rating .star:hover ~ .star {
             color: #fbc02d;
         }
+        /* Red-Blue Gradient for Primary Colors */
+        .btn-primary,
+        button.btn-primary,
+        a.btn-primary,
+        .btn-success {
+            background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important;
+            border: none !important;
+            color: #fff !important;
+        }
+        .btn-primary:hover,
+        button.btn-primary:hover,
+        a.btn-primary:hover,
+        .btn-success:hover {
+            background: linear-gradient(135deg, #cc0000 0%, #4a4d94 100%) !important;
+        }
+        .text-primary,
+        a.text-primary {
+            background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .bg-primary,
+        .modal-header.bg-primary {
+            background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important;
+            color: #fff !important;
+        }
+        .nav-link.active {
+            background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important;
+            color: #fff !important;
+        }
     </style>
 
     <div class="container-fluid">
