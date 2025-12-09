@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bank Transfer Payment Notification</title>
+    <title>Post Job Bank Transfer Payment Notification</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -76,14 +76,14 @@
             color: #6c757d;
             font-weight: 600;
         }
-        .booking-details {
+        .bid-details {
             background-color: #f8f9fa;
             border-radius: 8px;
             padding: 20px;
             margin: 20px 0;
             border-left: 4px solid #28a745;
         }
-        .booking-details h3 {
+        .bid-details h3 {
             margin-top: 0;
             color: #28a745;
             font-size: 20px;
@@ -119,7 +119,7 @@
 <body>
     <div class="email-container">
         <div class="header">
-            <h1>🏦 Bank Transfer Payment Notification</h1>
+            <h1>🏦 Post Job Bank Transfer Payment Notification</h1>
         </div>
         
         <div class="content">
@@ -127,14 +127,14 @@
             
             <div class="alert-box">
                 <h3>⚠️ Action Required</h3>
-                <p>A new bank transfer payment has been received and requires your verification. Please review the payment details below and verify the transaction in your bank account.</p>
+                <p>A new bank transfer payment has been received for a post job request and requires your verification. Please review the payment details below and verify the transaction in your bank account.</p>
             </div>
             
             <div class="payment-details">
                 <h3>💰 Payment Information</h3>
                 <div class="detail-row">
                     <span class="detail-label">Payment Type:</span>
-                    <span class="detail-value">{{ $paymentType === 'advance_payment' ? 'Advance Payment' : 'Remaining Payment' }}</span>
+                    <span class="detail-value">{{ $paymentType === 'advance' ? 'Advance Payment' : 'Remaining Payment' }}</span>
                 </div>
                 <div class="detail-row">
                     <span class="detail-label">Amount:</span>
@@ -154,37 +154,32 @@
                 </div>
             </div>
             
-            <div class="booking-details">
-                <h3>📋 Booking Information</h3>
+            <div class="bid-details">
+                <h3>📋 Post Job Bid Information</h3>
                 <div class="detail-row">
-                    <span class="detail-label">Booking ID:</span>
-                    <span class="detail-value">#{{ $booking->id }}</span>
+                    <span class="detail-label">Bid ID:</span>
+                    <span class="detail-value">#{{ $bid->id }}</span>
                 </div>
                 <div class="detail-row">
                     <span class="detail-label">Customer:</span>
-                    <span class="detail-value">{{ $booking->customer ? ($booking->customer->first_name ?? '') . ' ' . ($booking->customer->last_name ?? '') : 'N/A' }}</span>
+                    <span class="detail-value">{{ $bid->customer ? ($bid->customer->first_name ?? '') . ' ' . ($bid->customer->last_name ?? '') : 'N/A' }}</span>
                 </div>
                 <div class="detail-row">
                     <span class="detail-label">Provider:</span>
-                    <span class="detail-value">{{ $booking->provider ? ($booking->provider->first_name ?? '') . ' ' . ($booking->provider->last_name ?? '') : 'N/A' }}</span>
+                    <span class="detail-value">{{ $bid->provider ? ($bid->provider->first_name ?? '') . ' ' . ($bid->provider->last_name ?? '') : 'N/A' }}</span>
                 </div>
                 <div class="detail-row">
-                    <span class="detail-label">Total Booking Amount:</span>
-                    <span class="detail-value">${{ number_format($booking->total_amount, 2) }}</span>
-                </div>
-                @if($paymentType === 'advance_payment')
-                <div class="detail-row">
-                    <span class="detail-label">Advance Paid:</span>
-                    <span class="detail-value">${{ number_format($booking->advance_paid_amount ?? 0, 2) }}</span>
-                </div>
-                @else
-                <div class="detail-row">
-                    <span class="detail-label">Advance Paid:</span>
-                    <span class="detail-value">${{ number_format($booking->advance_paid_amount ?? 0, 2) }}</span>
+                    <span class="detail-label">Bid Price:</span>
+                    <span class="detail-value">${{ number_format($bid->price ?? 0, 2) }}</span>
                 </div>
                 <div class="detail-row">
-                    <span class="detail-label">Remaining Amount:</span>
-                    <span class="detail-value">${{ number_format(($booking->total_amount ?? 0) - ($booking->advance_paid_amount ?? 0), 2) }}</span>
+                    <span class="detail-label">Bid Title:</span>
+                    <span class="detail-value">{{ $bid->title ?? 'N/A' }}</span>
+                </div>
+                @if($bid->request)
+                <div class="detail-row">
+                    <span class="detail-label">Post Job Request ID:</span>
+                    <span class="detail-value">#{{ $bid->request->id ?? 'N/A' }}</span>
                 </div>
                 @endif
             </div>
@@ -201,7 +196,7 @@
                 <a href="https://frobster.com/cash-payment-list" class="cta-button">Review Payment →</a>
             </div>
             
-            <p style="margin-top: 30px;">Please verify this payment as soon as possible to ensure timely processing of the booking.</p>
+            <p style="margin-top: 30px;">Please verify this payment as soon as possible to ensure timely processing of the post job request.</p>
         </div>
         
         <div class="footer">

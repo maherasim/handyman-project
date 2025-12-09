@@ -28,6 +28,8 @@ use Carbon\Carbon;
 use App\Models\ProviderPayout;
 use App\Models\CommissionEarning;
 use App\Models\PostJobBid;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\PostJobBankTransferPaymentNotificationMail;
 use App\Models\PostJobExtraCharge;
 use App\Traits\NotificationTrait;
 use Illuminate\Support\Facades\Log;
@@ -1607,6 +1609,17 @@ class PostJobRequestController extends Controller
         }
 
         $bid->save();
+
+        // ✅ Send email notification to admin
+        try {
+            $adminEmail = 'asimriazasim107@gmail.com';
+            // Load relationships for email
+            $bid->load(['customer', 'provider', 'request']);
+            Mail::to($adminEmail)->send(new PostJobBankTransferPaymentNotificationMail($payment, $bid, $type));
+        } catch (\Exception $e) {
+            // Log error but don't fail the payment creation
+            \Log::error('Failed to send post job bank transfer payment notification email: ' . $e->getMessage());
+        }
 
         return response()->json([
             'status' => true,
