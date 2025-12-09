@@ -428,14 +428,17 @@ class PostJobRequestController extends Controller
             $wallet->decrement('amount', $payAmount);
     
           //dd($customerActivity,'customerActivity');
-           $data= WalletHistory::create([
+           // Wallet history (customer) - Debit entry for sender
+           WalletHistory::create([
                 'datetime'         => now(),
-                'user_id'          => $user->id,
+                'user_id'          => $user->id, // Sender (customer)
                 'activity_type'    => 'debit',
                 'activity_message' => $customerActivity,
                 'activity_data'    => json_encode([
                     'amount'  => $payAmount,
                     'balance' => $wallet->amount,
+                    'receiver_id' => $post->provider_id, // Store receiver ID in activity_data
+                    'transaction_id' => $txnId,
                 ]),
             ]);
    // dd($data);
@@ -477,7 +480,21 @@ class PostJobRequestController extends Controller
                 $providerWallet = Wallet::firstOrCreate(['user_id' => $post->provider_id]);
                 $providerWallet->increment('amount', $providerPayoutAmount);
     
-                // Wallet history (provider)
+                // Wallet history (provider) - Credit entry for receiver
+                WalletHistory::create([
+                    'datetime'         => now(),
+                    'user_id'          => $post->provider_id, // Receiver (provider)
+                    'activity_type'    => 'credit',
+                    'activity_message' => $providerActivity,
+                    'activity_data'    => json_encode([
+                        'amount'  => $providerPayoutAmount,
+                        'balance' => $providerWallet->amount,
+                        'sender_id' => $user->id, // Store sender ID in activity_data
+                        'transaction_id' => $txnId,
+                    ]),
+                ]);
+    
+                // Payment history (provider)
                 PaymentPostJObHistory::create([
                     'datetime'          => now(),
                     'payment_id'        => $payment->id,
