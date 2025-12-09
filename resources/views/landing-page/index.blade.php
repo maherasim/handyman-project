@@ -1428,70 +1428,7 @@
             </div>
         </div>
     @endif
-
-    @if ($sectionData && isset($sectionData['section_7']) && $sectionData['section_7']['section_7'] == 1)
-        <div class="section-padding pt-0">
-            <div class="container">
-                <div class="row align-items-center">
-                    <div class="col-lg-5">
-                        <div class="iq-title-box mb-0">
-                            <h3 class="text-capitalize line-count-2">{{ $sectionData['section_7']['title'] }}
-                                <span class="highlighted-text">
-                                    <span class="highlighted-text-swipe"></span>
-                                    <span class="highlighted-image">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="164" height="12"
-                                            viewBox="0 0 164 12" fill="none">
-                                            <path d="M2 9.5C2.71429 9.26081 83.4286 -2.45948 162 4.9554"
-                                                stroke="currentColor" stroke-width="4" stroke-linecap="round"
-                                                stroke-linejoin="round" />
-                                        </svg>
-                                    </span>
-                                </span>
-                            </h3>
-                        </div>
-                    </div>
-                    <div class="col-lg-7 mt-lg-0 mt-3">
-                        <p class="m-0 line-count-3">{{ $sectionData['section_7']['description'] ?? null }}</p>
-                    </div>
-                </div>
-                @php
-                    $mediaVimage = Spatie\MediaLibrary\MediaCollections\Models\Media::where(
-                        'collection_name',
-                        'vimage',
-                    )->first();
-                @endphp
-
-                <div class="row align-items-center mt-5 pt-lg-5">
-                    <div class="col-lg-6 pe-xl-5 position-relative">
-                        @if ($mediaVimage)
-                            <img src="{{ url('storage/' . $mediaVimage->id . '/' . $mediaVimage->file_name) }}"
-                                alt="video-popup" class="img-fluid w-100 rounded">
-                        @else
-                            <img src="{{ asset('landing-images/general/popup.webp') }}" alt="video-popup"
-                                class="img-fluid w-100 rounded">
-                        @endif
-                        @include('landing-page.components.widgets.video-popup', [
-                            'videoLinkUrl' => $sectionData['section_7']['url'],
-                        ])
-
-                    </div>
-                    <div class="col-lg-6 mt-lg-0 mt-5 ps-xl-5">
-                        @if (isset($sectionData['section_7']['subtitle']) && isset($sectionData['section_7']['subdescription']))
-                            @for ($i = 0; $i < min(count($sectionData['section_7']['subtitle']), count($sectionData['section_7']['subdescription'])); $i++)
-                                <div class="mb-4 pb-4 border-bottom">
-                                    @include('landing-page.components.widgets.icon-box', [
-                                        'iconboxNumber' => $i + 1,
-                                        'iconboxTitle' => $sectionData['section_7']['subtitle'][$i],
-                                        'iconboxDescription' => $sectionData['section_7']['subdescription'][$i],
-                                    ])
-                                </div>
-                            @endfor
-                        @endif
-                    </div>
-                </div>
-            </div>
-        </div>
-    @endif
+ 
 
 
 @endsection
