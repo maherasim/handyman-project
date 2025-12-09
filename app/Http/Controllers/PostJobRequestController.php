@@ -435,10 +435,10 @@ class PostJobRequestController extends Controller
                 'activity_type'    => 'debit',
                 'activity_message' => $customerActivity,
                 'activity_data'    => json_encode([
-                    'amount'  => $payAmount,
-                    'balance' => $wallet->amount,
-                    'receiver_id' => $post->provider_id, // Store receiver ID in activity_data
-                    'transaction_id' => $txnId,
+                    'user_id' => $post->provider_id, // Receiver ID
+                    'credit_debit_amount' => $payAmount,
+                    'amount' => $wallet->amount, // Balance after transaction
+                    'transaction_type' => 'Debit',
                 ]),
             ]);
    // dd($data);
@@ -487,10 +487,10 @@ class PostJobRequestController extends Controller
                     'activity_type'    => 'credit',
                     'activity_message' => $providerActivity,
                     'activity_data'    => json_encode([
-                        'amount'  => $providerPayoutAmount,
-                        'balance' => $providerWallet->amount,
-                        'sender_id' => $user->id, // Store sender ID in activity_data
-                        'transaction_id' => $txnId,
+                        'user_id' => $user->id, // Sender ID (customer)
+                        'credit_debit_amount' => $providerPayoutAmount,
+                        'amount' => $providerWallet->amount, // Balance after transaction
+                        'transaction_type' => 'Credit',
                     ]),
                 ]);
     
