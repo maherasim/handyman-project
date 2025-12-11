@@ -219,7 +219,7 @@
 
             // Fetch bank details using withdrawal ID (backend will fetch bank from relationship)
             $.ajax({
-                url: '{{ route("withdrawal-request-bank-details", ":id") }}'.replace(':id', withdrawalId),
+                url: '{{ route("wallet.withdrawal_bank_details", ":id") }}'.replace(':id', withdrawalId),
                 type: 'GET',
                 success: function(response) {
                     Swal.close();
