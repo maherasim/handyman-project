@@ -86,16 +86,56 @@ The `value` JSON should contain:
 }
 ```
 
+**Example of Correct Configuration:**
+```json
+{
+  "firebase_notification": 1,
+  "project_id": "laravel-firebase-28deb",
+  "auto_assign_provider": 0,
+  "dashboard_type": "dashboard"
+}
+```
+
+✅ **Your Configuration Status:**
+- ✅ `firebase_notification: 1` - **Enabled** ✓
+- ✅ `project_id: "laravel-firebase-28deb"` - **Configured** ✓
+
+**Your Firebase notification settings are correctly configured!** The system should be able to send push notifications.
+
+**Next Step:** Verify that the Firebase service account JSON file is uploaded (see section B below).
+
 #### B. Verify JSON File Location
 The Firebase service account JSON file should be in:
 ```
 storage/app/data/*.json
 ```
 
-You can check if file exists:
+**Check if file exists:**
+
+**Via Command Line:**
 ```bash
+# Windows (PowerShell)
+Get-ChildItem storage\app\data\*.json
+
+# Linux/Mac
 ls storage/app/data/*.json
 ```
+
+**Via PHP (in Laravel Tinker):**
+```php
+php artisan tinker
+>>> File::glob(storage_path('app/data/*.json'));
+```
+
+**Expected Result:**
+- Should return at least one `.json` file
+- File should contain `"project_id": "laravel-firebase-28deb"` (must match your Project ID)
+- File should have `"type": "service_account"`
+
+**If file is missing:**
+1. Go to Admin Panel → Settings → Other Settings
+2. Upload the Firebase service account JSON file
+3. The file will be saved to `storage/app/data/` automatically
 
 #### C. Check Logs
 When a chat message is sent, check Laravel logs:

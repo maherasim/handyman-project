@@ -1318,17 +1318,26 @@ function sendNotification($type,$user,$data){
      $heading   ='#'.$data['id'].' '.str_replace("_"," ",$data['subject'] );
      $content   = $data['message'];
 
-
+     // FCM v1 API requires payload wrapped in 'message' object
      $firebase_data = [
-         'topic'=>'user_'.$user->id,
-         'collapse_key' => 'type_a',
-         'notification' => [
-             'body' =>   $content,
-             'title' => $heading ,
-         ],
-         'data' => [
-            'type' => $data['type'],
-            'id' => $data['id']
+         'message' => [
+             'topic' => 'user_'.$user->id,
+             'notification' => [
+                 'title' => $heading,
+                 'body' => $content,
+             ],
+             'data' => [
+                'type' => $data['type'],
+                'id' => (string) $data['id']
+             ],
+             'android' => [
+                 'priority' => 'high',
+             ],
+             'apns' => [
+                 'headers' => [
+                     'apns-priority' => '10',
+                 ],
+             ],
          ],
      ];
 

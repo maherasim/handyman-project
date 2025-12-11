@@ -325,18 +325,29 @@ class ChatController extends Controller
                 $heading = 'New Message from ' . ($sender->display_name ?? $sender->name);
                 $content = $message->message ? mb_substr($message->message, 0, 100) : 'New attachment';
 
+                // FCM v1 API requires payload wrapped in 'message' object
                 $firebase_data = [
-                    'topic' => 'user_' . $recipient->id,
-                    'collapse_key' => 'chat_message',
-                    'notification' => [
-                        'body' => $content,
-                        'title' => $heading,
-                    ],
-                    'data' => [
-                        'type' => 'chat_message',
-                        'id' => $message->id,
-                        'conversation_id' => $message->conversation_id,
-                        'sender_id' => $sender->id
+                    'message' => [
+                        'topic' => 'user_' . $recipient->id,
+                        'notification' => [
+                            'title' => $heading,
+                            'body' => $content,
+                        ],
+                        'data' => [
+                            'type' => 'chat_message',
+                            'id' => (string) $message->id,
+                            'conversation_id' => (string) $message->conversation_id,
+                            'sender_id' => (string) $sender->id,
+                            'sender_name' => $sender->display_name ?? $sender->name,
+                        ],
+                        'android' => [
+                            'priority' => 'high',
+                        ],
+                        'apns' => [
+                            'headers' => [
+                                'apns-priority' => '10',
+                            ],
+                        ],
                     ],
                 ];
 
