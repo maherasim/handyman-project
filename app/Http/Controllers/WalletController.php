@@ -623,12 +623,74 @@ public function getWalletPaymentMethod(Request $request)
                 
             })
             ->addColumn('bank_details', function($query){
-                if($query->payment_type == 'manual' || !$query->bank_id){
-                    return '<span class="text-muted">-</span>';
+                // Check if payment type is manual
+                if($query->payment_type == 'manual'){
+                    return '<span class="text-muted">' . __('messages.manual_transaction') . '</span>';
                 }
-                return '<button type="button" class="btn btn-sm btn-info view-bank-details" data-id="'.$query->id.'" data-bank-id="'.$query->bank_id.'">
-                    <i class="fas fa-eye"></i> View Bank Details
-                </button>';
+                
+                // Get bank from relationship
+                $bank = $query->bank;
+                
+                // If bank not loaded, try to load it directly (including trashed)
+                if (!$bank && $query->bank_id) {
+                    $bank = \App\Models\Bank::withTrashed()->find($query->bank_id);
+                }
+                
+                // If still no bank, show message
+                if (!$bank) {
+                    return '<span class="text-muted">Bank not found</span>';
+                }
+                
+                // Display bank details from Bank model relationship
+                $bankName = $bank->bank_name ?? '-';
+                $accountHolder = $bank->account_holder ?? '-';
+                $accountNo = $bank->account_no ?? null;
+                $ibanNo = $bank->iban_no ?? null;
+                $bicNumber = $bank->bic_number ?? null;
+                $branchName = $bank->branch_name ?? null;
+                $withdrawalId = $query->id;
+                $bankId = $bank->id;
+                
+                // Build bank details display - make it clickable to show full popup
+                $html = '<div class="bank-details-info">';
+                $html .= '<a href="javascript:void(0);" class="view-bank-details text-decoration-none" data-id="' . $withdrawalId . '" data-bank-id="' . $bankId . '" style="cursor: pointer;">';
+                
+                // Bank Name
+                $html .= '<div class="mb-1"><strong><i class="fas fa-university me-1"></i>' . e($bankName) . '</strong></div>';
+                
+                // Account Holder
+                if ($accountHolder && $accountHolder != '-') {
+                    $html .= '<div class="mb-1 text-muted small"><i class="fas fa-user me-1"></i>' . e($accountHolder) . '</div>';
+                }
+                
+                // Account Number (masked)
+                if ($accountNo) {
+                    $maskedAccountNo = str_repeat('X', strlen($accountNo) - 4) . substr($accountNo, -4);
+                    $html .= '<div class="mb-1 text-muted small"><i class="fas fa-credit-card me-1"></i>****' . $maskedAccountNo . '</div>';
+                }
+                
+                // IBAN (if available)
+                if ($ibanNo) {
+                    $html .= '<div class="mb-1 text-muted small"><i class="fas fa-barcode me-1"></i>IBAN: ' . e($ibanNo) . '</div>';
+                }
+                
+                // BIC/SWIFT (if available)
+                if ($bicNumber) {
+                    $html .= '<div class="mb-1 text-muted small"><i class="fas fa-code me-1"></i>SWIFT: ' . e($bicNumber) . '</div>';
+                }
+                
+                // Branch Name (if available)
+                if ($branchName) {
+                    $html .= '<div class="mb-1 text-muted small"><i class="fas fa-map-marker-alt me-1"></i>' . e($branchName) . '</div>';
+                }
+                
+                // Click hint
+                $html .= '<div class="mt-2"><small class="text-primary"><i class="fas fa-info-circle me-1"></i>Click to view full details</small></div>';
+                
+                $html .= '</a>';
+                $html .= '</div>';
+                
+                return $html;
             })
             ->addIndexColumn()
             ->rawColumns(['user_id','bank_id','amount','datetime','action','status','check','bank_details'])
