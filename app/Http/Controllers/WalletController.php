@@ -623,9 +623,12 @@ public function getWalletPaymentMethod(Request $request)
                 
             })
             ->addColumn('bank_details', function($query){
-                // Check if payment type is manual
-                if($query->payment_type == 'manual'){
-                    return '<span class="text-muted">' . __('messages.manual_transaction') . '</span>';
+                // Check if bank_id exists - if not, show message
+                if (!$query->bank_id) {
+                    if($query->payment_type == 'manual'){
+                        return '<span class="text-muted">' . __('messages.manual_transaction') . '</span>';
+                    }
+                    return '<span class="text-muted">No bank selected</span>';
                 }
                 
                 // Get bank from relationship
@@ -638,7 +641,7 @@ public function getWalletPaymentMethod(Request $request)
                 
                 // If still no bank, show message
                 if (!$bank) {
-                    return '<span class="text-muted">Bank not found</span>';
+                    return '<span class="text-muted">Bank not found (ID: ' . $query->bank_id . ')</span>';
                 }
                 
                 // Display bank details from Bank model relationship
