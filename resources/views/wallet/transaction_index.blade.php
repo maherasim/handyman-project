@@ -88,7 +88,13 @@
                         name: 'bank_id',
                         title: "{{ __('messages.bank_name') }}"
                     },
-
+                    {
+                        data: 'bank_details',
+                        name: 'bank_details',
+                        title: "Bank Details",
+                        orderable: false,
+                        searchable: false
+                    },
                     {
                         data: 'amount',
                         name: 'amount',
@@ -189,6 +195,98 @@
                 form.attr('action', submitUrl);
                 form.submit();
             }
+        });
+
+        // Bank Details Modal Handler
+        $(document).on('click', '.view-bank-details', function() {
+            const withdrawalId = $(this).data('id');
+            const bankId = $(this).data('bank-id');
+            
+            if (!bankId) {
+                Swal.fire('Error', 'Bank details not available', 'error');
+                return;
+            }
+
+            // Show loading
+            Swal.fire({
+                title: 'Loading...',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            // Fetch bank details
+            $.ajax({
+                url: '{{ route("wallet.withdrawal_bank_details", ":id") }}'.replace(':id', withdrawalId),
+                type: 'GET',
+                success: function(response) {
+                    Swal.close();
+                    if (response.success && response.data) {
+                        const bank = response.data;
+                        const bankDetailsHtml = `
+                            <div class="text-start">
+                                <div class="mb-3">
+                                    <h6 class="text-primary mb-3"><i class="fas fa-university"></i> Bank Information</h6>
+                                </div>
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <strong>Bank Name:</strong>
+                                        <p class="mb-2">${bank.bank_name}</p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <strong>Branch Name:</strong>
+                                        <p class="mb-2">${bank.branch_name}</p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <strong>Account Holder (Full Name):</strong>
+                                        <p class="mb-2">${bank.account_holder}</p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <strong>Account Number:</strong>
+                                        <p class="mb-2">${bank.account_no}</p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <strong>IBAN Code:</strong>
+                                        <p class="mb-2">${bank.iban_no}</p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <strong>SWIFT/BIC Code:</strong>
+                                        <p class="mb-2">${bank.bic_number}</p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <strong>Mobile Number:</strong>
+                                        <p class="mb-2">${bank.mobile_no}</p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <strong>Status:</strong>
+                                        <p class="mb-2">
+                                            <span class="badge ${bank.status === 'Active' ? 'bg-success' : 'bg-danger'}">
+                                                ${bank.status}
+                                            </span>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                        
+                        Swal.fire({
+                            title: 'Bank Details',
+                            html: bankDetailsHtml,
+                            width: '600px',
+                            confirmButtonText: 'Close',
+                            confirmButtonColor: '#3085d6'
+                        });
+                    } else {
+                        Swal.fire('Error', response.error || 'Failed to load bank details', 'error');
+                    }
+                },
+                error: function(xhr) {
+                    Swal.close();
+                    const errorMsg = xhr.responseJSON?.error || 'Failed to load bank details';
+                    Swal.fire('Error', errorMsg, 'error');
+                }
+            });
         });
     </script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>

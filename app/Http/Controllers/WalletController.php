@@ -595,8 +595,16 @@ public function getWalletPaymentMethod(Request $request)
                 return view('wallet.transaction_action',compact('query','exists'))->render();
                 
             })
+            ->addColumn('bank_details', function($query){
+                if($query->payment_type == 'manual' || !$query->bank_id){
+                    return '<span class="text-muted">-</span>';
+                }
+                return '<button type="button" class="btn btn-sm btn-info view-bank-details" data-id="'.$query->id.'" data-bank-id="'.$query->bank_id.'">
+                    <i class="fas fa-eye"></i> View Bank Details
+                </button>';
+            })
             ->addIndexColumn()
-            ->rawColumns(['user_id','bank_id','amount','datetime','action','status','check'])
+            ->rawColumns(['user_id','bank_id','amount','datetime','action','status','check','bank_details'])
             ->toJson();
     }
 
@@ -612,5 +620,34 @@ public function getWalletPaymentMethod(Request $request)
     $message = __('messages.transaction_complete_success');
     return redirect(route('wallet_transaction'))->withSuccess($message);
 }
+
+    public function getWithdrawalBankDetails($id)
+    {
+        $withdrawMoney = WithdrawMoney::with('bank')->where('id', $id)->first();
+        
+        if (!$withdrawMoney) {
+            return response()->json(['error' => 'Withdrawal request not found'], 404);
+        }
+
+        if (!$withdrawMoney->bank) {
+            return response()->json(['error' => 'Bank details not found'], 404);
+        }
+
+        $bank = $withdrawMoney->bank;
+        
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'bank_name' => $bank->bank_name ?? '-',
+                'branch_name' => $bank->branch_name ?? '-',
+                'account_holder' => $bank->account_holder ?? '-',
+                'account_no' => $bank->account_no ?? '-',
+                'iban_no' => $bank->iban_no ?? '-',
+                'bic_number' => $bank->bic_number ?? '-',
+                'status' => $bank->status == 1 ? 'Active' : 'Inactive',
+                'mobile_no' => $bank->mobile_no ?? '-',
+            ]
+        ]);
+    }
 
 }
