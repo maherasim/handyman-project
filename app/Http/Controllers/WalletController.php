@@ -536,19 +536,35 @@ public function getWalletPaymentMethod(Request $request)
                       ->orderBy('customers.display_name', $order);   
             })
             ->editColumn('bank_id', function($query) {
-                $bankName = '';
+                // Check if payment type is manual
                 if($query->payment_type == 'manual'){
-                    $bankName = __('messages.manual_transaction');
+                    return '<span class="text-muted">' . __('messages.manual_transaction') . '</span>';
                 }
-                else{
-                    $bankName = optional($query->bank)->bank_name;
-                    $accountNo = optional($query->bank)->account_no;
-                    if ($accountNo) {
-                        $maskedAccountNo = str_repeat('X', strlen($accountNo) - 4) . substr($accountNo, -4);
-                        return '<b>' . $bankName.'</b>'  . '<br>' . $maskedAccountNo . '</br>';
-                    }
+                
+                // Get bank from relationship
+                $bank = $query->bank;
+                
+                if (!$bank) {
+                    return '<span class="text-muted">-</span>';
                 }
-                return $bankName;
+                
+                // Display bank details from Bank model relationship
+                $bankName = $bank->bank_name ?? '-';
+                $accountHolder = $bank->account_holder ?? '-';
+                $accountNo = $bank->account_no ?? null;
+                
+                $html = '<div class="bank-info">';
+                $html .= '<strong class="d-block">' . e($bankName) . '</strong>';
+                $html .= '<small class="text-muted d-block">' . e($accountHolder) . '</small>';
+                
+                if ($accountNo) {
+                    $maskedAccountNo = str_repeat('X', strlen($accountNo) - 4) . substr($accountNo, -4);
+                    $html .= '<small class="text-muted d-block">****' . $maskedAccountNo . '</small>';
+                }
+                
+                $html .= '</div>';
+                
+                return $html;
             })
             ->orderColumn('bank_id', function ($query, $order) {
                 $query->select('withdraw_money.*')
