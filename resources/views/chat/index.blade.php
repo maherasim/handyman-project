@@ -2,7 +2,12 @@
     <div class="container py-3">
         <div class="d-flex align-items-center mb-3">
             <h5 class="mb-0">Messages</h5>
-            <button type="button" id="refreshUnreadBtn" class="ms-auto btn btn-sm btn-outline-secondary" aria-label="Refresh" title="Refresh"><i class="fas fa-sync-alt"></i></button>
+            <div class="ms-auto d-flex gap-2">
+                <button type="button" id="enableNotificationsBtn" class="btn btn-sm btn-outline-primary" aria-label="Enable Notifications" title="Enable Browser Notifications" style="display: none;">
+                    <i class="fas fa-bell"></i> Enable Notifications
+                </button>
+                <button type="button" id="refreshUnreadBtn" class="btn btn-sm btn-outline-secondary" aria-label="Refresh" title="Refresh"><i class="fas fa-sync-alt"></i></button>
+            </div>
         </div>
         <div class="card">
             @isset($countries)
@@ -127,6 +132,90 @@
                     });
                 }
             } catch (_) {}
+            // Browser Notification Support (WhatsApp-like)
+            let notificationPermission = Notification.permission;
+            const enableNotificationsBtn = document.getElementById('enableNotificationsBtn');
+            
+            // Show/hide enable notifications button
+            if (enableNotificationsBtn) {
+                if (notificationPermission === 'denied' || notificationPermission === 'default') {
+                    enableNotificationsBtn.style.display = 'block';
+                } else {
+                    enableNotificationsBtn.style.display = 'none';
+                }
+                
+                enableNotificationsBtn.addEventListener('click', () => {
+                    if (notificationPermission === 'denied') {
+                        alert('Notifications are blocked. Please enable them in your browser settings.');
+                        return;
+                    }
+                    Notification.requestPermission().then(permission => {
+                        notificationPermission = permission;
+                        if (permission === 'granted') {
+                            console.log('Browser notifications enabled');
+                            enableNotificationsBtn.style.display = 'none';
+                            // Register service worker for background notifications
+                            if ('serviceWorker' in navigator) {
+                                navigator.serviceWorker.register('/sw.js').catch(err => console.log('SW registration failed:', err));
+                            }
+                        } else {
+                            enableNotificationsBtn.style.display = 'block';
+                        }
+                    });
+                });
+            }
+            
+            // Request notification permission if not granted (auto-request on first visit)
+            if (notificationPermission === 'default') {
+                // Don't auto-request, let user click button instead
+                // Notification.requestPermission().then(permission => {
+                //     notificationPermission = permission;
+                //     if (permission === 'granted') {
+                //         console.log('Browser notifications enabled');
+                //         if ('serviceWorker' in navigator) {
+                //             navigator.serviceWorker.register('/sw.js').catch(err => console.log('SW registration failed:', err));
+                //         }
+                //     }
+                // });
+            } else if (notificationPermission === 'granted' && 'serviceWorker' in navigator) {
+                navigator.serviceWorker.register('/sw.js').catch(err => console.log('SW registration failed:', err));
+            }
+
+            // Function to show browser notification
+            function showBrowserNotification(message) {
+                if (notificationPermission !== 'granted') return;
+                if (document.hasFocus() && window.location.pathname === '/messages') return; // Don't notify if user is on messages page
+
+                const notificationOptions = {
+                    body: message.snippet || 'New message',
+                    icon: message.sender_avatar || '{{ asset("images/user/user.png") }}',
+                    badge: '{{ asset("images/logo.png") }}',
+                    tag: `chat-${message.conversation_id || message.id}`,
+                    data: {
+                        conversation_id: message.conversation_id,
+                        message_id: message.id,
+                        sender_id: message.sender_id,
+                        url: message.url || '/messages'
+                    },
+                    requireInteraction: false,
+                    vibrate: [200, 100, 200]
+                };
+
+                if ('serviceWorker' in navigator) {
+                    navigator.serviceWorker.ready.then(registration => {
+                        registration.showNotification(
+                            `New message from ${message.sender_name || 'User'}`,
+                            notificationOptions
+                        );
+                    });
+                } else {
+                    new Notification(
+                        `New message from ${message.sender_name || 'User'}`,
+                        notificationOptions
+                    );
+                }
+            }
+
             async function handlePingResponse(j, forceToast){
                 const last = sessionStorage.getItem(lastKey) || '0';
                 if (j && j.latest && j.latest.id) {
@@ -136,6 +225,12 @@
                         const text = `${j.latest.sender_name}: ${j.latest.snippet || ''}`;
                         if (window.Swal){ Swal.fire({ toast:true, position:'bottom-end', timer:3500, showConfirmButton:false, icon:'info', title: text }); }
                         if (window.__playChatNotify) window.__playChatNotify();
+                        
+                        // Show browser notification for new messages
+                        if (isNew && notificationPermission === 'granted') {
+                            showBrowserNotification(j.latest);
+                        }
+                        
                         try {
                             await fetch('{{ route('chat.unread.ack') }}', {
                                 method: 'POST',

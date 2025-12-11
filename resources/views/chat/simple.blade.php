@@ -67,6 +67,60 @@
             let typingTimer = null;
             let lastRenderedDate = null;
 
+            // Browser Notification Support (WhatsApp-like)
+            let notificationPermission = Notification.permission;
+            
+            // Request notification permission if not granted
+            if (notificationPermission === 'default') {
+                Notification.requestPermission().then(permission => {
+                    notificationPermission = permission;
+                    if (permission === 'granted') {
+                        console.log('Browser notifications enabled');
+                        // Register service worker for background notifications
+                        if ('serviceWorker' in navigator) {
+                            navigator.serviceWorker.register('/sw.js').catch(err => console.log('SW registration failed:', err));
+                        }
+                    }
+                });
+            } else if (notificationPermission === 'granted' && 'serviceWorker' in navigator) {
+                navigator.serviceWorker.register('/sw.js').catch(err => console.log('SW registration failed:', err));
+            }
+
+            // Function to show browser notification
+            function showBrowserNotification(message) {
+                if (notificationPermission !== 'granted') return;
+                if (document.hasFocus() && window.location.pathname.includes('/chat/')) return; // Don't notify if user is viewing this chat
+
+                const notificationOptions = {
+                    body: message.message || 'New attachment',
+                    icon: message.sender_avatar_url || '{{ $fallbackAvatar }}',
+                    badge: '{{ asset("images/logo.png") }}',
+                    tag: `chat-${conversationId}-${message.id}`,
+                    data: {
+                        conversation_id: conversationId,
+                        message_id: message.id,
+                        sender_id: message.sender_id,
+                        url: `/chat/${conversationId}/messages`
+                    },
+                    requireInteraction: false,
+                    vibrate: [200, 100, 200]
+                };
+
+                if ('serviceWorker' in navigator) {
+                    navigator.serviceWorker.ready.then(registration => {
+                        registration.showNotification(
+                            `New message from ${message.sender_name || 'User'}`,
+                            notificationOptions
+                        );
+                    });
+                } else {
+                    new Notification(
+                        `New message from ${message.sender_name || 'User'}`,
+                        notificationOptions
+                    );
+                }
+            }
+
             // Realtime via Pusher (Laravel Echo)
             try {
                 // Requires window.Echo to be bootstrapped globally once (in layout) or add minimal init here
@@ -77,6 +131,10 @@
                     window.Echo.private(`chat.${conversationId}`).listen('.ChatMessageSent', (e) => {
                         // Append the incoming message immediately
                         if (e && typeof e === 'object') {
+                            // Only show notification if message is from someone else
+                            if (e.sender_id !== currentUserId) {
+                                showBrowserNotification(e);
+                            }
                             maybeRenderDateSeparator(e.created_at);
                             renderMessage(e);
                             scrollToBottom();

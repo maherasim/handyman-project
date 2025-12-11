@@ -249,6 +249,15 @@
         }
     </style>
     <script>
+        // Handle navigation messages from service worker
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.addEventListener('message', (event) => {
+                if (event.data && event.data.type === 'navigate') {
+                    window.location.href = event.data.url;
+                }
+            });
+        }
+        
         // Minimal Echo factory for pages that need realtime and don't have a global bootstrap
         window.EchoFactory = function() {
             try {
