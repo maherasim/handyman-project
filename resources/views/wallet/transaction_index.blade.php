@@ -86,7 +86,7 @@
                     {
                         data: 'bank_id',
                         name: 'bank_id',
-                        title: "{{ __('messages.bank_name') }}"
+                        title: "ASim"
                     },
                     {
                         data: 'bank_details',
