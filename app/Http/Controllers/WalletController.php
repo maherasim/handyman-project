@@ -644,56 +644,15 @@ public function getWalletPaymentMethod(Request $request)
                     return '<span class="text-muted">Bank not found (ID: ' . $query->bank_id . ')</span>';
                 }
                 
-                // Display bank details from Bank model relationship
-                $bankName = $bank->bank_name ?? '-';
-                $accountHolder = $bank->account_holder ?? '-';
-                $accountNo = $bank->account_no ?? null;
-                $ibanNo = $bank->iban_no ?? null;
-                $bicNumber = $bank->bic_number ?? null;
-                $branchName = $bank->branch_name ?? null;
+                // Get bank name and make it clickable to show popup
+                $bankName = $bank->bank_name ?? 'Unknown Bank';
                 $withdrawalId = $query->id;
                 $bankId = $bank->id;
                 
-                // Build bank details display - make it clickable to show full popup
-                $html = '<div class="bank-details-info">';
-                $html .= '<a href="javascript:void(0);" class="view-bank-details text-decoration-none" data-id="' . $withdrawalId . '" data-bank-id="' . $bankId . '" style="cursor: pointer;">';
-                
-                // Bank Name
-                $html .= '<div class="mb-1"><strong><i class="fas fa-university me-1"></i>' . e($bankName) . '</strong></div>';
-                
-                // Account Holder
-                if ($accountHolder && $accountHolder != '-') {
-                    $html .= '<div class="mb-1 text-muted small"><i class="fas fa-user me-1"></i>' . e($accountHolder) . '</div>';
-                }
-                
-                // Account Number (masked)
-                if ($accountNo) {
-                    $maskedAccountNo = str_repeat('X', strlen($accountNo) - 4) . substr($accountNo, -4);
-                    $html .= '<div class="mb-1 text-muted small"><i class="fas fa-credit-card me-1"></i>****' . $maskedAccountNo . '</div>';
-                }
-                
-                // IBAN (if available)
-                if ($ibanNo) {
-                    $html .= '<div class="mb-1 text-muted small"><i class="fas fa-barcode me-1"></i>IBAN: ' . e($ibanNo) . '</div>';
-                }
-                
-                // BIC/SWIFT (if available)
-                if ($bicNumber) {
-                    $html .= '<div class="mb-1 text-muted small"><i class="fas fa-code me-1"></i>SWIFT: ' . e($bicNumber) . '</div>';
-                }
-                
-                // Branch Name (if available)
-                if ($branchName) {
-                    $html .= '<div class="mb-1 text-muted small"><i class="fas fa-map-marker-alt me-1"></i>' . e($branchName) . '</div>';
-                }
-                
-                // Click hint
-                $html .= '<div class="mt-2"><small class="text-primary"><i class="fas fa-info-circle me-1"></i>Click to view full details</small></div>';
-                
-                $html .= '</a>';
-                $html .= '</div>';
-                
-                return $html;
+                // Simple bank name link - click to show popup
+                return '<a href="javascript:void(0);" class="view-bank-details text-primary text-decoration-none fw-bold" data-id="' . $withdrawalId . '" data-bank-id="' . $bankId . '" style="cursor: pointer;">
+                    <i class="fas fa-university me-1"></i>' . e($bankName) . '
+                </a>';
             })
             ->addIndexColumn()
             ->rawColumns(['user_id','bank_id','amount','datetime','action','status','check','bank_details'])
