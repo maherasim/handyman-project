@@ -500,7 +500,9 @@ public function getWalletPaymentMethod(Request $request)
 
     public function wallet_transaction_index_data(DataTables $datatable,Request $request)
     {
-        $query = WithdrawMoney::query()->with('providers','bank');
+        $query = WithdrawMoney::query()->with(['providers', 'bank' => function($q) {
+            $q->withTrashed(); // Include soft deleted banks
+        }]);
 
         if(auth()->user()->hasRole('provider')){
             $query = $query->where('user_id', auth()->user()->id);
@@ -541,25 +543,34 @@ public function getWalletPaymentMethod(Request $request)
                     return '<span class="text-muted">' . __('messages.manual_transaction') . '</span>';
                 }
                 
-                // Get bank from relationship
+                // Get bank from relationship (try to reload if not loaded)
                 $bank = $query->bank;
                 
-                if (!$bank) {
-                    return '<span class="text-muted">-</span>';
+                // If bank not loaded, try to load it directly (including trashed)
+                if (!$bank && $query->bank_id) {
+                    $bank = \App\Models\Bank::withTrashed()->find($query->bank_id);
                 }
                 
-                // Display bank details from Bank model relationship
-                $bankName = $bank->bank_name ?? '-';
-                $accountHolder = $bank->account_holder ?? '-';
-                $accountNo = $bank->account_no ?? null;
+                // If still no bank, show bank_id as fallback
+                if (!$bank) {
+                    return '<span class="text-muted">Bank ID: ' . ($query->bank_id ?? 'N/A') . '</span>';
+                }
                 
+                // Get bank name - make it clickable to show popup
+                $bankName = $bank->bank_name ?? 'Unknown Bank';
+                $withdrawalId = $query->id;
+                $bankId = $bank->id;
+                
+                // Make bank name clickable to show popup
                 $html = '<div class="bank-info">';
-                $html .= '<strong class="d-block">' . e($bankName) . '</strong>';
-                $html .= '<small class="text-muted d-block">' . e($accountHolder) . '</small>';
+                $html .= '<a href="javascript:void(0);" class="view-bank-details text-primary text-decoration-none fw-bold" data-id="' . $withdrawalId . '" data-bank-id="' . $bankId . '" style="cursor: pointer;">';
+                $html .= '<i class="fas fa-university me-1"></i>' . e($bankName);
+                $html .= '</a>';
                 
-                if ($accountNo) {
-                    $maskedAccountNo = str_repeat('X', strlen($accountNo) - 4) . substr($accountNo, -4);
-                    $html .= '<small class="text-muted d-block">****' . $maskedAccountNo . '</small>';
+                // Show account holder if available
+                $accountHolder = $bank->account_holder ?? null;
+                if ($accountHolder) {
+                    $html .= '<br><small class="text-muted">' . e($accountHolder) . '</small>';
                 }
                 
                 $html .= '</div>';
@@ -639,17 +650,23 @@ public function getWalletPaymentMethod(Request $request)
 
     public function getWithdrawalBankDetails($id)
     {
-        $withdrawMoney = WithdrawMoney::with('bank')->where('id', $id)->first();
+        $withdrawMoney = WithdrawMoney::with(['bank' => function($q) {
+            $q->withTrashed(); // Include soft deleted banks
+        }])->where('id', $id)->first();
         
         if (!$withdrawMoney) {
             return response()->json(['error' => 'Withdrawal request not found'], 404);
         }
 
-        if (!$withdrawMoney->bank) {
-            return response()->json(['error' => 'Bank details not found'], 404);
+        // Try to load bank if not loaded, including trashed
+        $bank = $withdrawMoney->bank;
+        if (!$bank && $withdrawMoney->bank_id) {
+            $bank = \App\Models\Bank::withTrashed()->find($withdrawMoney->bank_id);
         }
 
-        $bank = $withdrawMoney->bank;
+        if (!$bank) {
+            return response()->json(['error' => 'Bank details not found'], 404);
+        }
         
         return response()->json([
             'success' => true,

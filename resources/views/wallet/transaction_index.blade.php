@@ -198,12 +198,13 @@
         });
 
         // Bank Details Modal Handler
-        $(document).on('click', '.view-bank-details', function() {
+        $(document).on('click', '.view-bank-details', function(e) {
+            e.preventDefault();
             const withdrawalId = $(this).data('id');
             const bankId = $(this).data('bank-id');
             
-            if (!bankId) {
-                Swal.fire('Error', 'Bank details not available', 'error');
+            if (!withdrawalId) {
+                Swal.fire('Error', 'Withdrawal request ID not found', 'error');
                 return;
             }
 
@@ -216,7 +217,7 @@
                 }
             });
 
-            // Fetch bank details
+            // Fetch bank details using withdrawal ID (backend will fetch bank from relationship)
             $.ajax({
                 url: '{{ route("wallet.withdrawal_bank_details", ":id") }}'.replace(':id', withdrawalId),
                 type: 'GET',
