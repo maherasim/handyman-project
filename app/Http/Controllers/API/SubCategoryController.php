@@ -24,6 +24,9 @@ class SubCategoryController extends Controller
         if($request->has('category_id')){
             $subcategory->where('category_id',$request->category_id);
         }
+        if($request->has('search')){
+            $subcategory->where('name','like',"%{$request->search}%");
+        }
         $per_page = config('constant.PER_PAGE_LIMIT');
         if( $request->has('per_page') && !empty($request->per_page)){
             if(is_numeric($request->per_page)){

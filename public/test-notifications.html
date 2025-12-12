@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Browser Notifications</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 10px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .info { background: #d1ecf1; color: #0c5460; }
+        pre {
+            background: #f4f4f4;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Browser Notification Test</h1>
+    
+    <div id="status"></div>
+    
+    <h2>Step 1: Check Permission</h2>
+    <button onclick="checkPermission()">Check Permission</button>
+    <div id="permissionStatus"></div>
+    
+    <h2>Step 2: Request Permission</h2>
+    <button onclick="requestPermission()">Request Permission</button>
+    
+    <h2>Step 3: Register Service Worker</h2>
+    <button onclick="registerServiceWorker()">Register Service Worker</button>
+    <div id="swStatus"></div>
+    
+    <h2>Step 4: Test Notification</h2>
+    <button onclick="testNotification()">Test Notification</button>
+    
+    <h2>Step 5: Test Background Notification</h2>
+    <button onclick="testBackgroundNotification()">Test Background (via SW)</button>
+    
+    <h2>Debug Info</h2>
+    <pre id="debug"></pre>
+    
+    <script>
+        function showStatus(message, type = 'info') {
+            const statusDiv = document.getElementById('status');
+            statusDiv.innerHTML = `<div class="status ${type}">${message}</div>`;
+        }
+        
+        function updateDebug() {
+            const debug = document.getElementById('debug');
+            debug.textContent = JSON.stringify({
+                permission: Notification.permission,
+                serviceWorkerSupported: 'serviceWorker' in navigator,
+                notificationSupported: 'Notification' in window,
+                location: window.location.href,
+                protocol: window.location.protocol
+            }, null, 2);
+        }
+        
+        function checkPermission() {
+            const permission = Notification.permission;
+            const statusDiv = document.getElementById('permissionStatus');
+            
+            let message = '';
+            let type = 'info';
+            
+            if (permission === 'granted') {
+                message = '✅ Permission is GRANTED';
+                type = 'success';
+            } else if (permission === 'denied') {
+                message = '❌ Permission is DENIED. You need to enable it in browser settings.';
+                type = 'error';
+            } else {
+                message = '⚠️ Permission is DEFAULT. Click "Request Permission" button.';
+                type = 'info';
+            }
+            
+            statusDiv.innerHTML = `<div class="status ${type}">${message}</div>`;
+            updateDebug();
+        }
+        
+        function requestPermission() {
+            if (Notification.permission === 'granted') {
+                showStatus('Permission already granted!', 'success');
+                return;
+            }
+            
+            Notification.requestPermission().then(permission => {
+                if (permission === 'granted') {
+                    showStatus('✅ Permission granted!', 'success');
+                    checkPermission();
+                } else {
+                    showStatus('❌ Permission denied. Enable it in browser settings.', 'error');
+                }
+                updateDebug();
+            });
+        }
+        
+        function registerServiceWorker() {
+            if (!('serviceWorker' in navigator)) {
+                showStatus('❌ Service Workers not supported in this browser', 'error');
+                return;
+            }
+            
+            navigator.serviceWorker.register('/sw.js')
+                .then(registration => {
+                    showStatus('✅ Service Worker registered successfully!', 'success');
+                    const swStatus = document.getElementById('swStatus');
+                    swStatus.innerHTML = `<div class="status success">
+                        Active: ${registration.active ? 'Yes' : 'No'}<br>
+                        Scope: ${registration.scope}
+                    </div>`;
+                    updateDebug();
+                })
+                .catch(error => {
+                    showStatus('❌ Service Worker registration failed: ' + error.message, 'error');
+                    console.error('SW registration error:', error);
+                    updateDebug();
+                });
+        }
+        
+        function testNotification() {
+            if (Notification.permission !== 'granted') {
+                showStatus('❌ Permission not granted. Request permission first.', 'error');
+                return;
+            }
+            
+            try {
+                const notification = new Notification('Test Notification', {
+                    body: 'If you see this, browser notifications are working!',
+                    icon: '/images/logo.png',
+                    badge: '/images/logo.png',
+                    tag: 'test-notification'
+                });
+                
+                showStatus('✅ Notification sent! Check your notifications.', 'success');
+                
+                notification.onclick = () => {
+                    console.log('Notification clicked');
+                    notification.close();
+                };
+            } catch (error) {
+                showStatus('❌ Notification failed: ' + error.message, 'error');
+                console.error('Notification error:', error);
+            }
+        }
+        
+        function testBackgroundNotification() {
+            if (Notification.permission !== 'granted') {
+                showStatus('❌ Permission not granted. Request permission first.', 'error');
+                return;
+            }
+            
+            if (!('serviceWorker' in navigator)) {
+                showStatus('❌ Service Workers not supported', 'error');
+                return;
+            }
+            
+            navigator.serviceWorker.ready.then(registration => {
+                registration.showNotification('Test Background Notification', {
+                    body: 'This notification was sent via Service Worker (works in background)',
+                    icon: '/images/logo.png',
+                    badge: '/images/logo.png',
+                    tag: 'test-background',
+                    data: {
+                        url: '/messages',
+                        test: true
+                    }
+                }).then(() => {
+                    showStatus('✅ Background notification sent!', 'success');
+                }).catch(error => {
+                    showStatus('❌ Background notification failed: ' + error.message, 'error');
+                    console.error('SW notification error:', error);
+                });
+            }).catch(error => {
+                showStatus('❌ Service Worker not ready: ' + error.message, 'error');
+                console.error('SW ready error:', error);
+            });
+        }
+        
+        // Check service worker status on load
+        window.addEventListener('load', () => {
+            checkPermission();
+            updateDebug();
+            
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.getRegistrations().then(regs => {
+                    if (regs.length > 0) {
+                        const swStatus = document.getElementById('swStatus');
+                        swStatus.innerHTML = `<div class="status success">
+                            ✅ Service Worker already registered<br>
+                            Active: ${regs[0].active ? 'Yes' : 'No'}<br>
+                            Scope: ${regs[0].scope}
+                        </div>`;
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
+
+

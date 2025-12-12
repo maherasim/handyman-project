@@ -183,8 +183,24 @@
 
             // Function to show browser notification
             function showBrowserNotification(message) {
-                if (notificationPermission !== 'granted') return;
-                if (document.hasFocus() && window.location.pathname === '/messages') return; // Don't notify if user is on messages page
+                console.log('showBrowserNotification called', {
+                    permission: notificationPermission,
+                    hasFocus: document.hasFocus(),
+                    pathname: window.location.pathname,
+                    message: message
+                });
+                
+                if (notificationPermission !== 'granted') {
+                    console.log('Notification skipped - permission not granted:', notificationPermission);
+                    return;
+                }
+                
+                // Only suppress if user is actively viewing messages page AND tab has focus
+                // Allow notification if tab is inactive (minimized or in background)
+                if (document.hasFocus() && window.location.pathname === '/messages') {
+                    console.log('Notification skipped - user is actively viewing messages page');
+                    return;
+                }
 
                 const notificationOptions = {
                     body: message.snippet || 'New message',
@@ -203,16 +219,46 @@
 
                 if ('serviceWorker' in navigator) {
                     navigator.serviceWorker.ready.then(registration => {
+                        console.log('Showing notification via Service Worker');
                         registration.showNotification(
                             `New message from ${message.sender_name || 'User'}`,
                             notificationOptions
-                        );
+                        ).then(() => {
+                            console.log('Browser notification shown successfully');
+                        }).catch(err => {
+                            console.error('Failed to show notification via SW:', err);
+                            // Fallback to direct notification
+                            try {
+                                new Notification(
+                                    `New message from ${message.sender_name || 'User'}`,
+                                    notificationOptions
+                                );
+                            } catch (e) {
+                                console.error('Direct notification also failed:', e);
+                            }
+                        });
+                    }).catch(err => {
+                        console.error('Service Worker not ready:', err);
+                        // Fallback to direct notification
+                        try {
+                            new Notification(
+                                `New message from ${message.sender_name || 'User'}`,
+                                notificationOptions
+                            );
+                        } catch (e) {
+                            console.error('Direct notification failed:', e);
+                        }
                     });
                 } else {
-                    new Notification(
-                        `New message from ${message.sender_name || 'User'}`,
-                        notificationOptions
-                    );
+                    console.log('Service Worker not supported, using direct notification');
+                    try {
+                        new Notification(
+                            `New message from ${message.sender_name || 'User'}`,
+                            notificationOptions
+                        );
+                    } catch (e) {
+                        console.error('Direct notification failed:', e);
+                    }
                 }
             }
 
@@ -228,7 +274,13 @@
                         
                         // Show browser notification for new messages
                         if (isNew && notificationPermission === 'granted') {
+                            console.log('New message detected via polling, showing browser notification');
                             showBrowserNotification(j.latest);
+                        } else if (isNew) {
+                            console.log('New message detected but notification skipped', {
+                                permission: notificationPermission,
+                                isNew: isNew
+                            });
                         }
                         
                         try {

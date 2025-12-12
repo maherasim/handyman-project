@@ -47,7 +47,7 @@ class PostJobRequestController extends Controller
         switch (strtolower($status)) {
             case 'requested':
                 $label = 'Requested';
-                $class = 'badge text-primary bg-primary-subtle';
+                $class = 'badge text-white bg-primary-subtle';
                 break;
             case 'accepted':
                 $label = 'Accepted';

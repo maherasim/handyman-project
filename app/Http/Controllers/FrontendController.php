@@ -211,14 +211,38 @@ class FrontendController extends Controller
 
 
             $categories    = Category::where('status', 1)->orderBy('name')->get(['id','name'])->take(10);
+            if(!empty($filters['category_id'])){
+                $selected = Category::find($filters['category_id']);
+                if($selected && !$categories->contains('id', $selected->id)) $categories->push($selected);
+            }
+
             $subcategories = SubCategory::where('status', 1)->orderBy('name')->get(['id','name','category_id'])->take(10);
+            if(!empty($filters['subcategory_id'])){
+                $selected = SubCategory::find($filters['subcategory_id']);
+                if($selected && !$subcategories->contains('id', $selected->id)) $subcategories->push($selected);
+            }
+
             $providers     = User::where('user_type','provider')->where('status',1)->orderBy('display_name')->get(['id','display_name'])->take(10);
+            if(!empty($filters['provider_id'])){
+                $selected = User::find($filters['provider_id']);
+                if($selected && !$providers->contains('id', $selected->id)) $providers->push($selected);
+            }
+
             $countries     = Country::orderBy('name')->get(['id','name'])->take(10);
+            if(!empty($filters['country_id'])){
+                $selected = Country::find($filters['country_id']);
+                if($selected && !$countries->contains('id', $selected->id)) $countries->push($selected);
+            }
+
             // cities table doesn't have country_id; join states to fetch country_id for dependent dropdown
             $cities        = City::query()
                 ->leftJoin('states', 'states.id', '=', 'cities.state_id')
                 ->orderBy('cities.name')
                 ->get(['cities.id', 'cities.name', 'cities.state_id', 'states.country_id'])->take(10);
+            if(!empty($filters['city_id'])){
+                $selected = City::find($filters['city_id']);
+                if($selected && !$cities->contains('id', $selected->id)) $cities->push($selected);
+            }
 
             $query = Service::where('service_type','service')->where('status',1);
             if (!empty($filters['q'])) {
@@ -1566,5 +1590,32 @@ class FrontendController extends Controller
         $sitesetup = Setting::where('type', 'site-setup')->where('key', 'site-setup')->first();
         $date_time = $sitesetup ? json_decode($sitesetup->value, true) : null;
         return view('landing-page.HelpdeskDetail', compact('findHelpdesk', 'date_time', 'helpdeskData'));
+    }
+
+    public function ajaxCityList(Request $request)
+    {
+        $term = $request->q;
+        $country_id = $request->country_id;
+
+        $query = City::query()->select('cities.id', 'cities.name', 'cities.state_id');
+
+        if ($country_id) {
+            $query->leftJoin('states', 'states.id', '=', 'cities.state_id')
+                  ->where('states.country_id', $country_id);
+        }
+
+        if ($term) {
+            $query->where('cities.name', 'like', "%$term%");
+        }
+
+        if($country_id){
+            $cities = $query->get();
+        } else {
+            $cities = $query->limit(50)->get();
+        }
+
+        return response()->json($cities->map(function($c){
+            return ['id' => $c->id, 'text' => $c->name];
+        }));
     }
 }

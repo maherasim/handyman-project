@@ -20,7 +20,10 @@ class CategoryController extends Controller
             }
         }
         if($request->has('is_featured')){
-            $category->where('is_featured',$request->is_featured);
+             $category->where('is_featured',$request->is_featured);
+        }
+        if($request->has('search')){
+            $category->where('name','like',"%{$request->search}%");
         }
 
         $per_page = config('constant.PER_PAGE_LIMIT');

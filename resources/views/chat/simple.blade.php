@@ -88,8 +88,24 @@
 
             // Function to show browser notification
             function showBrowserNotification(message) {
-                if (notificationPermission !== 'granted') return;
-                if (document.hasFocus() && window.location.pathname.includes('/chat/')) return; // Don't notify if user is viewing this chat
+                console.log('showBrowserNotification called', {
+                    permission: notificationPermission,
+                    hasFocus: document.hasFocus(),
+                    pathname: window.location.pathname,
+                    message: message
+                });
+                
+                if (notificationPermission !== 'granted') {
+                    console.log('Notification skipped - permission not granted:', notificationPermission);
+                    return;
+                }
+                
+                // Only suppress if user is viewing THIS specific chat
+                if (document.hasFocus() && window.location.pathname.includes('/chat/') && 
+                    window.location.pathname.includes(`/chat/${conversationId}/`)) {
+                    console.log('Notification skipped - user is viewing this chat');
+                    return;
+                }
 
                 const notificationOptions = {
                     body: message.message || 'New attachment',
@@ -108,16 +124,37 @@
 
                 if ('serviceWorker' in navigator) {
                     navigator.serviceWorker.ready.then(registration => {
+                        console.log('Showing notification via Service Worker');
                         registration.showNotification(
                             `New message from ${message.sender_name || 'User'}`,
                             notificationOptions
-                        );
+                        ).then(() => {
+                            console.log('Notification shown successfully');
+                        }).catch(err => {
+                            console.error('Failed to show notification:', err);
+                        });
+                    }).catch(err => {
+                        console.error('Service Worker not ready:', err);
+                        // Fallback to direct notification
+                        try {
+                            new Notification(
+                                `New message from ${message.sender_name || 'User'}`,
+                                notificationOptions
+                            );
+                        } catch (e) {
+                            console.error('Direct notification also failed:', e);
+                        }
                     });
                 } else {
-                    new Notification(
-                        `New message from ${message.sender_name || 'User'}`,
-                        notificationOptions
-                    );
+                    console.log('Service Worker not supported, using direct notification');
+                    try {
+                        new Notification(
+                            `New message from ${message.sender_name || 'User'}`,
+                            notificationOptions
+                        );
+                    } catch (e) {
+                        console.error('Direct notification failed:', e);
+                    }
                 }
             }
 
@@ -133,6 +170,7 @@
                         if (e && typeof e === 'object') {
                             // Only show notification if message is from someone else
                             if (e.sender_id !== currentUserId) {
+                                console.log('New message received via WebSocket, showing notification');
                                 showBrowserNotification(e);
                             }
                             maybeRenderDateSeparator(e.created_at);
@@ -140,6 +178,9 @@
                             scrollToBottom();
                         }
                     });
+                    console.log('WebSocket listener registered for chat.' + conversationId);
+                } else {
+                    console.log('WebSocket (Echo) not available, using polling fallback');
                 }
             } catch (err) { /* fallback to polling only */ }
 

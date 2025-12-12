@@ -98,6 +98,7 @@ Route::get('/post-job-datatable', [FrontendController::class, 'postJobDatatable'
 Route::get('/favouriteservice-datatable', [FrontendController::class, 'favouriteServiceDatatable'])->name('favouriteservice.data');
 Route::get('/rating-datatable', [FrontendController::class, 'ratingDatatable'])->name('rating.data');
 Route::post('/user-subscribe', [FrontendController::class, 'userSubscribe'])->name('user.subscribe');
+Route::get('/ajax-list/cities', [FrontendController::class, 'ajaxCityList'])->name('ajax.list.cities');
 
 
 

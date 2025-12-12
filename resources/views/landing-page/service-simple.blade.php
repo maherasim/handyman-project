@@ -1,86 +1,120 @@
 @extends('landing-page.layouts.default')
 
 @section('content')
-<div class="section-padding">
+<div class="section-padding bg-light">
     <div class="container">
-        <form method="GET" class="card shadow-sm mb-4 p-3" id="serviceFilterForm">
-            <input type="hidden" name="mode" value="simple">
-            <div class="row g-2 align-items-end d-flex flex-wrap bg-light border rounded px-2 py-2" style="gap:8px;">
-                <div class="col-auto">
-                    <label class="form-label">Category</label>
-                    <select name="category_id" id="categorySelect" class="form-select" style="min-width:200px;">
-                        <option value="">All</option>
-                        @foreach($categories as $c)
-                        <option value="{{ $c->id }}" {{ (string)($filters['category_id'] ?? '') === (string)$c->id ? 'selected' : '' }}>{{ $c->name }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="col-auto">
-                    <label class="form-label">Subcategory</label>
-                    <select name="subcategory_id" id="subcategorySelect" class="form-select" style="min-width:200px;">
-                        <option value="">All</option>
-                        @foreach($subcategories as $sc)
-                        <option value="{{ $sc->id }}" data-category="{{ $sc->category_id }}" {{ (string)($filters['subcategory_id'] ?? '') === (string)$sc->id ? 'selected' : '' }}>{{ $sc->name }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="col-auto">
-                    <label class="form-label">Provider</label>
-                    <select name="provider_id" class="form-select" id="providerSelect" style="min-width:200px;">
-                        <option value="">All</option>
-                        @foreach($providers as $p)
-                        <option value="{{ $p->id }}" {{ (string)($filters['provider_id'] ?? '') === (string)$p->id ? 'selected' : '' }}>{{ $p->display_name }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="col-auto">
-                    <label class="form-label">Search</label>
-                    <input type="text" class="form-control" name="q" value="{{ $filters['q'] ?? '' }}" placeholder="Search services" style="min-width:200px;">
-                </div>
-                <div class="col-auto">
-                    <label class="form-label">Country</label>
-                    <select name="country_id" id="countrySelect" class="form-select" style="min-width:180px;">
-                        <option value="">All</option>
-                        @foreach($countries as $ct)
-                        <option value="{{ $ct->id }}" {{ (string)($filters['country_id'] ?? '') === (string)$ct->id ? 'selected' : '' }}>{{ $ct->name }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="col-auto">
-                    <label class="form-label">City</label>
-                    <select name="city_id" id="citySelect" class="form-select" style="min-width:180px;">
-                        <option value="">All</option>
-                        @foreach($cities as $cy)
-                        <option value="{{ $cy->id }}" data-country="{{ $cy->country_id }}" data-state="{{ $cy->state_id ?? '' }}" {{ (string)($filters['city_id'] ?? '') === (string)$cy->id ? 'selected' : '' }}>{{ $cy->name }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="col-auto">
-                    <label class="form-label">Min price</label>
-                    <input type="number" step="0.01" class="form-control" name="price_min" value="{{ $filters['price_min'] ?? '' }}" style="min-width:120px;">
-                </div>
-                <div class="col-auto">
-                    <label class="form-label">Max price</label>
-                    <input type="number" step="0.01" class="form-control" name="price_max" value="{{ $filters['price_max'] ?? '' }}" style="min-width:120px;">
-                </div>
-                <div class="col-auto">
-                    <label class="form-label">Sort</label>
-                    <select name="sort" class="form-select" style="min-width:160px;">
-                        <option value="newest" {{ ($filters['sort'] ?? 'newest')==='newest' ? 'selected' : '' }}>Newest</option>
-                        <option value="price_asc" {{ ($filters['sort'] ?? '')==='price_asc' ? 'selected' : '' }}>Price: Low to High</option>
-                        <option value="price_desc" {{ ($filters['sort'] ?? '')==='price_desc' ? 'selected' : '' }}>Price: High to Low</option>
-                    </select>
-                </div>
-                <div class="col-auto text-md-end d-flex align-items-end" style="gap:8px;">
-                    <a href="{{ route('service.list') }}" class="btn btn-light border">Clear</a>
-                    <button id="applyBtn" type="submit" class="btn btn-primary">Apply</button>
-                </div>
+        <!-- Top Filters -->
+        <div class="card shadow-sm border-0 rounded-3 mb-4">
+            <div class="card-header bg-white border-bottom p-3">
+                <h5 class="mb-0 text-primary fw-bold"><i class="fas fa-filter me-2"></i> Filters</h5>
             </div>
-        </form>
+            <div class="card-body p-4">
+                <form method="GET" id="serviceFilterForm">
+                    <input type="hidden" name="mode" value="simple">
+                    <div class="row g-3">
+                        <!-- Search -->
+                        <div class="col-lg-3 col-md-6">
+                            <label class="form-label small fw-bold text-muted text-uppercase">Search</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0"><i class="fas fa-search text-muted"></i></span>
+                                <input type="text" class="form-control border-start-0 bg-light" name="q" value="{{ $filters['q'] ?? '' }}" placeholder="Search services...">
+                            </div>
+                        </div>
 
-        <div class="row">
+                        <!-- Sort -->
+                        <div class="col-lg-3 col-md-6">
+                            <label class="form-label small fw-bold text-muted text-uppercase">Sort By</label>
+                            <select name="sort" class="form-select bg-light">
+                                <option value="newest" {{ ($filters['sort'] ?? 'newest')==='newest' ? 'selected' : '' }}>Most Recent</option>
+                                <option value="price_asc" {{ ($filters['sort'] ?? '')==='price_asc' ? 'selected' : '' }}>Price: Low to High</option>
+                                <option value="price_desc" {{ ($filters['sort'] ?? '')==='price_desc' ? 'selected' : '' }}>Price: High to Low</option>
+                            </select>
+                        </div>
+
+                        <!-- Price Range -->
+                        <div class="col-lg-6 col-md-12">
+                            <label class="form-label small fw-bold text-muted text-uppercase">Price Range</label>
+                            <div class="row g-2">
+                                <div class="col-6">
+                                    <input type="number" step="0.01" class="form-control bg-light" name="price_min" value="{{ $filters['price_min'] ?? '' }}" placeholder="Min Price">
+                                </div>
+                                <div class="col-6">
+                                    <input type="number" step="0.01" class="form-control bg-light" name="price_max" value="{{ $filters['price_max'] ?? '' }}" placeholder="Max Price">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Category -->
+                        <div class="col-lg-3 col-md-6">
+                            <label class="form-label small fw-bold text-muted text-uppercase">Category</label>
+                            <select name="category_id" id="categorySelect" class="form-select bg-light w-100">
+                                <option value="">All Categories</option>
+                                @foreach($categories as $c)
+                                <option value="{{ $c->id }}" {{ (string)($filters['category_id'] ?? '') === (string)$c->id ? 'selected' : '' }}>{{ $c->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <!-- Subcategory -->
+                        <div class="col-lg-3 col-md-6">
+                            <label class="form-label small fw-bold text-muted text-uppercase">Subcategory</label>
+                            <select name="subcategory_id" id="subcategorySelect" class="form-select bg-light w-100">
+                                <option value="">All Subcategories</option>
+                                @foreach($subcategories as $sc)
+                                <option value="{{ $sc->id }}" data-category="{{ $sc->category_id }}" {{ (string)($filters['subcategory_id'] ?? '') === (string)$sc->id ? 'selected' : '' }}>{{ $sc->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <!-- Provider -->
+                        <div class="col-lg-3 col-md-6">
+                            <label class="form-label small fw-bold text-muted text-uppercase">Provider</label>
+                            <select name="provider_id" id="providerSelect" class="form-select bg-light w-100">
+                                <option value="">All Providers</option>
+                                @foreach($providers as $p)
+                                <option value="{{ $p->id }}" {{ (string)($filters['provider_id'] ?? '') === (string)$p->id ? 'selected' : '' }}>{{ $p->display_name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                         <!-- Location (Combined for compactness) -->
+                        <div class="col-lg-3 col-md-6">
+                             <div class="row g-2">
+                                <div class="col-6">
+                                    <label class="form-label small fw-bold text-muted text-uppercase">Country</label>
+                                    <select name="country_id" id="countrySelect" class="form-select bg-light mb-2 w-100">
+                                        <option value="">All</option>
+                                        @foreach($countries as $ct)
+                                        <option value="{{ $ct->id }}" {{ (string)($filters['country_id'] ?? '') === (string)$ct->id ? 'selected' : '' }}>{{ $ct->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="col-6">
+                                    <label class="form-label small fw-bold text-muted text-uppercase">City</label>
+                                    <select name="city_id" id="citySelect" class="form-select bg-light w-100">
+                                        <option value="">All</option>
+                                        @foreach($cities as $cy)
+                                        <option value="{{ $cy->id }}" data-country="{{ $cy->country_id }}" data-state="{{ $cy->state_id ?? '' }}" {{ (string)($filters['city_id'] ?? '') === (string)$cy->id ? 'selected' : '' }}>{{ $cy->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                             </div>
+                        </div>
+
+                        <!-- Buttons -->
+                        <div class="col-12 mt-4 text-end">
+                            <a href="{{ route('service.list') }}" class="btn btn-outline-secondary px-4 me-2">Clear All</a>
+                            <button id="applyBtn" type="submit" class="btn btn-primary px-4 fw-bold">Apply Filters</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="row g-4">
             @forelse($services as $data)
-                <div class="col-md-3">
+                <div class="col-lg-3 col-md-6">
                     @php
                         $totalReviews = \App\Models\BookingRating::where('service_id', $data->id)->count();
                         $totalRating = $data->serviceRating ? (float)number_format(max($data->serviceRating->avg('rating'), 0), 2) : 0;
@@ -104,66 +138,177 @@
                 </div>
             @empty
                 <div class="col-12">
-                    <div class="alert alert-light border">No services found.</div>
+                    <div class="text-center py-5 bg-white rounded shadow-sm">
+                        <img src="{{ asset('assets/search-no-data.png') }}" class="img-fluid mb-3" style="max-width: 200px;" alt="No services found">
+                        <h4 class="text-muted">No services found</h4>
+                        <p class="text-muted mb-0">Try adjusting your filters used to find what you're looking for.</p>
+                    </div>
                 </div>
             @endforelse
         </div>
 
-        <div class="mt-3">
+        <div class="mt-4 d-flex justify-content-center">
             {{ $services->links() }}
         </div>
     </div>
 </div>
 
+@section('after_head')
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
+@endsection
+
+@section('after_script')
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function(){
-    const categorySelect = document.getElementById('categorySelect');
-    const subcategorySelect = document.getElementById('subcategorySelect');
-    const countrySelect = document.getElementById('countrySelect');
-    const citySelect = document.getElementById('citySelect');
-    const filterForm = document.getElementById('serviceFilterForm');
-
-    function filterDependent(child, attr, parentValue){
-        const valueToKeep = '{{ $filters['subcategory_id'] ?? '' }}';
-        [...child.options].forEach((opt, idx) => {
-            if(idx===0) return; // keep placeholder
-            const match = String(opt.getAttribute(attr)) === String(parentValue || '');
-            opt.hidden = !match;
-            if (!match && opt.selected) { opt.selected = false; }
-        });
-    }
-
-    function applyCategory(){
-        filterDependent(subcategorySelect, 'data-category', categorySelect.value);
-    }
-    function applyCountry(){
-        filterDependent(citySelect, 'data-country', countrySelect.value);
-    }
-
-    // Update dependent options only; do not submit automatically
-    categorySelect.addEventListener('change', () => { applyCategory(); });
-    countrySelect.addEventListener('change', () => { applyCountry(); });
-    subcategorySelect.addEventListener('change', () => {});
-    citySelect.addEventListener('change', () => {});
-    document.getElementById('providerSelect').addEventListener('change', () => {});
-
-    applyCategory();
-    applyCountry();
-
-    // Prevent implicit submits (Enter key or plugin behaviors)
-    filterForm.addEventListener('keydown', function(e){
-        if(e.key === 'Enter') { e.preventDefault(); }
+    // Initialize Select2
+    $('#categorySelect').select2({
+        theme: 'bootstrap-5',
+        placeholder: 'All Categories',
+        allowClear: true,
+        ajax: {
+            url: '{{ url("/api/category-list") }}',
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
+                return {
+                    search: params.term, // search term
+                    per_page: 'all' // or use pagination, but user asked for "fetch all"
+                };
+            },
+            processResults: function (data) {
+                return {
+                    results: $.map(data.data, function (item) {
+                        return { text: item.name, id: item.id }
+                    })
+                };
+            },
+            cache: true
+        }
     });
 
-    // Only allow submit via the Apply button
-    filterForm.addEventListener('submit', function(e){
-        const submitter = e.submitter || null;
-        if(!submitter || submitter.id !== 'applyBtn') {
-            e.preventDefault();
+    $('#subcategorySelect').select2({
+        theme: 'bootstrap-5', 
+        placeholder: 'All Subcategories',
+        allowClear: true,
+        ajax: {
+            url: '{{ url("/api/subcategory-list") }}',
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
+                return {
+                    search: params.term,
+                    category_id: $('#categorySelect').val(),
+                    per_page: 'all'
+                };
+            },
+            processResults: function (data) {
+                return {
+                    results: $.map(data.data, function (item) {
+                        return { text: item.name, id: item.id }
+                    })
+                };
+            },
+            cache: true
         }
+    });
+
+    $('#providerSelect').select2({
+        theme: 'bootstrap-5',
+        placeholder: 'All Providers', 
+        allowClear: true,
+        ajax: {
+            url: '{{ url("/api/user-list") }}',
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
+                return {
+                    keyword: params.term,
+                    user_type: 'provider',
+                    status: 1,
+                    per_page: 'all' 
+                };
+            },
+            processResults: function (data) {
+                return {
+                    results: $.map(data.data, function (item) {
+                        return { text: item.display_name, id: item.id }
+                    })
+                };
+            },
+            cache: true
+        }
+    });
+    
+    // For countries, we can fetch all at once since it's small (200) or use Select2
+    // Since api/country-list is POST, Select2 ajax type needs 'POST' or use 'transport'
+    let countryData = [];
+    $.post('{{ url("/api/country-list") }}', { _token: '{{ csrf_token() }}' }, function(data) {
+        // data is array of objects
+        // Populate select options manually or reinit Select2
+        // We can just use standard select2 with data array
+        countryData = data.map(c => ({ id: c.id, text: c.name }));
+        
+        // Check if there is a selected value from server rendering
+        let selectedCountry = '{{ $filters['country_id'] ?? '' }}';
+        
+        $('#countrySelect').empty().select2({
+            theme: 'bootstrap-5',
+            placeholder: 'All Countries',
+            allowClear: true,
+            data: countryData
+        });
+        
+        if(selectedCountry) {
+            $('#countrySelect').val(selectedCountry).trigger('change');
+        } else {
+             $('#countrySelect').val(null).trigger('change');
+        }
+    });
+
+    $('#citySelect').select2({
+        theme: 'bootstrap-5',
+        placeholder: 'All Cities',
+        allowClear: true,
+        ajax: {
+            url: '{{ route("ajax.list.cities") }}',
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
+                return {
+                    q: params.term,
+                    country_id: $('#countrySelect').val()
+                };
+            },
+            processResults: function (data) {
+                return {
+                    results: data // data is already [{id, text}]
+                };
+            },
+            cache: true
+        }
+    });
+
+    // Event listeners
+    $('#categorySelect').on('select2:select', function (e) {
+         $('#subcategorySelect').val(null).trigger('change'); // Clear subcat
+    });
+    
+    $('#countrySelect').on('select2:select', function(e) {
+         $('#citySelect').val(null).trigger('change');
+    });
+
+    // Handle clearing
+    $('#categorySelect').on('select2:clear', function (e) {
+         $('#subcategorySelect').val(null).trigger('change');
+    });
+    $('#countrySelect').on('select2:clear', function(e) {
+         $('#citySelect').val(null).trigger('change');
     });
 });
 </script>
+@endsection
 @endsection
 
 

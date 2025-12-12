@@ -1,4 +1,6 @@
 <x-master-layout>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/glightbox/dist/js/glightbox.min.js"></script>
     
     <main class="main-area">
         <div class="main-content">
@@ -66,7 +68,9 @@
                                                         $firstAttachmentUrl = $attachmentUrls[0] ?? null; // Use a default image if empty
                                                     @endphp
                                                     @if($firstAttachmentUrl !== null)
-                                                    <img src="{{ $firstAttachmentUrl }}" alt="avatar" class="avatar avatar-40">   
+                                                    <a href="{{ $firstAttachmentUrl }}" class="glightbox">
+                                                        <img src="{{ $firstAttachmentUrl }}" alt="avatar" class="avatar avatar-40">   
+                                                    </a>
                                                     @endif             
                                                     <div class="text-start">
                                                         <span class="">{{ $helpdeskdata->description ?? '--' }}</span>
@@ -148,7 +152,9 @@
                                                                 $firstAttachmentUrl = $attachmentUrls[0] ?? null; // Use a default image if empty
                                                             @endphp
                                                             @if($firstAttachmentUrl !== null)
-                                                                <img src="{{ $firstAttachmentUrl }}" alt="avatar" class="avatar avatar-40">
+                                                                <a href="{{ $firstAttachmentUrl }}" class="glightbox">
+                                                                    <img src="{{ $firstAttachmentUrl }}" alt="avatar" class="avatar avatar-40">
+                                                                </a>
                                                             @endif
                                                                 <div class="text-start" id="messages">
                                                                     <span>{{ $activity->messages ?? '--' }}</span>
@@ -271,4 +277,11 @@
 });
 
 
+</script>
+<script>
+    const lightbox = GLightbox({
+        touchNavigation: true,
+        loop: true,
+        autoplayVideos: true
+    });
 </script>
