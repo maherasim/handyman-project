@@ -191,159 +191,113 @@
 
      <body>
          <div class="container mt-5">
-             <div class="filter-section"
-                 style="
-                 background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                 border-radius: 20px;
-                 padding: 30px;
-                 margin-bottom: 40px;
-                 box-shadow: 0 8px 32px rgba(102, 126, 234, 0.2);
-             ">
-                 <h4 class="text-white text-center mb-4"
-                     style="
-                     font-weight: 700;
-                     font-size: 24px;
-                     margin-bottom: 30px;
-                     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-                 ">
-                     <i class='bx bx-filter-alt' style="margin-right: 10px;"></i>
-                     Find Your Perfect Job
-                 </h4>
+        <div class="card shadow-sm border-0 rounded-3 mb-4">
+            <div class="card-header bg-white border-bottom p-3">
+                <h5 class="mb-0 text-primary fw-bold"><i class="fas fa-filter me-2"></i> Find Your Perfect Job</h5>
+            </div>
+            <div class="card-body p-4">
+                <form method="GET" action="{{ route('job.data') }}" id="jobFilterForm">
+                    <div class="row g-3">
+                        <!-- Category -->
+                        <div class="col-lg-3 col-md-6">
+                            <label class="form-label small fw-bold text-muted text-uppercase">Category</label>
+                            <select name="category_id" id="category-select" class="form-select bg-light w-100">
+                                <option value="">All Categories</option>
+                                @foreach ($categories as $category)
+                                    <option value="{{ $category->id }}" {{ request('category_id') == $category->id ? 'selected' : '' }}>
+                                        {{ $category->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
 
-                 <div class="row g-3">
-                     <div class="col-lg-2 col-md-4 col-6">
-                         <select class="form-select filter-select" id="category-select" aria-label="Filter by Category"
-                             style="
-                             border: none;
-                             border-radius: 12px;
-                             padding: 12px 16px;
-                             font-weight: 500;
-                             background: rgba(255, 255, 255, 0.95);
-                             backdrop-filter: blur(10px);
-                             transition: all 0.3s ease;
-                         ">
-                             <option selected>Category</option>
-                             @foreach ($categories as $category)
-                                 <option value="{{ $category->id }}">{{ $category->name }}</option>
-                             @endforeach
-                         </select>
-                     </div>
+                        <!-- Subcategory -->
+                        <div class="col-lg-3 col-md-6">
+                            <label class="form-label small fw-bold text-muted text-uppercase">Sub-Category</label>
+                            <select name="subcategory_id" id="subcategory-select" class="form-select bg-light w-100">
+                                <option value="">All Sub-Categories</option>
+                                @foreach ($subcategories as $subcategory)
+                                    <option value="{{ $subcategory->id }}" {{ request('subcategory_id') == $subcategory->id ? 'selected' : '' }}>
+                                        {{ $subcategory->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
 
-                     <div class="col-lg-2 col-md-4 col-6">
-                         <select class="form-select filter-select" id="subcategory-select"
-                             aria-label="Filter by Sub-Category"
-                             style="
-                             border: none;
-                             border-radius: 12px;
-                             padding: 12px 16px;
-                             font-weight: 500;
-                             background: rgba(255, 255, 255, 0.95);
-                             backdrop-filter: blur(10px);
-                             transition: all 0.3s ease;
-                         ">
-                             <option selected>Sub-Category</option>
-                             @foreach ($subcategories as $subcategory)
-                                 <option value="{{ $subcategory->id }}">{{ $subcategory->name }}</option>
-                             @endforeach
-                         </select>
-                     </div>
+                        <!-- Customer -->
+                        <div class="col-lg-3 col-md-6">
+                            <label class="form-label small fw-bold text-muted text-uppercase">Customer</label>
+                            <select name="customer_id" id="customer-select" class="form-select bg-light w-100">
+                                <option value="">All Customers</option>
+                                @foreach ($customers as $customer)
+                                    <option value="{{ $customer->id }}" {{ request('customer_id') == $customer->id ? 'selected' : '' }}>
+                                        {{ $customer->display_name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
 
-                     <div class="col-lg-2 col-md-4 col-6">
-                         <select class="form-select filter-select" id="customer-select" aria-label="Filter by Customer"
-                             style="
-                             border: none;
-                             border-radius: 12px;
-                             padding: 12px 16px;
-                             font-weight: 500;
-                             background: rgba(255, 255, 255, 0.95);
-                             backdrop-filter: blur(10px);
-                             transition: all 0.3s ease;
-                         ">
-                             <option selected>Customer</option>
-                             @foreach ($customers as $customer)
-                                 <option value="{{ $customer->id }}">{{ $customer->display_name }}</option>
-                             @endforeach
-                         </select>
-                     </div>
+                         <!-- Country -->
+                         <div class="col-lg-3 col-md-6">
+                            <label class="form-label small fw-bold text-muted text-uppercase">Country</label>
+                            <select name="country_id" id="country-select" class="form-select bg-light w-100">
+                                <option value="">All Countries</option>
+                                @foreach ($countries as $country)
+                                    <option value="{{ $country->id }}" {{ request('country_id') == $country->id ? 'selected' : '' }}>
+                                        {{ $country->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
 
-                     <div class="col-lg-2 col-md-4 col-6">
-                         <select class="form-select filter-select" id="country-select" aria-label="Filter by Country"
-                             style="
-                             border: none;
-                             border-radius: 12px;
-                             padding: 12px 16px;
-                             font-weight: 500;
-                             background: rgba(255, 255, 255, 0.95);
-                             backdrop-filter: blur(10px);
-                             transition: all 0.3s ease;
-                         ">
-                             <option selected>Country</option>
-                             @foreach ($countries as $country)
-                                 <option value="{{ $country->id }}">{{ $country->name }}</option>
-                             @endforeach
-                         </select>
-                     </div>
+                        <!-- City -->
+                        <div class="col-lg-3 col-md-6">
+                            <label class="form-label small fw-bold text-muted text-uppercase">City</label>
+                            <select name="city_id" id="city-select" class="form-select bg-light w-100">
+                                <option value="">All Cities</option>
+                                @foreach ($cities as $city)
+                                    <option value="{{ $city->id }}" {{ request('city_id') == $city->id ? 'selected' : '' }}>
+                                        {{ $city->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
 
-                     <div class="col-lg-2 col-md-4 col-6">
-                         <select class="form-select filter-select" id="city-select" aria-label="Filter by City"
-                             style="
-                             border: none;
-                             border-radius: 12px;
-                             padding: 12px 16px;
-                             font-weight: 500;
-                             background: rgba(255, 255, 255, 0.95);
-                             backdrop-filter: blur(10px);
-                             transition: all 0.3s ease;
-                         ">
-                             <option selected>City</option>
-                         </select>
-                     </div>
+                        <!-- Sort By -->
+                        <div class="col-lg-3 col-md-6">
+                            <label class="form-label small fw-bold text-muted text-uppercase">Sort By</label>
+                            <select name="sort" id="sort-select" class="form-select bg-light w-100">
+                                <option value="">Default</option>
+                                <option value="1" {{ request('sort') == '1' ? 'selected' : '' }}>Price: Low to High</option>
+                                <option value="2" {{ request('sort') == '2' ? 'selected' : '' }}>Price: High to Low</option>
+                            </select>
+                        </div>
+                        
+                         <!-- Buttons -->
+                         <div class="col-lg-6 col-md-12 d-flex align-items-end">
+                            <div class="d-flex gap-2 w-100">
+                                <button type="submit" class="btn btn-primary flex-grow-1">
+                                    <i class="fas fa-filter me-2"></i>Apply Filters
+                                </button>
+                                <a href="{{ route('job.data') }}" class="btn btn-light border flex-grow-1">
+                                    <i class="fas fa-times me-2"></i>Clear
+                                </a>
+                            </div>
+                        </div>
 
-                     <div class="col-lg-2 col-md-4 col-6">
-                         <select class="form-select filter-select" id="sort-select" aria-label="Sort by Price"
-                             style="
-                             border: none;
-                             border-radius: 12px;
-                             padding: 12px 16px;
-                             font-weight: 500;
-                             background: rgba(255, 255, 255, 0.95);
-                             backdrop-filter: blur(10px);
-                             transition: all 0.3s ease;
-                         ">
-                             <option selected>Sort by</option>
-                             <option value="1">Price: Low to High</option>
-                             <option value="2">Price: High to Low</option>
-                         </select>
-                     </div>
-
-                     <!-- Clear Filters Button -->
-                     <div class="col-lg-2 col-md-4 col-6">
-                         <button class="form-select filter-select" id="clear-filters-btn"
-                             style="
-                             border: none;
-                             border-radius: 12px;
-                             padding: 12px 16px;
-                             font-weight: 500;
-                             background: rgba(255, 255, 255, 0.95);
-                             backdrop-filter: blur(10px);
-                             transition: all 0.3s ease;
-                             cursor: pointer;
-                             text-align: left;
-                         ">
-                             <i class="fas fa-times me-2"></i>Clear Filters
-                         </button>
-                     </div>
-                 </div>
-             </div>
-         </div>
+                    </div>
+                </form>
+            </div>
+        </div>
 
          <div class="container mt-5">
              <div class="row">
                  @if ($jobrequest->isEmpty())
                      <div class="col-12">
-                         <div class="alert alert-warning text-center"
-                             style="border-radius: 10px; background-color: #fff3cd; color: #856404;">
-                             <strong>Notice:</strong> No data exists based on the selected filters.
+                         <div class="text-center py-5 bg-white rounded shadow-sm">
+                             <img src="{{ asset('assets/search-no-data.png') }}" class="img-fluid mb-3" style="max-width: 200px;" alt="No jobs found">
+                             <h4 class="text-muted">No jobs found</h4>
+                             <p class="text-muted mb-0">Try adjusting your filters to find what you're looking for.</p>
                          </div>
                      </div>
                  @else
@@ -626,149 +580,49 @@
 
 
          <!-- Include Bootstrap JS and jQuery -->
-         <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
          <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
          <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
         <script>
              $(document).ready(function() {
-                 // When the category dropdown changes - ONLY load subcategories, don't apply filters
+                 
+                 // Dependent Dropdowns Logic
                  $('#category-select').on('change', function() {
                      var categoryId = $(this).val();
-
-                     // Reset subcategory dropdown
-                     $('#subcategory-select').empty();
-                     $('#subcategory-select').append('<option selected>Sub-Category</option>');
-
-                     if (categoryId && categoryId !== 'Category') {
-                         // Make AJAX request to fetch subcategories
+                     $('#subcategory-select').empty().append('<option value="">All Sub-Categories</option>');
+                     
+                     if (categoryId) {
                          $.ajax({
                              url: '{{ route('subcategory.listforgood') }}',
                              method: 'GET',
-                             data: {
-                                 category_id: categoryId
-                             },
+                             data: { category_id: categoryId },
                              success: function(response) {
-                                 // Populate the subcategory dropdown with the new options
                                  $.each(response, function(key, subcategory) {
-                                     $('#subcategory-select').append('<option value="' +
-                                         subcategory.id + '">' + subcategory.name +
-                                         '</option>');
+                                     $('#subcategory-select').append('<option value="' + subcategory.id + '">' + subcategory.name + '</option>');
                                  });
-                             },
-                             error: function(xhr, status, error) {
-                                 console.error('AJAX request failed:', status, error);
                              }
                          });
                      }
                  });
 
-                 // When the country dropdown changes - ONLY load cities, don't apply filters
                  $('#country-select').on('change', function() {
                      var countryId = $(this).val();
-
-                     // Reset city dropdown
-                     $('#city-select').empty();
-                     $('#city-select').append('<option selected>City</option>');
-
-                     if (countryId && countryId !== 'Country') {
-                         // Make AJAX request to fetch cities based on the selected country
+                     $('#city-select').empty().append('<option value="">All Cities</option>');
+                     
+                     if (countryId) {
                          $.ajax({
-                             url: '/ajax-cities/' + countryId,
+                             url: '{{ route('ajax.list.cities') }}',
                              method: 'GET',
+                             data: { country_id: countryId },
                              success: function(response) {
-                                 // Populate the city dropdown with the new options
                                  $.each(response, function(key, city) {
-                                     $('#city-select').append('<option value="' + city.id +
-                                         '">' + city.name + '</option>');
+                                     $('#city-select').append('<option value="' + city.id + '">' + city.text + '</option>');
                                  });
-                             },
-                             error: function(xhr, status, error) {
-                                 console.error('AJAX request failed:', status, error);
                              }
                          });
                      }
                  });
-
-                 // Apply filters only when final selections are made
-                 $('#subcategory-select, #customer-select, #city-select, #sort-select').on('change', function() {
-                     // Small delay to ensure all dropdowns are updated
-                     setTimeout(function() {
-                         applyFilters();
-                     }, 100);
-                 });
-
-                 // Clear Filters functionality
-                 $('#clear-filters-btn').on('click', function() {
-                     clearAllFilters();
-                 });
-
-                 // Function to apply filters
-                 function applyFilters() {
-                     const params = new URLSearchParams(window.location.search);
-
-                     // Get all filter values
-                     const categoryId = $('#category-select').val();
-                     const subcategoryId = $('#subcategory-select').val();
-                     const customerId = $('#customer-select').val();
-                     const countryId = $('#country-select').val();
-                     const cityId = $('#city-select').val();
-                     const sortValue = $('#sort-select').val();
-
-                     // Set parameters only if they have actual values (not default text)
-                     if (categoryId && categoryId !== 'Category') {
-                         params.set('category_id', categoryId);
-                     } else {
-                         params.delete('category_id');
-                     }
-
-                     if (subcategoryId && subcategoryId !== 'Sub-Category') {
-                         params.set('subcategory_id', subcategoryId);
-                     } else {
-                         params.delete('subcategory_id');
-                     }
-
-                     if (customerId && customerId !== 'Customer') {
-                         params.set('customer_id', customerId);
-                     } else {
-                         params.delete('customer_id');
-                     }
-
-                     if (countryId && countryId !== 'Country') {
-                         params.set('country_id', countryId);
-                     } else {
-                         params.delete('country_id');
-                     }
-
-                     if (cityId && cityId !== 'City') {
-                         params.set('city_id', cityId);
-                     } else {
-                         params.delete('city_id');
-                     }
-
-                     if (sortValue && sortValue !== 'Sort by') {
-                         params.set('sort', sortValue);
-                     } else {
-                         params.delete('sort');
-                     }
-
-                     // Reload page with new parameters
-                     window.location.search = params.toString();
-                 }
-
-                 // Function to clear all filters
-                 function clearAllFilters() {
-                     // Reset all dropdowns to default
-                     $('#category-select').val('Category');
-                     $('#subcategory-select').empty().append('<option selected>Sub-Category</option>');
-                     $('#customer-select').val('Customer');
-                     $('#country-select').val('Country');
-                     $('#city-select').empty().append('<option selected>City</option>');
-                     $('#sort-select').val('Sort by');
-
-                     // Clear URL parameters
-                     window.location.search = '';
-                 }
              });
          </script>
 

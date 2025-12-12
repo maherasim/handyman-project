@@ -135,10 +135,26 @@
     }
 
     /* Apply gradient to navigation items */
-    .nav-link.active,
+    /* Apply gradient to nav pills only */
     .nav-pills .nav-link.active {
         background: var(--red-blue-gradient) !important;
         color: #fff !important;
+    }
+    
+    /* Apply consistent padding to all navbar items to prevent jumping */
+    .navbar-nav .nav-link {
+        padding: 0.5rem 1rem !important;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+    }
+
+    /* Apply gradient text to navbar items */
+    .navbar-nav .nav-link.active {
+        background: var(--red-blue-gradient) !important;
+        color: #fff !important;
+        -webkit-background-clip: border-box !important;
+        -webkit-text-fill-color: #fff !important;
+        background-clip: border-box !important;
     }
 
     /* Apply gradient to progress bars */

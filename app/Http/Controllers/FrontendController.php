@@ -1054,23 +1054,23 @@ class FrontendController extends Controller
 
 
         // Apply filters based on request input
-        if ($request->has('category_id') && $request->category_id != 'Filter by Category') {
+        if ($request->filled('category_id')) {
             $query->where('category_id', $request->category_id);
         }
 
-        if ($request->has('subcategory_id') && $request->subcategory_id != 'Filter by Sub-Category') {
+        if ($request->filled('subcategory_id')) {
             $query->where('subcategory_id', $request->subcategory_id);
         }
 
-        if ($request->has('customer_id') && $request->customer_id != 'Filter by Customer') {
+        if ($request->filled('customer_id')) {
             $query->where('customer_id', $request->customer_id);
         }
 
-        if ($request->has('country_id') && $request->country_id != 'Filter by Country') {
+        if ($request->filled('country_id')) {
             $query->where('country_id', $request->country_id);
         }
 
-        if ($request->has('city_id') && $request->city_id != 'Filter by City') {
+        if ($request->filled('city_id')) {
             $query->where('city_id', $request->city_id);
         }
 
@@ -1617,5 +1617,11 @@ class FrontendController extends Controller
         return response()->json($cities->map(function($c){
             return ['id' => $c->id, 'text' => $c->name];
         }));
+    }
+    public function subCatgeoryListfor(Request $request)
+    {
+        $category_id = $request->category_id;
+        $subcategories = SubCategory::where('category_id', $category_id)->get();
+        return response()->json($subcategories);
     }
 }
