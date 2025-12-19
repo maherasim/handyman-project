@@ -136,6 +136,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('save-bank-transfer-payment',[API\PaymentController::class, 'saveBankTransferPayment']);
 
     Route::get('payment-list',[API\PaymentController::class, 'paymentList']);
+    Route::get('handyman-earnings-list',[API\PaymentController::class, 'handymanEarningsList']);
     Route::post('transfer-payment',[API\PaymentController::class, 'transferPayment']);
     Route::get('payment-history',[API\PaymentController::class, 'paymentHistory']);
     Route::get('cash-detail',[API\PaymentController::class, 'paymentDetail']);

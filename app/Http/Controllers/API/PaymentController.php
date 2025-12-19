@@ -781,4 +781,148 @@ class PaymentController extends Controller
 
         return comman_custom_response($payment);
     }
+
+    /**
+     * Get handyman earnings/payments list
+     * Returns payment history with handyman commission earnings
+     * 
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function handymanEarningsList(Request $request)
+    {
+        // Check if user is handyman
+        $user = auth()->user();
+        if (!$user->hasRole('handyman')) {
+            return comman_message_response(__('messages.unauthorized'), 403);
+        }
+
+        $query = Payment::query()
+            ->myPayment()
+            ->with([
+                'handymanEarning' => function ($q) {
+                    $q->where('user_type', 'handyman')
+                      ->where('commission_status', 'paid');
+                },
+                'booking.service',
+                'booking.bookingPackage',
+                'customer',
+                'postJobRequest'
+            ])
+            ->where(function ($q) {
+                $q->where('payment_type', '!=', 'bank_transfer')
+                    ->orWhere(function ($sub) {
+                        $sub->where('payment_type', 'bank_transfer')->where('status', 1);
+                    });
+            })
+            ->groupBy('payments.booking_id');
+
+        // Apply filters
+        $filter = $request->filter;
+        if (isset($filter) && isset($filter['column_status'])) {
+            $query->where('payment_status', $filter['column_status']);
+        }
+
+        // Search functionality
+        if ($request->has('search') && !empty($request->search)) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->whereHas('booking.service', function ($serviceQuery) use ($search) {
+                    $serviceQuery->where('name', 'like', '%' . $search . '%');
+                })
+                ->orWhereHas('customer', function ($customerQuery) use ($search) {
+                    $customerQuery->where('display_name', 'like', '%' . $search . '%')
+                                  ->orWhere('first_name', 'like', '%' . $search . '%')
+                                  ->orWhere('last_name', 'like', '%' . $search . '%');
+                })
+                ->orWhereHas('postJobRequest', function ($postJobQuery) use ($search) {
+                    $postJobQuery->where('title', 'like', '%' . $search . '%');
+                });
+            });
+        }
+
+        // Pagination
+        $per_page = config('constant.PER_PAGE_LIMIT');
+        if ($request->has('per_page') && !empty($request->per_page)) {
+            if (is_numeric($request->per_page)) {
+                $per_page = $request->per_page;
+            }
+            if ($request->per_page === 'all') {
+                $per_page = $query->count();
+            }
+        }
+
+        // Ordering
+        $orderBy = $request->get('order_by', 'datetime');
+        $orderDir = $request->get('order_dir', 'desc');
+        $query->orderBy($orderBy, $orderDir);
+
+        $payments = $query->paginate($per_page);
+
+        // Transform data
+        $transformedData = $payments->getCollection()->map(function ($payment) {
+            $booking = $payment->booking;
+            $customer = $payment->customer;
+            $handymanEarning = $payment->handymanEarning;
+            
+            // Get service/post job name
+            $serviceName = '-';
+            if ($booking) {
+                if (!empty($booking->bookingPackage)) {
+                    $serviceName = optional($booking->bookingPackage)->name . " (Service Package)";
+                } elseif ($booking->service) {
+                    $serviceName = optional($booking->service)->name . " (Service)";
+                }
+            } elseif ($payment->postJobRequest) {
+                $serviceName = optional($payment->postJobRequest)->title . " (Post Job Request)";
+            }
+
+            // Get user info
+            $userInfo = [
+                'id' => $customer->id ?? null,
+                'name' => $customer->display_name ?? ($customer ? ($customer->first_name . ' ' . $customer->last_name) : '-'),
+                'profile_image' => getSingleMedia($customer, 'profile_image', null),
+                'address' => $customer->address ?? null,
+            ];
+
+            // Format date
+            $sitesetup = Setting::where('type', 'site-setup')->where('key', 'site-setup')->first();
+            $datetime = $sitesetup ? json_decode($sitesetup->value) : null;
+            $dateFormat = $datetime->date_format ?? 'd F, Y';
+            $timeFormat = $datetime->time_format ?? 'H:i';
+            $formattedDate = date("$dateFormat $timeFormat", strtotime($payment->datetime));
+
+            return [
+                'id' => $payment->id,
+                'booking_id' => $payment->booking_id ? '#' . $payment->booking_id : null,
+                'service_post_job' => $serviceName,
+                'user' => $userInfo,
+                'payment_type' => $payment->payment_type ?? '-',
+                'payment_status' => $payment->payment_status ?? '-',
+                'status_label' => $payment->payment_status ? str_replace('_', ' ', ucfirst($payment->payment_status)) : '-',
+                'datetime' => $formattedDate,
+                'datetime_raw' => $payment->datetime,
+                'my_earning' => $handymanEarning ? (float)$handymanEarning->commission_amount : 0,
+                'my_earning_formatted' => $handymanEarning ? getPriceFormat($handymanEarning->commission_amount) : getPriceFormat(0),
+                'total_amount' => (float)$payment->total_amount,
+                'total_amount_formatted' => getPriceFormat($payment->total_amount),
+            ];
+        });
+
+        $response = [
+            'pagination' => [
+                'total_items' => $payments->total(),
+                'per_page' => $payments->perPage(),
+                'current_page' => $payments->currentPage(),
+                'total_pages' => $payments->lastPage(),
+                'from' => $payments->firstItem(),
+                'to' => $payments->lastItem(),
+                'next_page_url' => $payments->nextPageUrl(),
+                'previous_page_url' => $payments->previousPageUrl(),
+            ],
+            'data' => $transformedData,
+        ];
+
+        return comman_custom_response($response);
+    }
 }
