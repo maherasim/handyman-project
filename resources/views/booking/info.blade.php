@@ -130,6 +130,21 @@
         </tr>
     </tbody>
 </table>
+<style>
+    /* Red-Blue Gradient for Booking Info Tables */
+    /* Extra Charges table header */
+    .booking-info-container .card-header.bg-primary {
+        background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important;
+        border: none !important;
+    }
+    
+    /* Review, Service Proof, and Extra Charges table headers */
+    .booking-info-container .table.table-bordered thead th {
+        background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important;
+        color: #fff !important;
+        border-color: transparent !important;
+    }
+</style>
 <div class="container-fluid booking-info-container">
     <div class="row">
         <div class="col-md-8">
