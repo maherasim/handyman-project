@@ -616,46 +616,50 @@ $menu->add('<span>'.__('Service Wallet Balance').'</span><span class="custom-too
 
             
 
-        // Job Request Payment
-        $menu
-            ->add(
-                '<span>' .
-                    __('Job Request Payment') .
-                    '</span><span class="custom-tooltip"><span class="tooltip-text">' .
-                    __('Job Request Payment') .
-                    '</span></span>',
-                ['route' => 'paymentjobrequest', 'class' => 'sidebar-layout'],
-            )
-            ->prepend(
-                '<svg class="sidebar-menu-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        // Job Request Payment - Hide for handyman
+        if(auth()->user()->user_type != 'handyman'){
+            $menu
+                ->add(
+                    '<span>' .
+                        __('Job Request Payment') .
+                        '</span><span class="custom-tooltip"><span class="tooltip-text">' .
+                        __('Job Request Payment') .
+                        '</span></span>',
+                    ['route' => 'paymentjobrequest', 'class' => 'sidebar-layout'],
+                )
+                ->prepend(
+                    '<svg class="sidebar-menu-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
 <rect x="3" y="4" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.5"/>
 <path d="M3 9H21" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
 <path d="M8 13H12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
 <path d="M14.5 13H17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
 </svg>',
-            )
-            ->nickname('job_request_payment')
-            ->data('permission', 'payment list');
+                )
+                ->nickname('job_request_payment')
+                ->data('permission', 'payment list');
+        }
 
-        // Job Request Cash Payment
-        $menu
-            ->add(
-                '<span>' .
-                    __('Job Request Cash Payment') .
-                    '</span><span class="custom-tooltip"><span class="tooltip-text">' .
-                    __('Job Request Cash Payment') .
-                    '</span></span>',
-                ['route' => 'paymentjobrequest.cash.index', 'class' => 'sidebar-layout'],
-            )
-            ->prepend(
-                '<svg class="sidebar-menu-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        // Job Request Cash Payment - Hide for handyman
+        if(auth()->user()->user_type != 'handyman'){
+            $menu
+                ->add(
+                    '<span>' .
+                        __('Job Request Cash Payment') .
+                        '</span><span class="custom-tooltip"><span class="tooltip-text">' .
+                        __('Job Request Cash Payment') .
+                        '</span></span>',
+                    ['route' => 'paymentjobrequest.cash.index', 'class' => 'sidebar-layout'],
+                )
+                ->prepend(
+                    '<svg class="sidebar-menu-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
 <rect x="2" y="6" width="20" height="12" rx="2" stroke="currentColor" stroke-width="1.5"/>
 <path d="M6 12H10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
 <circle cx="16.5" cy="12" r="2" stroke="currentColor" stroke-width="1.5"/>
 </svg>',
-            )
-            ->nickname('job_request_cash_payment')
-            ->data('permission', 'payment list');
+                )
+                ->nickname('job_request_cash_payment')
+                ->data('permission', 'payment list');
+        }
 
 
 if(auth()->user()->user_type == 'user' || auth()->user()->user_type == 'provider'){
