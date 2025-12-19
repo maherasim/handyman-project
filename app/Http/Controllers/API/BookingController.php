@@ -983,4 +983,233 @@ $booking_data = Booking::withTrashed()->with([
 
     //     return comman_custom_response($response);
     // }
+
+    /**
+     * Get booking ratings list for handyman
+     * Returns ratings for bookings where handyman was involved
+     * 
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getBookingRatingsList(Request $request)
+    {
+        $user = auth()->user();
+        
+        // For handyman, get ratings for bookings where they were assigned
+        if ($user->hasRole('handyman')) {
+            $query = BookingRating::query()
+                ->with([
+                    'customer.country',
+                    'customer.city',
+                    'service',
+                    'booking.handymanAdded' => function($q) use ($user) {
+                        $q->where('handyman_id', $user->id);
+                    }
+                ])
+                ->whereHas('booking.handymanAdded', function($q) use ($user) {
+                    $q->where('handyman_id', $user->id);
+                });
+        } else {
+            // For other roles, use the myRating scope
+            $query = BookingRating::query()->myRating()
+                ->with(['customer.country', 'customer.city', 'service']);
+        }
+
+        // Apply filters
+        $filter = $request->filter;
+        if (isset($filter) && isset($filter['column_status'])) {
+            $query->where('status', $filter['column_status']);
+        }
+
+        // Search functionality
+        if ($request->has('search') && !empty($request->search)) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->whereHas('customer', function ($customerQuery) use ($search) {
+                    $customerQuery->where('display_name', 'like', '%' . $search . '%')
+                                  ->orWhere('first_name', 'like', '%' . $search . '%')
+                                  ->orWhere('last_name', 'like', '%' . $search . '%');
+                })
+                ->orWhereHas('service', function ($serviceQuery) use ($search) {
+                    $serviceQuery->where('name', 'like', '%' . $search . '%');
+                })
+                ->orWhere('review', 'like', '%' . $search . '%');
+            });
+        }
+
+        // Pagination
+        $per_page = config('constant.PER_PAGE_LIMIT');
+        if ($request->has('per_page') && !empty($request->per_page)) {
+            if (is_numeric($request->per_page)) {
+                $per_page = $request->per_page;
+            }
+            if ($request->per_page === 'all') {
+                $per_page = $query->count();
+            }
+        }
+
+        // Ordering
+        $orderBy = $request->get('order_by', 'updated_at');
+        $orderDir = $request->get('order_dir', 'desc');
+        $query->orderBy($orderBy, $orderDir);
+
+        $ratings = $query->paginate($per_page);
+
+        // Transform data
+        $transformedData = $ratings->getCollection()->map(function ($rating) {
+            $customer = $rating->customer;
+            $service = $rating->service;
+            
+            return [
+                'id' => $rating->id,
+                'booking_id' => $rating->booking_id,
+                'customer' => [
+                    'id' => $customer->id ?? null,
+                    'name' => $customer->display_name ?? ($customer ? ($customer->first_name . ' ' . $customer->last_name) : '-'),
+                    'profile_image' => getSingleMedia($customer, 'profile_image', null),
+                    'address' => ($customer->country->name ?? '--') . '-' . ($customer->city->name ?? '--'),
+                ],
+                'service' => [
+                    'id' => $service->id ?? null,
+                    'name' => $service->name ?? '-',
+                ],
+                'rating' => (float)$rating->rating,
+                'review' => $rating->review ?? '-',
+                'created_at' => $rating->created_at ? $rating->created_at->format('Y-m-d H:i:s') : null,
+                'updated_at' => $rating->updated_at ? $rating->updated_at->format('Y-m-d H:i:s') : null,
+            ];
+        });
+
+        $response = [
+            'pagination' => [
+                'total_items' => $ratings->total(),
+                'per_page' => $ratings->perPage(),
+                'current_page' => $ratings->currentPage(),
+                'total_pages' => $ratings->lastPage(),
+                'from' => $ratings->firstItem(),
+                'to' => $ratings->lastItem(),
+                'next_page_url' => $ratings->nextPageUrl(),
+                'previous_page_url' => $ratings->previousPageUrl(),
+            ],
+            'data' => $transformedData,
+        ];
+
+        return comman_custom_response($response);
+    }
+
+    /**
+     * Get handyman ratings list
+     * Returns ratings given to handyman by customers
+     * 
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getHandymanRatingsList(Request $request)
+    {
+        $user = auth()->user();
+        
+        // Use myRating scope which filters by handyman_id for handyman role
+        $query = HandymanRating::query()->myRating()
+            ->with([
+                'handyman.country',
+                'handyman.city',
+                'customer.country',
+                'customer.city',
+                'service',
+                'booking'
+            ]);
+
+        // Apply filters
+        $filter = $request->filter;
+        if (isset($filter) && isset($filter['column_status'])) {
+            $query->where('status', $filter['column_status']);
+        }
+
+        // Search functionality
+        if ($request->has('search') && !empty($request->search)) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->whereHas('customer', function ($customerQuery) use ($search) {
+                    $customerQuery->where('display_name', 'like', '%' . $search . '%')
+                                  ->orWhere('first_name', 'like', '%' . $search . '%')
+                                  ->orWhere('last_name', 'like', '%' . $search . '%');
+                })
+                ->orWhereHas('handyman', function ($handymanQuery) use ($search) {
+                    $handymanQuery->where('display_name', 'like', '%' . $search . '%')
+                                  ->orWhere('first_name', 'like', '%' . $search . '%')
+                                  ->orWhere('last_name', 'like', '%' . $search . '%');
+                })
+                ->orWhereHas('service', function ($serviceQuery) use ($search) {
+                    $serviceQuery->where('name', 'like', '%' . $search . '%');
+                })
+                ->orWhere('review', 'like', '%' . $search . '%');
+            });
+        }
+
+        // Pagination
+        $per_page = config('constant.PER_PAGE_LIMIT');
+        if ($request->has('per_page') && !empty($request->per_page)) {
+            if (is_numeric($request->per_page)) {
+                $per_page = $request->per_page;
+            }
+            if ($request->per_page === 'all') {
+                $per_page = $query->count();
+            }
+        }
+
+        // Ordering
+        $orderBy = $request->get('order_by', 'updated_at');
+        $orderDir = $request->get('order_dir', 'desc');
+        $query->orderBy($orderBy, $orderDir);
+
+        $ratings = $query->paginate($per_page);
+
+        // Transform data
+        $transformedData = $ratings->getCollection()->map(function ($rating) {
+            $handyman = $rating->handyman;
+            $customer = $rating->customer;
+            $service = $rating->service;
+            
+            return [
+                'id' => $rating->id,
+                'booking_id' => $rating->booking_id,
+                'handyman' => [
+                    'id' => $handyman->id ?? null,
+                    'name' => $handyman->display_name ?? ($handyman ? ($handyman->first_name . ' ' . $handyman->last_name) : '-'),
+                    'profile_image' => getSingleMedia($handyman, 'profile_image', null),
+                    'address' => ($handyman->country->name ?? '--') . '-' . ($handyman->city->name ?? '--'),
+                ],
+                'customer' => [
+                    'id' => $customer->id ?? null,
+                    'name' => $customer->display_name ?? ($customer ? ($customer->first_name . ' ' . $customer->last_name) : '-'),
+                    'profile_image' => getSingleMedia($customer, 'profile_image', null),
+                    'address' => ($customer->country->name ?? '--') . '-' . ($customer->city->name ?? '--'),
+                ],
+                'service' => [
+                    'id' => $service->id ?? null,
+                    'name' => $service->name ?? '-',
+                ],
+                'rating' => (float)$rating->rating,
+                'review' => $rating->review ?? '-',
+                'created_at' => $rating->created_at ? $rating->created_at->format('Y-m-d H:i:s') : null,
+                'updated_at' => $rating->updated_at ? $rating->updated_at->format('Y-m-d H:i:s') : null,
+            ];
+        });
+
+        $response = [
+            'pagination' => [
+                'total_items' => $ratings->total(),
+                'per_page' => $ratings->perPage(),
+                'current_page' => $ratings->currentPage(),
+                'total_pages' => $ratings->lastPage(),
+                'from' => $ratings->firstItem(),
+                'to' => $ratings->lastItem(),
+                'next_page_url' => $ratings->nextPageUrl(),
+                'previous_page_url' => $ratings->previousPageUrl(),
+            ],
+            'data' => $transformedData,
+        ];
+
+        return comman_custom_response($response);
+    }
 }

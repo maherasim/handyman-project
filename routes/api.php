@@ -112,6 +112,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('booking-detail', [ API\BookingController::class, 'getBookingDetail' ] );
     Route::post('save-booking-rating', [ API\BookingController::class, 'saveBookingRating' ] );
     Route::post('delete-booking-rating', [ API\BookingController::class, 'deleteBookingRating' ] );
+    Route::get('booking-ratings-list', [ API\BookingController::class, 'getBookingRatingsList' ] );
     Route::get('get-user-ratings', [ API\BookingController::class, 'getUserRatings' ] );
     //Route::get('earning-breakdown', [ API\BookingController::class, 'getEarningsBreakdown' ] );
     Route::get('handyman-earning-list',[ App\Http\Controllers\EarningController::class, 'handymanEarningData' ]);
@@ -153,6 +154,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('provideraddress-delete/{id}', [ App\Http\Controllers\ProviderAddressMappingController::class, 'destroy' ]);
     Route::post('save-handyman-rating', [ API\BookingController::class, 'saveHandymanRating' ] );
     Route::post('delete-handyman-rating', [ API\BookingController::class, 'deleteHandymanRating' ] );
+    Route::get('handyman-ratings-list', [ API\BookingController::class, 'getHandymanRatingsList' ] );
 
     Route::get('document-list', [ API\DocumentsController::class, 'getDocumentList' ] );
     Route::get('provider-document-list', [ API\ProviderDocumentController::class, 'getProviderDocumentList' ] );
