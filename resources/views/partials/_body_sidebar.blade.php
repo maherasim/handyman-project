@@ -605,12 +605,14 @@ $menu->add('<span>'.__('Service Wallet Balance').'</span><span class="custom-too
 
 }
 
-        // Post Job Request Transactions heading (single line label)
-        $menu
-            ->add('Transactions Job Request', [
-                'class' => 'category-main',
-            ])
-            ->data('permission', ['payment list']);
+        // Post Job Request Transactions heading (single line label) - Hide for handyman
+        if(auth()->user()->user_type != 'handyman'){
+            $menu
+                ->add('Transactions Job Request', [
+                    'class' => 'category-main',
+                ])
+                ->data('permission', ['payment list']);
+        }
             
 
 
