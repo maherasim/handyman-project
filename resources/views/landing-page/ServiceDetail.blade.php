@@ -839,20 +839,23 @@
                     @endif --}}
 
 
-                    <div class="bg-light   pl-5 pr-5 pb-0 rounded-3 mt-0 pt-0 ">
-                        <div class="position-relative d-flex justify-content-center" style="margin: auto; width: 60%;">
-                            <div style="
-                                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    <div class="bg-light pl-5 pr-5 pb-0 rounded-3 mt-0 pt-0">
+                        <div class="position-relative d-flex justify-content-center provider-details-header-wrapper" style="margin: auto; width: 60%;">
+                            <div class="provider-details-heading" style="
+                                background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%);
                                 color: #fff;
                                 padding: 10px 16px;
                                 border-radius: 12px;
                                 font-weight: 700;
                                 font-size: 14px;
-                                box-shadow: 0 6px 18px rgba(102, 126, 234, 0.35);
+                                box-shadow: 0 6px 18px rgba(255, 0, 0, 0.2);
                                 backdrop-filter: blur(8px);
                                 text-align: center;
                                 width: 100%;
                                 max-width: 480px;
+                                opacity: 1;
+                                visibility: visible;
+                                display: block;
                             ">
                                 Provider Details
                             </div>
@@ -919,44 +922,322 @@
 
                         </div>
 
-                        <h5 class="mb-2">{{ __('landingpage.available_location') }}</h5>
-                        <ul class="list-inline m-0 p-0 d-flex align-items-center gap-2 flex-wrap">
-                            @foreach ($serviceData['service_detail']['service_address_mapping'] as $service_address)
-                                <li>
-                                    <span
-                                        class="btn btn-sm btn-outline-primary text-capitalize cursor-default">{{ $service_address['provider_address_mapping']['address'] }}</span>
-                                </li>
-                            @endforeach
-                        </ul>
-                        <ul>
-                            <li>
+                        <!-- Provider Information Cards -->
+                        <div class="provider-info-section mt-4">
+                            <!-- Available Location Card -->
+                            @if(!empty($serviceData['service_detail']['service_address_mapping']))
+                            <div class="info-card mb-3">
+                                <div class="info-card-header">
+                                    <i class="ri-map-pin-line me-2"></i>
+                                    <h6 class="mb-0">{{ __('landingpage.available_location') }}</h6>
+                                </div>
+                                <div class="info-card-body">
+                                    <div class="d-flex flex-wrap gap-2">
+                                        @foreach ($serviceData['service_detail']['service_address_mapping'] as $service_address)
+                                            <span class="location-badge">{{ $service_address['provider_address_mapping']['address'] }}</span>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            </div>
+                            @endif
 
-                                <a class="d-inline-block  ">
-                                    Member since
-                                    :{{ \Carbon\Carbon::parse($serviceData['provider']['created_at'])->format('d M Y') }}
-                            </li>
-                            <li> Designation:{{ $serviceData['provider']['designation'] }}</li>
+                            <!-- Basic Information Card -->
+                            <div class="info-card mb-3">
+                                <div class="info-card-header">
+                                    <i class="ri-user-line me-2"></i>
+                                    <h6 class="mb-0">Basic Information</h6>
+                                </div>
+                                <div class="info-card-body">
+                                    <div class="info-row">
+                                        <span class="info-label">
+                                            <i class="ri-calendar-line me-1"></i> Member Since:
+                                        </span>
+                                        <span class="info-value">{{ \Carbon\Carbon::parse($serviceData['provider']['created_at'])->format('d M Y') }}</span>
+                                    </div>
+                                    @if(!empty($serviceData['provider']['designation']))
+                                    <div class="info-row">
+                                        <span class="info-label">
+                                            <i class="ri-briefcase-line me-1"></i> Designation:
+                                        </span>
+                                        <span class="info-value">{{ $serviceData['provider']['designation'] }}</span>
+                                    </div>
+                                    @endif
+                                    @if(!empty($completed_services))
+                                    <div class="info-row">
+                                        <span class="info-label">
+                                            <i class="ri-checkbox-circle-line me-1"></i> Jobs Completed:
+                                        </span>
+                                        <span class="info-value badge bg-success">{{ $completed_services }}</span>
+                                    </div>
+                                    @endif
+                                </div>
+                            </div>
+
+                            <!-- Availability & Mobility Card -->
+                            @if(!empty($serviceData['provider']['availability']) || !empty($serviceData['provider']['mobility']))
+                            <div class="info-card mb-3">
+                                <div class="info-card-header">
+                                    <i class="ri-time-line me-2"></i>
+                                    <h6 class="mb-0">Availability & Mobility</h6>
+                                </div>
+                                <div class="info-card-body">
+                                    @if(!empty($serviceData['provider']['availability']))
+                                    <div class="info-row">
+                                        <span class="info-label">
+                                            <i class="ri-calendar-check-line me-1"></i> Availability:
+                                        </span>
+                                        <span class="info-value">
+                                            <span class="badge bg-primary">{{ $serviceData['provider']['availability'] }}</span>
+                                        </span>
+                                    </div>
+                                    @endif
+                                    @if(!empty($serviceData['provider']['mobility']))
+                                    <div class="info-row">
+                                        <span class="info-label">
+                                            <i class="ri-car-line me-1"></i> Mobility:
+                                        </span>
+                                        <span class="info-value">
+                                            <span class="badge bg-info">{{ $serviceData['provider']['mobility'] }}</span>
+                                        </span>
+                                    </div>
+                                    @endif
+                                </div>
+                            </div>
+                            @endif
+
+                            <!-- Languages Card -->
                             @php
                                 // Check if the 'languages' field is a JSON string
                                 $languages = is_string($serviceData['provider']['languages'])
                                     ? json_decode($serviceData['provider']['languages'], true)
                                     : $serviceData['provider']['languages']; // Use as-is if it's already an array
+                                $languagesList = is_array($languages) ? $languages : (!empty($languages) ? [$languages] : []);
                             @endphp
+                            @if(!empty($languagesList))
+                            <div class="info-card mb-3">
+                                <div class="info-card-header">
+                                    <i class="ri-global-line me-2"></i>
+                                    <h6 class="mb-0">Languages</h6>
+                                </div>
+                                <div class="info-card-body">
+                                    <div class="d-flex flex-wrap gap-2">
+                                        @foreach($languagesList as $lang)
+                                            <span class="language-badge">{{ trim($lang) }}</span>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            </div>
+                            @endif
 
-                            <li>Languages: {{ is_array($languages) ? implode(', ', $languages) : $languages }}</li>
+                            <!-- Education & Skills Card -->
+                            @if(!empty($serviceData['provider']['education']))
+                            <div class="info-card mb-3">
+                                <div class="info-card-header">
+                                    <i class="ri-graduation-cap-line me-2"></i>
+                                    <h6 class="mb-0">Education & Skills</h6>
+                                </div>
+                                <div class="info-card-body">
+                                    <div class="info-row">
+                                        <span class="info-label">
+                                            <i class="ri-book-open-line me-1"></i> Education:
+                                        </span>
+                                        <span class="info-value">{{ $serviceData['provider']['education'] }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            @endif
 
-                            <li> Availability : {{ $serviceData['provider']['availability'] }} </li>
-                            <li>Mobility : {{ $serviceData['provider']['mobility'] }}</li>
-                            <li>Skills : {{ $serviceData['provider']['education'] }}</li>
-                            <li>Diploma : {{ $serviceData['provider']['skills'] }}</li>
-                            <li>Skills : {{ $serviceData['provider']['certification'] }}</li>
-                            <li>Jobs Completed :    {{ $completed_services }}</li>
+                            <!-- Diploma Card -->
+                            @if(!empty($serviceData['provider']['skills']))
+                            <div class="info-card mb-3">
+                                <div class="info-card-header">
+                                    <i class="ri-file-certificate-line me-2"></i>
+                                    <h6 class="mb-0">Diploma & Certifications</h6>
+                                </div>
+                                <div class="info-card-body">
+                                    <div class="diploma-content">
+                                        {{ $serviceData['provider']['skills'] }}
+                                    </div>
+                                </div>
+                            </div>
+                            @endif
 
+                            <!-- Additional Skills/Certifications Card -->
+                            @if(!empty($serviceData['provider']['certification']))
+                            <div class="info-card mb-3">
+                                <div class="info-card-header">
+                                    <i class="ri-award-line me-2"></i>
+                                    <h6 class="mb-0">Certifications & Skills</h6>
+                                </div>
+                                <div class="info-card-body">
+                                    <div class="skills-list">
+                                        @php
+                                            $certifications = is_string($serviceData['provider']['certification']) 
+                                                ? explode(',', $serviceData['provider']['certification']) 
+                                                : (is_array($serviceData['provider']['certification']) ? $serviceData['provider']['certification'] : [$serviceData['provider']['certification']]);
+                                        @endphp
+                                        @foreach($certifications as $cert)
+                                            <span class="skill-badge">{{ trim($cert) }}</span>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            </div>
+                            @endif
+                        </div>
 
-                            </a>
+                        <style>
+                            /* Prevent flash/blink on provider details heading */
+                            .provider-details-header-wrapper {
+                                opacity: 1 !important;
+                                visibility: visible !important;
+                                display: flex !important;
+                                transition: none !important;
+                                animation: none !important;
+                            }
+                            
+                            .provider-details-heading {
+                                opacity: 1 !important;
+                                visibility: visible !important;
+                                display: block !important;
+                                transition: none !important;
+                                animation: none !important;
+                                will-change: auto !important;
+                            }
+                            
+                            /* Ensure no parent elements are hiding it */
+                            .bg-light.pl-5.pr-5,
+                            .bg-light.pl-5.pr-5 > * {
+                                opacity: 1 !important;
+                                visibility: visible !important;
+                            }
 
+                            .provider-info-section {
+                                margin-top: 1.5rem;
+                            }
 
-                        </ul>
+                            .info-card {
+                                background: #fff;
+                                border: 1px solid #e9ecef;
+                                border-radius: 12px;
+                                overflow: hidden;
+                                transition: all 0.3s ease;
+                                box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+                            }
+
+                            .info-card:hover {
+                                box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+                                transform: translateY(-2px);
+                            }
+
+                            .info-card-header {
+                                background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%);
+                                color: #fff;
+                                padding: 12px 16px;
+                                display: flex;
+                                align-items: center;
+                                font-weight: 600;
+                            }
+
+                            .info-card-header i {
+                                font-size: 18px;
+                            }
+
+                            .info-card-body {
+                                padding: 16px;
+                            }
+
+                            .info-row {
+                                display: flex;
+                                align-items: flex-start;
+                                padding: 10px 0;
+                                border-bottom: 1px solid #f0f0f0;
+                            }
+
+                            .info-row:last-child {
+                                border-bottom: none;
+                            }
+
+                            .info-label {
+                                font-weight: 600;
+                                color: #495057;
+                                min-width: 140px;
+                                display: flex;
+                                align-items: center;
+                                font-size: 14px;
+                            }
+
+                            .info-label i {
+                                color: #6c757d;
+                                margin-right: 6px;
+                            }
+
+                            .info-value {
+                                color: #212529;
+                                flex: 1;
+                                font-size: 14px;
+                            }
+
+                            .location-badge {
+                                display: inline-block;
+                                padding: 6px 12px;
+                                background: linear-gradient(135deg, rgba(255, 0, 0, 0.1) 0%, rgba(95, 96, 185, 0.1) 100%);
+                                border: 1px solid rgba(255, 0, 0, 0.2);
+                                border-radius: 20px;
+                                color: #495057;
+                                font-size: 13px;
+                                font-weight: 500;
+                            }
+
+                            .language-badge {
+                                display: inline-block;
+                                padding: 6px 12px;
+                                background: #e7f3ff;
+                                border: 1px solid #b3d9ff;
+                                border-radius: 20px;
+                                color: #0066cc;
+                                font-size: 13px;
+                                font-weight: 500;
+                            }
+
+                            .skill-badge {
+                                display: inline-block;
+                                padding: 6px 12px;
+                                background: #f0f9ff;
+                                border: 1px solid #bae6fd;
+                                border-radius: 20px;
+                                color: #0369a1;
+                                font-size: 13px;
+                                font-weight: 500;
+                                margin: 4px 4px 4px 0;
+                            }
+
+                            .diploma-content {
+                                color: #495057;
+                                line-height: 1.6;
+                                font-size: 14px;
+                                padding: 12px;
+                                background: #f8f9fa;
+                                border-radius: 8px;
+                                border-left: 3px solid #5F60B9;
+                            }
+
+                            .skills-list {
+                                display: flex;
+                                flex-wrap: wrap;
+                                gap: 8px;
+                            }
+
+                            @media (max-width: 768px) {
+                                .info-row {
+                                    flex-direction: column;
+                                    gap: 4px;
+                                }
+
+                                .info-label {
+                                    min-width: auto;
+                                }
+                            }
+                        </style>
                     </div>
                 </div>
             </div>
@@ -1034,6 +1315,33 @@
 @section('after_script')
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.1/dist/sweetalert2.all.min.js"></script>
     <script>
+        // Prevent provider details heading from blinking/disappearing
+        (function() {
+            const heading = document.querySelector('.provider-details-heading');
+            if (heading) {
+                heading.style.opacity = '1';
+                heading.style.visibility = 'visible';
+                heading.style.display = 'block';
+                
+                // Use MutationObserver to prevent any changes
+                const observer = new MutationObserver(function(mutations) {
+                    mutations.forEach(function(mutation) {
+                        if (mutation.type === 'attributes' && 
+                            (mutation.attributeName === 'style' || mutation.attributeName === 'class')) {
+                            heading.style.opacity = '1';
+                            heading.style.visibility = 'visible';
+                            heading.style.display = 'block';
+                        }
+                    });
+                });
+                
+                observer.observe(heading, {
+                    attributes: true,
+                    attributeFilter: ['style', 'class']
+                });
+            }
+        })();
+        
         $(document).ready(function() {
             // Initialize tab buttons with clean styling
             $('.service-details-tabs .tab-btn').each(function() {
