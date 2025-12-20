@@ -72,28 +72,28 @@
                             <h6 class="mb-3" style="color: rgba(255, 255, 255, 0.9) !important; font-size: 0.9rem !important; font-weight: 600 !important; text-transform: uppercase !important; letter-spacing: 0.5px !important;">{{__('landingpage.follow_us')}}</h6>
                             <div class="d-flex align-items-center gap-3 flex-wrap">
                                 @if(optional($socialmedia)->facebook_url)
-                                    <a href="{{ optional($socialmedia)->facebook_url }}" target="_blank" class="social-icon-link" style="width: 42px !important; height: 42px !important; background: rgba(255, 255, 255, 0.1) !important; border-radius: 10px !important; display: flex !important; align-items: center !important; justify-content: center !important; color: #fff !important; text-decoration: none !important; transition: all 0.3s ease !important; border: 1px solid rgba(255, 255, 255, 0.1) !important;">
-                                        <i class="ri-facebook-fill" style="font-size: 1.2rem !important;"></i>
+                                    <a href="{{ optional($socialmedia)->facebook_url }}" target="_blank" class="social-icon-link" style="width: 42px !important; height: 42px !important; background: rgba(255, 255, 255, 0.25) !important; border-radius: 10px !important; display: flex !important; align-items: center !important; justify-content: center !important; color: #fff !important; text-decoration: none !important; transition: all 0.3s ease !important; border: 1px solid rgba(255, 255, 255, 0.3) !important; backdrop-filter: blur(10px) !important;">
+                                        <i class="ri-facebook-fill" style="font-size: 1.3rem !important; color: #ffffff !important; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5) !important; font-family: 'remixicon' !important; font-style: normal !important; display: inline-block !important; line-height: 1 !important;"></i>
                                     </a>
                                 @endif
                                 @if(optional($socialmedia)->twitter_url)
-                                    <a href="{{ optional($socialmedia)->twitter_url }}" target="_blank" class="social-icon-link" style="width: 42px !important; height: 42px !important; background: rgba(255, 255, 255, 0.1) !important; border-radius: 10px !important; display: flex !important; align-items: center !important; justify-content: center !important; color: #fff !important; text-decoration: none !important; transition: all 0.3s ease !important; border: 1px solid rgba(255, 255, 255, 0.1) !important;">
-                                        <i class="ri-twitter-fill" style="font-size: 1.2rem !important;"></i>
+                                    <a href="{{ optional($socialmedia)->twitter_url }}" target="_blank" class="social-icon-link" style="width: 42px !important; height: 42px !important; background: rgba(255, 255, 255, 0.25) !important; border-radius: 10px !important; display: flex !important; align-items: center !important; justify-content: center !important; color: #fff !important; text-decoration: none !important; transition: all 0.3s ease !important; border: 1px solid rgba(255, 255, 255, 0.3) !important; backdrop-filter: blur(10px) !important;">
+                                        <i class="ri-twitter-fill" style="font-size: 1.3rem !important; color: #ffffff !important; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5) !important; font-family: 'remixicon' !important; font-style: normal !important; display: inline-block !important; line-height: 1 !important;"></i>
                                     </a>
                                 @endif
                                 @if(optional($socialmedia)->instagram_url)
-                                    <a href="{{ optional($socialmedia)->instagram_url }}" target="_blank" class="social-icon-link" style="width: 42px !important; height: 42px !important; background: rgba(255, 255, 255, 0.1) !important; border-radius: 10px !important; display: flex !important; align-items: center !important; justify-content: center !important; color: #fff !important; text-decoration: none !important; transition: all 0.3s ease !important; border: 1px solid rgba(255, 255, 255, 0.1) !important;">
-                                        <i class="ri-instagram-fill" style="font-size: 1.2rem !important;"></i>
+                                    <a href="{{ optional($socialmedia)->instagram_url }}" target="_blank" class="social-icon-link" style="width: 42px !important; height: 42px !important; background: rgba(255, 255, 255, 0.25) !important; border-radius: 10px !important; display: flex !important; align-items: center !important; justify-content: center !important; color: #fff !important; text-decoration: none !important; transition: all 0.3s ease !important; border: 1px solid rgba(255, 255, 255, 0.3) !important; backdrop-filter: blur(10px) !important;">
+                                        <i class="ri-instagram-fill" style="font-size: 1.3rem !important; color: #ffffff !important; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5) !important; font-family: 'remixicon' !important; font-style: normal !important; display: inline-block !important; line-height: 1 !important;"></i>
                                     </a>
                                 @endif
                                 @if(optional($socialmedia)->youtube_url)
-                                    <a href="{{ optional($socialmedia)->youtube_url }}" target="_blank" class="social-icon-link" style="width: 42px !important; height: 42px !important; background: rgba(255, 255, 255, 0.1) !important; border-radius: 10px !important; display: flex !important; align-items: center !important; justify-content: center !important; color: #fff !important; text-decoration: none !important; transition: all 0.3s ease !important; border: 1px solid rgba(255, 255, 255, 0.1) !important;">
-                                        <i class="ri-youtube-fill" style="font-size: 1.2rem !important;"></i>
+                                    <a href="{{ optional($socialmedia)->youtube_url }}" target="_blank" class="social-icon-link" style="width: 42px !important; height: 42px !important; background: rgba(255, 255, 255, 0.25) !important; border-radius: 10px !important; display: flex !important; align-items: center !important; justify-content: center !important; color: #fff !important; text-decoration: none !important; transition: all 0.3s ease !important; border: 1px solid rgba(255, 255, 255, 0.3) !important; backdrop-filter: blur(10px) !important;">
+                                        <i class="ri-youtube-fill" style="font-size: 1.3rem !important; color: #ffffff !important; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5) !important; font-family: 'remixicon' !important; font-style: normal !important; display: inline-block !important; line-height: 1 !important;"></i>
                                     </a>
                                 @endif
                                 @if(optional($socialmedia)->linkedin_url)
-                                    <a href="{{ optional($socialmedia)->linkedin_url }}" target="_blank" class="social-icon-link" style="width: 42px !important; height: 42px !important; background: rgba(255, 255, 255, 0.1) !important; border-radius: 10px !important; display: flex !important; align-items: center !important; justify-content: center !important; color: #fff !important; text-decoration: none !important; transition: all 0.3s ease !important; border: 1px solid rgba(255, 255, 255, 0.1) !important;">
-                                        <i class="ri-linkedin-fill" style="font-size: 1.2rem !important;"></i>
+                                    <a href="{{ optional($socialmedia)->linkedin_url }}" target="_blank" class="social-icon-link" style="width: 42px !important; height: 42px !important; background: rgba(255, 255, 255, 0.25) !important; border-radius: 10px !important; display: flex !important; align-items: center !important; justify-content: center !important; color: #fff !important; text-decoration: none !important; transition: all 0.3s ease !important; border: 1px solid rgba(255, 255, 255, 0.3) !important; backdrop-filter: blur(10px) !important;">
+                                        <i class="ri-linkedin-fill" style="font-size: 1.3rem !important; color: #ffffff !important; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5) !important; font-family: 'remixicon' !important; font-style: normal !important; display: inline-block !important; line-height: 1 !important;"></i>
                                     </a>
                                 @endif
                             </div>
@@ -198,6 +198,8 @@
                         <a target="_blank" href="{{ route('user.help_support') }}" style="color: rgba(255, 255, 255, 0.7) !important; text-decoration: none !important; font-size: 0.85rem !important; transition: all 0.3s ease !important;">{{__('landingpage.help_support')}}</a>
                         <span style="color: rgba(255, 255, 255, 0.3) !important;">|</span>
                         <a target="_blank" href="{{ route('user.refund_policy') }}" style="color: rgba(255, 255, 255, 0.7) !important; text-decoration: none !important; font-size: 0.85rem !important; transition: all 0.3s ease !important;">{{__('landingpage.refund_policy')}}</a>
+                        <span style="color: rgba(255, 255, 255, 0.3) !important;">|</span>
+                        <a target="_blank" href="{{ route('user.imprint') }}" style="color: rgba(255, 255, 255, 0.7) !important; text-decoration: none !important; font-size: 0.85rem !important; transition: all 0.3s ease !important;">{{__('landingpage.imprint')}}</a>
                     </div>
                 </div>
             </div>
@@ -351,13 +353,13 @@
         transform: translateX(4px) !important;
     }
     
-    /* Social Media Icons with Gradient */
+    /* Social Media Icons with Gradient - Enhanced Visibility */
     body .social-icon-link {
         position: relative !important;
-        overflow: hidden !important;
+        overflow: visible !important;
         width: 45px !important;
         height: 45px !important;
-        background: rgba(255, 255, 255, 0.08) !important;
+        background: rgba(255, 255, 255, 0.25) !important;
         border-radius: 12px !important;
         display: flex !important;
         align-items: center !important;
@@ -365,7 +367,9 @@
         color: #fff !important;
         text-decoration: none !important;
         transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
-        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        border: 1px solid rgba(255, 255, 255, 0.3) !important;
+        backdrop-filter: blur(10px) !important;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2) !important;
     }
     
     body .social-icon-link::before {
@@ -382,6 +386,15 @@
         position: relative !important;
         z-index: 1 !important;
         font-size: 1.3rem !important;
+        color: #ffffff !important;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5) !important;
+        filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5)) !important;
+        font-family: 'remixicon' !important;
+        font-style: normal !important;
+        -webkit-font-smoothing: antialiased !important;
+        -moz-osx-font-smoothing: grayscale !important;
+        display: inline-block !important;
+        line-height: 1 !important;
     }
     
     body .social-icon-link:hover::before {
@@ -389,15 +402,16 @@
     }
     
     body .social-icon-link:hover {
-        background: transparent !important;
+        background: rgba(255, 255, 255, 0.35) !important;
         transform: translateY(-5px) scale(1.15) rotate(5deg) !important;
         box-shadow: 0 10px 25px rgba(255, 0, 0, 0.4) !important;
-        border-color: transparent !important;
+        border-color: rgba(255, 255, 255, 0.5) !important;
     }
     
     body .social-icon-link:hover i {
         color: #fff !important;
         transform: scale(1.1) !important;
+        text-shadow: 0 3px 6px rgba(0, 0, 0, 0.6) !important;
     }
     
     /* Footer Links with Gradient Hover */
@@ -516,12 +530,15 @@
         transition: all 0.3s ease !important;
     }
     
-    body .footer-bottom a:hover {
-        background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important;
-        -webkit-background-clip: text !important;
-        -webkit-text-fill-color: transparent !important;
-        background-clip: text !important;
+    body .footer-bottom a:hover,
+    body .footer-bottom a:active,
+    body .footer-bottom a:focus,
+    body .footer-bottom a:visited {
+        color: rgba(255, 255, 255, 0.9) !important;
+        -webkit-text-fill-color: rgba(255, 255, 255, 0.9) !important;
+        background: transparent !important;
         transform: translateY(-2px) !important;
+        text-decoration: underline !important;
     }
     
     body .footer-bottom span {

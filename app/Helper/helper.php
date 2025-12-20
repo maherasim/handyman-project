@@ -87,12 +87,44 @@ function demoUserPermission(){
 }
 
 function getSingleMedia($model, $collection = 'profile_image', $skip=true   ){
-    if (!\Auth::check() && $skip) {
+    // Don't skip for service_attachment and other non-profile collections
+    if (!\Auth::check() && $skip && in_array($collection, ['profile_image', 'image_icon'])) {
         return asset('images/user/user.png');
     }
     $media = null;
     if ($model !== null) {
-        $media = $model->getFirstMedia($collection);
+        // For service_attachment, try getFirstMedia first, then fallback to getMedia()->first()
+        if ($collection === 'service_attachment') {
+            $media = $model->getFirstMedia($collection);
+            // If getFirstMedia returns null, try getting all media and taking first
+            if (!$media) {
+                $mediaCollection = $model->getMedia($collection);
+                if ($mediaCollection->isNotEmpty()) {
+                    $media = $mediaCollection->first();
+                }
+            }
+        } else {
+            $media = $model->getFirstMedia($collection);
+        }
+    }
+
+    // For service_attachment, check if file exists before returning URL
+    if ($collection === 'service_attachment' && $media) {
+        // Check if file actually exists before returning URL
+        if (getFileExistsCheck($media)) {
+            try {
+                return $media->getFullUrl();
+            } catch (\Exception $e) {
+                try {
+                    return $media->getUrl();
+                } catch (\Exception $e2) {
+                    return asset('images/default.png');
+                }
+            }
+        } else {
+            // File doesn't exist, return default
+            return asset('images/default.png');
+        }
     }
 
     if (getFileExistsCheck($media)) {

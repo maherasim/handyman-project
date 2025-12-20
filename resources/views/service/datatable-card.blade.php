@@ -91,8 +91,8 @@
          <span class="online-service"></span>
       @endif
       <a href="{{ route('service.detail', $data->id) }}" class="service-img">
-         <img src="{{ getSingleMedia($data,'service_attachment', null) }}" alt="service"
-         class="service-asim w-100 object-cover img-fluid rounded-3"> 
+         <img src="{{ isset($serviceImage) ? $serviceImage : getSingleMedia($data, 'service_attachment', null) }}" alt="service"
+         class="service-asim w-100 object-cover img-fluid rounded-3" onerror="this.src='{{ asset('images/default.png') }}'"> 
       </a>
 
       @if(auth()->check() && auth()->user()->hasRole('user'))
@@ -284,7 +284,7 @@
          </span>
          <span role="button" tabindex="0" class="social-link share-link"
                data-platform="instagram"
-               data-image-url="{{ getSingleMedia($data,'service_attachment', null) }}"
+               data-image-url="{{ isset($serviceImage) ? $serviceImage : asset('images/default.png') }}"
                data-quote="{{ Str::limit($data->name, 80) }} • {{ getPriceFormat($data->price) }} • {{ ucfirst($data->type) }} • {{ $data->city->name ?? 'City' }}, {{ $data->country->name ?? 'Country' }} — {{ route('service.detail', $data->id) }}"
                onclick="return window.__shareClickHandler(event, this);"
                style="cursor: pointer;">

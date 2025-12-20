@@ -1101,7 +1101,7 @@ class FrontendController extends Controller
 
     public function serviceDatatable(Datatables $datatable, Request $request)
     {
-        $query = Service::where('service_type', 'service')->where('status', 1);
+        $query = Service::where('service_type', 'service')->where('status', 1)->with('media');
 
         // Apply filters (existing logic)
         if ($request->type == 'provider-service') {
@@ -1228,7 +1228,12 @@ class FrontendController extends Controller
                     }
                 }
 
-                return view('service.datatable-card', compact('data', 'totalReviews', 'totalRating', 'favouriteService', 'completedBookingCount', 'plan_icon'));
+                // Preload service image URL - reload service fresh to ensure media is accessible
+                // DataTables may serialize the model, so we need a fresh instance
+                $service = Service::find($data->id);
+                $serviceImage = $service ? getSingleMedia($service, 'service_attachment', null) : asset('images/default.png');
+
+                return view('service.datatable-card', compact('data', 'totalReviews', 'totalRating', 'favouriteService', 'completedBookingCount', 'plan_icon', 'serviceImage'));
             })
             ->order(function ($query) {
                 $query->orderBy('id', 'desc');
