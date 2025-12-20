@@ -5,6 +5,7 @@ namespace App\Http\Resources\API;
 use Illuminate\Http\Resources\Json\JsonResource;
 use App\Models\UserFavouriteProvider;
 use App\Models\Booking;
+use App\Models\Service;
 class UserResource extends JsonResource
 {
     /**
@@ -113,6 +114,17 @@ class UserResource extends JsonResource
             'skills' => $this->skills,
             'is_favourite'  => UserFavouriteProvider::where('user_id',$request->login_user_id ?? null)->where('provider_id',$request->id ?? $this->id)->first() ? 1 : 0,
             'total_services_booked' => Booking::where('provider_id',$this->id)->count('service_id'),
+            // Total Services: Count of active services created by this provider
+            'total_services' => ($this->user_type == 'provider') 
+                ? Service::where('provider_id', $this->id)
+                    ->where('service_type', 'service')
+                    ->where('status', 1)
+                    ->count() 
+                : 0,
+            // Total Bookings: Count of all bookings for this provider
+            'total_bookings' => ($this->user_type == 'provider') 
+                ? Booking::where('provider_id', $this->id)->count() 
+                : 0,
             'why_choose_me' => $this->why_choose_me,
             'is_subscribe' => $this->is_subscribe,
             'is_email_verified' => $this->is_email_verified
