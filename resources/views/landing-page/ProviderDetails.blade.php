@@ -133,6 +133,35 @@
                 font-size: 13px;
             }
         }
+
+        /* Prevent flash/blink on provider detail card headers */
+        .info-card-modern {
+            opacity: 1 !important;
+            visibility: visible !important;
+            transition: none !important;
+            animation: none !important;
+        }
+
+        .info-card-header-modern {
+            opacity: 1 !important;
+            visibility: visible !important;
+            display: flex !important;
+            transition: none !important;
+            animation: none !important;
+            will-change: auto !important;
+        }
+
+        .info-card-header-modern * {
+            opacity: 1 !important;
+            visibility: visible !important;
+        }
+
+        /* Ensure no parent elements are hiding it */
+        .provider-details-grid,
+        .provider-details-grid > * {
+            opacity: 1 !important;
+            visibility: visible !important;
+        }
     </style>
     <div class="section-padding position-relative px-0">
         <div class="container">
@@ -673,4 +702,66 @@
     </div>
     </div>
     </div>
+@endsection
+
+@section('after_script')
+<script>
+    // Prevent provider detail card headers from blinking/disappearing
+    (function() {
+        // Function to enforce visibility on all card headers
+        function enforceHeaderVisibility() {
+            const headers = document.querySelectorAll('.info-card-header-modern');
+            headers.forEach(function(header) {
+                if (header) {
+                    header.style.opacity = '1';
+                    header.style.visibility = 'visible';
+                    header.style.display = 'flex';
+                    
+                    // Also ensure all children are visible
+                    const children = header.querySelectorAll('*');
+                    children.forEach(function(child) {
+                        child.style.opacity = '1';
+                        child.style.visibility = 'visible';
+                    });
+                }
+            });
+        }
+
+        // Run immediately
+        enforceHeaderVisibility();
+
+        // Run after DOM is fully loaded
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', enforceHeaderVisibility);
+        } else {
+            enforceHeaderVisibility();
+        }
+
+        // Run after a short delay to catch any late-loading scripts
+        setTimeout(enforceHeaderVisibility, 100);
+        setTimeout(enforceHeaderVisibility, 500);
+
+        // Set up MutationObserver for each header
+        const headers = document.querySelectorAll('.info-card-header-modern');
+        headers.forEach(function(header) {
+            if (header) {
+                const observer = new MutationObserver(function(mutations) {
+                    mutations.forEach(function(mutation) {
+                        if (mutation.type === 'attributes' &&
+                            (mutation.attributeName === 'style' || mutation.attributeName === 'class')) {
+                            header.style.opacity = '1';
+                            header.style.visibility = 'visible';
+                            header.style.display = 'flex';
+                        }
+                    });
+                });
+                
+                observer.observe(header, {
+                    attributes: true,
+                    attributeFilter: ['style', 'class']
+                });
+            }
+        });
+    })();
+</script>
 @endsection
