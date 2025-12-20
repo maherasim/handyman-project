@@ -1022,7 +1022,7 @@
                                 <div class="info-card-body">
                                     <div class="d-flex flex-wrap gap-2">
                                         @foreach($languagesList as $lang)
-                                            <span class="language-badge">{{ trim($lang) }}</span>
+                                            <span class="language-badge">{{ ucfirst(trim($lang)) }}</span>
                                         @endforeach
                                     </div>
                                 </div>
@@ -1055,8 +1055,31 @@
                                     <h6 class="mb-0">Diploma & Certifications</h6>
                                 </div>
                                 <div class="info-card-body">
-                                    <div class="diploma-content">
-                                        {{ $serviceData['provider']['skills'] }}
+                                    <div class="skills-list">
+                                        @php
+                                            $skillsData = $serviceData['provider']['skills'];
+                                            
+                                            // Try to decode JSON first
+                                            if (is_string($skillsData)) {
+                                                $decoded = json_decode($skillsData, true);
+                                                if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                                                    // Successfully decoded JSON array
+                                                    $skills = $decoded;
+                                                } else {
+                                                    // Not JSON, try comma-separated string
+                                                    $skills = explode(',', $skillsData);
+                                                }
+                                            } elseif (is_array($skillsData)) {
+                                                // Already an array
+                                                $skills = $skillsData;
+                                            } else {
+                                                // Single value, convert to array
+                                                $skills = [$skillsData];
+                                            }
+                                        @endphp
+                                        @foreach($skills as $skill)
+                                            <span class="skill-badge">{{ trim($skill) }}</span>
+                                        @endforeach
                                     </div>
                                 </div>
                             </div>
