@@ -13,6 +13,126 @@
             word-wrap: break-word;
             white-space: normal;
         }
+
+        /* Modern Provider Details Cards */
+        .provider-details-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+        }
+
+        .info-card-modern {
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid #e9ecef;
+        }
+
+        .info-card-modern:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+        }
+
+        .info-card-header-modern {
+            background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%);
+            color: #ffffff;
+            padding: 18px 24px;
+            display: flex;
+            align-items: center;
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .info-card-header-modern i {
+            font-size: 20px;
+            margin-right: 8px;
+        }
+
+        .info-card-body-modern {
+            padding: 24px;
+        }
+
+        .skills-badge-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .skill-badge-modern {
+            display: inline-block;
+            padding: 10px 18px;
+            background: linear-gradient(135deg, rgba(255, 0, 0, 0.1) 0%, rgba(95, 96, 185, 0.1) 100%);
+            border: 1px solid rgba(255, 0, 0, 0.2);
+            border-radius: 25px;
+            color: #333;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .skill-badge-modern:hover {
+            background: linear-gradient(135deg, rgba(255, 0, 0, 0.15) 0%, rgba(95, 96, 185, 0.15) 100%);
+            border-color: rgba(255, 0, 0, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 0, 0, 0.15);
+        }
+
+        .info-value-modern {
+            font-size: 15px;
+            color: #495057;
+            line-height: 1.6;
+            display: flex;
+            align-items: center;
+        }
+
+        .badge-modern {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .bg-info-modern {
+            background: linear-gradient(135deg, rgba(13, 202, 240, 0.15) 0%, rgba(13, 202, 240, 0.25) 100%);
+            color: #0dcaf0;
+            border: 1px solid rgba(13, 202, 240, 0.3);
+        }
+
+        .about-me-content {
+            color: #495057;
+            line-height: 1.8;
+            font-size: 15px;
+            text-align: justify;
+        }
+
+        .about-me-content p {
+            margin-bottom: 12px;
+        }
+
+        .about-me-content p:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .info-card-header-modern {
+                padding: 14px 18px;
+                font-size: 15px;
+            }
+
+            .info-card-body-modern {
+                padding: 18px;
+            }
+
+            .skill-badge-modern {
+                padding: 8px 14px;
+                font-size: 13px;
+            }
+        }
     </style>
     <div class="section-padding position-relative px-0">
         <div class="container">
@@ -210,51 +330,201 @@
                     </div>
                 </div>
                 <div class="col-lg-8 mt-lg-0 mt-5">
-                    <h3 class="text-capitalize mb-3">{{ __('landingpage.provider_personal_info') }}</h3>
+                    <h3 class="text-capitalize mb-4" style="background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; font-weight: 700;">{{ __('landingpage.provider_personal_info') }}</h3>
                    
-
-                    <p class="mt-0 mb-3">
-                    <h5>{{ __('Skills') }}</h5>
-                    {{ $providerData['data']['skills'] }}
-                    </p>
-                    <p class="mt-0 mb-3">
-                        <h5>{{ __('Location') }}</h5>
-                        @if(isset($providerData['data']['city_name']) && isset($providerData['data']['country_name']))
-                            {{ $providerData['data']['city_name'] }}, {{ $providerData['data']['country_name'] }}
-                        @elseif(isset($providerData['data']['city_name']))
-                            {{ $providerData['data']['city_name'] }}
-                        @elseif(isset($providerData['data']['country_name']))
-                            {{ $providerData['data']['country_name'] }}
-                        @else
-                            {{ __('N/A') }}
+                    <!-- Professional Provider Information Cards -->
+                    <div class="provider-details-grid">
+                        <!-- Full Skills Card -->
+                        @if(!empty($providerData['data']['skills']))
+                        <div class="info-card-modern mb-4">
+                            <div class="info-card-header-modern">
+                                <i class="ri-tools-line me-2"></i>
+                                <h5 class="mb-0">Full Skills</h5>
+                            </div>
+                            <div class="info-card-body-modern">
+                                <div class="skills-badge-container">
+                                    @php
+                                        $skillsData = $providerData['data']['skills'];
+                                        
+                                        // Try to decode JSON first
+                                        if (is_string($skillsData)) {
+                                            $decoded = json_decode($skillsData, true);
+                                            if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                                                $skills = $decoded;
+                                            } else {
+                                                // Not JSON, try comma-separated string
+                                                $skills = array_map('trim', explode(',', $skillsData));
+                                            }
+                                        } elseif (is_array($skillsData)) {
+                                            $skills = $skillsData;
+                                        } else {
+                                            $skills = [trim($skillsData)];
+                                        }
+                                    @endphp
+                                    @foreach($skills as $skill)
+                                        <span class="skill-badge-modern">{{ ucwords(trim($skill)) }}</span>
+                                    @endforeach
+                                </div>
+                            </div>
+                        </div>
                         @endif
-                        </p>
-                    <p class="mt-0 mb-3">
-                    <h5>{{ __('Experince') }}</h5>
-                    {{ $providerData['data']['experience'] }}
 
-                    </p>
-                    <p class="mt-0 mb-3">
-                    <h5>{{ __('Mobility') }}</h5>
-                    {{ $providerData['data']['mobility'] }}
+                        <!-- Location Card -->
+                        @if(isset($providerData['data']['city_name']) || isset($providerData['data']['country_name']))
+                        <div class="info-card-modern mb-4">
+                            <div class="info-card-header-modern">
+                                <i class="ri-map-pin-line me-2"></i>
+                                <h5 class="mb-0">Location</h5>
+                            </div>
+                            <div class="info-card-body-modern">
+                                <div class="info-value-modern">
+                                    <i class="ri-map-pin-fill me-2 text-primary"></i>
+                                    @if(isset($providerData['data']['city_name']) && isset($providerData['data']['country_name']))
+                                        {{ $providerData['data']['city_name'] }}, {{ $providerData['data']['country_name'] }}
+                                    @elseif(isset($providerData['data']['city_name']))
+                                        {{ $providerData['data']['city_name'] }}
+                                    @elseif(isset($providerData['data']['country_name']))
+                                        {{ $providerData['data']['country_name'] }}
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                        @endif
 
-                    </p>
-                    <p class="mt-0 mb-3">
-                    <h5>{{ __('Education') }}</h5>
-                    {{ $providerData['data']['education'] }}
+                        <!-- Experience Card -->
+                        @if(!empty($providerData['data']['experience']))
+                        <div class="info-card-modern mb-4">
+                            <div class="info-card-header-modern">
+                                <i class="ri-briefcase-4-line me-2"></i>
+                                <h5 class="mb-0">Experience</h5>
+                            </div>
+                            <div class="info-card-body-modern">
+                                <div class="skills-badge-container">
+                                    @php
+                                        $experienceData = $providerData['data']['experience'];
+                                        
+                                        // Try to decode JSON first
+                                        if (is_string($experienceData)) {
+                                            $decoded = json_decode($experienceData, true);
+                                            if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                                                $experiences = $decoded;
+                                            } else {
+                                                // Not JSON, try comma-separated string
+                                                $experiences = array_map('trim', explode(',', $experienceData));
+                                            }
+                                        } elseif (is_array($experienceData)) {
+                                            $experiences = $experienceData;
+                                        } else {
+                                            $experiences = [trim($experienceData)];
+                                        }
+                                    @endphp
+                                    @foreach($experiences as $exp)
+                                        <span class="skill-badge-modern">{{ ucwords(trim($exp)) }}</span>
+                                    @endforeach
+                                </div>
+                            </div>
+                        </div>
+                        @endif
 
-                    </p>
+                        <!-- Mobility Card -->
+                        @if(!empty($providerData['data']['mobility']))
+                        <div class="info-card-modern mb-4">
+                            <div class="info-card-header-modern">
+                                <i class="ri-car-line me-2"></i>
+                                <h5 class="mb-0">Mobility</h5>
+                            </div>
+                            <div class="info-card-body-modern">
+                                <div class="info-value-modern">
+                                    <span class="badge-modern bg-info-modern">{{ ucfirst(trim($providerData['data']['mobility'])) }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        @endif
 
+                        <!-- Education Card -->
+                        @if(!empty($providerData['data']['education']))
+                        <div class="info-card-modern mb-4">
+                            <div class="info-card-header-modern">
+                                <i class="ri-graduation-cap-line me-2"></i>
+                                <h5 class="mb-0">Education</h5>
+                            </div>
+                            <div class="info-card-body-modern">
+                                <div class="skills-badge-container">
+                                    @php
+                                        $educationData = $providerData['data']['education'];
+                                        
+                                        // Try to decode JSON first
+                                        if (is_string($educationData)) {
+                                            $decoded = json_decode($educationData, true);
+                                            if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                                                $educations = $decoded;
+                                            } else {
+                                                // Not JSON, try comma-separated string
+                                                $educations = array_map('trim', explode(',', $educationData));
+                                            }
+                                        } elseif (is_array($educationData)) {
+                                            $educations = $educationData;
+                                        } else {
+                                            $educations = [trim($educationData)];
+                                        }
+                                    @endphp
+                                    @foreach($educations as $edu)
+                                        <span class="skill-badge-modern">{{ ucwords(trim($edu)) }}</span>
+                                    @endforeach
+                                </div>
+                            </div>
+                        </div>
+                        @endif
 
-                    <p class="mt-0 mb-3">
-                    <h5>{{ __('Certificate') }}</h5>
-                    {{ $providerData['data']['certification'] }}
+                        <!-- Certificate Card -->
+                        @if(!empty($providerData['data']['certification']))
+                        <div class="info-card-modern mb-4">
+                            <div class="info-card-header-modern">
+                                <i class="ri-file-certificate-2-line me-2"></i>
+                                <h5 class="mb-0">Certificate</h5>
+                            </div>
+                            <div class="info-card-body-modern">
+                                <div class="skills-badge-container">
+                                    @php
+                                        $certificationData = $providerData['data']['certification'];
+                                        
+                                        // Try to decode JSON first
+                                        if (is_string($certificationData)) {
+                                            $decoded = json_decode($certificationData, true);
+                                            if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                                                $certifications = $decoded;
+                                            } else {
+                                                // Not JSON, try comma-separated string
+                                                $certifications = array_map('trim', explode(',', $certificationData));
+                                            }
+                                        } elseif (is_array($certificationData)) {
+                                            $certifications = $certificationData;
+                                        } else {
+                                            $certifications = [trim($certificationData)];
+                                        }
+                                    @endphp
+                                    @foreach($certifications as $cert)
+                                        <span class="skill-badge-modern">{{ ucwords(trim($cert)) }}</span>
+                                    @endforeach
+                                </div>
+                            </div>
+                        </div>
+                        @endif
 
-                    </p>
-
-                    <div class="mt-0 mb-3">
-                        <h5>{{ __('About Me') }}</h5>
-                        {!! $providerData['data']['about_me'] !!}
+                        <!-- About Me Card -->
+                        @if(!empty($providerData['data']['about_me']))
+                        <div class="info-card-modern mb-4">
+                            <div class="info-card-header-modern">
+                                <i class="ri-user-heart-line me-2"></i>
+                                <h5 class="mb-0">About Me</h5>
+                            </div>
+                            <div class="info-card-body-modern">
+                                <div class="about-me-content">
+                                    {!! $providerData['data']['about_me'] !!}
+                                </div>
+                            </div>
+                        </div>
+                        @endif
                     </div>
 
 

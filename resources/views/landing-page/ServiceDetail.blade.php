@@ -933,9 +933,9 @@
                                 </div>
                                 <div class="info-card-body">
                                     <div class="d-flex flex-wrap gap-2">
-                                        @foreach ($serviceData['service_detail']['service_address_mapping'] as $service_address)
+                            @foreach ($serviceData['service_detail']['service_address_mapping'] as $service_address)
                                             <span class="location-badge">{{ $service_address['provider_address_mapping']['address'] }}</span>
-                                        @endforeach
+                            @endforeach
                                     </div>
                                 </div>
                             </div>
@@ -959,7 +959,7 @@
                                         <span class="info-label">
                                             <i class="ri-briefcase-line me-1"></i> Designation:
                                         </span>
-                                        <span class="info-value">{{ $serviceData['provider']['designation'] }}</span>
+                                        <span class="info-value">{{ ucfirst(trim($serviceData['provider']['designation'])) }}</span>
                                     </div>
                                     @endif
                                     @if(!empty($completed_services))
@@ -987,7 +987,7 @@
                                             <i class="ri-calendar-check-line me-1"></i> Availability:
                                         </span>
                                         <span class="info-value">
-                                            <span class="badge bg-primary">{{ $serviceData['provider']['availability'] }}</span>
+                                            <span class="badge bg-primary">{{ ucfirst(trim($serviceData['provider']['availability'])) }}</span>
                                         </span>
                                     </div>
                                     @endif
@@ -997,7 +997,7 @@
                                             <i class="ri-car-line me-1"></i> Mobility:
                                         </span>
                                         <span class="info-value">
-                                            <span class="badge bg-info">{{ $serviceData['provider']['mobility'] }}</span>
+                                            <span class="badge bg-info">{{ ucfirst(trim($serviceData['provider']['mobility'])) }}</span>
                                         </span>
                                     </div>
                                     @endif
@@ -1037,11 +1037,31 @@
                                     <h6 class="mb-0">Education & Skills</h6>
                                 </div>
                                 <div class="info-card-body">
-                                    <div class="info-row">
-                                        <span class="info-label">
-                                            <i class="ri-book-open-line me-1"></i> Education:
-                                        </span>
-                                        <span class="info-value">{{ $serviceData['provider']['education'] }}</span>
+                                    <div class="skills-list">
+                                        @php
+                                            $educationData = $serviceData['provider']['education'];
+                                            
+                                            // Try to decode JSON first
+                                            if (is_string($educationData)) {
+                                                $decoded = json_decode($educationData, true);
+                                                if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                                                    // Successfully decoded JSON array
+                                                    $educationItems = $decoded;
+                                                } else {
+                                                    // Not JSON, try comma-separated string
+                                                    $educationItems = explode(',', $educationData);
+                                                }
+                                            } elseif (is_array($educationData)) {
+                                                // Already an array
+                                                $educationItems = $educationData;
+                                            } else {
+                                                // Single value, convert to array
+                                                $educationItems = [$educationData];
+                                            }
+                                        @endphp
+                                        @foreach($educationItems as $edu)
+                                            <span class="skill-badge">{{ trim($edu) }}</span>
+                                        @endforeach
                                     </div>
                                 </div>
                             </div>
