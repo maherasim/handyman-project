@@ -1,4 +1,33 @@
 <x-master-layout>
+    <style>
+        /* Red-Blue Gradient for Post Job Request Table Headers */
+        #postBidsTable thead th,
+        #postBidsTable thead tr th,
+        table#postBidsTable thead th {
+            background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important;
+            color: #fff !important;
+            border-color: transparent !important;
+        }
+        
+        /* DataTables pagination buttons */
+        .dataTables_wrapper .dataTables_paginate .paginate_button.current,
+        .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
+            background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important;
+            border: none !important;
+            color: #fff !important;
+        }
+        
+        .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+            background: linear-gradient(135deg, rgba(255, 0, 0, 0.1) 0%, rgba(95, 96, 185, 0.1) 100%) !important;
+            color: #333 !important;
+        }
+        
+        /* Modal header gradient */
+        .modal-header.bg-primary {
+            background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important;
+            color: #fff !important;
+        }
+    </style>
     <div class="container-fluid">
         <div class="row">
             <div class="col-lg-12">

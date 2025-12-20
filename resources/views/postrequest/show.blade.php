@@ -624,18 +624,57 @@
     </div>
     @endif
     <style>
+        /* Fix text color for cards with red-blue gradient background */
+        .card.border-primary .card-body,
+        .card.border-primary .card-body * {
+            color: #fff !important;
+        }
+        
+        .card.border-primary .card-body h6,
+        .card.border-primary .card-body p,
+        .card.border-primary .card-body i {
+            color: #fff !important;
+        }
+        
+        .card.border-primary .card-body i.text-primary {
+            color: rgba(255, 255, 255, 0.9) !important;
+            -webkit-text-fill-color: rgba(255, 255, 255, 0.9) !important;
+            background: transparent !important;
+            -webkit-background-clip: unset !important;
+            background-clip: unset !important;
+        }
+        
+        /* Red-Blue Gradient for Card Headers */
+        .card-header.bg-primary {
+            background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important;
+            color: #fff !important;
+            border: none !important;
+        }
+        
+        /* Red-Blue Gradient for Table Headers */
+        .table thead th,
+        .table thead tr th {
+            background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important;
+            color: #fff !important;
+            border-color: transparent !important;
+        }
+        
         .extra-charges-card .card-header {
-            background: linear-gradient(180deg, #0d6efd 0%, #3751d7 100%);
+            background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important;
             border-bottom: 1px solid rgba(255,255,255,0.25);
         }
         .extra-charges-table thead .extra-charges-heading th {
-            background: linear-gradient(180deg, #0d6efd 0%, #3751d7 100%);
-            color: #fff;
-            border-bottom: none;
+            background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important;
+            color: #fff !important;
+            border-bottom: none !important;
         }
         .extra-charges-table thead tr {
-            background: #5755d9;
-            color: #ffffff;
+            background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important;
+            color: #ffffff !important;
+        }
+        .extra-charges-table thead th {
+            background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important;
+            color: #fff !important;
         }
         .extra-charges-table thead th {
             font-weight: 600;
