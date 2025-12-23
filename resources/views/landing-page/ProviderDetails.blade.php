@@ -1,7 +1,7 @@
 @extends('landing-page.layouts.default')
 
 
-@section('content')
+@section('after_head')
     <style>
         .table {
             table-layout: fixed;
@@ -35,19 +35,50 @@
             box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
         }
 
-        .info-card-header-modern {
-            background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%);
-            color: #ffffff;
-            padding: 18px 24px;
-            display: flex;
-            align-items: center;
-            font-weight: 600;
-            font-size: 16px;
+        .info-card-header-modern,
+        .provider-details-grid .info-card-modern .info-card-header-modern,
+        .info-card-modern .info-card-header-modern {
+            background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important;
+            background-size: 200% 200% !important;
+            animation: gradient-shift 8s ease infinite !important;
+            color: #ffffff !important;
+            padding: 16px 20px !important;
+            display: flex !important;
+            align-items: center !important;
+            font-weight: 700 !important;
+            font-size: 14px !important;
+            position: relative !important;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+            border-bottom: none !important;
+            text-transform: uppercase !important;
+            letter-spacing: 0.5px !important;
+            border-radius: 16px 16px 0 0 !important;
+            min-height: 52px !important;
+            opacity: 1 !important;
+            visibility: visible !important;
         }
 
         .info-card-header-modern i {
-            font-size: 20px;
-            margin-right: 8px;
+            font-size: 20px !important;
+            flex-shrink: 0 !important;
+            margin-right: 10px !important;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2)) !important;
+            opacity: 0.95 !important;
+            position: relative;
+            z-index: 1;
+            visibility: visible !important;
+        }
+
+        .info-card-header-modern h5 {
+            margin: 0 !important;
+            font-size: 14px !important;
+            font-weight: 700 !important;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important;
+            color: #fff !important;
+            position: relative;
+            z-index: 1;
+            opacity: 1 !important;
+            visibility: visible !important;
         }
 
         .info-card-body-modern {
@@ -143,12 +174,21 @@
         }
 
         .info-card-header-modern {
+            background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important;
+            background-size: 200% 200% !important;
+            animation: gradient-shift 8s ease infinite !important;
             opacity: 1 !important;
             visibility: visible !important;
             display: flex !important;
             transition: none !important;
-            animation: none !important;
             will-change: auto !important;
+            color: #fff !important;
+            font-weight: 700 !important;
+            text-transform: uppercase !important;
+            letter-spacing: 0.5px !important;
+            padding: 16px 20px !important;
+            border-radius: 16px 16px 0 0 !important;
+            min-height: 52px !important;
         }
 
         .info-card-header-modern * {
@@ -163,6 +203,9 @@
             visibility: visible !important;
         }
     </style>
+@endsection
+
+@section('content')
     <div class="section-padding position-relative px-0">
         <div class="container">
             <div class="row">
@@ -704,64 +747,4 @@
     </div>
 @endsection
 
-@section('after_script')
-<script>
-    // Prevent provider detail card headers from blinking/disappearing
-    (function() {
-        // Function to enforce visibility on all card headers
-        function enforceHeaderVisibility() {
-            const headers = document.querySelectorAll('.info-card-header-modern');
-            headers.forEach(function(header) {
-                if (header) {
-                    header.style.opacity = '1';
-                    header.style.visibility = 'visible';
-                    header.style.display = 'flex';
-                    
-                    // Also ensure all children are visible
-                    const children = header.querySelectorAll('*');
-                    children.forEach(function(child) {
-                        child.style.opacity = '1';
-                        child.style.visibility = 'visible';
-                    });
-                }
-            });
-        }
 
-        // Run immediately
-        enforceHeaderVisibility();
-
-        // Run after DOM is fully loaded
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', enforceHeaderVisibility);
-        } else {
-            enforceHeaderVisibility();
-        }
-
-        // Run after a short delay to catch any late-loading scripts
-        setTimeout(enforceHeaderVisibility, 100);
-        setTimeout(enforceHeaderVisibility, 500);
-
-        // Set up MutationObserver for each header
-        const headers = document.querySelectorAll('.info-card-header-modern');
-        headers.forEach(function(header) {
-            if (header) {
-                const observer = new MutationObserver(function(mutations) {
-                    mutations.forEach(function(mutation) {
-                        if (mutation.type === 'attributes' &&
-                            (mutation.attributeName === 'style' || mutation.attributeName === 'class')) {
-                            header.style.opacity = '1';
-                            header.style.visibility = 'visible';
-                            header.style.display = 'flex';
-                        }
-                    });
-                });
-                
-                observer.observe(header, {
-                    attributes: true,
-                    attributeFilter: ['style', 'class']
-                });
-            }
-        });
-    })();
-</script>
-@endsection

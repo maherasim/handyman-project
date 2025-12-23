@@ -1,7 +1,7 @@
 @extends('landing-page.layouts.default')
 
 
-@section('content')
+@section('after_head')
  
 <style>
     .mt-2 {
@@ -167,7 +167,195 @@
         border-bottom: 3px solid #007bff !important;
         box-shadow: 0 -2px 4px rgba(0,0,0,0.1) !important;
     }
+
+
+                            /* Prevent flash/blink on provider details heading */
+                            .provider-details-header-wrapper {
+                                opacity: 1 !important;
+                                visibility: visible !important;
+                                display: flex !important;
+                                transition: none !important;
+                                animation: none !important;
+                            }
+                            
+                            .provider-details-heading {
+                                opacity: 1 !important;
+                                visibility: visible !important;
+                                display: block !important;
+                                transition: none !important;
+                                animation: none !important;
+                                will-change: auto !important;
+                            }
+                            
+                            /* Ensure no parent elements are hiding it */
+                            .bg-light.pl-5.pr-5,
+                            .bg-light.pl-5.pr-5 > * {
+                                opacity: 1 !important;
+                                visibility: visible !important;
+                            }
+
+                            .provider-info-section {
+                                margin-top: 1.5rem;
+                                width: 100%;
+                                max-width: 100%;
+                                overflow: hidden;
+                                box-sizing: border-box;
+                            }
+
+        .info-card {
+            background: #fff;
+            border: none;
+            border-radius: 16px;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(0, 0, 0, 0.05);
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            max-width: 100%;
+            margin-bottom: 1rem;
+            display: flex;
+            flex-direction: column;
+            box-sizing: border-box;
+        }
+
+        .info-card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+
+        /* ... header styles ... */
+
+        .info-card-body {
+            padding: 20px !important;
+            background: #fff !important;
+            border-radius: 0 0 16px 16px !important;
+            flex: 1;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            overflow: hidden;
+            box-sizing: border-box;
+            color: #495057;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #495057;
+            min-width: 140px;
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+        }
+
+        .info-label i {
+            color: #6c757d;
+            margin-right: 6px;
+        }
+
+        .info-value {
+            color: #212529;
+            flex: 1;
+            font-size: 14px;
+        }
+
+        .location-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            background: linear-gradient(135deg, rgba(255, 0, 0, 0.1) 0%, rgba(95, 96, 185, 0.1) 100%);
+            border: 1px solid rgba(255, 0, 0, 0.2);
+            border-radius: 20px;
+            color: #495057;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .language-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            background: #e7f3ff;
+            border: 1px solid #b3d9ff;
+            border-radius: 20px;
+            color: #0066cc;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .skill-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            background: linear-gradient(135deg, rgba(255, 0, 0, 0.1) 0%, rgba(95, 96, 185, 0.1) 100%);
+            border: 1px solid rgba(255, 0, 0, 0.2);
+            border-radius: 20px;
+            color: #495057;
+            font-size: 13px;
+            font-weight: 500;
+            margin: 4px 4px 4px 0;
+            word-wrap: break-word;
+            word-break: break-word;
+            overflow-wrap: break-word;
+            white-space: normal;
+            max-width: 100%;
+            min-width: 0;
+            line-height: 1.4;
+            box-sizing: border-box;
+            overflow: hidden;
+            hyphens: auto;
+            -webkit-hyphens: auto;
+            -ms-hyphens: auto;
+            flex-shrink: 1;
+        }
+
+        .skill-badge:hover {
+            background: linear-gradient(135deg, rgba(255, 0, 0, 0.15) 0%, rgba(95, 96, 185, 0.15) 100%);
+            border-color: rgba(255, 0, 0, 0.3);
+            transform: translateY(-1px);
+        }
+
+        .diploma-content {
+            color: #e0e0e0;
+            line-height: 1.6;
+            font-size: 14px;
+            padding: 12px;
+            background: #2b2d3c; /* Darker inner background */
+            border-radius: 8px;
+            border-left: 3px solid #5F60B9;
+        }
+
+                            .skills-list {
+                                display: flex;
+                                flex-wrap: wrap;
+                                gap: 8px;
+                                word-wrap: break-word;
+                                overflow-wrap: break-word;
+                                overflow: hidden;
+                                width: 100%;
+                                box-sizing: border-box;
+                            }
+
+                            @media (max-width: 768px) {
+                                .info-row {
+                                    flex-direction: column;
+                                    gap: 4px;
+                                }
+
+                                .info-label {
+                                    min-width: auto;
+                                }
+
+                                .skill-badge {
+                                    font-size: 12px;
+                                    padding: 5px 10px;
+                                    max-width: calc(100% - 8px);
+                                }
+
+                                .skills-list {
+                                    gap: 6px;
+                                }
+                            }
+
 </style>
+@endsection
+
+@section('content')
 
     <div class="section-padding service-detail">
         <div class="container">
@@ -1128,159 +1316,7 @@
                             @endif
                         </div>
 
-                        <style>
-                            /* Prevent flash/blink on provider details heading */
-                            .provider-details-header-wrapper {
-                                opacity: 1 !important;
-                                visibility: visible !important;
-                                display: flex !important;
-                                transition: none !important;
-                                animation: none !important;
-                            }
-                            
-                            .provider-details-heading {
-                                opacity: 1 !important;
-                                visibility: visible !important;
-                                display: block !important;
-                                transition: none !important;
-                                animation: none !important;
-                                will-change: auto !important;
-                            }
-                            
-                            /* Ensure no parent elements are hiding it */
-                            .bg-light.pl-5.pr-5,
-                            .bg-light.pl-5.pr-5 > * {
-                                opacity: 1 !important;
-                                visibility: visible !important;
-                            }
 
-                            .provider-info-section {
-                                margin-top: 1.5rem;
-                            }
-
-                            .info-card {
-                                background: #fff;
-                                border: 1px solid #e9ecef;
-                                border-radius: 12px;
-                                overflow: hidden;
-                                transition: all 0.3s ease;
-                                box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-                            }
-
-                            .info-card:hover {
-                                box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-                                transform: translateY(-2px);
-                            }
-
-                            .info-card-header {
-                                background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%);
-                                color: #fff;
-                                padding: 12px 16px;
-                                display: flex;
-                                align-items: center;
-                                font-weight: 600;
-                            }
-
-                            .info-card-header i {
-                                font-size: 18px;
-                            }
-
-                            .info-card-body {
-                                padding: 16px;
-                            }
-
-                            .info-row {
-                                display: flex;
-                                align-items: flex-start;
-                                padding: 10px 0;
-                                border-bottom: 1px solid #f0f0f0;
-                            }
-
-                            .info-row:last-child {
-                                border-bottom: none;
-                            }
-
-                            .info-label {
-                                font-weight: 600;
-                                color: #495057;
-                                min-width: 140px;
-                                display: flex;
-                                align-items: center;
-                                font-size: 14px;
-                            }
-
-                            .info-label i {
-                                color: #6c757d;
-                                margin-right: 6px;
-                            }
-
-                            .info-value {
-                                color: #212529;
-                                flex: 1;
-                                font-size: 14px;
-                            }
-
-                            .location-badge {
-                                display: inline-block;
-                                padding: 6px 12px;
-                                background: linear-gradient(135deg, rgba(255, 0, 0, 0.1) 0%, rgba(95, 96, 185, 0.1) 100%);
-                                border: 1px solid rgba(255, 0, 0, 0.2);
-                                border-radius: 20px;
-                                color: #495057;
-                                font-size: 13px;
-                                font-weight: 500;
-                            }
-
-                            .language-badge {
-                                display: inline-block;
-                                padding: 6px 12px;
-                                background: #e7f3ff;
-                                border: 1px solid #b3d9ff;
-                                border-radius: 20px;
-                                color: #0066cc;
-                                font-size: 13px;
-                                font-weight: 500;
-                            }
-
-                            .skill-badge {
-                                display: inline-block;
-                                padding: 6px 12px;
-                                background: #f0f9ff;
-                                border: 1px solid #bae6fd;
-                                border-radius: 20px;
-                                color: #0369a1;
-                                font-size: 13px;
-                                font-weight: 500;
-                                margin: 4px 4px 4px 0;
-                            }
-
-                            .diploma-content {
-                                color: #495057;
-                                line-height: 1.6;
-                                font-size: 14px;
-                                padding: 12px;
-                                background: #f8f9fa;
-                                border-radius: 8px;
-                                border-left: 3px solid #5F60B9;
-                            }
-
-                            .skills-list {
-                                display: flex;
-                                flex-wrap: wrap;
-                                gap: 8px;
-                            }
-
-                            @media (max-width: 768px) {
-                                .info-row {
-                                    flex-direction: column;
-                                    gap: 4px;
-                                }
-
-                                .info-label {
-                                    min-width: auto;
-                                }
-                            }
-                        </style>
                     </div>
                 </div>
             </div>
@@ -1358,32 +1394,7 @@
 @section('after_script')
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.1/dist/sweetalert2.all.min.js"></script>
     <script>
-        // Prevent provider details heading from blinking/disappearing
-        (function() {
-            const heading = document.querySelector('.provider-details-heading');
-            if (heading) {
-                heading.style.opacity = '1';
-                heading.style.visibility = 'visible';
-                heading.style.display = 'block';
-                
-                // Use MutationObserver to prevent any changes
-                const observer = new MutationObserver(function(mutations) {
-                    mutations.forEach(function(mutation) {
-                        if (mutation.type === 'attributes' && 
-                            (mutation.attributeName === 'style' || mutation.attributeName === 'class')) {
-                            heading.style.opacity = '1';
-                            heading.style.visibility = 'visible';
-                            heading.style.display = 'block';
-                        }
-                    });
-                });
-                
-                observer.observe(heading, {
-                    attributes: true,
-                    attributeFilter: ['style', 'class']
-                });
-            }
-        })();
+
         
         $(document).ready(function() {
             // Initialize tab buttons with clean styling
