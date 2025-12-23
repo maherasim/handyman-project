@@ -466,9 +466,9 @@
                         <!-- Experience Card -->
                         @if(!empty($providerData['data']['experience']))
                         <div class="info-card-modern mb-4">
-                            <div class="info-card-header-modern">
-                                <i class="ri-briefcase-4-line me-2"></i>
-                                <h5 class="mb-0">Experience</h5>
+                            <div class="info-card-header-modern" style="opacity: 1 !important; visibility: visible !important; display: flex !important; background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important;">
+                                <i class="ri-briefcase-4-line me-2" style="opacity: 1 !important; visibility: visible !important;"></i>
+                                <h5 class="mb-0" style="opacity: 1 !important; visibility: visible !important; color: #ffffff !important;">Experience</h5>
                             </div>
                             <div class="info-card-body-modern">
                                 <div class="skills-badge-container">
@@ -516,9 +516,9 @@
                         <!-- Education Card -->
                         @if(!empty($providerData['data']['education']))
                         <div class="info-card-modern mb-4">
-                            <div class="info-card-header-modern">
-                                <i class="ri-graduation-cap-line me-2"></i>
-                                <h5 class="mb-0">Education</h5>
+                            <div class="info-card-header-modern" style="opacity: 1 !important; visibility: visible !important; display: flex !important; background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important;">
+                                <i class="ri-graduation-cap-line me-2" style="opacity: 1 !important; visibility: visible !important;"></i>
+                                <h5 class="mb-0" style="opacity: 1 !important; visibility: visible !important; color: #ffffff !important;">Education</h5>
                             </div>
                             <div class="info-card-body-modern">
                                 <div class="skills-badge-container">

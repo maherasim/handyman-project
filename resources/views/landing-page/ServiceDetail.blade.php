@@ -1115,9 +1115,9 @@
                             <!-- Available Location Card -->
                             @if(!empty($serviceData['service_detail']['service_address_mapping']))
                             <div class="info-card mb-3">
-                                <div class="info-card-header">
+                                <div class="info-card-header" style="background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important; color: #fff !important;">
                                     <i class="ri-map-pin-line me-2"></i>
-                                    <h6 class="mb-0">{{ __('landingpage.available_location') }}</h6>
+                                    <h6 class="mb-0" style="color: #fff !important;">{{ __('landingpage.available_location') }}</h6>
                                 </div>
                                 <div class="info-card-body">
                                     <div class="d-flex flex-wrap gap-2">
@@ -1131,9 +1131,9 @@
 
                             <!-- Basic Information Card -->
                             <div class="info-card mb-3">
-                                <div class="info-card-header">
+                                <div class="info-card-header" style="background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important; color: #fff !important;">
                                     <i class="ri-user-line me-2"></i>
-                                    <h6 class="mb-0">Basic Information</h6>
+                                    <h6 class="mb-0" style="color: #fff !important;">Basic Information</h6>
                                 </div>
                                 <div class="info-card-body">
                                     <div class="info-row">
@@ -1164,9 +1164,9 @@
                             <!-- Availability & Mobility Card -->
                             @if(!empty($serviceData['provider']['availability']) || !empty($serviceData['provider']['mobility']))
                             <div class="info-card mb-3">
-                                <div class="info-card-header">
+                                <div class="info-card-header" style="background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important; color: #fff !important;">
                                     <i class="ri-time-line me-2"></i>
-                                    <h6 class="mb-0">Availability & Mobility</h6>
+                                    <h6 class="mb-0" style="color: #fff !important;">Availability & Mobility</h6>
                                 </div>
                                 <div class="info-card-body">
                                     @if(!empty($serviceData['provider']['availability']))
@@ -1203,9 +1203,9 @@
                             @endphp
                             @if(!empty($languagesList))
                             <div class="info-card mb-3">
-                                <div class="info-card-header">
+                                <div class="info-card-header" style="background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important; color: #fff !important;">
                                     <i class="ri-global-line me-2"></i>
-                                    <h6 class="mb-0">Languages</h6>
+                                    <h6 class="mb-0" style="color: #fff !important;">Languages</h6>
                                 </div>
                                 <div class="info-card-body">
                                     <div class="d-flex flex-wrap gap-2">
@@ -1220,9 +1220,9 @@
                             <!-- Education & Skills Card -->
                             @if(!empty($serviceData['provider']['education']))
                             <div class="info-card mb-3">
-                                <div class="info-card-header">
+                                <div class="info-card-header" style="background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important; color: #fff !important;">
                                     <i class="ri-graduation-cap-line me-2"></i>
-                                    <h6 class="mb-0">Education & Skills</h6>
+                                    <h6 class="mb-0" style="color: #fff !important;">Education & Skills</h6>
                                 </div>
                                 <div class="info-card-body">
                                     <div class="skills-list">
@@ -1258,9 +1258,9 @@
                             <!-- Diploma Card -->
                             @if(!empty($serviceData['provider']['skills']))
                             <div class="info-card mb-3">
-                                <div class="info-card-header">
+                                <div class="info-card-header" style="background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important; color: #fff !important;">
                                     <i class="ri-file-certificate-line me-2"></i>
-                                    <h6 class="mb-0">Diploma & Certifications</h6>
+                                    <h6 class="mb-0" style="color: #fff !important;">Diploma & Certifications</h6>
                                 </div>
                                 <div class="info-card-body">
                                     <div class="skills-list">
@@ -1296,9 +1296,9 @@
                             <!-- Additional Skills/Certifications Card -->
                             @if(!empty($serviceData['provider']['certification']))
                             <div class="info-card mb-3">
-                                <div class="info-card-header">
+                                <div class="info-card-header" style="background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important; color: #fff !important;">
                                     <i class="ri-award-line me-2"></i>
-                                    <h6 class="mb-0">Certifications & Skills</h6>
+                                    <h6 class="mb-0" style="color: #fff !important;">Certifications & Skills</h6>
                                 </div>
                                 <div class="info-card-body">
                                     <div class="skills-list">
