@@ -325,7 +325,7 @@
                                                 data-status="in_progress"
                                                 data-confirm-message="You want to start this booking?">
                                                 <i class="las la-play-circle"></i>
-                                                {{ __('Lets Start') }}
+                                                {{ __('Lets Start Working') }}
                                             </button>
                                         </div>
                                     @endhasanyrole
