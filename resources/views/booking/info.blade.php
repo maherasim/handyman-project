@@ -768,7 +768,7 @@
                         <div class="col-md-4 mb-3">
                                 <div class="card h-65 soft-shadow hover-lift">
                                     <div class="card-body">
-                                        <p class="opacity-75 fz-12">{{ __('messages.address') }}</p>
+                                        <p class="opacity-75 fz-12">{{ __('Working Location') }}</p>
                                         <p class="mb-0 text-primary" id="booking_status__span">
                                             {{ str_replace('_', ' ', ucfirst($bookingdata->city->name ?? '')) }}-</p>
                                             {{ str_replace('_', ' ', ucfirst($bookingdata->country->name ?? '')) }}
