@@ -95,12 +95,11 @@ function getSingleMedia($model, $collection = 'profile_image', $skip=true   ){
     if ($model !== null) {
         // For service_attachment, try getFirstMedia first, then fallback to getMedia()->first()
         if ($collection === 'service_attachment') {
-            $media = $model->getFirstMedia($collection);
-            // If getFirstMedia returns null, try getting all media and taking first
-            if (!$media) {
-                $mediaCollection = $model->getMedia($collection);
-                if ($mediaCollection->isNotEmpty()) {
-                    $media = $mediaCollection->first();
+            $mediaCollection = $model->getMedia($collection);
+            foreach ($mediaCollection as $item) {
+                if (getFileExistsCheck($item)) {
+                    $media = $item;
+                    break;
                 }
             }
         } else {
