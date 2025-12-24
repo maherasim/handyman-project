@@ -769,10 +769,15 @@
                                 <div class="card h-65 soft-shadow hover-lift">
                                     <div class="card-body">
                                         <p class="opacity-75 fz-12">{{ __('Working Location') }}</p>
-                                        <p class="mb-0 text-primary" id="booking_status__span">
-                                            {{ str_replace('_', ' ', ucfirst($bookingdata->city->name ?? '')) }}-</p>
-                                            {{ str_replace('_', ' ', ucfirst($bookingdata->country->name ?? '')) }}
-                                            </p>
+                                        <p class="mb-0 text-primary" id="booking_status__span" style="word-wrap: break-word; overflow-wrap: break-word;">
+                                            @if(!empty($bookingdata->address))
+                                                {{ $bookingdata->address }}
+                                            @elseif(isset($bookingdata->city->name) || isset($bookingdata->country->name))
+                                                {{ str_replace('_', ' ', ucfirst($bookingdata->city->name ?? '')) }}@if(isset($bookingdata->city->name) && isset($bookingdata->country->name)), @endif{{ str_replace('_', ' ', ucfirst($bookingdata->country->name ?? '')) }}
+                                            @else
+                                                {{ __('N/A') }}
+                                            @endif
+                                        </p>
                                     </div>
                                 </div>
                         </div>
