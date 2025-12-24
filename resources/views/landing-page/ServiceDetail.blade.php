@@ -1006,6 +1006,10 @@
                                     style="width: 30px; border-radius: 8px;" alt="">
                             </a>
                             <a href="#">
+                                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRokEYt0yyh6uNDKL8uksVLlhZ35laKNQgZ9g&s"
+                                    style="width: 30px; border-radius: 8px;" alt="LinkedIn">
+                            </a>
+                            <a href="#">
                                 <img src="https://static.vecteezy.com/system/resources/previews/016/716/481/original/facebook-icon-free-png.png"
                                     style="width: 30px; border-radius: 8px;" alt="">
                             </a>
@@ -1531,27 +1535,21 @@
                     }
                 });
             });
-        });
-
-        document.addEventListener("DOMContentLoaded", function() {
-            var readmoreBtn = document.querySelector('.readmore-btn');
-            var aboutSection = document.getElementById('about-service');
-
-            if (readmoreBtn) {
-                // Show the button only if the destination section exists
-                readmoreBtn.style.display = aboutSection ? 'inline-block' : 'none';
-
-                // Smooth scroll to the About Service section
-                readmoreBtn.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    if (aboutSection && typeof aboutSection.scrollIntoView === 'function') {
-                        aboutSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    } else if (aboutSection) {
-                        // Fallback without smooth behavior
-                        window.location.hash = '#about-service';
-                    }
-                });
-            }
+            // Read More button functionality
+            $('.readmore-btn').on('click', function(e) {
+                e.preventDefault();
+                
+                // Trigger click on the "About Services" tab
+                var aboutTabBtn = $('.service-details-tabs .tab-btn[data-tab="about-services"]');
+                if (aboutTabBtn.length) {
+                    aboutTabBtn.trigger('click');
+                    
+                    // Method 1: jQuery animate (standard)
+                    $('html, body').animate({
+                        scrollTop: $('.service-details-tabs').offset().top - 100
+                    }, 800);
+                }
+            });
         });
     </script>
 @endsection

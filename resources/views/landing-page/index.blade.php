@@ -681,14 +681,14 @@
                                 <div class="col-md-3"> <!-- Changed from col-md-4 to col-md-3 -->
                                     <div class="service-box-card bg-white rounded-3 mb-5 shadow-sm"
                                         data-service-id="{{ $data->id }}">
-                                        <div class="iq-image position-relative">
+                                        <div class="iq-image position-relative" style="height: 200px; width: 100%; overflow: hidden; border-radius: 0.5rem;">
                                             @if ($data->visit_type == 'ONLINE')
                                                 <span class="online-service"></span>
                                             @endif
-                                            <a href="{{ route('service.detail', $data->id) }}" class="service-img">
+                                            <a href="{{ route('service.detail', $data->id) }}" class="service-img d-block w-100 h-100">
                                                 <img src="{{ getSingleMedia($data, 'service_attachment', null) }}"
                                                     alt="service"
-                                                    class="service-asim w-100 object-cover img-fluid rounded-3">
+                                                    class="w-100 h-100" style="object-fit: cover;" onerror="this.src='{{ asset('images/default.png') }}'">
                                             </a>
 
                                             @if (auth()->check() && auth()->user()->hasRole('user'))
@@ -961,14 +961,14 @@
                             <div class="col-md-3"> <!-- Changed from col-md-4 to col-md-3 -->
                                 <div class="service-box-card bg-white rounded-3 mb-5 shadow-sm"
                                     data-service-id="{{ $data->id }}">
-                                    <div class="iq-image position-relative">
+                                    <div class="iq-image position-relative" style="height: 200px; width: 100%; overflow: hidden; border-radius: 0.5rem;">
                                         @if ($data->visit_type == 'ONLINE')
                                             <span class="online-service"></span>
                                         @endif
-                                        <a href="{{ route('service.detail', $data->id) }}" class="service-img">
+                                        <a href="{{ route('service.detail', $data->id) }}" class="service-img d-block w-100 h-100">
                                             <img src="{{ getSingleMedia($data, 'service_attachment', null) }}"
                                                 alt="service"
-                                                class="service-asim w-100 object-cover img-fluid rounded-3">
+                                                class="w-100 h-100" style="object-fit: cover;" onerror="this.src='{{ asset('images/default.png') }}'">
                                         </a>
 
                                         @if (auth()->check() && auth()->user()->hasRole('user'))
