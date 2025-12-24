@@ -554,13 +554,34 @@ $booking_data = Booking::withTrashed()->with([
         //$this->addBookingCommission($bookingdata);
 
         // Send notification if status changed and activity_type is set
-        if($old_status != $data['status'] && !empty($activity_type)){
+        if($old_status != $data['status']){
+            // Reload booking to get fresh data after update
+            $bookingdata->refresh();
             $bookingdata->old_status = $old_status;
+            
+            // Ensure activity_type is set
+            if(empty($activity_type)) {
+                if($data['status'] == 'cancelled'){
+                    $activity_type = 'cancel_booking';
+                } else {
+                    $activity_type = 'update_booking_status';
+                }
+            }
+            
             $activity_data = [
                 'activity_type' => $activity_type,
                 'booking_id' => $id,
                 'booking' => $bookingdata,
             ];
+            
+            // Log for debugging
+            \Log::info('Sending booking notification', [
+                'old_status' => $old_status,
+                'new_status' => $data['status'],
+                'activity_type' => $activity_type,
+                'booking_id' => $id
+            ]);
+            
             $this->sendNotification($activity_data);
         }
 
