@@ -342,6 +342,9 @@ $booking_data = Booking::withTrashed()->with([
 
         $bookingdata = Booking::find($id);
 
+        // Capture old status immediately after fetching booking data, before any modifications
+        $old_status = $bookingdata->status;
+        $activity_type = null; // Initialize activity_type
 
         $paymentdata = Payment::where('booking_id',$id)->first();
         $user_wallet = Wallet::where('user_id', $bookingdata->customer_id)->first();
@@ -428,12 +431,6 @@ $booking_data = Booking::withTrashed()->with([
             $data['total_amount'] =round($totalamount,$digitafter_decimal_point);
 
         }
-        if($bookingdata->status != $data['status']) {
-            $activity_type = 'update_booking_status';
-        }
-        if($data['status'] == 'cancelled'){
-            $activity_type = 'cancel_booking';
-        }
 
         if($data['status'] == 'rejected'){
             if($bookingdata->handymanAdded()->count() > 0){
@@ -446,6 +443,15 @@ $booking_data = Booking::withTrashed()->with([
             if($bookingdata->handymanAdded()->count() > 0){
                 $bookingdata->handymanAdded()->delete();
                 $data['status'] = 'accept';
+            }
+        }
+
+        // Set activity_type based on final status change (after all modifications)
+        if($old_status != $data['status']) {
+            if($data['status'] == 'cancelled'){
+                $activity_type = 'cancel_booking';
+            } else {
+                $activity_type = 'update_booking_status';
             }
         }
 
@@ -496,7 +502,6 @@ $booking_data = Booking::withTrashed()->with([
             ];
             $this->sendNotification($activity_data);
         }
-        $old_status = $bookingdata->status;
         if(!empty($request->extra_charges)){
             if($bookingdata->bookingExtraCharge()->count() > 0)
             {
@@ -548,7 +553,8 @@ $booking_data = Booking::withTrashed()->with([
         // }
         //$this->addBookingCommission($bookingdata);
 
-        if($old_status != $data['status'] ){
+        // Send notification if status changed and activity_type is set
+        if($old_status != $data['status'] && !empty($activity_type)){
             $bookingdata->old_status = $old_status;
             $activity_data = [
                 'activity_type' => $activity_type,
@@ -556,7 +562,6 @@ $booking_data = Booking::withTrashed()->with([
                 'booking' => $bookingdata,
             ];
             $this->sendNotification($activity_data);
-
         }
 
         if($bookingdata->payment_id != null){
