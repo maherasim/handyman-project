@@ -720,7 +720,7 @@
                             @endhasanyrole
 
                            <div class="col-md-4 mb-3">  
-    <div class="card h-100 soft-shadow hover-lift">
+    <div class="card h-65 soft-shadow hover-lift">
         @php
             // If booking is cancelled, override payment status
             if (isset($bookingdata) && $bookingdata->status === 'cancelled') {
@@ -766,9 +766,9 @@
                             
 
                         <div class="col-md-4 mb-3">
-                                <div class="card h-100 soft-shadow hover-lift">
+                                <div class="card h-65 soft-shadow hover-lift">
                                     <div class="card-body">
-                                        <p class="opacity-75 fz-12">{{ __('messages.work_address') }}</p>
+                                        <p class="opacity-75 fz-12">{{ __('messages.address') }}</p>
                                         <p class="mb-0 text-primary" id="booking_status__span">
                                             {{ str_replace('_', ' ', ucfirst($bookingdata->city->name ?? '')) }}-</p>
                                             {{ str_replace('_', ' ', ucfirst($bookingdata->country->name ?? '')) }}
@@ -785,7 +785,7 @@
                             <!-- Add Cancellation Reason Card -->
                             @if ($bookingdata->status === 'cancelled')
                                 <div class="col-md-4 mb-3">
-                                    <div class="card h-100 soft-shadow hover-lift">
+                                    <div class="card h-65 soft-shadow hover-lift">
                                         <div class="card-body">
                                             <p class="opacity-75 fz-12">{{ __('landingpage.cancel_reason') }}</p>
                                             <p class="mb-0 text-danger">
@@ -798,9 +798,9 @@
 
                             <!-- Booking Schedule Card - Moved to the end -->
                             <div class="col-md-4 mb-3">
-                                <div class="card h-100 soft-shadow hover-lift">
+                                <div class="card h-65 soft-shadow hover-lift">
                                     <div class="card-body">
-                                        <p class="opacity-75 fz-12 mb-3">{{ __('messages.booking_schedule') }}</p>
+                                        <p class="opacity-75 fz-12 mb-3">{{ __('messages.service_schedule') }}</p>
                                         @if($bookingdata->slots && count($bookingdata->slots) > 0)
                                             <div class="booking-slots-container">
                                                 @foreach ($bookingdata->slots as $index => $slot)
@@ -1792,6 +1792,43 @@
 	}
 	.booking-info-container .card-body .text-primary {
 		font-weight: 600;
+	}
+	
+	/* Equal height for all cards */
+	.h-65 {
+		height: 110px !important;
+		display: flex !important;
+		flex-direction: column !important;
+	}
+	
+	.h-65 .card-body {
+		display: flex !important;
+		flex-direction: column !important;
+		justify-content: center !important;
+		flex: 1 !important;
+		overflow: hidden !important;
+		padding: 12px !important;
+	}
+	
+	.h-65 .booking-slots-container {
+		max-height: 50px !important;
+		overflow-y: auto !important;
+		overflow-x: hidden !important;
+	}
+	
+	.h-65 .booking-slots-container::-webkit-scrollbar {
+		width: 3px;
+	}
+	
+	.h-65 .booking-slots-container::-webkit-scrollbar-thumb {
+		background: #ccc;
+		border-radius: 2px;
+	}
+	
+	.h-65 .slot-item {
+		margin-bottom: 4px !important;
+		padding: 4px 8px !important;
+		font-size: 11px !important;
 	}
 	
 	/* Marquee Banner Styles */
