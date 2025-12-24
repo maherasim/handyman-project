@@ -734,19 +734,19 @@
             $isPaid = $paymentStatus === 'paid';
             $cardStyle = $isPaid
                 ? 'background: linear-gradient(135deg, #43e97b, #38f9d7); color: #fff; border-radius: 10px; padding: 12px;'
-                : '';
+                : 'background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #fff; border-radius: 10px; padding: 12px;';
 
             $statusClass = match ($paymentStatus) {
                 'paid' => 'text-white fw-bold',
-                'advanced_paid' => 'text-dark fw-bold',
-                'Advanced Refund' => 'text-warning',
-                'cancelled' => 'text-danger fw-bold', // Red text for cancelled
-                default => 'text-danger',
+                'advanced_paid' => 'text-white fw-bold',
+                'Advanced Refund' => 'text-white fw-bold',
+                'cancelled' => 'text-white fw-bold',
+                default => 'text-white fw-bold',
             };
         @endphp
 
         <div class="card-body" style="{{ $cardStyle }}">
-            <p class="fz-12 {{ $isPaid ? 'text-white' : 'opacity-75' }}">
+            <p class="fz-12 text-white">
                 {{ __('messages.payment_status') }}
             </p>
 
@@ -755,7 +755,7 @@
                     {{ str_replace('_', ' ', ucfirst($paymentStatus)) }}
                 </p>
             @else
-                <p class="mb-0 text-danger">
+                <p class="mb-0 text-white fw-bold">
                     {{ __('messages.pending') }}
                 </p>
             @endif

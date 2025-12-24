@@ -285,7 +285,7 @@
 
                             <!-- Add Button -->
                             <div class="mb-4">
-                                <button type="button" class="btn btn-outline-primary" @click="addMoreDates">
+                                <button type="button" class="btn btn-primary" @click="addMoreDates">
                                     ➕ Add More Dates
                                 </button>
                             </div>

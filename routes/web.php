@@ -652,3 +652,15 @@ Route::post('/transaction-request/{id}/confirm', [TransactionRequestController::
 Route::get('wallet_balance', [TransactionRequestController::class, 'walletindex'])->name('wallet_balance.index');
 Route::get('wallet_balance/data', [TransactionRequestController::class, 'walletindexData'])->name('wallet_balance.index_data');
 Route::get('/handyman/earnings-data', [PaymentController::class, 'handymanEarningsData'])->name('handyman.earnings.data');
+
+Route::get('/test-mail', function () {
+    try {
+        \Illuminate\Support\Facades\Mail::raw('This is a test email to verify SMTP configuration.', function ($message) {
+            $message->to('asimriazasim107@gmail.com')
+                    ->subject('SMTP Test Email');
+        });
+        return 'Test email sent successfully to asimriazasim107@gmail.com';
+    } catch (\Exception $e) {
+        return 'Failed to send email: ' . $e->getMessage();
+    }
+});
