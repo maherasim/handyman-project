@@ -805,31 +805,30 @@
                             <div class="col-md-4 mb-3">
                                 <div class="card h-65 soft-shadow hover-lift">
                                     <div class="card-body">
-                                        <p class="opacity-75 fz-12 mb-3">{{ __('messages.service_schedule') }}</p>
+                                        <p class="opacity-75 fz-12 mb-2">{{ __('messages.service_schedule') }}</p>
                                         @if($bookingdata->slots && count($bookingdata->slots) > 0)
-                                            <div class="booking-slots-container">
+                                            <div class="booking-slots-container-modern">
                                                 @foreach ($bookingdata->slots as $index => $slot)
-                                                    <div class="slot-item d-flex align-items-center mb-2 p-2 rounded" 
-                                                         style="background: linear-gradient(135deg, #f8f9fa, #e9ecef); border-left: 3px solid #007bff;">
-                                                        <div class="flex-shrink-0 me-2">
-                                                            <i class="ri-calendar-check-line text-primary" style="font-size: 16px;"></i>
+                                                    <div class="slot-item-modern">
+                                                        <div class="slot-icon-wrapper">
+                                                            <i class="ri-calendar-2-line"></i>
                                                         </div>
-                                                        <div class="flex-grow-1">
-                                                            <div class="fw-semibold text-dark small">
+                                                        <div class="slot-content">
+                                                            <div class="slot-date">
                                                                 {{ date("M d, Y", strtotime($slot->date)) ?? '-' }}
                                                             </div>
-                                                            <div class="text-muted small">
-                                                                <i class="ri-time-line me-1"></i>
-                                                                {{ date('g:i A', strtotime($slot->start_time)) }} - {{ date('g:i A', strtotime($slot->end_time)) }}
+                                                            <div class="slot-time">
+                                                                <i class="ri-time-line"></i>
+                                                                <span>{{ date('g:i A', strtotime($slot->start_time)) }} - {{ date('g:i A', strtotime($slot->end_time)) }}</span>
                                                             </div>
                                                         </div>
                                                     </div>
                                                 @endforeach
                                             </div>
                                         @else
-                                            <div class="text-muted text-center py-3">
-                                                <i class="ri-calendar-line" style="font-size: 24px; opacity: 0.5;"></i>
-                                                <p class="mb-0 small mt-2">No slots scheduled</p>
+                                            <div class="no-slots-modern">
+                                                <i class="ri-calendar-line"></i>
+                                                <p class="mb-0">No slots scheduled</p>
                                             </div>
                                         @endif
                                     </div>
@@ -1834,6 +1833,122 @@
 		margin-bottom: 4px !important;
 		padding: 4px 8px !important;
 		font-size: 11px !important;
+	}
+	
+	/* Modern Service Schedule Card Styles */
+	.booking-slots-container-modern {
+		max-height: 70px !important;
+		overflow-y: auto !important;
+		overflow-x: hidden !important;
+		padding-right: 4px;
+	}
+	
+	.booking-slots-container-modern::-webkit-scrollbar {
+		width: 4px;
+	}
+	
+	.booking-slots-container-modern::-webkit-scrollbar-track {
+		background: #f1f1f1;
+		border-radius: 10px;
+	}
+	
+	.booking-slots-container-modern::-webkit-scrollbar-thumb {
+		background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%);
+		border-radius: 10px;
+	}
+	
+	.slot-item-modern {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+		padding: 8px 10px;
+		margin-bottom: 6px;
+		background: linear-gradient(135deg, rgba(255, 0, 0, 0.05) 0%, rgba(95, 96, 185, 0.05) 100%);
+		border-radius: 8px;
+		border: 1px solid rgba(255, 0, 0, 0.1);
+		transition: all 0.3s ease;
+		position: relative;
+		overflow: hidden;
+	}
+	
+	.slot-item-modern::before {
+		content: '';
+		position: absolute;
+		left: 0;
+		top: 0;
+		bottom: 0;
+		width: 3px;
+		background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%);
+		border-radius: 0 8px 8px 0;
+	}
+	
+	.slot-item-modern:hover {
+		background: linear-gradient(135deg, rgba(255, 0, 0, 0.1) 0%, rgba(95, 96, 185, 0.1) 100%);
+		transform: translateX(2px);
+		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+	}
+	
+	.slot-icon-wrapper {
+		width: 32px;
+		height: 32px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%);
+		border-radius: 8px;
+		flex-shrink: 0;
+		box-shadow: 0 2px 6px rgba(255, 0, 0, 0.2);
+	}
+	
+	.slot-icon-wrapper i {
+		color: #fff;
+		font-size: 16px;
+	}
+	
+	.slot-content {
+		flex: 1;
+		min-width: 0;
+	}
+	
+	.slot-date {
+		font-size: 12px;
+		font-weight: 600;
+		color: #212529;
+		margin-bottom: 2px;
+		line-height: 1.3;
+	}
+	
+	.slot-time {
+		display: flex;
+		align-items: center;
+		gap: 4px;
+		font-size: 11px;
+		color: #6c757d;
+		line-height: 1.3;
+	}
+	
+	.slot-time i {
+		font-size: 12px;
+		color: #5F60B9;
+	}
+	
+	.no-slots-modern {
+		text-align: center;
+		padding: 20px 10px;
+		color: #6c757d;
+	}
+	
+	.no-slots-modern i {
+		font-size: 32px;
+		color: #dee2e6;
+		margin-bottom: 8px;
+		display: block;
+	}
+	
+	.no-slots-modern p {
+		font-size: 12px;
+		margin: 0;
+		color: #adb5bd;
 	}
 	
 	/* Marquee Banner Styles */
