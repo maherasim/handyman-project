@@ -29,9 +29,7 @@
         <div class="mt-3 rating-component">
             <div class="d-flex justify-content-between">
                 <h5 class="mb-5">{{ $t('landingpage.your_review') }}</h5>
-                <div class="d-inline-flex align-items-center gap-2">
-                    <button @click="editRating" class="btn btn-sm btn-primary-subtle px-2"><i class="fas fa-edit"></i></button>
-                </div>
+                <!-- Edit button hidden -->
             </div>
             <ul class="comment-list list-inline m-0">
                 <li class="comment mb-5 pb-5 border-bottom">
