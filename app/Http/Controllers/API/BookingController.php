@@ -8,6 +8,7 @@ use App\Models\Booking;
 use App\Models\BookingStatus;
 use App\Models\BookingRating;
 use App\Models\HandymanRating;
+use App\Models\CustomerRating;
 use App\Models\BookingActivity;
 use App\Models\Payment;
 use App\Models\PaymentHistory;
@@ -639,6 +640,64 @@ $booking_data = Booking::withTrashed()->with([
 		if($result->wasRecentlyCreated){
 			$message = __('messages.save_form',[ 'form' => __('messages.rating') ] );
 		}
+
+        return comman_message_response($message);
+    }
+
+    public function saveCustomerRating(Request $request)
+    {
+        $user = auth()->user();
+        
+        // Validate required fields
+        $request->validate([
+            'booking_id' => 'required|integer|exists:bookings,id',
+            'customer_id' => 'required|integer|exists:users,id',
+            'rating' => 'required|numeric|min:1|max:5',
+            'review' => 'nullable|string',
+            'provider_id' => 'nullable|integer|exists:users,id',
+        ]);
+
+        // Get provider_id from request or authenticated user
+        $provider_id = $request->provider_id ?? $user->id;
+        
+        // Verify that the authenticated user is the provider for this booking
+        $booking = Booking::find($request->booking_id);
+        if (!$booking) {
+            return comman_message_response(__('messages.booking_not_found'), 404);
+        }
+        
+        // Verify provider matches the booking's provider
+        if ($booking->provider_id != $provider_id && !$user->hasRole(['admin', 'demo_admin'])) {
+            return comman_message_response(__('messages.demo_permission_denied'), 403);
+        }
+
+        // Verify customer matches the booking's customer
+        if ($booking->customer_id != $request->customer_id) {
+            return comman_message_response(__('messages.invalid_customer'), 400);
+        }
+
+        $rating_data = [
+            'booking_id' => $request->booking_id,
+            'customer_id' => $request->customer_id,
+            'provider_id' => $provider_id,
+            'rating' => $request->rating,
+            'review' => $request->review ?? null,
+        ];
+
+        // Use updateOrCreate to allow updating existing ratings
+        $result = CustomerRating::updateOrCreate(
+            [
+                'booking_id' => $request->booking_id,
+                'customer_id' => $request->customer_id,
+                'provider_id' => $provider_id,
+            ],
+            $rating_data
+        );
+
+        $message = __('messages.update_form', [ 'form' => __('messages.rating') ]);
+        if ($result->wasRecentlyCreated) {
+            $message = __('messages.save_form', [ 'form' => __('messages.rating') ]);
+        }
 
         return comman_message_response($message);
     }

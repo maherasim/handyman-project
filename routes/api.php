@@ -155,6 +155,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('save-handyman-rating', [ API\BookingController::class, 'saveHandymanRating' ] );
     Route::post('delete-handyman-rating', [ API\BookingController::class, 'deleteHandymanRating' ] );
     Route::get('handyman-ratings-list', [ API\BookingController::class, 'getHandymanRatingsList' ] );
+    Route::post('save-customer-rating', [ API\BookingController::class, 'saveCustomerRating' ] );
 
     Route::get('document-list', [ API\DocumentsController::class, 'getDocumentList' ] );
     Route::get('provider-document-list', [ API\ProviderDocumentController::class, 'getProviderDocumentList' ] );
