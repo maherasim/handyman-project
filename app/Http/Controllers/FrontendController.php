@@ -904,12 +904,12 @@ class FrontendController extends Controller
         return view('landing-page.post-job-show', compact('user_id'));
     }
 
-    public function bookingDetail(Request $request)
+    public function bookingDetail(Request $request, $id)
     {
         if (!auth()->check()) {
             return redirect(route('frontend.index'))->withErrors(trans('messages.demo_permission_denied'));
         }
-        $booking_id = $request->id;
+        $booking_id = $id;
         $findBooking = Booking::where('id', $booking_id)->first();
         if (is_null($findBooking)) {
             return redirect()->route('booking.list')->withErrors(trans('messages.booking_not_found'));;
