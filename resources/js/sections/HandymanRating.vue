@@ -1,18 +1,18 @@
 <template>
     <a v-if="!handymanrating || handymanrating === ''"  href="javascript:void(0);" class="d-inline-block text-capitalize fw-bold mt-2"
-        data-bs-toggle="modal" data-bs-target="#ratingModal">{{$t('landingpage.rate_handyman')}}</a>
+        @click="openModal">{{$t('landingpage.rate_handyman')}}</a>
 
     <a v-if="handymanrating && handymanrating.id"  href="javascript:void(0);" class="d-inline-block text-capitalize fw-bold mt-2"
-        @click="editRating" data-bs-target="#ratingModal">{{$t('landingpage.edit_your_review')}}</a>
+        @click="editRating">{{$t('landingpage.edit_your_review')}}</a>
 
     <!-- ===================
     Review Modal
     ========================== -->
-    <div class="modal fade" id="ratingModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="ratingModalLabel" aria-hidden="true">
+    <div class="modal fade" :id="modalId" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" :aria-labelledby="modalLabelId" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title text-capitalize" id="ratingModalLabel">{{$t('landingpage.your_review')}}</h5>
+                    <h5 class="modal-title text-capitalize" :id="modalLabelId">{{$t('landingpage.your_review')}}</h5>
                     <span class="text-primary custom-btn-close" data-bs-dismiss="modal" aria-label="Close" @click="closeModal()">
                         <svg xmlns="http://www.w3.org/2000/svg" width="40" height="41" viewBox="0 0 40 41" fill="none">
                             <rect x="12" y="11.8381" width="17" height="17" fill="white"></rect>
@@ -45,7 +45,7 @@
                         </div>
                         <div class="d-flex align-items-center gap-3 flex-wrap">
                             <button type="submit" class="btn btn-primary">{{$t('messages.submit')}}</button>
-                            <span class="btn btn-danger" id="deletebtn" style="display:none;" @click="deleteRating(handymanrating.id)">{{$t('landingpage.delete')}}</span>
+                            <span class="btn btn-danger" :id="`deletebtn_${handyman_id}`" style="display:none;" @click="deleteRating(handymanrating.id)">{{$t('landingpage.delete')}}</span>
                         </div>
                     </form>
                 </div>
@@ -66,6 +66,10 @@ console.log(props.handymanrating);
 
 const ratingval = ref(0)
 const componentKey = ref(0)
+
+// Create unique modal ID based on handyman_id
+const modalId = computed(() => `handymanRatingModal_${props.handyman_id}`)
+const modalLabelId = computed(() => `handymanRatingModalLabel_${props.handyman_id}`)
 
 const addServiceRating = (ratingval) => {
     // console.log(ratingval);
@@ -134,12 +138,59 @@ const formSubmit = handleSubmit(async(values) => {
     }
 });  
 
+const openModal = () => {
+    ratingval.value = 0
+    rating.value = ''
+    review.value = ''
+    componentKey.value += 1
+    const modalElement = document.getElementById(modalId.value);
+    if (modalElement) {
+        // Try Bootstrap 5 first, fallback to jQuery if available
+        if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+            const modal = new bootstrap.Modal(modalElement);
+            modal.show();
+        } else if (typeof $ !== 'undefined' && $.fn.modal) {
+            $(`#${modalId.value}`).modal('show');
+        } else {
+            // Fallback: manually show modal
+            modalElement.classList.add('show');
+            modalElement.style.display = 'block';
+            document.body.classList.add('modal-open');
+            const backdrop = document.createElement('div');
+            backdrop.className = 'modal-backdrop fade show';
+            backdrop.id = `backdrop_${props.handyman_id}`;
+            document.body.appendChild(backdrop);
+        }
+    }
+}
+
 const editRating = () =>{
     ratingval.value = props.handymanrating.rating
     rating.value = props.handymanrating.rating
     review.value = props.handymanrating.review
-    document.getElementById('deletebtn').style.display = 'inline-block';
-    $('#ratingModal').modal('show');
+    const deleteBtn = document.getElementById(`deletebtn_${props.handyman_id}`);
+    if (deleteBtn) {
+        deleteBtn.style.display = 'inline-block';
+    }
+    const modalElement = document.getElementById(modalId.value);
+    if (modalElement) {
+        // Try Bootstrap 5 first, fallback to jQuery if available
+        if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+            const modal = new bootstrap.Modal(modalElement);
+            modal.show();
+        } else if (typeof $ !== 'undefined' && $.fn.modal) {
+            $(`#${modalId.value}`).modal('show');
+        } else {
+            // Fallback: manually show modal
+            modalElement.classList.add('show');
+            modalElement.style.display = 'block';
+            document.body.classList.add('modal-open');
+            const backdrop = document.createElement('div');
+            backdrop.className = 'modal-backdrop fade show';
+            backdrop.id = `backdrop_${props.handyman_id}`;
+            document.body.appendChild(backdrop);
+        }
+    }
 }
 
 const deleteRating = async(id) =>{
@@ -186,6 +237,27 @@ const closeModal=()=>{
     ratingval.value = 0
     componentKey.value += 1
     review.value = ''
+    const modalElement = document.getElementById(modalId.value);
+    if (modalElement) {
+        // Try Bootstrap 5 first, fallback to jQuery if available
+        if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+            const modal = bootstrap.Modal.getInstance(modalElement);
+            if (modal) {
+                modal.hide();
+            }
+        } else if (typeof $ !== 'undefined' && $.fn.modal) {
+            $(`#${modalId.value}`).modal('hide');
+        } else {
+            // Fallback: manually hide modal
+            modalElement.classList.remove('show');
+            modalElement.style.display = 'none';
+            document.body.classList.remove('modal-open');
+            const backdrop = document.getElementById(`backdrop_${props.handyman_id}`);
+            if (backdrop) {
+                backdrop.remove();
+            }
+        }
+    }
 }
 
 onMounted(() => {
