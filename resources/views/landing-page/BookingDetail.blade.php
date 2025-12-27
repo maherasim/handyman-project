@@ -253,24 +253,27 @@
                         @if(!empty($bookingData['handyman_data']))
                         <div class="col-lg-5 col-sm-6 mt-sm-0 mt-5">
                             <h6 class="mt-0 mb-4 font-size-18 text-capitalize">{{__('landingpage.about_handyman')}}</h6>
-                            @foreach($bookingData['handyman_data'] as $handyman)
+                            @foreach($bookingData['handyman_data'] as $handymanItem)
+                            @php
+                                $handyman = $handymanItem['handyman'] ?? [];
+                            @endphp
                             <div class="img flex-shrink-0 mb-4">
-                                <a href="{{ route('handyman-detail', $handyman['id']) }}">
-                                    <img src="{{  $handyman['profile_image'] ? asset( $handyman['profile_image']) : asset('images/user/user.png') }}" width="208" height="208"
+                                <a href="{{ route('handyman-detail', $handyman['id'] ?? '') }}">
+                                    <img src="{{  !empty($handyman['profile_image']) ? asset($handyman['profile_image']) : asset('images/user/user.png') }}" width="208" height="208"
                                         class="mw-100 rounded-3 object-cover" alt="about-handyman">
                                 </a>
                             </div>
 
                             <div class="content">
-                                <a href="{{ route('handyman-detail', $handyman['id']) }}">
-                                    <h5 class="mt-0 mb-1 text-capitalize">{{ $handyman['display_name'] }}</h5>
+                                <a href="{{ route('handyman-detail', $handyman['id'] ?? '') }}">
+                                    <h5 class="mt-0 mb-1 text-capitalize">{{ $handyman['display_name'] ?? '' }}</h5>
                                 </a>
                                 <div class="d-flex align-items-center gap-1 flex-wrap">
                                     <div>
-                                        <rating-component :readonly=true :showrating="false" :ratingvalue="{{ $handyman['handyman_rating'] }}" />
+                                        <rating-component :readonly=true :showrating="false" :ratingvalue="{{ $handyman['handyman_rating'] ?? 0 }}" />
                                     </div>
-                                    <a href="{{route('rating.all', ['handyman_id' => $handyman['id']])}}">
-                                        <span class="h6 lh-1">({{ round($handyman['handyman_rating'],1) }})</span>
+                                    <a href="{{route('rating.all', ['handyman_id' => $handyman['id'] ?? ''])}}">
+                                        <span class="h6 lh-1">({{ round($handyman['handyman_rating'] ?? 0, 1) }})</span>
                                     </a>
                                 </div>
 
@@ -286,7 +289,7 @@
                                                     <path fill-rule="evenodd" clip-rule="evenodd" d="M6.99963 14.25C6.10078 14.25 1.375 10.4238 1.375 6.42247C1.375 3.28998 3.89283 0.75 6.99963 0.75C10.1064 0.75 12.625 3.28998 12.625 6.42247C12.625 10.4238 7.89849 14.25 6.99963 14.25Z" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"></path>
                                                 </svg>
                                             </span>
-                                            <span class="h6 text-body">{{ $bookingData['provider_data']['address'] }}</span>
+                                            <span class="h6 text-body">{{ $handyman['address'] ?? '' }}</span>
                                         </div>
                                     </li>
                                     @endif
