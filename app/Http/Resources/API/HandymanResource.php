@@ -17,10 +17,15 @@ class HandymanResource extends JsonResource
  public function toArray($request)
 {
     $booking_id = request()->booking_id;
+    $customer_id = request()->customer_id ?? (auth()->check() ? auth()->user()->id : null);
     $rating = null;
     if ($booking_id) {
-        $r = HandymanRating::where('booking_id', $booking_id)
-            ->where('handyman_id', $this->handyman->id)->first();
+        $query = HandymanRating::where('booking_id', $booking_id)
+            ->where('handyman_id', $this->handyman->id);
+        if ($customer_id) {
+            $query->where('customer_id', $customer_id);
+        }
+        $r = $query->first();
         $rating = $r ? new HandymanRatingResource($r) : null;
     }
 

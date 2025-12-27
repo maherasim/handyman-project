@@ -915,7 +915,7 @@ class FrontendController extends Controller
             return redirect()->route('booking.list')->withErrors(trans('messages.booking_not_found'));;
         }
         $bookingController = app(BookingController::class);
-        $apiRequest = new Request(['booking_id' => $booking_id]);
+        $apiRequest = new Request(['booking_id' => $booking_id, 'customer_id' => auth()->user()->id]);
         $booking = $bookingController->getBookingDetail($apiRequest);
 
         $user = auth()->user();

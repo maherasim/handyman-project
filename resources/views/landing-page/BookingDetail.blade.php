@@ -646,6 +646,28 @@
                 @endphp
                 @if($bookingData['booking_detail']['status'] == 'completed')
                 <booking-rating :booking_id="{{ $bookingData['booking_detail']['id'] }}" :service_id="{{ $bookingData['service']['id'] }}" :customer_id="{{ auth()->user()->id }}" :bookingrating="{{ json_encode($bookingRating) }}"></booking-rating>
+                
+                @if(!empty($bookingData['handyman_data']))
+                <div class="pt-lg-5 pt-3 mt-lg-5 mt-3">
+                    <h4 class="text-capitalize mt-0 mb-4">{{__('landingpage.rate_handyman')}}</h4>
+                    @foreach($bookingData['handyman_data'] as $handymanItem)
+                    @php
+                        $handyman = $handymanItem['handyman'] ?? [];
+                        $handymanRating = $handymanItem['handyman_review'] ?? null;
+                    @endphp
+                    <div class="mb-4 pb-4 border-bottom">
+                        <h5 class="mb-3">{{ $handyman['display_name'] ?? '' }}</h5>
+                        <handyman-rating 
+                            :booking_id="{{ $bookingData['booking_detail']['id'] }}" 
+                            :service_id="{{ $bookingData['service']['id'] }}" 
+                            :customer_id="{{ auth()->user()->id }}" 
+                            :handyman_id="{{ $handyman['id'] ?? '' }}" 
+                            :handymanrating="{{ json_encode($handymanRating) }}">
+                        </handyman-rating>
+                    </div>
+                    @endforeach
+                </div>
+                @endif
                 @endif
 
                 @if(count($bookingData['rating_data']) !== 0)
