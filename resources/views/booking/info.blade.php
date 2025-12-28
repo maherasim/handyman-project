@@ -2188,12 +2188,18 @@ $(document).ready(function() {
                 customer_id: customerId
             },
             success: function(response) {
+                console.log('Customer Rating Response:', response); // Debug
                 var html = '';
                 
-                if (response.data) {
-                    var data = response.data;
+                // Handle response - API returns data directly (not wrapped in 'data' key)
+                // Check if response has 'data' key, otherwise use response directly
+                var data = (response && response.data) ? response.data : response;
+                
+                if (data && (data.average_rating !== undefined || data.total_reviews !== undefined)) {
                     var avgRating = parseFloat(data.average_rating) || 0;
-                    var totalReviews = data.total_reviews || 0;
+                    var totalReviews = parseInt(data.total_reviews) || 0;
+                    
+                    console.log('Average Rating:', avgRating, 'Total Reviews:', totalReviews); // Debug
                     
                     // Display stars based on rating
                     html += '<div class="customer-rating-display">';
@@ -2205,8 +2211,8 @@ $(document).ready(function() {
                         if (i <= Math.floor(avgRating)) {
                             // Full star
                             html += '<span class="star-filled-display">&#9733;</span>';
-                        } else if (i === Math.ceil(avgRating) && avgRating % 1 !== 0) {
-                            // Half star
+                        } else if (i === Math.ceil(avgRating) && avgRating % 1 !== 0 && i === Math.ceil(avgRating)) {
+                            // Half star (only show if it's the ceiling and has decimal)
                             html += '<span class="star-half-display">&#9733;</span>';
                         } else {
                             // Empty star
@@ -2238,6 +2244,7 @@ $(document).ready(function() {
             },
             error: function(xhr) {
                 console.error('Error loading customer rating:', xhr);
+                console.error('Response:', xhr.responseText); // Debug
                 $section.html('<div class="text-center"><small class="text-muted">Rating unavailable</small></div>');
             }
         });

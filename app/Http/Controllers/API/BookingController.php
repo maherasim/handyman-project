@@ -717,10 +717,14 @@ $booking_data = Booking::withTrashed()->with([
         }
         
         // Get all customer ratings (ratings given by providers to this customer)
+        // Include soft deleted records to get accurate count
         $customerRatings = CustomerRating::where('customer_id', $customer_id)
             ->with(['provider', 'booking'])
             ->orderBy('created_at', 'desc')
             ->get();
+        
+        // Debug: Log the count
+        \Log::info('Customer Rating Count for customer_id: ' . $customer_id, ['count' => $customerRatings->count()]);
         
         // Calculate average rating
         $averageRating = $customerRatings->avg('rating') ?? 0;
@@ -738,11 +742,13 @@ $booking_data = Booking::withTrashed()->with([
         });
         
         $response = [
-            'customer_id' => $customer_id,
-            'customer_name' => $customer->display_name,
-            'average_rating' => round($averageRating, 1),
-            'total_reviews' => $totalReviews,
-            'recent_reviews' => $recentReviews
+            'data' => [
+                'customer_id' => $customer_id,
+                'customer_name' => $customer->display_name,
+                'average_rating' => round($averageRating, 1),
+                'total_reviews' => $totalReviews,
+                'recent_reviews' => $recentReviews
+            ]
         ];
         
         return comman_custom_response($response);
