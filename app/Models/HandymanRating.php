@@ -29,7 +29,7 @@ class HandymanRating extends Model
 
     public function booking()
     {
-        return $this->belongsTo(Booking::class, 'id', 'booking_id');
+        return $this->belongsTo(Booking::class, 'booking_id', 'id');
     }
 
     public function customer()
