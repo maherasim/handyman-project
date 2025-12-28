@@ -806,6 +806,7 @@ class PaymentController extends Controller
                 },
                 'booking.service',
                 'booking.bookingPackage',
+                'booking.slots',
                 'customer',
                 'postJobRequest'
             ])
@@ -892,6 +893,21 @@ class PaymentController extends Controller
             $timeFormat = $datetime->time_format ?? 'H:i';
             $formattedDate = date("$dateFormat $timeFormat", strtotime($payment->datetime));
 
+            // Get service slots
+            $serviceSlots = [];
+            if ($booking && $booking->slots) {
+                $serviceSlots = $booking->slots->map(function ($slot) {
+                    return [
+                        'id' => $slot->id,
+                        'date' => $slot->date,
+                        'start_time' => $slot->start_time,
+                        'end_time' => $slot->end_time,
+                        'total_days' => $slot->total_days ?? 0,
+                        'total_hours' => $slot->total_hours ?? 0,
+                    ];
+                })->toArray();
+            }
+
             return [
                 'id' => $payment->id,
                 'booking_id' => $payment->booking_id ? '#' . $payment->booking_id : null,
@@ -906,6 +922,7 @@ class PaymentController extends Controller
                 'my_earning_formatted' => $handymanEarning ? getPriceFormat($handymanEarning->commission_amount) : getPriceFormat(0),
                 'total_amount' => (float)$payment->total_amount,
                 'total_amount_formatted' => getPriceFormat($payment->total_amount),
+                'service_slots' => $serviceSlots,
             ];
         });
 
