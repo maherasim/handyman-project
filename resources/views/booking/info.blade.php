@@ -179,6 +179,31 @@
     .star-rating-small .star-empty-small {
         color: #ccc;
     }
+    
+    /* Customer Rating Display Styles */
+    .customer-rating-section {
+        min-height: 60px;
+    }
+    .star-rating-display {
+        font-size: 1.2rem;
+        line-height: 1;
+        display: inline-flex;
+        gap: 2px;
+    }
+    .star-filled-display {
+        color: #fbc02d;
+    }
+    .star-half-display {
+        color: #fbc02d;
+        opacity: 0.5;
+    }
+    .star-empty-display {
+        color: #ddd;
+    }
+    .rating-value {
+        font-size: 1.1rem;
+        color: #333;
+    }
 </style>
 <div class="container-fluid booking-info-container">
     <div class="row">
@@ -2145,7 +2170,80 @@
 
 <script>
 $(document).ready(function() {
-    // View Customer Rating Info (Before Accepting)
+    // Load Customer Rating Info for all customer sections
+    $('.customer-rating-section').each(function() {
+        var $section = $(this);
+        var customerId = $section.data('customer-id');
+        var sectionId = $section.attr('id');
+        
+        if (!customerId) return;
+        
+        $.ajax({
+            url: baseUrl + '/api/get-customer-rating-info',
+            type: 'GET',
+            headers: {
+                'X-CSRF-TOKEN': csrfToken
+            },
+            data: {
+                customer_id: customerId
+            },
+            success: function(response) {
+                var html = '';
+                
+                if (response.data) {
+                    var data = response.data;
+                    var avgRating = parseFloat(data.average_rating) || 0;
+                    var totalReviews = data.total_reviews || 0;
+                    
+                    // Display stars based on rating
+                    html += '<div class="customer-rating-display">';
+                    html += '<div class="d-flex align-items-center justify-content-center gap-2 mb-2">';
+                    html += '<div class="star-rating-display">';
+                    
+                    // Show filled and empty stars
+                    for (var i = 1; i <= 5; i++) {
+                        if (i <= Math.floor(avgRating)) {
+                            // Full star
+                            html += '<span class="star-filled-display">&#9733;</span>';
+                        } else if (i === Math.ceil(avgRating) && avgRating % 1 !== 0) {
+                            // Half star
+                            html += '<span class="star-half-display">&#9733;</span>';
+                        } else {
+                            // Empty star
+                            html += '<span class="star-empty-display">&#9734;</span>';
+                        }
+                    }
+                    
+                    html += '</div>';
+                    html += '<strong class="rating-value">' + avgRating.toFixed(1) + '</strong>';
+                    html += '</div>';
+                    
+                    html += '<div class="text-center">';
+                    html += '<small class="text-muted">' + totalReviews + ' ' + (totalReviews === 1 ? 'review' : 'reviews') + '</small>';
+                    html += '</div>';
+                    
+                    html += '</div>';
+                } else {
+                    html += '<div class="text-center">';
+                    html += '<div class="star-rating-display mb-2">';
+                    for (var j = 1; j <= 5; j++) {
+                        html += '<span class="star-empty-display">&#9734;</span>';
+                    }
+                    html += '</div>';
+                    html += '<small class="text-muted">No ratings yet</small>';
+                    html += '</div>';
+                }
+                
+                $section.html(html);
+            },
+            error: function(xhr) {
+                console.error('Error loading customer rating:', xhr);
+                $section.html('<div class="text-center"><small class="text-muted">Rating unavailable</small></div>');
+            }
+        });
+    });
+    
+    // View Customer Rating Info (Before Accepting) - Keep for modal if needed
     var pendingBookingId = null;
     var pendingCustomerId = null;
     
