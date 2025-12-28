@@ -702,6 +702,52 @@ $booking_data = Booking::withTrashed()->with([
         return comman_message_response($message);
     }
 
+    public function getCustomerRatingInfo(Request $request)
+    {
+        $customer_id = $request->customer_id;
+        
+        if (!$customer_id) {
+            return comman_message_response(__('messages.customer_id_required'), 400);
+        }
+        
+        // Get customer info
+        $customer = User::find($customer_id);
+        if (!$customer) {
+            return comman_message_response(__('messages.customer_not_found'), 404);
+        }
+        
+        // Get all customer ratings (ratings given by providers to this customer)
+        $customerRatings = CustomerRating::where('customer_id', $customer_id)
+            ->with(['provider', 'booking'])
+            ->orderBy('created_at', 'desc')
+            ->get();
+        
+        // Calculate average rating
+        $averageRating = $customerRatings->avg('rating') ?? 0;
+        $totalReviews = $customerRatings->count();
+        
+        // Get recent reviews (last 5)
+        $recentReviews = $customerRatings->take(5)->map(function($rating) {
+            return [
+                'id' => $rating->id,
+                'rating' => $rating->rating,
+                'review' => $rating->review,
+                'provider_name' => optional($rating->provider)->display_name,
+                'created_at' => $rating->created_at ? $rating->created_at->format('Y-m-d') : null,
+            ];
+        });
+        
+        $response = [
+            'customer_id' => $customer_id,
+            'customer_name' => $customer->display_name,
+            'average_rating' => round($averageRating, 1),
+            'total_reviews' => $totalReviews,
+            'recent_reviews' => $recentReviews
+        ];
+        
+        return comman_custom_response($response);
+    }
+
     public function getHandymanRatingList(Request $request){
 
         $handymanratings = HandymanRating::orderBy('id','desc');

@@ -156,6 +156,29 @@
     .star-rating .star:hover ~ .star {
         color: #fbc02d;
     }
+    
+    /* Customer Rating Info Modal Styles */
+    .star-rating-large {
+        font-size: 2.5rem;
+        color: #ccc;
+        display: inline-block;
+    }
+    .star-rating-large .star-filled {
+        color: #fbc02d;
+    }
+    .star-rating-large .star-empty {
+        color: #ccc;
+    }
+    .star-rating-small {
+        font-size: 0.9rem;
+        color: #ccc;
+    }
+    .star-rating-small .star-filled-small {
+        color: #fbc02d;
+    }
+    .star-rating-small .star-empty-small {
+        color: #ccc;
+    }
 </style>
 <div class="container-fluid booking-info-container">
     <div class="row">
@@ -175,12 +198,11 @@
                                 @if ($bookingdata->status === 'pending')
                                     @hasanyrole('admin|demo_admin|provider')
                                         <div class="w3-third">
-                                            <button class="float-end btn btn-primary update-booking"
-                                                data-id="{{ $bookingdata->id }}"
-                                                data-handyman-id="{{ $bookingdata->provider_id }}" data-status="accept"
-                                                data-confirm-message="You want to accept this booking?">
-                                                <i class="las la-play-circle"></i>
-                                                {{ __('messages.accept_booking') }}
+                                            <button class="float-end btn btn-primary" id="view-customer-rating-btn"
+                                                data-booking-id="{{ $bookingdata->id }}"
+                                                data-customer-id="{{ $bookingdata->customer_id }}">
+                                                <i class="las la-star"></i>
+                                                {{ __('View Customer Rating') }}
                                             </button>
                                         </div>
                                         @endhasanyrole
@@ -2002,6 +2024,31 @@
 	}
 </style>
 
+<!-- View Customer Rating Info Modal (Before Accepting) -->
+<div class="modal fade" id="viewCustomerRatingModal" tabindex="-1" aria-labelledby="viewCustomerRatingModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="viewCustomerRatingModalLabel">{{ __('Customer Rating Information') }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="customer-rating-info-content">
+                <div class="text-center">
+                    <div class="spinner-border" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" data-dismiss="modal">{{ __('messages.close') }}</button>
+                <button type="button" class="btn btn-success" id="confirm-accept-booking">{{ __('messages.accept_booking') }}</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Customer Rating Modal -->
 <div class="modal fade" id="customerRatingModal" tabindex="-1" aria-labelledby="customerRatingModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -2088,6 +2135,119 @@
 
 <script>
 $(document).ready(function() {
+    // View Customer Rating Info (Before Accepting)
+    var pendingBookingId = null;
+    var pendingCustomerId = null;
+    
+    $(document).on('click', '#view-customer-rating-btn', function() {
+        var bookingId = $(this).data('booking-id');
+        var customerId = $(this).data('customer-id');
+        
+        pendingBookingId = bookingId;
+        pendingCustomerId = customerId;
+        
+        // Show modal
+        $('#viewCustomerRatingModal').modal('show');
+        
+        // Load customer rating info
+        $.ajax({
+            url: baseUrl + '/api/get-customer-rating-info',
+            type: 'GET',
+            headers: {
+                'X-CSRF-TOKEN': csrfToken
+            },
+            data: {
+                customer_id: customerId
+            },
+            success: function(response) {
+                var html = '<div class="customer-rating-summary">';
+                
+                if (response.data) {
+                    var data = response.data;
+                    var avgRating = data.average_rating || 0;
+                    var totalReviews = data.total_reviews || 0;
+                    
+                    html += '<div class="text-center mb-4">';
+                    html += '<h4>' + (data.customer_name || 'Customer') + '</h4>';
+                    html += '<div class="mb-3">';
+                    html += '<div class="star-rating-large">';
+                    for (var i = 1; i <= 5; i++) {
+                        if (i <= Math.round(avgRating)) {
+                            html += '<span class="star-filled">&#9733;</span>';
+                        } else {
+                            html += '<span class="star-empty">&#9734;</span>';
+                        }
+                    }
+                    html += '</div>';
+                    html += '<div class="mt-2"><strong>' + parseFloat(avgRating).toFixed(1) + '</strong> <span class="text-muted">(' + totalReviews + ' ' + (totalReviews === 1 ? 'review' : 'reviews') + ')</span></div>';
+                    html += '</div>';
+                    html += '</div>';
+                    
+                    if (data.recent_reviews && data.recent_reviews.length > 0) {
+                        html += '<div class="recent-reviews">';
+                        html += '<h5 class="mb-3">Recent Reviews</h5>';
+                        html += '<div class="list-group">';
+                        data.recent_reviews.forEach(function(review) {
+                            html += '<div class="list-group-item mb-2">';
+                            html += '<div class="d-flex justify-content-between align-items-start mb-2">';
+                            html += '<div>';
+                            html += '<strong>' + (review.provider_name || 'Provider') + '</strong>';
+                            html += '<div class="star-rating-small mt-1">';
+                            for (var j = 1; j <= 5; j++) {
+                                if (j <= review.rating) {
+                                    html += '<span class="star-filled-small">&#9733;</span>';
+                                } else {
+                                    html += '<span class="star-empty-small">&#9734;</span>';
+                                }
+                            }
+                            html += '</div>';
+                            html += '</div>';
+                            html += '<small class="text-muted">' + (review.created_at || '') + '</small>';
+                            html += '</div>';
+                            if (review.review) {
+                                html += '<p class="mb-0">' + review.review + '</p>';
+                            }
+                            html += '</div>';
+                        });
+                        html += '</div>';
+                        html += '</div>';
+                    } else {
+                        html += '<div class="alert alert-info">No reviews available for this customer yet.</div>';
+                    }
+                } else {
+                    html += '<div class="alert alert-info">No rating information available for this customer.</div>';
+                }
+                
+                html += '</div>';
+                $('#customer-rating-info-content').html(html);
+            },
+            error: function(xhr) {
+                console.error('Error:', xhr);
+                $('#customer-rating-info-content').html('<div class="alert alert-danger">Failed to load customer rating information.</div>');
+            }
+        });
+    });
+    
+    // Confirm Accept Booking after viewing rating
+    $(document).on('click', '#confirm-accept-booking', function() {
+        $('#viewCustomerRatingModal').modal('hide');
+        
+        // Show confirmation dialog
+        Swal.fire({
+            title: 'Are you sure?',
+            text: 'You want to accept this booking?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, accept it!',
+            cancelButtonText: 'No, cancel'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Update booking status to accept
+                updateBookingStatus(pendingBookingId, 'accept', 0);
+            }
+        });
+    });
+    
     // Customer Rating Modal Handler
     var customerSelectedRating = 0;
     
