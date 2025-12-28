@@ -797,6 +797,8 @@ class PaymentController extends Controller
             return comman_message_response(__('messages.unauthorized'), 403);
         }
 
+        // Get payments - prioritize 'paid' status over 'advanced_paid' for same booking
+        // Use a subquery to get the most relevant payment per booking
         $query = Payment::query()
             ->myPayment()
             ->with([
@@ -816,7 +818,24 @@ class PaymentController extends Controller
                         $sub->where('payment_type', 'bank_transfer')->where('status', 1);
                     });
             })
-            ->groupBy('payments.booking_id');
+            ->whereIn('id', function($subQuery) {
+                // For each booking, get the payment with 'paid' status if exists, otherwise get 'advanced_paid'
+                $subQuery->select(DB::raw('COALESCE(
+                    MAX(CASE WHEN payment_status = "paid" THEN id END),
+                    MAX(CASE WHEN payment_status = "advanced_paid" THEN id END)
+                )'))
+                    ->from('payments as p2')
+                    ->whereColumn('p2.booking_id', 'payments.booking_id')
+                    ->where(function($q) {
+                        $q->where('payment_type', '!=', 'bank_transfer')
+                            ->orWhere(function ($sub) {
+                                $sub->where('payment_type', 'bank_transfer')->where('status', 1);
+                            });
+                    })
+                    ->groupBy('p2.booking_id');
+            })
+            ->orderByRaw("CASE WHEN payment_status = 'paid' THEN 0 ELSE 1 END")
+            ->orderBy('datetime', 'desc');
 
         // Apply filters
         $filter = $request->filter;
