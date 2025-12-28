@@ -144,6 +144,18 @@
         color: #fff !important;
         border-color: transparent !important;
     }
+    
+    /* Star Rating Styles */
+    .star-rating {
+        font-size: 2rem;
+        color: #ccc;
+        cursor: pointer;
+    }
+    .star-rating .star.selected,
+    .star-rating .star:hover,
+    .star-rating .star:hover ~ .star {
+        color: #fbc02d;
+    }
 </style>
 <div class="container-fluid booking-info-container">
     <div class="row">
@@ -502,7 +514,7 @@
 
                                 @if (($bookingdata->status === 'completed' || $bookingdata->status === 'paid') && isset($payment) && $payment->payment_status == 'paid')
                                     @hasanyrole(['handyman', 'provider'])
-                                        <div class="w3-third d-flex align-items-end">
+                                        <div class="w3-third d-flex align-items-end gap-2">
                                             <button class="float-end btn btn-primary" id="service-proof-btn"
                                                 data-id="{{ $bookingdata->id }}"
                                                 data-service-id="{{ $bookingdata->service_id }}"
@@ -510,6 +522,15 @@
                                                 <i class="las la-clipboard-list"></i>
                                                 {{ __('messages.service_proof') }}
                                             </button>
+                                            @if ($auth_user->user_type == 'provider' || $bookingdata->provider_id == $auth_user->id)
+                                            <button class="float-end btn btn-warning" id="rate-customer-btn"
+                                                data-booking-id="{{ $bookingdata->id }}"
+                                                data-customer-id="{{ $bookingdata->customer_id }}"
+                                                data-provider-id="{{ $bookingdata->provider_id }}">
+                                                <i class="las la-star"></i>
+                                                {{ __('messages.rate_customer') }}
+                                            </button>
+                                            @endif
                                         </div>
                                     @endhasanyrole
                                 @endif
@@ -1981,6 +2002,46 @@
 	}
 </style>
 
+<!-- Customer Rating Modal -->
+<div class="modal fade" id="customerRatingModal" tabindex="-1" aria-labelledby="customerRatingModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="customerRatingModalLabel">{{ __('messages.rate_customer') }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="customerRatingForm">
+                    <input type="hidden" id="customer_rating_booking_id">
+                    <input type="hidden" id="customer_rating_customer_id">
+                    <input type="hidden" id="customer_rating_provider_id">
+                    
+                    <div class="mb-3">
+                        <label class="form-label">{{ __('messages.rating') }}</label>
+                        <div class="star-rating">
+                            <span class="star" data-value="1">&#9733;</span>
+                            <span class="star" data-value="2">&#9733;</span>
+                            <span class="star" data-value="3">&#9733;</span>
+                            <span class="star" data-value="4">&#9733;</span>
+                            <span class="star" data-value="5">&#9733;</span>
+                        </div>
+                        <input type="hidden" id="customer_rating_value" value="0">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">{{ __('messages.review') }}</label>
+                        <textarea class="form-control" id="customer_review_text" rows="4" placeholder="Write your review..."></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('messages.cancel') }}</button>
+                <button type="button" class="btn btn-primary" id="submitCustomerRating">{{ __('messages.submit') }}</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Service Proof Modal -->
 <div class="modal fade" id="serviceProofModal" tabindex="-1" aria-labelledby="serviceProofModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
@@ -2025,6 +2086,115 @@
 
 <script>
 $(document).ready(function() {
+    // Customer Rating Modal Handler
+    var customerSelectedRating = 0;
+    
+    // Open Customer Rating Modal
+    $('#rate-customer-btn').click(function() {
+        var bookingId = $(this).data('booking-id');
+        var customerId = $(this).data('customer-id');
+        var providerId = $(this).data('provider-id');
+        
+        $('#customer_rating_booking_id').val(bookingId);
+        $('#customer_rating_customer_id').val(customerId);
+        $('#customer_rating_provider_id').val(providerId);
+        $('#customer_review_text').val('');
+        customerSelectedRating = 0;
+        $('#customer_rating_value').val(0);
+        $('#customerRatingModal .star').removeClass('selected');
+        
+        // Show modal (Bootstrap 5 or jQuery fallback)
+        try {
+            var modalEl = document.getElementById('customerRatingModal');
+            var modal = window.bootstrap ? (window.bootstrap.Modal.getInstance(modalEl) || new window.bootstrap.Modal(modalEl)) : null;
+            if(modal){ modal.show(); } else { $('#customerRatingModal').modal('show'); }
+        } catch(e) { $('#customerRatingModal').modal('show'); }
+    });
+    
+    // Star Rating Click Handler
+    $(document).on('click', '#customerRatingModal .star', function() {
+        customerSelectedRating = $(this).data('value');
+        $('#customer_rating_value').val(customerSelectedRating);
+        $('#customerRatingModal .star').removeClass('selected');
+        $(this).prevAll().addBack().addClass('selected');
+    });
+    
+    // Submit Customer Rating
+    $('#submitCustomerRating').click(function() {
+        var bookingId = $('#customer_rating_booking_id').val();
+        var customerId = $('#customer_rating_customer_id').val();
+        var providerId = $('#customer_rating_provider_id').val();
+        var rating = $('#customer_rating_value').val();
+        var review = $('#customer_review_text').val().trim();
+        
+        if (!rating || rating == 0) {
+            if (typeof Swal !== 'undefined' && Swal.fire) {
+                Swal.fire('Error', 'Please select a star rating.', 'warning');
+            } else {
+                alert('Please select a star rating.');
+            }
+            return;
+        }
+        
+        var payload = {
+            booking_id: bookingId,
+            customer_id: customerId,
+            provider_id: providerId,
+            rating: rating,
+            review: review
+        };
+        
+        $.ajax({
+            url: baseUrl + '/api/save-customer-rating',
+            type: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': csrfToken,
+                'Content-Type': 'application/json'
+            },
+            data: JSON.stringify(payload),
+            success: function(response) {
+                // Close modal
+                try {
+                    var modalEl = document.getElementById('customerRatingModal');
+                    var modal = window.bootstrap ? (window.bootstrap.Modal.getInstance(modalEl) || new window.bootstrap.Modal(modalEl)) : null;
+                    if(modal){ modal.hide(); } else { $('#customerRatingModal').modal('hide'); }
+                } catch(e) { $('#customerRatingModal').modal('hide'); }
+                
+                // Reset form
+                $('#customerRatingForm')[0].reset();
+                customerSelectedRating = 0;
+                $('#customerRatingModal .star').removeClass('selected');
+                
+                // Show success message
+                if (typeof Swal !== 'undefined' && Swal.fire) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success',
+                        text: response.message || 'Rating submitted successfully.',
+                        showConfirmButton: true
+                    }).then(function(){
+                        location.reload();
+                    });
+                } else {
+                    alert('Rating submitted successfully.');
+                    location.reload();
+                }
+            },
+            error: function(xhr) {
+                console.error('Error:', xhr);
+                var errorMsg = 'Failed to submit rating.';
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    errorMsg = xhr.responseJSON.message;
+                }
+                if (typeof Swal !== 'undefined' && Swal.fire) {
+                    Swal.fire('Error', errorMsg, 'error');
+                } else {
+                    alert(errorMsg);
+                }
+            }
+        });
+    });
+    
     // Service Proof Button Click
     $('#service-proof-btn').click(function() {
         var bookingId = $(this).data('id');
