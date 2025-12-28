@@ -220,17 +220,41 @@ class BookingController extends Controller
     public function getBookingDetail(Request $request){
 
         $id = $request->booking_id;
+        
+        // Validate booking_id
+        if (empty($id)) {
+            $message = __('messages.booking_id_required') ?? 'Booking ID is required';
+            return comman_message_response($message, 400);
+        }
+        
+        // Cast to integer to ensure proper type
+        $id = (int) $id;
+        
+        if ($id <= 0) {
+            $message = __('messages.invalid_booking_id') ?? 'Invalid booking ID';
+            return comman_message_response($message, 400);
+        }
 
-$booking_data = Booking::withTrashed()->with([
-  'customer',
-  'provider.city','provider.country','provider.providerSubscription',
-  'handymanAdded.handyman.city','handymanAdded.handyman.country',
-  'service','bookingRating','bookingPostJob','bookingAddonService',
-  'bookingPackage','payment','slots',
-])->where('id', $id)->first();
+        // First check if booking exists at all (without relationships for debugging)
+        $bookingExists = Booking::withTrashed()->where('id', $id)->exists();
+        
+        if (!$bookingExists) {
+            $message = __('messages.booking_not_found') ?? 'Booking not found';
+            return comman_message_response($message, 404);
+        }
+
+        // Now load with all relationships
+        $booking_data = Booking::withTrashed()->with([
+          'customer',
+          'provider.city','provider.country','provider.providerSubscription',
+          'handymanAdded.handyman.city','handymanAdded.handyman.country',
+          'service','bookingRating','bookingPostJob','bookingAddonService',
+          'bookingPackage','payment','slots',
+        ])->where('id', $id)->first();
+        
         if($booking_data == null){
-            $message = __('messages.booking_not_found');
-            return comman_message_response($message,400);
+            $message = __('messages.booking_not_found') ?? 'Booking not found';
+            return comman_message_response($message, 404);
         }
         $booking_detail = new BookingDetailResource($booking_data);
 
@@ -742,13 +766,11 @@ $booking_data = Booking::withTrashed()->with([
         });
         
         $response = [
-            'data' => [
-                'customer_id' => $customer_id,
-                'customer_name' => $customer->display_name,
-                'average_rating' => round($averageRating, 1),
-                'total_reviews' => $totalReviews,
-                'recent_reviews' => $recentReviews
-            ]
+            'customer_id' => $customer_id,
+            'customer_name' => $customer->display_name,
+            'average_rating' => round($averageRating, 1),
+            'total_reviews' => $totalReviews,
+            'recent_reviews' => $recentReviews
         ];
         
         return comman_custom_response($response);
