@@ -219,10 +219,17 @@ class BookingController extends Controller
 
     public function getBookingDetail(Request $request){
 
-        $id = $request->booking_id;
+        // Get booking_id from request - try multiple methods to handle JSON and form data
+        $id = $request->input('booking_id');
         
-        // Validate booking_id
-        if (empty($id)) {
+        // If input() returns null, try getting from all() (for JSON requests)
+        if ($id === null) {
+            $all = $request->all();
+            $id = $all['booking_id'] ?? null;
+        }
+        
+        // Validate booking_id - check if it's set and not empty string
+        if ($id === null || $id === '') {
             $message = __('messages.booking_id_required') ?? 'Booking ID is required';
             return comman_message_response($message, 400);
         }
@@ -260,7 +267,17 @@ class BookingController extends Controller
 
         $rating_data = BookingRatingResource::collection($booking_detail->bookingRating->take(5));
         $service = new ServiceResource($booking_detail->service);
+        
+        // Get customer rating info
+        $customerRatingInfo = CustomerRating::where('customer_id', $booking_detail->customer_id)->get();
+        $customerAverageRating = $customerRatingInfo->avg('rating') ?? 0;
+        $customerTotalRatings = $customerRatingInfo->count();
+        
         $customer = new UserResource($booking_detail->customer);
+        $customerArray = $customer->toArray($request);
+        $customerArray['customer_rating'] = round($customerAverageRating, 1);
+        $customerArray['customer_total_ratings'] = $customerTotalRatings;
+        
         $provider_data = new UserResource($booking_detail->provider);
         $handyman_data = HandymanResource::collection($booking_detail->handymanAdded);
 
@@ -297,7 +314,7 @@ class BookingController extends Controller
         $response = [
             'booking_detail'    => $booking_detail,
             'service'           => $service,
-            'customer'          => $customer,
+            'customer'          => $customerArray,
             'booking_activity'  => $booking_activity,
             'rating_data'       => $rating_data,
             'handyman_data'     => $handyman_data,
