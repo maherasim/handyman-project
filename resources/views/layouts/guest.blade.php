@@ -16,6 +16,7 @@
         <!-- Styles -->
         <link rel="stylesheet" href="{{ asset('css/backend.css') }}">
         <link rel="stylesheet" href="{{ asset('css/fronted-custom.css') }}">
+        <link rel="stylesheet" href="{{ asset('vendor/@fortawesome/fontawesome-free/css/all.min.css')}}">
 
         <script>
             // Red-Blue Gradient Primary Color - set globally

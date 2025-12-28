@@ -17,6 +17,7 @@
   'Add-ons' => 'Add-ons',
   'about_handyman' => 'about handyman',
   'rate_handyman' => 'rate handyman',
+  'rate_customer' => 'Rate Customer',
   'price_detail' => 'Price detail',
   'subtotal' => 'Subtotal',
   'total' => 'Total',

@@ -10,6 +10,7 @@ use App\Models\Booking;
 use App\Models\BookingHandymanMapping;
 use App\Models\HandymanPayout;
 use App\Models\BookingRating;
+use App\Models\CustomerRating;
 use App\Models\BookingStatus;
 use App\Models\PaymentHistory;
 use App\Models\CommissionEarning;
@@ -1069,6 +1070,16 @@ public function bookingAssigned(Request $request)
         $is_enable_advance_payment = $bookingdata->service->is_enable_advance_payment;
         $serviceProof = ServiceProof::where('booking_id',$id)->get();
         $customer_review = BookingRating::with('customer')->where('customer_id',$user_id)->where('service_id',$bookingdata->service_id)->where('booking_id',$id)->first();
+        
+        // Get customer rating (provider rating the customer)
+        $customer_rating = null;
+        if ($bookingdata->status === 'completed' && ($user_data->hasRole(['provider', 'admin', 'demo_admin']) || $bookingdata->provider_id == $user_id)) {
+            $customer_rating = \App\Models\CustomerRating::where('booking_id', $id)
+                ->where('customer_id', $bookingdata->customer_id)
+                ->where('provider_id', $bookingdata->provider_id)
+                ->first();
+        }
+        
         $payment = Payment::where('booking_id', $id)->orderBy('id', 'desc')->first() ?? null;
         $serviceconfig = Setting::getValueByKey('service-configurations', 'service-configurations');
         $advancePaymentPercentage = isset($serviceconfig->advance_paynment_percantage) ? $serviceconfig->advance_paynment_percantage : 0;
@@ -1078,7 +1089,7 @@ public function bookingAssigned(Request $request)
 
         switch ($tabpage) {
             case 'info':
-                $data = view('booking.' . $tabpage, compact('user_data', 'tabpage', 'auth_user', 'bookingdata', 'payment','advanceservice', 'customer_review', 'serviceProof', 'is_enable_advance_payment'))->render();
+                $data = view('booking.' . $tabpage, compact('user_data', 'tabpage', 'auth_user', 'bookingdata', 'payment','advanceservice', 'customer_review', 'customer_rating', 'serviceProof', 'is_enable_advance_payment'))->render();
                 break;
             case 'status':
                 $data = view('booking.' . $tabpage, compact('user_data', 'tabpage', 'auth_user', 'bookingdata', 'payment'))->render();

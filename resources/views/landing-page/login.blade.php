@@ -64,16 +64,7 @@
                                                     <input type="password" id="password" name="password" class="form-control" placeholder="{{__('placeholder.login_password')}}"
                                                            aria-label="Password" aria-describedby="togglePassword" required>
                                                     <span class="input-group-text" id="togglePassword" style="cursor:pointer; padding: 6px 10px;" onclick="togglePassword()">
-                                                        <!-- Try safe filename first; if missing, fallback to the original with space -->
-                                                        <img id="icon-close"
-                                                             src="{{ asset('assets/close-icon.svg') }}"
-                                                             onerror="this.onerror=null; this.src='{{ asset('assets/close%20icon.svg') }}';"
-                                                             alt="hide" width="18" height="18"
-                                                             style="display:inline-block; width:18px; height:18px; object-fit:contain;">
-                                                        <img id="icon-open"
-                                                             src="{{ asset('assets/opens.png') }}"
-                                                             alt="show" width="18" height="18"
-                                                             style="display:none; width:18px; height:18px; object-fit:contain;">
+                                                        <i class="fa fa-eye-slash" id="toggleIcon"></i>
                                                     </span>
                                                 </div>
                                                 <small class="help-block with-errors text-danger"></small>
@@ -179,21 +170,18 @@
 
         function togglePassword() {
             const passwordInput = document.getElementById('password');
-            const iconOpen = document.getElementById('icon-open');   // open state image
-            const iconClose = document.getElementById('icon-close'); // closed state image
+            const toggleIcon = document.getElementById('toggleIcon');
 
             const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
             passwordInput.setAttribute('type', type);
 
-            // Swap images
+            // Toggle FontAwesome classes
             if (type === 'password') {
-                // hidden password -> show "closed" icon
-                iconClose.style.display = '';
-                iconOpen.style.display = 'none';
+                toggleIcon.classList.remove('fa-eye');
+                toggleIcon.classList.add('fa-eye-slash');
             } else {
-                // visible password -> show "open" icon
-                iconClose.style.display = 'none';
-                iconOpen.style.display = '';
+                toggleIcon.classList.remove('fa-eye-slash');
+                toggleIcon.classList.add('fa-eye');
             }
         }
     </script>
