@@ -198,11 +198,12 @@
                                 @if ($bookingdata->status === 'pending')
                                     @hasanyrole('admin|demo_admin|provider')
                                         <div class="w3-third">
-                                            <button class="float-end btn btn-primary" id="view-customer-rating-btn"
-                                                data-booking-id="{{ $bookingdata->id }}"
-                                                data-customer-id="{{ $bookingdata->customer_id }}">
-                                                <i class="las la-star"></i>
-                                                {{ __('View Customer Rating') }}
+                                            <button class="float-end btn btn-primary update-booking"
+                                                data-id="{{ $bookingdata->id }}"
+                                                data-handyman-id="{{ $bookingdata->provider_id }}" data-status="accept"
+                                                data-confirm-message="You want to accept this booking?">
+                                                <i class="las la-play-circle"></i>
+                                                {{ __('messages.accept_booking') }}
                                             </button>
                                         </div>
                                         @endhasanyrole
@@ -927,6 +928,15 @@
                                         </span>
                                 </li>
                             </ul>
+                            
+                            <!-- Customer Rating Section (Like Freelancer/Upwork) -->
+                            <div class="customer-rating-section mt-3 pt-3 border-top" id="customer-rating-section-{{ $bookingdata->customer_id }}" data-customer-id="{{ $bookingdata->customer_id }}">
+                                <div class="text-center">
+                                    <div class="spinner-border spinner-border-sm" role="status">
+                                        <span class="sr-only">Loading...</span>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
