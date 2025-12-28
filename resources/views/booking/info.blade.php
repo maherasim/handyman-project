@@ -528,7 +528,7 @@
                                                 data-customer-id="{{ $bookingdata->customer_id }}"
                                                 data-provider-id="{{ $bookingdata->provider_id }}">
                                                 <i class="las la-star"></i>
-                                                {{ __('messages.rate_customer') }}
+                                                {{ __('landingpage.rate_customer') }}
                                             </button>
                                             @endif
                                         </div>
@@ -2007,8 +2007,10 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="customerRatingModalLabel">{{ __('messages.rate_customer') }}</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <h5 class="modal-title" id="customerRatingModalLabel">{{ __('landingpage.rate_customer') }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
             </div>
             <div class="modal-body">
                 <form id="customerRatingForm">
@@ -2035,7 +2037,7 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('messages.cancel') }}</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" data-dismiss="modal">{{ __('messages.cancel') }}</button>
                 <button type="button" class="btn btn-primary" id="submitCustomerRating">{{ __('messages.submit') }}</button>
             </div>
         </div>
@@ -2090,7 +2092,7 @@ $(document).ready(function() {
     var customerSelectedRating = 0;
     
     // Open Customer Rating Modal
-    $('#rate-customer-btn').click(function() {
+    $(document).on('click', '#rate-customer-btn', function() {
         var bookingId = $(this).data('booking-id');
         var customerId = $(this).data('customer-id');
         var providerId = $(this).data('provider-id');
@@ -2103,12 +2105,13 @@ $(document).ready(function() {
         $('#customer_rating_value').val(0);
         $('#customerRatingModal .star').removeClass('selected');
         
-        // Show modal (Bootstrap 5 or jQuery fallback)
-        try {
-            var modalEl = document.getElementById('customerRatingModal');
-            var modal = window.bootstrap ? (window.bootstrap.Modal.getInstance(modalEl) || new window.bootstrap.Modal(modalEl)) : null;
-            if(modal){ modal.show(); } else { $('#customerRatingModal').modal('show'); }
-        } catch(e) { $('#customerRatingModal').modal('show'); }
+        // Show modal - support both Bootstrap 3/4 and 5
+        $('#customerRatingModal').modal('show');
+    });
+    
+    // Close modal handlers - support both Bootstrap versions
+    $(document).on('click', '#customerRatingModal .btn-close, #customerRatingModal [data-bs-dismiss="modal"], #customerRatingModal [data-dismiss="modal"]', function() {
+        $('#customerRatingModal').modal('hide');
     });
     
     // Star Rating Click Handler
@@ -2154,11 +2157,7 @@ $(document).ready(function() {
             data: JSON.stringify(payload),
             success: function(response) {
                 // Close modal
-                try {
-                    var modalEl = document.getElementById('customerRatingModal');
-                    var modal = window.bootstrap ? (window.bootstrap.Modal.getInstance(modalEl) || new window.bootstrap.Modal(modalEl)) : null;
-                    if(modal){ modal.hide(); } else { $('#customerRatingModal').modal('hide'); }
-                } catch(e) { $('#customerRatingModal').modal('hide'); }
+                $('#customerRatingModal').modal('hide');
                 
                 // Reset form
                 $('#customerRatingForm')[0].reset();
