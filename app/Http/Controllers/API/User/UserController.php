@@ -413,6 +413,16 @@ public function register(UserRequest $request)
 
         $data=$request->all();
 
+        // Ensure availability is a string, not an array
+        if (isset($data['availability']) && is_array($data['availability'])) {
+            $data['availability'] = !empty($data['availability']) ? (string)($data['availability'][0] ?? null) : null;
+        }
+        
+        // Ensure language_option is a string, not an array
+        if (isset($data['language_option']) && is_array($data['language_option'])) {
+            $data['language_option'] = !empty($data['language_option']) ? (string)($data['language_option'][0] ?? 'en') : 'en';
+        }
+
         $why_choose_me=[
 
             'why_choose_me_title'=>$request->why_choose_me_title,

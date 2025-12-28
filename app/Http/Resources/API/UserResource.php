@@ -105,8 +105,8 @@ class UserResource extends JsonResource
             'handymantype' => optional($this->handymantype)->name,
             'handyman_commission' => (string) $this->handyman_commission,
             'known_languages' => $this->known_languages ? (is_string($this->known_languages) ? json_decode($this->known_languages, true) : $this->known_languages) : null,
-            'language_option' => is_array($this->language_option) ? json_encode($this->language_option) : ($this->language_option ?? 'en'),
-            'availability' => is_array($this->availability) ? (isset($this->availability[0]) ? $this->availability[0] : null) : ($this->availability ?? null),
+            'language_option' => $this->getLanguageOptionValue(),
+            'availability' => $this->getAvailabilityValue(),
             'experience' => $this->experience ?? null,
             'mobility' => $this->mobility ?? null,
             'education' => $this->education ?? null,
@@ -130,5 +130,59 @@ class UserResource extends JsonResource
             'is_email_verified' => $this->is_email_verified
 
         ];
+    }
+
+    /**
+     * Get language_option as string (handle array/JSON cases)
+     */
+    private function getLanguageOptionValue()
+    {
+        $value = $this->getRawOriginal('language_option');
+        
+        if ($value === null) {
+            return 'en';
+        }
+        
+        // If it's a JSON string, decode it and take first value or encode back
+        if (is_string($value) && (substr($value, 0, 1) === '[' || substr($value, 0, 1) === '{')) {
+            $decoded = json_decode($value, true);
+            if (is_array($decoded) && !empty($decoded)) {
+                return is_array($decoded[0] ?? null) ? json_encode($decoded) : (string)($decoded[0] ?? 'en');
+            }
+        }
+        
+        // If it's already an array (from accessor), convert to string
+        if (is_array($value)) {
+            return !empty($value) ? (string)($value[0] ?? 'en') : 'en';
+        }
+        
+        return (string)$value;
+    }
+
+    /**
+     * Get availability as string (handle array/JSON cases)
+     */
+    private function getAvailabilityValue()
+    {
+        $value = $this->getRawOriginal('availability');
+        
+        if ($value === null) {
+            return null;
+        }
+        
+        // If it's a JSON string, decode it and take first value
+        if (is_string($value) && (substr($value, 0, 1) === '[' || substr($value, 0, 1) === '{')) {
+            $decoded = json_decode($value, true);
+            if (is_array($decoded) && !empty($decoded)) {
+                return (string)($decoded[0] ?? null);
+            }
+        }
+        
+        // If it's already an array (from accessor), convert to string
+        if (is_array($value)) {
+            return !empty($value) ? (string)($value[0] ?? null) : null;
+        }
+        
+        return (string)$value;
     }
 }
