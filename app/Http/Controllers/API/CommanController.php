@@ -407,6 +407,7 @@ public function getBankList(Request $request){
     return comman_custom_response($response);
 }
 
+
     public function defaultBank(Request $request)
     {
         $bank_id = $request->id;
