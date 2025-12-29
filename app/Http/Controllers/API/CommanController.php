@@ -370,29 +370,8 @@ public function downloadInvoice(Request $request){
 }
 
     public function getBankList(Request $request){
-        $auth_user = auth()->user();
-        
-        // If no authenticated user, return error
-        if (!$auth_user) {
-            return comman_message_response(__('messages.unauthorized'), 401);
-        }
-        
-        // Get provider_id: use authenticated user's ID, or allow admin to specify provider_id
-        if ($auth_user->hasRole(['admin', 'demo_admin'])) {
-            // Admin can view any provider's banks if provider_id is specified
-            $user_id = $request->user_id ?? $auth_user->id;
-        } else {
-            // Non-admin users can only view their own banks
-            $user_id = $auth_user->id;
-            
-            // Verify the user is a provider
-            if ($auth_user->user_type !== 'provider') {
-                return comman_message_response(__('messages.unauthorized'), 403);
-            }
-        }
-        
-        $banks = Bank::where('provider_id', $user_id)->where('status', 1);
-        
+        $user_id = $request->user_id;
+        $banks = Bank::where('provider_id',$user_id)->where('status',1);
         $per_page = config('constant.PER_PAGE_LIMIT');
         if( $request->has('per_page') && !empty($request->per_page)){
             if(is_numeric($request->per_page)){
