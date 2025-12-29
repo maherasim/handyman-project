@@ -369,38 +369,44 @@ public function downloadInvoice(Request $request){
     }
 }
 
-    public function getBankList(Request $request){
-        $user_id = $request->user_id;
-        $banks = Bank::where('provider_id',$user_id)->where('status',1);
-        $per_page = config('constant.PER_PAGE_LIMIT');
-        if( $request->has('per_page') && !empty($request->per_page)){
-            if(is_numeric($request->per_page)){
-                $per_page = $request->per_page;
-            }
-            if($request->per_page === 'all' ){
-                $per_page = $banks->count();
-            }
+public function getBankList(Request $request){
+    $user = $request->user(); // get authenticated user
+    $user_id = $user->id;
+
+    $banks = Bank::where('provider_id', $user_id)
+                 ->where('status', 1);
+
+    $per_page = config('constant.PER_PAGE_LIMIT');
+
+    if($request->has('per_page') && !empty($request->per_page)){
+        if(is_numeric($request->per_page)){
+            $per_page = $request->per_page;
         }
-
-        $banks = $banks->paginate($per_page);
-        $items = BankResource::collection($banks);
-
-        $response = [
-            'pagination' => [
-                'total_items' => $items->total(),
-                'per_page' => $items->perPage(),
-                'currentPage' => $items->currentPage(),
-                'totalPages' => $items->lastPage(),
-                'from' => $items->firstItem(),
-                'to' => $items->lastItem(),
-                'next_page' => $items->nextPageUrl(),
-                'previous_page' => $items->previousPageUrl(),
-            ],
-            'data' => $items,
-        ];
-
-        return comman_custom_response($response);
+        if($request->per_page === 'all'){
+            $per_page = $banks->count();
+        }
     }
+
+    $banks = $banks->paginate($per_page);
+    $items = BankResource::collection($banks);
+
+    $response = [
+        'pagination' => [
+            'total_items' => $items->total(),
+            'per_page' => $items->perPage(),
+            'currentPage' => $items->currentPage(),
+            'totalPages' => $items->lastPage(),
+            'from' => $items->firstItem(),
+            'to' => $items->lastItem(),
+            'next_page' => $items->nextPageUrl(),
+            'previous_page' => $items->previousPageUrl(),
+        ],
+        'data' => $items,
+    ];
+
+    return comman_custom_response($response);
+}
+
     public function defaultBank(Request $request)
     {
         $bank_id = $request->id;
