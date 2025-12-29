@@ -3,6 +3,23 @@
     <head>
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <script type="text/javascript" src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
+        <style>
+            /* Gradient for Table Headers */
+            .table thead th,
+            #datatable thead th,
+            table thead th {
+                background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important;
+                color: #fff !important;
+                border-color: transparent !important;
+            }
+            /* DataTables pagination */
+            .dataTables_wrapper .dataTables_paginate .paginate_button.current,
+            .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
+                background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important;
+                border: none !important;
+                color: #fff !important;
+            }
+        </style>
     </head>
     <div class="container-fluid">
         <div class="row">
