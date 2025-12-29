@@ -24,6 +24,7 @@ use App\Models\Service;
 use App\Models\Setting;
 use DB;
 use App\Models\CommissionEarning;
+use App\Models\WalletHistory;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\BankTransferPaymentNotificationMail;
 
@@ -211,6 +212,54 @@ class PaymentController extends Controller
                 $wallet->save();
 
                 $service = Service::find($booking->service_id);
+                
+                // Create wallet history entry for customer (debit) - sender paid amount
+                $customerActivityMessage = trans('messages.paid_with_wallet', ['value' => $request->booking_id]);
+                WalletHistory::create([
+                    'datetime' => $request->datetime,
+                    'user_id' => $booking->customer_id, // Customer (sender)
+                    'activity_type' => 'debit',
+                    'activity_message' => $customerActivityMessage,
+                    'activity_data' => json_encode([
+                        'user_id' => $booking->provider_id, // Receiver ID (provider)
+                        'credit_debit_amount' => $request->total_amount,
+                        'amount' => $wallet->amount, // Balance after transaction
+                        'transaction_type' => 'Debit',
+                        'booking_id' => $request->booking_id,
+                        'service_name' => $service->name ?? '',
+                    ]),
+                ]);
+
+                // Create wallet history entry for provider (credit) - receiver received amount
+                // This allows provider to see the payment in their wallet history
+                $providerWallet = Wallet::firstOrCreate(['user_id' => $booking->provider_id]);
+                $customerName = get_user_name($booking->customer_id);
+                $providerActivityMessage = __('messages.payment_received_from_customer', [
+                    'amount' => getPriceFormat((float)$request->total_amount),
+                    'from' => $customerName,
+                    'booking_id' => $request->booking_id
+                ]);
+                
+                // Fallback message if translation doesn't exist
+                if (strpos($providerActivityMessage, 'messages.') === 0) {
+                    $providerActivityMessage = 'Payment received from ' . $customerName . ' for booking #' . $request->booking_id . ' - Amount: ' . getPriceFormat((float)$request->total_amount);
+                }
+                
+                WalletHistory::create([
+                    'datetime' => $request->datetime,
+                    'user_id' => $booking->provider_id, // Provider (receiver)
+                    'activity_type' => 'credit',
+                    'activity_message' => $providerActivityMessage,
+                    'activity_data' => json_encode([
+                        'user_id' => $booking->customer_id, // Sender ID (customer)
+                        'credit_debit_amount' => $request->total_amount,
+                        'amount' => $providerWallet->amount, // Provider wallet balance
+                        'transaction_type' => 'Credit',
+                        'booking_id' => $request->booking_id,
+                        'service_name' => $service->name ?? '',
+                    ]),
+                ]);
+
                 $this->sendNotification([
                     'activity_type' => 'paid_with_wallet',
                     'wallet' => $wallet,
