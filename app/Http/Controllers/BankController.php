@@ -178,43 +178,81 @@ class BankController extends Controller
         }
         $type = $data['type'] ?? '';
         unset($data['type']);
+        
+        // Ensure all bank columns are properly set (nullable fields can be null, but should be included)
+        $bankColumns = [
+            'provider_id', 'bank_name', 'branch_name', 'account_no', 'account_holder',
+            'mobile_no', 'iban_no', 'bic_number', 'ifsc_no', 'aadhar_no', 'pan_no',
+            'status', 'stripe_account', 'is_default'
+        ];
+        
+        // Filter data to only include valid bank columns and set defaults for nullable fields
+        $bankData = [];
+        foreach ($bankColumns as $column) {
+            $bankData[$column] = $data[$column] ?? null;
+        }
+        
+        // Set default status if not provided
+        if (!isset($bankData['status'])) {
+            $bankData['status'] = 1;
+        }
+        
+        // Set default is_default if not provided
+        if (!isset($bankData['is_default'])) {
+            $bankData['is_default'] = 0;
+        }
+        
+        // Get id safely for update/create
+        $bankId = isset($data['id']) && !empty($data['id']) ? $data['id'] : null;
+        
         if (!$request->is('api/*')) {
-            if ($request->id == null) {
+            if ($bankId == null) {
                 if (!isset($data['bank_attachment'])) {
                     return  redirect()->back()->withErrors(__('validation.required', ['attribute' => 'attachments']));
                 }
             }
         }
-        $result = Bank::updateOrCreate(['id' => $data['id']], $data);
+        
+        // Use updateOrCreate with proper id handling
+        if ($bankId) {
+            $result = Bank::updateOrCreate(['id' => $bankId], $bankData);
+        } else {
+            $result = Bank::create($bankData);
+        }
         if ($request->is('api/*')) {
             if ($request->has('attachment_count')) {
+                $file = [];
                 for ($i = 0; $i < $request->attachment_count; $i++) {
                     $attachment = "bank_attachment_" . $i;
                     if ($request->$attachment != null) {
                         $file[] = $request->$attachment;
                     }
                 }
-                storeMediaFile($result, $file, 'bank_attachment');
+                if (!empty($file)) {
+                    storeMediaFile($result, $file, 'bank_attachment');
+                }
             }
         } else {
-            storeMediaFile($result, $request->bank_attachment, 'bank_attachment');
+            if (isset($request->bank_attachment)) {
+                storeMediaFile($result, $request->bank_attachment, 'bank_attachment');
+            }
         }
         $message = trans('messages.update_form', ['form' => trans('messages.bank')]);
         if ($result->wasRecentlyCreated) {
             $message = trans('messages.save_form', ['form' => trans('messages.bank')]);
         }
 
-        $providerdata = User::with('providerbank')->where('id',$result->proider_id)->first();
+        $providerdata = User::with('providerbank')->where('id', $result->provider_id)->first();
 
-        $user_type=$providerdata->user_type ?? null;
+        $user_type = $providerdata->user_type ?? null;
 
         if($request->is('api/*')){
-            return response()->json(['status' => true, 'data'=>$data, 'message' => $message]);
+            return response()->json(['status' => true, 'data' => $bankData, 'message' => $message]);
         }
-        if($user_type=='provider'){
-            return redirect(route('providerpayout.create',$data['provider_id']))->withSuccess($message);
+        if($user_type == 'provider'){
+            return redirect(route('providerpayout.create', $bankData['provider_id']))->withSuccess($message);
         }else{
-            return redirect(route('bank.list',['user_id' => $result->provider_id]))->withSuccess($message);
+            return redirect(route('bank.list', ['user_id' => $result->provider_id]))->withSuccess($message);
         }
 
     }
