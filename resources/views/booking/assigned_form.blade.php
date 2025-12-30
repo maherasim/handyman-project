@@ -25,11 +25,14 @@
                         } else {
                             $route = route('ajax-list', ['type' => 'handyman', 'provider_id' => $bookingdata->provider_id ]);
                         }
-                        $assigned_handyman = $bookingdata->handymanAdded->mapWithKeys(function ($item) {
-                            return [$item->handyman_id => optional($item->handyman)->display_name];
-                        });
+                        $assigned_handyman = [];
+                        if ($bookingdata->handymanAdded && $bookingdata->handymanAdded->count() > 0) {
+                            $assigned_handyman = $bookingdata->handymanAdded->mapWithKeys(function ($item) {
+                                return [$item->handyman_id => optional($item->handyman)->display_name ?? 'N/A'];
+                            })->toArray();
+                        }
                     @endphp
-                    {{ html()->select('handyman_id[]', [$bookingdata->handymanAdded->pluck('handyman_id')], $assigned_handyman)
+                    {{ html()->select('handyman_id[]', $bookingdata->handymanAdded && $bookingdata->handymanAdded->count() > 0 ? [$bookingdata->handymanAdded->pluck('handyman_id')->toArray()] : [], $assigned_handyman)
                                         ->class('select2js form-group')
                                         ->id('handyman_id')
                                         ->required()

@@ -709,7 +709,7 @@ class BookingController extends Controller
         }
 
 
-        $bookingdata = Booking::with('bookingExtraCharge', 'payment', 'service')->myBooking()->find($id);
+        $bookingdata = Booking::with(['bookingExtraCharge', 'payment', 'service', 'handymanAdded.handyman', 'customer', 'provider'])->myBooking()->find($id);
  
 
         $tabpage = 'info';
@@ -863,8 +863,18 @@ class BookingController extends Controller
 
     public function bookingAssignForm(Request $request)
     {
-
-        $bookingdata = Booking::find($request->id);
+        $bookingdata = Booking::with([
+            'handymanAdded.handyman', 
+            'service', 
+            'provider',
+            'handymanByAddress.handyman',
+            'providerAddress'
+        ])->find($request->id);
+        
+        if (!$bookingdata) {
+            return response()->json(['status' => false, 'message' => 'Booking not found'], 404);
+        }
+        
         $pageTitle = __('messages.assign_form_title', ['form' => __('messages.booking')]);
         return view('booking.assigned_form', compact('bookingdata', 'pageTitle'));
     }
@@ -1086,7 +1096,7 @@ public function bookingAssigned(Request $request)
         $auth_user = authSession();
         $user_id = $auth_user->id;
         $user_data = User::find($user_id);
-        $bookingdata = Booking::with('handymanAdded', 'payment', 'bookingExtraCharge', 'bookingAddonService', 'slots',  'service.city','service.country','service', 'bookingRating')->myBooking()->find($id);
+        $bookingdata = Booking::with(['handymanAdded.handyman', 'payment', 'bookingExtraCharge', 'bookingAddonService', 'slots',  'service.city','service.country','service', 'bookingRating', 'customer', 'provider'])->myBooking()->find($id);
        $advanceservice=  $bookingdata->service->advance_payment_amount;
  
         $is_enable_advance_payment = $bookingdata->service->is_enable_advance_payment;

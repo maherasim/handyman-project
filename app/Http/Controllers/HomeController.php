@@ -525,11 +525,13 @@ $data['remaining_payout'] = round($providerRemainingPayout, $digitafter_decimal_
                 }
 
                 if (isset($request->booking_id)) {
-                    $booking_data = Booking::find($request->booking_id);
+                    $booking_data = Booking::with('handymanByAddress')->find($request->booking_id);
 
-                    $service_address = $booking_data->handymanByAddress;
-                    if ($service_address != null) {
-                        $items->where('service_address_id', $service_address->id);
+                    if ($booking_data) {
+                        $service_address = $booking_data->handymanByAddress;
+                        if ($service_address != null) {
+                            $items->where('service_address_id', $service_address->id);
+                        }
                     }
                 }
 
