@@ -11,6 +11,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\ChatMessageNotificationMail;
 
 class ChatApiController extends Controller
 {
@@ -272,6 +274,24 @@ class ChatApiController extends Controller
             'flagged_at' => $containsPii ? now() : null,
         ]);
         $conversation->touch();
+        
+        // Send email notification to recipient
+        try {
+            $sender = Auth::user();
+            $recipientId = ($conversation->user_one_id === $sender->id) 
+                ? $conversation->user_two_id 
+                : $conversation->user_one_id;
+            
+            $recipient = \App\Models\User::find($recipientId);
+            if ($recipient && $recipient->email) {
+                Mail::to($recipient->email)->send(new ChatMessageNotificationMail($recipient, $sender, $msg, $conversation));
+                \Log::info('Chat message email sent successfully to: ' . $recipient->email . ' for message ID: ' . $msg->id);
+            }
+        } catch (\Exception $e) {
+            // Log error but don't fail the message sending
+            \Log::error('Failed to send chat message email: ' . $e->getMessage());
+        }
+        
         return response()->json([
             'status' => true,
             'id' => $msg->id,

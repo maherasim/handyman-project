@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Mail;
 use App\Events\ChatMessageSent;
+use App\Mail\ChatMessageNotificationMail;
 
 class ChatController extends Controller
 {
@@ -221,6 +222,9 @@ class ChatController extends Controller
             \Log::warning('Broadcast failed for message '.$msg->id.': '.$e->getMessage());
         }
 
+        // Load sender relationship for notification
+        $msg->load('sender');
+        
         // Send notification to the recipient
         \Log::info('Sending notification for message ' . $msg->id . ' in conversation ' . $conversation->id);
         $this->sendMessageNotification($conversation, $msg);
@@ -285,6 +289,17 @@ class ChatController extends Controller
             
             // Try the direct FCM approach (but don't fail if it doesn't work)
             $this->sendDirectFCMNotification($recipient, $sender, $message);
+            
+            // Send email notification to recipient
+            try {
+                if ($recipient->email) {
+                    Mail::to($recipient->email)->send(new ChatMessageNotificationMail($recipient, $sender, $message, $conversation));
+                    \Log::info('Chat message email sent successfully to: ' . $recipient->email . ' for message ID: ' . $message->id);
+                }
+            } catch (\Exception $emailException) {
+                // Log error but don't fail the notification
+                \Log::error('Failed to send chat message email: ' . $emailException->getMessage());
+            }
             
         } catch (\Exception $e) {
             // Log error but don't break the message sending
