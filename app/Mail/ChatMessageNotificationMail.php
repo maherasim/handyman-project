@@ -17,7 +17,7 @@ class ChatMessageNotificationMail extends Mailable
 
     public $recipient;
     public $sender;
-    public $message;
+    public $chatMessage;
     public $conversation;
 
     /**
@@ -27,7 +27,7 @@ class ChatMessageNotificationMail extends Mailable
     {
         $this->recipient = $recipient;
         $this->sender = $sender;
-        $this->message = $message;
+        $this->chatMessage = $message;
         $this->conversation = $conversation;
     }
 

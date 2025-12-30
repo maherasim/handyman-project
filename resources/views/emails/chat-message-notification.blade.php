@@ -143,17 +143,17 @@
                     </div>
                     <div class="sender-details">
                         <div class="sender-name">{{ $sender->display_name ?? ($sender->first_name . ' ' . $sender->last_name) ?? 'User' }}</div>
-                        <div class="message-time">{{ \Carbon\Carbon::parse($message->created_at)->format('F d, Y h:i A') }}</div>
+                        <div class="message-time">{{ \Carbon\Carbon::parse($chatMessage->created_at)->format('F d, Y h:i A') }}</div>
                     </div>
                 </div>
                 
-                @if($message->message)
+                @if($chatMessage->message)
                 <div class="message-content">
-                    <p class="message-text">{{ $message->message }}</p>
+                    <p class="message-text">{{ $chatMessage->message }}</p>
                 </div>
                 @endif
                 
-                @if($message->attachment_path)
+                @if($chatMessage->attachment_path)
                 <div class="attachment-notice">
                     📎 <strong>Attachment:</strong> A file has been shared with you
                 </div>
