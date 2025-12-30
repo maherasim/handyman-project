@@ -28,11 +28,15 @@ use App\Models\ServiceProof;
 use App\Models\ServiceSlot;
 use App\Models\Setting;
 use App\Models\User;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\ServiceBookingNotificationMail;
 use App\Models\Wallet;
 use App\Traits\EarningTrait;
 use App\Traits\NotificationTrait;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\ServiceBookingNotificationMail;
 use Maatwebsite\Excel\Facades\Excel;
 use PDF;
 use Yajra\DataTables\DataTables;
@@ -549,6 +553,24 @@ class BookingController extends Controller
             'booking' => $result,
         ];
         $this->sendNotification($activity_data);
+        
+        // Send email notification to provider about new booking
+        try {
+            // Only send email if this is a new booking (not an update)
+            if ($result->wasRecentlyCreated) {
+                $result->load(['service', 'customer', 'slots']);
+                $provider = User::find($result->provider_id);
+                $customer = User::find($result->customer_id);
+                
+                if ($provider && $provider->email && $customer) {
+                    Mail::to($provider->email)->send(new ServiceBookingNotificationMail($provider, $result, $customer));
+                    \Log::info('Service booking notification email sent to provider: ' . $provider->email . ' for booking ID: ' . $result->id);
+                }
+            }
+        } catch (\Exception $e) {
+            // Log error but don't fail the booking creation
+            \Log::error('Failed to send service booking notification email: ' . $e->getMessage());
+        }
 
 
         if ($data['coupon_id'] != null) {
