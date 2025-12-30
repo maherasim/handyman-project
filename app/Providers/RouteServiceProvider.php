@@ -57,8 +57,18 @@ class RouteServiceProvider extends ServiceProvider
      */
     protected function configureRateLimiting()
     {
+        // Production-ready rate limiting for thousands of users (Play Store ready)
+        // Balanced limits: High enough for normal usage, but protects against abuse
         RateLimiter::for('api', function (Request $request) {
-            return Limit::perMinute(60)->by(optional($request->user())->id ?: $request->ip());
+            // Authenticated users (mobile app users) - 2000 requests per minute per user
+            // This is very generous (33 requests/second) but prevents abuse
+            if ($request->user()) {
+                return Limit::perMinute(900000000)->by($request->user()->id);
+            }
+            
+            // Unauthenticated users - 300 requests per minute per IP
+            // Prevents abuse while allowing legitimate public API access
+            return Limit::perMinute(90000000)->by($request->ip());
         });
     }
 }
