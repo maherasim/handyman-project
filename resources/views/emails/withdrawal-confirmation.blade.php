@@ -136,7 +136,7 @@
                 </div>
                 <div class="detail-row">
                     <span class="detail-label">Payment Type:</span>
-                    <span class="detail-value">{{ ucfirst($withdrawal->payment_type ?? 'Bank Transfer') }}</span>
+                    <span class="detail-value">Bank Transfer</span>
                 </div>
                 <div class="detail-row">
                     <span class="detail-label">Transaction Date:</span>
