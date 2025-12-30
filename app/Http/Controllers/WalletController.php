@@ -14,6 +14,8 @@ use App\Models\Payment;
 use App\Models\WithdrawMoney;
 use Carbon\Carbon;
 use App\Models\User;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\WithdrawalConfirmationMail;
 
 class WalletController extends Controller
 {
@@ -661,11 +663,23 @@ public function getWalletPaymentMethod(Request $request)
 
    public function wallet_transaction_payout($id)
 {
-    $withdraw_money = WithdrawMoney::where('id', $id)->first();
+    $withdraw_money = WithdrawMoney::with(['bank', 'providers'])->where('id', $id)->first();
 
     if ($withdraw_money) {
         $withdraw_money->status = 'paid';
         $withdraw_money->save();
+        
+        // Send confirmation email to user
+        try {
+            $user = $withdraw_money->providers;
+            if ($user && $user->email) {
+                Mail::to($user->email)->send(new WithdrawalConfirmationMail($user, $withdraw_money));
+                \Log::info('Withdrawal confirmation email sent successfully to: ' . $user->email . ' for withdrawal ID: ' . $id);
+            }
+        } catch (\Exception $e) {
+            // Log error but don't fail the withdrawal confirmation
+            \Log::error('Failed to send withdrawal confirmation email: ' . $e->getMessage());
+        }
     }
 
     $message = __('messages.transaction_complete_success');
