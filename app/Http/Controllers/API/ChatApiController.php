@@ -278,18 +278,28 @@ class ChatApiController extends Controller
         // Send email notification to recipient
         try {
             $sender = Auth::user();
-            $recipientId = ($conversation->user_one_id === $sender->id) 
-                ? $conversation->user_two_id 
-                : $conversation->user_one_id;
-            
-            $recipient = \App\Models\User::find($recipientId);
-            if ($recipient && $recipient->email) {
-                Mail::to($recipient->email)->send(new ChatMessageNotificationMail($recipient, $sender, $msg, $conversation));
-                \Log::info('Chat message email sent successfully to: ' . $recipient->email . ' for message ID: ' . $msg->id);
+            if (!$sender) {
+                \Log::error('Chat email notification failed - Sender not found');
+            } else {
+                $recipientId = ($conversation->user_one_id === $sender->id) 
+                    ? $conversation->user_two_id 
+                    : $conversation->user_one_id;
+                
+                $recipient = \App\Models\User::find($recipientId);
+                if (!$recipient) {
+                    \Log::error('Chat email notification failed - Recipient not found: ' . $recipientId);
+                } elseif (!$recipient->email) {
+                    \Log::warning('Cannot send email - Recipient email is missing. Recipient ID: ' . $recipient->id);
+                } else {
+                    \Log::info('Attempting to send email to: ' . $recipient->email . ' for message ID: ' . $msg->id);
+                    Mail::to($recipient->email)->send(new ChatMessageNotificationMail($recipient, $sender, $msg, $conversation));
+                    \Log::info('Chat message email sent successfully to: ' . $recipient->email . ' for message ID: ' . $msg->id);
+                }
             }
         } catch (\Exception $e) {
             // Log error but don't fail the message sending
             \Log::error('Failed to send chat message email: ' . $e->getMessage());
+            \Log::error('Email exception trace: ' . $e->getTraceAsString());
         }
         
         return response()->json([

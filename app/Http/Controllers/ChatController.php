@@ -243,7 +243,17 @@ class ChatController extends Controller
      */
     protected function sendMessageNotification(ChatConversation $conversation, ChatMessage $message): void
     {
+        // Ensure sender is loaded
+        if (!$message->relationLoaded('sender')) {
+            $message->load('sender');
+        }
+        
         $sender = $message->sender;
+        if (!$sender) {
+            \Log::error('Chat notification failed - Sender not found for message ID: ' . $message->id);
+            return;
+        }
+        
         $recipientId = ($conversation->user_one_id === $sender->id) 
             ? $conversation->user_two_id 
             : $conversation->user_one_id;
@@ -256,6 +266,7 @@ class ChatController extends Controller
         
         // Debug logging
         \Log::info('Chat notification - Sender: ' . $sender->id . ' (' . $sender->user_type . '), Recipient: ' . $recipient->id . ' (' . $recipient->user_type . ')');
+        \Log::info('Recipient email: ' . ($recipient->email ?? 'NULL'));
         
         // Use a simpler notification approach that bypasses templates
         try {
@@ -290,20 +301,24 @@ class ChatController extends Controller
             // Try the direct FCM approach (but don't fail if it doesn't work)
             $this->sendDirectFCMNotification($recipient, $sender, $message);
             
-            // Send email notification to recipient
-            try {
-                if ($recipient->email) {
-                    Mail::to($recipient->email)->send(new ChatMessageNotificationMail($recipient, $sender, $message, $conversation));
-                    \Log::info('Chat message email sent successfully to: ' . $recipient->email . ' for message ID: ' . $message->id);
-                }
-            } catch (\Exception $emailException) {
-                // Log error but don't fail the notification
-                \Log::error('Failed to send chat message email: ' . $emailException->getMessage());
-            }
-            
         } catch (\Exception $e) {
             // Log error but don't break the message sending
             \Log::error('Failed to send chat notification: ' . $e->getMessage());
+        }
+        
+        // Send email notification to recipient (outside try-catch to ensure it always runs)
+        try {
+            if ($recipient && $recipient->email) {
+                \Log::info('Attempting to send email to: ' . $recipient->email);
+                Mail::to($recipient->email)->send(new ChatMessageNotificationMail($recipient, $sender, $message, $conversation));
+                \Log::info('Chat message email sent successfully to: ' . $recipient->email . ' for message ID: ' . $message->id);
+            } else {
+                \Log::warning('Cannot send email - Recipient email is missing. Recipient ID: ' . ($recipient ? $recipient->id : 'NULL'));
+            }
+        } catch (\Exception $emailException) {
+            // Log error but don't fail the notification
+            \Log::error('Failed to send chat message email to ' . ($recipient->email ?? 'NULL') . ': ' . $emailException->getMessage());
+            \Log::error('Email exception trace: ' . $emailException->getTraceAsString());
         }
     }
     
