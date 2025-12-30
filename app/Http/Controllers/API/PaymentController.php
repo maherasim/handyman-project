@@ -28,6 +28,7 @@ use App\Models\WalletHistory;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\BankTransferPaymentNotificationMail;
 use App\Mail\AdvancePaymentNotificationMail;
+use App\Mail\FullPaymentReceivedMail;
 
 class PaymentController extends Controller
 {
@@ -188,6 +189,19 @@ class PaymentController extends Controller
 
             // Mark all commissions as paid (keeps previous admin advance record consistent)
             CommissionEarning::where('booking_id', $booking->id)->update(['commission_status' => 'paid']);
+            
+            // Send email notification to provider about full payment received
+            try {
+                $booking->load(['customer', 'service']);
+                $provider = User::find($booking->provider_id);
+                if ($provider && $provider->email) {
+                    Mail::to($provider->email)->send(new FullPaymentReceivedMail($provider, $result, $booking));
+                    \Log::info('Full payment received notification email sent to provider: ' . $provider->email . ' for booking ID: ' . $booking->id);
+                }
+            } catch (\Exception $e) {
+                // Log error but don't fail the payment
+                \Log::error('Failed to send full payment received notification email: ' . $e->getMessage());
+            }
         }
 
         // ALWAYS create new PaymentHistory entry - NO CONDITIONS

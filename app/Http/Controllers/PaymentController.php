@@ -23,6 +23,7 @@ use App\Models\CommissionEarning;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\MailMailableSend;
+use App\Mail\FullPaymentReceivedMail;
 
 class PaymentController extends Controller
 {
@@ -1095,8 +1096,21 @@ class PaymentController extends Controller
                 ->update([
                     'status' => 'paid',
                 ]);
+            
+            // Send email notification to provider about full payment received
+            try {
+                $booking->load(['customer', 'service']);
+                $provider = \App\Models\User::find($booking->provider_id);
+                if ($provider && $provider->email) {
+                    \Illuminate\Support\Facades\Mail::to($provider->email)->send(new \App\Mail\FullPaymentReceivedMail($provider, $paymentdata, $booking));
+                    \Log::info('Full payment received notification email sent to provider: ' . $provider->email . ' for booking ID: ' . $booking->id);
+                }
+            } catch (\Exception $e) {
+                // Log error but don't fail the payment
+                \Log::error('Failed to send full payment received notification email: ' . $e->getMessage());
+            }
         }
-    
+        
         // ✅ Send notification emails
         try {
             $amount = getPriceFormat((float)$paymentdata->total_amount);
