@@ -27,6 +27,7 @@ use App\Models\CommissionEarning;
 use App\Models\WalletHistory;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\BankTransferPaymentNotificationMail;
+use App\Mail\AdvancePaymentNotificationMail;
 
 class PaymentController extends Controller
 {
@@ -70,6 +71,19 @@ class PaymentController extends Controller
                 'commission_amount' => $admin_commission_amount,
                 'commission_status' => 'paid',
             ]);
+            
+            // Send email notification to provider about advance payment
+            try {
+                $booking->load(['customer', 'service']);
+                $provider = User::find($booking->provider_id);
+                if ($provider && $provider->email) {
+                    Mail::to($provider->email)->send(new AdvancePaymentNotificationMail($provider, $result, $booking));
+                    \Log::info('Advance payment notification email sent to provider: ' . $provider->email . ' for booking ID: ' . $booking->id);
+                }
+            } catch (\Exception $e) {
+                // Log error but don't fail the payment
+                \Log::error('Failed to send advance payment notification email: ' . $e->getMessage());
+            }
         }
 
         if ($isRemaining) {
@@ -389,6 +403,19 @@ class PaymentController extends Controller
                 'commission_amount' => $admin_commission_amount,
                 'commission_status' => 'pending',
             ]);
+            
+            // Send email notification to provider about advance payment
+            try {
+                $booking->load(['customer', 'service']);
+                $provider = User::find($booking->provider_id);
+                if ($provider && $provider->email) {
+                    Mail::to($provider->email)->send(new AdvancePaymentNotificationMail($provider, $payment, $booking));
+                    \Log::info('Advance payment notification email sent to provider: ' . $provider->email . ' for booking ID: ' . $booking->id);
+                }
+            } catch (\Exception $e) {
+                // Log error but don't fail the payment
+                \Log::error('Failed to send advance payment notification email: ' . $e->getMessage());
+            }
         }
     
         // ---------------------------

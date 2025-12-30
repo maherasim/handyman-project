@@ -382,7 +382,7 @@ class BookingController extends Controller
         $data['cancellation_charge'] = isset($request->cancellation_charge) ? $request->cancellation_charge : 0;
         $data['cancellation_charge_amount'] = isset($request->cancellation_charge_amount) ? $request->cancellation_charge_amount : 0;
 
-        $bookingdata = Booking::find($id);
+        $bookingdata = Booking::with(['customer', 'provider', 'service', 'handymanAdded.handyman', 'payment'])->find($id);
 
         // Capture old status immediately after fetching booking data, before any modifications
         $old_status = $bookingdata->status;
@@ -597,8 +597,9 @@ class BookingController extends Controller
 
         // Send notification if status changed and activity_type is set
         if($old_status != $data['status']){
-            // Reload booking to get fresh data after update
+            // Reload booking to get fresh data after update with all relationships
             $bookingdata->refresh();
+            $bookingdata->load(['customer', 'provider', 'service', 'handymanAdded.handyman', 'payment']);
             $bookingdata->old_status = $old_status;
             
             // Ensure activity_type is set
@@ -621,10 +622,25 @@ class BookingController extends Controller
                 'old_status' => $old_status,
                 'new_status' => $data['status'],
                 'activity_type' => $activity_type,
-                'booking_id' => $id
+                'booking_id' => $id,
+                'has_handyman' => $bookingdata->handymanAdded ? $bookingdata->handymanAdded->count() : 0,
+                'provider_id' => $bookingdata->provider_id,
+                'customer_id' => $bookingdata->customer_id
             ]);
             
-            $this->sendNotification($activity_data);
+            try {
+                $this->sendNotification($activity_data);
+                \Log::info('Booking notification sent successfully', [
+                    'booking_id' => $id,
+                    'activity_type' => $activity_type
+                ]);
+            } catch (\Exception $e) {
+                \Log::error('Failed to send booking notification: ' . $e->getMessage(), [
+                    'booking_id' => $id,
+                    'activity_type' => $activity_type,
+                    'trace' => $e->getTraceAsString()
+                ]);
+            }
         }
 
         if($bookingdata->payment_id != null){
