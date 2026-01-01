@@ -253,7 +253,7 @@ class BookingController extends Controller
             ->editColumn('status', function ($query) {
                 $statusKey = strtolower((string) $query->status);
                 $statusMap = [
-                    'pending' => ['Pending', 'badge bg-secondary text-white'],
+                    'pending' => ['Pending', 'badge bg-dark text-white'],
                     'accept' => ['Accepted', 'badge bg-info text-white'],
                     'on_going' => ['On Going', 'badge bg-primary text-white'],
                     'in_progress' => ['In Progress', 'badge bg-primary text-white'],
@@ -289,7 +289,7 @@ class BookingController extends Controller
                     $badgeClass = $payment_status === 'cancelled' ? 'bg-danger' : 'bg-primary';
                     $status = '<span class="text-center text-white badge ' . $badgeClass . '">' . str_replace('_', " ", ucfirst($payment_status)) . '</span>';
                 } else {
-                    $status = '<span class="badge text-primary bg-primary-subtle">' . __('messages.pending') . '</span>';
+                    $status = '<span class="badge bg-primary text-white">' . __('messages.pending') . '</span>';
                 }
                 return $status;
             })

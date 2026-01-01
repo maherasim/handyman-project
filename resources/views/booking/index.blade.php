@@ -65,6 +65,20 @@
                 background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important;
                 color: #fff !important;
             }
+            /* Pending status badge - ensure white text is visible */
+            .badge.bg-dark,
+            .badge.bg-secondary {
+                color: #fff !important;
+                background-color: #212529 !important;
+            }
+            /* Payment status badges - ensure white text */
+            .badge.bg-primary,
+            .badge.bg-danger,
+            .badge.bg-success,
+            .badge.bg-info,
+            .badge.bg-warning {
+                color: #fff !important;
+            }
         </style>
     </head>
     <div class="container-fluid">

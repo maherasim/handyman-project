@@ -525,14 +525,24 @@ $data['remaining_payout'] = round($providerRemainingPayout, $digitafter_decimal_
                 }
 
                 if (isset($request->booking_id)) {
-                    $booking_data = Booking::with('handymanByAddress')->find($request->booking_id);
+                    $booking_data = Booking::find($request->booking_id);
 
-                    if ($booking_data) {
-                        $service_address = $booking_data->handymanByAddress;
-                        if ($service_address != null) {
-                            $items->where('service_address_id', $service_address->id);
+                    if ($booking_data && $booking_data->booking_address_id != null) {
+                        // Try to load the address mapping, including soft deleted ones
+                        $service_address = \App\Models\ProviderAddressMapping::withTrashed()
+                            ->find($booking_data->booking_address_id);
+                        
+                        if ($service_address && $service_address->deleted_at == null) {
+                            // Filter by service_address_id if the address exists and is not deleted
+                            // Include handymen with matching service_address_id OR null service_address_id
+                            $items->where(function($query) use ($service_address) {
+                                $query->where('service_address_id', $service_address->id)
+                                      ->orWhereNull('service_address_id');
+                            });
                         }
+                        // If address is deleted or doesn't exist, show all provider handymen (no additional filter)
                     }
+                    // If booking_address_id is null, show all provider handymen (no additional filter)
                 }
 
                 if ($value != '') {
