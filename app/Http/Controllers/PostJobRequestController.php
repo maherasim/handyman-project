@@ -1976,6 +1976,9 @@ class PostJobRequestController extends Controller
      */
     public function store(Request $request)
     {
+        // Increase execution time for large image processing
+        set_time_limit(300); // 5 minutes for image processing
+        
         //dd($request->all());
         // Basic validation to preserve old input on errors
         $request->validate([
@@ -1999,8 +2002,8 @@ class PostJobRequestController extends Controller
             'education_level' => 'required|in:high_school,associate,undergraduate,graduate,doctorate',
             'duties' => 'nullable|string',
             'benefits' => 'nullable|string',
-            'image.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
-            'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
+            'image.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:203480', // 20MB to match PHP limit
+            'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:220480', // 20MB to match PHP limit
             'total_days' => 'nullable|integer|min:0',
             'total_hours' => 'nullable|integer|min:0',
         ]);
@@ -2036,14 +2039,128 @@ class PostJobRequestController extends Controller
         }
         $data['total_budget'] = $totalBudget;
 
-        // ✅ Handle image uploads (supports single and multiple)
+        // ✅ Handle image uploads (supports single and multiple) with resizing
         $imagePaths = [];
+        $maxWidth = 1920; // Maximum width for images
+        $maxHeight = 1920; // Maximum height for images
+        $quality = 85; // JPEG quality (1-100)
+        
+        // Helper function to resize and save image
+        $resizeAndSave = function($file, $filename) use ($maxWidth, $maxHeight, $quality) {
+            try {
+                // Increase memory limit for this operation
+                $originalMemoryLimit = ini_get('memory_limit');
+                ini_set('memory_limit', '256M');
+                // Get image info
+                $imageInfo = getimagesize($file->getRealPath());
+                if (!$imageInfo) {
+                    // If not a valid image, store as-is
+                    return $file->storeAs('images', $filename, 'public');
+                }
+                
+                $originalWidth = $imageInfo[0];
+                $originalHeight = $imageInfo[1];
+                $mimeType = $imageInfo['mime'];
+                
+                // Calculate new dimensions maintaining aspect ratio
+                $ratio = min($maxWidth / $originalWidth, $maxHeight / $originalHeight);
+                $newWidth = (int)($originalWidth * $ratio);
+                $newHeight = (int)($originalHeight * $ratio);
+                
+                // Only resize if image is larger than max dimensions
+                if ($originalWidth <= $maxWidth && $originalHeight <= $maxHeight) {
+                    return $file->storeAs('images', $filename, 'public');
+                }
+                
+                // Create image resource based on mime type
+                switch ($mimeType) {
+                    case 'image/jpeg':
+                        $sourceImage = imagecreatefromjpeg($file->getRealPath());
+                        break;
+                    case 'image/png':
+                        $sourceImage = imagecreatefrompng($file->getRealPath());
+                        break;
+                    case 'image/gif':
+                        $sourceImage = imagecreatefromgif($file->getRealPath());
+                        break;
+                    case 'image/webp':
+                        if (function_exists('imagecreatefromwebp')) {
+                            $sourceImage = imagecreatefromwebp($file->getRealPath());
+                        } else {
+                            return $file->storeAs('images', $filename, 'public');
+                        }
+                        break;
+                    default:
+                        return $file->storeAs('images', $filename, 'public');
+                }
+                
+                if (!$sourceImage) {
+                    return $file->storeAs('images', $filename, 'public');
+                }
+                
+                // Create new image with calculated dimensions
+                $newImage = imagecreatetruecolor($newWidth, $newHeight);
+                
+                // Preserve transparency for PNG and GIF
+                if ($mimeType === 'image/png' || $mimeType === 'image/gif') {
+                    imagealphablending($newImage, false);
+                    imagesavealpha($newImage, true);
+                    $transparent = imagecolorallocatealpha($newImage, 255, 255, 255, 127);
+                    imagefilledrectangle($newImage, 0, 0, $newWidth, $newHeight, $transparent);
+                }
+                
+                // Resize image
+                imagecopyresampled($newImage, $sourceImage, 0, 0, 0, 0, $newWidth, $newHeight, $originalWidth, $originalHeight);
+                
+                // Save resized image
+                $storagePath = storage_path('app/public/images');
+                if (!file_exists($storagePath)) {
+                    mkdir($storagePath, 0755, true);
+                }
+                $fullPath = $storagePath . '/' . $filename;
+                
+                switch ($mimeType) {
+                    case 'image/jpeg':
+                        imagejpeg($newImage, $fullPath, $quality);
+                        break;
+                    case 'image/png':
+                        imagepng($newImage, $fullPath, 9);
+                        break;
+                    case 'image/gif':
+                        imagegif($newImage, $fullPath);
+                        break;
+                    case 'image/webp':
+                        if (function_exists('imagewebp')) {
+                            imagewebp($newImage, $fullPath, $quality);
+                        }
+                        break;
+                }
+                
+                // Free memory
+                imagedestroy($sourceImage);
+                imagedestroy($newImage);
+                
+                // Restore original memory limit
+                ini_set('memory_limit', $originalMemoryLimit);
+                
+                return 'images/' . $filename;
+            } catch (\Exception $e) {
+                // Restore original memory limit on error
+                if (isset($originalMemoryLimit)) {
+                    ini_set('memory_limit', $originalMemoryLimit);
+                }
+                // If resizing fails, store original
+                \Log::warning('Image resize failed: ' . $e->getMessage());
+                return $file->storeAs('images', $filename, 'public');
+            }
+        };
+        
         if ($request->hasFile('image')) {
             $incoming = $request->file('image');
             $files = is_array($incoming) ? $incoming : [$incoming];
             foreach ($files as $idx => $file) {
-                $filename = time() . '_' . $file->getClientOriginalName();
-                $path = $file->storeAs('images', $filename, 'public');
+                $filename = time() . '_' . uniqid() . '_' . preg_replace('/[^a-zA-Z0-9._-]/', '', $file->getClientOriginalName());
+                $path = $resizeAndSave($file, $filename);
                 $imagePaths[] = $path;
                 if ($idx === 0) {
                     $data['image'] = $path; // first image as cover
@@ -2052,8 +2169,8 @@ class PostJobRequestController extends Controller
         }
         if ($request->hasFile('images')) {
             foreach ($request->file('images') as $img) {
-                $filename = time() . '_' . $img->getClientOriginalName();
-                $path = $img->storeAs('images', $filename, 'public');
+                $filename = time() . '_' . uniqid() . '_' . preg_replace('/[^a-zA-Z0-9._-]/', '', $img->getClientOriginalName());
+                $path = $resizeAndSave($img, $filename);
                 $imagePaths[] = $path;
             }
         }
