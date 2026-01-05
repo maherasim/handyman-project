@@ -47,7 +47,7 @@
                                     </div>
                                     <div>
                                         <h6 class="mb-1" style="color: rgba(255, 255, 255, 0.9) !important; font-size: 0.85rem !important; font-weight: 600 !important; text-transform: uppercase !important; letter-spacing: 0.5px !important;">{{__('landingpage.business_inquries')}}</h6>
-                                        <a href="mailto:{{ optional($generalsetting)->inquriy_email }}" style="color: #5F60B9 !important; text-decoration: none !important; font-size: 0.95rem !important; font-weight: 500 !important; transition: all 0.3s ease !important;">{{ optional($generalsetting)->inquriy_email }}</a>
+                                        <a href="mailto:{{ optional($generalsetting)->inquriy_email }}" style="color: #ffffff !important; text-decoration: none !important; font-size: 0.95rem !important; font-weight: 500 !important; transition: all 0.3s ease !important; text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3) !important;">{{ optional($generalsetting)->inquriy_email }}</a>
                                     </div>
                                 </div>
                                 @endif
@@ -58,7 +58,7 @@
                                     </div>
                                     <div>
                                         <h6 class="mb-1" style="color: rgba(255, 255, 255, 0.9) !important; font-size: 0.85rem !important; font-weight: 600 !important; text-transform: uppercase !important; letter-spacing: 0.5px !important;">{{__('landingpage.helpline_number')}}</h6>
-                                        <a href="tel:{{optional($generalsetting)->helpline_number}}" style="color: #5F60B9 !important; text-decoration: none !important; font-size: 0.95rem !important; font-weight: 500 !important; transition: all 0.3s ease !important;">{{optional($generalsetting)->helpline_number}}</a>
+                                        <a href="tel:{{optional($generalsetting)->helpline_number}}" style="color: #ffffff !important; text-decoration: none !important; font-size: 0.95rem !important; font-weight: 500 !important; transition: all 0.3s ease !important; text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3) !important;">{{optional($generalsetting)->helpline_number}}</a>
                                     </div>
                                 </div>
                                 @endif
@@ -190,16 +190,18 @@
                     </p>
                 </div>
                 <div class="col-md-6 text-md-end text-center">
-                    <div class="d-inline-flex align-items-center gap-3 flex-wrap justify-content-md-end justify-content-center">
-                        <a target="_blank" href="{{ route('user.term_conditions') }}" style="color: rgba(255, 255, 255, 0.7) !important; text-decoration: none !important; font-size: 0.85rem !important; transition: all 0.3s ease !important;">{{__('landingpage.terms_conditions')}}</a>
+                    <div class="d-inline-flex align-items-center gap-2 flex-wrap justify-content-md-end justify-content-center" style="flex-wrap: nowrap !important; white-space: nowrap !important;">
+                        <a target="_blank" href="{{ route('user.term_conditions') }}" style="color: rgba(255, 255, 255, 0.7) !important; text-decoration: none !important; font-size: 0.85rem !important; transition: all 0.3s ease !important; white-space: nowrap !important;">{{__('landingpage.terms_conditions')}}</a>
                         <span style="color: rgba(255, 255, 255, 0.3) !important;">|</span>
-                        <a target="_blank" href="{{ route('user.privacy_policy') }}" style="color: rgba(255, 255, 255, 0.7) !important; text-decoration: none !important; font-size: 0.85rem !important; transition: all 0.3s ease !important;">{{__('landingpage.privacy_policy')}}</a>
+                        <a target="_blank" href="{{ route('user.privacy_policy') }}" style="color: rgba(255, 255, 255, 0.7) !important; text-decoration: none !important; font-size: 0.85rem !important; transition: all 0.3s ease !important; white-space: nowrap !important;">{{__('landingpage.privacy_policy')}}</a>
                         <span style="color: rgba(255, 255, 255, 0.3) !important;">|</span>
-                        <a target="_blank" href="{{ route('user.help_support') }}" style="color: rgba(255, 255, 255, 0.7) !important; text-decoration: none !important; font-size: 0.85rem !important; transition: all 0.3s ease !important;">{{__('landingpage.help_support')}}</a>
+                        <a target="_blank" href="{{ route('user.help_support') }}" style="color: rgba(255, 255, 255, 0.7) !important; text-decoration: none !important; font-size: 0.85rem !important; transition: all 0.3s ease !important; white-space: nowrap !important;">{{__('landingpage.help_support')}}</a>
                         <span style="color: rgba(255, 255, 255, 0.3) !important;">|</span>
-                        <a target="_blank" href="{{ route('user.refund_policy') }}" style="color: rgba(255, 255, 255, 0.7) !important; text-decoration: none !important; font-size: 0.85rem !important; transition: all 0.3s ease !important;">{{__('landingpage.refund_policy')}}</a>
+                        <a target="_blank" href="{{ route('user.refund_policy') }}" style="color: rgba(255, 255, 255, 0.7) !important; text-decoration: none !important; font-size: 0.85rem !important; transition: all 0.3s ease !important; white-space: nowrap !important;">{{__('landingpage.refund_policy')}}</a>
                         <span style="color: rgba(255, 255, 255, 0.3) !important;">|</span>
-                        <a target="_blank" href="{{ route('user.imprint') }}" style="color: rgba(255, 255, 255, 0.7) !important; text-decoration: none !important; font-size: 0.85rem !important; transition: all 0.3s ease !important;">{{__('landingpage.imprint')}}</a>
+                        <a target="_blank" href="{{ route('user.imprint') }}" style="color: rgba(255, 255, 255, 0.7) !important; text-decoration: none !important; font-size: 0.85rem !important; transition: all 0.3s ease !important; white-space: nowrap !important;">{{__('landingpage.imprint')}}</a>
+                        <span style="color: rgba(255, 255, 255, 0.3) !important;">|</span>
+                        <a target="_blank" href="{{ route('user.data_deletion_request') }}" style="color: rgba(255, 255, 255, 0.7) !important; text-decoration: none !important; font-size: 0.85rem !important; transition: all 0.3s ease !important; white-space: nowrap !important;">{{__('landingpage.data_deletion_request')}}</a>
                     </div>
                 </div>
             </div>
@@ -278,34 +280,41 @@
     body .footer-contact-icon {
         width: 60px !important;
         height: 60px !important;
-        background: linear-gradient(135deg, rgba(255, 0, 0, 0.2) 0%, rgba(95, 96, 185, 0.2) 100%) !important;
+        background: rgba(255, 255, 255, 0.25) !important;
         border-radius: 16px !important;
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
         flex-shrink: 0 !important;
-        border: 2px solid rgba(255, 0, 0, 0.3) !important;
-        box-shadow: 0 6px 20px rgba(255, 0, 0, 0.2) !important;
+        border: 2px solid rgba(255, 255, 255, 0.4) !important;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3) !important;
         transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        backdrop-filter: blur(10px) !important;
     }
     
     body .footer-contact-icon i {
         font-size: 1.8rem !important;
-        background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important;
-        -webkit-background-clip: text !important;
-        -webkit-text-fill-color: transparent !important;
-        background-clip: text !important;
+        color: #ffffff !important;
+        text-shadow: 0 3px 8px rgba(0, 0, 0, 0.6) !important;
+        filter: drop-shadow(0 3px 8px rgba(0, 0, 0, 0.6)) !important;
+        -webkit-text-fill-color: #ffffff !important;
+        background: transparent !important;
+        -webkit-background-clip: unset !important;
+        background-clip: unset !important;
     }
     
     body .footer-contact-icon:hover {
-        background: linear-gradient(135deg, rgba(255, 0, 0, 0.35) 0%, rgba(95, 96, 185, 0.35) 100%) !important;
-        border-color: rgba(255, 0, 0, 0.5) !important;
+        background: rgba(255, 255, 255, 0.35) !important;
+        border-color: rgba(255, 255, 255, 0.6) !important;
         transform: translateY(-5px) scale(1.1) rotate(5deg) !important;
-        box-shadow: 0 10px 30px rgba(255, 0, 0, 0.35) !important;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4) !important;
     }
     
     body .footer-contact-icon:hover i {
         transform: scale(1.15) !important;
+        color: #ffffff !important;
+        text-shadow: 0 4px 10px rgba(0, 0, 0, 0.7) !important;
+        filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.7)) !important;
     }
     
     /* Section Titles with Gradient */
@@ -551,19 +560,21 @@
     /* Contact Links */
     body .footer-brand-section a[href^="mailto:"],
     body .footer-brand-section a[href^="tel:"] {
-        color: #5F60B9 !important;
+        color: #ffffff !important;
         text-decoration: none !important;
         font-size: 0.95rem !important;
         font-weight: 500 !important;
         transition: all 0.3s ease !important;
+        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3) !important;
     }
     
     body .footer-brand-section a[href^="mailto:"]:hover,
     body .footer-brand-section a[href^="tel:"]:hover {
-        background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important;
-        -webkit-background-clip: text !important;
-        -webkit-text-fill-color: transparent !important;
-        background-clip: text !important;
+        color: #ffffff !important;
+        -webkit-text-fill-color: #ffffff !important;
+        text-decoration: underline !important;
+        text-shadow: 0 2px 6px rgba(0, 0, 0, 0.5) !important;
+        transform: translateY(-1px) !important;
     }
     
     /* Responsive Design */

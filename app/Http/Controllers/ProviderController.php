@@ -331,6 +331,18 @@ public function store(UserRequest $request)
 
     $data['display_name'] = $data['first_name']." ".$data['last_name'];
 
+    // Handle why_choose_me field before creating/updating user
+    if($request->has('title') || $request->has('about_description') || $request->has('reason')){
+        $why_choose_me = [
+            'title' => $request->title,
+            'about_description' => $request->about_description,
+            'reason' => isset($request->reason) ? array_filter($request->reason, function ($value) {
+                return $value !== null;
+            }) : null,
+        ];
+        $data['why_choose_me'] = json_encode($why_choose_me);
+    }
+
     // Add these two lines to store tax_id and tax_country_id
     $data['tax_id'] = $request->tax_id;
     $data['tax_country_id'] = is_array($request->tax_id) ? $request->tax_id[0] : $request->tax_id;
@@ -384,6 +396,14 @@ public function store(UserRequest $request)
             ];
             $user->providerTaxMapping()->insert($provider_tax);
         }
+    }
+
+    // Handle tax_country_id for provider_taxes table
+    if($request->has('tax_country_id')){
+        \DB::table('provider_taxes')->updateOrInsert(
+            ['provider_id' => $user->id],
+            ['tax_id' => $request->tax_country_id]
+        );
     }
 
     if($request->is('api/*')){

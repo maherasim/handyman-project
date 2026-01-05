@@ -361,6 +361,9 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
     Route::get('pages/refund-cancellation-policy', [SettingController::class, 'refundCancellationPolicy'])->name('refund-cancellation-policy');
     Route::post('refund-cancellation-policy-save', [SettingController::class, 'saveRefundCancellationPolicy'])->name('refund-cancellation-policy-save');
 
+    Route::get('pages/imprint', [SettingController::class, 'imprint'])->name('imprint');
+    Route::post('imprint-save', [SettingController::class, 'saveImprint'])->name('imprint-save');
+
     Route::post('general-setting-save', [SettingController::class, 'generalSetting'])->name('generalsetting');
     Route::post('theme-setup-save', [SettingController::class, 'themeSetup'])->name('themesetup');
     Route::post('site-setup-save', [SettingController::class, 'siteSetup'])->name('sitesetup');

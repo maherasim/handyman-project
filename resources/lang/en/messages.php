@@ -526,6 +526,7 @@
     'search_for_your_area' => 'Search for your area',
     'help_support' => 'Help and Support',
     'refund_cancellation_policy' => 'Refund and Cancellation Policy',
+    'imprint' => 'Imprint',
     'service_management' => 'Service management',
     'sidebar_form_title' => ':form',
     'top_provider' => 'Top Providers',

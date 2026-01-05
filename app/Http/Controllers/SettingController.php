@@ -527,6 +527,35 @@ class SettingController extends Controller
         return redirect()->route('data-deletion-request')->withsuccess($message);
     }
 
+    public function imprint(Request $request)
+    {
+        $setting_data = Setting::where('type', 'imprint')->where('key', 'imprint')->first();
+        $pageTitle = __('messages.imprint');
+        $assets = ['textarea'];
+
+        return view('setting.imprint_form', compact('setting_data', 'pageTitle', 'assets'));
+    }
+
+    public function saveImprint(Request $request)
+    {
+        if (demoUserPermission()) {
+            return  redirect()->back()->withErrors(trans('messages.demo_permission_denied'));
+        }
+        $setting_data = [
+            'type'   => 'imprint',
+            'key'   =>  'imprint',
+            'value' =>  $request->value
+        ];
+        $result = Setting::updateOrCreate(['id' => $request->id], $setting_data);
+        if ($result->wasRecentlyCreated) {
+            $message = __('messages.save_form', ['form' => __('messages.imprint')]);
+        } else {
+            $message = __('messages.update_form', ['form' => __('messages.imprint')]);
+        }
+
+        return redirect()->route('imprint')->withsuccess($message);
+    }
+
     public function sendPushNotification(Request $request)
     {
         $data = $request->all();

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\Wallet;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\Request;
@@ -80,6 +81,15 @@ class RegisteredUserController extends Controller
     $verificationLink = route('verify', ['id' => $user->id]);
     Mail::to($user->email)->send(new VerificationEmail($verificationLink));
 
+    // Create wallet for all user types (provider, handyman, and user)
+    if (in_array($userType, ['provider', 'handyman', 'user'])) {
+        Wallet::create([
+            'title' => $user->display_name,
+            'user_id' => $user->id,
+            'amount' => 0,
+            'status' => 1
+        ]);
+    }
     
 if ($userType === 'provider') {
     $startDate = now();
@@ -123,11 +133,11 @@ if ($userType === 'provider') {
 }
 
  
-    if ($request->register === 'user_register') {
-        return redirect(RouteServiceProvider::FRONTEND);
+    // Redirect based on user type
+    if ($userType === 'user') {
+        return redirect(RouteServiceProvider::FRONTEND)->with('status', 'Email Verification link sent to your email. Please verify before logging in.');
     } else {
-        
-        return redirect(route('auth.login'))->with('status', 'Email Verification link sent to your email.');
+        return redirect(route('login'))->with('status', 'Email Verification link sent to your email. Please verify before logging in.');
     }
 }
 }

@@ -67,6 +67,7 @@
                               <div class="form-group">
                                  <label for="user_type" class="text-secondary">{{ __('messages.user_type') }} <span class="text-danger">*</span></label>
                                  <select name="usertype" class="form-control select2 mb-5" id="user_type" style="width:100%">
+                                    <option value="user">{{ __('landingpage.user') }}</option>
                                     <option value="provider">{{ __('messages.provider') }}</option>
                                     <option value="handyman">{{ __('messages.handyman') }}</option>
                                  </select>
@@ -84,9 +85,9 @@
                            </div>
 
                            <!-- Commission Section -->
-                           <div class="col-lg-12">
+                           <div class="col-lg-12" id="commission_section">
                               <div class="form-group">
-                                 <label for="user_commission" class="text-secondary">{{ __('messages.user_commission') }} <span class="text-danger">*</span></label>
+                                 <label for="user_commission" class="text-secondary">{{ __('messages.user_commission') }} <span class="text-danger" id="commission_required">*</span></label>
                                  <select name="providertype_id" class="form-control select2 mb-5" id="providertype" style="width:100%">
                                     <option value="">{{ __('messages.select_provider_type') }}</option>
                                  </select>
@@ -124,7 +125,7 @@
                         </div>
                         <button type="submit" class="btn btn-primary btn-block mt-2 w-100" id="submit-btn">{{ __('auth.create_account') }}</button>
                         <div class="col-lg-12 mt-3">
-                           <p class="mb-0 text-center">{{__('auth.already_have_account')}} <a class="btn-link p-0 text-capitalize" href="{{route('auth.login')}}">{{__('auth.sign_in')}}</a></p>
+                           <p class="mb-0 text-center">{{__('auth.already_have_account')}} <a class="btn-link p-0 text-capitalize" href="{{route('login')}}">{{__('auth.sign_in')}}</a></p>
                         </div>
                      </form>
                   </div>
@@ -204,13 +205,37 @@
 
     $('#user_type').change(function() {
         const selectedUserType = $(this).val();
-        fetchTypes(selectedUserType);
-        $('#provider_section').toggle(selectedUserType === 'handyman'); // Show only when handyman is selected
-        $('#providertype').val('');  // Clear provider type selection
-        $('#handymantype').val('');  // Clear handyman type selection
+        
+        // Hide/show sections based on user type
+        if (selectedUserType === 'user') {
+            $('#provider_section').hide();
+            $('#commission_section').hide();
+            // Make commission fields not required for users
+            $('#providertype').prop('required', false);
+            $('#handymantype').prop('required', false);
+        } else {
+            $('#provider_section').toggle(selectedUserType === 'handyman');
+            $('#commission_section').show();
+            $('#providertype').closest('.form-group').toggle(selectedUserType === 'provider');
+            $('#handymantype').closest('.form-group').toggle(selectedUserType === 'handyman');
+            
+            // Make commission fields required for provider/handyman
+            if (selectedUserType === 'provider') {
+                $('#providertype').prop('required', true);
+                $('#handymantype').prop('required', false);
+            } else if (selectedUserType === 'handyman') {
+                $('#providertype').prop('required', false);
+                $('#handymantype').prop('required', true);
+            }
+            
+            fetchTypes(selectedUserType);
+            
+            $('#providertype').val('');  // Clear provider type selection
+            $('#handymantype').val('');  // Clear handyman type selection
 
-        if (selectedUserType === 'handyman') {
-            fetchProviders(); // Fetch provider list when handyman is selected
+            if (selectedUserType === 'handyman') {
+                fetchProviders(); // Fetch provider list when handyman is selected
+            }
         }
     }).trigger('change');
 

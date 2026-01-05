@@ -26,7 +26,7 @@ require __DIR__.'/auth.php';
 
 Route::middleware([CheckInstallation::class])->group(function () {
     Route::get('/', [FrontendController::class, 'index'])->name('frontend.index');
-    Route::get('/login-page', [FrontendController::class, 'userLoginView'])->name('user.login');
+    Route::get('/login-page', function() { return redirect()->route('login'); })->name('user.login');
     Route::post('/user-login', [CustomerController::class, 'userLogin'])->name('user.user_login');
     Route::get('/register-page', [FrontendController::class, 'userRegistrationView'])->name('user.register');
     Route::get('/provider-register', [FrontendController::class, 'partnerRegistrationView'])->name('partner.register');

@@ -66,6 +66,7 @@
             let pollTimer = null;
             let typingTimer = null;
             let lastRenderedDate = null;
+            let isSending = false; // Flag to prevent double submissions
 
             // Browser Notification Support (WhatsApp-like)
             let notificationPermission = Notification.permission;
@@ -276,6 +277,12 @@
             messageForm.addEventListener('submit', (e) => {
                 e.preventDefault();
                 
+                // Prevent double submission
+                if (isSending) {
+                    console.log('Message already sending, ignoring duplicate submit');
+                    return;
+                }
+                
                 const formData = new FormData();
                 const messageText = messageInput.value.trim();
                 
@@ -290,6 +297,15 @@
                 if (!messageText && !fileInput.files[0]) {
                     return;
                 }
+                
+                // Set sending flag and disable form
+                isSending = true;
+                const sendButton = messageForm.querySelector('button[type="submit"]');
+                if (sendButton) {
+                    sendButton.disabled = true;
+                    sendButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+                }
+                messageInput.disabled = true;
                 
                 fetch(`/chat/${conversationId}/send`, {
                     method: 'POST',
@@ -308,7 +324,17 @@
                         loadMessages();
                     }
                 })
-                .catch(err => console.error('Error sending message:', err));
+                .catch(err => console.error('Error sending message:', err))
+                .finally(() => {
+                    // Re-enable form after request completes
+                    isSending = false;
+                    if (sendButton) {
+                        sendButton.disabled = false;
+                        sendButton.innerHTML = '<i class="fas fa-paper-plane"></i>';
+                    }
+                    messageInput.disabled = false;
+                    messageInput.focus();
+                });
             });
 
             // File input handling

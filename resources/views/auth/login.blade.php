@@ -31,7 +31,6 @@
                               <div class="form-group">
                                  <div class="d-flex justify-content-between align-items-center">
                                     <label class="text-secondary">{{__('auth.login_password')}} <span class="text-danger">*</span></label>
-                                    <!-- <label><a href="{{route('auth.recover-password')}}">{{__('auth.forgot_password')}}</a></label> -->
                                  </div>
                                  <div class="input-group">
                                     <input id="password" class="form-control" type="password" value="{{request('password')}}" placeholder="{{ __('auth.enter_name',['name' => __('auth.login_password') ]) }}" name="password" required autocomplete="current-password">
@@ -44,15 +43,14 @@
                            </div>
                            <div class="col-lg-12 mb-2">
                               <div class="d-flex justify-content-end align-items-center">
-                                 <!-- <label class="text-secondary">{{__('auth.login_password')}} <span class="text-danger">*</span></label> -->
-                                 <a href="{{route('auth.recover-password')}}" class="btn-link p-0 text-capitalize"><i>{{__('auth.forgot_password')}}</i></a>
+                                 <a href="{{route('password.request')}}" class="btn-link p-0 text-capitalize"><i>{{__('auth.forgot_password')}}</i></a>
                               </div>
                            </div>
                         </div>
                         <button type="submit" class="btn btn-primary btn-block mt-2 w-100">{{ __('auth.login') }}</button>
                         <div class="text-center my-4 text-signup">
                            <label class="m-0 text-capitalize"> {{__('auth.dont_have_account')}}</label>
-                           <a href="{{route('auth.register')}}" class="ms-1 btn-link align-baseline text-capitalize">{{__('auth.signup')}}</a>
+                           <a href="{{route('register')}}" class="ms-1 btn-link align-baseline text-capitalize">{{__('auth.signup')}}</a>
                        </div>
                      </form>
                   </div>

@@ -123,6 +123,7 @@
             let newestId = 0;
             let pollTimer = null;
             let typingTimer = null;
+            let isSending = false; // Flag to prevent double submissions
 
             // Lightweight audio ringtone via Web Audio API with external fallback
             let audioCtx = null;
@@ -273,6 +274,13 @@
 
             document.getElementById('composer').addEventListener('submit', (e) => {
                 e.preventDefault();
+                
+                // Prevent double submission
+                if (isSending) {
+                    console.log('Message already sending, ignoring duplicate submit');
+                    return;
+                }
+                
                 const fd = new FormData();
                 const text = (textInput.value || '').trim();
                 // Client-side quick PII check
@@ -329,6 +337,13 @@
                 }
                 if (text) fd.append('message', text);
                 if (fileInput.files && fileInput.files[0]) fd.append('attachment', fileInput.files[0]);
+                
+                // Set sending flag and disable form
+                isSending = true;
+                sendBtn.disabled = true;
+                sendBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+                textInput.disabled = true;
+                
                 fetch(sendUrl, {
                     method: 'POST',
                     headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
@@ -366,6 +381,15 @@
                         }
                         pollNewer();
                     }
+                }).catch(err => {
+                    console.error('Error sending message:', err);
+                }).finally(() => {
+                    // Re-enable form after request completes
+                    isSending = false;
+                    sendBtn.disabled = false;
+                    sendBtn.innerHTML = '<i class="fas fa-paper-plane"></i>';
+                    textInput.disabled = false;
+                    textInput.focus();
                 });
             });
 

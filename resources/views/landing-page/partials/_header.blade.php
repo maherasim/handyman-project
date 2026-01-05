@@ -138,7 +138,7 @@
                       <!-- Wishlist -->
                       @if(empty(auth()->user()) || auth()->user()->user_type !== 'user')
                         <li class="ms-sm-3 ms-2">
-                           <a href="{{route('user.login')}}" class="btn btn-primary" role="button">
+                           <a href="{{route('login')}}" class="btn btn-primary" role="button">
                               <svg xmlns="http://www.w3.org/2000/svg" width="14" height="16" viewBox="0 0 14 16"
                                  fill="none">
                                  <path fill-rule="evenodd" clip-rule="evenodd"
@@ -210,7 +210,7 @@
                                           @php
                                           $user = auth()->user();
                                           $wallet = $user->wallet;
-                                          $wallet_amount=  $wallet->amount;
+                                          $wallet_amount = $wallet ? $wallet->amount : 0;
                                           @endphp
                                           {{__('messages.wallet_balance')}}:
                                           <span class="text-primary">{{getPriceFormat($wallet_amount)}}</span>

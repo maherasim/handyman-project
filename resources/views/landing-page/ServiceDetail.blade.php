@@ -726,7 +726,7 @@
                                             <a href="{{ route('book.service', ['id' => $serviceData['service_detail']['id']]) }}"
                                                 class="btn btn-lg btn-primary continue-button">{{ __('messages.continue') }}({{ getPriceFormat($total) }})</a>
                                         @else
-                                            <a href="{{ route('user.login', ['service_id' => $serviceData['service_detail']['id']]) }}"
+                                            <a href="{{ route('login', ['service_id' => $serviceData['service_detail']['id']]) }}"
                                                 class="btn btn-lg btn-primary">{{ __('messages.continue') }}({{ getPriceFormat($total) }})</a>
                                         @endif
                                     </div>
@@ -954,7 +954,7 @@
                                         </form>
                                     @endif
                                 @else
-                                    <form method="GET" id="favoriteForm" action="{{ route('user.login') }}">
+                                    <form method="GET" id="favoriteForm" action="{{ route('login') }}">
                                         @csrf
                                         <button type="submit"
                                             class="btn btn-light bg-white rounded-circle serv-whishlist text-primary p-0 avatar-30">
@@ -988,7 +988,7 @@
                                 <a href="{{ route('book.service', ['id' => $serviceData['service_detail']['id']]) }}"
                                     class="btn btn-primary w-100 continue-button">{{ __('messages.continue') }}</a>
                             @else
-                                <a href="{{ route('user.login', ['service_id' => $serviceData['service_detail']['id']]) }}"
+                                <a href="{{ route('login', ['service_id' => $serviceData['service_detail']['id']]) }}"
                                     class="btn btn-primary w-100">{{ __('messages.continue') }}</a>
                             @endif
                         </div>

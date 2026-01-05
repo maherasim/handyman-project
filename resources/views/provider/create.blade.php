@@ -139,9 +139,288 @@
                             </div>
                             @endif
                     
+                            <div class="form-group col-md-6">
+                                {{ html()->label(__('messages.select_name', ['select' => __('Language')]), 'languages')->class('form-control-label') }}
+                                <br />
+                                {{ html()->select(
+                                        'languages[]',
+                                        [
+                                            'afrikaans' => 'Afrikaans',
+                                            'albanian' => 'Albanian',
+                                            'amharic' => 'Amharic',
+                                            'arabic' => 'Arabic',
+                                            'armenian' => 'Armenian',
+                                            'assamese' => 'Assamese',
+                                            'azerbaijani' => 'Azerbaijani (Azeri)',
+                                            'bassa' => 'Bassa',
+                                            'belarusian' => 'Belarusian',
+                                            'bengali' => 'Bengali',
+                                            'bosnian' => 'Bosnian',
+                                            'braille' => 'Braille',
+                                            'bulgarian' => 'Bulgarian',
+                                            'burmese' => 'Burmese',
+                                            'cambodian' => 'Cambodian',
+                                            'cape_verde_creole' => 'Cape Verde Creole',
+                                            'cebuano' => 'Cebuano',
+                                            'central_kurdish' => 'Central Kurdish',
+                                            'cherokee' => 'Cherokee',
+                                            'chinese' => 'Chinese',
+                                            'chuukese' => 'Chuukese',
+                                            'croatian' => 'Croatian',
+                                            'czech' => 'Czech',
+                                            'danish' => 'Danish',
+                                            'dari' => 'Dari',
+                                            'dutch' => 'Dutch',
+                                            'english' => 'English',
+                                            'estonian' => 'Estonian',
+                                            'farsi' => 'Farsi (Persian)',
+                                            'finnish' => 'Finnish',
+                                            'flemmish' => 'Flemmish',
+                                            'french' => 'French',
+                                            'fulani' => 'Fulani',
+                                            'galician' => 'Galician',
+                                            'georgian' => 'Georgian',
+                                            'german' => 'German',
+                                            'greek' => 'Greek',
+                                            'gujarati' => 'Gujarati',
+                                            'haitian_creole' => 'Haitian Creole',
+                                            'hakha_chin' => 'Hakha Chin',
+                                            'hakka' => 'Hakka (Chinese)',
+                                            'hausa' => 'Hausa',
+                                            'hebrew' => 'Hebrew',
+                                            'hindi' => 'Hindi',
+                                            'hmong' => 'Hmong',
+                                            'hungarian' => 'Hungarian',
+                                            'icelandic' => 'Icelandic',
+                                            'igbo' => 'Igbo/Ibo',
+                                            'ilocano' => 'Ilocano',
+                                            'ilonggo' => 'Ilonggo (Hiligaynon)',
+                                            'indonesian' => 'Indonesian',
+                                            'irish' => 'Irish',
+                                            'isixhosa' => 'isiXhosa',
+                                            'isizulu' => 'isiZulu',
+                                            'italian' => 'Italian',
+                                            'japanese' => 'Japanese',
+                                            'javanese' => 'Javanese',
+                                            'kannada' => 'Kannada',
+                                            'karen' => 'Karen',
+                                            'kazakh' => 'Kazakh',
+                                            'khmer' => 'Khmer',
+                                            'kiche' => "K'iche'",
+                                            'kinyarwanda' => 'Kinyarwanda',
+                                            'kirundi' => 'Kirundi',
+                                            'kiswahili' => 'KiSwahili',
+                                            'konkani' => 'Konkani',
+                                            'korean' => 'Korean',
+                                            'kurdish' => 'Kurdish',
+                                            'kyrgyz' => 'Kyrgyz/Kirgiz',
+                                            'lao' => 'Lao (Laotian)',
+                                            'latvian' => 'Latvian',
+                                            'lithuanian' => 'Lithuanian',
+                                            'luxembourgish' => 'Luxembourgish',
+                                            'macedonian' => 'Macedonian',
+                                            'malay' => 'Malay',
+                                            'malayalam' => 'Malayalam',
+                                            'maltese' => 'Maltese',
+                                            'mandinka' => 'Mandinka',
+                                            'maori' => 'Maori',
+                                            'marathi' => 'Marathi',
+                                            'marshallese' => 'Marshallese',
+                                            'mien' => 'Mien',
+                                            'mongolian' => 'Mongolian',
+                                            'montenegrin' => 'Montenegrin',
+                                            'navajo' => 'Navajo',
+                                            'nepali' => 'Nepali',
+                                            'norwegian' => 'Norwegian',
+                                            'odia' => 'Odia',
+                                            'oromo' => 'Oromo',
+                                            'pashto' => 'Pashto',
+                                            'persian' => 'Persian',
+                                            'polish' => 'Polish',
+                                            'portuguese' => 'Portuguese',
+                                            'punjabi' => 'Punjabi',
+                                            'quechua' => 'Quechua',
+                                            'rohingya' => 'Rohingya',
+                                            'romanian' => 'Romanian',
+                                            'russian' => 'Russian',
+                                            'scottish_gaelic' => 'Scottish Gaelic',
+                                            'serbian' => 'Serbian',
+                                            'sesotho_sa_leboa' => 'Sesotho sa Leboa',
+                                            'setswana' => 'Setswana',
+                                            'sindhi' => 'Sindhi',
+                                            'sinhala' => 'Sinhala',
+                                            'slovak' => 'Slovak',
+                                            'slovenian' => 'Slovenian',
+                                            'somali' => 'Somali',
+                                            'spanish' => 'Spanish',
+                                            'swahili' => 'Swahili',
+                                            'swedish' => 'Swedish',
+                                            'tagalog' => 'Tagalog',
+                                            'tajik' => 'Tajik',
+                                            'tamil' => 'Tamil',
+                                            'tatar' => 'Tatar',
+                                            'telugu' => 'Telugu',
+                                            'thai' => 'Thai',
+                                            'tibetan' => 'Tibetan',
+                                            'tigrinya' => 'Tigrinya',
+                                            'turkish' => 'Turkish',
+                                            'turkmen' => 'Turkmen',
+                                            'ukrainian' => 'Ukrainian',
+                                            'urdu' => 'Urdu',
+                                            'uzbek' => 'Uzbek',
+                                            'valencian' => 'Valencian',
+                                            'vietnamese' => 'Vietnamese',
+                                            'welsh' => 'Welsh',
+                                            'wolof' => 'Wolof',
+                                            'yoruba' => 'Yoruba',
+                                        ],
+                                        old('languages', $providerdata->languages ?? []),
+                                    )->class('form-group select2js')->multiple()->attribute('data-placeholder', __('select_name', ['select' => __('messages.language')])) }}
+                            </div>
+
+                            <div class="form-group col-md-6">
+                                {{ html()->label(__('messages.select_name', ['select' => __('Country tax')]), 'tax_country_id')->class('form-control-label') }}
+                                <br />
+                                {{ html()->select(
+                                        'tax_country_id',
+                                        [optional($providerdata->country)->id => optional($providerdata->country)->name],
+                                        optional($providerdata->country)->id,
+                                    )->class('form-group select2js tax_country')->attribute('data-placeholder', __('messages.select_name', ['select' => __('messages.tax_country')]))->attribute('data-ajax--url', route('ajax-list', ['type' => 'country']))->attribute('disabled', true) }}
+                            </div>
+                            <input type="hidden" name="tax_country_id" value="{{ optional($providerdata->country)->id }}">
+
+                            <div class="form-group col-md-6">
+                                {{ html()->label(__('Company Name') . ' <span class="text-danger">*</span>')->class('form-control-label')->for('company_name') }}
+                                {{ html()->text('company_name', $providerdata->company_name)->placeholder(__('Company Name'))->class('form-control')->required() }}
+                                <small class="help-block with-errors text-danger"></small>
+                            </div>
+
+                            <div class="form-group col-md-6">
+                                {{ html()->label(__('Vat Number') . ' <span class="text-danger">*</span>')->class('form-control-label')->for('vat_number') }}
+                                {{ html()->text('vat_number', $providerdata->vat_number)->placeholder(__('Vat Number'))->class('form-control')->required() }}
+                                <small class="help-block with-errors text-danger"></small>
+                            </div>
+
+                            <div class="form-group col-md-6">
+                                {{ html()->label(__('skills') . ' <span class="text-danger">*</span>')->class('form-control-label')->for('skills') }}
+                                {{ html()->text('skills', $providerdata->skills)->placeholder(__('skills'))->class('form-control')->required() }}
+                                <small class="help-block with-errors text-danger"></small>
+                            </div>
+
+                            <div class="form-group col-md-6">
+                                {{ html()->label(__('Education') . ' <span class="text-danger">*</span>')->class('form-control-label')->for('education') }}
+                                {{ html()->text('education', $providerdata->education)->placeholder(__('education'))->class('form-control')->required() }}
+                                <small class="help-block with-errors text-danger"></small>
+                            </div>
+
+                            <div class="form-group col-md-6">
+                                {{ html()->label(__('Certification') . ' <span class="text-danger">*</span>')->class('form-control-label')->for('certification') }}
+                                {{ html()->text('certification', $providerdata->certification)->placeholder(__('Certification'))->class('form-control')->required() }}
+                                <small class="help-block with-errors text-danger"></small>
+                            </div>
+
+                            <div class="form-group col-md-6">
+                                {{ html()->label(__('Availability') . ' <span class="text-danger">*</span>')->class('form-control-label')->for('availability') }}
+                                {{ html()->select(
+                                        'availability',
+                                        [
+                                            'Full-time' => 'Full-time',
+                                            'Part-time' => 'Part-time',
+                                        ],
+                                        $providerdata->availability,
+                                    )->class('form-control')->required()->placeholder(__('Select Availability')) }}
+                                <small class="help-block with-errors text-danger"></small>
+                            </div>
+
+                            <div class="form-group col-md-6">
+                                {{ html()->label(__('Mobility') . ' <span class="text-danger">*</span>')->class('form-control-label')->for('mobility') }}
+                                {{ html()->text('mobility', $providerdata->mobility)->placeholder(__('Mobility'))->class('form-control')->required() }}
+                                <small class="help-block with-errors text-danger"></small>
+                            </div>
+
+                            <div class="form-group col-md-12">
+                                {{ html()->label(__('experience'), 'experience')->class('form-control-label') }}
+                                {{ html()->textarea('experience', $providerdata->experience)->class('form-control textarea')->rows(2)->placeholder(__('experience'))->id('experience') }}
+                            </div>
+
+                            <div class="form-group col-md-12">
+                                {{ html()->label(__('About Me'))->class('form-control-label')->for('about_me') }}
+                                {{ html()->textarea('about_me', $providerdata->about_me)->class('form-control textarea')->rows(2)->placeholder(__('about_me'))->id('about_me') }}
+                            </div>
+
                             <div class="form-group col-md-12">
                                 {{ html()->label(__('messages.address'), 'address')->class('form-control-label') }}
-                                {{ html()->textarea('address', $providerdata->address)->class("form-control textarea")->rows(3)->placeholder(__('messages.address')) }}
+                                {{ html()->textarea('address', $providerdata->address)->class("form-control textarea")->rows(3)->placeholder(__('messages.address'))->id('address') }}
+                            </div>
+
+                            <div class="form-group col-md-12 mt-4">
+                                <h4>{{ __('messages.why_choose_me') }}</h4>
+                            </div>
+
+                            <div class="form-group col-md-12">
+                                {{ html()->label(__('messages.title'))->class('form-control-label')->for('title') }}
+                                {{ html()->text('title', $providerdata->title)->class('form-control')->placeholder(__('messages.title')) }}
+                                <small class="help-block with-errors text-danger"></small>
+                            </div>
+
+                            <div class="form-group col-md-12">
+                                {{ html()->label(__('messages.description'))->class('form-control-label')->for('about_description') }}
+                                {{ html()->textarea('about_description', $providerdata->about_description)->class('form-control textarea')->rows(2)->placeholder(__('messages.description'))->id('about_description') }}
+                            </div>
+
+                            @php
+                                $reasons = $providerdata->reason ?? [];
+                                if (is_string($reasons)) {
+                                    $reasons = json_decode($reasons, true) ?? [];
+                                }
+                                if (isset($reasons['reason']) && is_array($reasons['reason'])) {
+                                    $reasons = $reasons['reason'];
+                                }
+                            @endphp
+
+                            @if (!empty($reasons))
+                                @foreach ($reasons as $reason)
+                                    <div class="form-section1 form-group col-md-12">
+                                        <div class="row">
+                                            <div class="form-group col-md-12 d-flex">
+                                                {{ html()->text('reason[]', $reason)->placeholder(__('messages.reason'))->class('form-control') }}
+                                                <small class="help-block with-errors text-danger"></small>
+                                                <div class="form-group col-3 mb-0 align-self-center">
+                                                    <button class="remove-section1 button-custom button-remove"
+                                                        data-title="remove" title="Remove">
+                                                        <i class="far fa-trash-alt"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            @endif
+
+                            <div class="form-section form-group col-md-12">
+                                {{ html()->label(__('messages.reason'))->class('form-control-label')->for('reason') }}
+                                <div class="row">
+                                    <div class="form-group col-md-12 d-flex">
+                                        {{ html()->text('reason[]')->placeholder(__('messages.reason'))->class('form-control') }}
+                                        <small class="help-block with-errors text-danger"></small>
+                                        <div class="form-group mb-0 col-3 align-self-center">
+                                            <button class="remove-section button-custom button-remove">
+                                                <i class="far fa-trash-alt"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group col-md-12">
+                                <div class="form-group row">
+                                    <div class="col-md-9 text-md-right pe-1">
+                                        <button type="button" id="add-section" class="button-custom button-added">
+                                            <i class="fas fa-plus me-2"></i>Add More Reason
+                                        </button>
+                                    </div>
+                                    <div class="col-md-3"></div>
+                                </div>
                             </div>
                         </div>
                         <div class="row">
@@ -180,9 +459,18 @@
             stateName(country_id, state_id);
             $(document).on('change', '#country_id', function() {
                 var country = $(this).val();
+                var selectedText = $("#country_id option:selected").text();
                 $('#state_id').empty();
                 $('#city_id').empty();
                 stateName(country);
+
+                // Sync tax_country_id (disabled select)
+                $('#tax_country_id').empty();
+                var newOption = new Option(selectedText, country, true, true);
+                $('#tax_country_id').append(newOption).trigger('change');
+
+                // Update hidden input for submission
+                $('input[name="tax_country_id"]').val(country);
             })
             $(document).on('change', '#state_id', function() {
                 var state = $(this).val();
@@ -268,35 +556,74 @@
         }
     })(jQuery);
 
-    document.addEventListener('DOMContentLoaded', function() { 
-    checkImage();
-});
-function checkImage() { 
-    var id = @json($providerdata->id ); 
-    var route = "{{ route('check-image', ':id') }}";
-    route = route.replace(':id', id);  
-    var type = 'profile_image';
+    // Add/Remove Reason Section
+    $("#add-section").click(function () {
+        var newSection = $(".form-section:first").clone();
+        newSection.find('input').val('');
+        $(".form-section:last").after(newSection);
+        updateRemoveButtonVisibility();
+    });
 
-    $.ajax({
-        url: route,
-        type: 'GET',   
-        data: {
-            type: type,   
-        }, 
-        success: function(result) {  
-            var attachments = result.results;  
-
-            if (attachments.length === 0) { 
-                $('input[name="profile_image"]').attr('required', 'required');
-            } else { 
-                $('input[name="profile_image"]').removeAttr('required');
-            }         
-        },
-        error: function(xhr, status, error) {
-            console.error('Error:', error);  
+    $(document).on('click', '.remove-section', function () {
+        if ($(".form-section").length > 1) {
+            $(this).closest('.form-section').remove();
+            updateRemoveButtonVisibility();
         }
     });
-}
+
+    $(document).on('click', '.remove-section1', function () {
+        $(this).closest('.form-section1').remove();
+    });
+
+    function updateRemoveButtonVisibility() {
+        if ($(".form-section").length > 1) {
+            $('.remove-section').show();
+        } else {
+            $('.remove-section').hide();
+        }
+    }
+
+    updateRemoveButtonVisibility();
+
+    // Initialize tax_country_id with provider's current value
+    let initialTaxCountryId = "{{ optional($providerdata->country)->id }}";
+    let initialTaxCountryName = "{{ optional($providerdata->country)->name }}";
+    if (initialTaxCountryId && initialTaxCountryName) {
+        let initialOption = new Option(initialTaxCountryName, initialTaxCountryId, true, true);
+        $('#tax_country_id').append(initialOption).trigger('change');
+        $('input[name="tax_country_id"]').val(initialTaxCountryId);
+    }
+
+    document.addEventListener('DOMContentLoaded', function() { 
+        checkImage();
+    });
+    function checkImage() { 
+        var id = @json($providerdata->id ?? null); 
+        if (!id) return;
+        var route = "{{ route('check-image', ':id') }}";
+        route = route.replace(':id', id);  
+        var type = 'profile_image';
+
+        $.ajax({
+            url: route,
+            type: 'GET',   
+            data: {
+                type: type,   
+            }, 
+            success: function(result) {  
+                var attachments = result.results;  
+
+                if (attachments.length === 0) { 
+                    $('input[name="profile_image"]').attr('required', 'required');
+                } else { 
+                    $('input[name="profile_image"]').removeAttr('required');
+                }         
+            },
+            error: function(xhr, status, error) {
+                console.error('Error:', error);  
+            }
+        });
+    }
     </script>
     @endsection
 </x-master-layout>

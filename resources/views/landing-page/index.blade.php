@@ -739,7 +739,7 @@
                                                 @endif
                                             @else
                                                 <form method="GET" id="favoriteForm"
-                                                    action="{{ route('user.login') }}">
+                                                    action="{{ route('login') }}">
                                                     @csrf
                                                     <button type="submit" class="btn-link serv-whishlist text-primary">
                                                         <svg width="12" height="13" viewBox="0 0 12 13"
@@ -1019,7 +1019,7 @@
                                             @endif
                                         @else
                                             <form method="GET" id="favoriteForm"
-                                                action="{{ route('user.login') }}">
+                                                action="{{ route('login') }}">
                                                 @csrf
                                                 <button type="submit" class="btn-link serv-whishlist text-primary">
                                                     <svg width="12" height="13" viewBox="0 0 12 13"

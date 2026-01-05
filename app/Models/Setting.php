@@ -195,7 +195,7 @@ class Setting extends Model implements  HasMedia
         $setting = $setting->first();
 
         if ($setting) {
-            if ($key === 'privacy_policy' || $key === 'terms_condition'|| $key === 'help_support' || $key === 'refund_cancellation_policy' || $key === 'data_deletion_request' || $key === 'earning-setting' || $key === 'userdashboard-setting') {
+            if ($key === 'privacy_policy' || $key === 'terms_condition'|| $key === 'help_support' || $key === 'refund_cancellation_policy' || $key === 'data_deletion_request' || $key === 'imprint' || $key === 'earning-setting' || $key === 'userdashboard-setting') {
                 return $setting->value;
             } else {
                 return json_decode($setting->value);

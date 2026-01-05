@@ -39,14 +39,13 @@ class AuthenticatedSessionController extends Controller
             Auth::logout();
             return redirect()->back()->withErrors(['message' =>  __('auth.account_inactive')]);
         }
-        if($request->login == 'user_login' && $user->user_type === 'user'){
+        
+        // Route users based on their type
+        if($user->user_type === 'user'){
             return redirect(RouteServiceProvider::FRONTEND);
         } 
-        elseif($request->login == 'user_login' && $user->user_type !== 'user') {
-            Auth::logout();
-            return redirect()->back()->withErrors(['message' => 'You are not allowed to log in from here.']);
-        }
         else{
+            // Admin, Provider, Handyman go to dashboard
             return redirect(RouteServiceProvider::HOME);
         }
     }
