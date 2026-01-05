@@ -78,20 +78,21 @@ class DashboardController extends Controller
         $servicePaginated = $service->orderBy('id','desc')->paginate($per_page);
         $service = ServiceResource::collection($servicePaginated);
         
-        $service = $service->map(function ($item) {
-            $completedBookingCount = Booking::where('service_id', $item->id)
+        $service = $service->map(function ($item) use ($request) {
+            $itemArray = $item->toArray($request);
+            $completedBookingCount = Booking::where('service_id', $itemArray['id'])
                 ->where('status', 'completed')
                 ->count();
-            $item->completed_booking_count = $completedBookingCount;
+            $itemArray['completed_booking_count'] = $completedBookingCount;
             
             // Add provider total services count
-            $providerTotalServices = Service::where('provider_id', $item->provider_id)
+            $providerTotalServices = Service::where('provider_id', $itemArray['provider_id'])
                 ->where('service_type', 'service')
                 ->where('status', 1)
                 ->count();
-            $item->provider_total_services = $providerTotalServices;
+            $itemArray['provider_total_services'] = $providerTotalServices;
             
-            return $item;
+            return $itemArray;
         });
         
 
@@ -104,20 +105,21 @@ class DashboardController extends Controller
             $service = Service::with('providerServiceAddress', 'city', 'country')->whereIn('id',$service_in_location)->orwhere('visit_type','online')->get();
             $service = ServiceResource::collection($service);
             
-            $service = $service->map(function ($item) {
-                $completedBookingCount = Booking::where('service_id', $item->id)
+            $service = $service->map(function ($item) use ($request) {
+                $itemArray = $item->toArray($request);
+                $completedBookingCount = Booking::where('service_id', $itemArray['id'])
                     ->where('status', 'completed')
                     ->count();
-                $item->completed_booking_count = $completedBookingCount;
+                $itemArray['completed_booking_count'] = $completedBookingCount;
                 
                 // Add provider total services count
-                $providerTotalServices = Service::where('provider_id', $item->provider_id)
+                $providerTotalServices = Service::where('provider_id', $itemArray['provider_id'])
                     ->where('service_type', 'service')
                     ->where('status', 1)
                     ->count();
-                $item->provider_total_services = $providerTotalServices;
+                $itemArray['provider_total_services'] = $providerTotalServices;
                 
-                return $item;
+                return $itemArray;
             });
         }
 
@@ -142,6 +144,23 @@ class DashboardController extends Controller
             });
         }
         $featured_service = ServiceResource::collection($featured_service->orderBy('id','desc')->paginate($per_page));
+        
+        $featured_service = $featured_service->map(function ($item) use ($request) {
+            $itemArray = $item->toArray($request);
+            $completedBookingCount = Booking::where('service_id', $itemArray['id'])
+                ->where('status', 'completed')
+                ->count();
+            $itemArray['completed_booking_count'] = $completedBookingCount;
+            
+            // Add provider total services count
+            $providerTotalServices = Service::where('provider_id', $itemArray['provider_id'])
+                ->where('service_type', 'service')
+                ->where('status', 1)
+                ->count();
+            $itemArray['provider_total_services'] = $providerTotalServices;
+            
+            return $itemArray;
+        });
 
         if ($request->has('latitude') && !empty($request->latitude) && $request->has('longitude') && !empty($request->longitude)) {
             $get_distance = getSettingKeyValue('site-setup','radious');
@@ -153,20 +172,21 @@ class DashboardController extends Controller
             $featuredServicePaginated = $featured_service->orderBy('id','desc')->paginate($per_page);
             $featured_service = ServiceResource::collection($featuredServicePaginated);
             
-            $featured_service = $featured_service->map(function ($item) {
-                $completedBookingCount = Booking::where('service_id', $item->id)
+            $featured_service = $featured_service->map(function ($item) use ($request) {
+                $itemArray = $item->toArray($request);
+                $completedBookingCount = Booking::where('service_id', $itemArray['id'])
                     ->where('status', 'completed')
                     ->count();
-                $item->completed_booking_count = $completedBookingCount;
+                $itemArray['completed_booking_count'] = $completedBookingCount;
                 
                 // Add provider total services count
-                $providerTotalServices = Service::where('provider_id', $item->provider_id)
+                $providerTotalServices = Service::where('provider_id', $itemArray['provider_id'])
                     ->where('service_type', 'service')
                     ->where('status', 1)
                     ->count();
-                $item->provider_total_services = $providerTotalServices;
+                $itemArray['provider_total_services'] = $providerTotalServices;
                 
-                return $item;
+                return $itemArray;
             });
             
         }
