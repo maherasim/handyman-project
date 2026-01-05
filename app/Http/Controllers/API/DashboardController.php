@@ -83,6 +83,14 @@ class DashboardController extends Controller
                 ->where('status', 'completed')
                 ->count();
             $item->completed_booking_count = $completedBookingCount;
+            
+            // Add provider total services count
+            $providerTotalServices = Service::where('provider_id', $item->provider_id)
+                ->where('service_type', 'service')
+                ->where('status', 1)
+                ->count();
+            $item->provider_total_services = $providerTotalServices;
+            
             return $item;
         });
         
@@ -95,6 +103,22 @@ class DashboardController extends Controller
             $service_in_location = ProviderServiceAddressMapping::whereIn('provider_address_id',$locations)->get()->pluck('service_id');
             $service = Service::with('providerServiceAddress', 'city', 'country')->whereIn('id',$service_in_location)->orwhere('visit_type','online')->get();
             $service = ServiceResource::collection($service);
+            
+            $service = $service->map(function ($item) {
+                $completedBookingCount = Booking::where('service_id', $item->id)
+                    ->where('status', 'completed')
+                    ->count();
+                $item->completed_booking_count = $completedBookingCount;
+                
+                // Add provider total services count
+                $providerTotalServices = Service::where('provider_id', $item->provider_id)
+                    ->where('service_type', 'service')
+                    ->where('status', 1)
+                    ->count();
+                $item->provider_total_services = $providerTotalServices;
+                
+                return $item;
+            });
         }
 
         $provider = User::where('user_type','provider')->where('status',1);
@@ -134,6 +158,14 @@ class DashboardController extends Controller
                     ->where('status', 'completed')
                     ->count();
                 $item->completed_booking_count = $completedBookingCount;
+                
+                // Add provider total services count
+                $providerTotalServices = Service::where('provider_id', $item->provider_id)
+                    ->where('service_type', 'service')
+                    ->where('status', 1)
+                    ->count();
+                $item->provider_total_services = $providerTotalServices;
+                
                 return $item;
             });
             
