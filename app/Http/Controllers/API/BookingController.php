@@ -281,6 +281,7 @@ class BookingController extends Controller
         $customerArray['customer_total_ratings'] = $customerTotalRatings;
         
         $provider_data = new UserResource($booking_detail->provider);
+        $provider_data = $provider_data->toArray($request);
         $handyman_data = HandymanResource::collection($booking_detail->handymanAdded);
 
         $customer_review = null;
