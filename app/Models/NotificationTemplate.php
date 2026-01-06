@@ -47,6 +47,11 @@ class NotificationTemplate extends BaseModel
         return $this->hasOne(NotificationTemplateContentMapping::class, 'template_id', 'id')->where('language', 'en');
     }
 
+    public function notificationTemplateContentMappings()
+    {
+        return $this->hasMany(NotificationTemplateContentMapping::class, 'template_id', 'id');
+    }
+
     public function constant()
     {
         return $this->belongsTo(Constant::class, 'type', 'value')->where('type', 'notification_type');

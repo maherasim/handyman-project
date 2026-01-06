@@ -6,6 +6,7 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use App\Models\Constant;
 use App\Models\NotificationTemplate;
+use App\Models\NotificationTemplateContentMapping;
 
 class NotificationTemplateSeeder extends Seeder
 {
@@ -378,7 +379,8 @@ class NotificationTemplateSeeder extends Seeder
             'to' => '["admin","provider"]',
             'channels' => ['IS_MAIL' => '1', 'PUSH_NOTIFICATION' => '1'],
         ]);
-        $template->defaultNotificationTemplateMap()->create([
+        \App\Models\NotificationTemplateContentMapping::create([
+            'template_id' => $template->id,
             'language' => 'en',
             'notification_link' => '',
             'notification_message' => '',
@@ -387,7 +389,8 @@ class NotificationTemplateSeeder extends Seeder
             'subject' => 'New Booking Received',
             'template_detail' => '<p>New booking #[[ booking_id ]] - [[ customer_name ]] has booked [[ booking_services_name ]].</p>',
         ]);
-        $template->defaultNotificationTemplateMap()->create([
+        \App\Models\NotificationTemplateContentMapping::create([
+            'template_id' => $template->id,
             'language' => 'en',
             'notification_link' => '',
             'notification_message' => '',

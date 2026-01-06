@@ -1815,23 +1815,33 @@ public function saveStripePayment(Request $request, $id)
 
     /**
      * Create direct database notification as fallback
-     * This ensures notifications are saved even if queue fails
+     * This ensures notifications are saved even if queue fails or templates are missing
      */
     private function createDirectDatabaseNotification($booking, $activity_type, $old_status, $new_status)
     {
         try {
             $statusLabel = ucwords(str_replace('_', ' ', $new_status));
-            $message = "Booking #{$booking->id} status updated from " . ucwords(str_replace('_', ' ', $old_status)) . " to {$statusLabel}";
+            $oldStatusLabel = ucwords(str_replace('_', ' ', $old_status));
+            $serviceName = optional($booking->service)->name ?? 'Service';
+            $customerName = optional($booking->customer)->display_name ?? optional($booking->customer)->name ?? 'Customer';
+            $providerName = optional($booking->provider)->display_name ?? optional($booking->provider)->name ?? 'Provider';
+            
+            // Create a proper notification message
+            $message = "Booking #{$booking->id} for {$serviceName} status has been updated from {$oldStatusLabel} to {$statusLabel}";
             
             $notificationData = [
                 'id' => $booking->id,
                 'type' => $activity_type,
+                'subject' => 'Booking Status Updated',
                 'booking_id' => $booking->id,
                 'old_status' => $old_status,
                 'new_status' => $new_status,
                 'status_label' => $statusLabel,
-                'service_name' => optional($booking->service)->name ?? '',
+                'service_name' => $serviceName,
+                'customer_name' => $customerName,
+                'provider_name' => $providerName,
                 'message' => $message,
+                'notification-type' => 'booking',
                 'created_at' => now()->toDateTimeString(),
             ];
 

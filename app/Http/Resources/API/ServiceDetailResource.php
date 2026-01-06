@@ -75,7 +75,6 @@ class ServiceDetailResource extends JsonResource
             'minimum_booking'      => $this->minimum_booking,
             'duration'      => $this->duration,
             'status'        => $this->status,
-            'views'        => $this->total_views,
             'travel_required' => $this->travel_required,
             'remote_work_level' => $this->remote_work_level,
             'career_level' => $this->career_level,
@@ -94,8 +93,9 @@ class ServiceDetailResource extends JsonResource
             'attchments_array' => getAttachmentArray($this->getMedia('service_attachment'),null),
             'total_review'  => $this->serviceRating->count('id'),
             'total_rating'  => count($this->serviceRating) > 0 ? (float) number_format(max($this->serviceRating->avg('rating'),0), 2) : 0,
-            'total_booking_count' => $this->serviceBooking->count(),
-            'completed_booking_count' => $this->serviceBooking->where('status', 'completed')->count(),
+            'total_views' => (int) ($this->total_views ?? 0),
+            'total_booking_count' => (int) $this->serviceBooking->count(),
+            'completed_booking_count' => (int) $this->serviceBooking->where('status', 'completed')->count(),
             'is_favourite'  => $this->getUserFavouriteService->where('user_id',$user_id)->first() ? 1 : 0,
             'service_address_mapping' => $this->providerServiceAddress->map(function($mapping) {
                 return array_merge($mapping->toArray(), [
@@ -111,7 +111,6 @@ class ServiceDetailResource extends JsonResource
             'visit_type'           => $this->visit_type,
             'is_enable_advance_payment' => $this->is_enable_advance_payment == 1 ? $this->is_enable_advance_payment : $global_advance_payment ,
             'advance_payment_percentage' => $this->is_enable_advance_payment == 1 ? ($this->advance_payment_amount === null ? '0%' : (double) $this->advance_payment_amount . '%') : (double) $advancePaymentPercentage . '%',
-            'total_views' => (int) ($this->total_views ?? 0),
         ];
     }
 }
