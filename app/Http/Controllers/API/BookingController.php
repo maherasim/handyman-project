@@ -24,6 +24,7 @@ use App\Http\Resources\API\ServiceResource;
 use App\Http\Resources\API\UserResource;
 use App\Http\Resources\API\HandymanResource;
 use App\Http\Resources\API\HandymanRatingResource;
+use App\Http\Resources\API\CustomerRatingResource;
 use App\Http\Resources\API\ServiceProofResource;
 use App\Http\Resources\API\PostJobRequestResource;
 use App\Models\BookingServiceAddonMapping;
@@ -271,14 +272,20 @@ class BookingController extends Controller
         $service = new ServiceResource($booking_detail->service);
         
         // Get customer rating info
-        $customerRatingInfo = CustomerRating::where('customer_id', $booking_detail->customer_id)->get();
+        $customerRatingInfo = CustomerRating::where('customer_id', $booking_detail->customer_id)
+            ->orderBy('created_at', 'desc')
+            ->get();
         $customerAverageRating = $customerRatingInfo->avg('rating') ?? 0;
         $customerTotalRatings = $customerRatingInfo->count();
+        
+        // Get recent customer reviews with comments
+        $customerReviews = CustomerRatingResource::collection($customerRatingInfo->take(10));
         
         $customer = new UserResource($booking_detail->customer);
         $customerArray = $customer->toArray($request);
         $customerArray['customer_rating'] = round($customerAverageRating, 1);
         $customerArray['customer_total_ratings'] = $customerTotalRatings;
+        $customerArray['customer_reviews'] = $customerReviews;
         
         $provider_data = new UserResource($booking_detail->provider);
         $provider_data = $provider_data->toArray($request);
