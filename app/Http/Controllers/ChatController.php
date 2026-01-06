@@ -268,42 +268,53 @@ class ChatController extends Controller
         \Log::info('Chat notification - Sender: ' . $sender->id . ' (' . $sender->user_type . '), Recipient: ' . $recipient->id . ' (' . $recipient->user_type . ')');
         \Log::info('Recipient email: ' . ($recipient->email ?? 'NULL'));
         
-        // Use a simpler notification approach that bypasses templates
+        // Use CommonNotification with template system for consistency
         try {
-            // Create a simple database notification record without templates
+            $messagePreview = $message->message ? mb_substr($message->message, 0, 100) : 'New attachment';
+            
             $notificationData = [
                 'id' => $message->id,
-                'type' => 'chat_message',
-                'data' => [
-                    'message_id' => $message->id,
-                    'conversation_id' => $conversation->id,
-                    'sender_id' => $sender->id,
-                    'sender_name' => $sender->display_name ?? $sender->name,
-                    'message_preview' => $message->message ? mb_substr($message->message, 0, 100) : 'New attachment',
-                ],
-                'read_at' => null,
-                'created_at' => now(),
-                'updated_at' => now(),
+                'message_id' => $message->id,
+                'conversation_id' => $conversation->id,
+                'sender_id' => $sender->id,
+                'sender_name' => $sender->display_name ?? $sender->name,
+                'message_preview' => $messagePreview,
+                'user_type' => $recipient->user_type ?? 'user',
             ];
             
-            // Insert directly into notifications table
-            \DB::table('notifications')->insert([
-                'id' => \Str::uuid()->toString(),
-                'type' => 'App\Notifications\DatabaseNotification',
-                'notifiable_type' => 'App\Models\User',
-                'notifiable_id' => $recipient->id,
-                'data' => json_encode($notificationData),
-                'read_at' => null,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
+            // Use CommonNotification which will use templates
+            $recipient->notify(new \App\Notifications\CommonNotification('chat_message', $notificationData));
             
-            // Try the direct FCM approach (but don't fail if it doesn't work)
+            // Also try direct FCM as fallback (but don't fail if it doesn't work)
             $this->sendDirectFCMNotification($recipient, $sender, $message);
             
         } catch (\Exception $e) {
             // Log error but don't break the message sending
             \Log::error('Failed to send chat notification: ' . $e->getMessage());
+            // Fallback: create direct database notification if template system fails
+            try {
+                $notificationData = [
+                    'id' => $message->id,
+                    'type' => 'chat_message',
+                    'message_id' => $message->id,
+                    'conversation_id' => $conversation->id,
+                    'sender_id' => $sender->id,
+                    'sender_name' => $sender->display_name ?? $sender->name,
+                    'message_preview' => $message->message ? mb_substr($message->message, 0, 100) : 'New attachment',
+                ];
+                \DB::table('notifications')->insert([
+                    'id' => \Str::uuid()->toString(),
+                    'type' => 'App\Notifications\CommonNotification',
+                    'notifiable_type' => 'App\Models\User',
+                    'notifiable_id' => $recipient->id,
+                    'data' => json_encode($notificationData),
+                    'read_at' => null,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            } catch (\Exception $fallbackError) {
+                \Log::error('Failed to create fallback chat notification: ' . $fallbackError->getMessage());
+            }
         }
         
         // Send email notification to recipient (outside try-catch to ensure it always runs)

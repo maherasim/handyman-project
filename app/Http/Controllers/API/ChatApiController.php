@@ -275,32 +275,11 @@ class ChatApiController extends Controller
         ]);
         $conversation->touch();
         
-        // Send email notification to recipient
-        try {
-            $sender = Auth::user();
-            if (!$sender) {
-                \Log::error('Chat email notification failed - Sender not found');
-            } else {
-                $recipientId = ($conversation->user_one_id === $sender->id) 
-                    ? $conversation->user_two_id 
-                    : $conversation->user_one_id;
-                
-                $recipient = \App\Models\User::find($recipientId);
-                if (!$recipient) {
-                    \Log::error('Chat email notification failed - Recipient not found: ' . $recipientId);
-                } elseif (!$recipient->email) {
-                    \Log::warning('Cannot send email - Recipient email is missing. Recipient ID: ' . $recipient->id);
-                } else {
-                    \Log::info('Attempting to send email to: ' . $recipient->email . ' for message ID: ' . $msg->id);
-                    Mail::to($recipient->email)->send(new ChatMessageNotificationMail($recipient, $sender, $msg, $conversation));
-                    \Log::info('Chat message email sent successfully to: ' . $recipient->email . ' for message ID: ' . $msg->id);
-                }
-            }
-        } catch (\Exception $e) {
-            // Log error but don't fail the message sending
-            \Log::error('Failed to send chat message email: ' . $e->getMessage());
-            \Log::error('Email exception trace: ' . $e->getTraceAsString());
-        }
+        // Load sender relationship for notification
+        $msg->load('sender');
+        
+        // Send notification to the recipient using CommonNotification template system
+        $this->sendMessageNotification($conversation, $msg);
         
         return response()->json([
             'status' => true,
@@ -564,6 +543,98 @@ class ChatApiController extends Controller
         $request->validate(['text' => 'required|string|max:4000']);
         [$has, $types] = $this->detectPii($request->input('text'));
         return response()->json(['status' => true, 'contains_pii' => $has, 'types' => $types]);
+    }
+
+    /**
+     * Send notification to the recipient of a chat message using CommonNotification template system.
+     */
+    protected function sendMessageNotification(ChatConversation $conversation, ChatMessage $message): void
+    {
+        // Ensure sender is loaded
+        if (!$message->relationLoaded('sender')) {
+            $message->load('sender');
+        }
+        
+        $sender = $message->sender;
+        if (!$sender) {
+            \Log::error('Chat notification failed - Sender not found for message ID: ' . $message->id);
+            return;
+        }
+        
+        $recipientId = ($conversation->user_one_id === $sender->id) 
+            ? $conversation->user_two_id 
+            : $conversation->user_one_id;
+            
+        $recipient = \App\Models\User::find($recipientId);
+        if (!$recipient) {
+            \Log::error('Chat notification failed - Recipient not found: ' . $recipientId);
+            return;
+        }
+        
+        // Debug logging
+        \Log::info('Chat notification (API) - Sender: ' . $sender->id . ' (' . $sender->user_type . '), Recipient: ' . $recipient->id . ' (' . $recipient->user_type . ')');
+        
+        // Use CommonNotification with template system for consistency
+        try {
+            $messagePreview = $message->message ? mb_substr($message->message, 0, 100) : 'New attachment';
+            
+            $notificationData = [
+                'id' => $message->id,
+                'message_id' => $message->id,
+                'conversation_id' => $conversation->id,
+                'sender_id' => $sender->id,
+                'sender_name' => $sender->display_name ?? $sender->name,
+                'message_preview' => $messagePreview,
+                'user_type' => $recipient->user_type ?? 'user',
+            ];
+            
+            // Use CommonNotification which will use templates
+            $recipient->notify(new \App\Notifications\CommonNotification('chat_message', $notificationData));
+            
+        } catch (\Exception $e) {
+            // Log error but don't break the message sending
+            \Log::error('Failed to send chat notification (API): ' . $e->getMessage());
+            // Fallback: create direct database notification if template system fails
+            try {
+                $messagePreview = $message->message ? mb_substr($message->message, 0, 100) : 'New attachment';
+                $notificationData = [
+                    'id' => $message->id,
+                    'type' => 'chat_message',
+                    'message_id' => $message->id,
+                    'conversation_id' => $conversation->id,
+                    'sender_id' => $sender->id,
+                    'sender_name' => $sender->display_name ?? $sender->name,
+                    'message_preview' => $messagePreview,
+                ];
+                \DB::table('notifications')->insert([
+                    'id' => \Str::uuid()->toString(),
+                    'type' => 'App\Notifications\CommonNotification',
+                    'notifiable_type' => 'App\Models\User',
+                    'notifiable_id' => $recipient->id,
+                    'data' => json_encode($notificationData),
+                    'read_at' => null,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            } catch (\Exception $fallbackError) {
+                \Log::error('Failed to create fallback chat notification (API): ' . $fallbackError->getMessage());
+            }
+        }
+        
+        // Send email notification to recipient (outside try-catch to ensure it always runs)
+        try {
+            if ($recipient && $recipient->email) {
+                \Log::info('Attempting to send email to: ' . $recipient->email . ' for message ID: ' . $message->id);
+                Mail::to($recipient->email)->send(new ChatMessageNotificationMail($recipient, $sender, $message, $conversation));
+                \Log::info('Chat message email sent successfully to: ' . $recipient->email . ' for message ID: ' . $message->id);
+            } else {
+                \Log::warning('Cannot send email - Recipient email is missing. Recipient ID: ' . ($recipient ? $recipient->id : 'NULL'));
+            }
+        } catch (\Exception $emailException) {
+            // Log error but don't fail the notification
+            \Log::error('Failed to send chat message email (API) to ' . ($recipient->email ?? 'NULL') . ': ' . $emailException->getMessage());
+            \Log::error('Email exception trace: ' . $emailException->getTraceAsString());
+        }
     }
 }
 

@@ -320,6 +320,11 @@ class NotificationTemplateSeeder extends Seeder
                 'value' => 'cancellation_charges',
                 'name' => 'Cancellation Charges',
             ],
+            [
+                'type' => 'notification_type',
+                'value' => 'chat_message',
+                'name' => 'New Chat Message',
+            ],
 
 
 
@@ -1110,6 +1115,55 @@ class NotificationTemplateSeeder extends Seeder
             'status' => 1,
             'subject' => 'Cancellation Charges',
             'template_detail' => '<p>#[[ booking_id ]] - A cancellation charge [[ paid_amount ]] has been deducted from your wallet.</p>',
+        ]);
+
+        $template = NotificationTemplate::create([
+            'type' => 'chat_message',
+            'name' => 'chat_message',
+            'label' => 'New Chat Message',
+            'status' => 1,
+            'to' => '["user","provider","handyman","admin"]',
+            'channels' => ['IS_MAIL' => '1', 'PUSH_NOTIFICATION' => '1'],
+        ]);
+        NotificationTemplateContentMapping::create([
+            'template_id' => $template->id,
+            'language' => 'en',
+            'notification_link' => '',
+            'notification_message' => '',
+            'user_type' => 'user',
+            'status' => 1,
+            'subject' => 'New Message from [[ sender_name ]]',
+            'template_detail' => '<p>[[ sender_name ]] sent you a message: [[ message_preview ]]</p>',
+        ]);
+        NotificationTemplateContentMapping::create([
+            'template_id' => $template->id,
+            'language' => 'en',
+            'notification_link' => '',
+            'notification_message' => '',
+            'user_type' => 'provider',
+            'status' => 1,
+            'subject' => 'New Message from [[ sender_name ]]',
+            'template_detail' => '<p>[[ sender_name ]] sent you a message: [[ message_preview ]]</p>',
+        ]);
+        NotificationTemplateContentMapping::create([
+            'template_id' => $template->id,
+            'language' => 'en',
+            'notification_link' => '',
+            'notification_message' => '',
+            'user_type' => 'handyman',
+            'status' => 1,
+            'subject' => 'New Message from [[ sender_name ]]',
+            'template_detail' => '<p>[[ sender_name ]] sent you a message: [[ message_preview ]]</p>',
+        ]);
+        NotificationTemplateContentMapping::create([
+            'template_id' => $template->id,
+            'language' => 'en',
+            'notification_link' => '',
+            'notification_message' => '',
+            'user_type' => 'admin',
+            'status' => 1,
+            'subject' => 'New Message from [[ sender_name ]]',
+            'template_detail' => '<p>[[ sender_name ]] sent you a message: [[ message_preview ]]</p>',
         ]);
 
     }
