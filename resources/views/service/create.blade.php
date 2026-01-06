@@ -143,8 +143,7 @@
                                         [
                                             'fixed' => __('messages.fixed'),
                                             'hourly' => __('messages.hourly'),
-                                            'Daily' => __('Daily'), // Add 'daily' option here
-                                            'free' => __('messages.free'),
+                                            'Daily' => __('Daily'),
                                         ],
                                         old('type', $servicedata->type),
                                     )->class('form-control select2js')->required()->id('price_type') }}
@@ -598,19 +597,10 @@
                 var discount = "{{ old('discount', isset($servicedata->discount) ? $servicedata->discount : '') }}";
 
                 function priceformat(value) {
-                    if (value == 'free') {
-                        $('#price').val(0);
-                        $('#price').attr("readonly", true)
-
-                        $('#discount').val(0);
-                        $('#discount').attr("readonly", true)
-
-                    } else {
-                        $('#price').val(price);
-                        $('#price').attr("readonly", false)
-                        $('#discount').val(discount);
-                        $('#discount').attr("readonly", false)
-                    }
+                    $('#price').val(price);
+                    $('#price').attr("readonly", false)
+                    $('#discount').val(discount);
+                    $('#discount').attr("readonly", false)
                 }
 
                 function cityName(country, city = "") {
@@ -725,13 +715,6 @@
                         $duration.removeAttr('min').removeAttr('max').removeAttr('step');
                         $duration.prop('readonly', false).prop('disabled', false);
                         // Keep existing value as-is (could be numeric or HH:MM format)
-                    } else if (type === 'free') {
-                        // Use text input for free - accepts both numeric hours and HH:MM format
-                        $duration.removeClass('min-datetimepicker-time').addClass('duration-input');
-                        $duration.attr('type', 'text');
-                        $duration.removeAttr('min').removeAttr('max').removeAttr('step');
-                        $duration.prop('readonly', false).prop('disabled', false);
-                        // Keep existing value as-is (could be numeric or HH:MM format)
                     }
                 }
 
@@ -775,7 +758,7 @@
                                     }
                                 }
                                 
-                                if (priceType === 'fixed' || priceType === 'free') {
+                                if (priceType === 'fixed') {
                                     if (!isValid && durationValue !== '') {
                                         durationError.textContent = errorMessage || "Duration must be at least 0 hours. Enter numeric hours (e.g., 46) or time format (e.g., 46:30)";
                                     } else {

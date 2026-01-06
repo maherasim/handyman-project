@@ -808,7 +808,20 @@ class BookingController extends Controller
                 'booking_id' => $id,
                 'booking' => $bookingdata,
             ];
-            $this->sendNotification($activity_data);
+            
+            try {
+                $this->sendNotification($activity_data);
+                // Ensure database notification is created immediately (fallback if queue fails)
+                $this->createDirectDatabaseNotification($bookingdata, $activity_type, $old_status, $data['status']);
+            } catch (\Exception $e) {
+                \Log::error('Failed to send booking notification (web): ' . $e->getMessage());
+                // Fallback: create direct database notification even if sendNotification fails
+                try {
+                    $this->createDirectDatabaseNotification($bookingdata, $activity_type, $old_status, $data['status']);
+                } catch (\Exception $fallbackError) {
+                    \Log::error('Failed to create fallback database notification (web): ' . $fallbackError->getMessage());
+                }
+            }
             
             // ✅ Send direct email notifications to relevant parties
             try {
@@ -1800,5 +1813,76 @@ public function saveStripePayment(Request $request, $id)
         ]);
     }
 
+    /**
+     * Create direct database notification as fallback
+     * This ensures notifications are saved even if queue fails
+     */
+    private function createDirectDatabaseNotification($booking, $activity_type, $old_status, $new_status)
+    {
+        try {
+            $statusLabel = ucwords(str_replace('_', ' ', $new_status));
+            $message = "Booking #{$booking->id} status updated from " . ucwords(str_replace('_', ' ', $old_status)) . " to {$statusLabel}";
+            
+            $notificationData = [
+                'id' => $booking->id,
+                'type' => $activity_type,
+                'booking_id' => $booking->id,
+                'old_status' => $old_status,
+                'new_status' => $new_status,
+                'status_label' => $statusLabel,
+                'service_name' => optional($booking->service)->name ?? '',
+                'message' => $message,
+                'created_at' => now()->toDateTimeString(),
+            ];
+
+            // Notify customer
+            if ($booking->customer_id) {
+                \DB::table('notifications')->insert([
+                    'id' => \Str::uuid()->toString(),
+                    'type' => 'App\Notifications\CommonNotification',
+                    'notifiable_type' => 'App\Models\User',
+                    'notifiable_id' => $booking->customer_id,
+                    'data' => json_encode($notificationData),
+                    'read_at' => null,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            }
+
+            // Notify provider
+            if ($booking->provider_id) {
+                \DB::table('notifications')->insert([
+                    'id' => \Str::uuid()->toString(),
+                    'type' => 'App\Notifications\CommonNotification',
+                    'notifiable_type' => 'App\Models\User',
+                    'notifiable_id' => $booking->provider_id,
+                    'data' => json_encode($notificationData),
+                    'read_at' => null,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            }
+
+            // Notify handymen if any
+            if ($booking->handymanAdded && $booking->handymanAdded->count() > 0) {
+                foreach ($booking->handymanAdded as $handymanMapping) {
+                    if ($handymanMapping->handyman_id) {
+                        \DB::table('notifications')->insert([
+                            'id' => \Str::uuid()->toString(),
+                            'type' => 'App\Notifications\CommonNotification',
+                            'notifiable_type' => 'App\Models\User',
+                            'notifiable_id' => $handymanMapping->handyman_id,
+                            'data' => json_encode($notificationData),
+                            'read_at' => null,
+                            'created_at' => now(),
+                            'updated_at' => now(),
+                        ]);
+                    }
+                }
+            }
+        } catch (\Exception $e) {
+            \Log::error('Failed to create direct database notification (web): ' . $e->getMessage());
+        }
+    }
 
 }

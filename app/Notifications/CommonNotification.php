@@ -44,19 +44,27 @@ class CommonNotification extends Notification implements ShouldQueue
         $this->type = $type;
         $this->data = $data;
 
-        $userType = $data['user_type'];
+        $userType = $data['user_type'] ?? 'user';
         $notifications = NotificationTemplate::where('type', $this->type)
             ->with('defaultNotificationTemplateMap')
             ->first();
-        $notify_data = NotificationTemplateContentMapping::where('template_id', $notifications->id)->get();
-        $templateData = $notify_data->where('user_type', $userType)->first();
-        $templateDetail = $templateData->template_detail ?? null;
-        foreach ($this->data as $key => $value) {
-            $templateDetail = str_replace('[[ ' . $key . ' ]]', $this->data[$key], $templateDetail);
+        
+        if ($notifications) {
+            $notify_data = NotificationTemplateContentMapping::where('template_id', $notifications->id)->get();
+            $templateData = $notify_data->where('user_type', $userType)->first();
+            $templateDetail = $templateData->template_detail ?? null;
+            foreach ($this->data as $key => $value) {
+                $templateDetail = str_replace('[[ ' . $key . ' ]]', $this->data[$key], $templateDetail);
+            }
+            $this->data['type'] = $templateData->subject ?? 'None';
+            $this->data['message'] = $templateDetail ?? __('messages.default_notification_body');
+            $this->appData = $notifications->channels ?? [];
+        } else {
+            // Fallback if template doesn't exist
+            $this->data['type'] = ucwords(str_replace('_', ' ', $this->type));
+            $this->data['message'] = __('messages.default_notification_body');
+            $this->appData = [];
         }
-        $this->data['type'] = $templateData->subject ?? 'None';
-        $this->data['message'] = $templateDetail ?? __('messages.default_notification_body');
-        $this->appData = $notifications->channels;
     }
 
     /**
@@ -67,38 +75,30 @@ class CommonNotification extends Notification implements ShouldQueue
      */
     public function via($notifiable)
     {
-        $notificationSettings = $this->appData;
+        $notificationSettings = $this->appData ?? [];
         $notification_settings = [];
-        $notification_access = isset($notificationSettings[$this->type]) ? $notificationSettings[$this->type] : [];
-        if (isset($notificationSettings)) {
+        
+        if (is_array($notificationSettings) && !empty($notificationSettings)) {
             foreach ($notificationSettings as $key => $notification) {
                 if ($notification) {
-
                     switch ($key) {
-
                         case 'PUSH_NOTIFICATION':
-
-                            Log::info($notification_settings);
                             array_push($notification_settings, FcmChannel::class);
-
                             break;
 
                         case 'IS_CUSTOM_WEBHOOK':
                             array_push($notification_settings, CustomWebhook::class);
-
                             break;
 
                         case 'IS_MAIL':
-
-                            Log::info($notification_settings);
                             array_push($notification_settings, 'mail');
-
                             break;
                     }
                 }
             }
         }
 
+        // Always include database channel to ensure notifications are saved
         return array_merge($notification_settings, ['database']);
     }
 
@@ -112,19 +112,28 @@ class CommonNotification extends Notification implements ShouldQueue
      */
     public function toMail($notifiable)
     {
-        $userType = $this->data['user_type'];
-        $email = isset($notifiable->email) ? $notifiable->email : $notifiable->routes['mail'];
+        $userType = $this->data['user_type'] ?? 'user';
+        $email = isset($notifiable->email) ? $notifiable->email : ($notifiable->routes['mail'] ?? null);
+
+        if (!$email) {
+            return null;
+        }
 
         $mail = MailTemplates::where('type', $this->type)
             ->with('defaultMailTemplateMap')
             ->first();
 
-        $notify_data = MailTemplateContentMapping::where('template_id', $mail->id)->get();
-        $templateData = $notify_data->where('user_type', $userType)->first();
-        $this->subject = $templateData->subject;
-        $this->data['type'] = $templateData->subject ?? null;
-        $this->data['message'] = $templateData->template_detail ?? __('messages.default_notification_body');
-        return (new MailMailableSend($this->notification, $this->data, $this->type))->to($email)
+        if ($mail) {
+            $notify_data = MailTemplateContentMapping::where('template_id', $mail->id)->get();
+            $templateData = $notify_data->where('user_type', $userType)->first();
+            $this->subject = $templateData->subject ?? ucwords(str_replace('_', ' ', $this->type));
+            $this->data['type'] = $templateData->subject ?? null;
+            $this->data['message'] = $templateData->template_detail ?? __('messages.default_notification_body');
+        } else {
+            $this->subject = ucwords(str_replace('_', ' ', $this->type));
+        }
+
+        return (new MailMailableSend($this->notification ?? null, $this->data, $this->type))->to($email)
             ->bcc(isset($this->notification->bcc) ? json_decode($this->notification->bcc) : [])
             ->cc(isset($this->notification->cc) ? json_decode($this->notification->cc) : [])
             ->subject($this->subject);
