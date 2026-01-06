@@ -228,13 +228,13 @@
                 $('#handymantype').prop('required', true);
             }
             
-            fetchTypes(selectedUserType);
+        fetchTypes(selectedUserType);
             
-            $('#providertype').val('');  // Clear provider type selection
-            $('#handymantype').val('');  // Clear handyman type selection
+        $('#providertype').val('');  // Clear provider type selection
+        $('#handymantype').val('');  // Clear handyman type selection
 
-            if (selectedUserType === 'handyman') {
-                fetchProviders(); // Fetch provider list when handyman is selected
+        if (selectedUserType === 'handyman') {
+            fetchProviders(); // Fetch provider list when handyman is selected
             }
         }
     }).trigger('change');

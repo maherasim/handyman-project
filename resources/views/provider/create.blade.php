@@ -595,35 +595,35 @@
     }
 
     document.addEventListener('DOMContentLoaded', function() { 
-        checkImage();
-    });
-    function checkImage() { 
+    checkImage();
+});
+function checkImage() { 
         var id = @json($providerdata->id ?? null); 
         if (!id) return;
-        var route = "{{ route('check-image', ':id') }}";
-        route = route.replace(':id', id);  
-        var type = 'profile_image';
+    var route = "{{ route('check-image', ':id') }}";
+    route = route.replace(':id', id);  
+    var type = 'profile_image';
 
-        $.ajax({
-            url: route,
-            type: 'GET',   
-            data: {
-                type: type,   
-            }, 
-            success: function(result) {  
-                var attachments = result.results;  
+    $.ajax({
+        url: route,
+        type: 'GET',   
+        data: {
+            type: type,   
+        }, 
+        success: function(result) {  
+            var attachments = result.results;  
 
-                if (attachments.length === 0) { 
-                    $('input[name="profile_image"]').attr('required', 'required');
-                } else { 
-                    $('input[name="profile_image"]').removeAttr('required');
-                }         
-            },
-            error: function(xhr, status, error) {
-                console.error('Error:', error);  
-            }
-        });
-    }
+            if (attachments.length === 0) { 
+                $('input[name="profile_image"]').attr('required', 'required');
+            } else { 
+                $('input[name="profile_image"]').removeAttr('required');
+            }         
+        },
+        error: function(xhr, status, error) {
+            console.error('Error:', error);  
+        }
+    });
+}
     </script>
     @endsection
 </x-master-layout>

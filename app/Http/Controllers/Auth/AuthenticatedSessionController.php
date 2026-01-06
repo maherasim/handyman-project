@@ -43,7 +43,7 @@ class AuthenticatedSessionController extends Controller
         // Route users based on their type
         if($user->user_type === 'user'){
             return redirect(RouteServiceProvider::FRONTEND);
-        } 
+        }
         else{
             // Admin, Provider, Handyman go to dashboard
             return redirect(RouteServiceProvider::HOME);

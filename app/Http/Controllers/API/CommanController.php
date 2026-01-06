@@ -113,8 +113,15 @@ class CommanController extends Controller
         if($request->has('category_id') && $request->category_id != ''){
             $service->whereIn('category_id',explode(',',$request->category_id));
         }
-        if($request->has('subcategory_id') && $request->subcategory_id != ''){
-            $service->whereIn('subcategory_id',explode(',',$request->subcategory_id));
+        // Strict subcategory filtering: if subcategory_id is provided and not empty, filter strictly by it
+        // This ensures when switching subcategories, only services from the selected subcategory are shown
+        if($request->has('subcategory_id') && $request->subcategory_id != '' && $request->subcategory_id != 'null' && $request->subcategory_id != null){
+            $subcategoryIds = array_filter(explode(',', $request->subcategory_id), function($v){ 
+                return $v !== '' && $v !== 'null' && $v !== null; 
+            });
+            if(!empty($subcategoryIds)){
+                $service->whereIn('subcategory_id', $subcategoryIds);
+            }
         }
         // Location-based filters: match Service location OR Provider location
         if($request->has('country_id') && $request->country_id != ''){
