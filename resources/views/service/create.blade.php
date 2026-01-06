@@ -172,8 +172,8 @@
 
 
                             <div class="form-group col-md-3">
-                                {{ html()->label(__('messages.duration') . ' (hours) ', 'duration')->class('form-control-label') }}
-                                {{ html()->text('duration', old('duration', $servicedata->duration))->placeholder(__('messages.duration'))->class('form-control min-datetimepicker-time')->attributes(['min' => '0.5', 'step' => '0.5'])->id('duration') }}
+                                {{ html()->label(__('messages.duration') . ' (hours or HH:MM) ', 'duration')->class('form-control-label') }}
+                                {{ html()->text('duration', old('duration', $servicedata->duration))->placeholder(__('messages.duration') . ' (e.g., 46 or 46:30)')->class('form-control duration-input')->id('duration') }}
                                 <small class="help-block with-errors text-danger"></small>
                                 <small id="duration-error" class="text-danger"></small>
                             </div>
@@ -668,7 +668,11 @@
 
         <script type="text/javascript">
             document.addEventListener('DOMContentLoaded', function() {
-                handleDurationField($("#price_type").val());
+                var $duration = $('#duration');
+                var initialType = $("#price_type").val();
+                
+                // Initialize based on current type
+                handleDurationField(initialType);
                 addDurationValidation();
 
                 $("#price_type").on('change', function() {
@@ -676,20 +680,58 @@
                 });
 
                 function handleDurationField(type) {
-                    var $duration = $('#duration');
+                    // Destroy flatpickr instance if it exists
+                    if ($duration.data('flatpickr')) {
+                        $duration.flatpickr().destroy();
+                        $duration.removeData('flatpickr');
+                    }
 
                     if (type === 'hourly') {
-                        $duration.val(1).prop('readonly', true).prop('disabled', true);
+                        // Use time picker for hourly
+                        $duration.removeClass('duration-input').addClass('min-datetimepicker-time');
+                        $duration.attr('type', 'text');
+                        // Re-initialize flatpickr
+                        setTimeout(function() {
+                            if (!$duration.data('flatpickr')) {
+                                $duration.flatpickr({
+                                    enableTime: true,
+                                    noCalendar: true,
+                                    dateFormat: "H:i",
+                                    time_24hr: true
+                                });
+                            }
+                        }, 100);
+                        $duration.val('01:00').prop('readonly', true).prop('disabled', true);
                     } else if (type.toLowerCase() === 'daily') {
-                        $duration.val(8).prop('readonly', true).prop('disabled', true);
+                        // Use time picker for daily
+                        $duration.removeClass('duration-input').addClass('min-datetimepicker-time');
+                        $duration.attr('type', 'text');
+                        // Re-initialize flatpickr
+                        setTimeout(function() {
+                            if (!$duration.data('flatpickr')) {
+                                $duration.flatpickr({
+                                    enableTime: true,
+                                    noCalendar: true,
+                                    dateFormat: "H:i",
+                                    time_24hr: true
+                                });
+                            }
+                        }, 100);
+                        $duration.val('08:00').prop('readonly', true).prop('disabled', true);
                     } else if (type === 'fixed') {
+                        // Use text input for fixed - accepts both numeric hours and HH:MM format
+                        $duration.removeClass('min-datetimepicker-time').addClass('duration-input');
+                        $duration.attr('type', 'text');
+                        $duration.removeAttr('min').removeAttr('max').removeAttr('step');
                         $duration.prop('readonly', false).prop('disabled', false);
-                        // For fixed type, allow manual entry - no restrictions
-                        $duration.removeAttr('max');
+                        // Keep existing value as-is (could be numeric or HH:MM format)
                     } else if (type === 'free') {
+                        // Use text input for free - accepts both numeric hours and HH:MM format
+                        $duration.removeClass('min-datetimepicker-time').addClass('duration-input');
+                        $duration.attr('type', 'text');
+                        $duration.removeAttr('min').removeAttr('max').removeAttr('step');
                         $duration.prop('readonly', false).prop('disabled', false);
-                        // For free type, allow manual entry - no restrictions
-                        $duration.removeAttr('max');
+                        // Keep existing value as-is (could be numeric or HH:MM format)
                     }
                 }
 
@@ -699,20 +741,43 @@
 
                     if (durationInput) {
                         durationInput.addEventListener('input', function() {
-                            var durationValue = parseFloat(durationInput.value);
+                            var durationValue = durationInput.value.trim();
                             var priceType = $("#price_type").val();
                             
                             // Only validate if field is not readonly/disabled
                             if (!durationInput.readOnly && !durationInput.disabled) {
-                                if (priceType === 'fixed') {
-                                    if (isNaN(durationValue) || durationValue < 0.5) {
-                                        durationError.textContent = "Duration must be at least 0.5 hours for fixed price type";
+                                var isValid = false;
+                                var errorMessage = "";
+                                
+                                // Check if it's in HH:MM format
+                                if (durationValue.includes(':')) {
+                                    var timePattern = /^(\d+):([0-5]?\d)$/;
+                                    if (timePattern.test(durationValue)) {
+                                        var parts = durationValue.split(':');
+                                        var hours = parseInt(parts[0]);
+                                        var minutes = parseInt(parts[1]);
+                                        if (hours >= 0 && minutes >= 0 && minutes < 60) {
+                                            isValid = true;
+                                        } else {
+                                            errorMessage = "Invalid time format. Minutes must be 0-59. Use HH:MM (e.g., 46:30)";
+                                        }
                                     } else {
-                                        durationError.textContent = "";
+                                        errorMessage = "Invalid time format. Use HH:MM (e.g., 46:30)";
                                     }
-                                } else if (priceType === 'free') {
-                                    if (isNaN(durationValue) || durationValue < 0.5) {
-                                        durationError.textContent = "Duration must be at least 0.5 hours";
+                                } 
+                                // Check if it's a numeric value (hours)
+                                else if (durationValue !== '') {
+                                    var numericValue = parseFloat(durationValue);
+                                    if (!isNaN(numericValue) && numericValue >= 0) {
+                                        isValid = true;
+                                    } else {
+                                        errorMessage = "Duration must be a valid number";
+                                    }
+                                }
+                                
+                                if (priceType === 'fixed' || priceType === 'free') {
+                                    if (!isValid && durationValue !== '') {
+                                        durationError.textContent = errorMessage || "Duration must be at least 0 hours. Enter numeric hours (e.g., 46) or time format (e.g., 46:30)";
                                     } else {
                                         durationError.textContent = "";
                                     }

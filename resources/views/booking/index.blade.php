@@ -105,6 +105,12 @@
                    
                     <div class="col-md-6 col-lg-4 col-xl-3">
                         <div class="d-flex justify-content-end gap-2">
+                            <div class="datatable-filter">
+                                <select name="column_status" id="column_status" class="select2 form-control"
+                                    data-filter="select" style="width: 150px;">
+                                    <option value="">{{ __('messages.all') }}</option>
+                                </select>
+                            </div>
                             <div class="input-group input-group-search ms-2">
                                 <span class="input-group-text" id="addon-wrapping"><i class="fas fa-search"></i></span>
                                 <input type="text" class="form-control dt-search" placeholder="Search..."
@@ -190,7 +196,7 @@
                 <label class="form-label" for="bookingStatus">{{ __('messages.booking_status_label') }}</label>
                 <div class="btn-group d-flex flex-wrap gap-3">
                     @foreach ($advanceFilter['bookingStatus'] as $value => $label)
-                        <button type="button" class="btn filter-button" data-filter="booking_status"
+                        <button type="button" class="btn btn-outline-secondary filter-button" data-filter="booking_status"
                             data-value="{{ $value }}" data-multiple="true">
                             {{ formatString($label) }}
                         </button>
@@ -541,6 +547,76 @@
         });
 
         document.addEventListener('DOMContentLoaded', function() {
+            // Populate status dropdown from API
+            function populateStatusDropdown() {
+                $.ajax({
+                    url: '{{ url("api/booking-status") }}',
+                    type: 'GET',
+                    data: { per_page: 'all' },
+                    success: function(response) {
+                        const $select = $('#column_status');
+                        $select.empty();
+                        $select.append('<option value="">{{ __('messages.all') }}</option>');
+                        
+                        // Handle different response formats
+                        let statuses = [];
+                        if (response && Array.isArray(response)) {
+                            statuses = response;
+                        } else if (response.data && Array.isArray(response.data)) {
+                            statuses = response.data;
+                        } else if (response.status && response.data && Array.isArray(response.data)) {
+                            statuses = response.data;
+                        }
+                        
+                        // Populate dropdown with statuses
+                        statuses.forEach(function(status) {
+                            if (status.status === 1) { // Only show active statuses
+                                $select.append('<option value="' + status.value + '">' + status.label + '</option>');
+                            }
+                        });
+                        
+                        // Initialize Select2
+                        if ($.fn.select2) {
+                            $select.select2({
+                                placeholder: "{{ __('messages.all') }}",
+                                allowClear: true,
+                                width: '100%'
+                            });
+                        }
+                        
+                        // Handle change event
+                        $select.on('change', function() {
+                            $('#datatable').DataTable().ajax.reload();
+                            if (typeof updateTotalEarnings === 'function') {
+                                updateTotalEarnings();
+                            }
+                        });
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error loading booking statuses:', error);
+                        // Fallback: populate from server-side data if available
+                        @if(isset($advanceFilter['bookingStatus']))
+                            const $select = $('#column_status');
+                            $select.empty();
+                            $select.append('<option value="">{{ __('messages.all') }}</option>');
+                            @foreach($advanceFilter['bookingStatus'] as $value => $label)
+                                $select.append('<option value="{{ $value }}">{{ $label }}</option>');
+                            @endforeach
+                            if ($.fn.select2) {
+                                $select.select2({
+                                    placeholder: "{{ __('messages.all') }}",
+                                    allowClear: true,
+                                    width: '100%'
+                                });
+                            }
+                        @endif
+                    }
+                });
+            }
+            
+            // Initialize status dropdown
+            populateStatusDropdown();
+            
             $("#datepicker1").flatpickr({
                 mode: "range",
                 dateFormat: "Y-m-d",
@@ -548,7 +624,9 @@
                     if (selectedDates.length === 2 || selectedDates.length === 1) {
                         selectedFilters.date_range = dateStr;
                         $('#datatable').DataTable().ajax.reload();
-                        updateTotalEarnings();
+                        if (typeof updateTotalEarnings === 'function') {
+                            updateTotalEarnings();
+                        }
                     }
                 }
             });
@@ -556,23 +634,31 @@
             // Function to handle toggle of button state and update selected filters
             function toggleMultipleFilter(button, filterType) {
                 const value = button.dataset.value;
+                
+                // Ensure the filter array exists
+                if (!selectedFilters[filterType]) {
+                    selectedFilters[filterType] = [];
+                }
+                
                 const index = selectedFilters[filterType].indexOf(value);
 
                 if (index === -1) {
                     // Add value to array and add active class
                     selectedFilters[filterType].push(value);
-                    button.classList.remove('inactive');
+                    button.classList.remove('btn-outline-secondary', 'inactive');
                     button.classList.add('active');
                 } else {
                     // Remove value from array and remove active class
                     selectedFilters[filterType].splice(index, 1);
                     button.classList.remove('active');
-                    button.classList.add('inactive');
+                    button.classList.add('btn-outline-secondary', 'inactive');
                 }
 
                 // Refresh the table and update earnings
                 $('#datatable').DataTable().ajax.reload();
-                updateTotalEarnings();
+                if (typeof updateTotalEarnings === 'function') {
+                    updateTotalEarnings();
+                }
             }
 
             // Adding event listeners for filter buttons

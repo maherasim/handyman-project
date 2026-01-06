@@ -138,18 +138,51 @@ const refreshDropdowns = () => {
   const checkDropdowns = computed(() => {
     return status.value || booking_date_range.value !== ''
   });
+  
+  // Initialize Select2 only after data is loaded
+  const initializeSelect2 = () => {
+    if (bookingStatusRef.value && booking_status.value && booking_status.value.length > 0) {
+      // Destroy existing Select2 instance if it exists
+      if ($(bookingStatusRef.value).hasClass('select2-hidden-accessible')) {
+        $(bookingStatusRef.value).select2('destroy');
+      }
+      
+      // Initialize Select2
+      $(bookingStatusRef.value).select2({
+        placeholder: "Select Status",
+        allowClear: true,
+        width: '100%'
+      });
+      
+      // Handle change event
+      $(bookingStatusRef.value).off('change.select2-init');
+      $(bookingStatusRef.value).on('change.select2-init', function() {
+        status.value = $(this).val();
+      });
+    }
+  };
+  
   onMounted(() => {
-    $(bookingStatusRef.value).select2();
-    $(bookingStatusRef.value).on('change', function() {
-      status.value = $(this).val();
-    });
     bookingStatusData();
     initializeFlatpickr();
+    
+    // Initialize Select2 after data loads, not immediately
+    // The watch will handle initialization when data is available
 })
+
 
 const clearSearch = () =>{
   search.value = '';
 }
 
+// Watch for booking_status changes and initialize/reinitialize Select2 when data is available
+watch(() => booking_status.value, (newVal) => {
+  if (newVal && newVal.length > 0) {
+    // Wait for Vue to update the DOM with new options
+    setTimeout(() => {
+      initializeSelect2();
+    }, 100);
+  }
+}, { immediate: true })
 
 </script>

@@ -32,4 +32,5 @@ export const sectionState = {
         data: [],
         pagination: {}
     },
+    booking_status: []
 }

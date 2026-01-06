@@ -167,7 +167,7 @@ class BookingController extends Controller
 
             foreach ($filters as $key => $filter) {
                 if (!empty($advanceFilter[$key])) {
-                    if (is_array($advanceFilter[$key])) {
+                    if (is_array($advanceFilter[$key]) && count($advanceFilter[$key]) > 0) {
                         if (is_array($filter)) {
                             $query->whereHas($filter[0], function ($subQuery) use ($filter, $advanceFilter, $key) {
                                 $subQuery->whereIn($filter[1], $advanceFilter[$key]);
@@ -175,7 +175,7 @@ class BookingController extends Controller
                         } else {
                             $query->whereIn($filter, $advanceFilter[$key]);
                         }
-                    } else {
+                    } elseif (!is_array($advanceFilter[$key]) && $advanceFilter[$key] !== '') {
                         $query->where($filter, $advanceFilter[$key]);
                     }
                 }

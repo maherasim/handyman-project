@@ -442,6 +442,38 @@ public function store(ServiceRequest $request)
             $services['duration'] = '08:00';
         } elseif ($services['type'] === 'hourly') {
             $services['duration'] = '01:00';
+        } elseif (in_array($services['type'], ['fixed', 'free']) && !empty($services['duration'])) {
+            // For fixed/free type, normalize duration format
+            $duration = trim($services['duration']);
+            
+            // If it's already in HH:MM format, validate and normalize it
+            if (strpos($duration, ':') !== false) {
+                $parts = explode(':', $duration);
+                if (count($parts) == 2 && is_numeric($parts[0]) && is_numeric($parts[1])) {
+                    $hours = (int)$parts[0];
+                    $minutes = (int)$parts[1];
+                    // Ensure minutes are 0-59
+                    if ($minutes >= 60) {
+                        $hours += floor($minutes / 60);
+                        $minutes = $minutes % 60;
+                    }
+                    // Format hours without leading zeros (can be any number), minutes with 2 digits
+                    $services['duration'] = sprintf('%d:%02d', $hours, $minutes);
+                }
+            } 
+            // If it's numeric (hours), convert to HH:MM format
+            elseif (is_numeric($duration)) {
+                $hours = (int)$duration;
+                $decimalPart = $duration - $hours;
+                $minutes = round($decimalPart * 60);
+                // Handle case where minutes round up to 60
+                if ($minutes >= 60) {
+                    $hours += floor($minutes / 60);
+                    $minutes = $minutes % 60;
+                }
+                // Format hours without leading zeros (can be any number), minutes with 2 digits
+                $services['duration'] = sprintf('%d:%02d', $hours, $minutes);
+            }
         }
     }
 

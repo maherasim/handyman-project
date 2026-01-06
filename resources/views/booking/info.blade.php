@@ -872,32 +872,28 @@
 
                             <!-- Booking Schedule Card - Moved to the end -->
                             <div class="col-md-4 mb-3">
-                                <div class="card h-65 soft-shadow hover-lift">
+                                <div class="card h-100 soft-shadow">
                                     <div class="card-body">
-                                        <p class="opacity-75 fz-12 mb-2">{{ __('messages.service_schedule') }}</p>
+                                        <p class="opacity-75 fz-12 mb-3">{{ __('messages.service_schedule') }}</p>
                                         @if($bookingdata->slots && count($bookingdata->slots) > 0)
-                                            <div class="booking-slots-container-modern">
+                                            <div class="booking-slots-grid">
                                                 @foreach ($bookingdata->slots as $index => $slot)
-                                                    <div class="slot-item-modern">
-                                                        <div class="slot-icon-wrapper">
-                                                            <i class="ri-calendar-2-line"></i>
+                                                    <div class="slot-item-simple">
+                                                        <div class="slot-date-simple">
+                                                            <i class="ri-calendar-2-line me-2"></i>
+                                                            <span class="fw-semibold">{{ date("M d, Y", strtotime($slot->date)) ?? '-' }}</span>
                                                         </div>
-                                                        <div class="slot-content">
-                                                            <div class="slot-date">
-                                                                {{ date("M d, Y", strtotime($slot->date)) ?? '-' }}
-                                                            </div>
-                                                            <div class="slot-time">
-                                                                <i class="ri-time-line"></i>
-                                                                <span>{{ date('g:i A', strtotime($slot->start_time)) }} - {{ date('g:i A', strtotime($slot->end_time)) }}</span>
-                                                            </div>
+                                                        <div class="slot-time-simple">
+                                                            <i class="ri-time-line me-2"></i>
+                                                            <span>{{ date('g:i A', strtotime($slot->start_time)) }} - {{ date('g:i A', strtotime($slot->end_time)) }}</span>
                                                         </div>
                                                     </div>
                                                 @endforeach
                                             </div>
                                         @else
-                                            <div class="no-slots-modern">
-                                                <i class="ri-calendar-line"></i>
-                                                <p class="mb-0">No slots scheduled</p>
+                                            <div class="no-slots-simple text-muted">
+                                                <i class="ri-calendar-line me-2"></i>
+                                                <span>No slots scheduled</span>
                                             </div>
                                         @endif
                                     </div>
@@ -1913,26 +1909,117 @@
 		font-size: 11px !important;
 	}
 	
-	/* Modern Service Schedule Card Styles */
+	/* Simple Service Schedule Card Styles - Row-wise Grid Layout */
+	.booking-slots-grid {
+		display: grid !important;
+		grid-template-columns: 1fr !important;
+		gap: 12px !important;
+		width: 100%;
+	}
+	
+	.slot-item-simple {
+		display: flex !important;
+		flex-direction: column !important;
+		gap: 8px;
+		padding: 12px 14px !important;
+		background: #f8f9fa !important;
+		border-radius: 8px !important;
+		border: 1px solid #e9ecef !important;
+		border-left: 3px solid #5F60B9 !important;
+		transition: all 0.2s ease;
+		min-width: 0;
+		width: 100% !important;
+	}
+	
+	.slot-item-simple:hover {
+		background: #f1f3f5 !important;
+		border-color: #dee2e6 !important;
+		border-left-color: #dc3545 !important;
+		box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+		transform: translateY(-2px);
+	}
+	
+	.slot-date-simple {
+		display: flex !important;
+		align-items: center;
+		font-size: 13px;
+		color: #212529;
+		margin-bottom: 6px !important;
+		line-height: 1.4;
+	}
+	
+	.slot-date-simple i {
+		color: #dc3545;
+		font-size: 15px;
+		flex-shrink: 0;
+	}
+	
+	.slot-date-simple span {
+		font-weight: 600;
+	}
+	
+	.slot-time-simple {
+		display: flex !important;
+		align-items: center;
+		font-size: 12px;
+		color: #6c757d;
+		line-height: 1.4;
+	}
+	
+	.slot-time-simple i {
+		color: #6c757d;
+		font-size: 13px;
+		flex-shrink: 0;
+	}
+	
+	.slot-time-simple span {
+		white-space: normal;
+		word-break: break-word;
+	}
+	
+	.no-slots-simple {
+		display: flex;
+		align-items: center;
+		padding: 12px;
+		font-size: 13px;
+	}
+	
+	.no-slots-simple i {
+		font-size: 16px;
+	}
+	
+	/* Responsive adjustments */
+	@media (max-width: 768px) {
+		.booking-slots-grid {
+			grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)) !important;
+			gap: 10px !important;
+		}
+		
+		.slot-item-simple {
+			padding: 10px 12px !important;
+		}
+		
+		.slot-date-simple {
+			font-size: 12px;
+		}
+		
+		.slot-time-simple {
+			font-size: 11px;
+		}
+	}
+	
+	@media (max-width: 576px) {
+		.booking-slots-grid {
+			grid-template-columns: 1fr !important;
+		}
+	}
+	
+	/* Legacy styles kept for backward compatibility */
 	.booking-slots-container-modern {
-		max-height: 70px !important;
-		overflow-y: auto !important;
-		overflow-x: hidden !important;
-		padding-right: 4px;
-	}
-	
-	.booking-slots-container-modern::-webkit-scrollbar {
-		width: 4px;
-	}
-	
-	.booking-slots-container-modern::-webkit-scrollbar-track {
-		background: #f1f1f1;
-		border-radius: 10px;
-	}
-	
-	.booking-slots-container-modern::-webkit-scrollbar-thumb {
-		background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%);
-		border-radius: 10px;
+		max-height: none !important;
+		overflow-y: visible !important;
+		overflow-x: visible !important;
+		padding-right: 0;
 	}
 	
 	.slot-item-modern {

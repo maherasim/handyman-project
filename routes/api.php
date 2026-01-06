@@ -70,7 +70,7 @@ Route::get('booking-status', [ API\BookingController::class, 'bookingStatus' ] )
 Route::post('handyman-reviews',[API\User\UserController::class, 'handymanReviewsList']);
 Route::post('service-reviews', [ API\ServiceController::class, 'serviceReviewsList' ] );
 Route::get('post-job-status', [ API\PostJobRequestController::class, 'postRequestStatus' ] );
-// Route::get('booking-list', [ API\BookingController::class, 'getBookingList' ] );
+// Route::get('booking-list', [ API\BookingController::class, 'getBookingList' ] );sinc
 
 Route::group(['middleware' => ['auth:sanctum']], function () {
     // ===== Chat API (Mobile/Web) =====

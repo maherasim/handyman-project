@@ -14,8 +14,8 @@
                         :src="data"
                         alt=""
                         loading="lazy"
-                        :class="['img-fluid', props.mainFit === 'contain' ? 'object-contain' : 'object-cover', 'rounded-3']"
-                        :style="props.mainFit === 'contain' ? 'background:#f8f9fa;max-height:600px;width:100%;' : ''"
+                        :class="['img-fluid', props.mainFit === 'contain' ? 'object-contain' : 'object-cover', 'rounded-3', 'main-service-image']"
+                        :style="props.mainFit === 'contain' ? 'background:#f8f9fa;max-height:600px;width:100%;' : 'width:100%;height:auto;'"
                     />
                 </div>
             </SwiperSlide>
@@ -103,6 +103,13 @@ const updateMainSwiper = (index) => {
 
 .tab-slider .swiper-content {
     max-width: 100%;
+}
+
+.main-service-image {
+    width: 100%;
+    height: auto;
+    max-width: 100%;
+    display: block;
 }
 
 /* Utility for contain fit */
