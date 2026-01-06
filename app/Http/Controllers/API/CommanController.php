@@ -110,18 +110,25 @@ class CommanController extends Controller
         if($request->has('provider_id') && $request->provider_id != '' ){
             $service->whereIn('provider_id',explode(',',$request->provider_id));
         }
-        if($request->has('category_id') && $request->category_id != ''){
-            $service->whereIn('category_id',explode(',',$request->category_id));
-        }
-        // Strict subcategory filtering: if subcategory_id is provided and not empty, filter strictly by it
-        // This ensures when switching subcategories, only services from the selected subcategory are shown
+        
+        // Check if subcategory_id is provided and valid
+        $hasValidSubcategory = false;
         if($request->has('subcategory_id') && $request->subcategory_id != '' && $request->subcategory_id != 'null' && $request->subcategory_id != null){
             $subcategoryIds = array_filter(explode(',', $request->subcategory_id), function($v){ 
                 return $v !== '' && $v !== 'null' && $v !== null; 
             });
             if(!empty($subcategoryIds)){
+                // When subcategory_id is provided, filter strictly by subcategory (takes precedence over category_id)
+                // This ensures only services from the specific subcategory are returned
                 $service->whereIn('subcategory_id', $subcategoryIds);
+                $hasValidSubcategory = true;
             }
+        }
+        
+        // Only apply category filter if subcategory_id is NOT provided
+        // When subcategory_id is provided, it already ensures the correct category (since subcategories belong to categories)
+        if(!$hasValidSubcategory && $request->has('category_id') && $request->category_id != ''){
+            $service->whereIn('category_id',explode(',',$request->category_id));
         }
         // Location-based filters: match Service location OR Provider location
         if($request->has('country_id') && $request->country_id != ''){
