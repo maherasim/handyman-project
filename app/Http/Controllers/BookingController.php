@@ -810,7 +810,7 @@ class BookingController extends Controller
             ];
             
             try {
-                $this->sendNotification($activity_data);
+            $this->sendNotification($activity_data);
                 // Ensure database notification is created immediately (fallback if queue fails)
                 $this->createDirectDatabaseNotification($bookingdata, $activity_type, $old_status, $data['status']);
             } catch (\Exception $e) {

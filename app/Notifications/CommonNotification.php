@@ -50,14 +50,22 @@ class CommonNotification extends Notification implements ShouldQueue
             ->first();
         
         if ($notifications) {
-            $notify_data = NotificationTemplateContentMapping::where('template_id', $notifications->id)->get();
-            $templateData = $notify_data->where('user_type', $userType)->first();
-            $templateDetail = $templateData->template_detail ?? null;
-            foreach ($this->data as $key => $value) {
-                $templateDetail = str_replace('[[ ' . $key . ' ]]', $this->data[$key], $templateDetail);
-            }
-            $this->data['type'] = $templateData->subject ?? 'None';
-            $this->data['message'] = $templateDetail ?? __('messages.default_notification_body');
+        $notify_data = NotificationTemplateContentMapping::where('template_id', $notifications->id)->get();
+        $templateData = $notify_data->where('user_type', $userType)->first();
+        $templateDetail = $templateData->template_detail ?? null;
+        $templateSubject = $templateData->subject ?? 'None';
+        foreach ($this->data as $key => $value) {
+            // Convert null/empty values to empty string to avoid issues
+            $replacementValue = $this->data[$key] ?? '';
+            // Replace placeholders with spaces: [[ key ]]
+            $templateDetail = str_replace('[[ ' . $key . ' ]]', $replacementValue, $templateDetail);
+            $templateSubject = str_replace('[[ ' . $key . ' ]]', $replacementValue, $templateSubject);
+            // Also replace placeholders without spaces: [[key]]
+            $templateDetail = str_replace('[[' . $key . ']]', $replacementValue, $templateDetail);
+            $templateSubject = str_replace('[[' . $key . ']]', $replacementValue, $templateSubject);
+        }
+        $this->data['type'] = $templateSubject;
+        $this->data['message'] = $templateDetail ?? __('messages.default_notification_body');
             $this->appData = $notifications->channels ?? [];
         } else {
             // Fallback if template doesn't exist
@@ -124,11 +132,24 @@ class CommonNotification extends Notification implements ShouldQueue
             ->first();
 
         if ($mail) {
-            $notify_data = MailTemplateContentMapping::where('template_id', $mail->id)->get();
-            $templateData = $notify_data->where('user_type', $userType)->first();
-            $this->subject = $templateData->subject ?? ucwords(str_replace('_', ' ', $this->type));
-            $this->data['type'] = $templateData->subject ?? null;
-            $this->data['message'] = $templateData->template_detail ?? __('messages.default_notification_body');
+        $notify_data = MailTemplateContentMapping::where('template_id', $mail->id)->get();
+        $templateData = $notify_data->where('user_type', $userType)->first();
+            $mailSubject = $templateData->subject ?? ucwords(str_replace('_', ' ', $this->type));
+            $mailTemplateDetail = $templateData->template_detail ?? __('messages.default_notification_body');
+            // Replace placeholders in mail subject and template detail
+            foreach ($this->data as $key => $value) {
+                // Convert null/empty values to empty string to avoid issues
+                $replacementValue = $this->data[$key] ?? '';
+                // Replace placeholders with spaces: [[ key ]]
+                $mailSubject = str_replace('[[ ' . $key . ' ]]', $replacementValue, $mailSubject);
+                $mailTemplateDetail = str_replace('[[ ' . $key . ' ]]', $replacementValue, $mailTemplateDetail);
+                // Also replace placeholders without spaces: [[key]]
+                $mailSubject = str_replace('[[' . $key . ']]', $replacementValue, $mailSubject);
+                $mailTemplateDetail = str_replace('[[' . $key . ']]', $replacementValue, $mailTemplateDetail);
+            }
+            $this->subject = $mailSubject;
+        $this->data['type'] = $mailSubject;
+        $this->data['message'] = $mailTemplateDetail;
         } else {
             $this->subject = ucwords(str_replace('_', ' ', $this->type));
         }
