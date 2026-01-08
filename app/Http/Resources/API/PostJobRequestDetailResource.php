@@ -40,6 +40,7 @@ class PostJobRequestDetailResource extends JsonResource
             'duties'            => $this->duties,
             'education_level'   => $this->education_level,
             'career_level'      => $this->career_level,
+            'travel_required'   => (int) ($this->travel_required ?? 0),
             'remote_work_level' => $this->remote_work_level,
             'job_schedule'      => $this->job_schedule,
             'working_address'   => $this->working_address,
