@@ -21,11 +21,20 @@ class NotificationResource extends JsonResource
             $user = User::where('id',$booking->customer_id)->first();
             $image = $user->login_type != null ? $user->social_image: getSingleMedia($user, 'profile_image',null);
         }
+        // Format timestamps in ISO 8601 with UTC timezone (Z format)
+        $formatTimestamp = function($timestamp) {
+            if (!$timestamp) {
+                return null;
+            }
+            // Convert to UTC and format as ISO 8601 with Z suffix
+            return $timestamp->utc()->format('Y-m-d\TH:i:s\Z');
+        };
+
         return [
             'id' => $this->id,
-            'read_at' => $this->read_at,
+            'read_at' => $formatTimestamp($this->read_at),
             'profile_image'     => $image,
-            'created_at' => timeAgoFormate($this->created_at),
+            'created_at' => $formatTimestamp($this->created_at),
             'data' => $this->data,
         ];
     }
