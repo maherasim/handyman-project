@@ -408,7 +408,7 @@
                                             <button class="float-end btn btn-primary update-booking"
                                                 data-id="{{ $bookingdata->id }}"
                                                 data-handyman-id="{{ $bookingdata->provider_id }}"
-                                                data-status="pending_approval"
+                                                data-status="done_by_provider"
                                                 data-confirm-message="You want to end this booking?">
                                                 <i class="las la-check-circle"></i>
                                                 {{ __('messages.done') }}
@@ -418,6 +418,23 @@
                                 @endif
 
                                 @if ($bookingdata->status === 'pending_approval')
+                                    @hasanyrole(['user'])
+                                        <div class="w3-third">
+                                             <button class="float-end btn btn-success confirm-booking"
+                                                data-id="{{ $bookingdata->id }}"
+                                                data-handyman-id="{{ $bookingdata->provider_id }}"
+                                                data-status="confirm"
+                                                data-advance="{{ $bookingdata->is_advance_paid ? 1 : 0 }}"
+                                                data-confirm-message="You want to Confirm this booking?">
+                                                <i class="las la-check-circle"></i>
+                                                {{ __('Confirm Job Done') }}
+                                            </button>
+
+                                        </div>
+                                    @endhasanyrole
+                                @endif
+
+                                @if ($bookingdata->status === 'done_by_provider')
                                     @hasanyrole(['user'])
                                         <div class="w3-third">
                                              <button class="float-end btn btn-success confirm-booking"
@@ -676,6 +693,10 @@
                                     $nextText = 'Work is on hold — waiting for handyman to resume';
                                     break;
                                 case 'pending_approval':
+                                    $nextActor = 'user';
+                                    $nextText = 'Waiting for customer to confirm work is done';
+                                    break;
+                                case 'done_by_provider':
                                     $nextActor = 'user';
                                     $nextText = 'Waiting for customer to confirm work is done';
                                     break;
