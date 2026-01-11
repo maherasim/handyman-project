@@ -125,12 +125,7 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
         Route::post('/chat/unread/ack', [ChatController::class, 'unreadAck'])->name('chat.unread.ack');
         Route::get('/messages/flagged', [ChatController::class, 'flaggedIndex'])->name('chat.flagged.index');
         Route::post('/messages/flagged/{id}/warn', [ChatController::class, 'sendWarningEmail'])->name('chat.flagged.warn');
-    Route::get('/home', [HomeController::class, 'index'])->name('home')->middleware(function ($request, $next) {
-        if (auth()->check() && auth()->user()->user_type !== 'user') {
-            abort(403, 'Unauthorized access. This page is only available for users.');
-        }
-        return $next($request);
-    });
+        Route::get('/home', [HomeController::class, 'index'])->name('home');
     Route::group(['namespace' => '', 'middleware' => ['permission:permission list']], function () {
         Route::resource('permission', PermissionController::class);
         Route::get('permission/add/{type}', [PermissionController::class, 'addPermission'])->name('permission.add');
