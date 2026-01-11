@@ -199,10 +199,20 @@ function storeMediaFile($model,$file,$name){
         }
         if (is_array($file)){
             foreach ($file as $key => $value){
-                $model->addMedia($value)->toMediaCollection($name);
+                // Validate file before adding
+                if ($value && is_file($value) && file_exists($value)) {
+                    $model->addMedia($value)->toMediaCollection($name);
+                } elseif ($value instanceof \Illuminate\Http\UploadedFile && $value->isValid()) {
+                    $model->addMedia($value)->toMediaCollection($name);
+                }
             }
         }else{
-            $model->addMedia($file)->toMediaCollection($name);
+            // Validate file before adding
+            if ($file && is_file($file) && file_exists($file)) {
+                $model->addMedia($file)->toMediaCollection($name);
+            } elseif ($file instanceof \Illuminate\Http\UploadedFile && $file->isValid()) {
+                $model->addMedia($file)->toMediaCollection($name);
+            }
         }
     }
 

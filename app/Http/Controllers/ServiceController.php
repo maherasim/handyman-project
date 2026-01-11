@@ -477,38 +477,92 @@ public function store(ServiceRequest $request)
         }
     }
 
-    $result = Service::updateOrCreate(['id' => $request->id], $services);
-
-    if ($result->providerServiceAddress()->count() > 0) {
-        $result->providerServiceAddress()->delete();
-    }
-
-    if ($request->provider_address_id != null) {
-        foreach ($request->provider_address_id as $address) {
-            $provider_service_address = [
-                'service_id' => $result->id,
-                'provider_address_id' => $address,
-            ];
-            $result->providerServiceAddress()->insert($provider_service_address);
-        }
-    }
-
+    // Validate image files before saving service
+    $hasValidAttachment = false;
+    $file = [];
+    
     if ($request->is('api/*')) {
         if ($request->has('attachment_count')) {
             for ($i = 0; $i < $request->attachment_count; $i++) {
                 $attachment = "service_attachment_" . $i;
-                if ($request->$attachment != null) {
-                    $file[] = $request->$attachment;
+                if ($request->hasFile($attachment)) {
+                    $uploadedFile = $request->file($attachment);
+                    if ($uploadedFile && $uploadedFile->isValid()) {
+                        $file[] = $uploadedFile;
+                        $hasValidAttachment = true;
+                    }
+                } elseif ($request->$attachment != null) {
+                    // Check if it's a valid file path
+                    $filePath = $request->$attachment;
+                    if (is_string($filePath) && $filePath !== '/' && file_exists($filePath)) {
+                        $file[] = $filePath;
+                        $hasValidAttachment = true;
+                    }
                 }
             }
-            storeMediaFile($result, $file, 'service_attachment');
         }
     } else {
         if ($request->hasFile('service_attachment')) {
-            storeMediaFile($result, $request->file('service_attachment'), 'service_attachment');
-        } elseif ($request->id == null && $result->getMedia('service_attachment')->count() === 0) {
-            return redirect()->route('service.create', ['id' => $result->id])
+            $uploadedFile = $request->file('service_attachment');
+            if ($uploadedFile && $uploadedFile->isValid()) {
+                $file = $uploadedFile;
+                $hasValidAttachment = true;
+            }
+        }
+    }
+
+    // For new services, require valid attachment
+    if ($request->id == null && !$hasValidAttachment) {
+        if ($request->is('api/*')) {
+            return comman_custom_response([
+                'message' => __('validation.required', ['attribute' => 'attachments']),
+                'status' => false
+            ], 422);
+        } else {
+            return redirect()->route('service.create', ['id' => $request->id])
                 ->withErrors(['service_attachment' => __('validation.required', ['attribute' => 'attachments'])])
+                ->withInput();
+        }
+    }
+
+    // Use database transaction to ensure service is only saved if image upload succeeds
+    try {
+        \DB::beginTransaction();
+        
+        $result = Service::updateOrCreate(['id' => $request->id], $services);
+
+        if ($result->providerServiceAddress()->count() > 0) {
+            $result->providerServiceAddress()->delete();
+        }
+
+        if ($request->provider_address_id != null) {
+            foreach ($request->provider_address_id as $address) {
+                $provider_service_address = [
+                    'service_id' => $result->id,
+                    'provider_address_id' => $address,
+                ];
+                $result->providerServiceAddress()->insert($provider_service_address);
+            }
+        }
+
+        // Upload images only if we have valid files
+        if ($hasValidAttachment && !empty($file)) {
+            storeMediaFile($result, $file, 'service_attachment');
+        }
+
+        \DB::commit();
+    } catch (\Exception $e) {
+        \DB::rollBack();
+        \Log::error('Service save error: ' . $e->getMessage());
+        
+        if ($request->is('api/*')) {
+            return comman_custom_response([
+                'message' => __('messages.save_form_error', ['form' => __('messages.service')]) . ': ' . $e->getMessage(),
+                'status' => false
+            ], 500);
+        } else {
+            return redirect()->back()
+                ->withErrors(['error' => __('messages.save_form_error', ['form' => __('messages.service')])])
                 ->withInput();
         }
     }
