@@ -44,6 +44,11 @@ class HomeController extends Controller
  public function index(Request $request)
 {
     $user = auth()->user();
+    
+    // Restrict access to user role only
+    if ($user->user_type !== 'user') {
+        abort(403, 'Unauthorized access. This page is only available for users.');
+    }
 
     // Handle AJAX request for FullCalendar
     if ($request->ajax()) {

@@ -445,7 +445,7 @@
                                             </button>
                                         </div>
 
-                                        <button class="float-end btn btn-success" id="complete-booking"
+                                        <button class="float-end btn" id="complete-booking" style="background-color: #ffb366; border-color: #ffb366; color: #000;"
                                             data-id="{{ $bookingdata->id }}"
                                             data-handyman-id="{{ $bookingdata->provider_id }}" data-status="cancelled"
                                             data-confirm-message="Are you sure you want to cancel this booking?">
@@ -524,7 +524,7 @@
                                             </button>
                                         </div>
 
-                                        <button class="float-end btn btn-success" id="complete-booking"
+                                        <button class="float-end btn" id="complete-booking" style="background-color: #ffb366; border-color: #ffb366; color: #000;"
                                             data-id="{{ $bookingdata->id }}"
                                             data-handyman-id="{{ $bookingdata->provider_id }}" data-status="cancelled"
                                             data-confirm-message="Are you sure you want to cancel this booking?">
