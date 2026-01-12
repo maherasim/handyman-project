@@ -544,44 +544,42 @@
 
                                 @if ($bookingdata->status === 'completed' && empty($customer_review))
                                     @hasanyrole('user')
-                                        <div class="w3-third d-flex align-items-end">
-                                            <button class="float-end btn btn-warning" id="rate-now-btn"
-                                                data-id="{{ $bookingdata->id }}">
-                                                <i class="las la-star"></i>
-                                                <!-- Changed to a star icon (Line Awesome) -->
-                                                {{ __('messages.rate_now') }}
-                                            </button>
-                                        </div>
-                                        @if (isset($payment) && $payment->payment_status != 'paid')
-                                            @php
-                                                // Calculate remaining amount using same logic as billing table
-                                                $baseTotal = $bookingdata->amount * $bookingdata->quantity;
-                                                $subTotal = $baseTotal;
-                                                if ($bookingdata->discount > 0) {
-                                                    $subTotal -= $bookingdata->final_discount_amount;
-                                                }
-                                                if ($bookingdata->couponAdded) {
-                                                    $subTotal -= $bookingdata->final_coupon_discount_amount;
-                                                }
-                                                $addonTotal = $bookingdata->bookingAddonService->sum('price');
-                                                $extraChargeTotal = $bookingdata->bookingExtraCharge->sum(function ($item) {
-                                                    return $item->price * $item->qty;
-                                                });
-                                                $totalBeforeTax = $subTotal + $addonTotal + $extraChargeTotal;
-                                                $serviceTaxId = $bookingdata->service->tax_country_id ?? null;
-                                                $taxRate = 0;
-                                                if ($serviceTaxId) {
-                                                    $tax = \App\Models\Tax::find($serviceTaxId);
-                                                    $taxRate = $tax->value ?? 0;
-                                                }
-                                                $taxAmount = ($totalBeforeTax * $taxRate) / 100;
-                                                $grandTotal = $totalBeforeTax + $taxAmount;
-                                                $advancePaidAmount = $bookingdata->advance_paid_amount;
-                                                if ($advancePaidAmount <= 0 && isset($advanceservice) && $advanceservice > 0) {
-                                                    $advancePaidAmount = ($grandTotal * $advanceservice) / 100;
-                                                }
-                                                $remainingAmount = $grandTotal - $advancePaidAmount;
-                                            @endphp
+                                        @php
+                                            // Calculate remaining amount using same logic as billing table
+                                            $baseTotal = $bookingdata->amount * $bookingdata->quantity;
+                                            $subTotal = $baseTotal;
+                                            if ($bookingdata->discount > 0) {
+                                                $subTotal -= $bookingdata->final_discount_amount;
+                                            }
+                                            if ($bookingdata->couponAdded) {
+                                                $subTotal -= $bookingdata->final_coupon_discount_amount;
+                                            }
+                                            $addonTotal = $bookingdata->bookingAddonService->sum('price');
+                                            $extraChargeTotal = $bookingdata->bookingExtraCharge->sum(function ($item) {
+                                                return $item->price * $item->qty;
+                                            });
+                                            $totalBeforeTax = $subTotal + $addonTotal + $extraChargeTotal;
+                                            $serviceTaxId = $bookingdata->service->tax_country_id ?? null;
+                                            $taxRate = 0;
+                                            if ($serviceTaxId) {
+                                                $tax = \App\Models\Tax::find($serviceTaxId);
+                                                $taxRate = $tax->value ?? 0;
+                                            }
+                                            $taxAmount = ($totalBeforeTax * $taxRate) / 100;
+                                            $grandTotal = $totalBeforeTax + $taxAmount;
+                                            $advancePaidAmount = $bookingdata->advance_paid_amount ?? 0;
+                                            if ($advancePaidAmount <= 0 && isset($advanceservice) && $advanceservice > 0) {
+                                                $advancePaidAmount = ($grandTotal * $advanceservice) / 100;
+                                            }
+                                            $remainingAmount = $grandTotal - $advancePaidAmount;
+                                            
+                                            // Check if payment is fully paid
+                                            $isPaymentPaid = isset($payment) && $payment->payment_status == 'paid';
+                                            $hasRemainingAmount = $remainingAmount > 0;
+                                        @endphp
+                                        
+                                        {{-- Show "Pay Remaining" button when payment is not fully paid and there's remaining amount --}}
+                                        @if (isset($payment) && !$isPaymentPaid && $hasRemainingAmount)
                                             <div class="w3-third d-flex align-items-end">
                                                 <a class="float-end btn btn-warning d-flex align-items-center gap-2"
                                                     href="{{ route('book.service', ['id' => $bookingdata->service_id, 'booking_id' => $bookingdata->id, 'payment_type' => 'full_payment']) }}"
@@ -593,6 +591,18 @@
                                                         {{ getPriceFormat($remainingAmount) }}
                                                     </span>
                                                 </a>
+                                            </div>
+                                        @endif
+                                        
+                                        {{-- Show "Rate Now" button only after payment is fully paid --}}
+                                        @if ($isPaymentPaid || (!isset($payment) && !$hasRemainingAmount))
+                                            <div class="w3-third d-flex align-items-end">
+                                                <button class="float-end btn btn-warning" id="rate-now-btn"
+                                                    data-id="{{ $bookingdata->id }}">
+                                                    <i class="las la-star"></i>
+                                                    <!-- Changed to a star icon (Line Awesome) -->
+                                                    {{ __('messages.rate_now') }}
+                                                </button>
                                             </div>
                                         @endif
                                     @endhasanyrole

@@ -68,6 +68,11 @@
                                 @endif
 
                                 @if($bookingData['booking_detail']['status'] === 'completed' && ($bookingData['booking_detail']['payment_status'] === null || $bookingData['booking_detail']['payment_status'] === 'failed' || $bookingData['booking_detail']['payment_status'] === 'advanced_paid') && $bookingData['booking_detail']['total_amount'] != 0)
+                                @php
+                                    $remainingPrice = $bookingData['booking_detail']['total_amount'] - ($bookingData['booking_detail']['advance_paid_amount'] ?? 0);
+                                    $payablePrice = $remainingPrice > 0 ? $remainingPrice : $bookingData['booking_detail']['total_amount'];
+                                @endphp
+                                @if ($remainingPrice > 0)
                                 <div id="payment-component" style="display: none;">
                                     <payment
                                         :booking_id="{{ $bookingData['booking_detail']['id'] }}"
@@ -77,13 +82,9 @@
                                         :wallet_amount="{{$wallet_amount}}"></payment>
                                 </div>
                                 <div class="mt-5">
-                                    @php
-                                        $remainingPrice = $bookingData['booking_detail']['total_amount'] - ($bookingData['booking_detail']['advance_paid_amount'] ?? 0);
-
-                                        $payablePrice = $remainingPrice > 0 ? $remainingPrice : $bookingData['booking_detail']['total_amount'];
-                                    @endphp
                                     <a onclick="togglePayment()" id="pay_advance" class="btn btn-primary text-capitalize">{{ __('landingpage.pay_now') }} ({{ getPriceFormat($payablePrice) }})</a>
                                 </div>
+                                @endif
                                 @endif
 
                                 @if($bookingData['booking_detail']['status'] === 'on_going')
@@ -620,6 +621,10 @@
                     @endif
 
                     @if($bookingData['service']['visit_type'] == 'ONLINE' && $bookingData['booking_detail']['status'] == 'completed' && ($bookingData['booking_detail']['payment_id'] == null || $bookingData['booking_detail']['payment_status'] == 'failed' || $bookingData['booking_detail']['payment_status'] == 'pending'))
+                    @php
+                        $remainingPrice = $bookingData['booking_detail']['total_amount'] - ($bookingData['booking_detail']['advance_paid_amount'] ?? 0);
+                    @endphp
+                    @if ($remainingPrice > 0)
                     <div id="payment-component" style="display: none;">
                         <payment
                             :booking_id="{{ $bookingData['booking_detail']['id'] }}"
@@ -628,7 +633,8 @@
                             :total_amount="{{ $bookingData['booking_detail']['total_amount'] }}"
                             :wallet_amount="{{$wallet_amount}}"></payment>
                     </div>
-                    <a onclick="togglePayment()" id="pay_advance" class="btn btn-primary text-capitalize w-100" style="display: block;">{{__('landingpage.pay_now')}}</a>
+                    <a onclick="togglePayment()" id="pay_advance" class="btn btn-primary text-capitalize w-100" style="display: block;">{{__('landingpage.pay_now')}} ({{ getPriceFormat($remainingPrice) }})</a>
+                    @endif
                     @endif
                 </div>
             </div>
