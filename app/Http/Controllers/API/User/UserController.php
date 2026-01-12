@@ -418,6 +418,17 @@ public function register(UserRequest $request)
             $data['availability'] = !empty($data['availability']) ? (string)($data['availability'][0] ?? null) : null;
         }
         
+        // Convert availability from old format (1/0 or 'Full-time'/'Part-time') to new format (full_time/part_time)
+        if (isset($data['availability'])) {
+            $availability = $data['availability'];
+            if ($availability == '1' || $availability == 1 || $availability == 'Full-time') {
+                $data['availability'] = 'full_time';
+            } elseif ($availability == '0' || $availability == 0 || $availability == 'Part-time') {
+                $data['availability'] = 'part_time';
+            }
+            // If it's already 'full_time' or 'part_time', keep it as is
+        }
+        
         // Ensure language_option is a string, not an array
         if (isset($data['language_option']) && is_array($data['language_option'])) {
             $data['language_option'] = !empty($data['language_option']) ? (string)($data['language_option'][0] ?? 'en') : 'en';
@@ -456,8 +467,22 @@ public function register(UserRequest $request)
         } elseif ($request->filled('profile_image_url')) {
             $url = $request->input('profile_image_url');
             if (filter_var($url, FILTER_VALIDATE_URL)) {
-                $user->clearMediaCollection('profile_image');
-                $user->addMediaFromUrl($url)->toMediaCollection('profile_image');
+                try {
+                    $user->clearMediaCollection('profile_image');
+                    $user->addMediaFromUrl($url)->toMediaCollection('profile_image');
+                } catch (\Spatie\MediaLibrary\MediaCollections\Exceptions\UnreachableUrl $e) {
+                    // Log the error but don't fail the profile update
+                    \Log::warning('Failed to download profile image from URL: ' . $url, [
+                        'user_id' => $user->id,
+                        'error' => $e->getMessage()
+                    ]);
+                } catch (\Exception $e) {
+                    // Log any other media library errors
+                    \Log::warning('Failed to process profile image URL: ' . $url, [
+                        'user_id' => $user->id,
+                        'error' => $e->getMessage()
+                    ]);
+                }
             }
         }
 

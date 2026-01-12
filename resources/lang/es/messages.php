@@ -585,6 +585,7 @@
     'cash_payment' => 'Pago en efectivo',
     'cash_history' => 'Historial de efectivo',
     'cash_approved' => ':amount aprobado exitosamente por :name',
+    'cash_approved_subject' => 'Pago Aprobado - Confirmación de Reserva',
     'datetime' => 'Fecha y hora',
     'history' => 'Historial',
     'data_not_found' => 'Datos no encontrados',

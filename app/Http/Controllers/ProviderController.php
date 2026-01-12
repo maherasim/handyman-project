@@ -329,6 +329,17 @@ public function store(UserRequest $request)
         $data['is_featured'] = 1;
     }
 
+    // Convert availability from old format (1/0 or 'Full-time'/'Part-time') to new format (full_time/part_time)
+    if (isset($data['availability'])) {
+        $availability = $data['availability'];
+        if ($availability == '1' || $availability == 1 || $availability == 'Full-time') {
+            $data['availability'] = 'full_time';
+        } elseif ($availability == '0' || $availability == 0 || $availability == 'Part-time') {
+            $data['availability'] = 'part_time';
+        }
+        // If it's already 'full_time' or 'part_time', keep it as is
+    }
+
     $data['display_name'] = $data['first_name']." ".$data['last_name'];
 
     // Handle why_choose_me field before creating/updating user

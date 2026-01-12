@@ -1115,7 +1115,8 @@ class PaymentController extends Controller
         try {
             $amount = getPriceFormat((float)$paymentdata->total_amount);
             $bookingIdText = $booking ? ('#' . $booking->id) : '';
-            $subject = __('messages.cash_approved_subject') ?? 'Cash Payment Approved';
+            $subjectKey = __('messages.cash_approved_subject');
+            $subject = ($subjectKey !== 'messages.cash_approved_subject') ? $subjectKey : 'Payment Approved - Booking Confirmation';
             $body = __('messages.cash_approved', ['amount' => $amount, 'name' => get_user_name(admin_id())]);
     
             // Notify provider

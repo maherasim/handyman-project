@@ -590,6 +590,7 @@
     'cash_payment' => 'Cash Payment',
     'cash_history' => 'Cash History',
     'cash_approved' => ':amount successfully approved by :name',
+    'cash_approved_subject' => 'Payment Approved - Booking Confirmation',
     'datetime' => 'Date & Time',
     'history' => 'History',
     'data_not_found' => 'Data Not Found',

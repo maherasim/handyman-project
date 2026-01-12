@@ -585,6 +585,7 @@
     'cash_payment' => 'Pagamento in contante',
     'cash_history' => 'Storico contante',
     'cash_approved' => ':amount approvato con successo da :name',
+    'cash_approved_subject' => 'Pagamento Approvato - Conferma Prenotazione',
     'datetime' => 'Data e ora',
     'history' => 'Storico',
     'data_not_found' => 'Dati non trovati',

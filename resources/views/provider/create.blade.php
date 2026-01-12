@@ -321,13 +321,22 @@
 
                             <div class="form-group col-md-6">
                                 {{ html()->label(__('Availability') . ' <span class="text-danger">*</span>')->class('form-control-label')->for('availability') }}
+                                @php
+                                    // Convert old values (1/0 or 'Full-time'/'Part-time') to new format for display
+                                    $availabilityValue = $providerdata->availability;
+                                    if ($availabilityValue == '1' || $availabilityValue == 1 || $availabilityValue == 'Full-time') {
+                                        $availabilityValue = 'full_time';
+                                    } elseif ($availabilityValue == '0' || $availabilityValue == 0 || $availabilityValue == 'Part-time') {
+                                        $availabilityValue = 'part_time';
+                                    }
+                                @endphp
                                 {{ html()->select(
                                         'availability',
                                         [
-                                            'Full-time' => 'Full-time',
-                                            'Part-time' => 'Part-time',
+                                            'full_time' => 'Full-time',
+                                            'part_time' => 'Part-time',
                                         ],
-                                        $providerdata->availability,
+                                        $availabilityValue,
                                     )->class('form-control')->required()->placeholder(__('Select Availability')) }}
                                 <small class="help-block with-errors text-danger"></small>
                             </div>

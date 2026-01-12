@@ -585,6 +585,7 @@
     'cash_payment' => 'Pagamento em dinheiro',
     'cash_history' => 'Histórico de dinheiro',
     'cash_approved' => ':amount aprovado com sucesso por :name',
+    'cash_approved_subject' => 'Pagamento Aprovado - Confirmação de Reserva',
     'datetime' => 'Data e hora',
     'history' => 'Histórico',
     'data_not_found' => 'Dados não encontrados',

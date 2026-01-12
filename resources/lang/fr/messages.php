@@ -585,6 +585,7 @@
     'cash_payment' => 'Paiement en espèces',
     'cash_history' => 'Historique des espèces',
     'cash_approved' => ':amount approuvé avec succès par :name',
+    'cash_approved_subject' => 'Paiement Approuvé - Confirmation de Réservation',
     'datetime' => 'Date et heure',
     'history' => 'Historique',
     'data_not_found' => 'Données non trouvées',
