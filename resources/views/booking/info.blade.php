@@ -875,7 +875,18 @@
 </div>
 
                             
-
+                            
+                        @php
+                            // Show working location only if:
+                            // 1. Payment method is NOT bank_transfer, OR
+                            // 2. Payment method IS bank_transfer AND payment status is approved (paid/advanced_paid)
+                            $showWorkingLocation = true;
+                            if (isset($payment) && strtolower($payment->payment_type) === 'bank_transfer') {
+                                $paymentStatus = strtolower($payment->payment_status ?? '');
+                                $showWorkingLocation = in_array($paymentStatus, ['paid', 'advanced_paid'], true);
+                            }
+                        @endphp
+                        @if($showWorkingLocation)
                         <div class="col-md-4 mb-3">
                                 <div class="card h-65 soft-shadow hover-lift">
                                     <div class="card-body">
@@ -892,6 +903,7 @@
                                     </div>
                                 </div>
                         </div>
+                        @endif
 
 
 
