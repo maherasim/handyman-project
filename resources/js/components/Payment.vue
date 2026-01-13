@@ -62,16 +62,24 @@
               </strong>
             </p>
           </div>
+          <div class="mb-3">
+            <h6 class="text-primary mb-3"><strong>For local and international transfers</strong></h6>
+          </div>
           <div class="row g-3">
             <div class="col-md-6">
               <div class="bg-light p-3 rounded border">
                 <h6 class="text-primary mb-2"><i class="bi bi-credit-card-2-front-fill me-2"></i>Bank Information</h6>
                 <ul class="list-unstyled mb-0">
-                  <li><strong>Bank Name:</strong> Norisbank</li>
-                  <li><strong>Country:</strong> Germany</li>
-                  <li><strong>Account Number:</strong> 4776167</li>
-                  <li><strong>IBAN:</strong> DE57760260000477616700</li>
-                  <li><strong>BIC/Swift:</strong> NORDSDE71XXX</li>
+                  <li><strong>Recipient:</strong> Ben Ghezaiel</li>
+                  <li><strong>IBAN:</strong> DE02 1001 0178 1361 6331 79</li>
+                  <li><strong>BIC:</strong> REVODEB2</li>
+                  <li class="mt-2"><strong>Bank Name and Address:</strong></li>
+                  <li class="ms-3">Revolut Bank UAB,<br>
+                    Zweigniederlassung Deutschland<br>
+                    FORA Linden Palais, Unter den<br>
+                    Linden 40<br>
+                    10117, Berlin, Germany</li>
+                  <li class="mt-2"><strong>BIC of Sender Bank:</strong> CHASDEFX</li>
                 </ul>
               </div>
             </div>

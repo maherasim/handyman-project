@@ -923,11 +923,17 @@
                  <div class="text-start">
   <h6 class="mb-2">Bank Information</h6>
   <div class="mb-2"><strong>Amount:</strong> ${formatCurrencyJS(formattedAmount)}</div>
-  <div><strong>Bank Name:</strong> Norisbank</div>
-  <div><strong>Country:</strong> Germany</div>
-  <div><strong>Account Number:</strong> 4776167</div>
-  <div><strong>IBAN:</strong> DE57760260000477616700</div>
-  <div><strong>BIC/Swift:</strong> NORDSDE71XXX</div>
+  <div class="mb-2"><strong>For local and international transfers</strong></div>
+  <div><strong>Recipient:</strong> Ben Ghezaiel</div>
+  <div><strong>IBAN:</strong> DE02 1001 0178 1361 6331 79</div>
+  <div><strong>BIC:</strong> REVODEB2</div>
+  <div class="mt-2"><strong>Bank Name and Address:</strong></div>
+  <div class="ms-3">Revolut Bank UAB,<br>
+    Zweigniederlassung Deutschland<br>
+    FORA Linden Palais, Unter den<br>
+    Linden 40<br>
+    10117, Berlin, Germany</div>
+  <div class="mt-2"><strong>BIC of Sender Bank:</strong> CHASDEFX</div>
   
   <h6 class="mt-3">Instructions</h6>
  

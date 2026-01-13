@@ -1066,26 +1066,31 @@
 
                     <div class="bank-details mb-4">
                         <h6 class="text-success mb-3">🏦 Bank Information</h6>
+                        <div class="mb-2"><strong>For local and international transfers</strong></div>
                         <div class="bank-info-card">
                             <div class="bank-row">
-                                <span class="bank-label">Bank Name:</span>
-                                <span class="bank-value">Norisbank</span>
-                            </div>
-                            <div class="bank-row">
-                                <span class="bank-label">Country:</span>
-                                <span class="bank-value">Germany</span>
-                            </div>
-                            <div class="bank-row">
-                                <span class="bank-label">Account Number:</span>
-                                <span class="bank-value">4776167</span>
+                                <span class="bank-label">Recipient:</span>
+                                <span class="bank-value">Ben Ghezaiel</span>
                             </div>
                             <div class="bank-row">
                                 <span class="bank-label">IBAN:</span>
-                                <span class="bank-value">DE57760260000477616700</span>
+                                <span class="bank-value">DE02 1001 0178 1361 6331 79</span>
                             </div>
                             <div class="bank-row">
-                                <span class="bank-label">BIC/Swift:</span>
-                                <span class="bank-value">NORDSDE71XXX</span>
+                                <span class="bank-label">BIC:</span>
+                                <span class="bank-value">REVODEB2</span>
+                            </div>
+                            <div class="bank-row">
+                                <span class="bank-label">Bank Name and Address:</span>
+                                <span class="bank-value">Revolut Bank UAB,<br>
+                                    Zweigniederlassung Deutschland<br>
+                                    FORA Linden Palais, Unter den<br>
+                                    Linden 40<br>
+                                    10117, Berlin, Germany</span>
+                            </div>
+                            <div class="bank-row">
+                                <span class="bank-label">BIC of Sender Bank:</span>
+                                <span class="bank-value">CHASDEFX</span>
                             </div>
                         </div>
                     </div>
