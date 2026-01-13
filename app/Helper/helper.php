@@ -2173,38 +2173,128 @@ function addWalletAmount($data){
 
 function fcm($fields)
 {
-    $otherSetting = \App\Models\Setting::where('type', 'OTHER_SETTING')->first();
-    $other = json_decode($otherSetting->value);
-    $projectID = $other->project_id;
-    $access_token = getAccessToken();
-    $headers = [
-        'Authorization: Bearer ' . $access_token,
-        'Content-Type: application/json',
-    ];
-    $ch = curl_init('https://fcm.googleapis.com/v1/projects/' . $projectID . '/messages:send');
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
-    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($fields));
+    try {
+        $otherSetting = \App\Models\Setting::where('type', 'OTHER_SETTING')->first();
+        if (!$otherSetting) {
+            \Log::warning('FCM: OTHER_SETTING not found');
+            return;
+        }
+        
+        $other = json_decode($otherSetting->value);
+        $firebase_notification = $other->firebase_notification ?? 0;
+        
+        if ($firebase_notification != 1) {
+            \Log::info('FCM: Firebase notifications disabled in settings');
+            return;
+        }
+        
+        $projectID = $other->project_id ?? null;
+        if (!$projectID) {
+            \Log::warning('FCM: No project ID configured');
+            return;
+        }
+        
+        $access_token = getAccessToken();
+        if (!$access_token) {
+            \Log::error('FCM: Failed to get access token - cannot send notification');
+            return;
+        }
+        
+        $headers = [
+            'Authorization: Bearer ' . $access_token,
+            'Content-Type: application/json',
+        ];
+        
+        $apiUrl = 'https://fcm.googleapis.com/v1/projects/' . $projectID . '/messages:send';
+        $ch = curl_init($apiUrl);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($fields));
 
-    $response = curl_exec($ch);
-    Log::info($response);
-    curl_close($ch);
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+        
+        if ($httpCode === 200) {
+            \Log::info('FCM notification sent successfully', ['response' => $response]);
+        } else {
+            \Log::warning('FCM notification failed', [
+                'http_code' => $httpCode,
+                'response' => $response
+            ]);
+        }
+    } catch (\Exception $e) {
+        \Log::error('FCM function error: ' . $e->getMessage());
+    }
 }
 
 function getAccessToken()
 {
-    $directory = storage_path('app/data');
-    $credentialsFiles = File::glob($directory . '/*.json');
-    if (!empty($credentialsFiles)) {
+    try {
+        $directory = storage_path('app/data');
+        $credentialsFiles = File::glob($directory . '/*.json');
+        
+        if (empty($credentialsFiles)) {
+            \Log::warning('FCM: No service account JSON file found in ' . $directory);
+            return null;
+        }
 
-    $client = new Google_Client();
-    $client->setAuthConfig($credentialsFiles[0]);
-    $client->addScope('https://www.googleapis.com/auth/firebase.messaging');
+        $jsonFile = $credentialsFiles[0];
+        
+        // Verify JSON file is valid
+        $jsonContent = file_get_contents($jsonFile);
+        $jsonData = json_decode($jsonContent, true);
+        
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            \Log::error('FCM: Invalid JSON file - ' . json_last_error_msg());
+            return null;
+        }
+        
+        // Verify required fields exist
+        if (!isset($jsonData['type']) || $jsonData['type'] !== 'service_account') {
+            \Log::error('FCM: JSON file is not a valid service account file');
+            return null;
+        }
+        
+        if (!isset($jsonData['private_key']) || !isset($jsonData['client_email'])) {
+            \Log::error('FCM: Service account JSON missing required fields (private_key or client_email)');
+            return null;
+        }
 
-    $token = $client->fetchAccessTokenWithAssertion();
+        $client = new Google_Client();
+        $client->setAuthConfig($jsonFile);
+        $client->addScope('https://www.googleapis.com/auth/firebase.messaging');
+        
+        // Set application name (optional but recommended)
+        $client->setApplicationName('Frobster Handyman App');
 
-    return $token['access_token'];
+        $token = $client->fetchAccessTokenWithAssertion();
+        
+        if (isset($token['error'])) {
+            \Log::error('FCM: Access token error', [
+                'error' => $token['error'],
+                'error_description' => $token['error_description'] ?? 'No description'
+            ]);
+            return null;
+        }
+
+        if (!isset($token['access_token'])) {
+            \Log::error('FCM: No access token in response', ['token_response' => $token]);
+            return null;
+        }
+
+        \Log::info('FCM: Access token generated successfully');
+        return $token['access_token'];
+    } catch (\Google\Exception $e) {
+        \Log::error('FCM: Google API exception - ' . $e->getMessage());
+        return null;
+    } catch (\Exception $e) {
+        \Log::error('FCM: Failed to get access token - ' . $e->getMessage(), [
+            'file' => $e->getFile(),
+            'line' => $e->getLine()
+        ]);
+        return null;
     }
 }
 

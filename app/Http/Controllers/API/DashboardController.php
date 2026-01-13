@@ -603,16 +603,90 @@ class DashboardController extends Controller
     function firebaseDetails(Request $request)
     {
         $setting = Setting::getValueByKey('OTHER_SETTING', 'OTHER_SETTING');
+        $decodedata = $setting ? json_decode($setting->value) : null;
 
         $firebase_token = getAccessToken();
+        
+        // Check if JSON file exists
+        $directory = storage_path('app/data');
+        $credentialsFiles = \Illuminate\Support\Facades\File::glob($directory . '/*.json');
+        $jsonFileExists = !empty($credentialsFiles);
+        $jsonFileName = $jsonFileExists ? basename($credentialsFiles[0]) : null;
+        
+        // Validate JSON file if it exists
+        $jsonFileValid = false;
+        $jsonFileError = null;
+        if ($jsonFileExists) {
+            try {
+                $jsonContent = file_get_contents($credentialsFiles[0]);
+                $jsonData = json_decode($jsonContent, true);
+                
+                if (json_last_error() === JSON_ERROR_NONE) {
+                    if (isset($jsonData['type']) && $jsonData['type'] === 'service_account') {
+                        if (isset($jsonData['private_key']) && isset($jsonData['client_email'])) {
+                            $jsonFileValid = true;
+                            // Check if project_id matches
+                            $jsonProjectId = $jsonData['project_id'] ?? null;
+                            $configProjectId = $decodedata->project_id ?? null;
+                            if ($jsonProjectId && $configProjectId && $jsonProjectId !== $configProjectId) {
+                                $jsonFileError = 'Project ID mismatch: JSON has "' . $jsonProjectId . '" but config has "' . $configProjectId . '"';
+                            }
+                        } else {
+                            $jsonFileError = 'Missing required fields: private_key or client_email';
+                        }
+                    } else {
+                        $jsonFileError = 'Not a valid service account file (type should be "service_account")';
+                    }
+                } else {
+                    $jsonFileError = 'Invalid JSON: ' . json_last_error_msg();
+                }
+            } catch (\Exception $e) {
+                $jsonFileError = 'Error reading file: ' . $e->getMessage();
+            }
+        }
 
         $data = [
-            'project_id' => $setting ? $setting->project_id : null,
+            'project_id' => $decodedata->project_id ?? null,
+            'firebase_notification_enabled' => $decodedata->firebase_notification ?? 0,
             'firebase_token' => $firebase_token,
+            'token_status' => $firebase_token ? 'Generated successfully' : 'Generation failed',
+            'json_file_exists' => $jsonFileExists,
+            'json_file_name' => $jsonFileName,
+            'json_file_valid' => $jsonFileValid,
+            'json_file_error' => $jsonFileError,
+            'json_file_path' => $jsonFileExists ? $credentialsFiles[0] : null,
+            'api_version' => 'FCM V1 (HTTP v1) - Correct',
+            'legacy_api_status' => 'Disabled (Expected - Legacy was deprecated)',
+            'diagnosis' => $this->diagnoseFirebaseIssue($firebase_token, $jsonFileExists, $jsonFileValid, $decodedata),
         ];
 
         $message = trans('messages.firebase_data');
 
         return response()->json(['status' => true, 'data' => $data, 'message' => $message]);
+    }
+    
+    private function diagnoseFirebaseIssue($token, $jsonExists, $jsonValid, $settings)
+    {
+        if ($token) {
+            return 'Everything is working correctly!';
+        }
+        
+        if (!$jsonExists) {
+            return 'Issue: JSON file not found. Upload service account JSON file to storage/app/data/';
+        }
+        
+        if (!$jsonValid) {
+            return 'Issue: JSON file is invalid. Re-download service account JSON from Firebase Console.';
+        }
+        
+        if (!($settings->firebase_notification ?? 0)) {
+            return 'Issue: Firebase notifications disabled in settings. Enable it in admin panel.';
+        }
+        
+        if (!($settings->project_id ?? null)) {
+            return 'Issue: Project ID not configured. Set it in admin panel settings.';
+        }
+        
+        return 'Issue: Token generation failed. Check service account permissions in Google Cloud Console.';
     }
 }
