@@ -1,7 +1,7 @@
 {
     "private": true,
 "scripts": {
-  "clean": "rm -rf public/js public/css public/mix-manifest.json build-report.json .webpack node_modules/.cache 2>/dev/null; mkdir -p public/js public/css || true",
+  "clean": "rm -rf public/js public/css public/mix-manifest.json build-report.json .webpack node_modules/.cache public/hot 2>/dev/null; find public/js public/css -type f -name '*.js' -o -name '*.css' -o -name '*.map' 2>/dev/null | xargs rm -f 2>/dev/null || true; mkdir -p public/js public/css || true",
   "dev": "npm run development",
   "development": "mix",
   "watch": "mix watch",
@@ -11,6 +11,8 @@
   "production": "mix --production",
   "build:enhanced": "node package-build-script.js",
   "build:fix": "npm run clean && npm run production && echo 'Build completed with fixes applied'",
+  "clean:all": "npm run clean && rm -rf node_modules/.cache .webpack public/hot storage/framework/views/*.php 2>/dev/null || true",
+  "rebuild": "npm run clean:all && npm run production",
   "build:verify": "node -e \"const fs=require('fs'); const files=['public/js/backend-bundle.min.js','public/js/landing-app.min.js','public/css/backend-bundle.min.css','public/css/landing-page.min.css']; const missing=files.filter(f=>!fs.existsSync(f)); if(missing.length) {console.error('Missing files:', missing); process.exit(1);} else {console.log('All build files present');}\""
 },
 
