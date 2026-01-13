@@ -943,20 +943,23 @@
                                 </div>
                             @endif
 
-                            <!-- Booking Schedule Card - Moved to the end -->
-                            <div class="col-md-4 mb-3">
-                                <div class="card h-100 soft-shadow">
+                        </div>
+                        
+                        <!-- Service Schedule Card - Horizontal Row Layout -->
+                        <div class="row mt-3">
+                            <div class="col-12 mb-3">
+                                <div class="card soft-shadow">
                                     <div class="card-body">
-                                        <p class="opacity-75 fz-12 mb-3">{{ __('messages.service_schedule') }}</p>
+                                        <p class="opacity-75 fz-12 mb-3 fw-semibold">{{ __('messages.service_schedule') }}</p>
                                         @if($bookingdata->slots && count($bookingdata->slots) > 0)
-                                            <div class="booking-slots-grid">
+                                            <div class="booking-slots-horizontal">
                                                 @foreach ($bookingdata->slots as $index => $slot)
-                                                    <div class="slot-item-simple">
-                                                        <div class="slot-date-simple">
+                                                    <div class="slot-item-horizontal">
+                                                        <div class="slot-date-horizontal">
                                                             <i class="ri-calendar-2-line me-2"></i>
                                                             <span class="fw-semibold">{{ date("M d, Y", strtotime($slot->date)) ?? '-' }}</span>
                                                         </div>
-                                                        <div class="slot-time-simple">
+                                                        <div class="slot-time-horizontal">
                                                             <i class="ri-time-line me-2"></i>
                                                             <span>{{ date('g:i A', strtotime($slot->start_time)) }} - {{ date('g:i A', strtotime($slot->end_time)) }}</span>
                                                         </div>
@@ -1988,6 +1991,70 @@
 		grid-template-columns: 1fr !important;
 		gap: 12px !important;
 		width: 100%;
+	}
+	
+	/* Horizontal Service Schedule Layout */
+	.booking-slots-horizontal {
+		display: flex !important;
+		flex-direction: row !important;
+		flex-wrap: wrap !important;
+		gap: 12px !important;
+		width: 100%;
+		overflow-x: auto;
+	}
+	
+	.slot-item-horizontal {
+		display: flex !important;
+		flex-direction: row !important;
+		align-items: center !important;
+		gap: 16px !important;
+		padding: 12px 16px !important;
+		background: #f8f9fa !important;
+		border-radius: 8px !important;
+		border: 1px solid #e9ecef !important;
+		border-left: 3px solid #5F60B9 !important;
+		transition: all 0.2s ease;
+		min-width: fit-content !important;
+		flex: 0 0 auto !important;
+		white-space: nowrap;
+	}
+	
+	.slot-item-horizontal:hover {
+		background: #f1f3f5 !important;
+		border-color: #dee2e6 !important;
+		border-left-color: #dc3545 !important;
+		box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+		transform: translateY(-2px);
+	}
+	
+	.slot-date-horizontal {
+		display: flex !important;
+		align-items: center;
+		font-size: 13px;
+		color: #212529;
+		line-height: 1.4;
+		white-space: nowrap;
+	}
+	
+	.slot-date-horizontal i {
+		color: #dc3545;
+		font-size: 15px;
+		flex-shrink: 0;
+	}
+	
+	.slot-time-horizontal {
+		display: flex !important;
+		align-items: center;
+		font-size: 13px;
+		color: #6c757d;
+		line-height: 1.4;
+		white-space: nowrap;
+	}
+	
+	.slot-time-horizontal i {
+		color: #5F60B9;
+		font-size: 15px;
+		flex-shrink: 0;
 	}
 	
 	.slot-item-simple {
