@@ -800,6 +800,25 @@
                         placeholder: "{{ __('messages.select_name', ['select' => __('messages.country')]) }}"
                     });
 
+                    // Initialize all other select2js dropdowns that aren't already initialized
+                    $('.select2js').each(function() {
+                        var $this = $(this);
+                        var id = $this.attr('id');
+                        
+                        // Skip if already initialized or if it's one of the ones initialized above
+                        if ($this.hasClass('select2-hidden-accessible') || 
+                            ['country_id', 'state_id', 'city_id', 'tax_country_id_display'].includes(id)) {
+                            return;
+                        }
+                        
+                        // Initialize select2
+                        $this.select2({
+                            width: '100%',
+                            dropdownParent: $this.parent(),
+                            placeholder: $this.attr('data-placeholder') || $this.data('placeholder') || 'Select an option...'
+                        });
+                    });
+
                     // Load dependent dropdown data on page load
                     getStates(country_id, state_id);
                     getSubCategory(category_id, subcategory_id);
