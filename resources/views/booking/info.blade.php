@@ -887,14 +887,23 @@
                             
                             
                         @php
-                            // Show working location only if:
-                            // 1. Payment method is NOT bank_transfer, OR
-                            // 2. Payment method IS bank_transfer AND payment status is approved (paid/advanced_paid)
-                            $showWorkingLocation = true;
-                            if (isset($payment) && strtolower($payment->payment_type) === 'bank_transfer') {
+                            // Show working location ONLY when payment is approved
+                            // Hide if payment status is pending/pending_by_admin (for ANY payment type)
+                            $showWorkingLocation = false;
+                            
+                            if (isset($payment)) {
                                 $paymentStatus = strtolower($payment->payment_status ?? '');
-                                $showWorkingLocation = in_array($paymentStatus, ['paid', 'advanced_paid'], true);
+                                $paymentType = strtolower($payment->payment_type ?? '');
+                                
+                                // For bank_transfer: only show if status is paid or advanced_paid
+                                if ($paymentType === 'bank_transfer') {
+                                    $showWorkingLocation = in_array($paymentStatus, ['paid', 'advanced_paid'], true);
+                                } else {
+                                    // For other payment types: show if status is paid or advanced_paid (not pending)
+                                    $showWorkingLocation = in_array($paymentStatus, ['paid', 'advanced_paid'], true);
+                                }
                             }
+                            // If no payment exists, don't show location (default is false)
                         @endphp
                         @if($showWorkingLocation)
                         <div class="col-md-4 mb-3">

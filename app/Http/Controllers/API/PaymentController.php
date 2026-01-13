@@ -377,9 +377,10 @@ class PaymentController extends Controller
     public function saveBankTransferPayment(Request $request)
     {
         $data = $request->all();
-        $data['datetime'] = isset($request->datetime)
-            ? date('Y-m-d H:i:s', strtotime($request->datetime))
-            : date('Y-m-d H:i:s');
+        
+        // Normalize datetime - handle invalid times like 24:59:00
+        $normalizedDatetime = $this->normalizeDatetime($request->datetime ?? null);
+        $data['datetime'] = $normalizedDatetime;
     
         // Always pending for bank transfers until admin verifies
         $data['status'] = 0;
@@ -531,7 +532,7 @@ class PaymentController extends Controller
             'status' => 'pending_by_admin',
             'sender_id' => $request->customer_id,
             'receiver_id' => $booking->provider_id,
-            'datetime' => $request->datetime,
+            'datetime' => $normalizedDatetime, // Use normalized datetime
             'total_amount' => $request->total_amount,
             'txn_id' => $request->txn_id,
             'type' => $request->type,
@@ -570,6 +571,40 @@ class PaymentController extends Controller
         return comman_message_response(__('messages.payment_pending_admin_approval'), 200);
     }
     
+    /**
+     * Normalize datetime string - converts invalid times like 24:59:00 to valid format
+     * 
+     * @param string|null $datetime
+     * @return string
+     */
+    private function normalizeDatetime($datetime)
+    {
+        if (empty($datetime)) {
+            return date('Y-m-d H:i:s');
+        }
+        
+        // Check if datetime contains invalid hour (24:xx:xx)
+        if (preg_match('/^(\d{4}-\d{2}-\d{2})\s+24:(\d{2}):(\d{2})$/', $datetime, $matches)) {
+            // Convert 24:xx:xx to 00:xx:xx of next day
+            $date = $matches[1];
+            $minute = $matches[2];
+            $second = $matches[3];
+            
+            // Add one day and set time to 00:xx:xx
+            $nextDay = date('Y-m-d', strtotime($date . ' +1 day'));
+            return $nextDay . ' 00:' . $minute . ':' . $second;
+        }
+        
+        // Try to parse and validate the datetime
+        $timestamp = strtotime($datetime);
+        if ($timestamp === false) {
+            // If parsing fails, return current datetime
+            return date('Y-m-d H:i:s');
+        }
+        
+        // Return normalized datetime
+        return date('Y-m-d H:i:s', $timestamp);
+    }
 
 
 
