@@ -50,7 +50,7 @@ class BookingResource extends JsonResource
         $showAddress = ($paymentStatus === 'advanced_paid');
         
         // Return professional message instead of null when address is not available
-        $addressValue = $showAddress ? $this->address : 'Address will be available after advance payment confirmation';
+        $addressValue = $showAddress ? $this->address : 'Available after payment confirmation';
         
         return [
             'id'                    => $this->id,
