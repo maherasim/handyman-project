@@ -44,9 +44,17 @@ class BookingResource extends JsonResource
                 $membership = 'gold';
             }
         }
+        // Get payment status to determine if address should be shown
+        // Address is only visible when payment status is advance_paid
+        $paymentStatus = $payment ? strtolower($payment->payment_status ?? '') : '';
+        $showAddress = ($paymentStatus === 'advanced_paid');
+        
+        // Return professional message instead of null when address is not available
+        $addressValue = $showAddress ? $this->address : 'Address will be available after advance payment confirmation';
+        
         return [
             'id'                    => $this->id,
-            'address'               => $this->address,
+            'address'               => $addressValue,
             'customer_id'           => $this->customer_id,
             'service_id'            => $this->service_id,
             'provider_id'           => $this->provider_id,
