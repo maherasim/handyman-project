@@ -6,7 +6,7 @@
 <table class="table-sm title-color align-right w-100" style="display: none;">
 
     <tbody>
-        <!-- Unit Price -->
+        <!-- Unit Price --> 
         <tr>
             <td>{{ __('Price (Unit Price)') }}</td>
             <td class="bk-value">
