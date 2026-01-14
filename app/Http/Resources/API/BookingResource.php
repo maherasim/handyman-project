@@ -44,10 +44,19 @@ class BookingResource extends JsonResource
                 $membership = 'gold';
             }
         }
-        // Get payment status to determine if address should be shown
-        // Address is only visible when payment status is advance_paid
+        // Get payment status and type to determine if address should be shown
+        // Address is visible when:
+        // 1. Payment status is 'advanced_paid' (for any payment type)
+        // 2. Payment type is 'bank_transfer' AND status is 'paid' or 'advanced_paid'
         $paymentStatus = $payment ? strtolower($payment->payment_status ?? '') : '';
-        $showAddress = ($paymentStatus === 'advanced_paid');
+        $paymentType = $payment ? strtolower($payment->payment_type ?? '') : '';
+        
+        $showAddress = false;
+        if ($paymentStatus === 'advanced_paid') {
+            $showAddress = true;
+        } elseif ($paymentType === 'bank_transfer' && in_array($paymentStatus, ['paid', 'advanced_paid'], true)) {
+            $showAddress = true;
+        }
         
         // Return professional message instead of null when address is not available
         $addressValue = $showAddress ? $this->address : 'Available after payment confirmation';
