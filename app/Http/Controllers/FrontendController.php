@@ -1281,10 +1281,24 @@ class FrontendController extends Controller
 
         $datatable = $datatable->eloquent($query)
             ->editColumn('name', function ($data) {
-                // Service rating
-                $providers_service_rating = 0;
-                if (!empty($data->getServiceRating) && count($data->getServiceRating) > 0) {
-                    $providers_service_rating = (float)number_format(max($data->getServiceRating->avg('rating'), 0), 2);
+                // Calculate provider rating from booking_ratings table
+                // Match bookings.provider_id with provider id, then match bookings.id with booking_ratings.booking_id
+                $providerRating = 0;
+                $totalReviews = 0;
+                
+                // Get all booking IDs for this provider
+                $bookingIds = Booking::where('provider_id', $data->id)->pluck('id');
+                
+                if ($bookingIds->isNotEmpty()) {
+                    // Get all ratings for these bookings
+                    $ratings = BookingRating::whereIn('booking_id', $bookingIds)
+                        ->whereNotNull('rating')
+                        ->get();
+                    
+                    if ($ratings->isNotEmpty()) {
+                        $providerRating = (float)number_format($ratings->avg('rating'), 2);
+                        $totalReviews = $ratings->count();
+                    }
                 }
 
                 // Default to free plan icon (path per requirements)
@@ -1301,8 +1315,8 @@ class FrontendController extends Controller
                     }
                 }
 
-                // Pass $plan_icon to the blade view
-                return view('provider.datatable-card', compact('data', 'providers_service_rating', 'plan_icon'));
+                // Pass rating and review count to the blade view
+                return view('provider.datatable-card', compact('data', 'providerRating', 'totalReviews', 'plan_icon'));
             })
             ->order(function ($query) {
                 $query->orderBy('id', 'desc');

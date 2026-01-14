@@ -68,6 +68,7 @@ Route::post('service-detail', [ API\ServiceController::class, 'getServiceDetail'
 Route::get('user-list',[API\User\UserController::class, 'userList']);
 Route::get('booking-status', [ API\BookingController::class, 'bookingStatus' ] );
 Route::post('handyman-reviews',[API\User\UserController::class, 'handymanReviewsList']);
+Route::get('provider-reviews',[API\User\UserController::class, 'providerReviewsList']);
 Route::post('service-reviews', [ API\ServiceController::class, 'serviceReviewsList' ] );
 Route::get('post-job-status', [ API\PostJobRequestController::class, 'postRequestStatus' ] );
 // Route::get('booking-list', [ API\BookingController::class, 'getBookingList' ] );sinc
