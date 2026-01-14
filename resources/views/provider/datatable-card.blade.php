@@ -38,23 +38,36 @@
 
 
   <div>
+      @php 
+          $rating = round($providerRating ?? 0, 1);
+          $reviewsCount = $totalReviews ?? 0;
+          $displayRating = $rating; // Use separate variable for display
+      @endphp
 
-      @php $rating = round($providers_service_rating, 1); @endphp
-
-      @foreach (range(1, 5) as $i)
-          <span class="fa-stack" style="width:1em">
-              <i class="far fa-star fa-stack-1x"></i>
-              @if ($rating > 0)
-                  @if ($rating > 0.5)
-                      <i class="fas fa-star fa-stack-1x"></i>
-                  @else
-                      <i class="fas fa-star-half fa-stack-1x"></i>
+      <a href="javascript:void(0);" class="provider-rating-link text-decoration-none" 
+         data-provider-id="{{ $data->id }}" 
+         data-rating="{{ $rating }}" 
+         data-reviews-count="{{ $reviewsCount }}"
+         style="color: inherit; cursor: pointer;">
+          @php $starRating = $displayRating; @endphp
+          @foreach (range(1, 5) as $i)
+              <span class="fa-stack" style="width:1em">
+                  <i class="far fa-star fa-stack-1x"></i>
+                  @if ($starRating > 0)
+                      @if ($starRating >= 1)
+                          <i class="fas fa-star fa-stack-1x"></i>
+                      @elseif ($starRating > 0.5)
+                          <i class="fas fa-star-half fa-stack-1x"></i>
+                      @endif
                   @endif
-              @endif
-              @php $rating--; @endphp
-          </span>
-      @endforeach
-      ({{ round($providers_service_rating, 1) }})
+                  @php $starRating--; @endphp
+              </span>
+          @endforeach
+          <span class="rating-value">({{ round($providerRating ?? 0, 1) }})</span>
+          @if ($reviewsCount > 0)
+              <span class="reviews-count text-muted" style="font-size: 0.85em;">{{ $reviewsCount }} {{ $reviewsCount == 1 ? 'review' : 'reviews' }}</span>
+          @endif
+      </a>
   </div>
   <h6 class="text-primary text-capitalize mt-2 line-count-1">{{ $data->designation }}</h6>
   <p class="mt-0 mb-0" style="font-size: 12;  ">

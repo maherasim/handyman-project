@@ -12,9 +12,11 @@ use App\Http\Resources\API\UserResource;
 use App\Http\Resources\API\ServiceResource;
 use Illuminate\Support\Facades\Password;
 use App\Models\Booking;
+use App\Models\BookingRating;
 use App\Models\Wallet;
 use App\Models\HandymanRating;
 use App\Http\Resources\API\HandymanRatingResource;
+use App\Http\Resources\API\BookingRatingResource;
 use App\Traits\NotificationTrait;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\VerificationEmail;
@@ -734,6 +736,67 @@ public function register(UserRequest $request)
         ];
         return comman_custom_response($response);
     }
+
+    public function providerReviewsList(Request $request){
+        $providerId = $request->provider_id;
+        
+        if (!$providerId) {
+            return comman_message_response(__('messages.provider_id_required'), 400);
+        }
+
+        // Get all booking IDs for this provider
+        $bookingIds = Booking::where('provider_id', $providerId)->pluck('id');
+        
+        if ($bookingIds->isEmpty()) {
+            return comman_custom_response([
+                'pagination' => [
+                    'total_items' => 0,
+                    'per_page' => 0,
+                    'currentPage' => 1,
+                    'totalPages' => 0,
+                    'from' => null,
+                    'to' => null,
+                    'next_page' => null,
+                    'previous_page' => null,
+                ],
+                'data' => [],
+            ]);
+        }
+
+        // Get all ratings for these bookings
+        $rating_data = BookingRating::whereIn('booking_id', $bookingIds)
+            ->with(['customer', 'booking', 'service']);
+
+        $per_page = config('constant.PER_PAGE_LIMIT');
+
+        if ($request->has('per_page') && !empty($request->per_page)) {
+            if (is_numeric($request->per_page)) {
+                $per_page = $request->per_page;
+            }
+            if ($request->per_page === 'all') {
+                $per_page = $rating_data->count();
+            }
+        }
+
+        $rating_data = $rating_data->orderBy('created_at', 'desc')->paginate($per_page);
+
+        $items = BookingRatingResource::collection($rating_data);
+        $response = [
+            'pagination' => [
+                'total_items' => $items->total(),
+                'per_page' => $items->perPage(),
+                'currentPage' => $items->currentPage(),
+                'totalPages' => $items->lastPage(),
+                'from' => $items->firstItem(),
+                'to' => $items->lastItem(),
+                'next_page' => $items->nextPageUrl(),
+                'previous_page' => $items->previousPageUrl(),
+            ],
+            'data' => $items,
+        ];
+        return comman_custom_response($response);
+    }
+
     public function deleteUserAccount(Request $request){
         $user_id = \Auth::user()->id;
         $user = User::where('id',$user_id)->first();

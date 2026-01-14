@@ -86,7 +86,7 @@ class Booking extends Model
     }
 
     public function bookingRating(){
-        return $this->hasMany(BookingRating::class, 'service_id','service_id')->with(['customer']);
+        return $this->hasMany(BookingRating::class, 'booking_id','id')->with(['customer']);
     }
 
     public function couponAdded(){
