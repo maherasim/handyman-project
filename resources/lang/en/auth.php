@@ -32,5 +32,5 @@
   'user_type' => 'User Type',
   'designation' => 'Designation',
   'password_mismatch_error' => 'Password and Confirm password does not match',
-  'assign_provider_msg' => 'Contact your admin to assign a provider to you.',
+  'assign_provider_msg' => 'Contact your admin to assign a Employer to you.',
 );
