@@ -419,17 +419,10 @@
 
                                 @if ($bookingdata->status === 'pending_approval')
                                     @hasanyrole(['user'])
-                                        <div class="w3-third">
-                                             <button class="float-end btn btn-success confirm-booking"
-                                                data-id="{{ $bookingdata->id }}"
-                                                data-handyman-id="{{ $bookingdata->provider_id }}"
-                                                data-status="pending_approval"
-                                                data-advance="{{ $bookingdata->is_advance_paid ? 1 : 0 }}"
-                                                data-confirm-message="You want to Confirm this booking?">
-                                                <i class="las la-check-circle"></i>
-                                                {{ __('Confirm Job Done') }}
-                                            </button>
-
+                                        <div class="w3-third d-flex align-items-end">
+                                            <p><span class="text-info font-size-14" style="font-weight: 700">Waiting for
+                                                    handyman to mark booking as completed</span>
+                                            </p>
                                         </div>
                                     @endhasanyrole
 
