@@ -423,7 +423,7 @@
                                              <button class="float-end btn btn-success confirm-booking"
                                                 data-id="{{ $bookingdata->id }}"
                                                 data-handyman-id="{{ $bookingdata->provider_id }}"
-                                                data-status="confirm"
+                                                data-status="pending_approval"
                                                 data-advance="{{ $bookingdata->is_advance_paid ? 1 : 0 }}"
                                                 data-confirm-message="You want to Confirm this booking?">
                                                 <i class="las la-check-circle"></i>
@@ -461,7 +461,7 @@
                                              <button class="float-end btn btn-success confirm-booking"
                                                 data-id="{{ $bookingdata->id }}"
                                                 data-handyman-id="{{ $bookingdata->provider_id }}"
-                                                data-status="confirm"
+                                                data-status="pending_approval"
                                                 data-advance="{{ $bookingdata->is_advance_paid ? 1 : 0 }}"
                                                 data-confirm-message="You want to Confirm this booking?">
                                                 <i class="las la-check-circle"></i>
