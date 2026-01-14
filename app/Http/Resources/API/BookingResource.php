@@ -45,18 +45,11 @@ class BookingResource extends JsonResource
             }
         }
         // Get payment status and type to determine if address should be shown
-        // Address is visible when:
-        // 1. Payment status is 'advanced_paid' (for any payment type)
-        // 2. Payment type is 'bank_transfer' AND status is 'paid' or 'advanced_paid'
+        // Address is visible when payment status is 'paid' or 'advanced_paid' (for any payment type)
         $paymentStatus = $payment ? strtolower($payment->payment_status ?? '') : '';
         $paymentType = $payment ? strtolower($payment->payment_type ?? '') : '';
         
-        $showAddress = false;
-        if ($paymentStatus === 'advanced_paid') {
-            $showAddress = true;
-        } elseif ($paymentType === 'bank_transfer' && in_array($paymentStatus, ['paid', 'advanced_paid'], true)) {
-            $showAddress = true;
-        }
+        $showAddress = in_array($paymentStatus, ['paid', 'advanced_paid'], true);
         
         // Return professional message instead of null when address is not available
         $addressValue = $showAddress ? $this->address : 'Available after payment confirmation';
