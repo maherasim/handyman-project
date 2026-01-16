@@ -383,7 +383,17 @@ class DashboardController extends Controller
         $handyman_rating = HandymanRating::where('handyman_id',auth()->user()->id)->orderBy('id','desc')->paginate(10);
         $handyman_rating = HandymanRatingResource::collection($handyman_rating);
 
-        $commission = HandymanType::where('id',$handyman->handymantype_id)->first();
+        // Get commission from User table's handyman_commission field
+        $commission_value = $handyman->handyman_commission ?? 0;
+        $commission = [
+            'id' => $handyman->id,
+            'name' => $handyman->display_name ?? 'Handyman',
+            'commission' => (float) $commission_value,
+            'status' => $handyman->status ?? 1,
+            'type' => 'percentage',
+            'created_at' => $handyman->created_at,
+            'updated_at' => $handyman->updated_at,
+        ];
 
         if (Schema::hasColumn('handyman_payouts', 'status')) {
             $total_revenue = HandymanPayout::where('handyman_id', auth()->user()->id)
