@@ -387,7 +387,7 @@ class DashboardController extends Controller
         $commission_value = $handyman->handyman_commission ?? 0;
         $commission = [
             'id' => $handyman->id,
-            'name' => $handyman->display_name ?? 'Handyman',
+            'name' => 'Commission',
             'commission' => (float) $commission_value,
             'status' => $handyman->status ?? 1,
             'type' => 'percentage',
