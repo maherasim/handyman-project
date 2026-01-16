@@ -125,6 +125,10 @@ class UserResource extends JsonResource
             'total_bookings' => ($this->user_type == 'provider') 
                 ? Booking::where('provider_id', $this->id)->count() 
                 : 0,
+            // Completed Jobs: Count of completed bookings for this provider
+            'completed_jobs' => ($this->user_type == 'provider') 
+                ? Booking::where('provider_id', $this->id)->where('status', 'completed')->count() 
+                : 0,
             'why_choose_me' => $this->why_choose_me,
             'is_subscribe' => $this->is_subscribe,
             'is_email_verified' => $this->is_email_verified

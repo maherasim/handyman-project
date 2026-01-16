@@ -348,6 +348,15 @@ public function register(UserRequest $request)
         }
         $user_detail = new UserResource($user);
         $document = ProviderDocument::where('provider_id',$id)->get();
+        
+        // Calculate completed jobs count for provider
+        $completed_jobs = 0;
+        if($user->user_type == 'provider'){
+            $completed_jobs = Booking::where('provider_id', $id)
+                ->where('status', 'completed')
+                ->count();
+        }
+        
         if($user->user_type == 'handyman'){
             $handyman_rating = HandymanRating::where('handyman_id',$id)->orderBy('id','desc')->paginate(10);
             $handyman_rating = HandymanRatingResource::collection($handyman_rating);
@@ -360,6 +369,7 @@ public function register(UserRequest $request)
             'handyman_staff' => $handyman,
             'handyman_image' => $profile_array,
             'document_detail' => $document,
+            'completed_jobs' => $completed_jobs,
         ];
         return comman_custom_response($response);
 
