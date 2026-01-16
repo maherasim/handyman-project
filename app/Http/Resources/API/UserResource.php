@@ -113,10 +113,7 @@ class UserResource extends JsonResource
             'certification' => $this->certification,
             'skills' => $this->skills,
             'is_favourite'  => UserFavouriteProvider::where('user_id',$request->login_user_id ?? null)->where('provider_id',$request->id ?? $this->id)->first() ? 1 : 0,
-            // Total Services Booked: Count of unique services booked for this provider
-            'total_services_booked' => ($this->user_type == 'provider') 
-                ? Booking::where('provider_id', $this->id)->distinct('service_id')->count('service_id') 
-                : 0,
+            'total_services_booked' => Booking::where('provider_id',$this->id)->count('service_id'),
             // Total Services: Count of active services created by this provider
             'total_services' => ($this->user_type == 'provider') 
                 ? Service::where('provider_id', $this->id)

@@ -310,27 +310,9 @@ trait NotificationTrait
                 break;
 
             case "paid_with_wallet":
-
-            
-
-                $data['activity_message'] = trans('messages.paid_with_wallet', ['value' => $data['booking_id']]);
-                $user = \App\Models\User::find($data['wallet']->user_id);
-                $data['customer_name'] = isset($user->display_name) ? $user->display_name : null;
-                $data['pay_amount'] = isset($data['booking_amount']) ? $data['booking_amount'] : '';
-                $amount = isset($data['booking_amount']) ? getPriceFormat($data['booking_amount']) : '';
-
-                $activity_data = [
-                    'title' => $data['wallet']->title,
-                    'user_id' => $data['wallet']->user_id,
-                    'amount' => $data['wallet']->amount,
-                    'service_name' => $data['service_name'],
-                    'customer_name' => $user->name,
-                    'credit_debit_amount' => $data['booking_amount'],
-                    'transaction_type' => __('messages.debit'),
-                ];
-
-                $data['activity_data'] = json_encode($activity_data);
-                \App\Models\WalletHistory::create($data);
+                // Wallet history is already created manually in PaymentController::savePayment()
+                // No need to create duplicate entry here
+                // Just send notification without creating wallet history
                 break;
 
             case "job_requested":
