@@ -312,7 +312,13 @@ trait NotificationTrait
             case "paid_with_wallet":
                 // Wallet history is already created manually in PaymentController::savePayment()
                 // No need to create duplicate entry here
-                // Just send notification without creating wallet history
+                // Set activity message for notification
+                $bookingId = $data['booking_id'] ?? '';
+                $amount = isset($data['booking_amount']) ? getPriceFormat($data['booking_amount']) : '';
+                $data['activity_message'] = __('messages.paid_with_wallet', ['value' => $bookingId]);
+                if (empty($data['activity_message']) || strpos($data['activity_message'], 'messages.') === 0) {
+                    $data['activity_message'] = 'Payment made with wallet for booking #' . $bookingId;
+                }
                 break;
 
             case "job_requested":
@@ -529,7 +535,7 @@ trait NotificationTrait
         $notification_data = [
             'id'   => $id,
             'type' => $data['activity_type'],
-            'message' => $data['activity_message'],
+            'message' => $data['activity_message'] ?? '',
             "ios_badgeType" => "Increase",
             "ios_badgeCount" => 1,
             "notification-type" => $notification_type,
