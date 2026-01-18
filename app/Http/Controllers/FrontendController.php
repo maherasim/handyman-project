@@ -654,6 +654,14 @@ class FrontendController extends Controller
         $service = $serviceController->getServiceDetail($apiRequest);
         $serviceData = json_decode($service->content(), true);
 
+        // Check if API response has service_detail
+        // comman_custom_response returns the array directly, comman_message_response returns {message: '...'}
+        if (!isset($serviceData['service_detail']) || empty($serviceData['service_detail'])) {
+            // Service not found or API error - redirect or show error
+            $errorMessage = $serviceData['message'] ?? __('messages.record_not_found');
+            return redirect()->route('service.list')->with('error', $errorMessage);
+        }
+
         $sitesetup = Setting::where('type', 'site-setup')->where('key', 'site-setup')->first();
         $date_time = json_decode($sitesetup->value);
         $favouriteServiceData = [];

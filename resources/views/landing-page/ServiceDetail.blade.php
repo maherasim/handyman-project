@@ -357,11 +357,22 @@
 
 @section('content')
 
+    @if (!isset($serviceData['service_detail']) || empty($serviceData['service_detail']))
+        <div class="section-padding">
+            <div class="container">
+                <div class="alert alert-danger">
+                    <h4>{{ __('Service Not Found') }}</h4>
+                    <p>{{ __('The service you are looking for does not exist or is no longer available.') }}</p>
+                    <a href="{{ route('service.list') }}" class="btn btn-primary">{{ __('Back to Services') }}</a>
+                </div>
+            </div>
+        </div>
+    @else
     <div class="section-padding service-detail">
         <div class="container">
             <div class="row">
                 <div class="col-lg-8 pe-xxl-5">
-                    <h3 class="text-capitalize mb-2">{{ $serviceData['service_detail']['name'] }}</h3>
+                    <h3 class="text-capitalize mb-2">{{ $serviceData['service_detail']['name'] ?? 'Service' }}</h3>
                     <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
                         <ul class="service-meta-list list-inline m-0 d-flex align-items-center flex-wrap">
                             <li>
@@ -1392,6 +1403,7 @@
             </div>
         </div>
     </div>
+    @endif
 
 @endsection
 
