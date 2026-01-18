@@ -503,10 +503,24 @@ public function store(ServiceRequest $request)
         }
     } else {
         if ($request->hasFile('service_attachment')) {
-            $uploadedFile = $request->file('service_attachment');
-            if ($uploadedFile && $uploadedFile->isValid()) {
-                $file = $uploadedFile;
-                $hasValidAttachment = true;
+            $uploadedFiles = $request->file('service_attachment');
+            
+            // Handle both single file and multiple files (array)
+            // When form uses name="service_attachment[]" with multiple attribute, it returns an array
+            if (is_array($uploadedFiles)) {
+                // Multiple files uploaded
+                foreach ($uploadedFiles as $uploadedFile) {
+                    if ($uploadedFile && is_object($uploadedFile) && method_exists($uploadedFile, 'isValid') && $uploadedFile->isValid()) {
+                        $file[] = $uploadedFile;
+                        $hasValidAttachment = true;
+                    }
+                }
+            } else {
+                // Single file uploaded (when name="service_attachment" without [])
+                if ($uploadedFiles && is_object($uploadedFiles) && method_exists($uploadedFiles, 'isValid') && $uploadedFiles->isValid()) {
+                    $file = [$uploadedFiles]; // Convert to array for consistency with storeMediaFile
+                    $hasValidAttachment = true;
+                }
             }
         }
     }
