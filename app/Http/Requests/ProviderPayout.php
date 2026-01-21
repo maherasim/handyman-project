@@ -46,7 +46,7 @@ class ProviderPayout extends FormRequest
                     'payment_method' => 'required',
                     'provider_id' => 'required',
                     'bank'=>'required',
-                    'amount' => 'required|numeric|min:1|max:'.$amount,
+                    'amount' => 'required|numeric|min:50',
                   ];
 
                 }else{
@@ -54,7 +54,7 @@ class ProviderPayout extends FormRequest
                     return [
                         'payment_method' => 'required',
                         'provider_id' => 'required',
-                        'amount' => 'required|numeric|min:1|max:'.$amount,
+                        'amount' => 'required|numeric|min:50',
                     ];
 
 

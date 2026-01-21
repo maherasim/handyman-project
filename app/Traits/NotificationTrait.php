@@ -497,7 +497,7 @@ trait NotificationTrait
                     'user_type' => $data['user_type'],
                 ];
                 break;
-            case "withdraw_money";
+            case "withdraw_money":
                 $id = $data['id'];
                 $data['activity_type'] = $data['activity_type'];
                 $data['activity_message'] = trans('messages.withdraw_money',['amount' => getPriceFormat($data['amount'])]);
@@ -507,10 +507,18 @@ trait NotificationTrait
 
                 $amount = isset($data['amount']) ? getPriceFormat($data['amount']) : '';
 
+                // Get wallet amount if wallet exists, otherwise use 0 or amount from data
+                $walletAmount = 0;
+                if (isset($data['wallet']) && is_object($data['wallet'])) {
+                    $walletAmount = $data['wallet']->amount ?? 0;
+                } elseif (isset($data['wallet_amount'])) {
+                    $walletAmount = $data['wallet_amount'];
+                }
+
                 $activity_data = [
                     'user_id' => $data['user_id'],
                     'credit_debit_amount' => $data['amount'],
-                    'amount' => $data['wallet']->amount,
+                    'amount' => $walletAmount,
                     'transaction_type' => __('messages.debit'),
                 ];
 

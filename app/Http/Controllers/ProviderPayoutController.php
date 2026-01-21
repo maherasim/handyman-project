@@ -8,6 +8,7 @@ use App\Models\Booking;
 use App\Models\User;
 use App\Models\Wallet;
 use App\Models\Bank;
+use App\Models\WithdrawMoney;
 use Carbon\Carbon;
 use App\Http\Requests\ProviderPayout as ProviderPayoutRequest;
 use Yajra\DataTables\DataTables;
@@ -15,6 +16,7 @@ use App\Traits\NotificationTrait;
 use App\Traits\EarningTrait;
 use App\Models\CommissionEarning;
 use App\Models\Setting;
+use Illuminate\Support\Facades\Session;
 class ProviderPayoutController extends Controller
 {
     use NotificationTrait;
@@ -26,7 +28,17 @@ class ProviderPayoutController extends Controller
      */
     public function index()
     {
-
+        // Redirect to show method with current user's ID, or to earning page
+        if (auth()->check()) {
+            $user = auth()->user();
+            if ($user->hasRole(['provider', 'handyman'])) {
+                // Resource route expects 'providerpayout' parameter, not 'id'
+                return redirect()->route('providerpayout.show', ['providerpayout' => $user->id]);
+            } elseif ($user->hasRole(['admin', 'demo_admin'])) {
+                return redirect()->route('earning');
+            }
+        }
+        return redirect()->route('home');
     }
 
     public function index_data(DataTables $datatable,Request $request)
@@ -162,7 +174,15 @@ class ProviderPayoutController extends Controller
 
         $payoutdata->provider_id = $id;
 
-        return view('providerpayout.create', compact('pageTitle' ,'payoutdata' ,'auth_user' ,'redirect_type'));
+        // Fetch wallet balance for handyman and provider users
+        $walletBalance = 0;
+        $currentUser = auth()->user();
+        if ($currentUser && in_array($currentUser->user_type, ['handyman', 'provider'])) {
+            $wallet = Wallet::where('user_id', $currentUser->id)->first();
+            $walletBalance = $wallet ? ($wallet->amount ?? 0) : 0;
+        }
+
+        return view('providerpayout.create', compact('pageTitle' ,'payoutdata' ,'auth_user' ,'redirect_type', 'walletBalance'));
     }
 
     /**
@@ -181,6 +201,11 @@ class ProviderPayoutController extends Controller
              $data = $request->except('_token');
 
              $payout_status='';
+
+             // Ensure payment_method defaults to 'bank' if not provided
+             if (!isset($data['payment_method']) || empty($data['payment_method'])) {
+                 $data['payment_method'] = 'bank';
+             }
 
              $payment_gateway = isset($data['payment_gateway']) ? $data['payment_gateway'] : ' ';
 
@@ -260,14 +285,71 @@ class ProviderPayoutController extends Controller
             }
 
          }
-        $result = ProviderPayout::create($data);
+        
+        // If payment method is 'bank', save to withdraw_money table instead of provider_payouts
+        if($data['payment_method'] === 'bank') {
+            // Prepare data for withdraw_money table
+            $withdrawData = [
+                'user_id' => $provider_id,
+                'amount' => $data['amount'],
+                'bank_id' => $data['bank'] ?? null,
+                'datetime' => Carbon::now(),
+                'payment_type' => 'manual', // or 'bank_transfer'
+                'status' => 'pending', // Admin will process this manually
+            ];
+            
+            // Create withdraw_money record
+            $withdrawResult = WithdrawMoney::create($withdrawData);
+            
+            // Also create provider_payout record for tracking (optional - you can remove this if not needed)
+            $result = ProviderPayout::create($data);
+            
+            // Link withdraw_money to provider_payout if needed
+            if(isset($withdrawResult->id) && isset($result->id)) {
+                $withdrawResult->withdraw_money_id = $result->id;
+                $withdrawResult->save();
+            }
+            
+            // Get wallet for notification
+            $wallet = Wallet::where('user_id', $provider_id)->first();
+            
+            $activity_data = [
+                'type' => 'withdraw_money',
+                'activity_type' => 'withdraw_money',
+                'id' => $withdrawResult->id,
+                'user_id' => $provider_id,
+                'amount' => $data['amount'],
+            ];
+            
+            // Include wallet if it exists
+            if ($wallet) {
+                $activity_data['wallet'] = $wallet;
+            }
+            
+            $this->sendNotification($activity_data);
+            
+            // Update commission earnings
+            CommissionEarning::where('employee_id', $provider_id)->where('commission_status','unpaid')->update(['commission_status' => 'paid']);
+            
+            $message = trans('messages.save_form', ['form' => trans('messages.providerpayout')]);
+            if($request->is('api/*')){
+                return comman_message_response($message);
+            }
+            // Set success message in session
+            Session::flash('success', $message);
+            // Redirect back to the same create page with success message
+            return redirect()->route('providerpayout.create', ['id' => $provider_id]);
+        } else {
+            // For other payment methods (wallet, cash), use the original flow
+            $result = ProviderPayout::create($data);
+        }
 
         CommissionEarning::where('employee_id', $provider_id)->where('commission_status','unpaid')->update(['commission_status' => 'paid']);
         $activity_data = [
             'type' => 'provider_payout',
             'activity_type' => 'provider_payout',
             'id' => $result->id,
-            'pay_date' => $result->paid_date,
+            'pay_date' => $result->paid_date ?? null,
             'user_id' => $result->provider_id,
             'amount' => $result->amount,
         ];
@@ -304,16 +386,18 @@ class ProviderPayoutController extends Controller
 
      if($payout_status=='queued'){
 
-        return redirect()->route('earning')->with('success', __('messages.queue_message',['form' => 'Provider Payout']));
+        // Redirect back to the same create page with success message
+        return redirect()->route('providerpayout.create', ['id' => $provider_id])->with('success', __('messages.queue_message',['form' => 'Provider Payout']));
 
        }
     if ($request->redirect_type == 'collect_money') {
-        // Redirect to the provider's show page with success message
-        return redirect()->route('providerpayout.show', $data['provider_id'])->with('success', __('messages.created_success', ['form' => 'Provider Payout']));
+        // Redirect back to the same create page with success message
+        return redirect()->route('providerpayout.create', ['id' => $provider_id])->with('success', __('messages.created_success', ['form' => 'Provider Payout']));
     }
 
 
-        return redirect()->route('providerpayout.show', $data['provider_id'])->with('success', __('messages.created_success',['form' => 'Provider Payout']));
+        // Redirect back to the same create page with success message
+        return redirect()->route('providerpayout.create', ['id' => $provider_id])->with('success', __('messages.created_success',['form' => 'Provider Payout']));
 
     }
 

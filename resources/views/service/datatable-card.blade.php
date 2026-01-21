@@ -1,91 +1,4 @@
-
-<style>
-   .price-box {
-      background-color: #007bff; /* Blue background */
-      color: white; /* White text for better visibility */
-      font-size: 18px; /* Increased text size */
-      font-weight: bold;
-      color: red; /* Red text for price */
-      text-align: center;
-      padding: 10px 15px; /* Added consistent padding */
-      border-radius: 10px; /* Rounded corners */
-      display: inline-block;
-      radius: 15%;
-      width: 180px; /* Increased width */
-      margin: 5px 0; /* Optional: Adds spacing around the box */
-   }
-   .service-asim {
-            height: 10.5rem !important;
-            object-fit: cover;
-        }
-        .provider-info {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    white-space: nowrap;
-}
-
-.provider-name {
-    display: inline-block;
-    line-height: 1.2;
-    word-break: break-word;
-}
-
-.provider-name span {
-    display: block;
-}
-
-/* Card polish */
-.service-box-card { 
-    border: 1px solid #eef0f2; 
-    transition: box-shadow .2s ease, transform .2s ease; 
-    background: #fff; 
-    padding: 15px;
-    border-radius: 12px;
-}
-.service-box-card:hover { 
-    box-shadow: 0 10px 24px rgba(18,38,63,.08); 
-    transform: translateY(-2px); 
-}
-.social-share img, .social-share svg { 
-    width: 28px; 
-    height: 28px; 
-    border-radius: 6px; 
-}
-
-/* Statistics section improvements */
-.stats-section {
-    background: #f8f9fa;
-    border-radius: 8px;
-    padding: 12px 8px;
-    margin: 12px 0;
-}
-
-.stats-item {
-    text-align: center;
-    padding: 4px;
-}
-
-.stats-icon {
-    width: 16px;
-    height: 16px;
-    margin-right: 4px;
-}
-
-.stats-value {
-    font-weight: 600;
-    font-size: 14px;
-    color: #2c3e50;
-}
-
-.stats-label {
-    font-size: 11px;
-    color: #6c757d;
-    margin-top: 2px;
-}
-
-</style>
-<div class="service-box-card bg-white rounded-3 mb-0 shadow-sm h-100" data-service-id="{{ $data->id }}">
+<div class="service-box-card bg-white rounded-3 mb-0 shadow-sm h-100" data-service-id="{{ $data->id }}" v-pre>
    <div class="iq-image position-relative" style="height: 200px; width: 100%; overflow: hidden; border-radius: 0.5rem;">
       @if($data->visit_type == 'ONLINE')
          <span class="online-service"></span>
@@ -306,121 +219,194 @@
   
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.1/dist/sweetalert2.all.min.js"></script>
- 
-<script>
-  document.addEventListener('DOMContentLoaded', function () {
-    if (window.bootstrap && bootstrap.Tooltip) {
-      var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-      tooltipTriggerList.forEach(function (tooltipTriggerEl) {
-        new bootstrap.Tooltip(tooltipTriggerEl)
-      })
-    }
-  });
-</script>
+@if(!isset($skipScripts) || !$skipScripts)
 <script>
    $(document).ready(function () {
-   
-    const baseUrl = document.querySelector('meta[name="baseUrl"]').getAttribute('content');
+    const baseUrl = document.querySelector('meta[name="baseUrl"]')?.getAttribute('content') || '{{ env("APP_URL") }}';
 
-    $('.save_fav').off('click').on('click', function () {
+    // Only attach handlers if not already attached (for DataTables usage)
+    if (typeof window.favoriteHandlersAttached === 'undefined') {
+        window.favoriteHandlersAttached = true;
 
-       const form = $(this).closest('form');
+        $('.save_fav').off('click').on('click', function (e) {
+           e.preventDefault();
+           const form = $(this).closest('form');
+           const serviceId = form.find('.service_id').data('service-id');
+           const userId = form.find('#user_id').val() || $('input[name="user_id"]').first().val();
 
-       const serviceId = form.find('.service_id').data('service-id');
-       const userId = $('#user_id').val();
+           if (!userId) {
+               console.error('User ID not found');
+               return;
+           }
 
-       $.ajax({
-            url: baseUrl + '/api/save-favourite',
-            type: 'POST',
-            data: {
-                _token: '{{ csrf_token() }}',
-                service_id: serviceId,
-                user_id: userId,
-            },
-            success: function (response) {
-               Swal.fire({
-               title: 'Done',
-               text: response.message,
-               icon: 'success',
-               iconColor: '#5F60B9'
-               }).then((result) => {
-                  if (result.isConfirmed) {
-                     $('#datatable').DataTable().ajax.reload();
-                  }
-               })
-            },
-            error: function (error) {
-                console.error('Error:', error);
-            }
+           $.ajax({
+                url: '{{ route("save-favourite") }}',
+                type: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json'
+                },
+                data: {
+                    _token: '{{ csrf_token() }}',
+                    service_id: serviceId,
+                    user_id: userId,
+                },
+                success: function (response) {
+                   if (typeof Swal !== 'undefined') {
+                       Swal.fire({
+                          title: 'Done',
+                          text: response.message || 'Favorite saved successfully',
+                          icon: 'success',
+                          iconColor: '#5F60B9'
+                       }).then((result) => {
+                          if ($('#datatable').length && typeof $('#datatable').DataTable !== 'undefined') {
+                             $('#datatable').DataTable().ajax.reload(null, false);
+                          } else {
+                             window.location.reload();
+                          }
+                       });
+                   } else {
+                       alert(response.message || 'Favorite saved successfully');
+                       if ($('#datatable').length && typeof $('#datatable').DataTable !== 'undefined') {
+                           $('#datatable').DataTable().ajax.reload(null, false);
+                       } else {
+                           window.location.reload();
+                       }
+                   }
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error:', error, xhr);
+                    if (typeof Swal !== 'undefined') {
+                        if (xhr.responseJSON && xhr.responseJSON.message) {
+                            Swal.fire({
+                                title: 'Error',
+                                text: xhr.responseJSON.message,
+                                icon: 'error'
+                            });
+                        } else {
+                            Swal.fire({
+                                title: 'Error',
+                                text: 'Failed to save favorite. Please try again.',
+                                icon: 'error'
+                            });
+                        }
+                    } else {
+                        alert('Failed to save favorite. Please try again.');
+                    }
+                }
+            });
         });
-    });
 
-    $('.delete_fav').off('click').on('click', function () {
-       const form = $(this).closest('form');
+        $('.delete_fav').off('click').on('click', function (e) {
+           e.preventDefault();
+           const form = $(this).closest('form');
+           const serviceId = form.find('.service_id').data('service-id');
+           const userId = form.find('#user_id').val() || $('input[name="user_id"]').first().val();
 
-       const serviceId = form.find('.service_id').data('service-id');
-       const userId = $('#user_id').val();
+           if (!userId) {
+               console.error('User ID not found');
+               return;
+           }
 
-       $.ajax({
-            url: baseUrl + '/api/delete-favourite',
-            type: 'POST',
-            data: {
-                _token: '{{ csrf_token() }}',
-                service_id: serviceId,
-                user_id: userId,
-            },
-            success: function (response) {
-               Swal.fire({
-               title: 'Done',
-               text: response.message,
-               icon: 'success',
-               iconColor: '#5F60B9'
-               }).then((result) => {
-                  if (result.isConfirmed) {
-                     $('#datatable').DataTable().ajax.reload();
-                  }
-               })
-            },
-            error: function (error) {
-                console.error('Error', error);
-            }
+           $.ajax({
+                url: '{{ route("delete-favourite") }}',
+                type: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json'
+                },
+                data: {
+                    _token: '{{ csrf_token() }}',
+                    service_id: serviceId,
+                    user_id: userId,
+                },
+                success: function (response) {
+                   if (typeof Swal !== 'undefined') {
+                       Swal.fire({
+                          title: 'Done',
+                          text: response.message || 'Favorite removed successfully',
+                          icon: 'success',
+                          iconColor: '#5F60B9'
+                       }).then((result) => {
+                          if ($('#datatable').length && typeof $('#datatable').DataTable !== 'undefined') {
+                             $('#datatable').DataTable().ajax.reload(null, false);
+                          } else {
+                             window.location.reload();
+                          }
+                       });
+                   } else {
+                       alert(response.message || 'Favorite removed successfully');
+                       if ($('#datatable').length && typeof $('#datatable').DataTable !== 'undefined') {
+                           $('#datatable').DataTable().ajax.reload(null, false);
+                       } else {
+                           window.location.reload();
+                       }
+                   }
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error:', error, xhr);
+                    if (typeof Swal !== 'undefined') {
+                        if (xhr.responseJSON && xhr.responseJSON.message) {
+                            Swal.fire({
+                                title: 'Error',
+                                text: xhr.responseJSON.message,
+                                icon: 'error'
+                            });
+                        } else {
+                            Swal.fire({
+                                title: 'Error',
+                                text: 'Failed to delete favorite. Please try again.',
+                                icon: 'error'
+                            });
+                        }
+                    } else {
+                        alert('Failed to delete favorite. Please try again.');
+                    }
+                }
+            });
         });
-    });
-
-    $('.service-heading, .service-img').on('click', function (e) {
-    e.preventDefault();
-    var serviceId = $(this).closest('.service-box-card').data('service-id');
-
-    // Local Storage
-    var storedServiceIds = JSON.parse(localStorage.getItem('recentlyViewed')) || [];
-    if (!storedServiceIds.includes(serviceId)) {
-        storedServiceIds.unshift(serviceId);
-        storedServiceIds = storedServiceIds.slice(0, 10);
-        localStorage.setItem('recentlyViewed', JSON.stringify(storedServiceIds));
     }
 
-    // Laravel Session
-    $.ajax({
-        url: baseUrl + '/save-recently-viewed/' + serviceId,
-        type: 'POST',
-        data: {
-            _token: '{{ csrf_token() }}',
-        },
-        success: function (response) {
-            return response;
-        },
-        error: function (error) {
-            console.error('Error storing recently viewed service:', error);
+    $('.service-heading, .service-img').on('click', function (e) {
+        e.preventDefault();
+        var serviceId = $(this).closest('.service-box-card').data('service-id');
+        const baseUrl = document.querySelector('meta[name="baseUrl"]')?.getAttribute('content') || '{{ env("APP_URL") }}';
+
+        // Local Storage
+        var storedServiceIds = JSON.parse(localStorage.getItem('recentlyViewed')) || [];
+        if (!storedServiceIds.includes(serviceId)) {
+            storedServiceIds.unshift(serviceId);
+            storedServiceIds = storedServiceIds.slice(0, 10);
+            localStorage.setItem('recentlyViewed', JSON.stringify(storedServiceIds));
         }
+
+        // Laravel Session
+        $.ajax({
+            url: baseUrl + '/save-recently-viewed/' + serviceId,
+            type: 'POST',
+            data: {
+                _token: '{{ csrf_token() }}',
+            },
+            success: function (response) {
+                return response;
+            },
+            error: function (error) {
+                console.error('Error storing recently viewed service:', error);
+            }
+        });
+
+        window.location.href = $(this).attr('href');
     });
 
-    window.location.href = $(this).attr('href');
-});
-});
-</script>
+    // Initialize tooltips
+    if (window.bootstrap && bootstrap.Tooltip) {
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.forEach(function (tooltipTriggerEl) {
+            new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+    }
 
-<script>
+    // Share handler
     if (!window.__shareClickHandler) {
         window.__shareClickHandler = function(e, el) {
             try { e.preventDefault(); e.stopPropagation(); } catch (_) {}
@@ -460,4 +446,6 @@
             return false;
         };
     }
+   });
 </script>
+@endif

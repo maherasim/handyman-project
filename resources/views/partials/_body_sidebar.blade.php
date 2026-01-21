@@ -809,7 +809,8 @@ $menu->add('<span>'.__('Favourit Provider').'</span><span class="custom-tooltip"
         if (
             auth()->user()->user_type == 'provider' ||
             auth()->user()->user_type == 'admin' ||
-            auth()->user()->user_type == 'demo_admin'
+            auth()->user()->user_type == 'demo_admin' ||
+            auth()->user()->user_type == 'handyman'
         ) {
             $menu
                 ->add(
@@ -828,8 +829,7 @@ $menu->add('<span>'.__('Favourit Provider').'</span><span class="custom-tooltip"
 </svg>
 ',
                 )
-                ->nickname('provider_withdrawal_requests')
-                ->data('permission', 'service list');
+                ->nickname('provider_withdrawal_requests');
         }
 
         // removed duplicate provider myjob_request quick link (moved to Quick Access)

@@ -126,12 +126,18 @@
                             if (str_contains($rawPlan, 'silver')) { $plan_icon = asset('images/icon/silverpng.png'); }
                             elseif (str_contains($rawPlan, 'gold')) { $plan_icon = asset('images/goldpng.png'); }
                         }
+                        // Fetch favorite service for logged-in user
+                        if (!empty(auth()->user()) && auth()->user()->hasRole('user')) {
+                            $favouriteService = $data->getUserFavouriteService()->where('user_id', auth()->user()->id)->get();
+                        } else {
+                            $favouriteService = collect();
+                        }
                     @endphp
                     @include('service.datatable-card', [
                         'data' => $data,
                         'totalReviews' => $totalReviews,
                         'totalRating' => $totalRating,
-                        'favouriteService' => collect(),
+                        'favouriteService' => $favouriteService,
                         'completedBookingCount' => $completedBookingCount,
                         'plan_icon' => $plan_icon,
                     ])
@@ -159,6 +165,7 @@
 @endsection
 
 @section('after_script')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.1/dist/sweetalert2.all.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function(){
@@ -306,6 +313,132 @@ document.addEventListener('DOMContentLoaded', function(){
     $('#countrySelect').on('select2:clear', function(e) {
          $('#citySelect').val(null).trigger('change');
     });
+
+    // Favorite functionality
+    const baseUrl = document.querySelector('meta[name="baseUrl"]')?.getAttribute('content') || '{{ env("APP_URL") }}';
+
+    // Use event delegation to handle dynamically added favorite buttons
+    $(document).off('click', '.save_fav').on('click', '.save_fav', function (e) {
+        e.preventDefault();
+        const form = $(this).closest('form');
+        const serviceId = form.find('.service_id').data('service-id');
+        const userId = form.find('#user_id').val() || $('input[name="user_id"]').first().val();
+
+        if (!userId) {
+            console.error('User ID not found');
+            Swal.fire({
+                title: 'Error',
+                text: 'Please log in to add favorites',
+                icon: 'error'
+            });
+            return;
+        }
+
+        $.ajax({
+            url: '{{ route("save-favourite") }}',
+            type: 'POST',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'application/json'
+            },
+            data: {
+                _token: '{{ csrf_token() }}',
+                service_id: serviceId,
+                user_id: userId,
+            },
+            success: function (response) {
+                Swal.fire({
+                    title: 'Done',
+                    text: response.message || 'Favorite saved successfully',
+                    icon: 'success',
+                    iconColor: '#5F60B9'
+                }).then((result) => {
+                    window.location.reload();
+                });
+            },
+            error: function (xhr, status, error) {
+                console.error('Error:', error, xhr);
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    Swal.fire({
+                        title: 'Error',
+                        text: xhr.responseJSON.message,
+                        icon: 'error'
+                    });
+                } else {
+                    Swal.fire({
+                        title: 'Error',
+                        text: 'Failed to save favorite. Please try again.',
+                        icon: 'error'
+                    });
+                }
+            }
+        });
+    });
+
+    $(document).off('click', '.delete_fav').on('click', '.delete_fav', function (e) {
+        e.preventDefault();
+        const form = $(this).closest('form');
+        const serviceId = form.find('.service_id').data('service-id');
+        const userId = form.find('#user_id').val() || $('input[name="user_id"]').first().val();
+
+        if (!userId) {
+            console.error('User ID not found');
+            Swal.fire({
+                title: 'Error',
+                text: 'Please log in to remove favorites',
+                icon: 'error'
+            });
+            return;
+        }
+
+        $.ajax({
+            url: '{{ route("delete-favourite") }}',
+            type: 'POST',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'application/json'
+            },
+            data: {
+                _token: '{{ csrf_token() }}',
+                service_id: serviceId,
+                user_id: userId,
+            },
+            success: function (response) {
+                Swal.fire({
+                    title: 'Done',
+                    text: response.message || 'Favorite removed successfully',
+                    icon: 'success',
+                    iconColor: '#5F60B9'
+                }).then((result) => {
+                    window.location.reload();
+                });
+            },
+            error: function (xhr, status, error) {
+                console.error('Error:', error, xhr);
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    Swal.fire({
+                        title: 'Error',
+                        text: xhr.responseJSON.message,
+                        icon: 'error'
+                    });
+                } else {
+                    Swal.fire({
+                        title: 'Error',
+                        text: 'Failed to delete favorite. Please try again.',
+                        icon: 'error'
+                    });
+                }
+            }
+        });
+    });
+
+    // Initialize tooltips
+    if (window.bootstrap && bootstrap.Tooltip) {
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.forEach(function (tooltipTriggerEl) {
+            new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+    }
 });
 </script>
 @endsection

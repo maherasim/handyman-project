@@ -696,6 +696,11 @@ public function store(ServiceRequest $request)
 			$message = __('messages.save_form',[ 'form' => __('messages.favourite') ] );
 		}
 
+        // Return JSON for AJAX requests
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json(['status' => true, 'message' => $message]);
+        }
+
         return  redirect()->back()->withSuccess($message);
     }
 
@@ -705,6 +710,11 @@ public function store(ServiceRequest $request)
         $service_rating = UserFavouriteService::where('user_id',$request->user_id)->where('service_id',$request->service_id)->delete();
 
         $message = __('messages.delete_form',[ 'form' => __('messages.favourite') ] );
+
+        // Return JSON for AJAX requests
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json(['status' => true, 'message' => $message]);
+        }
 
         return  redirect()->back()->withSuccess($message);
     }

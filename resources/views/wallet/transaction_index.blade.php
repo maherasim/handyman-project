@@ -61,6 +61,19 @@
                     <div class="card-body p-0">
                         <div class="d-flex justify-content-between align-items-center p-3 flex-wrap gap-3">
                             <h5 class="fw-bold">{{ __('messages.provider_withdrawal_requests') }}</h5>
+                            @if(auth()->check() && (auth()->user()->hasRole('provider') || auth()->user()->hasRole('handyman')))
+                            <div class="d-flex align-items-center gap-3 flex-wrap">
+                                @if(isset($walletBalance))
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="text-muted">{{ __('messages.available_balance') }}:</span>
+                                    <span class="fw-bold text-success fs-6">{{ getPriceFormat($walletBalance ?? 0) }}</span>
+                                </div>
+                                @endif
+                                <a href="{{ route('providerpayout.create', ['id' => auth()->user()->id]) }}" class="btn btn-sm btn-primary">
+                                    <i class="fa fa-money-bill-wave"></i> {{ __('messages.withdraw_money') ?? 'Withdraw Money' }}
+                                </a>
+                            </div>
+                            @endif
                         </div>
 
                     </div>

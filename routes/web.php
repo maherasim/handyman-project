@@ -505,12 +505,15 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
         Route::post('plans/{id}', [PlanController::class, 'destroy'])->name('plans.destroy');
     });
 
+    // Bank create and store routes accessible to handyman and provider without permission check
+    Route::get('bank/create/', [BankController::class, 'create'])->name('bank.create');
+    Route::post('bank', [BankController::class, 'store'])->name('bank.store');
+    
     Route::group(['middleware' => ['permission:bank list']], function () {
-        Route::resource('bank', BankController::class);
+        Route::resource('bank', BankController::class)->except(['create', 'store']);
         Route::get('bank-index-data', [BankController::class, 'index_data'])->name('bank.index_data');
         Route::post('bank-bulk-action', [BankController::class, 'bulk_action'])->name('bank.bulk_action');
         Route::post('bank-action', [BankController::class, 'action'])->name('bank.action');
-        Route::get('bank/create/', [BankController::class, 'create'])->name('bank.create');
         Route::get('bank/edit/{id}', [BankController::class, 'edit'])->name('bank.edit');
         Route::get('bank-list/{user_id}', [BankController::class, 'banklist'])->name('bank.list');
     });

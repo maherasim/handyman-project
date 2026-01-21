@@ -131,9 +131,6 @@ class BankController extends Controller
      */
     public function create(Request $request)
     {
-        if (!auth()->user()->can('bank add')) {
-            return redirect()->back()->withErrors(trans('messages.demo_permission_denied'));
-        }
         $id = $request->id;
         $auth_user = authSession();
         $user_type=null;
@@ -173,7 +170,7 @@ class BankController extends Controller
             return  redirect()->back()->withErrors(trans('messages.demo_permission_denied'));
         }
         $data = $request->all();
-        if (auth()->user()->hasRole('provider')) {
+        if (auth()->user()->hasRole('provider') || auth()->user()->hasRole('handyman')) {
             $data['provider_id'] = auth()->id();
         }
         $type = $data['type'] ?? '';
@@ -249,7 +246,7 @@ class BankController extends Controller
         if($request->is('api/*')){
             return response()->json(['status' => true, 'data' => $bankData, 'message' => $message]);
         }
-        if($user_type == 'provider'){
+        if($user_type == 'provider' || $user_type == 'handyman'){
             return redirect(route('providerpayout.create', $bankData['provider_id']))->withSuccess($message);
         }else{
             return redirect(route('bank.list', ['user_id' => $result->provider_id]))->withSuccess($message);

@@ -497,7 +497,16 @@ public function getWalletPaymentMethod(Request $request)
         $pageTitle = __('messages.list_form_title',['form' => __('messages.provider_withdrawal_requests')] );
         $auth_user = authSession();
         $assets = ['datatable'];
-        return view('wallet.transaction_index', compact('pageTitle','auth_user','assets','filter'));
+        
+        // Fetch wallet balance for handyman and provider users
+        $walletBalance = 0;
+        $currentUser = auth()->user();
+        if ($currentUser && (in_array($currentUser->user_type, ['handyman', 'provider']) || $currentUser->hasRole('handyman') || $currentUser->hasRole('provider'))) {
+            $wallet = Wallet::where('user_id', $currentUser->id)->first();
+            $walletBalance = $wallet ? ($wallet->amount ?? 0) : 0;
+        }
+        
+        return view('wallet.transaction_index', compact('pageTitle','auth_user','assets','filter', 'walletBalance'));
     }
 
     public function wallet_transaction_index_data(DataTables $datatable,Request $request)
@@ -506,7 +515,7 @@ public function getWalletPaymentMethod(Request $request)
             $q->withTrashed(); // Include soft deleted banks
         }]);
 
-        if(auth()->user()->hasRole('provider')){
+        if(auth()->user()->hasRole('provider') || auth()->user()->hasRole('handyman')){
             $query = $query->where('user_id', auth()->user()->id);
         }
 
@@ -592,7 +601,13 @@ public function getWalletPaymentMethod(Request $request)
                 return ucfirst($query->payment_type);
             })
             ->editColumn('user_type' , function ($query){
-                return optional($query->providers)->user_type ?? '-';
+                $userType = optional($query->providers)->user_type ?? null;
+                if ($userType === 'provider') {
+                    return 'Employer';
+                } elseif ($userType === 'handyman') {
+                    return 'Worker';
+                }
+                return $userType ?? '-';
             })
             ->filterColumn('user_type',function($query,$keyword){
                 $query->whereHas('providers',function ($q) use($keyword){
@@ -665,24 +680,39 @@ public function getWalletPaymentMethod(Request $request)
 {
     $withdraw_money = WithdrawMoney::with(['bank', 'providers'])->where('id', $id)->first();
 
-    if ($withdraw_money) {
-        $withdraw_money->status = 'paid';
-        $withdraw_money->save();
-        
-        // Send confirmation email to user
-        try {
-            $user = $withdraw_money->providers;
-            if ($user && $user->email) {
-                Mail::to($user->email)->send(new WithdrawalConfirmationMail($user, $withdraw_money));
-                \Log::info('Withdrawal confirmation email sent successfully to: ' . $user->email . ' for withdrawal ID: ' . $id);
-            }
-        } catch (\Exception $e) {
-            // Log error but don't fail the withdrawal confirmation
-            \Log::error('Failed to send withdrawal confirmation email: ' . $e->getMessage());
+    if (!$withdraw_money) {
+        return redirect(route('wallet_transaction'))->withErrors('Withdrawal request not found.');
+    }
+
+    // Update status to paid
+    $withdraw_money->status = 'paid';
+    $withdraw_money->save();
+    
+    // Send confirmation email to user
+    $emailSent = false;
+    try {
+        $user = $withdraw_money->providers;
+        if ($user && $user->email) {
+            Mail::to($user->email)->send(new WithdrawalConfirmationMail($user, $withdraw_money));
+            $emailSent = true;
+            \Log::info('Withdrawal confirmation email sent successfully to: ' . $user->email . ' for withdrawal ID: ' . $id);
+        } else {
+            \Log::warning('Cannot send withdrawal email: User or email not found for withdrawal ID: ' . $id);
         }
+    } catch (\Exception $e) {
+        // Log error but don't fail the withdrawal confirmation
+        \Log::error('Failed to send withdrawal confirmation email: ' . $e->getMessage(), [
+            'withdrawal_id' => $id,
+            'user_id' => $withdraw_money->user_id,
+            'trace' => $e->getTraceAsString()
+        ]);
     }
 
     $message = __('messages.transaction_complete_success');
+    if ($emailSent) {
+        $message .= ' Confirmation email has been sent to the user.';
+    }
+    
     return redirect(route('wallet_transaction'))->withSuccess($message);
 }
 
