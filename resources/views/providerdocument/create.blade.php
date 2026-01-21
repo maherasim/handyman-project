@@ -51,8 +51,10 @@
                                         ],
                                         optional($provider_document->document)->id,
                                     )->class('select2js form-group document_id')->id('document_id')->required()->attribute('data-placeholder', __('messages.select_name', ['select' => __('messages.document')]))->attribute('data-ajax--url', route('ajax-list', ['type' => 'documents'])) }}
+                                @if (!auth()->user()->hasRole('provider'))
                                 <a href="{{ route('document.create') }}"><i class="fa fa-plus-circle mt-2"></i>
                                     {{ trans('messages.add_form_title', ['form' => trans('messages.document')]) }}</a>
+                                @endif
                             </div>
 
                             @if (auth()->user()->hasAnyRole(['admin', 'demo_admin']))
