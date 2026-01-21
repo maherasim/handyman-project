@@ -1102,6 +1102,12 @@
                                         </div>
                                     </div>
                                     <ul class="list-unstyled mt-3">
+                                        <li class="d-flex align-items-center mb-2">
+                                            <i class="ri-calendar-line me-2"></i>
+                                            <span class="text-body">
+                                                {{ optional($booking->handyman)->created_at ? optional($booking->handyman)->created_at->format('Y-m-d') : '-' }}
+                                            </span>
+                                        </li>
                                         {{-- <li class="d-flex align-items-center mb-2">
                                             <i class="ri-phone-line me-2"></i>
                                             <a href="tel:{{ optional($booking->handyman)->contact_number }}"
