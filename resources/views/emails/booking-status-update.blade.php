@@ -94,7 +94,17 @@
                 <strong style="color: #667eea;">{{ ucwords(str_replace('_', ' ', $newStatus)) }}</strong>
             </p>
             <p style="margin-top: 10px; color: #666;">
-                Updated by: <strong>{{ $actorName }}</strong> ({{ ucfirst($actorType) }})
+                Updated by: <strong>{{ $actorName }}</strong> 
+                @php
+                    // Convert text based on recipient type: provider -> Employer, handyman -> Worker
+                    $displayActorType = $actorType;
+                    if ($actorType === 'provider') {
+                        $displayActorType = 'Employer';
+                    } elseif ($actorType === 'handyman') {
+                        $displayActorType = 'Worker';
+                    }
+                @endphp
+                ({{ ucfirst($displayActorType) }})
             </p>
         </div>
         
@@ -118,7 +128,11 @@
             @endif
             @if($booking->provider)
             <div class="info-row">
-                <span class="info-label">Provider:</span>
+                @php
+                    // Show "Employer" instead of "Provider" when email is sent to provider
+                    $providerLabel = (isset($recipientType) && $recipientType === 'provider') ? 'Employer' : 'Provider';
+                @endphp
+                <span class="info-label">{{ $providerLabel }}:</span>
                 <span>{{ $booking->provider->display_name ?? 'N/A' }}</span>
             </div>
             @endif

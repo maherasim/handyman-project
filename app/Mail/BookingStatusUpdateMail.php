@@ -18,11 +18,12 @@ class BookingStatusUpdateMail extends Mailable
     public $newStatus;
     public $actorName;
     public $actorType;
+    public $recipientType;
 
     /**
      * Create a new message instance.
      */
-    public function __construct(User $recipient, Booking $booking, $oldStatus, $newStatus, $actorName, $actorType)
+    public function __construct(User $recipient, Booking $booking, $oldStatus, $newStatus, $actorName, $actorType, $recipientType = null)
     {
         $this->recipient = $recipient;
         $this->booking = $booking;
@@ -30,6 +31,7 @@ class BookingStatusUpdateMail extends Mailable
         $this->newStatus = $newStatus;
         $this->actorName = $actorName;
         $this->actorType = $actorType;
+        $this->recipientType = $recipientType;
     }
 
     /**

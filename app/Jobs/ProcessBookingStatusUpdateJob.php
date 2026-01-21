@@ -167,7 +167,8 @@ class ProcessBookingStatusUpdateJob implements ShouldQueue
                         $oldStatus,
                         $newStatus,
                         $actorName,
-                        $actorType
+                        $actorType,
+                        $emailData['type'] // recipient type: 'provider', 'handyman', or 'user'
                     )
                 );
             } catch (\Exception $e) {

@@ -771,7 +771,8 @@ class BookingController extends Controller
                                 $old_status,
                                 $newStatus,
                                 $actorName,
-                                $actorType
+                                $actorType,
+                                $emailData['type'] // recipient type: 'provider', 'handyman', or 'user'
                             )
                         );
                         \Log::info('Booking status update email sent', [

@@ -134,7 +134,7 @@
         <div class="content">
             <h2>Dear {{ $recipient->display_name ?? $recipient->first_name ?? 'Valued User' }},</h2>
             
-            <p>You have received a new message in your conversation.</p>
+            <p>You have received a new message from <strong>{{ $sender->display_name ?? ($sender->first_name . ' ' . $sender->last_name) ?? 'Someone' }}</strong>.</p>
             
             <div class="message-box">
                 <div class="sender-info">
@@ -147,25 +147,22 @@
                     </div>
                 </div>
                 
-                @if($chatMessage->message)
-                <div class="message-content">
-                    <p class="message-text">{{ $chatMessage->message }}</p>
+                <div style="margin-top: 15px; padding: 15px; background-color: #fff3cd; border-left: 4px solid #ffc107; border-radius: 8px;">
+                    <p style="margin: 0; color: #856404; font-size: 15px;">
+                        <strong>📩 New Message Received</strong>
+                    </p>
+                    <p style="margin: 10px 0 0 0; color: #856404; font-size: 14px;">
+                        To view the message content, please open the app or visit our website.
+                    </p>
                 </div>
-                @endif
-                
-                @if($chatMessage->attachment_path)
-                <div class="attachment-notice">
-                    📎 <strong>Attachment:</strong> A file has been shared with you
-                </div>
-                @endif
             </div>
             
             <div class="button-container">
-                <a href="{{ url('/messages') }}" class="button">View Message</a>
+                <a href="{{ url('/messages') }}" class="button">View Message on Website</a>
             </div>
             
-            <p style="margin-top: 30px; color: #6c757d; font-size: 14px;">
-                <strong>Note:</strong> This is an automated email notification. You can reply to this message by logging into your account.
+            <p style="margin-top: 30px; color: #6c757d; font-size: 14px; text-align: center;">
+                <strong>Note:</strong> For your privacy and security, message content is not displayed in email notifications. Please log in to your account or open the app to read the full message.
             </p>
         </div>
         
