@@ -204,9 +204,6 @@ class ProviderController extends Controller
         ->editColumn('display_name', function ($query) {
             return view('provider.user', compact('query'));
         })
-        ->editColumn('wallet', function ($query) {
-            return view('provider.wallet', compact('query'));
-        })
         ->editColumn('status', function ($query) {
             if ($query->status == '0') {
                 $status = '<a class="btn-sm text-white btn-success" href='.route('provider.approve', $query->id).'><i class="fa fa-check"></i>Approve</a>';
@@ -235,11 +232,8 @@ class ProviderController extends Controller
                 $q->where('name', 'like', '%'.$keyword.'%');
             });
         })
-        ->addColumn('action', function ($provider) {
-            return view('provider.action', compact('provider'))->render();
-        })
         ->addIndexColumn()
-        ->rawColumns(['check', 'display_name', 'wallet', 'action', 'status'])
+        ->rawColumns(['check', 'display_name', 'status'])
         ->toJson();
 }
 

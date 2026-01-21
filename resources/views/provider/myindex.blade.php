@@ -121,34 +121,16 @@
                         name: 'created_at',
                         title: "{{ __('messages.joining_date') }}"
                     },
-                    {
-                      data:'providertype_id',
-                      name:'providertype_id',
-                      title:"{{ __('messages.providertype') }}"
-                    },
+                    
                     {
                       data:'contact_number',
                       name:'contact_number',
                       title:"{{ __('messages.contact_number') }}"
                     },
                     {
-                      data:'wallet',
-                      name:'wallet',
-                      title:"{{ __('messages.wallet_amt') }}",
-                      searchable: false,
-                      orderable: false,
-                    },
-                    {
                         data: 'status',
                         name: 'status',
                         title: "{{ __('messages.status') }}"
-                    },
-                    {
-                        data: 'action',
-                        name: 'action',
-                        orderable: false,
-                        searchable: false,
-                        title: "{{ __('messages.action') }}"
                     }
 
                 ]
