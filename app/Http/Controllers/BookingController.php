@@ -116,7 +116,7 @@ class BookingController extends Controller
     public function index_data(DataTables $datatable, Request $request)
     {
         $auth_user = authSession();
-        $query = Booking::query()->myBooking()->with('payment', 'commissionsdata', 'handymanAdded');
+        $query = Booking::query()->myBooking()->with('payment', 'commissionsdata', 'handymanAdded', 'service.city', 'service.country');
 
         // Apply role-based filters
         if ($auth_user->hasRole('handyman')) {
@@ -238,14 +238,20 @@ class BookingController extends Controller
                 return view('booking.provider', compact('query'));
             })
             ->filterColumn('provider_id', function ($query, $keyword) {
-                $query->whereHas('provider', function ($q) use ($keyword) {
-                    $q->where('display_name', 'like', '%' . $keyword . '%');
+                $query->whereHas('service', function ($q) use ($keyword) {
+                    $q->whereHas('city', function ($cityQuery) use ($keyword) {
+                        $cityQuery->where('name', 'like', '%' . $keyword . '%');
+                    })->orWhereHas('country', function ($countryQuery) use ($keyword) {
+                        $countryQuery->where('name', 'like', '%' . $keyword . '%');
+                    });
                 });
             })
             ->orderColumn('provider_id', function ($query, $order) {
                 $query->select('bookings.*')
-                    ->join('users as providers', 'providers.id', '=', 'bookings.provider_id')
-                    ->orderBy('providers.display_name', $order);
+                    ->join('services', 'services.id', '=', 'bookings.service_id')
+                    ->leftJoin('cities', 'cities.id', '=', 'services.city_id')
+                    ->leftJoin('countries', 'countries.id', '=', 'services.country_id')
+                    ->orderByRaw("CONCAT(COALESCE(countries.name, ''), '-', COALESCE(cities.name, '')) {$order}");
             })
             // ->editColumn('status', function ($query) {
             //     return bookingstatus(BookingStatus::bookingStatus($query->status));

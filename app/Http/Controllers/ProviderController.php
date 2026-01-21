@@ -1283,105 +1283,126 @@ public function store(UserRequest $request)
 public function getProviderTimeSlot(Request $request)
 {
     $auth_user = authSession();
-    $id = $request->id;
+    
+    // Set default provider_id to current user if not provided
+    $provider_id = $request->id ?? auth()->user()->id;
 
-    if ($id != auth()->user()->id && !auth()->user()->hasRole(['admin', 'demo_admin'])) {
+    // Permission check: only allow if viewing own slots or user is admin
+    if ($provider_id != auth()->user()->id && !auth()->user()->hasRole(['admin', 'demo_admin'])) {
         return redirect(route('home'))->withErrors(trans('messages.demo_permission_denied'));
     }
 
     $providerdata = User::with('providerslotsmapping')
         ->where('user_type', 'provider')
-        ->where('id', $id)
+        ->where('id', $provider_id)
         ->first();
 
-    // Set timezone (ensure $admin is defined or passed in if necessary)
-    $admin = User::where('user_type', 'admin')->first(); // fallback if not available in your context
+    // Set timezone
+    $admin = User::where('user_type', 'admin')->first();
     date_default_timezone_set($admin->time_zone ?? 'UTC');
 
-    $current_time = \Carbon\Carbon::now();
-    $time = $current_time->toTimeString();
-    $current_day = strtolower(date('D'));
-    $provider_id = $request->id ?? auth()->user()->id;
+    // Fetch date-based slots for calendar view
+    $startDate = \Carbon\Carbon::now();
+    $endDate = \Carbon\Carbon::now()->addDays(90); // Show 3 months ahead
 
-    $days = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
+    $slots = ProviderSlotMapping::where('provider_id', $provider_id)
+        ->whereNotNull('date')
+        ->whereBetween('date', [$startDate->format('Y-m-d'), $endDate->format('Y-m-d')])
+        ->orderBy('date', 'asc')
+        ->orderBy('start_at', 'asc')
+        ->get();
 
-    $slotsArray = ['days' => $days];
-    $activeDay = 'mon';
-    $activeSlots = [];
+    // Get unique dates that have slots (for marking green in calendar)
+    // Use array_values() to ensure it's a numeric array (not associative) for JSON encoding
+    $datesWithSlots = array_values($slots->pluck('date')->unique()->toArray());
 
-    foreach ($days as $value) {
-        $slot = ProviderSlotMapping::where('provider_id', $provider_id)
-            ->where('days', $value)
-            ->orderBy('start_at', 'asc')
-            ->pluck('start_at')
-            ->toArray();
+    // Group slots by date for display
+    $calendarSlots = [];
+    foreach ($slots as $slot) {
+        $date = $slot->date;
+        $timeSlot = $slot->start_at;
+        if (strlen($timeSlot) == 5) {
+            $timeSlot .= ':00';
+        }
+        
+        if (!isset($calendarSlots[$date])) {
+            $calendarSlots[$date] = [];
+        }
+        $calendarSlots[$date][] = $timeSlot;
+    }
 
-        $obj = [
-            "day" => $value,
-            "slot" => $slot,
-        ];
-        $slotsArray[] = $obj;
-        $activeSlots[$value] = $slot;
+    // Remove duplicates and sort
+    foreach ($calendarSlots as $date => $times) {
+        $calendarSlots[$date] = array_unique($times);
+        sort($calendarSlots[$date]);
     }
 
     $pageTitle = __('messages.slot', ['form' => __('messages.slot')]);
 
     return view('provider.timeslot', compact(
         'auth_user',
-        'slotsArray',
         'pageTitle',
-        'activeDay',
         'provider_id',
         'providerdata',
-        'activeSlots' // ✅ added to the compact
+        'datesWithSlots',
+        'calendarSlots'
     ));
 }
 
 
     public function editProviderTimeSlot(Request $request){
         $auth_user = authSession();
-        $id = $request->id;
-        if ($id != auth()->user()->id && !auth()->user()->hasRole(['admin', 'demo_admin'])) {
-            return redirect(route('provider.time-slot',auth()->user()->id))->withErrors(trans('messages.demo_permission_denied'));
-        }
-        $providerdata = User::with('providerslotsmapping')->where('user_type','provider')->where('id',$id)->first();
-        date_default_timezone_set($admin->time_zone ?? 'UTC');
-
-        $current_time = \Carbon\Carbon::now();
-        $time = $current_time->toTimeString();
-
-        $current_day = strtolower(date('D'));
-
+        
+        // Set default provider_id to current user if not provided
         $provider_id = $request->id ?? auth()->user()->id;
-
-        $days = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
-
-        $slotsArray = ['days' => $days];
-        $activeDay = 'mon';
-        $activeSlots = [];
-
-        foreach ($days as $value) {
-            $slot = ProviderSlotMapping::where('provider_id', $provider_id)
-            ->where('days', $value)
-            ->orderBy('start_at', 'asc')
-            ->selectRaw("SUBSTRING(start_at, 1, 5) as start_at")
-            ->pluck('start_at')
-            ->toArray();
-
-            $obj = [
-                "day" => $value,
-                "slot" => $slot,
-            ];
-            $slotsArray[] = $obj;
-            $activeSlots[$value] = $slot;
-
+        
+        // Permission check: only allow if editing own slots or user is admin
+        if ($provider_id != auth()->user()->id && !auth()->user()->hasRole(['admin', 'demo_admin'])) {
+            return redirect(route('provider.time-slot', ['id' => auth()->user()->id]))->withErrors(trans('messages.demo_permission_denied'));
         }
+        
+        $providerdata = User::with('providerslotsmapping')->where('user_type','provider')->where('id',$provider_id)->first();
+        
+        // Set timezone
+        $admin = User::where('user_type', 'admin')->first();
+        date_default_timezone_set($admin->time_zone ?? 'UTC');
+        $selectedDate = $request->date; // Get date from query parameter if provided
+
+        // Fetch date-based slots like the API does
+        $startDate = \Carbon\Carbon::now();
+        $endDate = \Carbon\Carbon::now()->addDays(90); // Show 3 months ahead
+
+        $slots = ProviderSlotMapping::where('provider_id', $provider_id)
+            ->whereNotNull('date')
+            ->whereBetween('date', [$startDate->format('Y-m-d'), $endDate->format('Y-m-d')])
+            ->orderBy('date', 'asc')
+            ->orderBy('start_at', 'asc')
+            ->get();
+
+        // Group slots by date for the calendar
+        $calendarSlots = [];
+        foreach ($slots as $slot) {
+            $date = $slot->date;
+            $timeSlot = $slot->start_at;
+            if (strlen($timeSlot) == 5) {
+                $timeSlot .= ':00';
+            }
+            
+            if (!isset($calendarSlots[$date])) {
+                $calendarSlots[$date] = [];
+            }
+            $calendarSlots[$date][] = $timeSlot;
+        }
+
+        // Remove duplicates and sort
+        foreach ($calendarSlots as $date => $times) {
+            $calendarSlots[$date] = array_unique($times);
+            sort($calendarSlots[$date]);
+        }
+
         $pageTitle = __('messages.slot', ['form' => __('messages.slot')]);
 
-            return view('provider.edittimeslot', compact('auth_user','slotsArray', 'pageTitle', 'activeDay', 'provider_id', 'activeSlots','providerdata'));
-
-
-
+        return view('provider.edittimeslot', compact('auth_user', 'pageTitle', 'provider_id', 'calendarSlots', 'providerdata', 'selectedDate'));
     }
     public function createSubscriptionStripePayment(Request $request)
     {

@@ -338,7 +338,7 @@
                             </div>
                             <div class="form-check">
                                 <input type="checkbox" class="form-check-input" id="colPrice" checked />
-                                <label class="form-check-label" for="colPrice">{{ __('messages.provider') }}</label>
+                                <label class="form-check-label" for="colPrice">{{ __('messages.location') }}</label>
                             </div>
                             <div class="form-check">
                                 <input type="checkbox" class="form-check-input" id="colStatus" checked />
@@ -454,7 +454,7 @@
                         {
                             data: 'provider_id',
                             name: 'provider_id',
-                            title: "{{ __('messages.provider') }}"
+                            title: "{{ __('messages.location') }}"
                         },
                     @endif 
                     {

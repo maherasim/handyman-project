@@ -86,7 +86,7 @@
   'schedule_service' => 'Schedule Service',
   'remove' => 'Remove',
   'date_time' => 'Date and Time',
-  'available_slots' => 'Available Slots',
+  'available_slots' => 'Dates with Available Time Slots',
   'slot_not_available' => 'Slot is not avaible',
   'quantity' => 'Quantity',
   'remove_coupon' => 'Remove Coupon',

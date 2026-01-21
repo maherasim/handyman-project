@@ -35,34 +35,64 @@ class ProviderSlotController extends Controller
 public function store(Request $request)
 {
     $request->validate([
-        'slots' => 'required|array',
-        'slots.*.day' => 'required|string|in:sun,mon,tue,wed,thu,fri,sat',
-        'slots.*.time' => 'required|array',
-        'slots.*.time.*' => 'required|date_format:H:i',
+        'slots' => 'nullable|array',
+        'slots.*.date' => 'required|date|date_format:Y-m-d',
+        'slots.*.time' => 'nullable|array',
     ]);
 
-    $slotdata = $request->all();
     $provider_id = $request->provider_id ?? auth()->user()->id;
 
-    // Delete old slots for this provider
-    ProviderSlotMapping::where('provider_id', $provider_id)->delete();
+    // Delete existing slots for the specific dates being updated
+    $datesToUpdate = [];
+    foreach ($request->slots as $slot) {
+        if (isset($slot['date']) && !empty($slot['date'])) {
+            $datesToUpdate[] = $slot['date'];
+        }
+    }
+
+    if (!empty($datesToUpdate)) {
+        ProviderSlotMapping::where('provider_id', $provider_id)
+            ->whereIn('date', $datesToUpdate)
+            ->delete();
+    }
 
     $isCreated = false;
 
-    foreach ($slotdata['slots'] as $value) {
-        if (!empty($value['time'])) {
-            foreach ($value['time'] as $time) {
-                $start = \Carbon\Carbon::createFromFormat('H:i', $time);
-                $end = $start->copy()->addMinutes(60); // or 30, your choice
+    foreach ($request->slots as $slot) {
+        $date = $slot['date'] ?? null;
+        $times = $slot['time'] ?? [];
+
+        if (!$date) {
+            continue;
+        }
+
+        if (empty($times)) {
+            continue;
+        }
+
+        foreach ($times as $time) {
+            if ($time === '24:00:00') {
+                continue;
+            }
+
+            try {
+                // Handle both H:i and H:i:s formats
+                $timeFormat = strlen($time) === 5 ? 'H:i' : 'H:i:s';
+                $start = \Carbon\Carbon::createFromFormat($timeFormat, $time);
+                $end = $start->copy()->addMinutes(60);
 
                 ProviderSlotMapping::create([
                     'provider_id' => $provider_id,
-                    'days' => $value['day'],
+                    'date' => $date,
                     'start_at' => $start->format('H:i'),
-                    'end_at' => $end->format('H:i')
+                    'end_at' => $end->format('H:i'),
+                    'days' => null, // Explicitly set to null since we're using date-based slots
                 ]);
 
                 $isCreated = true;
+            } catch (\Exception $e) {
+                \Log::error('Error creating slot: ' . $e->getMessage());
+                continue;
             }
         }
     }

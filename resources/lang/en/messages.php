@@ -560,7 +560,7 @@
     'recent_provider' => 'Recent Providers',
     'recent_customer' => 'Recent Customers',
     'recent_booking' => 'Recent Bookings',
-    'provider_detail' => 'Provider Details',
+    'provider_detail' => 'Employer Details',
     'package' => 'Package',
     'package_type' => 'Package Type',
     'single' => 'Single Category',

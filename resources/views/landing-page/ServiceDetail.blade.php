@@ -1060,7 +1060,7 @@
                                 visibility: visible;
                                 display: block;
                             ">
-                                Provider Details
+                                Employer Details
                             </div>
                         </div>
 
