@@ -107,8 +107,8 @@ return [
                 'db_port_placeholder' => 'Database Port',
                 'db_name_label' => 'Database Name',
                 'db_name_placeholder' => 'Database Name',
-                'db_username_label' => 'Database User Name',
-                'db_username_placeholder' => 'Database User Name',
+                'db_username_label' => 'Database Customer  Name',
+                'db_username_placeholder' => 'Database Customer  Name',
                 'db_password_label' => 'Database Password',
                 'db_password_placeholder' => 'Database Password',
 
@@ -192,7 +192,7 @@ return [
         'console' => 'Application Console Output:',
         'log' => 'Installation Log Entry:',
         'env' => 'Final .env File:',
-        'exit' => 'User Website',
+        'exit' => 'Customer  Website',
         'admin_panel' => 'Admin Website',
     ],
 

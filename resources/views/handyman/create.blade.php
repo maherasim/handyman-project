@@ -225,6 +225,7 @@
                             @endif
 
                             <!-- Text Editors Row - All three together at the end -->
+                            <div class="w-100"></div>
                             <div class="form-group col-md-4">
                                 {{ html()->label(__('experience'), 'experience')->class('form-control-label') }}
                                 {{ html()->textarea('experience', $handymandata->experience)->class('form-control textarea')->rows(2)->placeholder(__('experience'))->id('experience') }}

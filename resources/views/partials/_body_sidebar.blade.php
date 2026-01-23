@@ -1407,7 +1407,20 @@ $menu->add('<span>'.__('Favourit Provider').'</span><span class="custom-tooltip"
                 class="img-fluid rounded-normal light-logo site_logo_preview d-none" alt="logo">
             <img src="{{ getSingleMedia(imageSession('get'), 'logo', null) }}"
                 class="img-fluid rounded-normal darkmode-logo site_logo_preview" alt="logo">
-            <span class="white-space-no-wrap">{{ ucfirst(str_replace('_', ' ', auth()->user()->user_type)) }}</span>
+            <span class="white-space-no-wrap">
+                @php
+                    $userType = auth()->user()->user_type;
+                    if ($userType === 'provider') {
+                        echo 'Employer';
+                    } elseif ($userType === 'handyman') {
+                        echo 'Worker';
+                    } elseif ($userType === 'user') {
+                        echo 'Customer';
+                    } else {
+                        echo ucfirst(str_replace('_', ' ', $userType));
+                    }
+                @endphp
+            </span>
         </a>
         <div class="side-menu-bt-sidebar-1">
             <svg xmlns="http://www.w3.org/2000/svg" class="text-light wrapper-menu" width="30" fill="none"

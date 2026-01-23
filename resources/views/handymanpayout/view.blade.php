@@ -157,7 +157,7 @@
                     {
                         data: 'description',
                         name: 'description',
-                        title: "{{__('messages.description')}}"
+                        title: "{{__('messages.service')}}"
                     },
                     {
                         data: 'created_at',

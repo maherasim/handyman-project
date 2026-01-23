@@ -51,9 +51,69 @@ class HandymanPayoutController extends Controller
             return '<input type="checkbox" class="form-check-input select-table-row"  id="datatable-row-'.$row->id.'"  name="datatable_ids[]" value="'.$row->id.'" onclick="dataTableRowCheck('.$row->id.')">';
         })
         ->editColumn('payment_method', function($payout) {
-            return !empty($payout->payment_method) ? ucfirst($payout->payment_method) : 'Cash';
+            if (empty($payout->payment_method)) {
+                return 'Cash';
+            }
+            
+            $method = $payout->payment_method;
+            
+            // Convert bank_transfer to Bank Transfer
+            if ($method === 'bank_transfer' || $method === 'bank') {
+                return 'Bank Transfer';
+            }
+            
+            // Convert other methods: replace underscores with spaces and capitalize
+            return ucwords(str_replace('_', ' ', $method));
         })
         ->editColumn('description', function($payout) {
+            // Get service names from commission_earnings related to this payout
+            // Since payout updates commission_earnings when created, match by updated_at time
+            // Get commission_earnings that were updated around the payout creation time (within 5 minutes)
+            $payoutCreatedAt = $payout->created_at;
+            $serviceNames = CommissionEarning::where('employee_id', $payout->handyman_id)
+                ->where('commission_status', 'paid')
+                ->where('user_type', 'handyman')
+                ->whereBetween('updated_at', [
+                    $payoutCreatedAt->copy()->subMinutes(5),
+                    $payoutCreatedAt->copy()->addMinutes(5)
+                ])
+                ->whereHas('getbooking.service', function($query) {
+                    $query->whereNotNull('name');
+                })
+                ->with(['getbooking.service'])
+                ->get()
+                ->pluck('getbooking.service.name')
+                ->filter()
+                ->unique()
+                ->values()
+                ->toArray();
+            
+            if (!empty($serviceNames)) {
+                return implode(', ', $serviceNames);
+            }
+            
+            // Fallback: Get service names from any paid commission_earnings for this handyman
+            $fallbackServiceNames = CommissionEarning::where('employee_id', $payout->handyman_id)
+                ->where('commission_status', 'paid')
+                ->where('user_type', 'handyman')
+                ->whereHas('getbooking.service', function($query) {
+                    $query->whereNotNull('name');
+                })
+                ->with(['getbooking.service'])
+                ->orderBy('updated_at', 'desc')
+                ->limit(5)
+                ->get()
+                ->pluck('getbooking.service.name')
+                ->filter()
+                ->unique()
+                ->values()
+                ->toArray();
+            
+            if (!empty($fallbackServiceNames)) {
+                return implode(', ', $fallbackServiceNames);
+            }
+            
+            // Final fallback to original description
             return !empty($payout->description) ? $payout->description : '-';
         })
 
