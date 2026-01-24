@@ -1277,9 +1277,12 @@ public function bookingAssigned(Request $request)
         $bookingdata->service->is_enable_advance_payment = $bookingdata->service->type == 'fixed' ? ($bookingdata->service->is_enable_advance_payment == 1 ? $bookingdata->service->is_enable_advance_payment : $global_advance_payment) : 0;
         $bookingdata->service->advance_payment_amount = $bookingdata->service->type == 'fixed' ? ($bookingdata->service->advance_payment_amount > 0 ? $bookingdata->service->advance_payment_amount : $advancePaymentPercentage) : 0;
 
+        // Check if customer rating already exists for this booking
+        $customer_rating_exists = CustomerRating::where('booking_id', $id)->exists();
+
         switch ($tabpage) {
             case 'info':
-                $data = view('booking.' . $tabpage, compact('user_data', 'tabpage', 'auth_user', 'bookingdata', 'payment','advanceservice', 'customer_review', 'customer_rating', 'serviceProof', 'is_enable_advance_payment'))->render();
+                $data = view('booking.' . $tabpage, compact('user_data', 'tabpage', 'auth_user', 'bookingdata', 'payment','advanceservice', 'customer_review', 'customer_rating', 'serviceProof', 'is_enable_advance_payment', 'customer_rating_exists'))->render();
                 break;
             case 'status':
                 $data = view('booking.' . $tabpage, compact('user_data', 'tabpage', 'auth_user', 'bookingdata', 'payment'))->render();
