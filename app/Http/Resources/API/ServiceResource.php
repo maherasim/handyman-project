@@ -106,6 +106,7 @@ class ServiceResource extends JsonResource
                 : (double) $advancePaymentPercentage,
             'completed_booking_count' => $this->completed_booking_count ?? Booking::where('service_id', $this->id)->where('status', 'completed')->count(),
             'total_booking_count' => Booking::where('service_id', $this->id)->count(),
+            'total_services_booked' => Booking::where('service_id', $this->id)->count(),
             'total_views' => (int) ($this->total_views ?? 0),
             'provider_total_services' => $this->provider_total_services ?? Service::where('provider_id', $this->provider_id)
                 ->where('service_type', 'service')
