@@ -612,7 +612,7 @@
                                                 {{ __('messages.service_proof') }}
                                             </button>
                                             @if ($auth_user->user_type == 'provider' || $bookingdata->provider_id == $auth_user->id)
-                                                @if (!isset($customer_rating_exists) || !$customer_rating_exists)
+                                                @if (!$customer_rating_exists)
                                                 <button class="float-end btn btn-warning" id="rate-customer-btn"
                                                     data-booking-id="{{ $bookingdata->id }}"
                                                     data-customer-id="{{ $bookingdata->customer_id }}"
