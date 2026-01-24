@@ -1414,7 +1414,6 @@
                                     <th>{{ __('messages.name') }}</th>
                                     <th>{{ __('messages.rating') }}</th>
                                     <th>{{ __('messages.review') }}</th>
-                                    <th class="text-center">{{ __('messages.actions') }}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -1423,18 +1422,6 @@
                                         {{ $customer_review->customer->last_name ?? '' }}</td>
                                     <td>{{ $customer_review->rating }}</td>
                                     <td>{{ $customer_review->review }}</td>
-                                    <td class="text-center">
-                                        <button class="btn btn-sm btn-warning edit-review"
-                                            data-id="{{ $customer_review->id }}"
-                                            data-rating="{{ $customer_review->rating }}"
-                                            data-review="{{ $customer_review->review }}">
-                                            <i class="las la-pen"></i> {{ __('messages.edit') }}
-                                        </button>
-                                        <button class="btn btn-sm btn-danger delete-review"
-                                            data-id="{{ $customer_review->id }}">
-                                            <i class="las la-trash"></i> {{ __('messages.delete') }}
-                                        </button>
-                                    </td>
                                 </tr>
                             </tbody>
                         </table>

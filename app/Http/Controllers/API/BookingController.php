@@ -321,6 +321,9 @@ class BookingController extends Controller
             $bookingpackage->package_image = $mediaUrl ?? asset('images/default.png');
         }
 
+        // Check if customer rating already exists for this booking
+        $customer_rating_exists = CustomerRating::where('booking_id', $id)->exists();
+
         $response = [
             'booking_detail'    => $booking_detail,
             'service'           => $service,
@@ -333,6 +336,7 @@ class BookingController extends Controller
             'customer_review'   => $customer_review,
             'service_proof'     => $serviceProof,
             'post_request_detail' => $post_job_object,
+            'customer_rating_exists' => $customer_rating_exists,
             // 'bookingpackage'    => $bookingpackage,
         ];
         return comman_custom_response($response);
