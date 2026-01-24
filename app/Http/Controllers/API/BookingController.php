@@ -322,10 +322,11 @@ class BookingController extends Controller
         }
 
         // Check if customer rating already exists for this booking
-        // If rating exists, show_rate_customer_button = false (hide button)
-        // If no rating exists, show_rate_customer_button = true (show button)
+        // Return meaningful message instead of true/false
         $rating_exists = CustomerRating::where('booking_id', $id)->exists();
-        $show_rate_customer_button = !$rating_exists; // Invert: true means show button, false means hide
+        $show_rate_customer_button = $rating_exists 
+            ? 'Rating already submitted' 
+            : 'Rate Customer';
 
         $response = [
             'booking_detail'    => $booking_detail,
