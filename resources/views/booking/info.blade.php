@@ -696,7 +696,11 @@
                                     $nextText = 'Waiting for provider to accept the booking';
                                     break;
                                 case 'accept':
-                                    if ($is_enable_advance_payment == 1 && (!isset($payment) || $payment->payment_status != 'advanced_paid')) {
+                                    // Check if payment status is pending_by_admin
+                                    if (isset($payment) && strtolower($payment->payment_status) === 'pending_by_admin') {
+                                        $nextActor = null;
+                                        $nextText = 'Waiting for payment approval by admin';
+                                    } elseif ($is_enable_advance_payment == 1 && (!isset($payment) || $payment->payment_status != 'advanced_paid')) {
                                         $nextActor = 'user';
                                         $nextText = 'Waiting for customer to pay advance payment';
                                     } else {
@@ -729,7 +733,11 @@
                                     $nextText = 'Waiting for handyman to mark booking as completed';
                                     break;
                                 case 'completed':
-                                    if (isset($payment) && $payment->payment_status != 'paid') {
+                                    // Check if payment status is pending_by_admin
+                                    if (isset($payment) && strtolower($payment->payment_status) === 'pending_by_admin') {
+                                        $nextActor = null;
+                                        $nextText = 'Waiting for payment approval by admin';
+                                    } elseif (isset($payment) && $payment->payment_status != 'paid') {
                                         $nextActor = 'user';
                                         $nextText = 'Waiting for customer to pay remaining amount';
                                     } else {

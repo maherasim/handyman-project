@@ -209,12 +209,13 @@
                         orderable: false,
                         searchable: false,
                     },
-
+                    @if (!auth()->user()->hasRole('handyman'))
                     {
                         data: 'total_amount',
                         name: 'total_amount',
                         title: "{{ __('messages.price') }}"
                     },
+                    @endif
                     @if (auth()->user()->hasAnyRole(['admin']))
                         {
                             data: 'action',
