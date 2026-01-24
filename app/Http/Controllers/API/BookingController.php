@@ -322,7 +322,10 @@ class BookingController extends Controller
         }
 
         // Check if customer rating already exists for this booking
-        $customer_rating_exists = CustomerRating::where('booking_id', $id)->exists();
+        // If rating exists, show_rate_customer_button = false (hide button)
+        // If no rating exists, show_rate_customer_button = true (show button)
+        $rating_exists = CustomerRating::where('booking_id', $id)->exists();
+        $show_rate_customer_button = !$rating_exists; // Invert: true means show button, false means hide
 
         $response = [
             'booking_detail'    => $booking_detail,
@@ -336,7 +339,7 @@ class BookingController extends Controller
             'customer_review'   => $customer_review,
             'service_proof'     => $serviceProof,
             'post_request_detail' => $post_job_object,
-            'customer_rating_exists' => $customer_rating_exists,
+            'show_rate_customer_button' => $show_rate_customer_button,
             // 'bookingpackage'    => $bookingpackage,
         ];
         return comman_custom_response($response);
