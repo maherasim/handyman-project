@@ -12,6 +12,7 @@ use App\Models\HandymanType;
 use Illuminate\Support\Arr;
 use Yajra\DataTables\DataTables;
 use App\Models\CommissionEarning;
+use App\Models\Payment;
 
 class EarningController extends Controller
 {
@@ -373,7 +374,10 @@ class EarningController extends Controller
                         })
                         ->pluck('booking_id');
 
-                    $totalServiceAmount = Booking::whereIn('id', $bookingIds)->sum('final_sub_total');
+                    // Sum actual payment amounts (advanced_paid + remaining payment)
+                    $totalServiceAmount = Payment::whereIn('booking_id', $bookingIds)
+                        ->whereIn('payment_status', ['advanced_paid', 'paid'])
+                        ->sum('total_amount');
 
                     return getPriceFormat($totalServiceAmount);
                 })
