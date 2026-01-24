@@ -736,6 +736,21 @@ class PaymentController extends Controller
                 $date = date("$datetime->date_format $datetime->time_format", strtotime($query->datetime));
                 return $date;
             })
+            ->editColumn('payment_type', function ($payment) {
+                if (empty($payment->payment_type)) {
+                    return '-';
+                }
+                
+                $method = $payment->payment_type;
+                
+                // Convert bank_transfer to Bank Transfer
+                if ($method === 'bank_transfer' || $method === 'bank') {
+                    return 'Bank Transfer';
+                }
+                
+                // Convert other methods: replace underscores with spaces and capitalize
+                return ucwords(str_replace('_', ' ', $method));
+            })
             ->editColumn('payment_status', function ($query) {
                 $payment = $query->payment_status;
                 if ($payment !== null) {
@@ -847,6 +862,21 @@ class PaymentController extends Controller
                 $datetime = json_decode($sitesetup->value);
                 $date = date("$datetime->date_format $datetime->time_format", strtotime($query->datetime));
                 return $date;
+            })
+            ->editColumn('payment_type', function ($payment) {
+                if (empty($payment->payment_type)) {
+                    return '-';
+                }
+                
+                $method = $payment->payment_type;
+                
+                // Convert bank_transfer to Bank Transfer
+                if ($method === 'bank_transfer' || $method === 'bank') {
+                    return 'Bank Transfer';
+                }
+                
+                // Convert other methods: replace underscores with spaces and capitalize
+                return ucwords(str_replace('_', ' ', $method));
             })
             ->editColumn('payment_status', function ($query) {
                 $payment = $query->payment_status;
