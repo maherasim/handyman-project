@@ -612,13 +612,15 @@
                                                 {{ __('messages.service_proof') }}
                                             </button>
                                             @if ($auth_user->user_type == 'provider' || $bookingdata->provider_id == $auth_user->id)
-                                            <button class="float-end btn btn-warning" id="rate-customer-btn"
-                                                data-booking-id="{{ $bookingdata->id }}"
-                                                data-customer-id="{{ $bookingdata->customer_id }}"
-                                                data-provider-id="{{ $bookingdata->provider_id }}">
-                                                <i class="las la-star"></i>
-                                                {{ __('landingpage.rate_customer') }}
-                                            </button>
+                                                @if (!isset($customer_rating_exists) || !$customer_rating_exists)
+                                                <button class="float-end btn btn-warning" id="rate-customer-btn"
+                                                    data-booking-id="{{ $bookingdata->id }}"
+                                                    data-customer-id="{{ $bookingdata->customer_id }}"
+                                                    data-provider-id="{{ $bookingdata->provider_id }}">
+                                                    <i class="las la-star"></i>
+                                                    {{ __('landingpage.rate_customer') }}
+                                                </button>
+                                                @endif
                                             @endif
                                         </div>
                                     @endhasanyrole
@@ -2667,6 +2669,11 @@ $(document).ready(function() {
             success: function(response) {
                 // Close modal
                 $('#customerRatingModal').modal('hide');
+                
+                // Hide the rate customer button immediately
+                $('#rate-customer-btn').fadeOut(300, function() {
+                    $(this).remove();
+                });
                 
                 // Reset form
                 $('#customerRatingForm')[0].reset();

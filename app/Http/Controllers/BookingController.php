@@ -725,8 +725,17 @@ class BookingController extends Controller
             $auth_user->unreadNotifications->where('data.id', $id)->markAsRead();
         }
 
+        // Check if customer rating already exists for this booking
+        $customer_rating_exists = false;
+        if ($bookingdata && $auth_user) {
+            $customer_rating_exists = CustomerRating::where('booking_id', $id)
+                ->where('customer_id', $bookingdata->customer_id)
+                ->where('provider_id', $bookingdata->provider_id)
+                ->exists();
+        }
+
         $pageTitle = __('messages.view_form_title', ['form' => __('messages.booking')]);
-        return view('booking.view', compact('pageTitle', 'bookingdata', 'auth_user', 'tabpage'));
+        return view('booking.view', compact('pageTitle', 'bookingdata', 'auth_user', 'tabpage', 'customer_rating_exists'));
     }
 
     /**
