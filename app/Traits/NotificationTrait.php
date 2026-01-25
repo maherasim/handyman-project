@@ -588,6 +588,7 @@ trait NotificationTrait
             $notification_data['staff_email'] = $handymanEmail;
             $notification_data['staff_contact'] = $handymanContact;
             $notification_data['booking_services_name'] = isset($booking->service) ? $booking->service->name : '';
+            $notification_data['booking_services_names'] = isset($booking->service) ? $booking->service->name : ''; // Support plural version for email templates
             $notification_data['description'] = isset($booking->service) ? $booking->service->description : '';
             $notification_data['booking_date'] = $date;
             $notification_data['booking_duration'] = isset($booking->service) ? $booking->service->duration : '';
@@ -610,6 +611,7 @@ trait NotificationTrait
             $notification_data['booking_time'] = $time;
             $notification_data['amount'] = isset($amount) ? $amount: '';
             $notification_data['booking_services_name'] = isset($data['service_name']) ? $data['service_name'] : '';
+            $notification_data['booking_services_names'] = isset($data['service_name']) ? $data['service_name'] : ''; // Support plural version for email templates
             $notification_data['wallet_transaction_id'] = isset($data['transaction_id']) ? $data['transaction_id'] : '';
             $notification_data['wallet_transaction_type'] = isset($data['transaction_type']) ? $data['transaction_type'] : '';
             $notification_data['wallet_amount'] = isset($data['wallet']->amount) ? getPriceFormat($data['wallet']->amount) : '';
