@@ -165,7 +165,7 @@
                     <span class="detail-value">{{ $booking->customer ? ($booking->customer->first_name ?? '') . ' ' . ($booking->customer->last_name ?? '') : 'N/A' }}</span>
                 </div>
                 <div class="detail-row">
-                    <span class="detail-label">Provider:</span>
+                    <span class="detail-label">Employer:</span>
                     <span class="detail-value">{{ $booking->provider ? ($booking->provider->first_name ?? '') . ' ' . ($booking->provider->last_name ?? '') : 'N/A' }}</span>
                 </div>
                 <div class="detail-row">

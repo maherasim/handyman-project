@@ -96,12 +96,14 @@
             <p style="margin-top: 10px; color: #666;">
                 Updated by: <strong>{{ $actorName }}</strong> 
                 @php
-                    // Convert text based on recipient type: provider -> Employer, handyman -> Worker
+                    // Convert text: provider -> Employer, handyman -> Worker, user -> Customer
                     $displayActorType = $actorType;
                     if ($actorType === 'provider') {
                         $displayActorType = 'Employer';
                     } elseif ($actorType === 'handyman') {
                         $displayActorType = 'Worker';
+                    } elseif ($actorType === 'user') {
+                        $displayActorType = 'Customer';
                     }
                 @endphp
                 ({{ ucfirst($displayActorType) }})
@@ -128,12 +130,18 @@
             @endif
             @if($booking->provider)
             <div class="info-row">
-                @php
-                    // Show "Employer" instead of "Provider" when email is sent to provider
-                    $providerLabel = (isset($recipientType) && $recipientType === 'provider') ? 'Employer' : 'Provider';
-                @endphp
-                <span class="info-label">{{ $providerLabel }}:</span>
+                <span class="info-label">Employer:</span>
                 <span>{{ $booking->provider->display_name ?? 'N/A' }}</span>
+            </div>
+            @endif
+            @if($booking->handymanAdded && $booking->handymanAdded->count() > 0)
+            <div class="info-row">
+                <span class="info-label">Worker:</span>
+                <span>
+                    @foreach($booking->handymanAdded as $handymanMapping)
+                        {{ $handymanMapping->handyman->display_name ?? 'N/A' }}@if(!$loop->last), @endif
+                    @endforeach
+                </span>
             </div>
             @endif
             <div class="info-row">

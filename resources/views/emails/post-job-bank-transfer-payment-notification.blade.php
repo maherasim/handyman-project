@@ -165,7 +165,7 @@
                     <span class="detail-value">{{ $bid->customer ? ($bid->customer->first_name ?? '') . ' ' . ($bid->customer->last_name ?? '') : 'N/A' }}</span>
                 </div>
                 <div class="detail-row">
-                    <span class="detail-label">Provider:</span>
+                    <span class="detail-label">Employer:</span>
                     <span class="detail-value">{{ $bid->provider ? ($bid->provider->first_name ?? '') . ' ' . ($bid->provider->last_name ?? '') : 'N/A' }}</span>
                 </div>
                 <div class="detail-row">
