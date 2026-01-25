@@ -134,7 +134,7 @@ class FrontendController extends Controller
             $userId = 0;
         }
 
-        return view('landing-page.index', compact('sectionData', 'favouriteService', 'completedBookingCount', 'postjobservice', 'auth_user_id', 'favourite', 'totalRating', 'jobRequests', 'categoryrequest', 'servicerequest', 'featuredrequest'));
+        return view('landing-page.index', compact('sectionData', 'favouriteService', 'postjobservice', 'auth_user_id', 'favourite', 'totalRating', 'jobRequests', 'categoryrequest', 'servicerequest', 'featuredrequest'));
     }
 
     public function userLoginView(Request $request)
