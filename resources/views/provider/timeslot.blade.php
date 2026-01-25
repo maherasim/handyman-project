@@ -31,12 +31,12 @@
                                 <div class="d-flex align-items-center gap-2">
                                     <div style="width: 20px; height: 20px; background-color: #198754; border-radius: 3px; box-shadow: 0 1px 3px rgba(0,0,0,0.2);"></div>
                                     <span class="font-weight-semibold" style="color: #495057;">
-                                        {{ __('messages.available_slots') ?? 'Dates with Available Time Slots' }}
+                                     Available Slots 
                                     </span>
                                 </div>
-                                <div class="text-muted small">
+                                {{-- <div class="text-muted small">
                                     <i class="fa fa-info-circle"></i> Click on any green date to view or edit time slots
-                                </div>
+                                </div> --}}
                             </div>
                         </div>
                     </div>
@@ -182,10 +182,9 @@
                               '</div>',
                         icon: 'info',
                         iconColor: '#198754',
+                        showConfirmButton: false,
                         showCancelButton: true,
-                        confirmButtonText: '<i class="fa fa-edit"></i> Edit Time Slots',
                         cancelButtonText: 'Close',
-                        confirmButtonColor: '#198754',
                         cancelButtonColor: '#6c757d',
                         width: '500px',
                         padding: '2rem',
@@ -193,10 +192,6 @@
                             popup: 'slot-modal-popup',
                             title: 'slot-modal-title',
                             htmlContainer: 'slot-modal-content'
-                        }
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            window.location.href = '{{ route("provider.edit-time-slot", ["id" => $provider_id]) }}?date=' + normalizedDate;
                         }
                     });
                 } else {
@@ -257,10 +252,9 @@
                           '</div>',
                     icon: 'info',
                     iconColor: '#198754',
+                    showConfirmButton: false,
                     showCancelButton: true,
-                    confirmButtonText: '<i class="fa fa-edit"></i> Edit Time Slots',
                     cancelButtonText: 'Close',
-                    confirmButtonColor: '#198754',
                     cancelButtonColor: '#6c757d',
                     width: '500px',
                     padding: '2rem',
@@ -271,11 +265,6 @@
                     },
                     buttonsStyling: true,
                     reverseButtons: false
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        // Redirect to edit page with selected date
-                        window.location.href = '{{ route("provider.edit-time-slot", ["id" => $provider_id]) }}?date=' + normalizedDate;
-                    }
                 });
             }
         });

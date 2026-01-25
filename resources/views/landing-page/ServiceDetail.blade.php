@@ -1004,26 +1004,55 @@
                             @endif
                         </div>
                         <div class="d-flex align-items-center justify-content-center gap-3 mt-3">
-                            <a href="#">
-                                <img src="https://cdn.pixabay.com/photo/2021/06/15/12/51/facebook-6338507_1280.png"
-                                    style="width: 30px; border-radius: 8px;" alt="">
-                            </a>
-                            <a href="#">
-                                <img src="https://upload.wikimedia.org/wikipedia/commons/9/95/Instagram_logo_2022.svg"
-                                    style="width: 30px; border-radius: 8px;" alt="">
-                            </a>
-                            <a href="#">
-                                <img src="https://cdn.pixabay.com/photo/2015/03/10/17/30/twitter-667462_640.png"
-                                    style="width: 30px; border-radius: 8px;" alt="">
-                            </a>
-                            <a href="#">
-                                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRokEYt0yyh6uNDKL8uksVLlhZ35laKNQgZ9g&s"
-                                    style="width: 30px; border-radius: 8px;" alt="LinkedIn">
-                            </a>
-                            <a href="#">
+                            @php
+                                $serviceId = $serviceData['service_detail']['id'] ?? null;
+                                $serviceName = Str::limit($serviceData['service_detail']['name'] ?? 'Service', 80);
+                                $servicePrice = getPriceFormat($serviceData['service_detail']['price'] ?? 0);
+                                $serviceType = ucfirst($serviceData['service_detail']['type'] ?? 'service');
+                                $cityName = $serviceData['service_detail']['city_name'] ?? 'City';
+                                $countryName = $serviceData['service_detail']['country_name'] ?? 'Country';
+                                $locationText = $cityName . ', ' . $countryName;
+                                $shareUrl = $serviceId ? route('service.detail', $serviceId) : url()->current();
+                                $shareQuote = $serviceName . ' • ' . $servicePrice . ' • ' . $serviceType . ' • ' . $locationText;
+                                $serviceImage = !empty($serviceData['service_detail']['attchments']) && isset($serviceData['service_detail']['attchments'][0]) 
+                                    ? $serviceData['service_detail']['attchments'][0] 
+                                    : asset('images/default.png');
+                            @endphp
+                            <span role="button" tabindex="0" class="social-link share-link"
+                                  data-platform="facebook"
+                                  data-share-url="{{ $shareUrl }}"
+                                  data-quote="{{ $shareQuote }}"
+                                  onclick="return window.__shareClickHandler(event, this);"
+                                  style="cursor: pointer;">
                                 <img src="https://static.vecteezy.com/system/resources/previews/016/716/481/original/facebook-icon-free-png.png"
-                                    style="width: 30px; border-radius: 8px;" alt="">
-                            </a>
+                                    style="width: 30px; border-radius: 8px;" alt="Share on Facebook">
+                            </span>
+                            <span role="button" tabindex="0" class="social-link share-link"
+                                  data-platform="twitter"
+                                  data-share-url="{{ $shareUrl }}"
+                                  data-text="{{ $shareQuote }}"
+                                  onclick="return window.__shareClickHandler(event, this);"
+                                  style="cursor: pointer;">
+                                <img src="https://cdn.pixabay.com/photo/2015/03/10/17/30/twitter-667462_640.png"
+                                    style="width: 30px; border-radius: 8px;" alt="Share on Twitter">
+                            </span>
+                            <span role="button" tabindex="0" class="social-link share-link"
+                                  data-platform="linkedin"
+                                  data-share-url="{{ $shareUrl }}"
+                                  onclick="return window.__shareClickHandler(event, this);"
+                                  style="cursor: pointer;">
+                                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRokEYt0yyh6uNDKL8uksVLlhZ35laKNQgZ9g&s"
+                                    style="width: 30px; border-radius: 8px;" alt="Share on LinkedIn">
+                            </span>
+                            <span role="button" tabindex="0" class="social-link share-link"
+                                  data-platform="instagram"
+                                  data-image-url="{{ $serviceImage }}"
+                                  data-quote="{{ $shareQuote }} — {{ $shareUrl }}"
+                                  onclick="return window.__shareClickHandler(event, this);"
+                                  style="cursor: pointer;">
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/9/95/Instagram_logo_2022.svg"
+                                    style="width: 30px; border-radius: 8px;" alt="Share on Instagram">
+                            </span>
                         </div>
                     </div>
 
@@ -1130,9 +1159,9 @@
                             <!-- Available Location Card -->
                             @if(!empty($serviceData['service_detail']['service_address_mapping']))
                             <div class="info-card mb-3">
-                                <div class="info-card-header" style="background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important; color: #fff !important; display: flex !important; justify-content: center !important; align-items: center !important; padding: 20px 20px !important; min-height: 60px !important;">
-                                    <i class="ri-map-pin-line me-2" style="font-size: 20px;"></i>
-                                    <h6 class="mb-0" style="color: #fff !important; font-size: 15px; font-weight: 700;">{{ __('landingpage.available_location') }}</h6>
+                                <div class="info-card-header" style="background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important; color: #fff !important; display: flex !important; justify-content: center !important; align-items: center !important; padding: 6px 15px !important; min-height: 40px !important;">
+                                    <i class="ri-map-pin-line me-2" style="font-size: 16px;"></i>
+                                    <h6 class="mb-0" style="color: #fff !important; font-size: 13px; font-weight: 700;">{{ __('landingpage.available_location') }}</h6>
                                 </div>
                                 <div class="info-card-body">
                                     <div class="d-flex flex-wrap gap-2">
@@ -1146,9 +1175,9 @@
 
                             <!-- Basic Information Card -->
                             <div class="info-card mb-3">
-                                <div class="info-card-header" style="background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important; color: #fff !important; display: flex !important; justify-content: center !important; align-items: center !important; padding: 20px 20px !important; min-height: 60px !important;">
-                                    <i class="ri-user-line me-2" style="font-size: 20px;"></i>
-                                    <h6 class="mb-0" style="color: #fff !important; font-size: 15px; font-weight: 700;">Basic Information</h6>
+                                <div class="info-card-header" style="background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important; color: #fff !important; display: flex !important; justify-content: center !important; align-items: center !important; padding: 6px 15px !important; min-height: 40px !important;">
+                                    <i class="ri-user-line me-2" style="font-size: 16px;"></i>
+                                    <h6 class="mb-0" style="color: #fff !important; font-size: 13px; font-weight: 700;">Basic Information</h6>
                                 </div>
                                 <div class="info-card-body">
                                     <div class="info-row">
@@ -1179,9 +1208,9 @@
                             <!-- Availability & Mobility Card -->
                             @if(!empty($serviceData['provider']['availability']) || !empty($serviceData['provider']['mobility']))
                             <div class="info-card mb-3">
-                                <div class="info-card-header" style="background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important; color: #fff !important; display: flex !important; justify-content: center !important; align-items: center !important; padding: 20px 20px !important; min-height: 60px !important;">
-                                    <i class="ri-time-line me-2" style="font-size: 20px;"></i>
-                                    <h6 class="mb-0" style="color: #fff !important; font-size: 15px; font-weight: 700;">Availability & Mobility</h6>
+                                <div class="info-card-header" style="background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important; color: #fff !important; display: flex !important; justify-content: center !important; align-items: center !important; padding: 6px 15px !important; min-height: 40px !important;">
+                                    <i class="ri-time-line me-2" style="font-size: 16px;"></i>
+                                    <h6 class="mb-0" style="color: #fff !important; font-size: 13px; font-weight: 700;">Availability & Mobility</h6>
                                 </div>
                                 <div class="info-card-body">
                                     @if(!empty($serviceData['provider']['availability']))
@@ -1218,9 +1247,9 @@
                             @endphp
                             @if(!empty($languagesList))
                             <div class="info-card mb-3">
-                                <div class="info-card-header" style="background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important; color: #fff !important; display: flex !important; justify-content: center !important; align-items: center !important; padding: 20px 20px !important; min-height: 60px !important;">
-                                    <i class="ri-global-line me-2" style="font-size: 20px;"></i>
-                                    <h6 class="mb-0" style="color: #fff !important; font-size: 15px; font-weight: 700;">Languages</h6>
+                                <div class="info-card-header" style="background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important; color: #fff !important; display: flex !important; justify-content: center !important; align-items: center !important; padding: 6px 15px !important; min-height: 40px !important;">
+                                    <i class="ri-global-line me-2" style="font-size: 16px;"></i>
+                                    <h6 class="mb-0" style="color: #fff !important; font-size: 13px; font-weight: 700;">Languages</h6>
                                 </div>
                                 <div class="info-card-body">
                                     <div class="d-flex flex-wrap gap-2">
@@ -1235,9 +1264,9 @@
                             <!-- Education & Skills Card -->
                             @if(!empty($serviceData['provider']['education']))
                             <div class="info-card mb-3">
-                                <div class="info-card-header" style="background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important; color: #fff !important; display: flex !important; justify-content: center !important; align-items: center !important; padding: 20px 20px !important; min-height: 60px !important;">
-                                    <i class="ri-graduation-cap-line me-2" style="font-size: 20px;"></i>
-                                    <h6 class="mb-0" style="color: #fff !important; font-size: 15px; font-weight: 700;">Education & Skills</h6>
+                                <div class="info-card-header" style="background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important; color: #fff !important; display: flex !important; justify-content: center !important; align-items: center !important; padding: 6px 15px !important; min-height: 40px !important;">
+                                    <i class="ri-graduation-cap-line me-2" style="font-size: 16px;"></i>
+                                    <h6 class="mb-0" style="color: #fff !important; font-size: 13px; font-weight: 700;">Education & Skills</h6>
                                 </div>
                                 <div class="info-card-body">
                                     <div class="skills-list">
@@ -1273,9 +1302,9 @@
                             <!-- Diploma Card -->
                             @if(!empty($serviceData['provider']['skills']))
                             <div class="info-card mb-3">
-                                <div class="info-card-header" style="background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important; color: #fff !important; display: flex !important; justify-content: center !important; align-items: center !important; padding: 20px 20px !important; min-height: 60px !important;">
-                                    <i class="ri-file-certificate-line me-2" style="font-size: 20px;"></i>
-                                    <h6 class="mb-0" style="color: #fff !important; font-size: 15px; font-weight: 700;">Diploma & Certifications</h6>
+                                <div class="info-card-header" style="background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important; color: #fff !important; display: flex !important; justify-content: center !important; align-items: center !important; padding: 6px 15px !important; min-height: 40px !important;">
+                                    <i class="ri-file-certificate-line me-2" style="font-size: 16px;"></i>
+                                    <h6 class="mb-0" style="color: #fff !important; font-size: 13px; font-weight: 700;">Diploma & Certifications</h6>
                                 </div>
                                 <div class="info-card-body">
                                     <div class="skills-list">
@@ -1311,9 +1340,9 @@
                             <!-- Additional Skills/Certifications Card -->
                             @if(!empty($serviceData['provider']['certification']))
                             <div class="info-card mb-3">
-                                <div class="info-card-header" style="background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important; color: #fff !important; display: flex !important; justify-content: center !important; align-items: center !important; padding: 20px 20px !important; min-height: 60px !important;">
-                                    <i class="ri-award-line me-2" style="font-size: 20px;"></i>
-                                    <h6 class="mb-0" style="color: #fff !important; font-size: 15px; font-weight: 700;">Certifications & Skills</h6>
+                                <div class="info-card-header" style="background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important; color: #fff !important; display: flex !important; justify-content: center !important; align-items: center !important; padding: 6px 15px !important; min-height: 40px !important;">
+                                    <i class="ri-award-line me-2" style="font-size: 16px;"></i>
+                                    <h6 class="mb-0" style="color: #fff !important; font-size: 13px; font-weight: 700;">Certifications & Skills</h6>
                                 </div>
                                 <div class="info-card-body">
                                     <div class="skills-list">
@@ -1561,6 +1590,77 @@
                         scrollTop: $('.service-details-tabs').offset().top - 100
                     }, 800);
                 }
+            });
+
+            // Social Media Share Handler
+            window.__shareClickHandler = function(e, el) {
+                try { 
+                    if (e) {
+                        e.preventDefault(); 
+                        e.stopPropagation(); 
+                    }
+                } catch (_) {}
+
+                function openPopup(url) {
+                    if (url) {
+                        window.open(url, '_blank', 'noopener,noreferrer,width=600,height=600');
+                    }
+                }
+
+                if (!el) {
+                    console.error('Share handler: element not found');
+                    return false;
+                }
+
+                var platform = el.getAttribute('data-platform');
+                var shareUrl = el.getAttribute('data-share-url');
+
+                if (!platform) {
+                    console.error('Share handler: platform not found');
+                    return false;
+                }
+
+                if (platform === 'facebook') {
+                    var fbUrl = encodeURIComponent(shareUrl || window.location.href);
+                    var quote = encodeURIComponent(el.getAttribute('data-quote') || '');
+                    var shareLink = 'https://www.facebook.com/sharer/sharer.php?u=' + fbUrl + (quote ? '&quote=' + quote : '');
+                    openPopup(shareLink);
+                } else if (platform === 'twitter') {
+                    var text = encodeURIComponent(el.getAttribute('data-text') || '');
+                    var url = encodeURIComponent(shareUrl || window.location.href);
+                    var shareLink = 'https://twitter.com/intent/tweet?url=' + url + '&text=' + text;
+                    openPopup(shareLink);
+                } else if (platform === 'linkedin') {
+                    var liUrl = encodeURIComponent(shareUrl || window.location.href);
+                    var shareLink = 'https://www.linkedin.com/sharing/share-offsite/?url=' + liUrl;
+                    openPopup(shareLink);
+                } else if (platform === 'instagram') {
+                    var quoteText = el.getAttribute('data-quote') || '';
+                    if (navigator.share) {
+                        try {
+                            navigator.share({ text: quoteText, url: shareUrl || window.location.href })
+                                .catch(function() {
+                                    openPopup('https://www.instagram.com/');
+                                });
+                        } catch (_) {
+                            openPopup('https://www.instagram.com/');
+                        }
+                    } else {
+                        openPopup('https://www.instagram.com/');
+                    }
+                }
+
+                return false;
+            };
+
+            // Event delegation for social media links
+            $(document).on('click', '.social-link.share-link', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                if (window.__shareClickHandler) {
+                    return window.__shareClickHandler(e, this);
+                }
+                return false;
             });
         });
     </script>

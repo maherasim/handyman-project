@@ -191,7 +191,7 @@ class BookingController extends Controller
             //     return '<input type="checkbox" class="form-check-input select-table-row"  id="datatable-row-' . $row->id . '"  name="datatable_ids[]" value="' . $row->id . '" data-type="booking" onclick="dataTableRowCheck(' . $row->id . ',this)">';
             // })
             ->editColumn('id', function ($query) {
-                return "<a class='btn-link btn-link-hover' href=" . route('booking.show', $query->id) . ">#" . $query->id . "</a>";
+                return "#" . $query->id;
             })
             ->editColumn('customer_id', function ($query) {
                 return view('booking.customer', compact('query'));
@@ -213,7 +213,7 @@ class BookingController extends Controller
                     $name = optional($query->service)->name;
                 }
                 $service_name = ($query->service_id != null && isset($query->service)) ? $name : "";
-                return "<a class='btn-link btn-link-hover' href=" . route('booking.show', $query->id) . ">" . $service_name . "</a>";
+                return $service_name;
             })
             ->filterColumn('service_id', function ($query, $keyword) {
                 $query->whereHas('service', function ($q) use ($keyword) {

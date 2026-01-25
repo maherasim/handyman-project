@@ -177,10 +177,15 @@
          </div>
       </div>  
       <div class="d-flex social-share social-icons" style="gap: 14px; justify-content: center;">
+         @php
+            $cityName = optional($data->city)->name ?? optional(optional($data->providers)->city)->name ?? 'City';
+            $countryName = optional($data->country)->name ?? optional(optional($data->providers)->country)->name ?? 'Country';
+            $locationText = $cityName . ', ' . $countryName;
+         @endphp
          <span role="button" tabindex="0" class="social-link share-link"
                data-platform="facebook"
                data-share-url="{{ route('service.detail', $data->id) }}?v={{ optional($data->updated_at)->timestamp ?? time() }}"
-               data-quote="{{ Str::limit($data->name, 80) }} • {{ getPriceFormat($data->price) }} • {{ ucfirst($data->type) }} • {{ $data->city->name ?? 'City' }}, {{ $data->country->name ?? 'Country' }}"
+               data-quote="{{ Str::limit($data->name, 80) }} • {{ getPriceFormat($data->price) }} • {{ ucfirst($data->type) }} • {{ $locationText }}"
                onclick="return window.__shareClickHandler(event, this);"
                style="cursor: pointer;">
              <img src="https://static.vecteezy.com/system/resources/previews/016/716/481/original/facebook-icon-free-png.png"
@@ -189,7 +194,7 @@
          <span role="button" tabindex="0" class="social-link share-link"
                data-platform="twitter"
                data-share-url="{{ route('service.detail', $data->id) }}?v={{ optional($data->updated_at)->timestamp ?? time() }}"
-               data-text="{{ Str::limit($data->name, 80) }} • {{ getPriceFormat($data->price) }} • {{ ucfirst($data->type) }} • {{ $data->city->name ?? 'City' }}, {{ $data->country->name ?? 'Country' }}"
+               data-text="{{ Str::limit($data->name, 80) }} • {{ getPriceFormat($data->price) }} • {{ ucfirst($data->type) }} • {{ $locationText }}"
                onclick="return window.__shareClickHandler(event, this);"
                style="cursor: pointer;">
              <img src="https://cdn.pixabay.com/photo/2015/03/10/17/30/twitter-667462_640.png"
@@ -198,7 +203,7 @@
          <span role="button" tabindex="0" class="social-link share-link"
                data-platform="instagram"
                data-image-url="{{ isset($serviceImage) ? $serviceImage : asset('images/default.png') }}"
-               data-quote="{{ Str::limit($data->name, 80) }} • {{ getPriceFormat($data->price) }} • {{ ucfirst($data->type) }} • {{ $data->city->name ?? 'City' }}, {{ $data->country->name ?? 'Country' }} — {{ route('service.detail', $data->id) }}"
+               data-quote="{{ Str::limit($data->name, 80) }} • {{ getPriceFormat($data->price) }} • {{ ucfirst($data->type) }} • {{ $locationText }} — {{ route('service.detail', $data->id) }}"
                onclick="return window.__shareClickHandler(event, this);"
                style="cursor: pointer;">
              <img src="https://upload.wikimedia.org/wikipedia/commons/9/95/Instagram_logo_2022.svg"

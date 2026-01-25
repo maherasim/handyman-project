@@ -151,6 +151,79 @@
         </div>
     </div>
     <script>
+        // Define share handler - must be available globally
+        window.__shareClickHandler = function(e, el) {
+            try { 
+                if (e) {
+                    e.preventDefault(); 
+                    e.stopPropagation(); 
+                }
+            } catch (_) {}
+
+            function openPopup(url) {
+                if (url) {
+                    window.open(url, '_blank', 'noopener,noreferrer,width=600,height=600');
+                }
+            }
+
+            if (!el) {
+                console.error('Share handler: element not found');
+                return false;
+            }
+
+            var platform = el.getAttribute('data-platform');
+            var shareUrl = el.getAttribute('data-share-url');
+
+            if (!platform) {
+                console.error('Share handler: platform not found');
+                return false;
+            }
+
+            if (platform === 'facebook') {
+                var fbUrl = encodeURIComponent(shareUrl || window.location.href);
+                var quote = encodeURIComponent(el.getAttribute('data-quote') || '');
+                var shareLink = 'https://www.facebook.com/sharer/sharer.php?u=' + fbUrl + (quote ? '&quote=' + quote : '');
+                openPopup(shareLink);
+            } else if (platform === 'twitter') {
+                var text = encodeURIComponent(el.getAttribute('data-text') || '');
+                var url = encodeURIComponent(shareUrl || window.location.href);
+                var shareLink = 'https://twitter.com/intent/tweet?url=' + url + '&text=' + text;
+                openPopup(shareLink);
+            } else if (platform === 'linkedin') {
+                var liUrl = encodeURIComponent(shareUrl || window.location.href);
+                var shareLink = 'https://www.linkedin.com/sharing/share-offsite/?url=' + liUrl;
+                openPopup(shareLink);
+            } else if (platform === 'instagram') {
+                var quoteText = el.getAttribute('data-quote') || '';
+                if (navigator.share) {
+                    try {
+                        navigator.share({ text: quoteText, url: shareUrl || window.location.href })
+                            .catch(function() {
+                                openPopup('https://www.instagram.com/');
+                            });
+                    } catch (_) {
+                        openPopup('https://www.instagram.com/');
+                    }
+                } else {
+                    openPopup('https://www.instagram.com/');
+                }
+            }
+
+            return false;
+        };
+
+        // Event delegation for dynamically loaded content (works with AJAX-loaded cards)
+        $(document).ready(function() {
+            $(document).on('click', '.social-link.share-link', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                if (window.__shareClickHandler) {
+                    return window.__shareClickHandler(e, this);
+                }
+                return false;
+            });
+        });
+
         document.addEventListener('DOMContentLoaded', (event) => {
 
             window.renderedDataTable = $('#datatable').DataTable({
