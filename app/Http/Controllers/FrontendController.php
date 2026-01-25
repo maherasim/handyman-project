@@ -83,19 +83,13 @@ class FrontendController extends Controller
                 $service->total_reviews = $totalReviews;
                 $service->avg_rating = round($avgRating, 1);
 
-                $service->booking_count = Booking::where('service_id', $service->id)
-                    ->where('status', 'completed') // Only count completed bookings
-                    ->count();
+                // Count all bookings for this service (regardless of status)
+                $service->booking_count = Booking::where('service_id', $service->id)->count();
 
                 return $service;
             });
 
         $featuredrequest = $sectionData['section_4']['service_id'] ?? [];
-        // dd( $featuredrequest);
-        $completedBookingCount = Booking::whereIn('service_id', $featuredrequest)
-            ->where('status', 'completed') // Only count completed bookings
-            ->count();
-        // dd( $completedBookingCount);
         $featuredrequest = Service::whereIn('id', $featuredrequest)
             ->with(['serviceRating']) // Assuming a serviceRating relationship exists
             ->get()
@@ -107,9 +101,8 @@ class FrontendController extends Controller
                 $service->total_reviews = $totalReviews;
                 $service->avg_rating = round($avgRating, 1);
 
-                $service->booking_count = Booking::where('service_id', $service->id)
-                    ->where('status', 'completed') // Only count completed bookings
-                    ->count();
+                // Count all bookings for this service (regardless of status)
+                $service->booking_count = Booking::where('service_id', $service->id)->count();
 
                 return $service;
             });
@@ -511,9 +504,8 @@ class FrontendController extends Controller
                     $favouriteService = collect();
                 }
 
-                $completedBookingCount = Booking::where('service_id', $data->id)
-                    ->where('status', 'completed')
-                    ->count();
+                // Count all bookings for this service (regardless of status)
+                $completedBookingCount = Booking::where('service_id', $data->id)->count();
 
                 $col = 3;
 
@@ -1219,10 +1211,8 @@ class FrontendController extends Controller
                     $favouriteService = collect();
                 }
 
-                // Count the number of completed bookings for this service
-                $completedBookingCount = Booking::where('service_id', $data->id)
-                    ->where('status', 'completed')  // Only count completed bookings
-                    ->count();
+                // Count all bookings for this service (regardless of status)
+                $completedBookingCount = Booking::where('service_id', $data->id)->count();
 
                 // Compute provider plan icon (free/silver/gold)
                 $plan_icon = asset('images/freepng.png');

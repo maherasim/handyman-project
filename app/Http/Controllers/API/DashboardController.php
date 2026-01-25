@@ -80,9 +80,8 @@ class DashboardController extends Controller
         
         $service = $service->map(function ($item) use ($request) {
             $itemArray = $item->toArray($request);
-            $completedBookingCount = Booking::where('service_id', $itemArray['id'])
-                ->where('status', 'completed')
-                ->count();
+            // Count all bookings for this service (regardless of status)
+            $completedBookingCount = Booking::where('service_id', $itemArray['id'])->count();
             $itemArray['completed_booking_count'] = $completedBookingCount;
             
             // Add provider total services count
@@ -147,9 +146,8 @@ class DashboardController extends Controller
         
         $featured_service = $featured_service->map(function ($item) use ($request) {
             $itemArray = $item->toArray($request);
-            $completedBookingCount = Booking::where('service_id', $itemArray['id'])
-                ->where('status', 'completed')
-                ->count();
+            // Count all bookings for this service (regardless of status)
+            $completedBookingCount = Booking::where('service_id', $itemArray['id'])->count();
             $itemArray['completed_booking_count'] = $completedBookingCount;
             
             // Add provider total services count

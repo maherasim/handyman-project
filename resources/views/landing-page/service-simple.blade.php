@@ -118,7 +118,7 @@
                     @php
                         $totalReviews = \App\Models\BookingRating::where('service_id', $data->id)->count();
                         $totalRating = $data->serviceRating ? (float)number_format(max($data->serviceRating->avg('rating'), 0), 2) : 0;
-                        $completedBookingCount = \App\Models\Booking::where('service_id', $data->id)->where('status','completed')->count();
+                        $completedBookingCount = \App\Models\Booking::where('service_id', $data->id)->count();
                         $plan_icon = asset('images/freepng.png');
                         $provider = $data->providers;
                         if ($provider && $provider->providerSubscription) {
