@@ -104,6 +104,11 @@ class MailTemplateSeeder extends Seeder
             ],
             [
                 'type' => 'notification_type',
+                'value' => 'post_job_bid_status_update',
+                'name' => 'Job Bid Status Update',
+            ],
+            [
+                'type' => 'notification_type',
                 'value' => 'provider_payout',
                 'name' => 'Payout Process',
             ],
@@ -1020,13 +1025,13 @@ class MailTemplateSeeder extends Seeder
             'status' => 1,
             'subject' => 'New Bid Received',
             'template_detail' => '<p>Hello [[ customer_name ]],</p>
-                                  <p>A provider has placed a bid in response to your job request #[[ job_id ]].</p>
+                                  <p>An Employer has placed a bid in response to your job request #[[ job_id ]].</p>
                                   <p>&nbsp;</p>
                                   <p><strong>Here are the details:</strong></p>
                                   <ul>
                                   <li>Job Description<strong>:</strong> [[ job_description ]]</li>
                                   <li>Bid Amount: [[ bid_amount ]]</li>
-                                  <li>Provider: [[ provider_name ]]</li>
+                                  <li>Employer: [[ provider_name ]]</li>
                                   </ul>
                                   <p>Feel free to review the bid and proceed accordingly.</p>
                                   <p>&nbsp;</p>
@@ -1051,6 +1056,28 @@ class MailTemplateSeeder extends Seeder
             'template_detail' => '<p>Hello [[ provider_name ]],</p>
                                   <p>Your bid of [[ job_price ]] for the job #[[ job_request_id ]] - [[ job_name ]] request has been accepted by the [[ customer_name ]].</p>
                                   <p>Please proceed with the necessary steps to fulfill the job requirements.</p>
+                                  <p>&nbsp;</p>
+                                  <p>Best regards,<br />[[ company_name ]]</p>',
+        ]);
+
+        $template = MailTemplates::create([
+            'type' => 'post_job_bid_status_update',
+            'name' => 'post_job_bid_status_update',
+            'label' => 'Job Bid Status Update',
+            'status' => 1,
+            'to' => '["user"]',
+            'channels' => ['IS_MAIL' => '1', 'PUSH_NOTIFICATION' => '1'],
+        ]);
+        $template->defaultMailTemplateMap()->create([
+            'language' => 'en',
+            'notification_link' => '',
+            'notification_message' => '',
+            'user_type' => 'user',
+            'status' => 1,
+            'subject' => 'Job Status Updated',
+            'template_detail' => '<p>Hello [[ customer_name ]],</p>
+                                  <p>Employer [[ provider_name ]] has updated the status of your job request #[[ job_id ]] - [[ job_name ]] to <strong>[[ bid_status ]]</strong>.</p>
+                                  <p>Check the bid page for details.</p>
                                   <p>&nbsp;</p>
                                   <p>Best regards,<br />[[ company_name ]]</p>',
         ]);

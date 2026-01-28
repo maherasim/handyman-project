@@ -603,16 +603,19 @@ class PostJobRequestController extends Controller
         }
     
         $postjob->save();
-    
+
+        // Notify customer (user): in-app notification + email on every status update (start work, done, hold, etc.)
         try {
+            $bid->load(['postrequest', 'provider', 'customer']);
             $this->sendNotification([
-                'activity_type' => 'update_booking_status',
-                'post_job' => $bid,
+                'activity_type' => 'post_job_bid_status_update',
+                'post_job'      => $bid,
+                'bid_status'    => $bid->status,
             ]);
         } catch (\Throwable $e) {
-            // silent fail for notifications
+            \Log::warning('post_job_bid_status_update notification failed: ' . $e->getMessage());
         }
-    
+
         return response()->json([
             'status' => true,
             'message' => 'Status updated successfully',
@@ -1769,35 +1772,34 @@ class PostJobRequestController extends Controller
     {
         $auth_user = authSession();
 
-        // Load the bid with its post request
-        $bid = PostJobBid::with('postrequest')->findOrFail($id);
+        // Load the bid with relations needed for notification
+        $bid = PostJobBid::with(['postrequest', 'provider', 'customer'])->findOrFail($id);
 
         // Ensure customer owns this job request
         if (!$bid->postrequest || (int)$auth_user->id !== (int)$bid->postrequest->customer_id) {
             return response()->json(['status' => false, 'message' => 'Unauthorized'], 403);
         }
 
-        // Update the bid status instead of post request
+        // Update the bid and post request
         $bid->status = 'accepted';
         $bid->save();
+        $post = $bid->postrequest;
+        if ($post) {
+            $post->accepted_bid_id = $bid->id;
+            $post->status = 'accepted';
+            $post->provider_id = $bid->provider_id;
+            $post->save();
+        }
 
-        // Optionally, assign the provider to the post request
-        // $post = $bid->postrequest;
-        // if ($post) {
-        //     $post->provider_id = $bid->provider_id;
-        //     $post->status = 'assigned'; // This is optional if you still want post request status to reflect assignment
-        //     $post->save();
-        // }
-
-        // Notify provider/user if needed
+        // Notify provider (Employer): in-app notification + email
         try {
             $this->sendNotification([
                 'activity_type' => 'user_accept_bid',
-                // 'post_job' => $post,
-                // 'job_price' => getPriceFormat($bid->price),
+                'post_job'      => $bid,
+                'job_price'     => getPriceFormat($bid->price),
             ]);
         } catch (\Throwable $e) {
-            // Ignore notification failures
+            \Log::warning('user_accept_bid notification failed: ' . $e->getMessage());
         }
 
         return response()->json([

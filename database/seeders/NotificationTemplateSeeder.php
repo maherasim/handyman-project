@@ -89,6 +89,11 @@ class NotificationTemplateSeeder extends Seeder
                 'value' => 'user_accept_bid',
                 'name' => 'User Accept Bid',
             ],
+            [
+                'type' => 'notification_type',
+                'value' => 'post_job_bid_status_update',
+                'name' => 'Job Bid Status Update',
+            ],
 
             [
                 'type' => 'notification_type',
@@ -787,11 +792,11 @@ class NotificationTemplateSeeder extends Seeder
         $template->defaultNotificationTemplateMap()->create([
             'language' => 'en',
             'notification_link' => '',
-            'notification_message' => 'You have received a new bid of [[ bid_amount ]] from [[ provider_name ]] on your job request #[[ job_id ]].',
+            'notification_message' => 'You have received a new bid of [[ bid_amount ]]  Employer [[ provider_name ]] on your job request #[[ job_id ]].',
             'user_type' => 'user',
             'status' => 1,
             'subject' => 'New Bid Received',
-            'template_detail' => '<p>#[[ job_id ]] - You have received a new bid of [[ bid_amount ]] from [[ provider_name ]] on your job request. Check it out!</p>',
+            'template_detail' => '<p>#[[ job_id ]] - You have received a new bid of [[ bid_amount ]] from Employer [[ provider_name ]] on your job request. Check it out!</p>',
         ]);
 
         $template = NotificationTemplate::create([
@@ -805,11 +810,29 @@ class NotificationTemplateSeeder extends Seeder
         $template->defaultNotificationTemplateMap()->create([
             'language' => 'en',
             'notification_link' => '',
-            'notification_message' => '',
+            'notification_message' => 'Your bid of [[ job_price ]] for job #[[ job_request_id ]] has been accepted by [[ customer_name ]].',
             'user_type' => 'provider',
             'status' => 1,
             'subject' => 'Job Bid Accepted',
             'template_detail' => '<p>#[[ job_request_id ]] - Your bid of [[ job_price ]] for the job request has been accepted by [[ customer_name ]].</p>',
+        ]);
+
+        $template = NotificationTemplate::create([
+            'type' => 'post_job_bid_status_update',
+            'name' => 'post_job_bid_status_update',
+            'label' => 'Job Bid Status Update',
+            'status' => 1,
+            'to' => '["user"]',
+            'channels' => ['IS_MAIL' => '1', 'PUSH_NOTIFICATION' => '1'],
+        ]);
+        $template->defaultNotificationTemplateMap()->create([
+            'language' => 'en',
+            'notification_link' => '',
+            'notification_message' => 'Employer has updated the job status to [[ bid_status ]] for your job request #[[ job_id ]].',
+            'user_type' => 'user',
+            'status' => 1,
+            'subject' => 'Job Status Updated',
+            'template_detail' => '<p>Hello [[ customer_name ]],</p><p>Employer [[ provider_name ]] has updated the status of your job request #[[ job_id ]] - [[ job_name ]] to <strong>[[ bid_status ]]</strong>.</p><p>Check the bid page for details.</p>',
         ]);
 
         $template = NotificationTemplate::create([

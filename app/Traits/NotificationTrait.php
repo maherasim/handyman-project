@@ -363,11 +363,12 @@ trait NotificationTrait
                 break;
             case "user_accept_bid":
 
-                $data['activity_message'] = __('messages.bid_accepted_message', ['name' => $post_job->customer->display_name,]);
+                $data['activity_message'] = __('messages.bid_accepted_message', ['name' => $post_job->customer->display_name ?? '',]);
                 $data['activity_type'] =  __('messages.bid_accepted_title');
                 $data['provider_name'] = $post_job->provider->display_name ?? null;
                 $data['user_name'] = $post_job->customer->display_name ?? null;
-                $job_request_id= isset($post_job->id) ?  $post_job->id :'';
+                $job_request_id = isset($post_job->post_request_id) ? $post_job->post_request_id : '';
+                $data['job_name'] = isset($post_job->postrequest->title) ? $post_job->postrequest->title : '';
                 // Resolve price: prefer explicitly passed job_price, then price, else fall back to PostJobRequest price
                 $resolvedPrice = null;
                 if (!empty($data['job_price'])) {
@@ -413,6 +414,25 @@ trait NotificationTrait
                 \App\Models\BookingActivity::create($data);
                 break;
 
+            case "post_job_bid_status_update":
+                // Notify customer when provider updates bid status (start work, done, hold, advance_paid, etc.)
+                $bid_status = $data['bid_status'] ?? $post_job->status ?? '';
+                $data['activity_message'] = __('Employer has updated the job status to :status.', ['status' => $bid_status]);
+                $data['activity_type'] = __('Job status updated');
+                $data['provider_name'] = isset($post_job->provider) ? $post_job->provider->display_name : '';
+                $data['user_name'] = isset($post_job->customer) ? $post_job->customer->display_name : '';
+                $data['job_name'] = isset($post_job->postrequest->title) ? $post_job->postrequest->title : '';
+                $job_id = isset($post_job->post_request_id) ? $post_job->post_request_id : '';
+                $activity_data = [
+                    'post_request_id' => $post_job->post_request_id,
+                    'bid_id' => $post_job->id,
+                    'bid_status' => $bid_status,
+                    'provider_id' => $post_job->provider_id,
+                    'customer_id' => $post_job->customer_id,
+                ];
+                $data['activity_data'] = json_encode($activity_data);
+                \App\Models\BookingActivity::create($data);
+                break;
 
             case "provider_payout":
                 $id = $data['id'];
@@ -631,7 +651,22 @@ trait NotificationTrait
 					$notification_data['link'] = route('post-job-request.bids', ['id' => $targetId]);
 				}
 			}
+			// Link for provider when customer accepts bid (view bid page)
+			if ($notification_type === 'user_accept_bid') {
+				$targetId = $notification_data['job_request_id'] ?? $notification_data['job_id'] ?? null;
+				if (!empty($targetId)) {
+					$notification_data['link'] = route('post-job-request.bids', ['id' => $targetId]);
+				}
+			}
+			// Link for customer when provider updates bid status
+			if ($notification_type === 'post_job_bid_status_update') {
+				$targetId = $notification_data['job_id'] ?? null;
+				if (!empty($targetId)) {
+					$notification_data['link'] = route('post-job-request.bids', ['id' => $targetId]);
+				}
+			}
             $notification_data['job_request_id'] = isset( $job_request_id) ? $job_request_id : '';
+            $notification_data['bid_status'] = isset($data['bid_status']) ? $data['bid_status'] : '';
             $notification_data['job_name'] = (isset($post_job) && isset($post_job->title) ? $post_job->title : (isset($data['postjob_data']) ? ($data['postjob_data']->title ?? '') : ''));
             // Avoid double-formatting: if value is numeric, format; else assume it's already formatted
             if (isset($data['job_price'])) {
@@ -691,6 +726,15 @@ trait NotificationTrait
             }
             // Fallback: ensure job creator (user) is notified when a provider places a bid
             if ($notification_type === 'provider_send_bid') {
+                if (!is_array($mails)) {
+                    $mails = (array) $mails;
+                }
+                if (!in_array('user', $mails, true)) {
+                    $mails[] = 'user';
+                }
+            }
+            // Fallback: ensure customer is notified when provider updates bid status
+            if ($notification_type === 'post_job_bid_status_update') {
                 if (!is_array($mails)) {
                     $mails = (array) $mails;
                 }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Traits\NotificationTrait;
 use Illuminate\Http\Request;
 use App\Models\PostRequestStatus;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -18,6 +19,7 @@ use App\Http\Resources\API\PostJobRequestDetailResource;
 
 class PostJobRequestController extends Controller
 {
+    use NotificationTrait;
   
     public function postRequestStatus(Request $request)
     {
@@ -61,13 +63,16 @@ class PostJobRequestController extends Controller
         }
         $postjob->save();
 
+        // Notify customer (user): in-app notification + email on every status update
         try {
+            $bid->load(['postrequest', 'provider', 'customer']);
             $this->sendNotification([
-                'activity_type' => 'update_booking_status',
-                'post_job' => $bid,
+                'activity_type' => 'post_job_bid_status_update',
+                'post_job'      => $bid,
+                'bid_status'    => $bid->status,
             ]);
         } catch (\Throwable $e) {
-            // silent fail for notifications
+            \Log::warning('post_job_bid_status_update notification failed: ' . $e->getMessage());
         }
 
         return response()->json([
