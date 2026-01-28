@@ -188,27 +188,25 @@ class PostJobRequestController extends Controller
     
     public function startWork(Request $request, $id)
     {
-        // Find the bid
-        $post = PostJobBid::findOrFail($id);
-
-        // Ensure user is a provider
-
-
+        $bid = PostJobBid::findOrFail($id);
 
         // Update advance, remaining, and status
-        $post->advance_percent = $request->input('advance_percent');
-        $post->remaining_percent = $request->input('remaining_percent');
-        $post->status = 'Advance Payment Pending';
-        $post->save();
+        $bid->advance_percent = $request->input('advance_percent');
+        $bid->remaining_percent = $request->input('remaining_percent');
+        $bid->status = 'Advance Payment Pending';
+        $bid->save();
 
-        // Optionally notify the user
+        // Notify customer: Employer set payment split
         try {
+            $bid->load(['postrequest', 'provider', 'customer']);
             $this->sendNotification([
-                'activity_type' => 'update_booking_status',
-                'post_job' => $post,
+                'activity_type'    => 'post_job_bid_status_update',
+                'post_job'         => $bid,
+                'bid_status'       => 'split_payment',
+                'notify_recipient' => 'user',
             ]);
         } catch (\Throwable $e) {
-            // Silent fail
+            \Log::warning('startWork (split payment) notification failed: ' . $e->getMessage());
         }
 
         return response()->json([
