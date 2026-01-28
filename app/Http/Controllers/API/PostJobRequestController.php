@@ -63,7 +63,7 @@ class PostJobRequestController extends Controller
         }
         $postjob->save();
 
-        // Notify the OTHER party: provider updated → notify customer; customer updated → notify provider
+        // Notify the OTHER party (same as web): provider updated → email + notification to customer; customer updated → email + notification to provider
         try {
             $bid->load(['postrequest', 'provider', 'customer']);
             $isProviderUpdating = (int) auth()->id() === (int) $bid->provider_id;
@@ -196,7 +196,7 @@ class PostJobRequestController extends Controller
         $bid->status = 'Advance Payment Pending';
         $bid->save();
 
-        // Notify customer: Employer set payment split
+        // Notify customer (same as web): email + notification when provider sets payment split
         try {
             $bid->load(['postrequest', 'provider', 'customer']);
             $this->sendNotification([
