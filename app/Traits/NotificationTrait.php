@@ -673,6 +673,7 @@ trait NotificationTrait
 			}
             $notification_data['job_request_id'] = isset( $job_request_id) ? $job_request_id : '';
             $notification_data['bid_status'] = isset($data['bid_status']) ? $data['bid_status'] : '';
+            $notification_data['notify_recipient'] = isset($data['notify_recipient']) ? $data['notify_recipient'] : 'user';
             // job_name: prefer explicit $data['job_name'] (set in user_accept_bid / post_job_bid_status_update), then post_job/postjob_data
             $notification_data['job_name'] = isset($data['job_name']) && $data['job_name'] !== '' ? $data['job_name'] : (isset($post_job) && isset($post_job->title) ? $post_job->title : (isset($data['postjob_data']) ? ($data['postjob_data']->title ?? '') : ''));
             // Avoid double-formatting: if value is numeric, format; else assume it's already formatted
