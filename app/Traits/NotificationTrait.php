@@ -632,7 +632,7 @@ trait NotificationTrait
 				}
 			}
             $notification_data['job_request_id'] = isset( $job_request_id) ? $job_request_id : '';
-            $notification_data['job_name'] = (isset($post_job) && isset($post_job->title) ? $post_job->title : (isset($data['postjob_data']) ? ($data['postjob_data']->title ?? '') : '');
+            $notification_data['job_name'] = (isset($post_job) && isset($post_job->title) ? $post_job->title : (isset($data['postjob_data']) ? ($data['postjob_data']->title ?? '') : ''));
             // Avoid double-formatting: if value is numeric, format; else assume it's already formatted
             if (isset($data['job_price'])) {
                 $notification_data['job_price'] = is_numeric($data['job_price'])
