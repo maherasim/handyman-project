@@ -224,7 +224,7 @@ class PostJobRequestController extends Controller
                 $this->sendNotification([
                     'activity_type'    => 'post_job_bid_status_update',
                     'post_job'         => $bid,
-                    'bid_status'       => 'split_payment',
+                    'bid_status'       => 'Payment split set',
                     'notify_recipient' => 'user',
                 ]);
             }
@@ -2510,7 +2510,7 @@ class PostJobRequestController extends Controller
             $this->sendNotification([
                 'activity_type'    => 'post_job_bid_status_update',
                 'post_job'         => $bid,
-                'bid_status'       => 'split_payment',
+                'bid_status'       => 'Payment split set',
                 'notify_recipient' => 'user',
             ]);
         } catch (\Throwable $e) {
