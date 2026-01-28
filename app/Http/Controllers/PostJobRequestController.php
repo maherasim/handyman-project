@@ -667,7 +667,20 @@ class PostJobRequestController extends Controller
             $bid->quantity      = $totalQty;   // store summed qty for reference
             $bid->status        = 'completed';
             $bid->save();
-    
+
+            // Notify customer: Employer added extra charges and marked job as completed
+            try {
+                $bid->load(['postrequest', 'provider', 'customer']);
+                $this->sendNotification([
+                    'activity_type'    => 'post_job_bid_status_update',
+                    'post_job'         => $bid,
+                    'bid_status'       => 'completed',
+                    'notify_recipient' => 'user',
+                ]);
+            } catch (\Throwable $e) {
+                \Log::warning('addExtraCharges notification failed: ' . $e->getMessage());
+            }
+
             return response()->json([
                 'status'        => true,
                 'message'       => 'Extra charges added successfully & bid marked as completed',
@@ -676,7 +689,7 @@ class PostJobRequestController extends Controller
                 'new_status'    => $bid->status,
             ]);
         }
-    
+
         // Fallback: single-row compatibility
         $request->validate([
             'title'    => 'required|string|max:255',
@@ -701,7 +714,20 @@ class PostJobRequestController extends Controller
         $bid->quantity      = $quantity;
         $bid->status        = 'completed';
         $bid->save();
-    
+
+        // Notify customer: Employer added extra charges and marked job as completed
+        try {
+            $bid->load(['postrequest', 'provider', 'customer']);
+            $this->sendNotification([
+                'activity_type'    => 'post_job_bid_status_update',
+                'post_job'         => $bid,
+                'bid_status'       => 'completed',
+                'notify_recipient' => 'user',
+            ]);
+        } catch (\Throwable $e) {
+            \Log::warning('addExtraCharges notification failed: ' . $e->getMessage());
+        }
+
         return response()->json([
             'status'        => true,
             'message'       => 'Extra charges added successfully & bid marked as completed',
