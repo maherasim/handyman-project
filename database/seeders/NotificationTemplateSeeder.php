@@ -834,6 +834,16 @@ class NotificationTemplateSeeder extends Seeder
             'subject' => 'Job Status Updated',
             'template_detail' => '<p>Hello [[ customer_name ]],</p><p>Employer [[ provider_name ]] has updated the status of your job request #[[ job_id ]] - [[ job_name ]] to <strong>[[ bid_status ]]</strong>.</p><p>Check the bid page for details.</p>',
         ]);
+        // When customer updates status → notify provider with "Customer has updated..."
+        $template->notificationTemplateContentMappings()->create([
+            'language' => 'en',
+            'notification_link' => '',
+            'notification_message' => 'Customer has updated the job status to [[ bid_status ]] for job request #[[ job_id ]].',
+            'user_type' => 'provider',
+            'status' => 1,
+            'subject' => 'Job Status Updated',
+            'template_detail' => '<p>Hello [[ provider_name ]],</p><p>Customer [[ customer_name ]] has updated the status of your job request #[[ job_id ]] - [[ job_name ]] to <strong>[[ bid_status ]]</strong>.</p><p>Check the bid page for details.</p>',
+        ]);
 
         $template = NotificationTemplate::create([
             'type' => 'provider_payout',

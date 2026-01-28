@@ -1081,6 +1081,21 @@ class MailTemplateSeeder extends Seeder
                                   <p>&nbsp;</p>
                                   <p>Best regards,<br />[[ company_name ]]</p>',
         ]);
+        // When customer updates status → notify provider
+        \App\Models\MailTemplateContentMapping::create([
+            'template_id' => $template->id,
+            'language' => 'en',
+            'notification_link' => '',
+            'notification_message' => '',
+            'user_type' => 'provider',
+            'status' => 1,
+            'subject' => 'Job Status Updated',
+            'template_detail' => '<p>Hello [[ provider_name ]],</p>
+                                  <p>Customer [[ customer_name ]] has updated the status of your job request #[[ job_id ]] - [[ job_name ]] to <strong>[[ bid_status ]]</strong>.</p>
+                                  <p>Check the bid page for details.</p>
+                                  <p>&nbsp;</p>
+                                  <p>Best regards,<br />[[ company_name ]]</p>',
+        ]);
 
         $template = MailTemplates::create([
             'type' => 'provider_payout',

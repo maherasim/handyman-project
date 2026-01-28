@@ -63,13 +63,15 @@ class PostJobRequestController extends Controller
         }
         $postjob->save();
 
-        // Notify customer (user): in-app notification + email on every status update
+        // Notify the OTHER party: provider updated → notify customer; customer updated → notify provider
         try {
             $bid->load(['postrequest', 'provider', 'customer']);
+            $isProviderUpdating = (int) auth()->id() === (int) $bid->provider_id;
             $this->sendNotification([
-                'activity_type' => 'post_job_bid_status_update',
-                'post_job'      => $bid,
-                'bid_status'    => $bid->status,
+                'activity_type'    => 'post_job_bid_status_update',
+                'post_job'         => $bid,
+                'bid_status'       => $bid->status,
+                'notify_recipient' => $isProviderUpdating ? 'user' : 'provider',
             ]);
         } catch (\Throwable $e) {
             \Log::warning('post_job_bid_status_update notification failed: ' . $e->getMessage());

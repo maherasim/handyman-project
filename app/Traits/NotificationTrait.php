@@ -415,13 +415,19 @@ trait NotificationTrait
                 break;
 
             case "post_job_bid_status_update":
-                // Notify customer when provider updates bid status (start work, done, hold, advance_paid, etc.)
+                // Notify the OTHER party: provider updated → customer gets "Employer has updated..."; customer updated → provider gets "Customer has updated..."
                 $bid_status = $data['bid_status'] ?? $post_job->status ?? '';
-                $data['activity_message'] = __('Employer has updated the job status to :status.', ['status' => $bid_status]);
+                $notifyWho = $data['notify_recipient'] ?? 'user';
+                if ($notifyWho === 'provider') {
+                    $data['activity_message'] = __('Customer has updated the job status to :status.', ['status' => $bid_status]);
+                } else {
+                    $data['activity_message'] = __('Employer has updated the job status to :status.', ['status' => $bid_status]);
+                }
                 $data['activity_type'] = __('Job status updated');
                 $data['provider_name'] = isset($post_job->provider) ? $post_job->provider->display_name : '';
                 $data['user_name'] = isset($post_job->customer) ? $post_job->customer->display_name : '';
                 $data['job_name'] = isset($post_job->postrequest->title) ? $post_job->postrequest->title : '';
+                $data['notify_recipient'] = $notifyWho;
                 $job_id = isset($post_job->post_request_id) ? $post_job->post_request_id : '';
                 $activity_data = [
                     'post_request_id' => $post_job->post_request_id,
@@ -667,7 +673,8 @@ trait NotificationTrait
 			}
             $notification_data['job_request_id'] = isset( $job_request_id) ? $job_request_id : '';
             $notification_data['bid_status'] = isset($data['bid_status']) ? $data['bid_status'] : '';
-            $notification_data['job_name'] = (isset($post_job) && isset($post_job->title) ? $post_job->title : (isset($data['postjob_data']) ? ($data['postjob_data']->title ?? '') : ''));
+            // job_name: prefer explicit $data['job_name'] (set in user_accept_bid / post_job_bid_status_update), then post_job/postjob_data
+            $notification_data['job_name'] = isset($data['job_name']) && $data['job_name'] !== '' ? $data['job_name'] : (isset($post_job) && isset($post_job->title) ? $post_job->title : (isset($data['postjob_data']) ? ($data['postjob_data']->title ?? '') : ''));
             // Avoid double-formatting: if value is numeric, format; else assume it's already formatted
             if (isset($data['job_price'])) {
                 $notification_data['job_price'] = is_numeric($data['job_price'])
@@ -733,13 +740,18 @@ trait NotificationTrait
                     $mails[] = 'user';
                 }
             }
-            // Fallback: ensure customer is notified when provider updates bid status
+            // Status update: notify the OTHER party (user when provider updated, provider when customer updated)
             if ($notification_type === 'post_job_bid_status_update') {
+                $notifyWho = $notification_data['notify_recipient'] ?? 'user';
+                $mails = $notifyWho === 'provider' ? ['provider'] : ['user'];
+            }
+            // Fallback: ensure provider (Employer) is notified when customer accepts bid
+            if ($notification_type === 'user_accept_bid') {
                 if (!is_array($mails)) {
                     $mails = (array) $mails;
                 }
-                if (!in_array('user', $mails, true)) {
-                    $mails[] = 'user';
+                if (!in_array('provider', $mails, true)) {
+                    $mails[] = 'provider';
                 }
             }
 
