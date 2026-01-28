@@ -562,7 +562,16 @@ class PostJobRequestController extends Controller
             }
     
             DB::commit();
-    
+
+            // Notify provider: customer paid advance or remaining (email + notification)
+            $post->load(['provider', 'customer', 'postrequest']);
+            $this->sendNotification([
+                'activity_type'     => 'post_job_bid_status_update',
+                'post_job'          => $post,
+                'notify_recipient'  => 'provider',
+                'bid_status'        => $paymentType === 'remaining' ? 'Remaining paid' : 'Advance paid',
+            ]);
+
             return response()->json([
                 'status'  => true,
                 'message' => $successMsg,
@@ -989,6 +998,15 @@ class PostJobRequestController extends Controller
             $bid->status = ($type === 'advance') ? 'advance_paid' : 'remaining_paid';
             $bid->save();
 
+            // Notify provider: customer paid advance or remaining (email + notification)
+            $bid->load(['provider', 'customer', 'postrequest']);
+            $this->sendNotification([
+                'activity_type'     => 'post_job_bid_status_update',
+                'post_job'          => $bid,
+                'notify_recipient'  => 'provider',
+                'bid_status'        => $type === 'advance' ? 'Advance paid' : 'Remaining paid',
+            ]);
+
             return redirect()->route('post-job-bid.show', ['id' => $bid->post_request_id])
                 ->with('success', 'Stripe payment processed successfully. Commission and payouts recorded.');
         }
@@ -1128,6 +1146,15 @@ class PostJobRequestController extends Controller
             $bid->status = ($type === 'advance') ? 'advance_paid' : 'remaining_paid';
             $bid->save();
 
+            // Notify provider: customer paid advance or remaining (email + notification)
+            $bid->load(['provider', 'customer', 'postrequest']);
+            $this->sendNotification([
+                'activity_type'     => 'post_job_bid_status_update',
+                'post_job'          => $bid,
+                'notify_recipient'  => 'provider',
+                'bid_status'        => $type === 'advance' ? 'Advance paid' : 'Remaining paid',
+            ]);
+
             return response()->json([
                 'status' => true,
                 'message' => 'Stripe payment processed successfully. Commission and payouts recorded.',
@@ -1250,6 +1277,15 @@ class PostJobRequestController extends Controller
 
             $bid->status = ($type === 'advance') ? 'advance_paid' : 'remaining_paid';
             $bid->save();
+
+            // Notify provider: customer paid advance or remaining (email + notification)
+            $bid->load(['provider', 'customer', 'postrequest']);
+            $this->sendNotification([
+                'activity_type'     => 'post_job_bid_status_update',
+                'post_job'          => $bid,
+                'notify_recipient'  => 'provider',
+                'bid_status'        => $type === 'advance' ? 'Advance paid' : 'Remaining paid',
+            ]);
 
             return response()->json([
                 'status' => true,
@@ -1541,6 +1577,15 @@ class PostJobRequestController extends Controller
         // 🔹 Update bid status
         $bid->status = ($type === 'remaining') ? 'remaining_paid' : 'advance_paid';
         $bid->save();
+
+        // Notify provider: customer paid advance or remaining (email + notification)
+        $bid->load(['provider', 'customer', 'postrequest']);
+        $this->sendNotification([
+            'activity_type'     => 'post_job_bid_status_update',
+            'post_job'          => $bid,
+            'notify_recipient'  => 'provider',
+            'bid_status'        => $type === 'remaining' ? 'Remaining paid' : 'Advance paid',
+        ]);
 
         return redirect()->route('post-job-bid.show', ['id' => $bid->post_request_id])
             ->with('success', 'PayPal payment completed and payout recorded.');
