@@ -145,7 +145,10 @@ public function apiIndex(Request $request)
                  'bid_data' => $result,
                  'postjob_data' => $customer,
              ];
-             // Optional: $this->sendNotification($activity_data);
+             // Notify job creator (customer): in-app notification + email when a provider places a bid
+             if ($result->wasRecentlyCreated) {
+                 $this->sendNotification($activity_data);
+             }
      
              $message = __('messages.update_form', ['form' => __('messages.postbid')]);
              if ($result->wasRecentlyCreated) {

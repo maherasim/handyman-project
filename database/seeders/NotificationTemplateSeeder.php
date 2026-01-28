@@ -787,7 +787,7 @@ class NotificationTemplateSeeder extends Seeder
         $template->defaultNotificationTemplateMap()->create([
             'language' => 'en',
             'notification_link' => '',
-            'notification_message' => '',
+            'notification_message' => 'You have received a new bid of [[ bid_amount ]] from [[ provider_name ]] on your job request #[[ job_id ]].',
             'user_type' => 'user',
             'status' => 1,
             'subject' => 'New Bid Received',

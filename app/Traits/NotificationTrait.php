@@ -624,8 +624,15 @@ trait NotificationTrait
 					$notification_data['link'] = route('post-job-request.bids', ['id' => $targetId]);
 				}
 			}
+			// Link for job creator when a provider places a bid (view bids page)
+			if ($notification_type === 'provider_send_bid') {
+				$targetId = $notification_data['job_id'] ?? null;
+				if (!empty($targetId)) {
+					$notification_data['link'] = route('post-job-request.bids', ['id' => $targetId]);
+				}
+			}
             $notification_data['job_request_id'] = isset( $job_request_id) ? $job_request_id : '';
-            $notification_data['job_name'] = isset($post_job->title) ? $post_job->title : '';
+            $notification_data['job_name'] = (isset($post_job) && isset($post_job->title) ? $post_job->title : (isset($data['postjob_data']) ? ($data['postjob_data']->title ?? '') : '');
             // Avoid double-formatting: if value is numeric, format; else assume it's already formatted
             if (isset($data['job_price'])) {
                 $notification_data['job_price'] = is_numeric($data['job_price'])
@@ -635,7 +642,7 @@ trait NotificationTrait
                 $notification_data['job_price'] = '';
             }
             $notification_data['customer_name'] = isset($data['user_name']) ? $data['user_name'] : '';
-            $notification_data['job_description'] = isset($data['postjob_data']->description) ? $data['postjob_data']->description : '';
+            $notification_data['job_description'] = (isset($data['postjob_data']) && isset($data['postjob_data']->description)) ? $data['postjob_data']->description : '';
             $notification_data['bid_amount'] = isset($bid_amount) ? $bid_amount: '';
             $notification_data['provider_name'] = isset($data['provider_name']) ? $data['provider_name'] : '';
             $notification_data['handyman_name'] = isset($data['handyman_name']) ? $data['handyman_name'] : '';
@@ -680,6 +687,15 @@ trait NotificationTrait
                 // Ensure 'provider' is included exactly once
                 if (!in_array('provider', $mails, true)) {
                     $mails[] = 'provider';
+                }
+            }
+            // Fallback: ensure job creator (user) is notified when a provider places a bid
+            if ($notification_type === 'provider_send_bid') {
+                if (!is_array($mails)) {
+                    $mails = (array) $mails;
+                }
+                if (!in_array('user', $mails, true)) {
+                    $mails[] = 'user';
                 }
             }
 
