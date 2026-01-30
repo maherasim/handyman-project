@@ -336,9 +336,10 @@
                     </div>
 
                     @php
-                        $excludedStatuses = ['cancelled', 'split_payment', 'accepted', 'requested'];
+                        $advancePaidStatuses = ['advance_paid', 'in_progress', 'hold', 'done', 'confirm_done', 'remaining_paid', 'completed'];
+                        $showWorkingAddress = in_array($bid->status ?? '', $advancePaidStatuses);
                     @endphp
-                    @if (!in_array($bid->status, $excludedStatuses))
+                    @if ($showWorkingAddress)
                         <div class="col-md-4">
                             <div class="card border-secondary shadow-sm h-100 hover-shadow">
                                 <div class="card-body text-center">
