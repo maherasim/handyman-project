@@ -224,18 +224,42 @@
         });
     </script>
     
-    <!-- Why Choose Me Modal -->
+    <!-- Why Choose Me Modal - prevent text overflow -->
     <style>
-        #whyChooseMeModal .modal-body { overflow-x: hidden; }
+        #whyChooseMeModal .modal-dialog {
+            max-width: min(800px, calc(100vw - 2rem));
+        }
+        #whyChooseMeModal .modal-content {
+            overflow-x: hidden;
+            max-width: 100%;
+        }
+        #whyChooseMeModal .modal-body {
+            overflow-x: hidden;
+            min-width: 0;
+            max-width: 100%;
+        }
         #whyChooseMeContent {
+            overflow-wrap: break-word;
+            word-break: break-word;
+            overflow-x: hidden;
+            max-width: 100%;
+            min-width: 0;
+        }
+        #whyChooseMeContent p,
+        #whyChooseMeContent h1, #whyChooseMeContent h2, #whyChooseMeContent h3,
+        #whyChooseMeContent h4, #whyChooseMeContent h5, #whyChooseMeContent h6,
+        #whyChooseMeContent div, #whyChooseMeContent span {
             overflow-wrap: break-word;
             word-break: break-word;
             max-width: 100%;
         }
-        #whyChooseMeContent * {
-            max-width: 100%;
-            overflow-wrap: break-word;
+        #whyChooseMeContent table {
+            table-layout: fixed;
+            width: 100% !important;
+        }
+        #whyChooseMeContent td, #whyChooseMeContent th {
             word-break: break-word;
+            overflow-wrap: break-word;
         }
     </style>
     <div class="modal fade" id="whyChooseMeModal" tabindex="-1" aria-labelledby="whyChooseMeLabel" aria-hidden="true">
@@ -269,6 +293,8 @@
 
         // Insert HTML directly (keeps <p>, <br>, <strong>, etc.)
         $('#whyChooseMeContent').html(unescaped || '<p>No content provided.</p>');
+        // Prevent overflow: remove inline widths from injected content
+        $('#whyChooseMeContent').find('*').css({ 'maxWidth': '100%', 'minWidth': '0' });
         $('#whyChooseMeModal').modal('show');
     });
 
