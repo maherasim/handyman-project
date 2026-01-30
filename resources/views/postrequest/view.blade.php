@@ -95,7 +95,7 @@
                                 <th>Max. Budget</th>
                                 <th>Start Date</th>
                                 <th>End Date</th>
-                                <th>Provider</th>
+                                <th>Employer</th>
                                 <th>Why Choose Me</th>
                                 <th>Bid Amount</th>
                                 <th>Action</th>

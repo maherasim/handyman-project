@@ -81,7 +81,7 @@
                     break;
                 case 'accepted':
                     $nextActor = 'provider';
-                    $nextText = 'Waiting for provider to split the payment';
+                    $nextText = 'Waiting for Employer to split the payment';
                     break;
                 case 'Advance Payment Pending':
                     $nextActor = 'user';
@@ -89,7 +89,7 @@
                     break;
                 case 'advance_paid':
                     $nextActor = 'provider';
-                    $nextText = 'Waiting for provider to start work';
+                    $nextText = 'Waiting for Employer to start work';
                     break;
                 case 'in_process':
                     $nextActor = 'user';
@@ -101,7 +101,7 @@
                     break;
                 case 'hold':
                     $nextActor = 'provider';
-                    $nextText = 'Waiting for provider to resume work';
+                    $nextText = 'Waiting for Employer to resume work';
                     break;
                 case 'done':
                     $nextActor = 'user';
@@ -109,7 +109,7 @@
                     break;
                 case 'confirm_done':
                     $nextActor = 'provider';
-                    $nextText = 'Waiting for provider to mark the bid as completed';
+                    $nextText = 'Waiting for Employer to mark the bid as completed';
                     break;
                 case 'remaining_paid':
                     $nextActor = null;
@@ -379,7 +379,7 @@
                         <div class="card border-primary shadow-sm h-100 hover-shadow">
                             <div class="card-body text-center">
                                 <i class="fas fa-user fa-2x text-primary mb-2"></i>
-                                <h6 class="fw-bold mb-1">Provider</h6>
+                                <h6 class="fw-bold mb-1">Employer</h6>
                                 <p class="mb-0">{{ $bid->provider->display_name ?? '-' }}</p>
                             </div>
                         </div>
@@ -549,7 +549,7 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="postBidRatingModalLabel">Rate {{ $bid->provider->display_name ?? __('Provider') }}</h5>
+        <h5 class="modal-title" id="postBidRatingModalLabel">Rate {{ $bid->provider->display_name ?? 'Employer' }}</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
