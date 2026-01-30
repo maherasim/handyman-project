@@ -380,12 +380,13 @@
                         });
                     }
                 },
-                error: function(error) {
-                    console.error('Error:', error);
+                error: function(xhr) {
+                    console.error('Error:', xhr);
+                    var msg = (xhr.responseJSON && xhr.responseJSON.message) ? xhr.responseJSON.message : 'Something went wrong while submitting your bid.';
                     Swal.fire({
                         icon: 'error',
                         title: 'Error',
-                        text: 'Something went wrong while submitting your bid.',
+                        text: msg,
                     });
                 }
             });

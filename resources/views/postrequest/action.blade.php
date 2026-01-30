@@ -39,13 +39,15 @@ $auth_user = authSession();
 	{{-- Provider-specific actions --}}
 	@if(auth()->user()->hasAnyRole(['provider']))
 		@php
-			$hasProviderBid = $post_job->postBidList()
-									   ->where('provider_id', auth()->id())
-									   ->exists();
+			$providerBid = $post_job->postBidList()
+								   ->where('provider_id', auth()->id())
+								   ->first();
+			$hasProviderBid = $providerBid !== null;
+			$providerBidCancelled = $hasProviderBid && strtolower((string)($providerBid->status ?? '')) === 'cancelled';
 		@endphp
 
-		{{-- Show BID / UPDATE button only if status is requested OR cancelled --}}
-		@if(in_array($post_job->status, ['requested', 'cancelled']))
+		{{-- Show BID / UPDATE button only if post is requested/cancelled AND provider's bid is not cancelled --}}
+		@if(in_array($post_job->status, ['requested', 'cancelled']) && !$providerBidCancelled)
 			<button class="btn btn-success btn-sm bid-button mr-1" 
 					style="font-size: 14px; padding: 5px 10px;" 
 					type="button" 

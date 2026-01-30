@@ -511,6 +511,7 @@
     'postjob' => 'Post job',
     'postrequest' => 'Post Request',
     'postbid' => 'Post Bid',
+    'not_allowed_to_update_cancelled_bid' => 'You cannot update a cancelled bid.',
     'set_slot' => 'Enable Slot',
     'serviceslot' => 'Service slot',
     'providerslot' => 'Employer slot',

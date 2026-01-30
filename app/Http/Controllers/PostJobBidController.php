@@ -134,6 +134,18 @@ public function apiIndex(Request $request)
              $data['customer_id'] = $customer->customer_id;
              $data['provider_id'] = auth()->user()->id;
      
+             // Do not allow update when existing bid is cancelled
+             $existingBid = PostJobBid::where('provider_id', $data['provider_id'])
+                 ->where('post_request_id', $data['post_request_id'])
+                 ->first();
+             if ($existingBid && strtolower((string)($existingBid->status ?? '')) === 'cancelled') {
+                 $msg = __('messages.not_allowed_to_update_cancelled_bid');
+                 if ($request->is('api/*') || $request->wantsJson()) {
+                     return response()->json(['message' => $msg], 403);
+                 }
+                 return redirect()->back()->with('error', $msg);
+             }
+     
              // Update or create PostJobBid using provider_id + post_request_id as unique keys
              $result = PostJobBid::updateOrCreate([
                  'provider_id'     => $data['provider_id'],
