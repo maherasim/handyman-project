@@ -316,8 +316,11 @@
         });
 
         var authToken = "{{ auth()->user()->createToken('auth_token')->plainTextToken }}";
+        var bidSubmitInProgress = false;
 
         function submitBid() {
+            if (bidSubmitInProgress) return;
+            var $btn = $('.bid-button-submit');
             var bidAmount = $('#bidAmount').val();
             var why_choose_me;
             if (window.tinymce && tinymce.get('why_choose_me')) {
@@ -340,6 +343,10 @@
                 displayErrorMessage('Why Choose Me is required.', 'whyChooseMeError');
                 return;
             }
+
+            bidSubmitInProgress = true;
+            var btnText = $btn.text();
+            $btn.prop('disabled', true).text('Submitting...');
 
             $.ajax({
                 url: 'api/save-bid',
@@ -388,6 +395,10 @@
                         title: 'Error',
                         text: msg,
                     });
+                },
+                complete: function() {
+                    bidSubmitInProgress = false;
+                    $btn.prop('disabled', false).text(btnText);
                 }
             });
         }
