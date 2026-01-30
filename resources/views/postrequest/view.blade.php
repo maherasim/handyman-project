@@ -27,6 +27,27 @@
             background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important;
             color: #fff !important;
         }
+
+        /* Why Choose Me modal: keep content inside box, scrollable, good typography */
+        #whyChooseMeModal .modal-body {
+            max-height: 70vh;
+            overflow-y: auto;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+        #whyChooseMeContent {
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            white-space: pre-wrap;
+            max-width: 100%;
+            overflow-x: hidden;
+        }
+        #whyChooseMeContent p,
+        #whyChooseMeContent li,
+        #whyChooseMeContent div {
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
     </style>
     <div class="container-fluid">
         <div class="row">
@@ -226,19 +247,17 @@
     
     <!-- Why Choose Me Modal -->
     <div class="modal fade" id="whyChooseMeModal" tabindex="-1" aria-labelledby="whyChooseMeLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-dialog-centered">
-            <div class="modal-content shadow-lg">
-                <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title" id="whyChooseMeLabel">Why Choose Me</h5>
-                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content shadow-lg border-0 rounded-3">
+                <div class="modal-header bg-primary text-white border-0 py-3">
+                    <h5 class="modal-title fw-bold" id="whyChooseMeLabel">Why Choose Me</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" data-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
-                    <div class="p-2" id="whyChooseMeContent"></div>
+                <div class="modal-body py-4">
+                    <div class="p-3 bg-light rounded" id="whyChooseMeContent"></div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <div class="modal-footer border-0 py-3">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" data-dismiss="modal">Close</button>
                 </div>
             </div>
         </div>

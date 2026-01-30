@@ -1279,25 +1279,10 @@ class FrontendController extends Controller
 
         $datatable = $datatable->eloquent($query)
             ->editColumn('name', function ($data) {
-                // Calculate provider rating from booking_ratings table
-                // Match bookings.provider_id with provider id, then match bookings.id with booking_ratings.booking_id
-                $providerRating = 0;
-                $totalReviews = 0;
-                
-                // Get all booking IDs for this provider
-                $bookingIds = Booking::where('provider_id', $data->id)->pluck('id');
-                
-                if ($bookingIds->isNotEmpty()) {
-                    // Get all ratings for these bookings
-                    $ratings = BookingRating::whereIn('booking_id', $bookingIds)
-                        ->whereNotNull('rating')
-                        ->get();
-                    
-                    if ($ratings->isNotEmpty()) {
-                        $providerRating = (float)number_format($ratings->avg('rating'), 2);
-                        $totalReviews = $ratings->count();
-                    }
-                }
+                // Combined provider rating from both: service booking (booking_ratings) and post-job bid (post_job_bid_ratings)
+                $combined = \App\Models\User::getCombinedProviderRating((int) $data->id);
+                $providerRating = $combined['rating'];
+                $totalReviews = $combined['total_reviews'];
 
                 // Default to free plan icon (path per requirements)
                 $plan_icon = asset('images/freepng.png');

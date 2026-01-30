@@ -22,16 +22,11 @@ class FavouriteProviderResource extends JsonResource
         $membership = 'free';
         $membership_icon = asset('images/freepng.png');
         $verified_sticker_icon = asset('images/icon/notverifiedpng.png');
-        if (optional($this->provider) && method_exists($this->provider, 'getServiceRating')) {
-            $ratingsRelation = $this->provider->getServiceRating();
-            // If relation loaded, use collection; else query avg/count to avoid N+1
-            if ($this->provider->relationLoaded('getServiceRating')) {
-                $providers_service_rating = (float) number_format(max($this->provider->getServiceRating->avg('rating'), 0), 2);
-                $total_service_rating = $this->provider->getServiceRating->count();
-            } else {
-                $providers_service_rating = (float) number_format(max($ratingsRelation->avg('rating') ?? 0, 0), 2);
-                $total_service_rating = (int) ($ratingsRelation->count() ?? 0);
-            }
+        // Combined provider rating from service booking (booking_ratings) and post-job bid (post_job_bid_ratings)
+        if (optional($this->provider)) {
+            $combined = \App\Models\User::getCombinedProviderRating((int) $this->provider->id);
+            $providers_service_rating = $combined['rating'];
+            $total_service_rating = $combined['total_reviews'];
         }
         if (optional($this->provider)) {
             $isVerified = verify_provider_document($this->provider->id);

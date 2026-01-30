@@ -25,8 +25,10 @@ class UserResource extends JsonResource
         $verified_sticker_icon = asset('images/icon/notverifiedpng.png');
         if($this->user_type == 'provider')
         {
-            $providers_service_rating = (isset($this->getServiceRating) && count($this->getServiceRating) > 0 ) ? (float) number_format(max($this->getServiceRating->avg('rating'),0), 2) : 0;
-            $total_service_rating = (isset($this->getServiceRating)) ? count($this->getServiceRating) : 0;
+            // Combined rating from service booking (booking_ratings) and post-job bid (post_job_bid_ratings)
+            $combined = \App\Models\User::getCombinedProviderRating((int) $this->id);
+            $providers_service_rating = $combined['rating'];
+            $total_service_rating = $combined['total_reviews'];
             $is_verify_provider = verify_provider_document($this->id);
             $verified_sticker_icon = $is_verify_provider
                 ? asset('images/icon/verifiedpng.png')
