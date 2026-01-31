@@ -210,9 +210,9 @@
     @endif
 
     @php
-        $canProviderRateCustomer = auth()->user()->user_type === 'provider'
+        $canProviderRateCustomer = (auth()->user()->user_type === 'provider'
             && (int)auth()->id() === (int)($bid->provider_id ?? 0)
-            && in_array(strtolower((string)$bid->status), ['remaining_paid', 'completed']);
+            && ($showRateCustomerButton ?? false)); // showRateCustomerButton = provider has not yet rated (from controller)
     @endphp
     @if($canProviderRateCustomer)
         <button type="button" class="btn btn-info rounded-pill px-4 py-2 shadow-sm me-2 d-inline-flex align-items-center gap-2 mt-2"
@@ -598,7 +598,7 @@
     @endif
 
 {{-- Provider rates customer modal (outside extraCharges block so it's always in DOM when provider can rate) --}}
-@if($canProviderRateCustomer ?? false)
+@if(($showRateCustomerButton ?? false) && auth()->user()->user_type === 'provider' && (int)auth()->id() === (int)($bid->provider_id ?? 0))
 <div class="modal fade" id="postBidRateCustomerModal" tabindex="-1" aria-labelledby="postBidRateCustomerModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
