@@ -593,7 +593,12 @@
   </style>
 </div>
 
-{{-- Provider rates customer modal --}}
+        </div>
+    </div>
+    @endif
+
+{{-- Provider rates customer modal (outside extraCharges block so it's always in DOM when provider can rate) --}}
+@if($canProviderRateCustomer ?? false)
 <div class="modal fade" id="postBidRateCustomerModal" tabindex="-1" aria-labelledby="postBidRateCustomerModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
@@ -627,10 +632,7 @@
     .provider-rate-star.selected{color:#f1c40f}
   </style>
 </div>
-
-        </div>
-    </div>
-    @endif
+@endif
 
     @if($bid->ratings && $bid->ratings->count() > 0)
     <div class="container py-3">
