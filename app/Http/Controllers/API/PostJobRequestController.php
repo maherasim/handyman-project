@@ -12,6 +12,7 @@ use App\Models\User;
 
 use App\Models\PostJobRequest;
 use App\Models\PostJobBid;
+use App\Models\PostJobBidRating;
 use App\Models\PostJobBidCustomerRating;
 use App\Models\PaymentPostJOb;
 use App\Http\Resources\API\PostJobRequestResource;
@@ -251,12 +252,15 @@ class PostJobRequestController extends Controller
             ];
         }
 
-        // Provider has already rated the customer for this bid?
-        $providerRatingExists = PostJobBidCustomerRating::where('post_job_bid_id', $bid->id)
+        // provider_rating_exists: from post_job_bid_ratings = customer has already rated the provider for this bid
+        $providerRatingExists = PostJobBidRating::where('post_job_bid_id', $bid->id)->exists();
+
+        // show_rate_customer_button: provider has NOT yet rated the customer (from post_job_bid_customer_ratings)
+        $providerHasRatedCustomer = PostJobBidCustomerRating::where('post_job_bid_id', $bid->id)
             ->where('provider_id', $bid->provider_id)
             ->exists();
         $canProviderRate = in_array(strtolower((string)($bid->status ?? '')), ['remaining_paid', 'completed']);
-        $showRateCustomerButton = $canProviderRate && !$providerRatingExists;
+        $showRateCustomerButton = $canProviderRate && !$providerHasRatedCustomer;
 
         return response()->json([
             'success' => true,
