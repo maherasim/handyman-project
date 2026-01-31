@@ -990,10 +990,14 @@ class MailTemplateSeeder extends Seeder
             'notification_message' => '',
             'user_type' => 'admin',
             'status' => 1,
-            'subject' => 'New Custom Job Request',
+            'subject' => 'New job request on [[ company_name ]]: [[ job_name ]]',
             'template_detail' => '<p>Hello [[ admin_name ]],</p>
-                                  <p>#[[ job_id ]] - [[ customer_name ]] has requested a new job request [[ job_name ]].</p>
-                                  <p>&nbsp;</p>
+                                  <p>A new job request has been posted on [[ company_name ]].</p>
+                                  <p><strong>Job #[[ job_id ]]</strong> – [[ job_name ]]</p>
+                                  <p><strong>Posted by:</strong> [[ customer_name ]]</p>
+                                  <p><strong>Description:</strong><br />[[ job_description_short ]]</p>
+                                  <p><strong>Location:</strong> [[ job_address ]]</p>
+                                  <p>You can review and manage this request in your admin panel.</p>
                                   <p>Best regards,<br />[[ company_name ]]</p>',
         ]);
         $template->defaultMailTemplateMap()->create([
@@ -1002,10 +1006,16 @@ class MailTemplateSeeder extends Seeder
             'notification_message' => '',
             'user_type' => 'provider',
             'status' => 1,
-            'subject' => 'New Custom Job Request',
-                'template_detail' => '<p>Hello [[ provider_name ]],</p>
-                                      <p>#[[ job_id ]] - [[ customer_name ]] has requested a new job request [[ job_name ]].</p>
-                                      <p>&nbsp;</p>
+            'subject' => 'New job on [[ company_name ]]: [[ job_name ]] – submit your bid',
+            'template_detail' => '<p>Hello [[ provider_name ]],</p>
+                                      <p>A new job request has been posted on [[ company_name ]] that may match your services. The customer is looking for an Employer to help with the following:</p>
+                                      <p><strong>Job #[[ job_id ]] – [[ job_name ]]</strong></p>
+                                      <p><strong>Posted by:</strong> [[ customer_name ]]</p>
+                                      <p><strong>Description:</strong><br />[[ job_description_short ]]</p>
+                                      <p><strong>Location:</strong> [[ job_address ]]</p>
+                                      <p>If this job fits your skills, log in to [[ company_name ]] (or visit the app), view the full details, and submit your bid. The sooner you respond, the better your chances.</p>
+                                      <p><strong><a href="[[ link ]]" style="color:#2563eb;">View job and submit your bid</a></strong></p>
+                                      <p>If the link does not work, copy this URL into your browser: [[ link ]]</p>
                                       <p>Best regards,<br />[[ company_name ]]</p>',
         ]);
 
@@ -1081,7 +1091,7 @@ class MailTemplateSeeder extends Seeder
                                   <p>&nbsp;</p>
                                   <p>Best regards,<br />[[ company_name ]]</p>',
         ]);
-        // When customer updates status → notify provider
+        // When customer updates status → notify provider (email shows "Employer" not "Provider")
         \App\Models\MailTemplateContentMapping::create([
             'template_id' => $template->id,
             'language' => 'en',

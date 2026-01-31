@@ -5,6 +5,7 @@ namespace App\Traits;
 use App\Models\MailTemplates;
 use App\Models\User;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 use App\Models\NotificationTemplate;
 use App\Models\Setting;
 use App\Models\Country;
@@ -686,6 +687,16 @@ trait NotificationTrait
             }
             $notification_data['customer_name'] = isset($data['user_name']) ? $data['user_name'] : '';
             $notification_data['job_description'] = (isset($data['postjob_data']) && isset($data['postjob_data']->description)) ? $data['postjob_data']->description : '';
+            // For job_requested: pass description and address from post_job for a meaningful provider email
+            if ($notification_type === 'job_requested' && isset($post_job)) {
+                $notification_data['job_description'] = $post_job->description ?? '';
+                $notification_data['job_description_short'] = Str::limit(strip_tags($post_job->description ?? ''), 280) ?: 'No description provided.';
+                $addr = trim(($post_job->working_address ?? '') . ' ' . ($post_job->street_address ?? '') . ' ' . ($post_job->house_number ?? ''));
+                $notification_data['job_address'] = $addr ?: 'Not specified';
+            } else {
+                $notification_data['job_description_short'] = Str::limit(strip_tags($notification_data['job_description'] ?? ''), 280) ?: 'No description provided.';
+                $notification_data['job_address'] = 'Not specified';
+            }
             $notification_data['bid_amount'] = isset($bid_amount) ? $bid_amount: '';
             $notification_data['provider_name'] = isset($data['provider_name']) ? $data['provider_name'] : '';
             $notification_data['handyman_name'] = isset($data['handyman_name']) ? $data['handyman_name'] : '';
@@ -781,6 +792,10 @@ trait NotificationTrait
                                 if (isset($employee->email)) {
                                     try {
                                         $notification_data['user_type'] = $mailTo;
+                                        // Per-recipient: so "Hello [[ provider_name ]]" in email shows this provider's name
+                                        if ($notification_type === 'job_requested') {
+                                            $notification_data['provider_name'] = $employee->display_name ?? $employee->username ?? '';
+                                        }
                                         $employee->notify(new \App\Notifications\CommonNotification($notification_type, $notification_data));
                                     } catch (\Exception $e) {
                                         Log::error($e);
