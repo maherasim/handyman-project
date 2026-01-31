@@ -28,6 +28,7 @@ use Carbon\Carbon;
 use App\Models\ProviderPayout;
 use App\Models\CommissionEarning;
 use App\Models\PostJobBid;
+use App\Models\PostJobBidRating;
 use App\Models\PostJobBidCustomerRating;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\PostJobBankTransferPaymentNotificationMail;
@@ -175,7 +176,11 @@ class PostJobRequestController extends Controller
         $canProviderRate = in_array(strtolower((string)($bid->status ?? '')), ['remaining_paid', 'completed']);
         $showRateCustomerButton = $canProviderRate && !$providerHasRatedCustomer;
 
-        return view('postrequest.show', compact('bid', 'showRateCustomerButton'));
+        $customerHasRatedProvider = PostJobBidRating::where('post_job_bid_id', $bid->id)->exists();
+        $canCustomerRate = in_array(strtolower((string)($bid->status ?? '')), ['remaining_paid']);
+        $showRateNowButton = $canCustomerRate && !$customerHasRatedProvider;
+
+        return view('postrequest.show', compact('bid', 'showRateCustomerButton', 'showRateNowButton'));
     }
 
 

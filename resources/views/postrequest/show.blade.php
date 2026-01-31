@@ -199,7 +199,7 @@
         @php
         $canRatePostBid = auth()->user()->user_type === 'user'
             && (int)auth()->id() === (int)($bid->customer_id ?? 0)
-            && in_array(strtolower((string)$bid->status), ['remaining_paid']);
+            && ($showRateNowButton ?? false); // showRateNowButton = customer has not yet rated employer (from controller)
     @endphp
     @if($canRatePostBid)
         <button type="button" class="btn btn-warning rounded-pill px-4 py-2 shadow-sm me-2 d-inline-flex align-items-center gap-2 mt-2"
@@ -207,6 +207,9 @@
             <i class="las la-star"></i>
             <span>Rate Now</span>
         </button>
+    @endif
+    @if(auth()->user()->user_type === 'user' && (int)auth()->id() === (int)($bid->customer_id ?? 0) && !($showRateNowButton ?? true) && in_array(strtolower((string)($bid->status ?? '')), ['remaining_paid']))
+        <span class="badge bg-secondary rounded-pill px-3 py-2 mt-2 me-2">You have already rated the Employer</span>
     @endif
 
     @php
