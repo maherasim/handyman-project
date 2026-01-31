@@ -1305,12 +1305,27 @@
             });
         });
 
-        // Provider rates customer
+        // Provider rates customer – open modal explicitly (same as Rate Now)
         let providerRateCustomerStars = 0;
-        $(document).on('click', '#postbid-rate-customer-btn', function(){
+        $(document).on('click', '#postbid-rate-customer-btn', function(e){
+            e.preventDefault();
             providerRateCustomerStars = 0;
             $('.provider-rate-star').removeClass('selected');
             $('#postBidRateCustomerReview').val('');
+            var modalEl = document.getElementById('postBidRateCustomerModal');
+            if (modalEl) {
+                try {
+                    if (window.bootstrap && window.bootstrap.Modal) {
+                        var modal = window.bootstrap.Modal.getInstance(modalEl);
+                        if (!modal) modal = new window.bootstrap.Modal(modalEl);
+                        modal.show();
+                    } else {
+                        $('#postBidRateCustomerModal').modal('show');
+                    }
+                } catch (err) {
+                    $('#postBidRateCustomerModal').modal('show');
+                }
+            }
         });
         $(document).on('click', '.provider-rate-star', function(){
             providerRateCustomerStars = $(this).data('value');
