@@ -10,6 +10,7 @@ use App\Models\BookingHandymanMapping;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Models\Payment;
+use App\Models\PaymentPostJOb;
 use App\Models\Booking;
 use App\Models\Wallet;
 use App\Models\User;
@@ -365,9 +366,30 @@ class PaymentController extends Controller
             return $payment;
         });
 
+        // Post job payments: payment_post_jobs -> post_job_bid_request_id -> PostJobBid -> post_request_id -> PostJobRequest (title)
+        $postJobPaymentsQuery = PaymentPostJOb::query()
+            ->with(['postJobBidRequest.postrequest:id,title', 'customer:id,display_name,name'])
+            ->myPayment();
+
+        $filter = $request->filter ?? [];
+        if (isset($filter['column_status'])) {
+            $postJobPaymentsQuery->where('payment_status', $filter['column_status']);
+        }
+
+        $postJobPayments = $postJobPaymentsQuery->orderBy('id', 'desc')->paginate(10);
+
+        $postJobPayments->getCollection()->transform(function ($payment) {
+            $payment->job_title = optional(optional($payment->postJobBidRequest)->postrequest)->title ?? '-';
+            $payment->customer_name = optional($payment->customer)->display_name ?? optional($payment->customer)->name ?? '-';
+            return $payment;
+        });
+
         return response()->json([
             'status' => true,
-            'data' => $payments
+            'data' => [
+                'payments' => $payments,
+                'post_job_payments' => $postJobPayments,
+            ],
         ]);
     }
 
