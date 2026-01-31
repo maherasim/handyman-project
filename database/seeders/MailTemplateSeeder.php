@@ -996,7 +996,6 @@ class MailTemplateSeeder extends Seeder
                                   <p><strong>Job #[[ job_id ]]</strong> – [[ job_name ]]</p>
                                   <p><strong>Posted by:</strong> [[ customer_name ]]</p>
                                   <p><strong>Description:</strong><br />[[ job_description_short ]]</p>
-                                  <p><strong>Location:</strong> [[ job_address ]]</p>
                                   <p>You can review and manage this request in your admin panel.</p>
                                   <p>Best regards,<br />[[ company_name ]]</p>',
         ]);
@@ -1012,7 +1011,6 @@ class MailTemplateSeeder extends Seeder
                                       <p><strong>Job #[[ job_id ]] – [[ job_name ]]</strong></p>
                                       <p><strong>Posted by:</strong> [[ customer_name ]]</p>
                                       <p><strong>Description:</strong><br />[[ job_description_short ]]</p>
-                                      <p><strong>Location:</strong> [[ job_address ]]</p>
                                       <p>If this job fits your skills, log in to [[ company_name ]] (or visit the app), view the full details, and submit your bid. The sooner you respond, the better your chances.</p>
                                       <p><strong><a href="[[ link ]]" style="color:#2563eb;">View job and submit your bid</a></strong></p>
                                       <p>If the link does not work, copy this URL into your browser: [[ link ]]</p>
