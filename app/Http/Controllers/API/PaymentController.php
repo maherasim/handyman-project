@@ -368,7 +368,7 @@ class PaymentController extends Controller
 
         // Post job payments: payment_post_jobs -> post_job_bid_request_id -> PostJobBid -> post_request_id -> PostJobRequest (title)
         $postJobPaymentsQuery = PaymentPostJOb::query()
-            ->with(['postJobBidRequest.postrequest:id,title', 'customer:id,display_name,name'])
+            ->with(['postJobBidRequest.postrequest:id,title', 'customer:id,display_name,username'])
             ->myPayment();
 
         $filter = $request->filter ?? [];
@@ -380,7 +380,7 @@ class PaymentController extends Controller
 
         $postJobPayments->getCollection()->transform(function ($payment) {
             $payment->job_title = optional(optional($payment->postJobBidRequest)->postrequest)->title ?? '-';
-            $payment->customer_name = optional($payment->customer)->display_name ?? optional($payment->customer)->name ?? '-';
+            $payment->customer_name = optional($payment->customer)->display_name ?? optional($payment->customer)->username ?? '-';
             return $payment;
         });
 
