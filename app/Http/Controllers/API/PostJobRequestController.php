@@ -12,6 +12,7 @@ use App\Models\User;
 
 use App\Models\PostJobRequest;
 use App\Models\PostJobBid;
+use App\Models\PostJobBidCustomerRating;
 use App\Models\PaymentPostJOb;
 use App\Http\Resources\API\PostJobRequestResource;
 use App\Http\Resources\API\PostJobBiderResource;
@@ -249,12 +250,21 @@ class PostJobRequestController extends Controller
                 'amount' => (float) $payment->total_amount,
             ];
         }
-    
+
+        // Provider has already rated the customer for this bid?
+        $providerRatingExists = PostJobBidCustomerRating::where('post_job_bid_id', $bid->id)
+            ->where('provider_id', $bid->provider_id)
+            ->exists();
+        $canProviderRate = in_array(strtolower((string)($bid->status ?? '')), ['remaining_paid', 'completed']);
+        $showRateCustomerButton = $canProviderRate && !$providerRatingExists;
+
         return response()->json([
             'success' => true,
             'data' => $bid,
-            'tax_percent' => $tax_percent, // ✅ Added tax percent
-            'bank_transfer' => $bankTransfer, // ✅ Added bank transfer status block (null if not bank transfer)
+            'tax_percent' => $tax_percent,
+            'bank_transfer' => $bankTransfer,
+            'provider_rating_exists' => $providerRatingExists,
+            'show_rate_customer_button' => $showRateCustomerButton,
         ]);
     }
     
