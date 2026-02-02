@@ -354,18 +354,18 @@ class PostJobRequestController extends Controller
             PostJobBid::where('post_request_id', $id)->get()
         );
 
-        // ✅ For provider: show_update_bid = false if their bid status is cancelled, else true
-        $show_update_bid = true;
+        // show_update_bid = true only when provider's bid status is "requested"; otherwise false
+        $show_update_bid = false;
         if ($user->hasRole('provider')) {
             $providerBid = PostJobBid::where('post_request_id', $id)
                 ->where('provider_id', $user->id)
+                ->orderByDesc('id')
                 ->first();
-            if ($providerBid && strtolower((string)($providerBid->status ?? '')) === 'cancelled') {
-                $show_update_bid = false;
+            if ($providerBid && strtolower((string)($providerBid->status ?? '')) === 'requested') {
+                $show_update_bid = true;
             }
         }
-    
-        // ✅ Return response
+
         return comman_custom_response([
             'post_request_detail' => $post_request_detail,
             'bider_data' => $bider_data,
