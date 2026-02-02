@@ -523,9 +523,16 @@ class PostJobRequestController extends Controller
             $providerPayoutAmount  = max(0, $payAmount - $adminCommissionAmount);
     
             if ($providerPayoutAmount > 0) {
-                $providerWallet = Wallet::firstOrCreate(['user_id' => $post->provider_id]);
+                $providerWallet = Wallet::firstOrCreate(
+                    ['user_id' => $post->provider_id],
+                    ['amount' => 0]
+                );
+                if ($providerWallet->amount === null) {
+                    $providerWallet->update(['amount' => 0]);
+                }
                 $providerWallet->increment('amount', $providerPayoutAmount);
-    
+                $providerWallet->refresh();
+
                 // Wallet history (provider) - Credit entry for receiver
                 WalletHistory::create([
                     'datetime'         => now(),
@@ -1005,7 +1012,13 @@ class PostJobRequestController extends Controller
                 ]);
 
                 // Credit provider wallet
-                $providerWallet = Wallet::firstOrCreate(['user_id' => $providerId]);
+                $providerWallet = Wallet::firstOrCreate(
+                    ['user_id' => $providerId],
+                    ['amount' => 0]
+                );
+                if ($providerWallet->amount === null) {
+                    $providerWallet->update(['amount' => 0]);
+                }
                 $providerWallet->increment('amount', $providerEarningAmount);
                 $providerWallet->refresh();
                 WalletHistory::create([
@@ -1175,7 +1188,13 @@ class PostJobRequestController extends Controller
 
             // Credit provider wallet
             if ($providerEarningAmount > 0) {
-                $providerWallet = Wallet::firstOrCreate(['user_id' => $providerId]);
+                $providerWallet = Wallet::firstOrCreate(
+                    ['user_id' => $providerId],
+                    ['amount' => 0]
+                );
+                if ($providerWallet->amount === null) {
+                    $providerWallet->update(['amount' => 0]);
+                }
                 $providerWallet->increment('amount', $providerEarningAmount);
                 $providerWallet->refresh();
                 WalletHistory::create([
@@ -1322,7 +1341,13 @@ class PostJobRequestController extends Controller
                 ]);
 
                 // Credit provider wallet
-                $providerWallet = Wallet::firstOrCreate(['user_id' => $providerId]);
+                $providerWallet = Wallet::firstOrCreate(
+                    ['user_id' => $providerId],
+                    ['amount' => 0]
+                );
+                if ($providerWallet->amount === null) {
+                    $providerWallet->update(['amount' => 0]);
+                }
                 $providerWallet->increment('amount', $providerEarningAmount);
                 $providerWallet->refresh();
                 WalletHistory::create([
@@ -1633,7 +1658,13 @@ class PostJobRequestController extends Controller
 
             // Credit provider wallet
             if ($providerAmount > 0) {
-                $providerWallet = Wallet::firstOrCreate(['user_id' => $providerId]);
+                $providerWallet = Wallet::firstOrCreate(
+                    ['user_id' => $providerId],
+                    ['amount' => 0]
+                );
+                if ($providerWallet->amount === null) {
+                    $providerWallet->update(['amount' => 0]);
+                }
                 $providerWallet->increment('amount', $providerAmount);
                 $providerWallet->refresh();
                 WalletHistory::create([
