@@ -44,24 +44,24 @@ class PostJobRequestController extends Controller
     {
         $status = (string) ($status ?? '');
         $label = $status;
-        $class = 'badge bg-secondary';
+        $class = 'badge bg-secondary text-dark';
 
         switch (strtolower($status)) {
             case 'requested':
                 $label = 'Requested';
-                $class = 'badge text-white bg-primary-subtle';
+                $class = 'badge bg-primary-subtle text-dark';
                 break;
             case 'accepted':
                 $label = 'Accepted';
-                $class = 'badge bg-success';
+                $class = 'badge bg-success text-dark';
                 break;
             case 'in_progress':
                 $label = 'IN progress';
-                $class = 'badge bg-primary';
+                $class = 'badge bg-primary text-dark';
                 break;
             case 'in_process':
                 $label = 'IN process';
-                $class = 'badge bg-info';
+                $class = 'badge bg-info text-dark';
                 break;
             case 'advance_payment':
                 $label = 'Advance Payment';
@@ -69,11 +69,11 @@ class PostJobRequestController extends Controller
                 break;
             case 'advance_paid':
                 $label = 'Advance Paid';
-                $class = 'badge bg-success';
+                $class = 'badge bg-success text-dark';
                 break;
             case 'assigned':
                 $label = 'Assigned';
-                $class = 'badge bg-info';
+                $class = 'badge bg-info text-dark';
                 break;
             case 'hold':
             case 'on_hold':
@@ -82,19 +82,27 @@ class PostJobRequestController extends Controller
                 break;
             case 'done':
                 $label = 'Done';
-                $class = 'badge bg-success';
+                $class = 'badge bg-success text-dark';
+                break;
+            case 'remaining_paid':
+                $label = 'Remaining Paid';
+                $class = 'badge bg-success text-dark';
+                break;
+            case 'confirm_done':
+                $label = 'Confirm Done';
+                $class = 'badge bg-info text-dark';
                 break;
             case 'completed':
                 $label = 'Completed';
-                $class = 'badge bg-success';
+                $class = 'badge bg-success text-dark';
                 break;
             case 'cancelled':
                 $label = 'Cancelled';
-                $class = 'badge bg-danger';
+                $class = 'badge bg-danger text-dark';
                 break;
             default:
                 $label = ucfirst(str_replace('_', ' ', $status));
-                $class = 'badge bg-secondary';
+                $class = 'badge bg-secondary text-dark';
         }
 
         return '<span class="' . $class . '">' . e($label) . '</span>';
