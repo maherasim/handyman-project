@@ -132,7 +132,7 @@ class HomeController extends Controller
         $revenuedata = ProviderPayout::selectRaw('sum(amount) as total , DATE_FORMAT(updated_at , "%m") as month')
             ->where('provider_id', $user->id)
             ->whereYear('updated_at', date('Y'))
-            ->whereIn('status', ['paid', 'advance_paid'])
+            ->whereIn('status', ['paid', 'advance_paid', 'advance paid'])
             ->groupBy('month')
             ->get()->toArray();
 
@@ -197,7 +197,7 @@ $data['remaining_payout'] = round($providerRemainingPayout, $digitafter_decimal_
 
 
         $data['total_earning'] = ProviderPayout::where('provider_id', $user->id)
-            ->whereIn('status', ['paid', 'advance_paid'])
+            ->whereIn('status', ['paid', 'advance_paid', 'advance paid'])
             ->sum('amount') ?? 0;
 
     } elseif ($user->hasRole('handyman')) {
