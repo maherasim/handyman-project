@@ -89,8 +89,8 @@ class PostJobRequestController extends Controller
                 $class = 'badge bg-success text-dark';
                 break;
             case 'confirm_done':
-                $label = 'Confirm Done';
-                $class = 'badge bg-info text-dark';
+                $label = 'Completed';
+                $class = 'badge bg-success text-dark';
                 break;
             case 'completed':
                 $label = 'Completed';
