@@ -354,15 +354,17 @@ class PostJobRequestController extends Controller
             PostJobBid::where('post_request_id', $id)->get()
         );
 
-        // show_update_bid = true only when provider's bid status is "requested"; otherwise false
+        // show_update_bid = true when provider can bid: no bid yet, or their bid status is "requested"; otherwise false
         $show_update_bid = false;
         if ($user->hasRole('provider')) {
             $providerBid = PostJobBid::where('post_request_id', $id)
                 ->where('provider_id', $user->id)
                 ->orderByDesc('id')
                 ->first();
-            if ($providerBid && strtolower((string)($providerBid->status ?? '')) === 'requested') {
-                $show_update_bid = true;
+            if (!$providerBid) {
+                $show_update_bid = true; // no bid yet → can place bid
+            } elseif (strtolower((string)($providerBid->status ?? '')) === 'requested') {
+                $show_update_bid = true; // bid is requested → can update bid
             }
         }
 
