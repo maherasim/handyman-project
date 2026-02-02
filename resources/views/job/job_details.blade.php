@@ -581,9 +581,12 @@
                                     <div class="detail-item mb-2">
                                         <span class="detail-label"><b>Status:</b></span>
                                         <span class="detail-value">
-                                            <span class="badge bg-{{ $jobrequest->status === 'active' ? 'success' : ($jobrequest->status === 'completed' ? 'info' : 'warning') }}">
-                                                 {{ ucfirst($jobrequest->status ?? 'N/A') }}
-                                            </span>
+                                            @php
+                                                $statusKey = strtolower((string)($jobrequest->status ?? ''));
+                                                $statusDisplay = in_array($statusKey, ['confirm_done', 'completed']) ? 'Completed' : ucfirst($jobrequest->status ?? 'N/A');
+                                                $statusBg = in_array($statusKey, ['confirm_done', 'completed']) ? 'success' : ($jobrequest->status === 'active' ? 'success' : 'warning');
+                                            @endphp
+                                            <span class="badge bg-{{ $statusBg }} text-dark">{{ $statusDisplay }}</span>
                                         </span>
                                     </div>
                                     <div class="detail-item mb-2">
@@ -685,9 +688,12 @@
                                     <div class="detail-item mb-2">
                                         <span class="detail-label"><b>Status:</b></span>
                                         <span class="detail-value">
-                                            <span class="badge bg-{{ $jobrequest->status === 'active' ? 'success' : ($jobrequest->status === 'completed' ? 'info' : 'warning') }}">
-                                                {{ ucfirst($jobrequest->status ?? 'N/A') }}
-                                            </span>
+                                            @php
+                                                $statusKey = strtolower((string)($jobrequest->status ?? ''));
+                                                $statusDisplay = in_array($statusKey, ['confirm_done', 'completed']) ? 'Completed' : ucfirst($jobrequest->status ?? 'N/A');
+                                                $statusBg = in_array($statusKey, ['confirm_done', 'completed']) ? 'success' : ($jobrequest->status === 'active' ? 'success' : 'warning');
+                                            @endphp
+                                            <span class="badge bg-{{ $statusBg }} text-dark">{{ $statusDisplay }}</span>
                                         </span>
                                     </div>
                                     <div class="detail-item mb-2">

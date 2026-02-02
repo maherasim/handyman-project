@@ -483,7 +483,13 @@
                                          ">
                                                      Status
                                                  </span>
-                                                 <span class="status-badge"
+                                                 @php
+                                                    $statusKey = strtolower((string)($jobRequest->status ?? ''));
+                                                    $isCompleted = in_array($statusKey, ['confirm_done', 'completed']);
+                                                    $isGreen = $isCompleted || $jobRequest->status === 'active';
+                                                    $statusLabel = $isCompleted ? 'Completed' : ucfirst($jobRequest->status ?? 'Pending');
+                                                @endphp
+                                                <span class="status-badge"
                                                      style="
                                              padding: 3px 6px;
                                              border-radius: 8px;
@@ -491,10 +497,10 @@
                                              font-weight: 600;
                                              text-transform: uppercase;
                                              letter-spacing: 0.5px;
-                                             background: {{ $jobRequest->status === 'active' ? '#e8f5e8' : '#fff3cd' }};
-                                             color: {{ $jobRequest->status === 'active' ? '#2d5a2d' : '#856404' }};
+                                             background: {{ $isGreen ? '#e8f5e8' : '#fff3cd' }};
+                                             color: {{ $isGreen ? '#2d5a2d' : '#856404' }};
                                          ">
-                                                     {{ ucfirst($jobRequest->status ?? 'Pending') }}
+                                                     {{ $statusLabel }}
                                                  </span>
                                              </div>
                                          </div>
