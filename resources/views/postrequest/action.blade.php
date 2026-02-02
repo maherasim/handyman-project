@@ -1,12 +1,15 @@
-<?php
+@php
 $auth_user = authSession();
-?>
+// applicants is set by withCount in index_data; fallback for other contexts
+$applicantCount = isset($post_job->applicants) ? (int)$post_job->applicants : $post_job->postBidList()->where('status', '!=', 'cancelled')->count();
+$hasProposals = $applicantCount > 0;
+@endphp
 {{ html()->form('DELETE', route('post-job-request.destroy', $post_job->id))->attribute('data--submit', 'post-job-request' . $post_job->id)->open() }}
 
 <div class="d-flex justify-content-end align-items-center">
 
-	{{-- Delete button (only for admin or user roles) --}}
-	@if(auth()->user()->hasAnyRole(['admin']))
+	{{-- Delete: only for admin, and only when there are no proposals --}}
+	@if(auth()->user()->hasAnyRole(['admin']) && !$hasProposals)
 		<a class="me-2" href="javascript:void(0)" 
 		   data--submit="post-job-request{{ $post_job->id }}" 
 		   data--confirmation="true" 
@@ -17,15 +20,14 @@ $auth_user = authSession();
 		</a>
 	@endif
 
-	{{-- Edit button: allow owners (user/admin) to edit when not in-progress/completed --}}
-	@if(auth()->user()->hasAnyRole(['admin']) || (int)auth()->id() === (int)$post_job->customer_id)
-	 
+	{{-- Edit: allow owners (user/admin) when status is requested and there are no proposals --}}
+	@if(!$hasProposals && (auth()->user()->hasAnyRole(['admin']) || (int)auth()->id() === (int)$post_job->customer_id))
 		@if(($post_job->status ?? null) === 'requested')
 			<a class="me-2" href="{{ route('post-job-requestjob.edit', $post_job->id) }}" 
 			   title="{{ __('messages.update_form_title',['form'=> __('messages.post_job') ]) }}">
 				<i class="far fa-edit text-primary"></i>
 			</a>
-		 @endif
+		@endif
 	@endif
 
 	{{-- View button: visible only when status is requested --}}
