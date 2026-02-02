@@ -1003,6 +1003,22 @@ class PostJobRequestController extends Controller
                     'post_job_request_id' => $bid->id,
                     'payment_gateway'     => 'Stripe',
                 ]);
+
+                // Credit provider wallet
+                $providerWallet = Wallet::firstOrCreate(['user_id' => $providerId]);
+                $providerWallet->increment('amount', $providerEarningAmount);
+                $providerWallet->refresh();
+                WalletHistory::create([
+                    'datetime'         => now(),
+                    'user_id'          => $providerId,
+                    'activity_type'    => 'credit',
+                    'activity_message' => ($type === 'remaining' ? 'Remaining' : 'Advance') . " payment for Bid #{$bid->id} received (Stripe)",
+                    'activity_data'    => json_encode([
+                        'credit_debit_amount' => $providerEarningAmount,
+                        'amount'              => $providerWallet->amount,
+                        'transaction_type'    => 'Credit',
+                    ]),
+                ]);
             }
 
             // 🔹 Payment history
@@ -1156,6 +1172,25 @@ class PostJobRequestController extends Controller
                 'post_job_request_id' => $bid->id,
                 'payment_gateway'     => 'Stripe',
             ]);
+
+            // Credit provider wallet
+            if ($providerEarningAmount > 0) {
+                $providerWallet = Wallet::firstOrCreate(['user_id' => $providerId]);
+                $providerWallet->increment('amount', $providerEarningAmount);
+                $providerWallet->refresh();
+                WalletHistory::create([
+                    'datetime'         => now(),
+                    'user_id'          => $providerId,
+                    'activity_type'    => 'credit',
+                    'activity_message' => ($type === 'remaining' ? 'Remaining' : 'Advance') . " payment for Bid #{$bid->id} received (Stripe)",
+                    'activity_data'    => json_encode([
+                        'credit_debit_amount' => $providerEarningAmount,
+                        'amount'              => $providerWallet->amount,
+                        'transaction_type'    => 'Credit',
+                    ]),
+                ]);
+            }
+
             PaymentPostJObHistory::create([
                 'payment_id'  => $finalPayment->id,
                 'parent_id'   => null,
@@ -1284,6 +1319,22 @@ class PostJobRequestController extends Controller
                     'booking_id'          => null,
                     'post_job_request_id' => $bid->id,
                     'payment_gateway'     => 'Stripe',
+                ]);
+
+                // Credit provider wallet
+                $providerWallet = Wallet::firstOrCreate(['user_id' => $providerId]);
+                $providerWallet->increment('amount', $providerEarningAmount);
+                $providerWallet->refresh();
+                WalletHistory::create([
+                    'datetime'         => now(),
+                    'user_id'          => $providerId,
+                    'activity_type'    => 'credit',
+                    'activity_message' => ($type === 'remaining' ? 'Remaining' : 'Advance') . " payment for Bid #{$bid->id} received (Stripe)",
+                    'activity_data'    => json_encode([
+                        'credit_debit_amount' => $providerEarningAmount,
+                        'amount'              => $providerWallet->amount,
+                        'transaction_type'    => 'Credit',
+                    ]),
                 ]);
             }
 
@@ -1579,6 +1630,24 @@ class PostJobRequestController extends Controller
                 'post_job_request_id' => $bid->id,
                 'payment_gateway'     => 'PayPal',
             ]);
+
+            // Credit provider wallet
+            if ($providerAmount > 0) {
+                $providerWallet = Wallet::firstOrCreate(['user_id' => $providerId]);
+                $providerWallet->increment('amount', $providerAmount);
+                $providerWallet->refresh();
+                WalletHistory::create([
+                    'datetime'         => now(),
+                    'user_id'          => $providerId,
+                    'activity_type'    => 'credit',
+                    'activity_message' => ($type === 'remaining' ? 'Remaining' : 'Advance') . " payment for Bid #{$bid->id} received (PayPal)",
+                    'activity_data'    => json_encode([
+                        'credit_debit_amount' => $providerAmount,
+                        'amount'              => $providerWallet->amount,
+                        'transaction_type'    => 'Credit',
+                    ]),
+                ]);
+            }
 
             // 🔹 Record PaymentHistory
             PaymentPostJObHistory::create([
