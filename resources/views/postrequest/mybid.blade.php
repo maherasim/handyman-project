@@ -9,12 +9,6 @@
                         <h5 class="fw-bold mb-0">{{ $pageTitle }} </h5>
 
                         <div class="d-flex gap-2"> {{-- buttons grouped together --}}
-                            {{-- Provider sees Set Payment --}}
-                            @if (isset($assignedPost) && auth()->id() === $assignedPost->provider_id)
-                                <button class="btn btn-primary startWorkBtn" data-post-id="{{ $assignedPost->id }}">
-                                    <i class="fas fa-play"></i> Set Payment
-                                </button>
-                            @endif
                             {{-- Customer sees Pay Advance --}}
                             @if (isset($advance_payment))
                                 @php
