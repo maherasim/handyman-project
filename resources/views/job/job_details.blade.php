@@ -30,7 +30,17 @@
 @endsection
 
 @section('content')
-
+    @php
+        // Format label-like values (e.g. high_school → High School, onsite → Onsite)
+        if (!function_exists('formatJobDetailLabel')) {
+            function formatJobDetailLabel($value) {
+                if ($value === null || $value === '') return 'N/A';
+                $v = (string) $value;
+                if (strtolower(trim($v)) === 'n/a') return 'N/A';
+                return ucwords(str_replace('_', ' ', strtolower($v)));
+            }
+        }
+    @endphp
     <style>
         /* Professional Job Details Tab Styling */
         .job-details-tabs {
@@ -555,7 +565,7 @@
                                     </div>
                                     <div class="detail-item mb-2">
                                         <span class="detail-label"><b>Type:</b></span>
-                                        <span class="detail-value"> {{ ucfirst($jobrequest->type ?? 'N/A') }}</span>
+                                        <span class="detail-value"> {{ formatJobDetailLabel($jobrequest->type ?? null) }}</span>
                                     </div>
                                     <div class="detail-item mb-2">
                                         <span class="detail-label"><b>Remote Level:</b></span>
@@ -568,7 +578,7 @@
                                     </div>
                                     <div class="detail-item mb-2">
                                         <span class="detail-label"><b>Career Level:</b></span>
-                                        <span class="detail-value"> {{ ucfirst($jobrequest->career_level ?? 'N/A') }}</span>
+                                        <span class="detail-value"> {{ formatJobDetailLabel($jobrequest->career_level ?? null) }}</span>
                                     </div>
                                     <div class="detail-item mb-2">
                                         <span class="detail-label"><b>Travel Required:</b></span>
@@ -576,14 +586,14 @@
                                     </div>
                                     <div class="detail-item mb-2">
                                         <span class="detail-label"><b>Education Level:</b></span>
-                                        <span class="detail-value"> {{ ucfirst($jobrequest->education_level ?? 'N/A') }}</span>
+                                        <span class="detail-value"> {{ formatJobDetailLabel($jobrequest->education_level ?? null) }}</span>
                                     </div>
                                     <div class="detail-item mb-2">
                                         <span class="detail-label"><b>Status:</b></span>
                                         <span class="detail-value">
                                             @php
                                                 $statusKey = strtolower((string)($jobrequest->status ?? ''));
-                                                $statusDisplay = in_array($statusKey, ['confirm_done', 'completed']) ? 'Completed' : ucfirst($jobrequest->status ?? 'N/A');
+                                                $statusDisplay = in_array($statusKey, ['confirm_done', 'completed']) ? 'Completed' : formatJobDetailLabel($jobrequest->status ?? null);
                                                 $statusBg = in_array($statusKey, ['confirm_done', 'completed']) ? 'success' : ($jobrequest->status === 'active' ? 'success' : 'warning');
                                             @endphp
                                             <span class="badge bg-{{ $statusBg }} text-dark">{{ $statusDisplay }}</span>
@@ -662,7 +672,7 @@
                                     </div>
                                     <div class="detail-item mb-2">
                                         <span class="detail-label"><b>Type:</b></span>
-                                        <span class="detail-value"> {{ $jobrequest->type ?? 'N/A' }}</span>
+                                        <span class="detail-value"> {{ formatJobDetailLabel($jobrequest->type ?? null) }}</span>
                                     </div>
                                     <div class="detail-item mb-2">
                                         <span class="detail-label"><b>Remote level:</b></span>
@@ -675,7 +685,7 @@
                                     </div>
                                     <div class="detail-item mb-2">
                                         <span class="detail-label"><b>Career level:</b></span>
-                                        <span class="detail-value"> {{ $jobrequest->career_level ?? 'N/A' }}</span>
+                                        <span class="detail-value"> {{ formatJobDetailLabel($jobrequest->career_level ?? null) }}</span>
                                     </div>
                                     <div class="detail-item mb-2">
                                         <span class="detail-label"><b>Travel required:</b></span>
@@ -683,14 +693,14 @@
                                     </div>
                                     <div class="detail-item mb-2">
                                         <span class="detail-label"><b>Education level:</b></span>
-                                        <span class="detail-value"> {{ $jobrequest->education_level ?? 'N/A' }}</span>
+                                        <span class="detail-value"> {{ formatJobDetailLabel($jobrequest->education_level ?? null) }}</span>
                                     </div>
                                     <div class="detail-item mb-2">
                                         <span class="detail-label"><b>Status:</b></span>
                                         <span class="detail-value">
                                             @php
                                                 $statusKey = strtolower((string)($jobrequest->status ?? ''));
-                                                $statusDisplay = in_array($statusKey, ['confirm_done', 'completed']) ? 'Completed' : ucfirst($jobrequest->status ?? 'N/A');
+                                                $statusDisplay = in_array($statusKey, ['confirm_done', 'completed']) ? 'Completed' : formatJobDetailLabel($jobrequest->status ?? null);
                                                 $statusBg = in_array($statusKey, ['confirm_done', 'completed']) ? 'success' : ($jobrequest->status === 'active' ? 'success' : 'warning');
                                             @endphp
                                             <span class="badge bg-{{ $statusBg }} text-dark">{{ $statusDisplay }}</span>
