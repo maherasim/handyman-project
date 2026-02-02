@@ -572,7 +572,7 @@
                                         @php
                                             $remoteLevelRaw = $jobrequest->remote_work_level ?? null;
                                             $remoteLevelPercent = $remoteLevelRaw ? (int) preg_replace('/\D+/', '', $remoteLevelRaw) : null;
-                                            $remoteLevelDisplay = is_null($remoteLevelPercent) ? 'N/A' : ($remoteLevelPercent === 100 ? 'Remote 100%' : "{$remoteLevelPercent}% remote");
+                                            $remoteLevelDisplay = is_null($remoteLevelPercent) ? 'N/A' : ($remoteLevelPercent === 100 ? 'Remote 100%' : "{$remoteLevelPercent}% Remote");
                                         @endphp
                                         <span class="detail-value"> {{ $remoteLevelDisplay }}</span>
                                     </div>
@@ -679,7 +679,7 @@
                                         @php
                                             $remoteLevelRaw = $jobrequest->remote_work_level ?? null;
                                             $remoteLevelPercent = $remoteLevelRaw ? (int) preg_replace('/\D+/', '', $remoteLevelRaw) : null;
-                                            $remoteLevelDisplay = is_null($remoteLevelPercent) ? 'N/A' : ($remoteLevelPercent === 100 ? 'Remote 100%' : "{$remoteLevelPercent}% remote");
+                                            $remoteLevelDisplay = is_null($remoteLevelPercent) ? 'N/A' : ($remoteLevelPercent === 100 ? 'Remote 100%' : "{$remoteLevelPercent}% Remote");
                                         @endphp
                                         <span class="detail-value"> {{ $remoteLevelDisplay }}</span>
                                     </div>
