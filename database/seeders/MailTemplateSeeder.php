@@ -1082,11 +1082,12 @@ class MailTemplateSeeder extends Seeder
             'notification_message' => '',
             'user_type' => 'user',
             'status' => 1,
-            'subject' => 'Job Status Updated',
+            'subject' => 'Job Request #[[ job_id ]] – Status updated to [[ bid_status ]]',
             'template_detail' => '<p>Hello [[ customer_name ]],</p>
-                                  <p>Employer [[ provider_name ]] has updated the status of your job request #[[ job_id ]] - [[ job_name ]] to <strong>[[ bid_status ]]</strong>.</p>
-                                  <p>Check the bid page for details.</p>
-                                  <p>&nbsp;</p>
+                                  <p>The Employer has updated the status of your job request <strong>#[[ job_id ]] – [[ job_name ]]</strong> to <strong>[[ bid_status ]]</strong>.</p>
+                                  <p>You can view the latest details and take any required action in the app or via the link below.</p>
+                                  <p><a href="[[ link ]]" style="color: #2563eb;">View job and bid details</a></p>
+                                  <p>If the link does not work, copy and paste this URL into your browser:<br /><span style="word-break: break-all;">[[ link ]]</span></p>
                                   <p>Best regards,<br />[[ company_name ]]</p>',
         ]);
         // When customer updates status → notify provider (email shows "Employer" not "Provider")
@@ -1097,11 +1098,12 @@ class MailTemplateSeeder extends Seeder
             'notification_message' => '',
             'user_type' => 'provider',
             'status' => 1,
-            'subject' => 'Job Status Updated',
+            'subject' => 'Job Request #[[ job_id ]] – Status updated to [[ bid_status ]]',
             'template_detail' => '<p>Hello [[ provider_name ]],</p>
-                                  <p>Customer [[ customer_name ]] has updated the status of your job request #[[ job_id ]] - [[ job_name ]] to <strong>[[ bid_status ]]</strong>.</p>
-                                  <p>Check the bid page for details.</p>
-                                  <p>&nbsp;</p>
+                                  <p>The Customer has updated the status of your job request <strong>#[[ job_id ]] – [[ job_name ]]</strong> to <strong>[[ bid_status ]]</strong>.</p>
+                                  <p>You can view the latest details and take any required action in the app or via the link below.</p>
+                                  <p><a href="[[ link ]]" style="color: #2563eb;">View job and bid details</a></p>
+                                  <p>If the link does not work, copy and paste this URL into your browser:<br /><span style="word-break: break-all;">[[ link ]]</span></p>
                                   <p>Best regards,<br />[[ company_name ]]</p>',
         ]);
 

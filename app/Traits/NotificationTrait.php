@@ -417,8 +417,16 @@ trait NotificationTrait
 
             case "post_job_bid_status_update":
                 // Notify the OTHER party: provider updated → customer gets "Employer has updated..."; customer updated → provider gets "Customer has updated..."
-                $bid_status = $data['bid_status'] ?? $post_job->status ?? '';
+                $bid_status_raw = $data['bid_status'] ?? $post_job->status ?? '';
+                $bid_status_labels = [
+                    'accepted' => 'Accepted', 'in_progress' => 'In Progress', 'in_process' => 'In Process',
+                    'hold' => 'On Hold', 'done' => 'Done', 'confirm_done' => 'Completed', 'completed' => 'Completed',
+                    'advance_paid' => 'Advance Paid', 'remaining_paid' => 'Remaining Paid', 'requested' => 'Requested',
+                    'cancelled' => 'Cancelled', 'rejected' => 'Rejected',
+                ];
+                $data['bid_status'] = $bid_status_labels[strtolower((string) $bid_status_raw)] ?? ucwords(str_replace('_', ' ', (string) $bid_status_raw)) ?: $bid_status_raw;
                 $notifyWho = $data['notify_recipient'] ?? 'user';
+                $bid_status = $data['bid_status'];
                 if ($notifyWho === 'provider') {
                     $data['activity_message'] = __('Customer has updated the job status to :status.', ['status' => $bid_status]);
                 } else {
@@ -427,13 +435,14 @@ trait NotificationTrait
                 $data['activity_type'] = __('Job status updated');
                 $data['provider_name'] = isset($post_job->provider) ? $post_job->provider->display_name : '';
                 $data['user_name'] = isset($post_job->customer) ? $post_job->customer->display_name : '';
+                $data['customer_name'] = isset($post_job->customer) ? $post_job->customer->display_name : '';
                 $data['job_name'] = isset($post_job->postrequest->title) ? $post_job->postrequest->title : '';
                 $data['notify_recipient'] = $notifyWho;
                 $job_id = isset($post_job->post_request_id) ? $post_job->post_request_id : '';
                 $activity_data = [
                     'post_request_id' => $post_job->post_request_id,
                     'bid_id' => $post_job->id,
-                    'bid_status' => $bid_status,
+                    'bid_status' => $data['bid_status'],
                     'provider_id' => $post_job->provider_id,
                     'customer_id' => $post_job->customer_id,
                 ];
@@ -665,11 +674,11 @@ trait NotificationTrait
 					$notification_data['link'] = route('post-job-request.bids', ['id' => $targetId]);
 				}
 			}
-			// Link for customer when provider updates bid status
+			// Link to bid page for status update (provider/customer): same page as in app (post-job-bid/{id})
 			if ($notification_type === 'post_job_bid_status_update') {
 				$targetId = $notification_data['job_id'] ?? null;
 				if (!empty($targetId)) {
-					$notification_data['link'] = route('post-job-request.bids', ['id' => $targetId]);
+					$notification_data['link'] = url(route('post-job-bid.show', ['id' => $targetId]));
 				}
 			}
             $notification_data['job_request_id'] = isset( $job_request_id) ? $job_request_id : '';
@@ -837,5 +846,31 @@ trait NotificationTrait
                 }
             }
         }
+    }
+
+    /**
+     * Return a professional label for bid status (for emails and in-app display).
+     */
+    public static function humanizeBidStatus(?string $status): string
+    {
+        $status = (string) ($status ?? '');
+        $map = [
+            'accepted'       => 'Accepted',
+            'in_progress'    => 'In Progress',
+            'in_process'     => 'In Process',
+            'hold'           => 'On Hold',
+            'done'           => 'Done',
+            'confirm_done'   => 'Completed',
+            'completed'      => 'Completed',
+            'advance_paid'   => 'Advance Paid',
+            'advance paid'   => 'Advance Paid',
+            'remaining_paid' => 'Remaining Paid',
+            'remaining paid' => 'Remaining Paid',
+            'requested'      => 'Requested',
+            'cancelled'      => 'Cancelled',
+            'rejected'       => 'Rejected',
+        ];
+        $key = strtolower(trim($status));
+        return $map[$key] ?? (ucwords(str_replace('_', ' ', $status)) ?: $status);
     }
 }
