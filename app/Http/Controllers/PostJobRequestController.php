@@ -167,10 +167,10 @@ class PostJobRequestController extends Controller
         $showRateCustomerButton = $canProviderRate && !$providerHasRatedCustomer;
 
         $customerHasRatedProvider = PostJobBidRating::where('post_job_bid_id', $bid->id)->exists();
-        $canCustomerRate = in_array(strtolower((string)($bid->status ?? '')), ['remaining_paid', 'confirm_done', 'completed']);
+        $canCustomerRate = strtolower((string)($bid->status ?? '')) === 'remaining_paid';
         $showRateNowButton = $canCustomerRate && !$customerHasRatedProvider;
 
-        return view('postrequest.show', compact('bid', 'showRateCustomerButton', 'showRateNowButton'));
+        return view('postrequest.show', compact('bid', 'showRateCustomerButton', 'showRateNowButton', 'customerHasRatedProvider'));
     }
 
     /**
@@ -196,10 +196,10 @@ class PostJobRequestController extends Controller
         $showRateCustomerButton = $canProviderRate && !$providerHasRatedCustomer;
 
         $customerHasRatedProvider = PostJobBidRating::where('post_job_bid_id', $bid->id)->exists();
-        $canCustomerRate = in_array(strtolower((string)($bid->status ?? '')), ['remaining_paid', 'confirm_done', 'completed']);
+        $canCustomerRate = strtolower((string)($bid->status ?? '')) === 'remaining_paid';
         $showRateNowButton = $canCustomerRate && !$customerHasRatedProvider;
 
-        return view('postrequest.show', compact('bid', 'showRateCustomerButton', 'showRateNowButton'));
+        return view('postrequest.show', compact('bid', 'showRateCustomerButton', 'showRateNowButton', 'customerHasRatedProvider'));
     }
 
 
