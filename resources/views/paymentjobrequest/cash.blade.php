@@ -304,6 +304,67 @@
                 form.submit();
             }
         });
+
+        // Verify/Approve single post-job cash (bank transfer) – SweetAlert then AJAX
+        $(document).on('click', '.postjob-verify-btn', function(e) {
+            e.preventDefault();
+            const btn = $(this);
+            const paymentId = btn.data('payment-id');
+            const url = btn.data('approve-url');
+            const token = btn.data('csrf');
+            if (!paymentId || !url) return;
+            if (typeof Swal === 'undefined') {
+                if (confirm('Approve this bank transfer payment? This will mark the payment as completed.')) {
+                    submitPostJobApprove(url, token, paymentId, btn);
+                }
+                return;
+            }
+            Swal.fire({
+                title: '{{ __("Approve payment?") }}',
+                text: '{{ __("This will verify the bank transfer and mark the payment as completed.") }}',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: '{{ __("Yes, approve") }}',
+                cancelButtonText: '{{ __("Cancel") }}'
+            }).then(function(result) {
+                if (result.isConfirmed) {
+                    submitPostJobApprove(url, token, paymentId, btn);
+                }
+            });
+        });
+
+        function submitPostJobApprove(url, token, paymentId, btn) {
+            btn.prop('disabled', true).addClass('disabled');
+            $.ajax({
+                url: url,
+                type: 'POST',
+                data: {
+                    _token: token,
+                    rowIds: paymentId,
+                    status: 1,
+                    action_type: 'change-status'
+                },
+                success: function(res) {
+                    if (window.renderedDataTable && window.renderedDataTable.ajax) {
+                        window.renderedDataTable.ajax.reload(null, false);
+                    }
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({ icon: 'success', title: res.message || '{{ __("Cash Approved Successfully") }}', timer: 2000, showConfirmButton: false });
+                    } else {
+                        alert(res.message || '{{ __("Cash Approved Successfully") }}');
+                    }
+                },
+                error: function(xhr) {
+                    btn.prop('disabled', false).removeClass('disabled');
+                    const msg = (xhr.responseJSON && xhr.responseJSON.message) ? xhr.responseJSON.message : (xhr.statusText || 'Request failed');
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({ icon: 'error', title: '{{ __("Error") }}', text: msg });
+                    } else {
+                        alert(msg);
+                    }
+                }
+            });
+        }
     </script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 </x-master-layout>

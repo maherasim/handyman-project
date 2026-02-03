@@ -59,21 +59,30 @@ class PaymentController extends Controller
         return redirect()->back()->with('error', __('messages.no_records_selected'));
     }
 
-    // Update payment
+    // Update payment: use 'completed' so payment status clearly reflects that payment is done (e.g. for bank transfer)
     $payment = PaymentPostJOb::findOrFail($id);
     //dd($payment);
-    $payment->payment_status = 'Verified';
+    $payment->payment_status = 'completed';
     $payment->status = $request->status;
     
-    $data=$payment->save();
+    $data = $payment->save();
  
     // Update CommissionEarning
     CommissionEarning::where('payment_id', $id)
         ->update(['commission_status' => 'paid']);
 
-    // Update ProviderPayout
-    ProviderPayout::where('payment_id', $id)
-        ->update(['status' => 'paid']);
+    // Update ProviderPayout (by payment_id when set, or for post-job bank transfer by bid id)
+    ProviderPayout::where('payment_id', $id)->update(['status' => 'paid']);
+
+    // Post-job bank transfer: ProviderPayout may be created without payment_id; update by post_job_request_id if column exists
+    if ($payment->payment_type === 'bank_transfer' && !empty($payment->post_job_bid_request_id)) {
+        if (\Illuminate\Support\Facades\Schema::hasColumn('provider_payouts', 'post_job_request_id')) {
+            ProviderPayout::where('post_job_request_id', $payment->post_job_bid_request_id)
+                ->where('payment_method', 'Bank Transfer')
+                ->whereIn('status', ['pending', 'advance paid', 'remaining paid'])
+                ->update(['status' => 'paid']);
+        }
+    }
 
         return response()->json(['status' => true, 'message' => __('Cash Approved Successfully')]);
 
