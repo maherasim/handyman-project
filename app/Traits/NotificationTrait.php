@@ -860,7 +860,7 @@ trait NotificationTrait
             'in_process'     => 'In Process',
             'hold'           => 'On Hold',
             'done'           => 'Done',
-            'confirm_done'   => 'Completed',
+            'confirm_done'   => 'Confirm Done',
             'completed'      => 'Completed',
             'advance_paid'   => 'Advance Paid',
             'advance paid'   => 'Advance Paid',
