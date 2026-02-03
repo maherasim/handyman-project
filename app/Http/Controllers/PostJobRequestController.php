@@ -1787,7 +1787,7 @@ class PostJobRequestController extends Controller
             'discount' => 0,
             'total_amount' => number_format($payAmount, 2, '.', ''),
             'payment_type' => 'bank_transfer',
-            'payment_status' => 'pending',
+            'payment_status' => $type === 'advance' ? 'advance_pending' : 'remaining_pending',
             'status' => $type, // store whether it's advance or remaining
             'other_transaction_detail' => json_encode([
                 'note' => 'User reported bank transfer; awaiting verification',

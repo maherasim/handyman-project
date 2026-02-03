@@ -3,7 +3,7 @@
 @endphp
 <div class="d-flex justify-content-end align-items-center gap-1">
     @if($auth_user->hasAnyRole(['admin', 'demo_admin']))
-        @if(strtolower((string)($payment->payment_status ?? '')) === 'pending')
+        @if(in_array(strtolower((string)($payment->payment_status ?? '')), ['pending', 'advance_pending', 'remaining_pending']))
             <a class="btn btn-success btn-sm postjob-verify-btn"
                 href="#"
                 data-payment-id="{{ $payment->id }}"
