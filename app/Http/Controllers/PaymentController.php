@@ -61,9 +61,12 @@ class PaymentController extends Controller
 
     // Update payment: use 'completed' so payment status clearly reflects that payment is done (e.g. for bank transfer)
     $payment = PaymentPostJOb::findOrFail($id);
-    // Remember payment type (advance/remaining) before overwriting status; may also be in other_transaction_detail
+    // Remember payment type (advance/remaining) from payment_status or status before overwriting
+    $paymentStatusBefore = $payment->payment_status;
     $paymentType = $payment->status;
-    if (!in_array($paymentType, ['advance', 'remaining'], true) && !empty($payment->other_transaction_detail)) {
+    if (in_array(strtolower((string)$paymentStatusBefore), ['advance_pending', 'remaining_pending'], true)) {
+        $paymentType = $paymentStatusBefore === 'advance_pending' ? 'advance' : 'remaining';
+    } elseif (!in_array($paymentType, ['advance', 'remaining'], true) && !empty($payment->other_transaction_detail)) {
         $detail = json_decode($payment->other_transaction_detail, true);
         $paymentType = $detail['payment_type'] ?? $paymentType;
     }
@@ -71,13 +74,19 @@ class PaymentController extends Controller
     $payment->status = $request->status;
     
     $data = $payment->save();
- 
-    // Post-job bank transfer: update bid status from *_payment_pending to advance_paid/remaining_paid
+
+    // Post-job bank transfer: update post_job_bids – advance_payment_pending -> advance_paid, remaining_payment_pending -> remaining_paid
     if ($payment->payment_type === 'bank_transfer' && !empty($payment->post_job_bid_request_id)) {
         $bid = PostJobBid::find($payment->post_job_bid_request_id);
-        if ($bid && in_array(strtolower((string)$bid->status), ['advance_payment_pending', 'remaining_payment_pending'], true)) {
-            $bid->status = (strtolower((string)$paymentType) === 'advance') ? 'advance_paid' : 'remaining_paid';
-            $bid->save();
+        if ($bid) {
+            $bidStatus = strtolower((string)$bid->status);
+            if ($bidStatus === 'advance_payment_pending') {
+                $bid->status = 'advance_paid';
+                $bid->save();
+            } elseif ($bidStatus === 'remaining_payment_pending') {
+                $bid->status = 'remaining_paid';
+                $bid->save();
+            }
         }
     }
 
