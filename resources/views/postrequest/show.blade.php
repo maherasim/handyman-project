@@ -562,6 +562,12 @@
                 </div>
             </div>
 
+        </div>
+    </div>
+    @endif
+
+{{-- Customer rates provider modal – outside extraCharges block so it's in DOM when Rate Now is shown (even when bid has no extra charges) --}}
+@if($canRatePostBid ?? false)
 <div class="modal fade" id="postBidRatingModal" tabindex="-1" aria-labelledby="postBidRatingModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
@@ -595,10 +601,7 @@
     .postbid-star.selected{color:#f1c40f}
   </style>
 </div>
-
-        </div>
-    </div>
-    @endif
+@endif
 
 {{-- Provider rates customer modal (outside extraCharges block so it's always in DOM when provider can rate) --}}
 @if(($showRateCustomerButton ?? false) && auth()->user()->user_type === 'provider' && (int)auth()->id() === (int)($bid->provider_id ?? 0))
