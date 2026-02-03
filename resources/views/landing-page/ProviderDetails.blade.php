@@ -1,5 +1,25 @@
 @extends('landing-page.layouts.default')
 
+@php
+    $p = $providerData['data'] ?? [];
+    $shareTitle = $p['display_name'] ?? 'Provider';
+    $shareDescription = trim(\Illuminate\Support\Str::limit(strip_tags($p['description'] ?? $p['designation'] ?? 'Service provider on ' . config('app.name'), 150));
+    $shareUrl = route('provider.detail', $p['id'] ?? 0);
+    $shareImage = !empty($p['profile_image']) ? (str_starts_with($p['profile_image'], 'http') ? $p['profile_image'] : asset($p['profile_image'])) : asset('images/post-job/ac_refresh_and_revive.png');
+@endphp
+@section('before_head')
+    <meta property="og:type" content="profile" />
+    <meta property="og:title" content="{{ $shareTitle }}" />
+    <meta property="og:description" content="{{ $shareDescription }}" />
+    <meta property="og:url" content="{{ $shareUrl }}" />
+    <meta property="og:image" content="{{ $shareImage }}" />
+    <meta property="og:image:secure_url" content="{{ $shareImage }}" />
+    <meta property="og:site_name" content="{{ config('app.name') }}" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="{{ $shareTitle }}" />
+    <meta name="twitter:description" content="{{ $shareDescription }}" />
+    <meta name="twitter:image" content="{{ $shareImage }}" />
+@endsection
 
 @section('after_head')
     <style>
@@ -320,25 +340,24 @@
                                                 </td>
                                             </tr>
                                             <tr class=" pe-0">
+                                                @php
+                                                    $detailShareUrl = route('provider.detail', $p['id'] ?? 0);
+                                                    $detailQuote = ($p['display_name'] ?? '') . ' • ' . ($p['designation'] ?? '') . ' • ' . (data_get($p, 'city.name', '')) . ', ' . (data_get($p, 'country.name', ''));
+                                                @endphp
                                                 <div class="d-flex align-items-center justify-content-center gap-3 mt-3">
-                                                    <a href="#">
-                                                        <img src="https://static.vecteezy.com/system/resources/previews/016/716/481/original/facebook-icon-free-png.png"
-                                                            style="width: 30px; border-radius: 8px;" alt="">
-                                                    </a>
-                                                    <a href="#">
-                                                        <img src="https://upload.wikimedia.org/wikipedia/commons/9/95/Instagram_logo_2022.svg"
-                                                            style="width: 30px; border-radius: 8px;" alt="">
-                                                    </a>
-                                                    <a href="#">
-                                                        <img src="https://cdn.pixabay.com/photo/2015/03/10/17/30/twitter-667462_640.png"
-                                                            style="width: 30px; border-radius: 8px;" alt="">
-                                                    </a>
-                                                    <a href="#">
-                                                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRokEYt0yyh6uNDKL8uksVLlhZ35laKNQgZ9g&s"
-                                                            style="width: 30px; border-radius: 8px;" alt="">
-                                                    </a>
+                                                    <span role="button" tabindex="0" class="social-link share-link" data-platform="facebook" data-share-url="{{ $detailShareUrl }}" data-quote="{{ $detailQuote }}" onclick="return typeof window.__shareClickHandler === 'function' && window.__shareClickHandler(event, this);" style="cursor: pointer;">
+                                                        <img src="https://static.vecteezy.com/system/resources/previews/016/716/481/original/facebook-icon-free-png.png" style="width: 30px; border-radius: 8px;" alt="Facebook">
+                                                    </span>
+                                                    <span role="button" tabindex="0" class="social-link share-link" data-platform="instagram" data-share-url="{{ $detailShareUrl }}" data-quote="{{ $detailQuote }} — {{ $detailShareUrl }}" data-image-url="{{ $shareImage }}" onclick="return typeof window.__shareClickHandler === 'function' && window.__shareClickHandler(event, this);" style="cursor: pointer;">
+                                                        <img src="https://upload.wikimedia.org/wikipedia/commons/9/95/Instagram_logo_2022.svg" style="width: 30px; border-radius: 8px;" alt="Instagram">
+                                                    </span>
+                                                    <span role="button" tabindex="0" class="social-link share-link" data-platform="twitter" data-share-url="{{ $detailShareUrl }}" data-text="{{ $detailQuote }}" onclick="return typeof window.__shareClickHandler === 'function' && window.__shareClickHandler(event, this);" style="cursor: pointer;">
+                                                        <img src="https://cdn.pixabay.com/photo/2015/03/10/17/30/twitter-667462_640.png" style="width: 30px; border-radius: 8px;" alt="Twitter">
+                                                    </span>
+                                                    <span role="button" tabindex="0" class="social-link share-link" data-platform="linkedin" data-share-url="{{ $detailShareUrl }}" onclick="return typeof window.__shareClickHandler === 'function' && window.__shareClickHandler(event, this);" style="cursor: pointer;">
+                                                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRokEYt0yyh6uNDKL8uksVLlhZ35laKNQgZ9g&s" style="width: 30px; border-radius: 8px;" alt="LinkedIn">
+                                                    </span>
                                                 </div>
-
                                             </tr>
                                             <tr>
                                                 <td class="px-0">
@@ -748,4 +767,30 @@
     </div>
 @endsection
 
-
+@section('after_script')
+<script>
+window.__shareClickHandler = function(e, el) {
+    try { e.preventDefault(); e.stopPropagation(); } catch (_) {}
+    function openPopup(url) { window.open(url, '_blank', 'noopener,noreferrer,width=600,height=600'); }
+    var platform = el.getAttribute('data-platform');
+    var shareUrl = el.getAttribute('data-share-url') || window.location.href;
+    if (platform === 'facebook') {
+        var fbUrl = encodeURIComponent(shareUrl);
+        var quote = encodeURIComponent(el.getAttribute('data-quote') || '');
+        openPopup('https://www.facebook.com/sharer/sharer.php?u=' + fbUrl + (quote ? '&quote=' + quote : ''));
+    } else if (platform === 'twitter') {
+        var text = encodeURIComponent(el.getAttribute('data-text') || el.getAttribute('data-quote') || '');
+        var url = encodeURIComponent(shareUrl);
+        openPopup('https://twitter.com/intent/tweet?url=' + url + '&text=' + text);
+    } else if (platform === 'linkedin') {
+        openPopup('https://www.linkedin.com/sharing/share-offsite/?url=' + encodeURIComponent(shareUrl));
+    } else if (platform === 'instagram') {
+        var quote = el.getAttribute('data-quote') || '';
+        if (navigator.share) {
+            try { navigator.share({ text: quote, url: shareUrl }).catch(function() {}); } catch (_) { openPopup('https://www.instagram.com/'); }
+        } else { openPopup('https://www.instagram.com/'); }
+    }
+    return false;
+};
+</script>
+@endsection

@@ -31,8 +31,31 @@
 </div>
 @endsection
 
-@section('after_scripts')
+@section('after_script')
 <script>
+window.__shareClickHandler = function(e, el) {
+    try { e.preventDefault(); e.stopPropagation(); } catch (_) {}
+    function openPopup(url) { window.open(url, '_blank', 'noopener,noreferrer,width=600,height=600'); }
+    var platform = el.getAttribute('data-platform');
+    var shareUrl = el.getAttribute('data-share-url') || window.location.href;
+    if (platform === 'facebook') {
+        var fbUrl = encodeURIComponent(shareUrl);
+        var quote = encodeURIComponent(el.getAttribute('data-quote') || '');
+        openPopup('https://www.facebook.com/sharer/sharer.php?u=' + fbUrl + (quote ? '&quote=' + quote : ''));
+    } else if (platform === 'twitter') {
+        var text = encodeURIComponent(el.getAttribute('data-text') || el.getAttribute('data-quote') || '');
+        var url = encodeURIComponent(shareUrl);
+        openPopup('https://twitter.com/intent/tweet?url=' + url + '&text=' + text);
+    } else if (platform === 'linkedin') {
+        openPopup('https://www.linkedin.com/sharing/share-offsite/?url=' + encodeURIComponent(shareUrl));
+    } else if (platform === 'instagram') {
+        var quote = el.getAttribute('data-quote') || '';
+        if (navigator.share) {
+            try { navigator.share({ text: quote, url: shareUrl }).catch(function() {}); } catch (_) { openPopup('https://www.instagram.com/'); }
+        } else { openPopup('https://www.instagram.com/'); }
+    }
+    return false;
+};
 document.addEventListener('DOMContentLoaded', function() {
     // Handle provider rating link clicks
     $(document).on('click', '.provider-rating-link', function(e) {
