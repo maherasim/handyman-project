@@ -1872,7 +1872,7 @@ class PostJobRequestController extends Controller
 
         return response()->json([
             'status' => true,
-            'message' => 'Bank transfer processed. We will verify your payment shortly.',
+            'message' => 'Waiting for admin approval.',
             'payment_id' => $payment->id,
             'admin_commission' => $admin_commission_amount,
             'provider_earning' => $provider_earning,
