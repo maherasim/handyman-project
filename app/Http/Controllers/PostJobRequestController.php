@@ -71,11 +71,11 @@ class PostJobRequestController extends Controller
                 $label = 'Advance Paid';
                 $class = 'badge bg-success text-dark';
                 break;
-            case 'advance_payment_pending':
+            case 'advance_payment_pending_approval':
                 $label = 'Advance (Pending Approval)';
                 $class = 'badge bg-warning text-dark';
                 break;
-            case 'remaining_payment_pending':
+            case 'remaining_payment_pending_approval':
                 $label = 'Remaining (Pending Approval)';
                 $class = 'badge bg-warning text-dark';
                 break;
@@ -1852,23 +1852,11 @@ class PostJobRequestController extends Controller
         ]);
         // Bank transfer: wait for admin approval before marking as paid
         if ($type === 'advance') {
-            $bid->status = 'advance_payment_pending';
+            $bid->status = 'advance_payment_pending_approval';
         } elseif ($type === 'remaining') {
-            $bid->status = 'remaining_payment_pending';
+            $bid->status = 'remaining_payment_pending_approval approval';
         }
-
         $bid->save();
-
-        // ✅ Send email notification to admin
-        try {
-            $adminEmail = 'asimriazasim107@gmail.com';
-            // Load relationships for email
-            $bid->load(['customer', 'provider', 'request']);
-            Mail::to($adminEmail)->send(new PostJobBankTransferPaymentNotificationMail($payment, $bid, $type));
-        } catch (\Exception $e) {
-            // Log error but don't fail the payment creation
-            \Log::error('Failed to send post job bank transfer payment notification email: ' . $e->getMessage());
-        }
 
         return response()->json([
             'status' => true,
