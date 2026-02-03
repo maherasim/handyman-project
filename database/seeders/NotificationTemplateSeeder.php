@@ -94,7 +94,11 @@ class NotificationTemplateSeeder extends Seeder
                 'value' => 'post_job_bid_status_update',
                 'name' => 'Job Bid Status Update',
             ],
-
+            [
+                'type' => 'notification_type',
+                'value' => 'bank_transfer_payment_approved',
+                'name' => 'Bank Transfer Payment Approved',
+            ],
             [
                 'type' => 'notification_type',
                 'value' => 'provider_payout',
@@ -843,6 +847,33 @@ class NotificationTemplateSeeder extends Seeder
             'status' => 1,
             'subject' => 'Job Status Updated',
             'template_detail' => '<p>Hello [[ provider_name ]],</p><p>Customer [[ customer_name ]] has updated the status of your job request #[[ job_id ]] - [[ job_name ]] to <strong>[[ bid_status ]]</strong>.</p><p>Check the bid page for details.</p>',
+        ]);
+
+        $template = NotificationTemplate::create([
+            'type' => 'bank_transfer_payment_approved',
+            'name' => 'bank_transfer_payment_approved',
+            'label' => 'Bank Transfer Payment Approved',
+            'status' => 1,
+            'to' => '["user","provider"]',
+            'channels' => ['IS_MAIL' => '1', 'PUSH_NOTIFICATION' => '1'],
+        ]);
+        $template->defaultNotificationTemplateMap()->create([
+            'language' => 'en',
+            'notification_link' => '',
+            'notification_message' => 'Your [[ payment_type_label ]] payment of [[ amount ]] for job request #[[ job_id ]] has been approved.',
+            'user_type' => 'user',
+            'status' => 1,
+            'subject' => 'Payment Approved',
+            'template_detail' => '<p>Hello [[ customer_name ]],</p><p>Your [[ payment_type_label ]] payment of [[ amount ]] for job request #[[ job_id ]] – [[ job_name ]] has been verified and approved.</p>',
+        ]);
+        $template->notificationTemplateContentMappings()->create([
+            'language' => 'en',
+            'notification_link' => '',
+            'notification_message' => '[[ payment_type_label ]] payment of [[ amount ]] for job request #[[ job_id ]] has been approved.',
+            'user_type' => 'provider',
+            'status' => 1,
+            'subject' => 'Payment Approved',
+            'template_detail' => '<p>Hello [[ provider_name ]],</p><p>The [[ payment_type_label ]] payment of [[ amount ]] for job request #[[ job_id ]] – [[ job_name ]] has been verified and approved.</p>',
         ]);
 
         $template = NotificationTemplate::create([

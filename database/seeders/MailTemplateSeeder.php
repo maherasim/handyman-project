@@ -109,6 +109,11 @@ class MailTemplateSeeder extends Seeder
             ],
             [
                 'type' => 'notification_type',
+                'value' => 'bank_transfer_payment_approved',
+                'name' => 'Bank Transfer Payment Approved',
+            ],
+            [
+                'type' => 'notification_type',
                 'value' => 'provider_payout',
                 'name' => 'Payout Process',
             ],
@@ -1102,6 +1107,44 @@ class MailTemplateSeeder extends Seeder
             'template_detail' => '<p>Hello [[ provider_name ]],</p>
                                   <p>The Customer has updated the status of your job request <strong>#[[ job_id ]] – [[ job_name ]]</strong> to <strong>[[ bid_status ]]</strong>.</p>
                                   <p>You can view the latest details and take any required action in the app or via the link below.</p>
+                                  <p><a href="[[ link ]]" style="color: #2563eb;">View job and bid details</a></p>
+                                  <p>If the link does not work, copy and paste this URL into your browser:<br /><span style="word-break: break-all;">[[ link ]]</span></p>
+                                  <p>Best regards,<br />[[ company_name ]]</p>',
+        ]);
+
+        $template = MailTemplates::create([
+            'type' => 'bank_transfer_payment_approved',
+            'name' => 'bank_transfer_payment_approved',
+            'label' => 'Bank Transfer Payment Approved',
+            'status' => 1,
+            'to' => '["user","provider"]',
+            'channels' => ['IS_MAIL' => '1', 'PUSH_NOTIFICATION' => '1'],
+        ]);
+        $template->defaultMailTemplateMap()->create([
+            'language' => 'en',
+            'notification_link' => '',
+            'notification_message' => '',
+            'user_type' => 'user',
+            'status' => 1,
+            'subject' => 'Payment approved – Job Request #[[ job_id ]] [[ job_name ]]',
+            'template_detail' => '<p>Hello [[ customer_name ]],</p>
+                                  <p>Your [[ payment_type_label ]] payment of [[ amount ]] for the job request <strong>#[[ job_id ]] – [[ job_name ]]</strong> has been verified and approved by our team.</p>
+                                  <p>The payment is now complete. You can view the job and bid details at any time using the link below.</p>
+                                  <p><a href="[[ link ]]" style="color: #2563eb;">View job and bid details</a></p>
+                                  <p>If the link does not work, copy and paste this URL into your browser:<br /><span style="word-break: break-all;">[[ link ]]</span></p>
+                                  <p>Best regards,<br />[[ company_name ]]</p>',
+        ]);
+        \App\Models\MailTemplateContentMapping::create([
+            'template_id' => $template->id,
+            'language' => 'en',
+            'notification_link' => '',
+            'notification_message' => '',
+            'user_type' => 'provider',
+            'status' => 1,
+            'subject' => 'Payment approved – Job Request #[[ job_id ]] [[ job_name ]]',
+            'template_detail' => '<p>Hello [[ provider_name ]],</p>
+                                  <p>The [[ payment_type_label ]] payment of [[ amount ]] for the job request <strong>#[[ job_id ]] – [[ job_name ]]</strong> has been verified and approved. The amount will be reflected in your earnings.</p>
+                                  <p>You can view the job and bid details at any time using the link below.</p>
                                   <p><a href="[[ link ]]" style="color: #2563eb;">View job and bid details</a></p>
                                   <p>If the link does not work, copy and paste this URL into your browser:<br /><span style="word-break: break-all;">[[ link ]]</span></p>
                                   <p>Best regards,<br />[[ company_name ]]</p>',

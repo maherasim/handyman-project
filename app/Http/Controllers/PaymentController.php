@@ -22,6 +22,7 @@ use App\Models\Booking;
 use App\Models\CommissionEarning;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Mail;
+use App\Notifications\CommonNotification;
 use App\Mail\MailMailableSend;
 use App\Mail\FullPaymentReceivedMail;
 
@@ -104,6 +105,37 @@ class PaymentController extends Controller
                 ->where('payment_method', 'Bank Transfer')
                 ->whereIn('status', ['pending', 'advance paid', 'remaining paid'])
                 ->update(['status' => 'paid']);
+        }
+
+        // Notify customer and provider that payment has been approved (email + in-app)
+        $bid = PostJobBid::with(['postrequest', 'customer', 'provider'])->find($payment->post_job_bid_request_id);
+        if ($bid && $bid->postrequest) {
+            $jobId = $bid->post_request_id;
+            $jobName = $bid->postrequest->title ?? __('Job Request');
+            $amount = getPriceFormat($payment->total_amount);
+            $paymentTypeLabel = $paymentType === 'advance' ? __('Advance') : __('Remaining');
+            $link = route('post-job-bid.show', ['id' => $jobId]);
+            $companyName = env('APP_NAME', 'Frobster');
+
+            $baseData = [
+                'job_id' => $jobId,
+                'job_name' => $jobName,
+                'amount' => $amount,
+                'payment_type_label' => $paymentTypeLabel,
+                'link' => $link,
+                'customer_name' => $bid->customer ? $bid->customer->display_name : '',
+                'provider_name' => $bid->provider ? $bid->provider->display_name : '',
+                'company_name' => $companyName,
+            ];
+
+            if ($bid->customer) {
+                $customerData = array_merge($baseData, ['user_type' => 'user']);
+                $bid->customer->notify(new CommonNotification('bank_transfer_payment_approved', $customerData));
+            }
+            if ($bid->provider) {
+                $providerData = array_merge($baseData, ['user_type' => 'provider']);
+                $bid->provider->notify(new CommonNotification('bank_transfer_payment_approved', $providerData));
+            }
         }
     }
 
@@ -287,6 +319,13 @@ class PaymentController extends Controller
                             '</span>';
                 }
                 return '<span class="text-center d-block">-</span>';
+            })
+            ->editColumn('payment_type', function ($query) {
+                $type = $query->payment_type;
+                if ($type === 'bank_transfer') {
+                    return 'Bank Transfer';
+                }
+                return $type ? str_replace('_', ' ', ucfirst($type)) : '-';
             })
             ->editColumn('total_amount', function ($query) {
                 return getPriceFormat($query->total_amount);
