@@ -76,18 +76,17 @@ class PaymentController extends Controller
     
     $data = $payment->save();
 
-    // Post-job bank transfer: update post_job_bids – advance_pending/advance_payment_pending -> advance_paid, remaining_pending/remaining_payment_pending -> remaining_paid
-    if ($payment->payment_type === 'bank_transfer' && !empty($payment->post_job_bid_request_id)) {
-        $bid = PostJobBid::find($payment->post_job_bid_request_id);
-        if ($bid) {
-            $bidStatus = strtolower(trim((string)$bid->status));
-            if (in_array($bidStatus, ['advance_payment_pending', 'advance_pending'], true)) {
-                $bid->status = 'advance_paid';
-                $bid->save();
-            } elseif (in_array($bidStatus, ['remaining_payment_pending', 'remaining_pending'], true)) {
-                $bid->status = 'remaining_paid';
-                $bid->save();
-            }
+    // Update post_job_bids: when payment_post_jobs.payment_status is advance_pending → post_job_bids.status = advance_paid; remaining_pending → remaining_paid
+    $bidRequestId = $payment->post_job_bid_request_id;
+    if (!empty($bidRequestId)) {
+        $newBidStatus = null;
+        if (strtolower((string)$paymentStatusBefore) === 'advance_pending') {
+            $newBidStatus = 'advance_paid';
+        } elseif (strtolower((string)$paymentStatusBefore) === 'remaining_pending') {
+            $newBidStatus = 'remaining_paid';
+        }
+        if ($newBidStatus) {
+            PostJobBid::where('id', $bidRequestId)->update(['status' => $newBidStatus]);
         }
     }
 
