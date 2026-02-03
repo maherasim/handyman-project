@@ -1843,7 +1843,7 @@ class PostJobRequestController extends Controller
             'text' => __('messages.payment_transfer', [
                 'from' => get_user_name($user->id),
                 'to' => get_user_name($provider_id),
-                'amount' => getPriceFormat($provider_earning)
+                'amount' => getPriceFormat($payAmount),
             ]),
             'other_transaction_detail' => json_encode([
                 'admin_commission' => $admin_commission_amount,
