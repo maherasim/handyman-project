@@ -114,6 +114,16 @@ class MailTemplateSeeder extends Seeder
             ],
             [
                 'type' => 'notification_type',
+                'value' => 'post_job_bid_rated_provider',
+                'name' => 'Post Job – Customer Rated Employer',
+            ],
+            [
+                'type' => 'notification_type',
+                'value' => 'post_job_bid_rated_customer',
+                'name' => 'Post Job – Employer Rated Customer',
+            ],
+            [
+                'type' => 'notification_type',
                 'value' => 'provider_payout',
                 'name' => 'Payout Process',
             ],
@@ -1146,6 +1156,52 @@ class MailTemplateSeeder extends Seeder
                                   <p>The [[ payment_type_label ]] payment of [[ amount ]] for the job request <strong>#[[ job_id ]] – [[ job_name ]]</strong> has been verified and approved. The amount will be reflected in your earnings.</p>
                                   <p>You can view the job and bid details at any time using the link below.</p>
                                   <p><a href="[[ link ]]" style="color: #2563eb;">View job and bid details</a></p>
+                                  <p>If the link does not work, copy and paste this URL into your browser:<br /><span style="word-break: break-all;">[[ link ]]</span></p>
+                                  <p>Best regards,<br />[[ company_name ]]</p>',
+        ]);
+
+        $template = MailTemplates::create([
+            'type' => 'post_job_bid_rated_provider',
+            'name' => 'post_job_bid_rated_provider',
+            'label' => 'Post Job – Customer Rated Employer',
+            'status' => 1,
+            'to' => '["provider"]',
+            'channels' => ['IS_MAIL' => '1', 'PUSH_NOTIFICATION' => '1'],
+        ]);
+        $template->defaultMailTemplateMap()->create([
+            'language' => 'en',
+            'notification_link' => '',
+            'notification_message' => '',
+            'user_type' => 'provider',
+            'status' => 1,
+            'subject' => 'You received a [[ rating ]]-star rating – Job Request #[[ job_id ]] [[ job_name ]]',
+            'template_detail' => '<p>Hello [[ provider_name ]],</p>
+                                  <p>[[ customer_name ]] has left you a <strong>[[ rating ]]</strong>-star rating for the job request <strong>#[[ job_id ]] – [[ job_name ]]</strong>.</p>
+                                  <p>You can view the rating and any comment in the app or via the link below.</p>
+                                  <p><a href="[[ link ]]" style="color: #2563eb;">View job and rating</a></p>
+                                  <p>If the link does not work, copy and paste this URL into your browser:<br /><span style="word-break: break-all;">[[ link ]]</span></p>
+                                  <p>Best regards,<br />[[ company_name ]]</p>',
+        ]);
+
+        $template = MailTemplates::create([
+            'type' => 'post_job_bid_rated_customer',
+            'name' => 'post_job_bid_rated_customer',
+            'label' => 'Post Job – Employer Rated Customer',
+            'status' => 1,
+            'to' => '["user"]',
+            'channels' => ['IS_MAIL' => '1', 'PUSH_NOTIFICATION' => '1'],
+        ]);
+        $template->defaultMailTemplateMap()->create([
+            'language' => 'en',
+            'notification_link' => '',
+            'notification_message' => '',
+            'user_type' => 'user',
+            'status' => 1,
+            'subject' => 'You received a [[ rating ]]-star rating – Job Request #[[ job_id ]] [[ job_name ]]',
+            'template_detail' => '<p>Hello [[ customer_name ]],</p>
+                                  <p>[[ provider_name ]] has left you a <strong>[[ rating ]]</strong>-star rating for the job request <strong>#[[ job_id ]] – [[ job_name ]]</strong>.</p>
+                                  <p>You can view the rating and any comment in the app or via the link below.</p>
+                                  <p><a href="[[ link ]]" style="color: #2563eb;">View job and rating</a></p>
                                   <p>If the link does not work, copy and paste this URL into your browser:<br /><span style="word-break: break-all;">[[ link ]]</span></p>
                                   <p>Best regards,<br />[[ company_name ]]</p>',
         ]);

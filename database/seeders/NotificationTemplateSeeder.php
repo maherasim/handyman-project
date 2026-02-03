@@ -101,6 +101,16 @@ class NotificationTemplateSeeder extends Seeder
             ],
             [
                 'type' => 'notification_type',
+                'value' => 'post_job_bid_rated_provider',
+                'name' => 'Post Job – Customer Rated Employer',
+            ],
+            [
+                'type' => 'notification_type',
+                'value' => 'post_job_bid_rated_customer',
+                'name' => 'Post Job – Employer Rated Customer',
+            ],
+            [
+                'type' => 'notification_type',
                 'value' => 'provider_payout',
                 'name' => 'Payout Process',
             ],
@@ -874,6 +884,42 @@ class NotificationTemplateSeeder extends Seeder
             'status' => 1,
             'subject' => 'Payment Approved',
             'template_detail' => '<p>Hello [[ provider_name ]],</p><p>The [[ payment_type_label ]] payment of [[ amount ]] for job request #[[ job_id ]] – [[ job_name ]] has been verified and approved.</p>',
+        ]);
+
+        $template = NotificationTemplate::create([
+            'type' => 'post_job_bid_rated_provider',
+            'name' => 'post_job_bid_rated_provider',
+            'label' => 'Post Job – Customer Rated Employer',
+            'status' => 1,
+            'to' => '["provider"]',
+            'channels' => ['IS_MAIL' => '1', 'PUSH_NOTIFICATION' => '1'],
+        ]);
+        $template->defaultNotificationTemplateMap()->create([
+            'language' => 'en',
+            'notification_link' => '',
+            'notification_message' => '[[ customer_name ]] left you a [[ rating ]]-star rating for job request #[[ job_id ]].',
+            'user_type' => 'provider',
+            'status' => 1,
+            'subject' => 'New rating received',
+            'template_detail' => '<p>Hello [[ provider_name ]],</p><p>[[ customer_name ]] left you a [[ rating ]]-star rating for job request #[[ job_id ]] – [[ job_name ]].</p>',
+        ]);
+
+        $template = NotificationTemplate::create([
+            'type' => 'post_job_bid_rated_customer',
+            'name' => 'post_job_bid_rated_customer',
+            'label' => 'Post Job – Employer Rated Customer',
+            'status' => 1,
+            'to' => '["user"]',
+            'channels' => ['IS_MAIL' => '1', 'PUSH_NOTIFICATION' => '1'],
+        ]);
+        $template->defaultNotificationTemplateMap()->create([
+            'language' => 'en',
+            'notification_link' => '',
+            'notification_message' => '[[ provider_name ]] left you a [[ rating ]]-star rating for job request #[[ job_id ]].',
+            'user_type' => 'user',
+            'status' => 1,
+            'subject' => 'New rating received',
+            'template_detail' => '<p>Hello [[ customer_name ]],</p><p>[[ provider_name ]] left you a [[ rating ]]-star rating for job request #[[ job_id ]] – [[ job_name ]].</p>',
         ]);
 
         $template = NotificationTemplate::create([

@@ -156,11 +156,11 @@
                                     <label for="job_schedule">{{ __('Job Schedule') }} <span class="text-danger">*</span></label>
                                     <select name="job_schedule" id="job_schedule" class="form-control" required>
                                         @php $oldSchedule = old('job_schedule', $postJob->job_schedule); @endphp
-                                        <option value="full_time" {{ $oldSchedule == 'full_time' ? 'selected' : '' }}>{{ __('Full-Time') }}</option>
-                                        <option value="part_time" {{ $oldSchedule == 'part_time' ? 'selected' : '' }}>{{ __('Part-Time') }}</option>
-                                        <option value="contract" {{ $oldSchedule == 'contract' ? 'selected' : '' }}>{{ __('Contract') }}</option>
-                                        <option value="temporary" {{ $oldSchedule == 'temporary' ? 'selected' : '' }}>{{ __('Temporary') }}</option>
-                                        <option value="internship" {{ $oldSchedule == 'internship' ? 'selected' : '' }}>{{ __('Internship') }}</option>
+                                        <option value="full_time" {{ $oldSchedule == 'full_time' ? 'selected' : '' }}>Full time</option>
+                                        <option value="part_time" {{ $oldSchedule == 'part_time' ? 'selected' : '' }}>Part time</option>
+                                        <option value="contract" {{ $oldSchedule == 'contract' ? 'selected' : '' }}>Contract</option>
+                                        <option value="temporary" {{ $oldSchedule == 'temporary' ? 'selected' : '' }}>Temporary</option>
+                                        <option value="internship" {{ $oldSchedule == 'internship' ? 'selected' : '' }}>Internship</option>
                                     </select>
                                 </div>
                             </div>
