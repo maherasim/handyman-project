@@ -61,12 +61,26 @@ class PaymentController extends Controller
 
     // Update payment: use 'completed' so payment status clearly reflects that payment is done (e.g. for bank transfer)
     $payment = PaymentPostJOb::findOrFail($id);
-    //dd($payment);
+    // Remember payment type (advance/remaining) before overwriting status; may also be in other_transaction_detail
+    $paymentType = $payment->status;
+    if (!in_array($paymentType, ['advance', 'remaining'], true) && !empty($payment->other_transaction_detail)) {
+        $detail = json_decode($payment->other_transaction_detail, true);
+        $paymentType = $detail['payment_type'] ?? $paymentType;
+    }
     $payment->payment_status = 'completed';
     $payment->status = $request->status;
     
     $data = $payment->save();
  
+    // Post-job bank transfer: update bid status from *_payment_pending to advance_paid/remaining_paid
+    if ($payment->payment_type === 'bank_transfer' && !empty($payment->post_job_bid_request_id)) {
+        $bid = PostJobBid::find($payment->post_job_bid_request_id);
+        if ($bid && in_array(strtolower((string)$bid->status), ['advance_payment_pending', 'remaining_payment_pending'], true)) {
+            $bid->status = (strtolower((string)$paymentType) === 'advance') ? 'advance_paid' : 'remaining_paid';
+            $bid->save();
+        }
+    }
+
     // Update CommissionEarning
     CommissionEarning::where('payment_id', $id)
         ->update(['commission_status' => 'paid']);

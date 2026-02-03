@@ -71,6 +71,14 @@ class PostJobRequestController extends Controller
                 $label = 'Advance Paid';
                 $class = 'badge bg-success text-dark';
                 break;
+            case 'advance_payment_pending':
+                $label = 'Advance (Pending Approval)';
+                $class = 'badge bg-warning text-dark';
+                break;
+            case 'remaining_payment_pending':
+                $label = 'Remaining (Pending Approval)';
+                $class = 'badge bg-warning text-dark';
+                break;
             case 'assigned':
                 $label = 'Assigned';
                 $class = 'badge bg-info text-dark';
@@ -1785,6 +1793,7 @@ class PostJobRequestController extends Controller
                 'note' => 'User reported bank transfer; awaiting verification',
                 'admin_commission' => $admin_commission_amount,
                 'provider_earning' => $provider_earning,
+                'payment_type' => $type,
             ]),
         ]);
 
@@ -1841,10 +1850,11 @@ class PostJobRequestController extends Controller
                 'provider_earning' => $provider_earning,
             ]),
         ]);
+        // Bank transfer: wait for admin approval before marking as paid
         if ($type === 'advance') {
-            $bid->status = 'advance_paid';
+            $bid->status = 'advance_payment_pending';
         } elseif ($type === 'remaining') {
-            $bid->status = 'remaining_paid';
+            $bid->status = 'remaining_payment_pending';
         }
 
         $bid->save();
