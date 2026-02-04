@@ -361,7 +361,8 @@
                                 <div class="card-body text-center">
                                     <i class="fas fa-map-marker-alt fa-2x text-secondary mb-2"></i>
                                     <h6 class="fw-bold mb-1">Working Address</h6>
-                                    <p class="mb-0">{{ $bid->postrequest->working_address ?? '-' }}</p>
+                                    <p class="mb-0">{{ $bid->postrequest->street_address ?? '-' }}</p>
+                                    <p class="mb-0">{{ $bid->postrequest->house_number ?? '-' }}</p>
                                 </div>
                             </div>
                         </div>

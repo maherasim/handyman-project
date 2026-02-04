@@ -180,15 +180,6 @@ class PostJobRequestController extends Controller
         $canCustomerRate = strtolower((string)($bid->status ?? '')) === 'remaining_paid';
         $showRateNowButton = $canCustomerRate && !$customerHasRatedProvider;
 
-        // Use street_address as working_address when working_address is null/empty or string "null"
-        if ($bid->postrequest) {
-            $wa = $bid->postrequest->working_address;
-            if ($wa === null || $wa === '' || (is_string($wa) && strtolower(trim($wa)) === 'null')) {
-                $street = trim((string)($bid->postrequest->street_address ?? ''));
-                $bid->postrequest->working_address = $street !== '' ? $street : null;
-            }
-        }
-
         return view('postrequest.show', compact('bid', 'showRateCustomerButton', 'showRateNowButton', 'customerHasRatedProvider'));
     }
 
@@ -217,15 +208,6 @@ class PostJobRequestController extends Controller
         $customerHasRatedProvider = PostJobBidRating::where('post_job_bid_id', $bid->id)->exists();
         $canCustomerRate = strtolower((string)($bid->status ?? '')) === 'remaining_paid';
         $showRateNowButton = $canCustomerRate && !$customerHasRatedProvider;
-
-        // Use street_address as working_address when working_address is null/empty or string "null"
-        if ($bid->postrequest) {
-            $wa = $bid->postrequest->working_address;
-            if ($wa === null || $wa === '' || (is_string($wa) && strtolower(trim($wa)) === 'null')) {
-                $street = trim((string)($bid->postrequest->street_address ?? ''));
-                $bid->postrequest->working_address = $street !== '' ? $street : null;
-            }
-        }
 
         return view('postrequest.show', compact('bid', 'showRateCustomerButton', 'showRateNowButton', 'customerHasRatedProvider'));
     }
