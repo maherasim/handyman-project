@@ -261,6 +261,17 @@ class PostJobRequestController extends Controller
         $canProviderRate = in_array(strtolower((string)($bid->status ?? '')), ['remaining_paid', 'completed']);
         $showRateCustomerButton = $canProviderRate && !$providerHasRatedCustomer;
 
+        // Use street_address as working_address when working_address is null/empty or string "null"
+        if ($bid->postrequest) {
+            $wa = $bid->postrequest->working_address;
+            if ($wa === null || $wa === '' || (is_string($wa) && strtolower(trim($wa)) === 'null')) {
+                $street = trim((string)($bid->postrequest->street_address ?? ''));
+                $bid->postrequest->working_address = $street !== '' ? $street : null;
+            }
+            // Do not send street_address and house_number; only working_address
+            $bid->postrequest->makeHidden(['street_address', 'house_number']);
+        }
+
         return response()->json([
             'success' => true,
             'data' => $bid,
