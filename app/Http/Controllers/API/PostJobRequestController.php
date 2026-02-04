@@ -261,9 +261,12 @@ class PostJobRequestController extends Controller
         $canProviderRate = in_array(strtolower((string)($bid->status ?? '')), ['remaining_paid', 'completed']);
         $showRateCustomerButton = $canProviderRate && !$providerHasRatedCustomer;
 
-        // Only use street_address and house_number; do not send working_address
+        // API field is "working_address"; value = street_address + house_number (do not send street_address, house_number)
         if ($bid->postrequest) {
-            $bid->postrequest->makeHidden(['working_address']);
+            $street = trim((string)($bid->postrequest->street_address ?? ''));
+            $house  = trim((string)($bid->postrequest->house_number ?? ''));
+            $bid->postrequest->working_address = trim($street . ' ' . $house) ?: null;
+            $bid->postrequest->makeHidden(['street_address', 'house_number']);
         }
 
         return response()->json([
