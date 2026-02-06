@@ -85,7 +85,9 @@ class CommonNotification extends Notification implements ShouldQueue
     {
         $notificationSettings = $this->appData ?? [];
         $notification_settings = [];
-        
+        // Chat messages use ChatMessageNotificationMail (chat-message-notification.blade.php) only; skip template mail to avoid duplicate
+        $skipMail = ($this->type === 'chat_message');
+
         if (is_array($notificationSettings) && !empty($notificationSettings)) {
             foreach ($notificationSettings as $key => $notification) {
                 if ($notification) {
@@ -99,7 +101,9 @@ class CommonNotification extends Notification implements ShouldQueue
                             break;
 
                         case 'IS_MAIL':
-                            array_push($notification_settings, 'mail');
+                            if (!$skipMail) {
+                                array_push($notification_settings, 'mail');
+                            }
                             break;
                     }
                 }

@@ -620,20 +620,13 @@ class ChatApiController extends Controller
                 \Log::error('Failed to create fallback chat notification (API): ' . $fallbackError->getMessage());
             }
         }
-        
-        // Send email notification to recipient (outside try-catch to ensure it always runs)
+        // Send only the chat-message-notification.blade.php email (no template email for chat_message)
         try {
             if ($recipient && $recipient->email) {
-                \Log::info('Attempting to send email to: ' . $recipient->email . ' for message ID: ' . $message->id);
                 Mail::to($recipient->email)->send(new ChatMessageNotificationMail($recipient, $sender, $message, $conversation));
-                \Log::info('Chat message email sent successfully to: ' . $recipient->email . ' for message ID: ' . $message->id);
-            } else {
-                \Log::warning('Cannot send email - Recipient email is missing. Recipient ID: ' . ($recipient ? $recipient->id : 'NULL'));
             }
-        } catch (\Exception $emailException) {
-            // Log error but don't fail the notification
-            \Log::error('Failed to send chat message email (API) to ' . ($recipient->email ?? 'NULL') . ': ' . $emailException->getMessage());
-            \Log::error('Email exception trace: ' . $emailException->getTraceAsString());
+        } catch (\Exception $e) {
+            \Log::error('Failed to send chat message email (API): ' . $e->getMessage());
         }
     }
 }
