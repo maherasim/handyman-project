@@ -3,7 +3,7 @@
 @php
     $p = $providerData['data'] ?? [];
     $shareTitle = $p['display_name'] ?? 'Provider';
-    $shareDescription = trim(\Illuminate\Support\Str::limit(strip_tags($p['description'] ?? $p['designation'] ?? 'Service provider on ' . config('app.name'), 150));
+    $shareDescription = trim(\Illuminate\Support\Str::limit(strip_tags($p['description'] ?? $p['designation'] ?? 'Service provider on ' . config('app.name')), 150));
     $shareUrl = route('provider.detail', $p['id'] ?? 0);
     $shareImage = !empty($p['profile_image']) ? (str_starts_with($p['profile_image'], 'http') ? $p['profile_image'] : asset($p['profile_image'])) : asset('images/post-job/ac_refresh_and_revive.png');
 @endphp
