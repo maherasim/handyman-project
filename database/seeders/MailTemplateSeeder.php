@@ -1021,7 +1021,7 @@ class MailTemplateSeeder extends Seeder
             'user_type' => 'provider',
             'status' => 1,
             'subject' => 'New job on [[ company_name ]]: [[ job_name ]] – submit your bid',
-            'template_detail' => '<p>Hello [[ provider_name ]],</p>
+                'template_detail' => '<p>Hello [[ provider_name ]],</p>
                                       <p>A new job request has been posted on [[ company_name ]] that may match your services. The customer is looking for an Employer to help with the following:</p>
                                       <p><strong>Job #[[ job_id ]] – [[ job_name ]]</strong></p>
                                       <p><strong>Posted by:</strong> [[ customer_name ]]</p>
