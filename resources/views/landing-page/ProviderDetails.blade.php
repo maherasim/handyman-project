@@ -367,7 +367,7 @@
                                                 <td class=" pe-0">
 
                                                     <span class="text-white">
-                                                        {{ date("$datetime->date_format", strtotime($providerData['data']['created_at'])) }}</span>
+                                                        {{ date($datetime->date_format ?? 'Y-m-d', strtotime($providerData['data']['created_at'])) }}</span>
                                                 </td>
                                             </tr>
                                             <tr>
@@ -691,7 +691,7 @@
                                                     </div>
                                                 </div>
                                                 <div class="date text-capitalize">
-                                                    {{ date("$datetime->date_format", strtotime($ratingData['created_at'])) }}
+                                                    {{ date($datetime->date_format ?? 'Y-m-d', strtotime($ratingData['created_at'])) }}
                                                 </div>
                                             </div>
                                             <div class="mt-4">

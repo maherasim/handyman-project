@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-{{-- <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" dir="{{ session()->has('dir') ? session()->get('dir') : 'ltr' , }}"> --}}
+{{-- <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" dir="{{ session()->has('dir') ? session()->get('dir') : 'ltr' }}"> --}}
 <html lang="en" id="html-root" onload="pageLoad()">
 <head>
     @yield('before_head')
