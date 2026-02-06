@@ -387,8 +387,8 @@ public function getBankList(Request $request){
     $user = $request->user(); // get authenticated user
     $user_id = $user->id;
 
-    $banks = Bank::where('provider_id', $user_id)
-                 ->where('status', 1);
+    $banks = Bank::where('provider_id', $user_id);
+                 
 
     $per_page = config('constant.PER_PAGE_LIMIT');
 
