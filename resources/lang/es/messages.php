@@ -826,6 +826,8 @@
     'wallet_transaction' => 'Transacción de cartera',
     'provider_withdrawal_requests' => 'Solicitudes de retiro del proveedor',
     'withdrawal_request_list' => 'Lista de solicitudes de retiro',
+    'withdrawal_request_submitted' => 'Solicitud de retiro enviada correctamente. Se procesará tras la confirmación del administrador.',
+    'withdrawal_paid_activity' => 'Retiro pagado :amount',
     'transaction_complete_success' => 'Transacción completada con éxito',
     'json_file' => 'Archivo Json del servicio Firebase',
     'paid_elsewhere' => '¿Pagado en otro lugar?',

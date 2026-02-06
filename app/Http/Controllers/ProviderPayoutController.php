@@ -331,7 +331,7 @@ class ProviderPayoutController extends Controller
             // Update commission earnings
             CommissionEarning::where('employee_id', $provider_id)->where('commission_status','unpaid')->update(['commission_status' => 'paid']);
             
-            $message = trans('messages.save_form', ['form' => trans('messages.providerpayout')]);
+            $message = __('messages.withdrawal_request_submitted');
             if($request->is('api/*')){
                 return comman_message_response($message);
             }

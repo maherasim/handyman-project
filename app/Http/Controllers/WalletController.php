@@ -684,6 +684,37 @@ public function getWalletPaymentMethod(Request $request)
         return redirect(route('wallet_transaction'))->withErrors('Withdrawal request not found.');
     }
 
+    // If already paid, do not deduct again
+    if ($withdraw_money->status === 'paid') {
+        return redirect(route('wallet_transaction'))->withSuccess(__('messages.transaction_complete_success'));
+    }
+
+    $providerId = $withdraw_money->user_id;
+    $amount = (float) $withdraw_money->amount;
+
+    // Deduct amount from provider's wallet when admin confirms withdrawal
+    $wallet = Wallet::where('user_id', $providerId)->first();
+    if ($wallet) {
+        if ($wallet->amount < $amount) {
+            return redirect(route('wallet_transaction'))->withErrors(__('messages.transfer_admin_contact'));
+        }
+        $wallet->decrement('amount', $amount);
+
+        // Record wallet history (debit) for the withdrawal
+        WalletHistory::create([
+            'datetime'         => now(),
+            'user_id'          => $providerId,
+            'activity_type'    => 'debit',
+            'activity_message' => __('messages.withdrawal_paid_activity', ['amount' => getPriceFormat($amount)]),
+            'activity_data'    => json_encode([
+                'credit_debit_amount' => $amount,
+                'amount'              => $wallet->fresh()->amount,
+                'transaction_type'    => 'Debit',
+                'withdraw_money_id'   => $withdraw_money->id,
+            ]),
+        ]);
+    }
+
     // Update status to paid
     $withdraw_money->status = 'paid';
     $withdraw_money->save();

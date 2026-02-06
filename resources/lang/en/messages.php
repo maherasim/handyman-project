@@ -834,6 +834,8 @@
     'wallet_transaction' => 'Wallet Transaction',
     'provider_withdrawal_requests' => 'Withdrawal Requests',
     'withdrawal_request_list' => 'Withdrawal Request List',
+    'withdrawal_request_submitted' => 'Withdrawal request submitted successfully. It will be processed after admin confirmation.',
+    'withdrawal_paid_activity' => 'Withdrawal paid :amount',
     'transaction_complete_success' => 'Transaction Completed Successfully',
     'json_file' => 'Firebase Service Json File',
     'paid_elsewhere' => 'Paid ElseWhere?',

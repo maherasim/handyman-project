@@ -826,6 +826,8 @@
     'wallet_transaction' => 'Transazione del portafoglio',
     'provider_withdrawal_requests' => 'Richieste di prelievo del fornitore',
     'withdrawal_request_list' => 'Elenco delle richieste di prelievo',
+    'withdrawal_request_submitted' => 'Richiesta di prelievo inviata con successo. Sarà elaborata dopo la conferma dell\'amministratore.',
+    'withdrawal_paid_activity' => 'Prelievo pagato :amount',
     'transaction_complete_success' => 'Transazione completata con successo',
     'json_file' => 'File Json del servizio Firebase',
     'paid_elsewhere' => 'Pagato altrove?',
