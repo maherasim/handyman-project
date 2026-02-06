@@ -752,14 +752,9 @@ trait NotificationTrait
                     $mails[] = 'provider';
                 }
             }
-            // Fallback: ensure job creator (user) is notified when a provider places a bid
+            // When a provider places a bid, notify ONLY the job creator (customer), never the provider
             if ($notification_type === 'provider_send_bid') {
-                if (!is_array($mails)) {
-                    $mails = (array) $mails;
-                }
-                if (!in_array('user', $mails, true)) {
-                    $mails[] = 'user';
-                }
+                $mails = ['user'];
             }
             // Status update: notify the OTHER party (user when provider updated, provider when customer updated)
             if ($notification_type === 'post_job_bid_status_update') {
