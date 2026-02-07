@@ -36,7 +36,7 @@ $grays: (
 // fusv-enable
 
 // scss-docs-start color-variables
-$blue:    #5F60B9 !default;
+$blue:    #3333ff !default;
 $indigo:  #6610f2 !default;
 $purple:  #6f42c1 !default;
 $pink:    #d63384 !default;
@@ -298,8 +298,8 @@ $cyans: (
 // fusv-enable
 
 // scss-docs-start theme-color-variables
-// Static primary color - Red-Blue gradient (using blue as base, gradient applied via CSS)
-$primary:       #5F60B9 !default;
+// Base primary color (buttons, links, theme)
+$primary:       #3333ff !default;
 $secondary:     $teal !default;
 $success:       $green !default;
 $info:          $cyan !default;

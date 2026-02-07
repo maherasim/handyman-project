@@ -10,9 +10,9 @@
 
     @include('partials._head')
     
-    <!-- Red-Blue Gradient Styles - Loaded after all CSS -->
+    <!-- Primary color #3333ff - Dashboard Cards -->
     <style>
-        /* Force Red-Blue Gradient on Dashboard Cards - Maximum Specificity */
+        /* Primary #3333ff on Dashboard Cards - same as theme */
         body .container-fluid .row .col-lg-3 .card.total-booking-card,
         body .container-fluid .row .col-lg-3 .card.total-service-card,
         body .container-fluid .row .col-lg-3 .card.total-provider-card,
@@ -25,9 +25,9 @@
         body .card.total-service-card,
         body .card.total-provider-card,
         body .card.total-revenue {
-            background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important;
-            background-image: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important;
-            background-color: transparent !important;
+            background: #3333ff !important;
+            background-image: none !important;
+            background-color: #3333ff !important;
             color: #fff !important;
         }
 
@@ -49,47 +49,37 @@
     </style>
     
     <script>
-        // Red-Blue Gradient Primary Color - set globally for admin dashboard
+        // Primary color #3333ff - same as theme (backend/dashboard)
         const root = document.documentElement;
         
-        // Red color (from gradient)
-        const redHex = '#FF0000';
-        const redR = 255;
-        const redG = 0;
-        const redB = 0;
+        const primaryHex = '#3333ff';
+        const primaryR = 51;
+        const primaryG = 51;
+        const primaryB = 255;
         
-        // Blue color (from gradient)
-        const blueHex = '#5F60B9';
-        const blueR = 95;
-        const blueG = 96;
-        const blueB = 185;
-        
-        // Set gradient as primary
-        root.style.setProperty('--bs-primary-gradient', 'linear-gradient(135deg, #FF0000 0%, #5F60B9 100%)');
-        root.style.setProperty('--bs-primary', blueHex); // Fallback for non-gradient support
-        root.style.setProperty('--bs-primary-rgb', `${blueR}, ${blueG}, ${blueB}`);
-        root.style.setProperty('--bs-primary-bg-subtle', `linear-gradient(135deg, rgba(255, 0, 0, 0.09) 0%, rgba(95, 96, 185, 0.09) 100%)`);
-        root.style.setProperty('--bs-primary-border-subtle', `linear-gradient(135deg, rgba(255, 0, 0, 0.09) 0%, rgba(95, 96, 185, 0.09) 100%)`);
-        root.style.setProperty('--bs-primary-hover-bg', `linear-gradient(135deg, rgba(255, 0, 0, 0.75) 0%, rgba(95, 96, 185, 0.75) 100%)`);
-        root.style.setProperty('--bs-primary-hover-border', `linear-gradient(135deg, rgba(255, 0, 0, 0.75) 0%, rgba(95, 96, 185, 0.75) 100%)`);
-        root.style.setProperty('--bs-primary-active-bg', `linear-gradient(135deg, rgba(255, 0, 0, 0.75) 0%, rgba(95, 96, 185, 0.75) 100%)`);
-        root.style.setProperty('--bs-primary-active-border', `linear-gradient(135deg, rgba(255, 0, 0, 0.75) 0%, rgba(95, 96, 185, 0.75) 100%)`);
+        root.style.setProperty('--bs-primary', primaryHex);
+        root.style.setProperty('--bs-primary-rgb', `${primaryR}, ${primaryG}, ${primaryB}`);
+        root.style.setProperty('--bs-primary-bg-subtle', `rgba(${primaryR}, ${primaryG}, ${primaryB}, 0.09)`);
+        root.style.setProperty('--bs-primary-border-subtle', `rgba(${primaryR}, ${primaryG}, ${primaryB}, 0.2)`);
+        root.style.setProperty('--bs-primary-hover-bg', `rgba(${primaryR}, ${primaryG}, ${primaryB}, 0.85)`);
+        root.style.setProperty('--bs-primary-hover-border', `rgba(${primaryR}, ${primaryG}, ${primaryB}, 0.9)`);
+        root.style.setProperty('--bs-primary-active-bg', `rgba(${primaryR}, ${primaryG}, ${primaryB}, 0.85)`);
+        root.style.setProperty('--bs-primary-active-border', `rgba(${primaryR}, ${primaryG}, ${primaryB}, 0.9)`);
     </script>
     
     <style>
-        /* Global Red-Blue Gradient Styles - Admin Dashboard */
+        /* Primary #3333ff - same as theme */
         :root {
-            --red-blue-gradient: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%);
-            --red-blue-gradient-hover: linear-gradient(135deg, #cc0000 0%, #4a4d94 100%);
-            --red-blue-gradient-light: linear-gradient(135deg, rgba(255, 0, 0, 0.1) 0%, rgba(95, 96, 185, 0.1) 100%);
+            --bs-primary-solid: #3333ff;
+            --bs-primary-solid-hover: #2929e6;
+            --bs-primary-solid-light: rgba(51, 51, 255, 0.1);
         }
 
-        /* Apply gradient to all primary buttons */
         .btn-primary,
         button.btn-primary,
         input[type="submit"].btn-primary,
         a.btn-primary {
-            background: var(--red-blue-gradient) !important;
+            background: #3333ff !important;
             border: none !important;
             color: #fff !important;
         }
@@ -98,7 +88,7 @@
         button.btn-primary:hover,
         input[type="submit"].btn-primary:hover,
         a.btn-primary:hover {
-            background: var(--red-blue-gradient-hover) !important;
+            background: var(--bs-primary-solid-hover) !important;
             color: #fff !important;
         }
 
@@ -108,25 +98,25 @@
         .iq-sidebar .nav-link[aria-expanded="true"],
         .iq-sidebar .side-menu .nav-item.active > a,
         .iq-sidebar .side-menu .nav-link.active {
-            background: var(--red-blue-gradient) !important;
+            background: #3333ff !important;
             color: #fff !important;
         }
 
         .iq-sidebar .nav-link:hover,
         .iq-sidebar .side-menu .nav-link:hover {
-            background: var(--red-blue-gradient-light) !important;
+            background: var(--bs-primary-solid-light) !important;
             color: #333 !important;
         }
 
         /* Sidebar - Logo area */
         .iq-sidebar-logo {
-            background: var(--red-blue-gradient) !important;
+            background: #3333ff !important;
         }
 
         /* Sidebar - Submenu active items */
         .iq-sidebar .nav-item .nav-link.active,
         .iq-sidebar .dropdown-menu .nav-link.active {
-            background: var(--red-blue-gradient) !important;
+            background: #3333ff !important;
             color: #fff !important;
         }
 
@@ -140,7 +130,7 @@
         .iq-top-navbar,
         .iq-navbar-custom,
         .iq-navbar-custom .navbar {
-            background: var(--red-blue-gradient) !important;
+            background: #3333ff !important;
         }
 
         .iq-top-navbar .navbar-nav .nav-link {
@@ -153,18 +143,18 @@
 
         /* Footer */
         .iq-footer {
-            background: var(--red-blue-gradient) !important;
+            background: #3333ff !important;
             color: #fff !important;
         }
 
         /* Primary backgrounds */
         .bg-primary {
-            background: var(--red-blue-gradient) !important;
+            background: #3333ff !important;
         }
 
         /* Primary text */
         .text-primary {
-            background: var(--red-blue-gradient);
+            background: #3333ff;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -173,44 +163,44 @@
         /* Badges and alerts */
         .badge-primary,
         .alert-primary {
-            background: var(--red-blue-gradient) !important;
+            background: #3333ff !important;
             color: #fff !important;
         }
 
         /* Progress bars */
         .progress-bar.bg-primary {
-            background: var(--red-blue-gradient) !important;
+            background: #3333ff !important;
         }
 
         /* Pagination */
         .page-item.active .page-link {
-            background: var(--red-blue-gradient) !important;
+            background: #3333ff !important;
             border-color: transparent !important;
         }
 
         /* Form controls focus */
         .form-control:focus,
         .form-select:focus {
-            border-color: #5F60B9 !important;
+            border-color: #3333ff !important;
             box-shadow: 0 0 0 0.25rem rgba(95, 96, 185, 0.25) !important;
         }
 
         /* Cards with primary color */
         .card-primary {
-            background: var(--red-blue-gradient) !important;
+            background: #3333ff !important;
             color: #fff !important;
         }
 
         /* Table primary elements */
         .table-primary {
-            background: var(--red-blue-gradient) !important;
+            background: #3333ff !important;
             color: #fff !important;
         }
 
         /* Dropdown menu active */
         .dropdown-item.active,
         .dropdown-item:active {
-            background: var(--red-blue-gradient) !important;
+            background: #3333ff !important;
             color: #fff !important;
         }
 
@@ -218,24 +208,24 @@
         /* Chart colors */
         .apexcharts-series path,
         .apexcharts-series line {
-            stroke: #5F60B9 !important;
+            stroke: #3333ff !important;
         }
 
         .apexcharts-series rect {
-            fill: #5F60B9 !important;
+            fill: #3333ff !important;
         }
 
         /* Badges with primary color */
         .badge.bg-primary,
         .badge.bg-primary-subtle {
-            background: var(--red-blue-gradient) !important;
+            background: #3333ff !important;
             color: #fff !important;
         }
 
         /* Override any inline styles */
         [style*="background: var(--bs-primary)"],
         [style*="background-color: var(--bs-primary)"] {
-            background: var(--red-blue-gradient) !important;
+            background: #3333ff !important;
         }
     </style>
 </head>

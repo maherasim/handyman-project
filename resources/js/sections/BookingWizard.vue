@@ -1392,7 +1392,7 @@ const formSubmit = handleSubmit(async (values) => {
           title: 'Done',
           text: responseData.message,
           icon: 'success',
-          iconColor: '#5F60B9'
+          iconColor: '#3333ff'
         }).then((result) => {
 
           if (result.isConfirmed) {
@@ -1412,7 +1412,7 @@ const formSubmit = handleSubmit(async (values) => {
         title: 'Error',
         text: 'Something Went Wrong!',
         icon: 'error',
-        iconColor: '#5F60B9'
+        iconColor: '#3333ff'
       }).then((result) => {
 
       })

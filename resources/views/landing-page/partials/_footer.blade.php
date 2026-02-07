@@ -1,4 +1,4 @@
-<footer class="footer-modern" style="position: relative !important; overflow: hidden !important; background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important;">
+<footer class="footer-modern" style="position: relative !important; overflow: hidden !important; background: #3333ff !important;">
     <!-- Decorative Background Elements -->
     <div class="footer-bg-decoration-1"></div>
     <div class="footer-bg-decoration-2"></div>
@@ -31,7 +31,7 @@
                         <p class="mt-4 mb-3 readmore-text" style="color: rgba(255, 255, 255, 0.8) !important; font-size: 0.95rem !important; line-height: 1.7 !important;">
                             {{ optional($generalsetting)->site_description }}
                         </p>
-                        <a href="javascript:void(0);" class="readmore-btn" style="color: #5F60B9 !important; text-decoration: none !important; font-weight: 600 !important; font-size: 0.9rem !important; transition: all 0.3s ease !important; display: inline-flex !important; align-items: center !important; gap: 5px !important;">
+                        <a href="javascript:void(0);" class="readmore-btn" style="color: #3333ff !important; text-decoration: none !important; font-weight: 600 !important; font-size: 0.9rem !important; transition: all 0.3s ease !important; display: inline-flex !important; align-items: center !important; gap: 5px !important;">
                             {{__('landingpage.read_more')}}
                             <i class="ri-arrow-right-line" style="transition: transform 0.3s ease !important;"></i>
                         </a>
@@ -125,7 +125,7 @@
                                         @if($category && $category->status==1)
                                         <li class="mb-2">
                                             <a href="{{ route('category.detail', $category->id) }}" style="color: rgba(255, 255, 255, 0.75) !important; text-decoration: none !important; font-size: 0.9rem !important; transition: all 0.3s ease !important; display: inline-flex !important; align-items: center !important; padding: 4px 0 !important;">
-                                                <i class="ri-arrow-right-s-line me-2" style="font-size: 0.85rem !important; color: #5F60B9 !important; transition: all 0.3s ease !important;"></i>{{ $category->name }}
+                                                <i class="ri-arrow-right-s-line me-2" style="font-size: 0.85rem !important; color: #3333ff !important; transition: all 0.3s ease !important;"></i>{{ $category->name }}
                                             </a>
                                         </li>
                                         @endif
@@ -186,7 +186,7 @@
                 <div class="col-md-6 text-md-start text-center mb-md-0 mb-3">
                     <p class="mb-0" style="color: rgba(255, 255, 255, 0.7) !important; font-size: 0.9rem !important;">
                         {{ $first_part }}
-                        <a target="_blank" href="{{ optional($generalsetting)->website }}" style="color: #5F60B9 !important; text-decoration: none !important; font-weight: 600 !important; transition: all 0.3s ease !important;">{{ $second_part }}</a>
+                        <a target="_blank" href="{{ optional($generalsetting)->website }}" style="color: #3333ff !important; text-decoration: none !important; font-weight: 600 !important; transition: all 0.3s ease !important;">{{ $second_part }}</a>
                     </p>
                 </div>
                 <div class="col-md-6 text-md-end text-center">
@@ -215,8 +215,8 @@
     body footer.footer-modern,
     footer.footer-modern,
     .footer-modern {
-        background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important;
-        background-image: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important;
+        background: #3333ff !important;
+        background-image: #3333ff !important;
         background-color: transparent !important;
         color: #ffffff !important;
         position: relative !important;
@@ -333,14 +333,14 @@
         left: 0 !important;
         width: 60px !important;
         height: 4px !important;
-        background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important;
+        background: #3333ff !important;
         border-radius: 3px !important;
         box-shadow: 0 2px 8px rgba(255, 0, 0, 0.4) !important;
     }
     
     /* Read More Button */
     body .readmore-btn {
-        color: #5F60B9 !important;
+        color: #3333ff !important;
         text-decoration: none !important;
         font-weight: 600 !important;
         font-size: 0.95rem !important;
@@ -351,7 +351,7 @@
     }
     
     body .readmore-btn:hover {
-        background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important;
+        background: #3333ff !important;
         -webkit-background-clip: text !important;
         -webkit-text-fill-color: transparent !important;
         background-clip: text !important;
@@ -385,7 +385,7 @@
         content: '' !important;
         position: absolute !important;
         inset: 0 !important;
-        background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important;
+        background: #3333ff !important;
         opacity: 0 !important;
         transition: opacity 0.4s ease !important;
         z-index: 0 !important;
@@ -435,7 +435,7 @@
     }
     
     body .footer-links-list a:hover {
-        background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important;
+        background: #3333ff !important;
         -webkit-background-clip: text !important;
         -webkit-text-fill-color: transparent !important;
         background-clip: text !important;
@@ -444,7 +444,7 @@
     }
     
     body .footer-links-list a:hover i {
-        background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important;
+        background: #3333ff !important;
         -webkit-background-clip: text !important;
         -webkit-text-fill-color: transparent !important;
         background-clip: text !important;
@@ -515,7 +515,7 @@
     }
     
     body .service-link-item:hover span {
-        background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important;
+        background: #3333ff !important;
         -webkit-background-clip: text !important;
         -webkit-text-fill-color: transparent !important;
         background-clip: text !important;
@@ -621,7 +621,7 @@
             title: 'Error',
             text: 'Please enter an email address',
             icon: 'error',
-            iconColor: '#5F60B9'
+            iconColor: '#3333ff'
         });
         return;
     }
@@ -630,7 +630,7 @@
                 title: 'Error',
                 text: 'Invalid email address',
                 icon: 'error',
-                iconColor: '#5F60B9'
+                iconColor: '#3333ff'
             });
             return;
         }
@@ -647,7 +647,7 @@
                title: 'Done',
                text: response.message,
                icon: 'success',
-               iconColor: '#5F60B9'
+               iconColor: '#3333ff'
                }).then((result) => {
                   if (result.isConfirmed) {
                      document.getElementById('email').value = '';
@@ -660,7 +660,7 @@
                 title: 'Error',
                 text: 'Something Went Wrong!',
                 icon: 'error',
-                iconColor: '#5F60B9'
+                iconColor: '#3333ff'
                 }).then((result) => {
 
                 });

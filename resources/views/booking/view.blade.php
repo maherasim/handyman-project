@@ -15,7 +15,7 @@
         button.btn-primary,
         a.btn-primary,
         .btn-success {
-            background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important;
+            background: #3333ff !important;
             border: none !important;
             color: #fff !important;
         }
@@ -27,18 +27,18 @@
         }
         .text-primary,
         a.text-primary {
-            background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%);
+            background: #3333ff;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
         .bg-primary,
         .modal-header.bg-primary {
-            background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important;
+            background: #3333ff !important;
             color: #fff !important;
         }
         .nav-link.active {
-            background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important;
+            background: #3333ff !important;
             color: #fff !important;
         }
     </style>

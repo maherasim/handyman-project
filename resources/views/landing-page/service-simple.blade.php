@@ -351,7 +351,7 @@ document.addEventListener('DOMContentLoaded', function(){
                     title: 'Done',
                     text: response.message || 'Favorite saved successfully',
                     icon: 'success',
-                    iconColor: '#5F60B9'
+                    iconColor: '#3333ff'
                 }).then((result) => {
                     window.location.reload();
                 });
@@ -408,7 +408,7 @@ document.addEventListener('DOMContentLoaded', function(){
                     title: 'Done',
                     text: response.message || 'Favorite removed successfully',
                     icon: 'success',
-                    iconColor: '#5F60B9'
+                    iconColor: '#3333ff'
                 }).then((result) => {
                     window.location.reload();
                 });

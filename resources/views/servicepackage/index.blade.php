@@ -11,7 +11,7 @@
             .btn-outline-primary.active,
             .btn-outline-primary:active,
             .btn-outline-primary:focus {
-                background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important;
+                background: #3333ff !important;
                 border: none !important;
                 color: #fff !important;
             }
@@ -22,7 +22,7 @@
             }
             .text-primary,
             a.text-primary {
-                background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%);
+                background: #3333ff;
                 -webkit-background-clip: text;
                 -webkit-text-fill-color: transparent;
                 background-clip: text;
@@ -30,7 +30,7 @@
             .bg-primary,
             .badge.bg-primary,
             .badge.bg-primary-subtle {
-                background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important;
+                background: #3333ff !important;
                 color: #fff !important;
             }
             .table-primary,
@@ -40,14 +40,14 @@
             .table thead th,
             #datatable thead th,
             table thead th {
-                background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important;
+                background: #3333ff !important;
                 color: #fff !important;
                 border-color: transparent !important;
             }
             /* DataTables pagination */
             .dataTables_wrapper .dataTables_paginate .paginate_button.current,
             .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
-                background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important;
+                background: #3333ff !important;
                 border: none !important;
                 color: #fff !important;
             }
@@ -57,7 +57,7 @@
             }
             /* Select2 primary colors */
             .select2-container--default .select2-results__option--highlighted[aria-selected] {
-                background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important;
+                background: #3333ff !important;
                 color: #fff !important;
             }
         </style>

@@ -233,12 +233,12 @@ const formSubmit = handleSubmit(async (values) => {
 
         if (response.ok) {
           const responseData = await response.json()
-          Swal.fire({ title: 'Done', text: responseData.message, icon: 'success', iconColor: '#5F60B9' }).then(() => {
+          Swal.fire({ title: 'Done', text: responseData.message, icon: 'success', iconColor: '#3333ff' }).then(() => {
             const baseUrl = document.querySelector('meta[name="baseUrl"]').getAttribute('content')
             window.location.href = baseUrl + '/booking-list'
           })
         } else {
-          Swal.fire({ title: 'Error', text: 'Something Went Wrong!', icon: 'error', iconColor: '#5F60B9' })
+          Swal.fire({ title: 'Error', text: 'Something Went Wrong!', icon: 'error', iconColor: '#3333ff' })
         }
         IsLoading.value = 0
       })
@@ -268,12 +268,12 @@ const formSubmit = handleSubmit(async (values) => {
 
           if (response.ok) {
               const responseData = await response.json()
-              Swal.fire({ title: 'Done', text: responseData.message, icon: 'success', iconColor: '#5F60B9' }).then(() => {
+              Swal.fire({ title: 'Done', text: responseData.message, icon: 'success', iconColor: '#3333ff' }).then(() => {
                   const baseUrl = document.querySelector('meta[name="baseUrl"]').getAttribute('content')
                   window.location.href = baseUrl + '/booking-list'
               })
           } else {
-              Swal.fire({ title: 'Error', text: 'Something Went Wrong!', icon: 'error', iconColor: '#5F60B9' })
+              Swal.fire({ title: 'Error', text: 'Something Went Wrong!', icon: 'error', iconColor: '#3333ff' })
           }
           IsLoading.value = 0
       });
@@ -292,11 +292,11 @@ const formSubmit = handleSubmit(async (values) => {
           if (responseData.payment_geteway_data != null) {
               redirectToPayPal(values)
           } else {
-              Swal.fire({ title: 'Error', text: 'Check Your Paypal key Integration!', icon: 'error', iconColor: '#5F60B9' })
+              Swal.fire({ title: 'Error', text: 'Check Your Paypal key Integration!', icon: 'error', iconColor: '#3333ff' })
               IsLoading.value = 0
           }
       } else {
-          Swal.fire({ title: 'Error', text: 'Something Went Wrong!', icon: 'error', iconColor: '#5F60B9' })
+          Swal.fire({ title: 'Error', text: 'Something Went Wrong!', icon: 'error', iconColor: '#3333ff' })
           IsLoading.value = 0
       }
   } else if (values.payment_type === 'stripe') {
@@ -314,11 +314,11 @@ const formSubmit = handleSubmit(async (values) => {
       if (responseData.payment_geteway_data != null) {
         Openstripepayment(responseData)
       } else {
-        Swal.fire({ title: 'Error', text: 'Check Your Stripe key Integration!', icon: 'error', iconColor: '#5F60B9' })
+        Swal.fire({ title: 'Error', text: 'Check Your Stripe key Integration!', icon: 'error', iconColor: '#3333ff' })
         IsLoading.value = 0
       }
     } else {
-      Swal.fire({ title: 'Error', text: 'Something Went Wrong!', icon: 'error', iconColor: '#5F60B9' })
+      Swal.fire({ title: 'Error', text: 'Something Went Wrong!', icon: 'error', iconColor: '#3333ff' })
       IsLoading.value = 0
     }
   }
@@ -340,13 +340,13 @@ const redirectToPayPal = async (values) => {
       if (data.url) {
         window.location.href = data.url
       } else {
-        Swal.fire({ title: 'Error', text: 'Invalid PayPal response.', icon: 'error', iconColor: '#5F60B9' })
+        Swal.fire({ title: 'Error', text: 'Invalid PayPal response.', icon: 'error', iconColor: '#3333ff' })
       }
     } else {
-      Swal.fire({ title: 'Error', text: 'Failed to redirect to PayPal.', icon: 'error', iconColor: '#5F60B9' })
+      Swal.fire({ title: 'Error', text: 'Failed to redirect to PayPal.', icon: 'error', iconColor: '#3333ff' })
     }
   } catch (error) {
-    Swal.fire({ title: 'Error', text: 'Something went wrong.', icon: 'error', iconColor: '#5F60B9' })
+    Swal.fire({ title: 'Error', text: 'Something went wrong.', icon: 'error', iconColor: '#3333ff' })
     console.error(error)
   } finally {
     IsLoading.value = 0
@@ -369,10 +369,10 @@ const Openstripepayment = async (data) => {
     if (responseData.url) {
       window.location.href = responseData.url
     } else {
-      Swal.fire({ title: 'Error', text: responseData.message || 'Something went wrong.', icon: 'error', iconColor: '#5F60B9' })
+      Swal.fire({ title: 'Error', text: responseData.message || 'Something went wrong.', icon: 'error', iconColor: '#3333ff' })
     }
   } else {
-    Swal.fire({ title: 'Error', text: 'Stripe redirect failed.', icon: 'error', iconColor: '#5F60B9' })
+    Swal.fire({ title: 'Error', text: 'Stripe redirect failed.', icon: 'error', iconColor: '#3333ff' })
   }
 }
 

@@ -21,7 +21,7 @@
                 <div class="row g-3 mb-4">
                     <div class="col-lg-3 col-md-6">
                         <a href="{{ route('service.index') }}">
-                            <div class="card total-booking-card rounded-3 border-0 shadow-sm h-100" style="background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important; color: #fff !important;">
+                            <div class="card total-booking-card rounded-3 border-0 shadow-sm h-100" style="background: #3333ff !important; color: #fff !important;">
                                 <div class="card-body p-3">
                                     <div class="row">
                                         <div class="col">
@@ -45,7 +45,7 @@
                     </div>
                     <div class="col-lg-3 col-md-6">
 
-                            <div class="card total-service-card rounded-3 border-0 shadow-sm h-100" style="background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important; color: #fff !important;">
+                            <div class="card total-service-card rounded-3 border-0 shadow-sm h-100" style="background: #3333ff !important; color: #fff !important;">
                                 <div class="card-body p-3">
                                     <div class="row">
                                         <div class="col">
@@ -69,7 +69,7 @@
 
                     <div class="col-lg-3 col-md-6">
                         <a  href="{{ route('earning') }}">
-                            <div class="card total-revenue rounded-3 border-0 shadow-sm h-100" style="background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important; color: #fff !important;">
+                            <div class="card total-revenue rounded-3 border-0 shadow-sm h-100" style="background: #3333ff !important; color: #fff !important;">
                                 <div class="card-body p-3">
                                     <div class="row">
                                         <div class="col">
@@ -94,7 +94,7 @@
 
                     <div class="col-lg-3 col-md-6">
                         <a href="{{ route('admin.subscription-transactions.index') }}">
-                            <div class="card total-revenue rounded-3 border-0 shadow-sm h-100" style="background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important; color: #fff !important;">
+                            <div class="card total-revenue rounded-3 border-0 shadow-sm h-100" style="background: #3333ff !important; color: #fff !important;">
                                 <div class="card-body p-3">
                                     <div class="row">
                                         <div class="col">
@@ -118,7 +118,7 @@
 
                     <div class="col-lg-3 col-md-6">
                         <a  href="{{ route('earning') }}">
-                            <div class="card total-revenue" style="background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important; color: #fff !important;">
+                            <div class="card total-revenue" style="background: #3333ff !important; color: #fff !important;">
                                 <div class="card-body">
                                     <div class="row">
                                         <div class="col">
@@ -275,7 +275,7 @@
                 }
             }
         },
-        colors: ['#5F60B9'], // Using blue from gradient for chart
+        colors: ['#3333ff'], // Using blue from gradient for chart
         plotOptions: {
             bar: {
                 horizontal: false,

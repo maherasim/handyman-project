@@ -317,7 +317,7 @@
             padding: 12px;
             background: #2b2d3c; /* Darker inner background */
             border-radius: 8px;
-            border-left: 3px solid #5F60B9;
+            border-left: 3px solid #3333ff;
         }
 
                             .skills-list {
@@ -1074,7 +1074,7 @@
                     <div class="bg-light pl-5 pr-5 pb-0 rounded-3 mt-0 pt-0">
                         <div class="position-relative d-flex justify-content-center provider-details-header-wrapper" style="margin: auto; width: 60%;">
                             <div class="provider-details-heading" style="
-                                background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%);
+                                background: #3333ff;
                                 color: #fff;
                                 padding: 10px 16px;
                                 border-radius: 12px;
@@ -1159,7 +1159,7 @@
                             <!-- Available Location Card -->
                             @if(!empty($serviceData['service_detail']['service_address_mapping']))
                             <div class="info-card mb-3">
-                                <div class="info-card-header" style="background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important; color: #fff !important; display: flex !important; justify-content: center !important; align-items: center !important; padding: 6px 15px !important; min-height: 40px !important;">
+                                <div class="info-card-header" style="background: #3333ff !important; color: #fff !important; display: flex !important; justify-content: center !important; align-items: center !important; padding: 6px 15px !important; min-height: 40px !important;">
                                     <i class="ri-map-pin-line me-2" style="font-size: 16px;"></i>
                                     <h6 class="mb-0" style="color: #fff !important; font-size: 13px; font-weight: 700;">{{ __('landingpage.available_location') }}</h6>
                                 </div>
@@ -1175,7 +1175,7 @@
 
                             <!-- Basic Information Card -->
                             <div class="info-card mb-3">
-                                <div class="info-card-header" style="background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important; color: #fff !important; display: flex !important; justify-content: center !important; align-items: center !important; padding: 6px 15px !important; min-height: 40px !important;">
+                                <div class="info-card-header" style="background: #3333ff !important; color: #fff !important; display: flex !important; justify-content: center !important; align-items: center !important; padding: 6px 15px !important; min-height: 40px !important;">
                                     <i class="ri-user-line me-2" style="font-size: 16px;"></i>
                                     <h6 class="mb-0" style="color: #fff !important; font-size: 13px; font-weight: 700;">Basic Information</h6>
                                 </div>
@@ -1208,7 +1208,7 @@
                             <!-- Availability & Mobility Card -->
                             @if(!empty($serviceData['provider']['availability']) || !empty($serviceData['provider']['mobility']))
                             <div class="info-card mb-3">
-                                <div class="info-card-header" style="background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important; color: #fff !important; display: flex !important; justify-content: center !important; align-items: center !important; padding: 6px 15px !important; min-height: 40px !important;">
+                                <div class="info-card-header" style="background: #3333ff !important; color: #fff !important; display: flex !important; justify-content: center !important; align-items: center !important; padding: 6px 15px !important; min-height: 40px !important;">
                                     <i class="ri-time-line me-2" style="font-size: 16px;"></i>
                                     <h6 class="mb-0" style="color: #fff !important; font-size: 13px; font-weight: 700;">Availability & Mobility</h6>
                                 </div>
@@ -1247,7 +1247,7 @@
                             @endphp
                             @if(!empty($languagesList))
                             <div class="info-card mb-3">
-                                <div class="info-card-header" style="background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important; color: #fff !important; display: flex !important; justify-content: center !important; align-items: center !important; padding: 6px 15px !important; min-height: 40px !important;">
+                                <div class="info-card-header" style="background: #3333ff !important; color: #fff !important; display: flex !important; justify-content: center !important; align-items: center !important; padding: 6px 15px !important; min-height: 40px !important;">
                                     <i class="ri-global-line me-2" style="font-size: 16px;"></i>
                                     <h6 class="mb-0" style="color: #fff !important; font-size: 13px; font-weight: 700;">Languages</h6>
                                 </div>
@@ -1264,7 +1264,7 @@
                             <!-- Education & Skills Card -->
                             @if(!empty($serviceData['provider']['education']))
                             <div class="info-card mb-3">
-                                <div class="info-card-header" style="background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important; color: #fff !important; display: flex !important; justify-content: center !important; align-items: center !important; padding: 6px 15px !important; min-height: 40px !important;">
+                                <div class="info-card-header" style="background: #3333ff !important; color: #fff !important; display: flex !important; justify-content: center !important; align-items: center !important; padding: 6px 15px !important; min-height: 40px !important;">
                                     <i class="ri-graduation-cap-line me-2" style="font-size: 16px;"></i>
                                     <h6 class="mb-0" style="color: #fff !important; font-size: 13px; font-weight: 700;">Education & Skills</h6>
                                 </div>
@@ -1302,7 +1302,7 @@
                             <!-- Diploma Card -->
                             @if(!empty($serviceData['provider']['skills']))
                             <div class="info-card mb-3">
-                                <div class="info-card-header" style="background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important; color: #fff !important; display: flex !important; justify-content: center !important; align-items: center !important; padding: 6px 15px !important; min-height: 40px !important;">
+                                <div class="info-card-header" style="background: #3333ff !important; color: #fff !important; display: flex !important; justify-content: center !important; align-items: center !important; padding: 6px 15px !important; min-height: 40px !important;">
                                     <i class="ri-file-certificate-line me-2" style="font-size: 16px;"></i>
                                     <h6 class="mb-0" style="color: #fff !important; font-size: 13px; font-weight: 700;">Diploma & Certifications</h6>
                                 </div>
@@ -1340,7 +1340,7 @@
                             <!-- Additional Skills/Certifications Card -->
                             @if(!empty($serviceData['provider']['certification']))
                             <div class="info-card mb-3">
-                                <div class="info-card-header" style="background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important; color: #fff !important; display: flex !important; justify-content: center !important; align-items: center !important; padding: 6px 15px !important; min-height: 40px !important;">
+                                <div class="info-card-header" style="background: #3333ff !important; color: #fff !important; display: flex !important; justify-content: center !important; align-items: center !important; padding: 6px 15px !important; min-height: 40px !important;">
                                     <i class="ri-award-line me-2" style="font-size: 16px;"></i>
                                     <h6 class="mb-0" style="color: #fff !important; font-size: 13px; font-weight: 700;">Certifications & Skills</h6>
                                 </div>
@@ -1532,7 +1532,7 @@
                             title: 'Done',
                             text: response.message,
                             icon: 'success',
-                            iconColor: '#5F60B9'
+                            iconColor: '#3333ff'
                         }).then((result) => {
                             if (result.isConfirmed) {
                                 window.location.reload();
@@ -1564,7 +1564,7 @@
                             title: 'Done',
                             text: response.message,
                             icon: 'success',
-                            iconColor: '#5F60B9'
+                            iconColor: '#3333ff'
                         }).then((result) => {
                             if (result.isConfirmed) {
                                 window.location.reload();

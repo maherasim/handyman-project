@@ -262,7 +262,7 @@
                           title: 'Done',
                           text: response.message || 'Favorite saved successfully',
                           icon: 'success',
-                          iconColor: '#5F60B9'
+                          iconColor: '#3333ff'
                        }).then((result) => {
                           if ($('#datatable').length && typeof $('#datatable').DataTable !== 'undefined') {
                              $('#datatable').DataTable().ajax.reload(null, false);
@@ -331,7 +331,7 @@
                           title: 'Done',
                           text: response.message || 'Favorite removed successfully',
                           icon: 'success',
-                          iconColor: '#5F60B9'
+                          iconColor: '#3333ff'
                        }).then((result) => {
                           if ($('#datatable').length && typeof $('#datatable').DataTable !== 'undefined') {
                              $('#datatable').DataTable().ajax.reload(null, false);

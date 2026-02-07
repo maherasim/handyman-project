@@ -1240,7 +1240,7 @@
                     <div class="provider-contact-card text-center p-5 rounded-4 shadow-lg" style="background: #ffffff !important; border: 1px solid #e9ecef !important; position: relative !important; overflow: hidden !important;">
                         <div class="mb-4">
                             <div class="contact-icon-wrapper mb-4" style="display: flex !important; justify-content: center !important;">
-                                <div class="contact-icon-circle" style="width: 100px !important; height: 100px !important; border-radius: 50% !important; background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important; display: flex !important; align-items: center !important; justify-content: center !important; box-shadow: 0 10px 30px rgba(255, 0, 0, 0.2) !important;">
+                                <div class="contact-icon-circle" style="width: 100px !important; height: 100px !important; border-radius: 50% !important; background: #3333ff !important; display: flex !important; align-items: center !important; justify-content: center !important; box-shadow: 0 10px 30px rgba(255, 0, 0, 0.2) !important;">
                                     <i class="ri-customer-service-2-line" style="font-size: 2.5rem !important; color: #fff !important;"></i>
                                 </div>
                             </div>
@@ -1254,7 +1254,7 @@
                         
                         <div class="contact-buttons-wrapper d-flex flex-column flex-md-row gap-3 justify-content-center align-items-center" style="margin-top: 2rem !important;">
                             <a href="mailto:{{ $sectionData['section_5']['email'] ?? 'support@example.com' }}" 
-                               class="contact-btn contact-btn-email" style="display: inline-flex !important; align-items: center !important; padding: 15px 35px !important; border-radius: 50px !important; text-decoration: none !important; font-weight: 600 !important; font-size: 1.1rem !important; background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important; color: #fff !important; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1) !important; transition: all 0.3s ease !important;">
+                               class="contact-btn contact-btn-email" style="display: inline-flex !important; align-items: center !important; padding: 15px 35px !important; border-radius: 50px !important; text-decoration: none !important; font-weight: 600 !important; font-size: 1.1rem !important; background: #3333ff !important; color: #fff !important; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1) !important; transition: all 0.3s ease !important;">
                                 <i class="ri-mail-line me-2"></i>
                                 <span>{{ $sectionData['section_5']['email'] ?? 'support@example.com' }}</span>
                             </a>
@@ -1294,7 +1294,7 @@
             left: 0 !important;
             right: 0 !important;
             height: 5px !important;
-            background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important;
+            background: #3333ff !important;
             z-index: 1 !important;
         }
         
@@ -1307,7 +1307,7 @@
             width: 100px !important;
             height: 100px !important;
             border-radius: 50% !important;
-            background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important;
+            background: #3333ff !important;
             display: flex !important;
             align-items: center !important;
             justify-content: center !important;
@@ -1336,7 +1336,7 @@
         }
         
         body .contact-btn-email {
-            background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important;
+            background: #3333ff !important;
             color: #fff !important;
         }
         
@@ -1355,8 +1355,8 @@
         
         body .contact-btn-phone:hover {
             background: linear-gradient(135deg, rgba(255, 0, 0, 0.05) 0%, rgba(95, 96, 185, 0.05) 100%) !important;
-            border-color: #5F60B9 !important;
-            color: #5F60B9 !important;
+            border-color: #3333ff !important;
+            color: #3333ff !important;
             transform: translateY(-2px) !important;
             box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1) !important;
         }
@@ -1411,13 +1411,13 @@
                     <div class="col-12">
                         <!-- Title Section with Icon -->
                         <div class="text-center mb-5">
-                            <div class="testimonial-icon-wrapper mb-4" style="display: inline-flex !important; align-items: center !important; justify-content: center !important; width: 80px !important; height: 80px !important; background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important; border-radius: 50% !important; box-shadow: 0 10px 30px rgba(255, 0, 0, 0.2) !important; margin-bottom: 1.5rem !important;">
+                            <div class="testimonial-icon-wrapper mb-4" style="display: inline-flex !important; align-items: center !important; justify-content: center !important; width: 80px !important; height: 80px !important; background: #3333ff !important; border-radius: 50% !important; box-shadow: 0 10px 30px rgba(255, 0, 0, 0.2) !important; margin-bottom: 1.5rem !important;">
                                 <i class="ri-star-fill" style="font-size: 2.5rem !important; color: #fff !important;"></i>
                             </div>
                             <h2 class="testimonial-title fw-bold mb-3" style="font-size: 2.75rem !important; color: #1a1a1a !important; margin-bottom: 1rem !important; letter-spacing: -0.5px !important;">
                                 {{ $sectionData['section_9']['title'] }}
                             </h2>
-                            <div class="title-underline mx-auto mb-4" style="width: 150px !important; height: 5px !important; background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important; border-radius: 3px !important; margin-bottom: 2rem !important;"></div>
+                            <div class="title-underline mx-auto mb-4" style="width: 150px !important; height: 5px !important; background: #3333ff !important; border-radius: 3px !important; margin-bottom: 2rem !important;"></div>
                         </div>
 
                         <!-- Enhanced Rating Card -->
@@ -1425,7 +1425,7 @@
                             <div class="testimonial-rating-card-wrapper position-relative d-inline-block" style="position: relative !important;">
                                 <div class="testimonial-rating-card d-inline-flex align-items-center flex-sm-row flex-column gap-4 px-5 py-4 rounded-5 shadow-lg" style="background: #ffffff !important; border: 2px solid transparent !important; border-image: linear-gradient(135deg, rgba(255, 0, 0, 0.2) 0%, rgba(95, 96, 185, 0.2) 100%) 1 !important; box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12) !important; padding: 25px 40px !important; border-radius: 20px !important; position: relative !important; overflow: hidden !important;">
                                     <!-- Gradient Top Border -->
-                                    <div style="position: absolute !important; top: 0 !important; left: 0 !important; right: 0 !important; height: 4px !important; background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important;"></div>
+                                    <div style="position: absolute !important; top: 0 !important; left: 0 !important; right: 0 !important; height: 4px !important; background: #3333ff !important;"></div>
                                     
                                     <div class="vertical-center lh-1">
                                         <rating-component :readonly="true" :showrating="false"
@@ -1433,7 +1433,7 @@
                                     </div>
                                     @if (isset($sectionData['section_9']['overall_rating']) && $sectionData['section_9']['overall_rating'] == 'on')
                                         <div class="d-flex flex-column align-items-center gap-1">
-                                            <h3 class="mb-0 fw-bold" style="color: #1a1a1a !important; font-size: 2.25rem !important; background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important; -webkit-background-clip: text !important; -webkit-text-fill-color: transparent !important; background-clip: text !important;">{{ round($totalRating, 1) }}</h3>
+                                            <h3 class="mb-0 fw-bold" style="color: #1a1a1a !important; font-size: 2.25rem !important; background: #3333ff !important; -webkit-background-clip: text !important; -webkit-text-fill-color: transparent !important; background-clip: text !important;">{{ round($totalRating, 1) }}</h3>
                                             <h6 class="mb-0 text-muted fw-semibold" style="font-size: 0.95rem !important; font-weight: 600 !important; color: #6c757d !important; text-transform: uppercase !important; letter-spacing: 0.5px !important;">{{ __('landingpage.overall_rating') }}</h6>
                                         </div>
                                     @endif
@@ -1468,7 +1468,7 @@
                 justify-content: center !important;
                 width: 80px !important;
                 height: 80px !important;
-                background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important;
+                background: #3333ff !important;
                 border-radius: 50% !important;
                 box-shadow: 0 10px 30px rgba(255, 0, 0, 0.2) !important;
                 animation: pulse 2s ease-in-out infinite !important;
@@ -1496,7 +1496,7 @@
             body .title-underline {
                 width: 150px !important;
                 height: 5px !important;
-                background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important;
+                background: #3333ff !important;
                 border-radius: 3px !important;
                 margin-bottom: 2rem !important;
                 animation: expandWidth 1s ease-out !important;
@@ -1534,7 +1534,7 @@
                 left: 0 !important;
                 right: 0 !important;
                 height: 4px !important;
-                background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important;
+                background: #3333ff !important;
             }
             
             body .testimonial-description {
@@ -1550,7 +1550,7 @@
             /* Enhanced Testimonial Slider Navigation */
             body .ratingSlider .swiper-button-next,
             body .ratingSlider .swiper-button-prev {
-                background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important;
+                background: #3333ff !important;
                 width: 50px !important;
                 height: 50px !important;
                 border-radius: 50% !important;
@@ -1645,7 +1645,7 @@
             
             /* Swiper Pagination Enhancement */
             body .ratingSlider .swiper-pagination-bullet {
-                background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important;
+                background: #3333ff !important;
                 width: 12px !important;
                 height: 12px !important;
                 opacity: 0.4 !important;
@@ -2046,7 +2046,7 @@
             height: 50px;
             background: rgba(255, 255, 255, 0.9);
             border-radius: 50%;
-            background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%);
+            background: #3333ff;
             color: #fff;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
             transition: all 0.3s ease;

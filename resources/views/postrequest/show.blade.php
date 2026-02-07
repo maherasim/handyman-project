@@ -682,7 +682,7 @@
     </div>
     @endif
     <style>
-        /* Fix text color for cards with red-blue gradient background */
+        /* Fix text color for cards with primary background */
         .card.border-primary .card-body,
         .card.border-primary .card-body * {
             color: #fff !important;
@@ -704,7 +704,7 @@
         
         /* Red-Blue Gradient for Card Headers */
         .card-header.bg-primary {
-            background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important;
+            background: #3333ff !important;
             color: #fff !important;
             border: none !important;
         }
@@ -712,26 +712,26 @@
         /* Red-Blue Gradient for Table Headers */
         .table thead th,
         .table thead tr th {
-            background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important;
+            background: #3333ff !important;
             color: #fff !important;
             border-color: transparent !important;
         }
         
         .extra-charges-card .card-header {
-            background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important;
+            background: #3333ff !important;
             border-bottom: 1px solid rgba(255,255,255,0.25);
         }
         .extra-charges-table thead .extra-charges-heading th {
-            background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important;
+            background: #3333ff !important;
             color: #fff !important;
             border-bottom: none !important;
         }
         .extra-charges-table thead tr {
-            background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important;
+            background: #3333ff !important;
             color: #ffffff !important;
         }
         .extra-charges-table thead th {
-            background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important;
+            background: #3333ff !important;
             color: #fff !important;
         }
         .extra-charges-table thead th {

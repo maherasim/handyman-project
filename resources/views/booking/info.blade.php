@@ -134,13 +134,13 @@
     /* Red-Blue Gradient for Booking Info Tables */
     /* Extra Charges table header */
     .booking-info-container .card-header.bg-primary {
-        background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important;
+        background: #3333ff !important;
         border: none !important;
     }
     
     /* Review, Service Proof, and Extra Charges table headers */
     .booking-info-container .table.table-bordered thead th {
-        background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important;
+        background: #3333ff !important;
         color: #fff !important;
         border-color: transparent !important;
     }
@@ -2008,7 +2008,7 @@
 		background: #f8f9fa !important;
 		border-radius: 8px !important;
 		border: 1px solid #e9ecef !important;
-		border-left: 3px solid #5F60B9 !important;
+		border-left: 3px solid #3333ff !important;
 		transition: all 0.2s ease;
 		min-width: fit-content !important;
 		flex: 0 0 auto !important;
@@ -2048,7 +2048,7 @@
 	}
 	
 	.slot-time-horizontal i {
-		color: #5F60B9;
+		color: #3333ff;
 		font-size: 15px;
 		flex-shrink: 0;
 	}
@@ -2061,7 +2061,7 @@
 		background: #f8f9fa !important;
 		border-radius: 8px !important;
 		border: 1px solid #e9ecef !important;
-		border-left: 3px solid #5F60B9 !important;
+		border-left: 3px solid #3333ff !important;
 		transition: all 0.2s ease;
 		min-width: 0;
 		width: 100% !important;
@@ -2179,7 +2179,7 @@
 		top: 0;
 		bottom: 0;
 		width: 3px;
-		background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%);
+		background: #3333ff;
 		border-radius: 0 8px 8px 0;
 	}
 	
@@ -2195,7 +2195,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%);
+		background: #3333ff;
 		border-radius: 8px;
 		flex-shrink: 0;
 		box-shadow: 0 2px 6px rgba(255, 0, 0, 0.2);
@@ -2230,7 +2230,7 @@
 	
 	.slot-time i {
 		font-size: 12px;
-		color: #5F60B9;
+		color: #3333ff;
 	}
 	
 	.no-slots-modern {

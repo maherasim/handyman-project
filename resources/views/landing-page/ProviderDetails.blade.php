@@ -58,7 +58,7 @@
         .info-card-header-modern,
         .provider-details-grid .info-card-modern .info-card-header-modern,
         .info-card-modern .info-card-header-modern {
-            background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important;
+            background: #3333ff !important;
             background-size: 200% 200% !important;
             animation: gradient-shift 8s ease infinite !important;
             color: #ffffff !important;
@@ -195,7 +195,7 @@
         }
 
         .info-card-header-modern {
-            background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important;
+            background: #3333ff !important;
             background-size: 200% 200% !important;
             animation: gradient-shift 8s ease infinite !important;
             opacity: 1 !important;
@@ -422,14 +422,14 @@
                     </div>
                 </div>
                 <div class="col-lg-8 mt-lg-0 mt-5">
-                    <h3 class="text-capitalize mb-4" style="background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; font-weight: 700;">{{ __('landingpage.provider_personal_info') }}</h3>
+                    <h3 class="text-capitalize mb-4" style="background: #3333ff; -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; font-weight: 700;">{{ __('landingpage.provider_personal_info') }}</h3>
                    
                     <!-- Professional Provider Information Cards -->
                     <div class="provider-details-grid">
                         <!-- Full Skills Card -->
                         @if(!empty($providerData['data']['skills']))
                         <div class="info-card-modern mb-4">
-                            <div class="info-card-header-modern" style="opacity: 1 !important; visibility: visible !important; display: flex !important; justify-content: center !important; background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important; padding: 6px 15px !important; min-height: 40px !important;">
+                            <div class="info-card-header-modern" style="opacity: 1 !important; visibility: visible !important; display: flex !important; justify-content: center !important; background: #3333ff !important; padding: 6px 15px !important; min-height: 40px !important;">
                                 <i class="ri-tools-line me-2" style="opacity: 1 !important; visibility: visible !important; font-size: 16px;"></i>
                                 <h5 class="mb-0" style="opacity: 1 !important; visibility: visible !important; color: #ffffff !important; font-size: 13px; font-weight: 700;">Full Skills</h5>
                             </div>
@@ -464,7 +464,7 @@
                         <!-- Location Card -->
                         @if(isset($providerData['data']['city_name']) || isset($providerData['data']['country_name']))
                         <div class="info-card-modern mb-4">
-                            <div class="info-card-header-modern" style="opacity: 1 !important; visibility: visible !important; display: flex !important; justify-content: center !important; background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important; padding: 6px 15px !important; min-height: 40px !important;">
+                            <div class="info-card-header-modern" style="opacity: 1 !important; visibility: visible !important; display: flex !important; justify-content: center !important; background: #3333ff !important; padding: 6px 15px !important; min-height: 40px !important;">
                                 <i class="ri-map-pin-line me-2" style="opacity: 1 !important; visibility: visible !important; font-size: 16px;"></i>
                                 <h5 class="mb-0" style="opacity: 1 !important; visibility: visible !important; color: #ffffff !important; font-size: 13px; font-weight: 700;">Location</h5>
                             </div>
@@ -486,7 +486,7 @@
                         <!-- Experience Card -->
                         @if(!empty($providerData['data']['experience']))
                         <div class="info-card-modern mb-4">
-                            <div class="info-card-header-modern" style="opacity: 1 !important; visibility: visible !important; display: flex !important; justify-content: center !important; background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important; padding: 6px 15px !important; min-height: 40px !important;">
+                            <div class="info-card-header-modern" style="opacity: 1 !important; visibility: visible !important; display: flex !important; justify-content: center !important; background: #3333ff !important; padding: 6px 15px !important; min-height: 40px !important;">
                                 <i class="ri-briefcase-4-line me-2" style="opacity: 1 !important; visibility: visible !important; font-size: 16px;"></i>
                                 <h5 class="mb-0" style="opacity: 1 !important; visibility: visible !important; color: #ffffff !important; font-size: 13px; font-weight: 700;">Experience</h5>
                             </div>
@@ -521,7 +521,7 @@
                         <!-- Mobility Card -->
                         @if(!empty($providerData['data']['mobility']))
                         <div class="info-card-modern mb-4">
-                            <div class="info-card-header-modern" style="opacity: 1 !important; visibility: visible !important; display: flex !important; justify-content: center !important; background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important; padding: 6px 15px !important; min-height: 40px !important;">
+                            <div class="info-card-header-modern" style="opacity: 1 !important; visibility: visible !important; display: flex !important; justify-content: center !important; background: #3333ff !important; padding: 6px 15px !important; min-height: 40px !important;">
                                 <i class="ri-car-line me-2" style="opacity: 1 !important; visibility: visible !important; font-size: 16px;"></i>
                                 <h5 class="mb-0" style="opacity: 1 !important; visibility: visible !important; color: #ffffff !important; font-size: 13px; font-weight: 700;">Mobility</h5>
                             </div>
@@ -536,7 +536,7 @@
                         <!-- Education Card -->
                         @if(!empty($providerData['data']['education']))
                         <div class="info-card-modern mb-4">
-                            <div class="info-card-header-modern" style="opacity: 1 !important; visibility: visible !important; display: flex !important; justify-content: center !important; background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important; padding: 6px 15px !important; min-height: 40px !important;">
+                            <div class="info-card-header-modern" style="opacity: 1 !important; visibility: visible !important; display: flex !important; justify-content: center !important; background: #3333ff !important; padding: 6px 15px !important; min-height: 40px !important;">
                                 <i class="ri-graduation-cap-line me-2" style="opacity: 1 !important; visibility: visible !important; font-size: 16px;"></i>
                                 <h5 class="mb-0" style="opacity: 1 !important; visibility: visible !important; color: #ffffff !important; font-size: 13px; font-weight: 700;">Education</h5>
                             </div>
@@ -571,7 +571,7 @@
                         <!-- Certificate Card -->
                         @if(!empty($providerData['data']['certification']))
                         <div class="info-card-modern mb-4">
-                            <div class="info-card-header-modern" style="opacity: 1 !important; visibility: visible !important; display: flex !important; justify-content: center !important; background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important; padding: 6px 15px !important; min-height: 40px !important;">
+                            <div class="info-card-header-modern" style="opacity: 1 !important; visibility: visible !important; display: flex !important; justify-content: center !important; background: #3333ff !important; padding: 6px 15px !important; min-height: 40px !important;">
                                 <i class="ri-file-certificate-2-line me-2" style="opacity: 1 !important; visibility: visible !important; font-size: 16px;"></i>
                                 <h5 class="mb-0" style="opacity: 1 !important; visibility: visible !important; color: #ffffff !important; font-size: 13px; font-weight: 700;">Certificate</h5>
                             </div>
@@ -606,7 +606,7 @@
                         <!-- About Me Card -->
                         @if(!empty($providerData['data']['about_me']))
                         <div class="info-card-modern mb-4">
-                            <div class="info-card-header-modern" style="opacity: 1 !important; visibility: visible !important; display: flex !important; justify-content: center !important; background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important; padding: 6px 15px !important; min-height: 40px !important;">
+                            <div class="info-card-header-modern" style="opacity: 1 !important; visibility: visible !important; display: flex !important; justify-content: center !important; background: #3333ff !important; padding: 6px 15px !important; min-height: 40px !important;">
                                 <i class="ri-user-heart-line me-2" style="opacity: 1 !important; visibility: visible !important; font-size: 16px;"></i>
                                 <h5 class="mb-0" style="opacity: 1 !important; visibility: visible !important; color: #ffffff !important; font-size: 13px; font-weight: 700;">About Me</h5>
                             </div>

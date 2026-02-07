@@ -4,7 +4,7 @@
         #postBidsTable thead th,
         #postBidsTable thead tr th,
         table#postBidsTable thead th {
-            background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important;
+            background: #3333ff !important;
             color: #fff !important;
             border-color: transparent !important;
         }
@@ -12,7 +12,7 @@
         /* DataTables pagination buttons */
         .dataTables_wrapper .dataTables_paginate .paginate_button.current,
         .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
-            background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important;
+            background: #3333ff !important;
             border: none !important;
             color: #fff !important;
         }
@@ -24,7 +24,7 @@
         
         /* Modal header gradient */
         .modal-header.bg-primary {
-            background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important;
+            background: #3333ff !important;
             color: #fff !important;
         }
     </style>

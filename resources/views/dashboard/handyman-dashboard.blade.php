@@ -5,7 +5,7 @@
                 <div class="row">
                     <div class="col-lg-3 col-md-6">
                         <a href="{{ route('booking.index') }}">
-                            <div class="card total-booking-card rounded-3 border-0 shadow-sm h-100" style="background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important; color: #fff !important;">
+                            <div class="card total-booking-card rounded-3 border-0 shadow-sm h-100" style="background: #3333ff !important; color: #fff !important;">
                                 <div class="card-body p-3">
                                     <div class="row">
                                         <div class="col">
@@ -58,7 +58,7 @@
                     </div> -->
                     <div class="col-lg-3 col-md-6">
                         <a href="{{ route('booking.index', ['status' => 'completed']) }}">
-                            <div class="card total-provider-card rounded-3 border-0 shadow-sm h-100" style="background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important; color: #fff !important;">
+                            <div class="card total-provider-card rounded-3 border-0 shadow-sm h-100" style="background: #3333ff !important; color: #fff !important;">
                                 <div class="card-body p-3">
                                     <div class="row">
                                         <div class="col">
@@ -89,7 +89,7 @@
                     </div>
                     <div class="col-lg-3 col-md-6">
                         <!-- <a  href="{{ route('payment.index') }}"> -->
-                        <div class="card total-revenue rounded-3 border-0 shadow-sm h-100" style="background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important; color: #fff !important;">
+                        <div class="card total-revenue rounded-3 border-0 shadow-sm h-100" style="background: #3333ff !important; color: #fff !important;">
                             <div class="card-body p-3">
                                 <div class="row">
                                     <div class="col">
@@ -118,7 +118,7 @@
                     </div>
                     <div class="col-lg-3 col-md-6">
                         <a href="{{ route('handymanpayout.show', auth()->user()->id) }}">
-                            <div class="card total-revenue rounded-3 border-0 shadow-sm h-100" style="background: linear-gradient(135deg, #FF0000 0%, #5F60B9 100%) !important; color: #fff !important;">
+                            <div class="card total-revenue rounded-3 border-0 shadow-sm h-100" style="background: #3333ff !important; color: #fff !important;">
                                 <div class="card-body p-3">
                                     <div class="row">
                                         <div class="col">
