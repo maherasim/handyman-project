@@ -129,11 +129,11 @@ class HomeController extends Controller
     $digitafter_decimal_point = $setting ? $setting->digitafter_decimal_point : "2";
 
     if ($user->hasRole('provider')) {
-        // Total revenue: only status = paid (any payment method: stripe, wallet, bank, paypal)
+        // Total revenue: status = paid or remaining_paid (any payment method: stripe, wallet, bank, paypal)
         $revenuedata = ProviderPayout::selectRaw('sum(amount) as total , DATE_FORMAT(updated_at , "%m") as month')
             ->where('provider_id', $user->id)
             ->whereYear('updated_at', date('Y'))
-            ->where('status', 'paid')
+            ->whereIn('status', ['paid', 'remaining_paid', 'remaining paid'])
             ->groupBy('month')
             ->get()->toArray();
 
@@ -197,9 +197,9 @@ $data['remaining_payout'] = round($providerRemainingPayout, $digitafter_decimal_
 
 
 
-        // Total revenue: only status = paid (payment method irrelevant: stripe, wallet, bank, paypal)
+        // Total revenue: status = paid or remaining_paid (payment method irrelevant: stripe, wallet, bank, paypal)
         $data['total_earning'] = ProviderPayout::where('provider_id', $user->id)
-            ->where('status', 'paid')
+            ->whereIn('status', ['paid', 'remaining_paid', 'remaining paid'])
             ->sum('amount') ?? 0;
 
     } elseif ($user->hasRole('handyman')) {

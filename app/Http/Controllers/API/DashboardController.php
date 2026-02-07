@@ -256,9 +256,9 @@ class DashboardController extends Controller
 
         $handyman = UserResource::collection(User::myUsers()->where('status', 1)->take(4)->get());
 
-        // Total revenue: only status = paid (payment method irrelevant)
+        // Total revenue: status = paid or remaining_paid (payment method irrelevant)
         $total_revenue    = ProviderPayout::where('provider_id',$provider->id)
-            ->where('status', 'paid')
+            ->whereIn('status', ['paid', 'remaining_paid', 'remaining paid'])
             ->sum('amount') ?? 0;
 
         $handymanIds = User::with('providerHandyman')
@@ -287,7 +287,7 @@ class DashboardController extends Controller
         $revenuedata = ProviderPayout::selectRaw('sum(amount) as total , DATE_FORMAT(updated_at , "%m") as month')
                 ->where('provider_id', $user->id)
                 ->whereYear('updated_at', date('Y'))
-                ->where('status', 'paid')
+                ->whereIn('status', ['paid', 'remaining_paid', 'remaining paid'])
                 ->groupBy('month');
         $revenuedata= $revenuedata->get();
         $data['revenueData']    =    [];
