@@ -1299,14 +1299,20 @@
                 url: '{{ url('/api/postbid/rating/save') }}',
                 type: 'POST',
                 data: payload,
+                xhrFields: { withCredentials: true },
                 headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' },
                 success: function(){
                     Swal.fire('Thank you!','Your rating has been submitted.','success');
                     $('#postBidRatingModal').modal('hide');
                     window.location.reload();
                 },
-                error: function(){
-                    Swal.fire('Error','Failed to submit rating.','error');
+                error: function(xhr){
+                    var msg = 'Failed to submit rating.';
+                    if (xhr.status === 419) msg = 'Session expired. Please refresh the page and try again.';
+                    else if (xhr.status === 401) msg = 'Please sign in again, then try again.';
+                    else if (xhr.status === 422 && xhr.responseJSON && xhr.responseJSON.message) msg = xhr.responseJSON.message;
+                    else if (xhr.status === 422 && xhr.responseJSON && xhr.responseJSON.errors) msg = Object.values(xhr.responseJSON.errors).flat().join(' ');
+                    Swal.fire('Error', msg, 'error');
                 }
             });
         });
@@ -1354,14 +1360,20 @@
                 url: '{{ url('/api/postbid/rating-by-provider/save') }}',
                 type: 'POST',
                 data: payload,
+                xhrFields: { withCredentials: true },
                 headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' },
                 success: function(){
                     Swal.fire('Thank you!','Your rating has been submitted.','success');
                     $('#postBidRateCustomerModal').modal('hide');
                     window.location.reload();
                 },
-                error: function(){
-                    Swal.fire('Error','Failed to submit rating.','error');
+                error: function(xhr){
+                    var msg = 'Failed to submit rating.';
+                    if (xhr.status === 419) msg = 'Session expired. Please refresh the page and try again.';
+                    else if (xhr.status === 401) msg = 'Please sign in again, then try again.';
+                    else if (xhr.status === 422 && xhr.responseJSON && xhr.responseJSON.message) msg = xhr.responseJSON.message;
+                    else if (xhr.status === 422 && xhr.responseJSON && xhr.responseJSON.errors) msg = Object.values(xhr.responseJSON.errors).flat().join(' ');
+                    Swal.fire('Error', msg, 'error');
                 }
             });
         });
