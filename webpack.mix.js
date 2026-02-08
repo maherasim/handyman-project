@@ -16,11 +16,10 @@ const path = require('path')
 
 mix.js('resources/js/backend-bundle.js', 'public/js/backend-bundle.min.js')
     .sass('resources/scss/backend-bundle.scss','public/css/backend-bundle.min.css')
-    .sass('public/scss/backend.scss', 'public/css')
+    .sass('public/scss/backend.scss', 'public/css/backend.css')
     .options({
-        processCssUrls: false
-    })
-    .version(); // Add versioning to prevent cache issues
+        processCssUrls: true
+    });
 
 mix.alias({
     '@': path.join(__dirname, 'resources/js')
@@ -31,4 +30,4 @@ mix.js('resources/js/app.js', 'public/js/landing-app.min.js').vue()
    .sass('resources/scss/handyman.scss','public/css/landing-page.min.css')
    .sass('resources/scss/rtl.scss','public/css/landing-page-rtl.min.css')
    .sass('resources/scss/custom.scss','public/css/landing-page-custom.min.css')
-   .version(); // Add versioning to prevent cache issues
+   .options({ processCssUrls: true });
