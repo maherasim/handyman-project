@@ -16,7 +16,7 @@
         </div>
         <div class="col-lg-8 mt-5 mt-lg-0">
             <h5 class="booking-title text-capitalize line-count-1">
-                <a href="{{ url('/booking-detail/' . $data->id) }}" class="text-decoration-none text-body">
+                <a href="{{ route('booking.detail', $data->id) }}" class="text-decoration-none text-body booking-detail-link">
                 @if(!isset($data->bookingPackage))
                     #{{$data->id}} {{($data->service)->name}}
                 @else

@@ -93,7 +93,15 @@ const initializeFlatpickr = () => {
 const ajaxReload = () => window.$(tableRef.value).DataTable().ajax.reload(null, false)
 const tableRef = ref(null)
 const columns = ref([
-    { data: 'name', title: '', orderable: false, searchable: false}
+    {
+        data: 'name',
+        title: '',
+        orderable: false,
+        searchable: false,
+        render: function (data) {
+            return data != null ? data : '';
+        }
+    }
 ]);
 useDataTable({
   tableRef: tableRef,
