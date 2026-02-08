@@ -473,9 +473,16 @@
                     {
                         data: 'payment_id',
                         name: 'payment_id',
-                        title: "{{ __('messages.payment_statu fs') }}"
+                        title: "{{ __('messages.payment_status') }}"
                     },
-
+                    {
+                        data: 'view_booking',
+                        name: 'view_booking',
+                        orderable: false,
+                        searchable: false,
+                        title: "{{ __('messages.view') }}",
+                        className: 'text-end',
+                    },
                     @if ($auth_user->can('booking delete'))
                         {
                             data: 'action',

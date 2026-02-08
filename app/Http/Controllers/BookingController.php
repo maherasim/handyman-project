@@ -307,6 +307,10 @@ class BookingController extends Controller
             ->editColumn('total_amount', function ($query) {
                 return $query->total_amount ? getPriceFormat($query->total_amount) : '-';
             })
+            ->addColumn('view_booking', function ($booking) {
+                $url = route('booking.details', $booking->id);
+                return '<a href="' . e($url) . '" class="btn btn-sm btn-primary" title="' . e(__('messages.view')) . '"><i class="ri-eye-line"></i></a>';
+            })
             ->addColumn('action', function ($booking) {
                 return view('booking.action', compact('booking'))->render();
             })
@@ -319,7 +323,7 @@ class BookingController extends Controller
                 }
             })
             ->addIndexColumn()
-            ->rawColumns(['action', 'status', 'payment_id', 'service_id', 'id'])
+            ->rawColumns(['action', 'view_booking', 'status', 'payment_id', 'service_id', 'id'])
             ->toJson();
     }
 
