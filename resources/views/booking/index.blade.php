@@ -476,7 +476,7 @@
                         title: "{{ __('messages.payment_status') }}"
                     },
                     {
-                        data: 'view_booking',
+                        data: 'view_booking',  
                         name: 'view_booking',
                         orderable: false,
                         searchable: false,

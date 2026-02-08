@@ -308,7 +308,7 @@ class BookingController extends Controller
                 return $query->total_amount ? getPriceFormat($query->total_amount) : '-';
             })
             ->addColumn('view_booking', function ($booking) {
-                $url = route('booking.details', $booking->id);
+                $url = route('booking.show', $booking->id);
                 return '<a href="' . e($url) . '" class="btn btn-sm btn-primary" title="' . e(__('messages.view')) . '"><i class="ri-eye-line"></i></a>';
             })
             ->addColumn('action', function ($booking) {
@@ -1126,9 +1126,6 @@ public function bookingAssigned(Request $request)
     public function bookingDetails(Request $request, $id)
     {
         $auth_user = authSession();
-        if ($id != auth()->user()->id && !auth()->user()->hasRole(['admin', 'demo_admin'])) {
-            return redirect(route('home'))->withErrors(trans('messages.demo_permission_denied'));
-        }
         $providerdata = User::with([
             'providerBooking' => function ($query) {
                 $query->orderBy('updated_at', 'desc')->with('slots');
