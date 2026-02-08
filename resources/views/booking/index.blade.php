@@ -473,7 +473,7 @@
                     {
                         data: 'payment_id',
                         name: 'payment_id',
-                        title: "{{ __('messages.payment_status') }}"
+                        title: "{{ __('messages.payment_statu fs') }}"
                     },
 
                     @if ($auth_user->can('booking delete'))

@@ -1,4 +1,5 @@
 <div class="bg-light padding-50 rounded-3 position-relative mb-5">
+    <a href="{{ route('booking.detail', $data->id) }}" class="btn btn-sm btn-primary position-absolute top-0 end-0 m-3" title="{{ __('messages.view') }}"><i class="ri-eye-line"></i> {{ __('messages.view') }}</a>
     <div class="row align-items-center">
         <div class="col-lg-4">
             @if(!isset($data->bookingPackage))
