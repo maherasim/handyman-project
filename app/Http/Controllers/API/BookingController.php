@@ -12,7 +12,6 @@ use App\Models\CustomerRating;
 use App\Models\BookingActivity;
 use App\Models\Payment;
 use App\Models\PaymentHistory;
-use App\Models\Wallet;
 use App\Models\LiveLocation;
 use App\Models\User;
 use App\Models\BookingHandymanMapping;
@@ -407,8 +406,7 @@ class BookingController extends Controller
         $activity_type = null; // Initialize activity_type
 
         $paymentdata = Payment::where('booking_id',$id)->first();
-        $user_wallet = Wallet::where('user_id', $bookingdata->customer_id)->first();
-        $wallet_amount = $user_wallet->amount;
+        // Cancel happens before advance payment – booking update does not touch customer wallet.
         // Normalize client-provided payment_status for safe comparisons
         $clientPaymentStatus = strtolower(str_replace(' ', '_', $data['payment_status'] ?? ''));
         // Determine if the actor is the assigned provider
@@ -515,30 +513,13 @@ class BookingController extends Controller
             }
         }
 
+        // Cancel/reject: mark payment as Cancelled. Wallet not used – cancel happens before advance payment.
         if(($data['status'] == 'rejected' || $data['status'] == 'cancelled') && (($clientPaymentStatus == 'advance_paid') || (optional($paymentdata)->payment_status == 'advance_paid'))){
-            $advance_paid_amount = $bookingdata->advance_paid_amount;
-            $cancellation_charges = $data['cancellation_charge_amount'];
-
-
-            if($cancellation_charges > 0 ){
-                $user_wallet->amount = ($wallet_amount + $advance_paid_amount) - $cancellation_charges;
-            }else{
-                $user_wallet->amount = $wallet_amount + $advance_paid_amount;
-            }
-
-            $user_wallet->update();
             $paymentData = Payment::where('booking_id', $bookingdata->id)->first();
-            $paymentData->payment_status = 'Cancelled';
-            $paymentData->update();
-            $activity_data = [
-                'activity_type' => 'wallet_refund',
-                'payment_status' => 'Advance Payment',
-                'wallet' => $user_wallet,
-                'booking_id'=> $id,
-                'refund_amount'=> $advance_paid_amount,
-            ];
-            $this->sendNotification($activity_data);
-
+            if ($paymentData) {
+                $paymentData->payment_status = 'Cancelled';
+                $paymentData->update();
+            }
         }
         // If booking is cancelled and not an advance refund case, mark payment as 'cancelled' when appropriate
         if ($data['status'] === 'cancelled') {
@@ -550,18 +531,7 @@ class BookingController extends Controller
 
         $data['reason'] = isset($data['reason']) ? $data['reason'] : null;
 
-        if($data['status'] == 'cancelled' && $data['cancellation_charge_amount'] > 0 && $clientPaymentStatus !=='advance_paid' && !$actorIsProvider){
-            $cancellation_charges = $data['cancellation_charge_amount'];
-            $user_wallet->amount = $wallet_amount - $cancellation_charges;
-            $user_wallet->update();
-            $activity_data = [
-                'activity_type' => 'cancellation_charges',
-                'wallet' => $user_wallet,
-                'booking_id'=> $id,
-                'paid_amount'=> $cancellation_charges,
-            ];
-            $this->sendNotification($activity_data);
-        }
+        // Cancellation charges: not applied to wallet – cancel happens before advance payment.
         if(!empty($request->extra_charges)){
             if($bookingdata->bookingExtraCharge()->count() > 0)
             {
