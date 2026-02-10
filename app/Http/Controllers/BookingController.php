@@ -704,7 +704,8 @@ class BookingController extends Controller
 
             foreach ($user->unreadNotifications as $notifications) {
 
-                if ($notifications['data']['id'] == $id) {
+                $dataId = $notifications['data']['id'] ?? null;
+                if ($dataId != null && $dataId == $id) {
 
                     $notification = $user->unreadNotifications->where('id', $notifications['id'])->first();
                     if ($notification) {

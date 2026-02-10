@@ -376,12 +376,13 @@
                           <span class="text-danger">{{ errors.address }}</span>
 
                           <div>
-                            <!-- <a @click="getCurrentLocation" class="btn btn-primary mt-5">Get Current Location</a> -->
-                            <a @click="getCurrentLocation" class="btn btn-primary mt-5">
-                              <span v-if="isLoading" class="spinner-border spinner-border-sm" role="status"
+                            <button type="button" class="btn btn-primary mt-5" :disabled="isLoading"
+                              @click="getCurrentLocation">
+                              <span v-if="isLoading" class="spinner-border spinner-border-sm me-1" role="status"
                                 aria-hidden="true"></span>
                               <span v-else>{{ $t('landingpage.get_current_location') }}</span>
-                            </a>
+                            </button>
+                            <p v-if="locationError" class="text-danger small mt-2 mb-0">{{ locationError }}</p>
                           </div>
                         </div>
                       </div>
@@ -608,11 +609,13 @@ import 'flatpickr/dist/flatpickr.css';
 import * as yup from 'yup';
 import { STORE_BOOKING_API } from '../data/api';
 import couponcard from '../components/CouponCard.vue';
+import { useI18n } from 'vue-i18n';
 import { confirmcancleSwal } from '../data/utilities';
 import Swal from 'sweetalert2';
 import { Calendar, DatePicker } from 'v-calendar';
 import 'v-calendar/style.css';
 import moment from 'moment'
+const { t } = useI18n();
 const baseUrl = document.querySelector('meta[name="baseUrl"]').getAttribute('content');
 const props = defineProps(['service', 'coupons', 'taxes', 'user_id', 'availableserviceslot', 'serviceaddon', 'googlemapkey', 'wallet_amount', 'payment_type', 'booking_id', 'total_booking_amount', 'total_advance_paid_amount']);
 const googlemapkey = props.googlemapkey;
@@ -1244,32 +1247,67 @@ const { value: date } = useField('date')
 const { value: start_time } = useField('start_time')
 const { value: end_time } = useField('end_time')
 const isLoading = ref(false);
+const locationError = ref('');
 const getCurrentLocation = async () => {
+  locationError.value = '';
+  if (!window.isSecureContext) {
+    locationError.value = t('landingpage.location_https_required');
+    return;
+  }
+  if (!navigator.geolocation) {
+    locationError.value = t('landingpage.location_browser_unsupported');
+    return;
+  }
   isLoading.value = true;
-  navigator.geolocation.getCurrentPosition(async (position) => {
-    try {
-
-      const currentLatitude = position.coords.latitude;
-      const currentLongitude = position.coords.longitude;
-
-      const response = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${currentLatitude},${currentLongitude}&key=${googlemapkey}`);
-      const data = await response.json();
-
-      const formattedAddress = data.results[0]?.formatted_address;
-
-      setValues({ address: formattedAddress });
-
-      // localStorage.setItem('location_current_lat', currentLatitude);
-      // localStorage.setItem('location_current_long', currentLongitude);
-    } catch (error) {
-      console.error('Error fetching current location:', error);
-    } finally {
-      isLoading.value = false; // Set isLoading to false after location is fetched
-    }
-  }, (error) => {
-    console.error('Error getting current position:', error);
-    isLoading.value = false;
-  });
+  const options = {
+    enableHighAccuracy: true,
+    timeout: 15000,
+    maximumAge: 0
+  };
+  navigator.geolocation.getCurrentPosition(
+    async (position) => {
+      try {
+        const currentLatitude = position.coords.latitude;
+        const currentLongitude = position.coords.longitude;
+        let formattedAddress = null;
+        if (googlemapkey) {
+          const response = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${currentLatitude},${currentLongitude}&key=${googlemapkey}`);
+          const data = await response.json();
+          if (data.results && data.results[0]) {
+            formattedAddress = data.results[0].formatted_address;
+          }
+        }
+        if (!formattedAddress) {
+          const nominatimRes = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?lat=${currentLatitude}&lon=${currentLongitude}&format=json`,
+            { headers: { 'Accept-Language': 'en', 'User-Agent': 'FrobsterBooking/1.0' } }
+          );
+          const nominatimData = await nominatimRes.json();
+          if (nominatimData && nominatimData.display_name) {
+            formattedAddress = nominatimData.display_name;
+          }
+        }
+        setValues({ address: formattedAddress || `${currentLatitude}, ${currentLongitude}` });
+      } catch (err) {
+        console.error('Error fetching current location:', err);
+        setValues({ address: `${position.coords.latitude}, ${position.coords.longitude}` });
+      } finally {
+        isLoading.value = false;
+      }
+    },
+    (error) => {
+      isLoading.value = false;
+      const code = error.code;
+      const messages = {
+        1: t('landingpage.location_permission_denied'),
+        2: t('landingpage.location_unavailable'),
+        3: t('landingpage.location_timeout')
+      };
+      locationError.value = messages[code] || t('landingpage.location_error_fallback');
+      console.error('Geolocation error:', error);
+    },
+    options
+  );
 };
 const cancellation = window.cancellationCharge;
 let cancellationCharge = 0;
