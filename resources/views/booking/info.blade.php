@@ -421,7 +421,7 @@
                                     @hasanyrole(['user'])
                                         <div class="w3-third d-flex align-items-end">
                                             <p><span class="text-info font-size-14" style="font-weight: 700">Waiting for
-                                                    handyman to mark booking as completed</span>
+                                                    Employer to mark booking as completed</span>
                                             </p>
                                         </div>
                                     @endhasanyrole
@@ -732,7 +732,7 @@
                                     break;
                                 case 'confirm':
                                     $nextActor = 'handyman';
-                                    $nextText = 'Waiting for handyman to mark booking as completed';
+                                    $nextText = 'Waiting for Employer to mark booking as completed';
                                     break;
                                 case 'completed':
                                     // Check if payment status is pending_by_admin
