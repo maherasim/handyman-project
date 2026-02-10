@@ -682,21 +682,18 @@
     </div>
     @endif
     <style>
-        /* Fix text color for cards with primary background */
+        /* Info cards (Title, etc.) have white background — keep text dark for readability */
         .card.border-primary .card-body,
         .card.border-primary .card-body * {
-            color: #fff !important;
+            color: #000 !important;
         }
-        
         .card.border-primary .card-body h6,
-        .card.border-primary .card-body p,
-        .card.border-primary .card-body i {
-            color: #fff !important;
+        .card.border-primary .card-body p {
+            color: #000 !important;
         }
-        
         .card.border-primary .card-body i.text-primary {
-            color: rgba(255, 255, 255, 0.9) !important;
-            -webkit-text-fill-color: rgba(255, 255, 255, 0.9) !important;
+            color: var(--bs-primary) !important;
+            -webkit-text-fill-color: var(--bs-primary) !important;
             background: transparent !important;
             -webkit-background-clip: unset !important;
             background-clip: unset !important;
