@@ -270,14 +270,10 @@ class Booking extends Model
     }
     public function getExtraChargeValue(): float
     {
-        $extraCharge = 0;
-        if (!empty($this->bookingExtraCharge)) {
-            foreach (json_decode($this->bookingExtraCharge,true) as $charge) {
-                $extraCharge += $charge['price'] * $charge['qty'];
-            }
-        }
-
-        return $extraCharge;
+        $charges = $this->relationLoaded('bookingExtraCharge')
+            ? $this->bookingExtraCharge
+            : $this->bookingExtraCharge()->get();
+        return (float) $charges->sum(fn ($c) => ($c->price ?? 0) * ($c->qty ?? 1));
     }
     public function getTaxesValue(): float
     {

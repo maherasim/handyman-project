@@ -1477,25 +1477,28 @@ public function saveStripePayment(Request $request, $id)
         $result->total_amount = $remaining_amount;
         $result->save();
 
-        // Compute totals across the whole booking
-        $total_admin_commission = ($total_amount * $admin_commission_percentage) / 100;
-        $provider_total_earning = $total_amount - $total_admin_commission;
+        // Admin: 10% of remaining (10% of advance already paid at advance time)
         $remaining_admin_commission = ($remaining_amount > 0)
             ? ($remaining_amount * $admin_commission_percentage) / 100
             : 0;
 
-        // Calculate handyman payouts from provider_total_earning
+        // Pool = 90% of advance (held) + (90% of remaining - extra charges). Extra goes 100% to provider.
+        $extra_total = $booking->getExtraChargeValue();
+        $provider_side_advance = ($advance_paid * (100 - $admin_commission_percentage)) / 100;
+        $provider_side_remaining = ($remaining_amount * (100 - $admin_commission_percentage)) / 100;
+        $pool = $provider_side_advance + max(0, $provider_side_remaining - $extra_total);
+
+        // From pool: handyman gets his commission % of pool; rest + extra_total goes to provider
         $handymen = BookingHandymanMapping::where('booking_id', $booking->id)->pluck('handyman_id');
         $handyman_payouts = [];
         $total_handyman_share = 0;
         foreach ($handymen as $handyman_id) {
             $handyman = User::find($handyman_id);
             if (!$handyman || $handyman->handyman_commission === null) {
-                continue; // Skip if no handyman or no commission set
+                continue;
             }
-
             $commission_percent = max(1, min(85, $handyman->handyman_commission));
-            $handyman_share = ($provider_total_earning * $commission_percent) / 100;
+            $handyman_share = ($pool * $commission_percent) / 100;
             $total_handyman_share += $handyman_share;
             $handyman_payouts[] = [
                 'handyman_id' => $handyman_id,
@@ -1503,10 +1506,11 @@ public function saveStripePayment(Request $request, $id)
             ];
         }
 
-        $provider_final_earning = $provider_total_earning - $total_handyman_share;
-        if ($provider_final_earning < 0) {
-            $provider_final_earning = 0;
+        $provider_from_pool = $pool - $total_handyman_share;
+        if ($provider_from_pool < 0) {
+            $provider_from_pool = 0;
         }
+        $provider_final_earning = $provider_from_pool + $extra_total;
 
         // Pay handymen
         foreach ($handyman_payouts as $payout) {
@@ -1531,7 +1535,6 @@ public function saveStripePayment(Request $request, $id)
             ]);
         }
 
-        // Pay remaining admin commission only for the remaining payment now
         if ($remaining_admin_commission > 0) {
             Wallet::firstOrCreate(['user_id' => $admin_user_id])->increment('amount', $remaining_admin_commission);
 
@@ -1544,7 +1547,6 @@ public function saveStripePayment(Request $request, $id)
             ]);
         }
 
-        // Pay provider the final net amount once (advance was held)
         Wallet::firstOrCreate(['user_id' => $booking->provider_id])->increment('amount', $provider_final_earning);
 
         ProviderPayout::create([
