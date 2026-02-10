@@ -19,12 +19,7 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => [
-        'https://frobster.com',
-        'https://www.frobster.com',
-        'http://frobster.com',
-        'http://www.frobster.com',
-    ],
+    'allowed_origins' => ['*'],
 
     'allowed_origins_patterns' => [],
 
