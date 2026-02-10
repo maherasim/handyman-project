@@ -798,6 +798,7 @@
     'reviews' => 'reviews',
     'all_reviews' => 'All Reviews',
     'wallet_balance' => 'Wallet Balance',
+    'insufficient_balance' => 'Insufficient balance',
     'manage_slot' => 'Slot',
     'is_email_verified' => 'Verify',
     'user_verified' => 'Customer verified sucessfully',

@@ -11,8 +11,12 @@
               <label class="form-check-label h6 fw-normal text-capitalize" for="stripe">{{ $t('messages.stripe') }}</label>
             </div>
             <div class="form-check">
-              <input class="form-check-input" type="radio" name="payment_method" v-model="payment_method" id="wallet" value="wallet" />
-              <label class="form-check-label h6 fw-normal text-capitalize" for="wallet">{{ $t('messages.wallet') }}</label>
+              <input class="form-check-input" type="radio" name="payment_method" v-model="payment_method" id="wallet" value="wallet"
+                :disabled="!canUseWallet" />
+              <label class="form-check-label h6 fw-normal text-capitalize" for="wallet" :class="{ 'text-muted': !canUseWallet }">
+                {{ $t('messages.wallet') }}
+                <span v-if="!canUseWallet" class="small">({{ $t('messages.insufficient_balance') }})</span>
+              </label>
             </div>
             <div class="form-check" v-if="isPaypalEnabled">
               <input class="form-check-input" type="radio" name="payment_method" v-model="payment_method" id="paypal" value="paypal" />
@@ -31,7 +35,7 @@
             <p>{{ $t('messages.wallet_balance') }}: {{ formatCurrencyVue(wallet_amount) }}</p>
           <div class="mt-3">
             <div class="d-inline-flex align-items-center flex-wrap gap-3">
-              <button class="btn btn-primary" type="submit">
+              <button class="btn btn-primary" type="submit" :disabled="isProceedDisabled">
                 <span v-if="IsLoading == 1" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                 <span v-else>{{ $t('landingpage.Proceed_To_Payment') }}</span>
               </button>
@@ -137,6 +141,19 @@ const paymentDisplayAmount = computed(() => {
     }
 });
 
+const canUseWallet = computed(() => {
+  const balance = Number(props.wallet_amount) || 0;
+  const amountDue = Number(paymentDisplayAmount.value) || 0;
+  return balance >= amountDue && amountDue > 0;
+});
+
+const isProceedDisabled = computed(() => {
+  if (payment_method.value !== 'wallet') return false;
+  const balance = Number(props.wallet_amount) || 0;
+  const amountDue = Number(paymentDisplayAmount.value) || 0;
+  return balance <= 0 || balance < amountDue;
+});
+
 
 
 const paymentGatewayList = ref([])
@@ -213,6 +230,11 @@ const formSubmit = handleSubmit(async (values) => {
   const csrfToken = document.querySelector('meta[name="csrf-token"]').content
 
   if (values.payment_type === 'wallet') {
+    const walletBal = Number(props.wallet_amount) || 0;
+    if (walletBal <= 0) {
+      Swal.fire({ title: '', text: 'Insufficient wallet balance. Please choose another payment method.', icon: 'warning', iconColor: '#3333ff' });
+      return;
+    }
     if (values.wallet_amount > 0 && values.total_amount < values.wallet_amount) {
       IsLoading.value = 1
       values.txn_id = `#${props.booking_id}`

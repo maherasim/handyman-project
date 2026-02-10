@@ -426,7 +426,7 @@
                                         </div>
                                     @endhasanyrole
 
-                                    @hasanyrole(['handyman'])
+                                    @hasanyrole(['provider'])
                                         <div class="w3-third">
                                             <button class="float-end btn btn-success update-booking"
                                                 data-id="{{ $bookingdata->id }}"
@@ -505,7 +505,7 @@
                                 @endif
 
                                 @if ($bookingdata->status === 'confirm')
-                                    @hasanyrole(['handyman'])
+                                    @hasanyrole(['provider'])
                                         <div class="w3-third">
                                             <button class="float-end btn btn-success update-booking"
                                                 data-id="{{ $bookingdata->id }}"
