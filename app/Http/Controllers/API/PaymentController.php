@@ -98,17 +98,14 @@ class PaymentController extends Controller
             $result->total_amount = $remaining_amount;
             $result->save();
 
-            // Split original vs extra: admin gets 10% on extra, handyman only on base, provider gets 100% of extra
-            $extra_total = $booking->getExtraChargeValue();
-            $original_grand_total = $total_amount - $extra_total;
+            // Compute totals across the whole booking
+            $total_admin_commission = ($total_amount * $admin_commission_percentage) / 100;
+            $provider_total_earning = $total_amount - $total_admin_commission;
+            $remaining_admin_commission = ($remaining_amount > 0)
+                ? ($remaining_amount * $admin_commission_percentage) / 100
+                : 0;
 
-            $admin_commission_on_original = ($original_grand_total * $admin_commission_percentage) / 100;
-            $admin_commission_on_extra = ($extra_total * 10) / 100;
-            $advance_commission_already_paid = ($advance_paid * $admin_commission_percentage) / 100;
-            $remaining_admin_from_original = max(0, $admin_commission_on_original - $advance_commission_already_paid);
-            $total_admin_to_pay_now = $remaining_admin_from_original + $admin_commission_on_extra;
-
-            $provider_base_earning = $original_grand_total - $admin_commission_on_original;
+            // Calculate handyman payouts from provider_total_earning
             $handymen = BookingHandymanMapping::where('booking_id', $booking->id)->pluck('handyman_id');
             $handyman_payouts = [];
             $total_handyman_share = 0;
@@ -117,8 +114,9 @@ class PaymentController extends Controller
                 if (!$handyman || $handyman->handyman_commission === null) {
                     continue;
                 }
+                // Clamp each handyman commission between 1% and 85%
                 $commission_percent = max(1, min(85, $handyman->handyman_commission));
-                $handyman_total_share = ($provider_base_earning * $commission_percent) / 100;
+                $handyman_total_share = ($provider_total_earning * $commission_percent) / 100;
                 $total_handyman_share += $handyman_total_share;
                 $handyman_payouts[] = [
                     'handyman_id' => $handyman_id,
@@ -126,11 +124,12 @@ class PaymentController extends Controller
                 ];
             }
 
-            $provider_base_net = $provider_base_earning - $total_handyman_share;
-            if ($provider_base_net < 0) {
-                $provider_base_net = 0;
+            // Final provider earning = provider_total_earning - sum(handymen)
+            $provider_final_earning = $provider_total_earning - $total_handyman_share;
+            if ($provider_final_earning < 0) {
+                // Guard rail: never pay negative. If business rules allow, you can scale down handymen instead.
+                $provider_final_earning = 0;
             }
-            $provider_final_earning = $provider_base_net + $extra_total;
 
             // Pay handymen now
             foreach ($handyman_payouts as $payout) {
@@ -155,18 +154,20 @@ class PaymentController extends Controller
                 ]);
             }
 
-            if ($total_admin_to_pay_now > 0) {
-                Wallet::firstOrCreate(['user_id' => $admin_user_id])->increment('amount', $total_admin_to_pay_now);
+            // Pay remaining admin commission only for the remaining payment now
+            if ($remaining_admin_commission > 0) {
+                Wallet::firstOrCreate(['user_id' => $admin_user_id])->increment('amount', $remaining_admin_commission);
 
                 CommissionEarning::create([
                     'booking_id' => $booking->id,
                     'user_type' => 'admin',
                     'employee_id' => $admin_user_id,
-                    'commission_amount' => $total_admin_to_pay_now,
+                    'commission_amount' => $remaining_admin_commission,
                     'commission_status' => 'paid',
                 ]);
             }
 
+            // Pay provider the final net amount once (advance was held)
             Wallet::firstOrCreate(['user_id' => $booking->provider_id])->increment('amount', $provider_final_earning);
 
             ProviderPayout::create([
@@ -465,16 +466,9 @@ class PaymentController extends Controller
             $payment->total_amount = $remaining_amount;
             $payment->save();
 
-            $extra_total = $booking->getExtraChargeValue();
-            $original_grand_total = $total_amount - $extra_total;
+            $total_admin_commission = ($total_amount * $admin_commission_percentage) / 100;
+            $provider_total_earning = $total_amount - $total_admin_commission;
 
-            $admin_commission_on_original = ($original_grand_total * $admin_commission_percentage) / 100;
-            $admin_commission_on_extra = ($extra_total * 10) / 100;
-            $advance_commission_already_paid = ($advance_paid * $admin_commission_percentage) / 100;
-            $remaining_admin_from_original = max(0, $admin_commission_on_original - $advance_commission_already_paid);
-            $total_admin_to_pay_now = $remaining_admin_from_original + $admin_commission_on_extra;
-
-            $provider_base_earning = $original_grand_total - $admin_commission_on_original;
             $handymen = BookingHandymanMapping::where('booking_id', $booking->id)->pluck('handyman_id');
             $handyman_payouts = [];
             $total_handyman_share = 0;
@@ -484,7 +478,7 @@ class PaymentController extends Controller
                 if (!$handyman || $handyman->handyman_commission === null) continue;
 
                 $commission_percent = max(1, min(85, $handyman->handyman_commission));
-                $handyman_share = ($provider_base_earning * $commission_percent) / 100;
+                $handyman_share = ($provider_total_earning * $commission_percent) / 100;
                 $total_handyman_share += $handyman_share;
 
                 $handyman_payouts[] = [
@@ -493,10 +487,10 @@ class PaymentController extends Controller
                 ];
             }
 
-            $provider_base_net = $provider_base_earning - $total_handyman_share;
-            if ($provider_base_net < 0) $provider_base_net = 0;
-            $provider_final_earning = $provider_base_net + $extra_total;
+            $provider_final_earning = $provider_total_earning - $total_handyman_share;
+            if ($provider_final_earning < 0) $provider_final_earning = 0;
 
+            // ✅ Create pending handyman payouts
             foreach ($handyman_payouts as $payout) {
                 HandymanPayout::create([
                     'handyman_id' => $payout['handyman_id'],
@@ -517,6 +511,7 @@ class PaymentController extends Controller
                 ]);
             }
 
+            // ✅ Create pending provider payout
             ProviderPayout::create([
                 'provider_id' => $booking->provider_id,
                 'payment_id' => $payment->id,
@@ -535,12 +530,14 @@ class PaymentController extends Controller
                 'commission_status' => 'pending',
             ]);
 
-            if ($total_admin_to_pay_now > 0) {
+            // ✅ Admin commission for remaining
+            $remaining_admin_commission = ($remaining_amount * $admin_commission_percentage) / 100;
+            if ($remaining_admin_commission > 0) {
                 CommissionEarning::create([
                     'booking_id' => $booking->id,
                     'user_type' => 'admin',
                     'employee_id' => $admin_user_id,
-                    'commission_amount' => $total_admin_to_pay_now,
+                    'commission_amount' => $remaining_admin_commission,
                     'commission_status' => 'pending',
                 ]);
             }
