@@ -1477,25 +1477,28 @@ public function saveStripePayment(Request $request, $id)
         $result->total_amount = $remaining_amount;
         $result->save();
 
-        // Compute totals across the whole booking
-        $total_admin_commission = ($total_amount * $admin_commission_percentage) / 100;
-        $provider_total_earning = $total_amount - $total_admin_commission;
-        $remaining_admin_commission = ($remaining_amount > 0)
-            ? ($remaining_amount * $admin_commission_percentage) / 100
-            : 0;
+        // Split original vs extra: handyman commission only on base, admin gets 10% on extra too, provider gets 100% of extra
+        $extra_total = $booking->getExtraChargeValue();
+        $original_grand_total = $total_amount - $extra_total;
 
-        // Calculate handyman payouts from provider_total_earning
+        $admin_commission_on_original = ($original_grand_total * $admin_commission_percentage) / 100;
+        $admin_commission_on_extra = ($extra_total * 10) / 100; // 10% on extra charges
+        $advance_commission_already_paid = ($advance_paid * $admin_commission_percentage) / 100;
+        $remaining_admin_from_original = max(0, $admin_commission_on_original - $advance_commission_already_paid);
+        $total_admin_to_pay_now = $remaining_admin_from_original + $admin_commission_on_extra;
+
+        // Handyman commission only on original (base), not on extra
+        $provider_base_earning = $original_grand_total - $admin_commission_on_original;
         $handymen = BookingHandymanMapping::where('booking_id', $booking->id)->pluck('handyman_id');
         $handyman_payouts = [];
         $total_handyman_share = 0;
         foreach ($handymen as $handyman_id) {
             $handyman = User::find($handyman_id);
             if (!$handyman || $handyman->handyman_commission === null) {
-                continue; // Skip if no handyman or no commission set
+                continue;
             }
-
             $commission_percent = max(1, min(85, $handyman->handyman_commission));
-            $handyman_share = ($provider_total_earning * $commission_percent) / 100;
+            $handyman_share = ($provider_base_earning * $commission_percent) / 100;
             $total_handyman_share += $handyman_share;
             $handyman_payouts[] = [
                 'handyman_id' => $handyman_id,
@@ -1503,10 +1506,11 @@ public function saveStripePayment(Request $request, $id)
             ];
         }
 
-        $provider_final_earning = $provider_total_earning - $total_handyman_share;
-        if ($provider_final_earning < 0) {
-            $provider_final_earning = 0;
+        $provider_base_net = $provider_base_earning - $total_handyman_share;
+        if ($provider_base_net < 0) {
+            $provider_base_net = 0;
         }
+        $provider_final_earning = $provider_base_net + $extra_total; // 100% of extra to provider
 
         // Pay handymen
         foreach ($handyman_payouts as $payout) {
@@ -1531,20 +1535,20 @@ public function saveStripePayment(Request $request, $id)
             ]);
         }
 
-        // Pay remaining admin commission only for the remaining payment now
-        if ($remaining_admin_commission > 0) {
-            Wallet::firstOrCreate(['user_id' => $admin_user_id])->increment('amount', $remaining_admin_commission);
+        // Pay admin: remaining from original + 10% on extra
+        if ($total_admin_to_pay_now > 0) {
+            Wallet::firstOrCreate(['user_id' => $admin_user_id])->increment('amount', $total_admin_to_pay_now);
 
             CommissionEarning::create([
                 'booking_id' => $booking->id,
                 'user_type' => 'admin',
                 'employee_id' => $admin_user_id,
-                'commission_amount' => $remaining_admin_commission,
+                'commission_amount' => $total_admin_to_pay_now,
                 'commission_status' => 'paid',
             ]);
         }
 
-        // Pay provider the final net amount once (advance was held)
+        // Pay provider: base earnings after commissions + 100% of extra charges
         Wallet::firstOrCreate(['user_id' => $booking->provider_id])->increment('amount', $provider_final_earning);
 
         ProviderPayout::create([
