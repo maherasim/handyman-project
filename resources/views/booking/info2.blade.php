@@ -402,7 +402,7 @@ $datetime = $sitesetup ? json_decode($sitesetup->value) : null;
                 // SweetAlert confirmation
                 Swal.fire({
                     title: 'Are you sure?',
-                    text: "Do you want to assign this provider?",
+                    text: "Do you want to assign this Employer?",
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonColor: '#3085d6',
@@ -428,7 +428,7 @@ $datetime = $sitesetup ? json_decode($sitesetup->value) : null;
                             }
                         });
                     } else {
-                        Swal.fire("Assignment canceled!", "The provider was not assigned.", "info");
+                        Swal.fire("Assignment canceled!", "The Employer was not assigned.", "info");
                     }
                 });
             });

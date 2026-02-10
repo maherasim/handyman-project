@@ -695,7 +695,7 @@
                             switch ($status) {
                                 case 'pending':
                                     $nextActor = 'provider';
-                                    $nextText = 'Waiting for provider to accept the booking';
+                                    $nextText = 'Waiting for Employer to accept the booking';
                                     break;
                                 case 'accept':
                                     // Check if payment status is pending_by_admin
@@ -707,7 +707,7 @@
                                         $nextText = 'Waiting for customer to pay advance payment';
                                     } else {
                                         $nextActor = 'provider';
-                                        $nextText = 'Waiting for provider to assign handyman';
+                                        $nextText = 'Waiting for Employer to assign Worker';
                                     }
                                     break;
                                 case 'on_going':
@@ -716,11 +716,11 @@
                                     break;
                                 case 'in_progress':
                                     $nextActor = 'handyman';
-                                    $nextText = 'Work in progress — waiting for handyman to complete or put on hold';
+                                    $nextText = 'Work in progress — waiting for Worker to complete or put on hold';
                                     break;
                                 case 'hold':
                                     $nextActor = 'handyman';
-                                    $nextText = 'Work is on hold — waiting for handyman to resume';
+                                    $nextText = 'Work is on hold — waiting for Worker to resume';
                                     break;
                                 case 'pending_approval':
                                     $nextActor = 'user';
@@ -1571,7 +1571,7 @@
 
             Swal.fire({
                 title: 'Are you sure?',
-                text: "Do you want to assign this provider?",
+                text: "Do you want to assign this Employer?",
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#3085d6',
@@ -1590,7 +1590,7 @@
                 }).then(r=>r.json()).then(response => {
                     Swal.fire('Success!', response.message || 'Assigned', 'success');
                     $('.assign-provider-btn, .assign-provider').prop('disabled', true).addClass('disabled');
-                }).catch(() => Swal.fire('Error!', 'Unable to assign provider', 'error'));
+                }).catch(() => Swal.fire('Error!', 'Unable to assign Employer', 'error'));
             });
         });
 
@@ -2529,7 +2529,7 @@ $(document).ready(function() {
                             html += '<div class="list-group-item mb-2">';
                             html += '<div class="d-flex justify-content-between align-items-start mb-2">';
                             html += '<div>';
-                            html += '<strong>' + (review.provider_name || 'Provider') + '</strong>';
+                            html += '<strong>' + (review.provider_name || 'Employer') + '</strong>';
                             html += '<div class="star-rating-small mt-1">';
                             for (var j = 1; j <= 5; j++) {
                                 if (j <= review.rating) {

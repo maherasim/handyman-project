@@ -1101,7 +1101,7 @@
                         <div class="position-relative d-flex m-auto" style="width: 164px; height: 140px;">
                             <img src="{{ asset('images/frame_img.jpg') }}" alt="Frame"
                                 style="width: 100%; height: 100%; position: absolute; z-index: 2;">
-                            <img src="{{ asset($serviceData['provider']['profile_image']) }}" alt="Provider"
+                            <img src="{{ asset($serviceData['provider']['profile_image']) }}" alt="Employer"
                                 style="width: 80%; height: 80%; object-fit: cover; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 2;">
                         </div>
 
