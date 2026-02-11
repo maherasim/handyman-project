@@ -9,6 +9,7 @@ use App\Models\BookingStatus;
 use App\Models\BookingRating;
 use App\Models\HandymanRating;
 use App\Models\CustomerRating;
+use App\Models\PostJobBidCustomerRating;
 use App\Models\BookingActivity;
 use App\Models\Payment;
 use App\Models\PaymentHistory;
@@ -908,30 +909,53 @@ class BookingController extends Controller
             return comman_message_response(__('messages.customer_not_found'), 404);
         }
         
-        // Get all customer ratings (ratings given by providers to this customer)
-        // Include soft deleted records to get accurate count
+        // Get customer ratings from customer_ratings (booking)
         $customerRatings = CustomerRating::where('customer_id', $customer_id)
             ->with(['provider', 'booking'])
             ->orderBy('created_at', 'desc')
             ->get();
         
-        // Debug: Log the count
-        \Log::info('Customer Rating Count for customer_id: ' . $customer_id, ['count' => $customerRatings->count()]);
+        // Get customer ratings from post_job_bid_customer_ratings (post job)
+        $postJobBidRatings = PostJobBidCustomerRating::where('customer_id', $customer_id)
+            ->with(['provider'])
+            ->orderBy('created_at', 'desc')
+            ->get();
         
-        // Calculate average rating
-        $averageRating = $customerRatings->avg('rating') ?? 0;
-        $totalReviews = $customerRatings->count();
-        
-        // Get recent reviews (last 5)
-        $recentReviews = $customerRatings->take(5)->map(function($rating) {
+        // Map both to same format and merge
+        $allReviews = $customerRatings->map(function ($rating) {
             return [
                 'id' => $rating->id,
                 'rating' => $rating->rating,
                 'review' => $rating->review,
                 'provider_name' => optional($rating->provider)->display_name,
                 'created_at' => $rating->created_at ? $rating->created_at->format('Y-m-d') : null,
+                'sort_at' => $rating->created_at,
             ];
-        });
+        })->concat($postJobBidRatings->map(function ($rating) {
+            return [
+                'id' => $rating->id,
+                'rating' => $rating->rating,
+                'review' => $rating->review,
+                'provider_name' => optional($rating->provider)->display_name,
+                'created_at' => $rating->created_at ? $rating->created_at->format('Y-m-d') : null,
+                'sort_at' => $rating->created_at,
+            ];
+        }))->sortByDesc('sort_at')->values();
+        
+        // Calculate average rating and total from merged set
+        $totalReviews = $allReviews->count();
+        $averageRating = $totalReviews > 0 ? $allReviews->avg('rating') : 0;
+        
+        // Get recent reviews (last 5) - same JSON shape
+        $recentReviews = $allReviews->take(5)->map(function ($item) {
+            return [
+                'id' => $item['id'],
+                'rating' => $item['rating'],
+                'review' => $item['review'],
+                'provider_name' => $item['provider_name'],
+                'created_at' => $item['created_at'],
+            ];
+        })->values();
         
         $response = [
             'customer_id' => $customer_id,
