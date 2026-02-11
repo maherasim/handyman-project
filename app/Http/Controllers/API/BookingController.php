@@ -1144,43 +1144,95 @@ class BookingController extends Controller
 
     public function getUserRatings(Request $request){
         $user = auth()->user();
-
-        if(auth()->user() !== null){
-
-            if(auth()->user()->hasRole('admin')){
-                $ratings = BookingRating::orderBy('id','desc');
-            }
-            else{
-                $ratings = BookingRating::where('customer_id', $user->id);
-            }
+        if ($user === null) {
+            return response()->json(['message' => 'Unauthenticated'], 401);
         }
 
+        // Ratings OF the customer (received): from customer_ratings and post_job_bid_customer_ratings (customer_id = customer being rated)
+        $customer_id = $request->customer_id ?? $user->id;
+        $customer_id = (int) $customer_id;
+
+        // Non-admin may only view their own customer ratings
+        if (!$user->hasRole('admin') && !$user->hasRole('demo_admin') && (int) $user->id !== $customer_id) {
+            $customer_id = (int) $user->id;
+        }
+
+        $customerRatingInfo = CustomerRating::where('customer_id', $customer_id)
+            ->with(['provider', 'customer'])
+            ->orderBy('created_at', 'desc')
+            ->get();
+        $postJobBidRatings = PostJobBidCustomerRating::where('customer_id', $customer_id)
+            ->with(['provider', 'customer'])
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        $customer = User::find($customer_id);
+        $mapItem = function ($r) use ($customer) {
+            $bookingId = $r->booking_id ?? null;
+            $cust = $customer ?? $r->customer ?? null;
+            return [
+                'id' => $r->id,
+                'booking_id' => $bookingId,
+                'customer_id' => $r->customer_id,
+                'customer_name' => optional($cust)->display_name,
+                'customer_profile_image' => optional($cust)->login_type != null ? optional($cust)->social_image : getSingleMedia($cust, 'profile_image', null),
+                'provider_id' => $r->provider_id,
+                'provider_name' => optional($r->provider)->display_name,
+                'provider_profile_image' => optional($r->provider)->login_type != null ? optional($r->provider)->social_image : getSingleMedia($r->provider, 'profile_image', null),
+                'rating' => $r->rating,
+                'review' => $r->review,
+                'created_at' => $r->created_at ? date('Y-m-d', strtotime($r->created_at)) : null,
+                '_sort_at' => $r->created_at,
+            ];
+        };
+        $allReviews = $customerRatingInfo->map(function ($r) use ($mapItem) {
+            $item = $mapItem($r);
+            $item['booking_id'] = $r->booking_id;
+            return $item;
+        })->concat($postJobBidRatings->map(function ($r) use ($mapItem) {
+            $item = $mapItem($r);
+            $item['booking_id'] = null;
+            return $item;
+        }))->sortByDesc('_sort_at')->values();
 
         $per_page = config('constant.PER_PAGE_LIMIT');
-        if($request->has('per_page') && !empty($request->per_page)){
-            if(is_numeric($request->per_page)){
-                $per_page = $request->per_page;
+        if ($request->has('per_page') && !empty($request->per_page)) {
+            if (is_numeric($request->per_page)) {
+                $per_page = (int) $request->per_page;
             }
-            if($request->per_page === 'all'){
-                $per_page = $ratings->count();
+            if ($request->per_page === 'all') {
+                $per_page = $allReviews->count();
             }
         }
+        $per_page = max(1, $per_page);
+        $page = max(1, (int) $request->get('page', 1));
+        $total = $allReviews->count();
+        $slice = $allReviews->slice(($page - 1) * $per_page, $per_page)->values();
+        $dataPaginated = $slice->map(function ($item) {
+            unset($item['_sort_at']);
+            return $item;
+        });
 
-        $ratings = $ratings->paginate($per_page);
-        $data = BookingRatingResource::collection($ratings);
+        $paginator = new \Illuminate\Pagination\LengthAwarePaginator(
+            $dataPaginated,
+            $total,
+            $per_page,
+            $page,
+            ['path' => $request->url(), 'query' => $request->query()]
+        );
 
-        return response ([
+        return response([
             'pagination' => [
-                'total_ratings' => $data->total(),
-                'per_page' => $data->perPage(5),
-                'currentPage' => $data->currentPage(),
-                'totalPages' => $data->lastPage(),
-                'from' => $data->firstItem(),
-                'to' => $data->lastItem(),
-                'next_page' => $data->nextPageUrl(),
-                'previous_page' => $data->previousPageUrl(),
+                'total_ratings' => $paginator->total(),
+                'per_page' => $paginator->perPage(),
+                'currentPage' => $paginator->currentPage(),
+                'totalPages' => $paginator->lastPage(),
+                'from' => $paginator->firstItem(),
+                'to' => $paginator->lastItem(),
+                'next_page' => $paginator->nextPageUrl(),
+                'previous_page' => $paginator->previousPageUrl(),
             ],
-            'data' => $data,
+            'data' => $dataPaginated,
         ]);
     }
     public function getRatingsList(Request $request){
