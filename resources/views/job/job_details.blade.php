@@ -159,6 +159,49 @@
             font-size: 11px;
             padding: 4px 8px;
         }
+
+        /* Client-attractive job CTA card */
+        .job-cta-card {
+            background: linear-gradient(145deg, #5F60BA 0%, #4a4b9e 50%, #3d3e85 100%);
+            border-radius: 16px;
+            padding: 0;
+            overflow: hidden;
+            box-shadow: 0 12px 40px rgba(95, 96, 186, 0.35), 0 4px 12px rgba(0,0,0,0.08);
+            border: none;
+            position: relative;
+        }
+        .job-cta-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            opacity: 0.6;
+            pointer-events: none;
+        }
+        .job-cta-card .cta-inner { position: relative; z-index: 1; padding: 1.5rem 1.35rem; }
+        .job-cta-card .cta-badge {
+            display: inline-flex; align-items: center; gap: 6px;
+            background: rgba(255,255,255,0.2); color: #fff; font-size: 11px; font-weight: 600;
+            text-transform: uppercase; letter-spacing: 0.05em; padding: 6px 12px; border-radius: 20px; margin-bottom: 1rem;
+        }
+        .job-cta-card .cta-headline { color: #fff; font-size: 1.15rem; font-weight: 700; margin-bottom: 1rem; line-height: 1.35; text-shadow: 0 1px 2px rgba(0,0,0,0.1); }
+        .job-cta-card .cta-stats { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 1.1rem; }
+        .job-cta-card .cta-stat {
+            display: inline-flex; align-items: center; gap: 6px;
+            background: rgba(255,255,255,0.18); color: #fff; font-size: 12px; font-weight: 500;
+            padding: 8px 12px; border-radius: 10px; backdrop-filter: blur(6px);
+        }
+        .job-cta-card .cta-stat i { opacity: 0.95; font-size: 13px; }
+        .job-cta-card .cta-trust { color: rgba(255,255,255,0.88); font-size: 12px; margin-bottom: 1rem; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+        .job-cta-card .cta-trust span { display: inline-flex; align-items: center; gap: 4px; }
+        .job-cta-card .cta-btn {
+            display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 100%;
+            padding: 14px 20px; background: #fff; color: #5F60BA; font-weight: 700; font-size: 15px;
+            border-radius: 12px; text-decoration: none; border: none; box-shadow: 0 4px 14px rgba(0,0,0,0.15);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .job-cta-card .cta-btn:hover { color: #4a4b9e; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.2); }
+        .job-cta-card .cta-btn:active { transform: translateY(0); }
         
         /* Responsive Design */
         @media (max-width: 768px) {
@@ -419,40 +462,52 @@
                         </p>
                     </div>
 
-                    <!-- Job highlights & CTA (replaces Continue) -->
-                    <div class="job-highlights-card mb-4" style="
-                        background: linear-gradient(135deg, #f8f9ff 0%, #fff 50%, #f0f4ff 100%);
-                        border: 1px solid rgba(95, 96, 186, 0.2);
-                        border-radius: 12px;
-                        padding: 1rem 1.25rem;
-                        box-shadow: 0 4px 14px rgba(95, 96, 186, 0.08);
-                    ">
-                        <div class="d-flex align-items-center gap-2 mb-3" style="color: #5F60BA; font-weight: 600; font-size: 14px;">
-                            <i class="fas fa-bolt"></i>
-                            <span>At a glance</span>
-                        </div>
-                        <div class="d-flex flex-wrap gap-3 mb-3">
-                            <span class="d-inline-flex align-items-center gap-1 text-muted" style="font-size: 13px;">
-                                <i class="fas fa-map-marker-alt" style="color: #5F60BA;"></i>
-                                {{ optional($jobrequest->city)->name ?? '—' }}, {{ optional($jobrequest->country)->name ?? '—' }}
-                            </span>
-                            <span class="d-inline-flex align-items-center gap-1 text-muted" style="font-size: 13px;">
-                                <i class="fas fa-calendar-alt" style="color: #5F60BA;"></i>
+                    <!-- Client-attractive CTA card -->
+                    @php
+                        $priceLabelShort = $jobrequest->price_type === 'fixed' ? 'Fixed' : ($jobrequest->price_type === 'daily' ? '/day' : '/hr');
+                    @endphp
+                    <div class="job-cta-card mb-4">
+                        <div class="cta-inner">
+                            <div class="cta-badge">
+                                <i class="fas fa-star"></i>
+                                <span>Great opportunity</span>
+                            </div>
+                            <h3 class="cta-headline mb-0">
+                                Ready to win this project?<br>
+                                <span style="font-size: 0.92em; opacity: 0.95;">Sign in and place your bid in minutes.</span>
+                            </h3>
+                            <div class="cta-stats">
+                                <span class="cta-stat">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    {{ optional($jobrequest->city)->name ?? '—' }}, {{ optional($jobrequest->country)->name ?? '—' }}
+                                </span>
+                                <span class="cta-stat">
+                                    <i class="fas fa-wallet"></i>
+                                    {{ getPriceFormat($jobrequest->price) }} {{ $priceLabelShort }}
+                                </span>
                                 @if($jobrequest->start_date)
-                                    {{ \Carbon\Carbon::parse($jobrequest->start_date)->format('M j') }} – {{ $jobrequest->end_date ? \Carbon\Carbon::parse($jobrequest->end_date)->format('M j, Y') : '—' }}
-                                @else
-                                    —
+                                <span class="cta-stat">
+                                    <i class="fas fa-calendar-check"></i>
+                                    {{ \Carbon\Carbon::parse($jobrequest->start_date)->format('M j') }} – {{ $jobrequest->end_date ? \Carbon\Carbon::parse($jobrequest->end_date)->format('M j') : '—' }}
+                                </span>
                                 @endif
-                            </span>
-                            <span class="d-inline-flex align-items-center gap-1 text-muted" style="font-size: 13px;">
-                                <i class="fas fa-briefcase" style="color: #5F60BA;"></i>
-                                {{ formatJobDetailLabel($jobrequest->type ?? null) }}
-                            </span>
+                                <span class="cta-stat">
+                                    <i class="fas fa-briefcase"></i>
+                                    {{ formatJobDetailLabel($jobrequest->type ?? null) }}
+                                </span>
+                            </div>
+                            <div class="cta-trust">
+                                <span><i class="fas fa-shield-alt"></i> Secure</span>
+                                <span><i class="fas fa-comments"></i> Direct contact</span>
+                                <span><i class="fas fa-paper-plane"></i> Easy apply</span>
+                            </div>
+                            <div class="cta-btn-wrap">
+                                <a href="{{ route('login') }}" class="cta-btn">
+                                    <i class="fas fa-rocket"></i>
+                                    Apply now – Place your bid
+                                </a>
+                            </div>
                         </div>
-                        <p class="mb-0 small text-muted" style="line-height: 1.5;">
-                            <i class="fas fa-check-circle text-success me-1"></i>
-                            Interested? <a href="{{ route('login') }}" class="text-primary fw-medium text-decoration-none">Sign in</a> to place your bid and connect with the client.
-                        </p>
                     </div>
 
                     <!-- Social Sharing -->
