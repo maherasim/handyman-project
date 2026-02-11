@@ -13,6 +13,7 @@ use App\Http\Resources\API\ServiceResource;
 use Illuminate\Support\Facades\Password;
 use App\Models\Booking;
 use App\Models\BookingRating;
+use App\Models\PostJobBidRating;
 use App\Models\Wallet;
 use App\Models\HandymanRating;
 use App\Http\Resources\API\HandymanRatingResource;
@@ -748,61 +749,104 @@ public function register(UserRequest $request)
     }
 
     public function providerReviewsList(Request $request){
-        $providerId = $request->provider_id;
-        
+        $providerId = (int) $request->provider_id;
+
         if (!$providerId) {
             return comman_message_response(__('messages.provider_id_required'), 400);
         }
 
-        // Get all booking IDs for this provider
+        // Provider reviews from booking_ratings (bookings) and post_job_bid_ratings (post job) — same as listing count
         $bookingIds = Booking::where('provider_id', $providerId)->pluck('id');
-        
-        if ($bookingIds->isEmpty()) {
-            return comman_custom_response([
-                'pagination' => [
-                    'total_items' => 0,
-                    'per_page' => 0,
-                    'currentPage' => 1,
-                    'totalPages' => 0,
-                    'from' => null,
-                    'to' => null,
-                    'next_page' => null,
-                    'previous_page' => null,
-                ],
-                'data' => [],
-            ]);
-        }
+        $bookingRatings = $bookingIds->isEmpty()
+            ? collect()
+            : BookingRating::whereIn('booking_id', $bookingIds)
+                ->with(['customer', 'booking', 'service'])
+                ->orderBy('created_at', 'desc')
+                ->get();
+        $postJobBidRatings = PostJobBidRating::where('provider_id', $providerId)
+            ->with(['customer'])
+            ->orderBy('created_at', 'desc')
+            ->get();
 
-        // Get all ratings for these bookings
-        $rating_data = BookingRating::whereIn('booking_id', $bookingIds)
-            ->with(['customer', 'booking', 'service']);
+        $mapBookingRating = function ($r) {
+            $customer = $r->customer;
+            $profile_image = optional($customer)->login_type != null ? (optional($customer)->social_image ?? getSingleMedia($customer, 'profile_image', null)) : getSingleMedia($customer, 'profile_image', null);
+            return [
+                'id' => $r->id,
+                'rating' => $r->rating,
+                'review' => $r->review,
+                'service_id' => $r->service_id ?? null,
+                'service_name' => optional($r->service)->name ?? null,
+                'attchments' => isset($r->service) ? getAttachments($r->service->getMedia('service_attachment')) : [],
+                'booking_id' => $r->booking_id ?? null,
+                'created_at' => $r->created_at ? date('Y-m-d', strtotime($r->created_at)) : null,
+                'customer_id' => $r->customer_id,
+                'customer_name' => optional($customer)->display_name,
+                'profile_image' => $profile_image,
+                '_sort_at' => $r->created_at,
+            ];
+        };
+        $mapPostJobRating = function ($r) {
+            $customer = $r->customer;
+            $profile_image = optional($customer)->login_type != null ? (optional($customer)->social_image ?? getSingleMedia($customer, 'profile_image', null)) : getSingleMedia($customer, 'profile_image', null);
+            return [
+                'id' => $r->id,
+                'rating' => $r->rating,
+                'review' => $r->review,
+                'service_id' => null,
+                'service_name' => null,
+                'attchments' => [],
+                'booking_id' => null,
+                'created_at' => $r->created_at ? date('Y-m-d', strtotime($r->created_at)) : null,
+                'customer_id' => $r->customer_id,
+                'customer_name' => optional($customer)->display_name,
+                'profile_image' => $profile_image,
+                '_sort_at' => $r->created_at,
+            ];
+        };
+        $allReviews = $bookingRatings->map($mapBookingRating)
+            ->concat($postJobBidRatings->map($mapPostJobRating))
+            ->sortByDesc('_sort_at')
+            ->values();
 
         $per_page = config('constant.PER_PAGE_LIMIT');
-
         if ($request->has('per_page') && !empty($request->per_page)) {
             if (is_numeric($request->per_page)) {
-                $per_page = $request->per_page;
+                $per_page = (int) $request->per_page;
             }
             if ($request->per_page === 'all') {
-                $per_page = $rating_data->count();
+                $per_page = $allReviews->count();
             }
         }
+        $per_page = max(1, $per_page);
+        $page = max(1, (int) $request->get('page', 1));
+        $total = $allReviews->count();
+        $slice = $allReviews->slice(($page - 1) * $per_page, $per_page)->values();
+        $dataPaginated = $slice->map(function ($item) {
+            unset($item['_sort_at']);
+            return $item;
+        });
 
-        $rating_data = $rating_data->orderBy('created_at', 'desc')->paginate($per_page);
+        $paginator = new \Illuminate\Pagination\LengthAwarePaginator(
+            $dataPaginated,
+            $total,
+            $per_page,
+            $page,
+            ['path' => $request->url(), 'query' => $request->query()]
+        );
 
-        $items = BookingRatingResource::collection($rating_data);
         $response = [
             'pagination' => [
-                'total_items' => $items->total(),
-                'per_page' => $items->perPage(),
-                'currentPage' => $items->currentPage(),
-                'totalPages' => $items->lastPage(),
-                'from' => $items->firstItem(),
-                'to' => $items->lastItem(),
-                'next_page' => $items->nextPageUrl(),
-                'previous_page' => $items->previousPageUrl(),
+                'total_items' => $paginator->total(),
+                'per_page' => $paginator->perPage(),
+                'currentPage' => $paginator->currentPage(),
+                'totalPages' => $paginator->lastPage(),
+                'from' => $paginator->firstItem(),
+                'to' => $paginator->lastItem(),
+                'next_page' => $paginator->nextPageUrl(),
+                'previous_page' => $paginator->previousPageUrl(),
             ],
-            'data' => $items,
+            'data' => $dataPaginated->values(),
         ];
         return comman_custom_response($response);
     }
