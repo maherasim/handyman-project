@@ -897,25 +897,26 @@ class BookingController extends Controller
 
     public function getCustomerRatingInfo(Request $request)
     {
-        $customer_id = $request->customer_id;
-        
+        $customer_id = $request->customer_id ?? $request->rated;
+        $customer_id = $customer_id ? (int) $customer_id : null;
+
         if (!$customer_id) {
             return comman_message_response(__('messages.customer_id_required'), 400);
         }
-        
+
         // Get customer info
         $customer = User::find($customer_id);
         if (!$customer) {
             return comman_message_response(__('messages.customer_not_found'), 404);
         }
-        
-        // Get customer ratings from customer_ratings (booking)
+
+        // Get customer ratings from customer_ratings (booking) — customer_id = customer being rated
         $customerRatings = CustomerRating::where('customer_id', $customer_id)
             ->with(['provider', 'booking'])
             ->orderBy('created_at', 'desc')
             ->get();
-        
-        // Get customer ratings from post_job_bid_customer_ratings (post job)
+
+        // Get customer ratings from post_job_bid_customer_ratings — customer_id = customer being rated (rated)
         $postJobBidRatings = PostJobBidCustomerRating::where('customer_id', $customer_id)
             ->with(['provider'])
             ->orderBy('created_at', 'desc')
