@@ -29,18 +29,7 @@
     <meta name="twitter:image" content="{{ $shareImage }}" />
 @endsection
 
-@section('content')
-    @php
-        // Format label-like values (e.g. high_school → High School, onsite → Onsite)
-        if (!function_exists('formatJobDetailLabel')) {
-            function formatJobDetailLabel($value) {
-                if ($value === null || $value === '') return 'N/A';
-                $v = (string) $value;
-                if (strtolower(trim($v)) === 'n/a') return 'N/A';
-                return ucwords(str_replace('_', ' ', strtolower($v)));
-            }
-        }
-    @endphp
+@section('after_head')
     <style>
         /* Professional Job Details Tab Styling */
         .job-details-tabs {
@@ -260,8 +249,21 @@
             }
         }
     </style>
+@endsection
 
-    <body>
+@section('content')
+    @php
+        // Format label-like values (e.g. high_school → High School, onsite → Onsite)
+        if (!function_exists('formatJobDetailLabel')) {
+            function formatJobDetailLabel($value) {
+                if ($value === null || $value === '') return 'N/A';
+                $v = (string) $value;
+                if (strtolower(trim($v)) === 'n/a') return 'N/A';
+                return ucwords(str_replace('_', ' ', strtolower($v)));
+            }
+        }
+    @endphp
+
         <div class="container">
             <div class="row">
                 <div class="col-md-8 mt-3">
@@ -926,6 +928,6 @@
             });
         </script>
 
-    </body>
+
 
 @endsection
