@@ -270,17 +270,55 @@ class BookingController extends Controller
 
         $rating_data = BookingRatingResource::collection($booking_detail->bookingRating->take(5));
         $service = new ServiceResource($booking_detail->service);
-        
-        // Get customer rating info
-        $customerRatingInfo = CustomerRating::where('customer_id', $booking_detail->customer_id)
+
+        $customer_id = (int) $booking_detail->customer_id;
+
+        // Get customer rating info from customer_ratings (booking) and post_job_bid_customer_ratings
+        $customerRatingInfo = CustomerRating::where('customer_id', $customer_id)
+            ->with(['provider', 'customer'])
             ->orderBy('created_at', 'desc')
             ->get();
-        $customerAverageRating = $customerRatingInfo->avg('rating') ?? 0;
-        $customerTotalRatings = $customerRatingInfo->count();
-        
-        // Get recent customer reviews with comments
-        $customerReviews = CustomerRatingResource::collection($customerRatingInfo->take(10));
-        
+        $postJobBidRatings = PostJobBidCustomerRating::where('customer_id', $customer_id)
+            ->with(['provider', 'customer'])
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        // Map to same shape as CustomerRatingResource and merge
+        $bookingCustomer = $booking_detail->customer;
+        $mapBookingRating = function ($r) use ($bookingCustomer) {
+            return [
+                'id' => $r->id,
+                'booking_id' => $r->booking_id ?? null,
+                'customer_id' => $r->customer_id,
+                'customer_name' => optional($bookingCustomer)->display_name ?? optional($r->customer)->display_name,
+                'customer_profile_image' => optional($bookingCustomer)->login_type != null ? optional($bookingCustomer)->social_image : getSingleMedia($bookingCustomer ?? $r->customer, 'profile_image', null),
+                'provider_id' => $r->provider_id,
+                'provider_name' => optional($r->provider)->display_name,
+                'provider_profile_image' => optional($r->provider)->login_type != null ? optional($r->provider)->social_image : getSingleMedia($r->provider, 'profile_image', null),
+                'rating' => $r->rating,
+                'review' => $r->review,
+                'created_at' => $r->created_at ? date('Y-m-d', strtotime($r->created_at)) : null,
+            ];
+        };
+        $allCustomerReviews = $customerRatingInfo->map(function ($r) use ($mapBookingRating) {
+            $arr = $mapBookingRating($r);
+            $arr['booking_id'] = $r->booking_id;
+            return $arr + ['_sort_at' => $r->created_at];
+        })->concat($postJobBidRatings->map(function ($r) use ($mapBookingRating) {
+            $arr = $mapBookingRating($r);
+            $arr['booking_id'] = null;
+            return $arr + ['_sort_at' => $r->created_at];
+        }))->sortByDesc('_sort_at')->values();
+
+        $customerAverageRating = $allCustomerReviews->count() > 0 ? $allCustomerReviews->avg('rating') : 0;
+        $customerTotalRatings = $allCustomerReviews->count();
+
+        // Recent customer reviews (last 10) - same JSON shape as before
+        $customerReviews = $allCustomerReviews->take(10)->map(function ($item) {
+            unset($item['_sort_at']);
+            return $item;
+        })->values();
+
         $customer = new UserResource($booking_detail->customer);
         $customerArray = $customer->toArray($request);
         $customerArray['customer_rating'] = round($customerAverageRating, 1);
