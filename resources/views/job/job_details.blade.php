@@ -419,10 +419,41 @@
                         </p>
                     </div>
 
-                    <!-- Continue Button -->
-                    <button id="continueBtn" class="btn btn-primary w-100 mb-4" style="background: #5F60BA; padding: 12px;">
-                        Continue
-                    </button>
+                    <!-- Job highlights & CTA (replaces Continue) -->
+                    <div class="job-highlights-card mb-4" style="
+                        background: linear-gradient(135deg, #f8f9ff 0%, #fff 50%, #f0f4ff 100%);
+                        border: 1px solid rgba(95, 96, 186, 0.2);
+                        border-radius: 12px;
+                        padding: 1rem 1.25rem;
+                        box-shadow: 0 4px 14px rgba(95, 96, 186, 0.08);
+                    ">
+                        <div class="d-flex align-items-center gap-2 mb-3" style="color: #5F60BA; font-weight: 600; font-size: 14px;">
+                            <i class="fas fa-bolt"></i>
+                            <span>At a glance</span>
+                        </div>
+                        <div class="d-flex flex-wrap gap-3 mb-3">
+                            <span class="d-inline-flex align-items-center gap-1 text-muted" style="font-size: 13px;">
+                                <i class="fas fa-map-marker-alt" style="color: #5F60BA;"></i>
+                                {{ optional($jobrequest->city)->name ?? '—' }}, {{ optional($jobrequest->country)->name ?? '—' }}
+                            </span>
+                            <span class="d-inline-flex align-items-center gap-1 text-muted" style="font-size: 13px;">
+                                <i class="fas fa-calendar-alt" style="color: #5F60BA;"></i>
+                                @if($jobrequest->start_date)
+                                    {{ \Carbon\Carbon::parse($jobrequest->start_date)->format('M j') }} – {{ $jobrequest->end_date ? \Carbon\Carbon::parse($jobrequest->end_date)->format('M j, Y') : '—' }}
+                                @else
+                                    —
+                                @endif
+                            </span>
+                            <span class="d-inline-flex align-items-center gap-1 text-muted" style="font-size: 13px;">
+                                <i class="fas fa-briefcase" style="color: #5F60BA;"></i>
+                                {{ formatJobDetailLabel($jobrequest->type ?? null) }}
+                            </span>
+                        </div>
+                        <p class="mb-0 small text-muted" style="line-height: 1.5;">
+                            <i class="fas fa-check-circle text-success me-1"></i>
+                            Interested? <a href="{{ route('login') }}" class="text-primary fw-medium text-decoration-none">Sign in</a> to place your bid and connect with the client.
+                        </p>
+                    </div>
 
                     <!-- Social Sharing -->
                     <div class="d-flex align-items-center justify-content-center gap-3 mb-4 social-icons">
@@ -749,38 +780,6 @@
                     description.style.display = 'none';
                     fullDescription.style.display = 'block';
                     readMoreBtn.style.display = 'none';
-                });
-            });
-        </script>
-
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                const continueBtn = document.getElementById('continueBtn');
-                const descriptionTabBtn = document.querySelector('[data-tab="description"]');
-                const descriptionSection = document.getElementById('description-content');
-                if (continueBtn && descriptionTabBtn && descriptionSection) {
-                    continueBtn.addEventListener('click', function() {
-                        // Activate Description tab
-                        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-                        descriptionTabBtn.classList.add('active');
-                        document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
-                        descriptionSection.style.display = 'block';
-                        descriptionSection.classList.add('active');
-                        // Smooth scroll to description tab
-                        descriptionSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    });
-                }
-            });
-        </script>
-
-        <script>
-            document.addEventListener('DOMContentLoaded', function () {
-                const continueBtn = document.getElementById('continueBtn');
-                continueBtn.addEventListener('click', function () {
-                    window.scrollTo({
-                        top: document.body.scrollHeight,
-                        behavior: 'smooth'
-                    });
                 });
             });
         </script>
