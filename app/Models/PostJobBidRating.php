@@ -18,6 +18,16 @@ class PostJobBidRating extends Model
         'rating',
         'review',
     ];
+
+    public function customer()
+    {
+        return $this->belongsTo(User::class, 'customer_id', 'id');
+    }
+
+    public function provider()
+    {
+        return $this->belongsTo(User::class, 'provider_id', 'id');
+    }
 }
 
 

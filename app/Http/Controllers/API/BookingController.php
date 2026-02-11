@@ -10,6 +10,7 @@ use App\Models\BookingRating;
 use App\Models\HandymanRating;
 use App\Models\CustomerRating;
 use App\Models\PostJobBidCustomerRating;
+use App\Models\PostJobBidRating;
 use App\Models\BookingActivity;
 use App\Models\Payment;
 use App\Models\PaymentHistory;
@@ -327,6 +328,68 @@ class BookingController extends Controller
         
         $provider_data = new UserResource($booking_detail->provider);
         $provider_data = $provider_data->toArray($request);
+
+        // Provider reviews from booking_ratings and post_job_bid_ratings (same combined logic as UserResource rating)
+        $provider_id = (int) $booking_detail->provider_id;
+        $providerBookingIds = Booking::where('provider_id', $provider_id)->pluck('id');
+        $bookingRatingsForProvider = $providerBookingIds->isEmpty()
+            ? collect()
+            : BookingRating::whereIn('booking_id', $providerBookingIds)
+                ->with(['customer', 'service'])
+                ->orderBy('created_at', 'desc')
+                ->get();
+        $postJobBidRatingsForProvider = PostJobBidRating::where('provider_id', $provider_id)
+            ->with(['customer'])
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        $mapBookingRatingToReview = function ($r) {
+            $customer = $r->customer;
+            $profile_image = optional($customer)->login_type != null ? (optional($customer)->social_image ?? getSingleMedia($customer, 'profile_image', null)) : getSingleMedia($customer, 'profile_image', null);
+            return [
+                'id' => $r->id,
+                'rating' => $r->rating,
+                'review' => $r->review,
+                'service_id' => $r->service_id ?? null,
+                'service_name' => optional($r->service)->name ?? null,
+                'attchments' => isset($r->service) ? getAttachments($r->service->getMedia('service_attachment')) : [],
+                'booking_id' => $r->booking_id ?? null,
+                'created_at' => $r->created_at ? date('Y-m-d', strtotime($r->created_at)) : null,
+                'customer_id' => $r->customer_id,
+                'customer_name' => optional($customer)->display_name,
+                'profile_image' => $profile_image,
+                '_sort_at' => $r->created_at,
+            ];
+        };
+        $mapPostJobRatingToReview = function ($r) {
+            $customer = $r->customer;
+            $profile_image = optional($customer)->login_type != null ? (optional($customer)->social_image ?? getSingleMedia($customer, 'profile_image', null)) : getSingleMedia($customer, 'profile_image', null);
+            return [
+                'id' => $r->id,
+                'rating' => $r->rating,
+                'review' => $r->review,
+                'service_id' => null,
+                'service_name' => null,
+                'attchments' => [],
+                'booking_id' => null,
+                'created_at' => $r->created_at ? date('Y-m-d', strtotime($r->created_at)) : null,
+                'customer_id' => $r->customer_id,
+                'customer_name' => optional($customer)->display_name,
+                'profile_image' => $profile_image,
+                '_sort_at' => $r->created_at,
+            ];
+        };
+        $allProviderReviews = $bookingRatingsForProvider->map($mapBookingRatingToReview)
+            ->concat($postJobBidRatingsForProvider->map($mapPostJobRatingToReview))
+            ->sortByDesc('_sort_at')
+            ->values();
+        $provider_reviews = $allProviderReviews->take(10)->map(function ($item) {
+            unset($item['_sort_at']);
+            return $item;
+        })->values();
+
+        $provider_data['provider_reviews'] = $provider_reviews;
+
         $handyman_data = HandymanResource::collection($booking_detail->handymanAdded);
 
         $customer_review = null;
