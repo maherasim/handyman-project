@@ -157,7 +157,10 @@
                       @endif
                       <!-- Wishlist -->
                       @if(empty(auth()->user()) || auth()->user()->user_type !== 'user')
-                        <li class="ms-sm-3 ms-2">
+                        <li class="ms-sm-2 ms-1">
+                           <a href="{{ url('/register') }}" class="btn btn-outline-primary me-1 me-sm-2" role="button">Register FREE</a>
+                        </li>
+                        <li class="ms-sm-2 ms-1">
                            <a href="{{route('login')}}" class="btn btn-primary" role="button">
                               <svg xmlns="http://www.w3.org/2000/svg" width="14" height="16" viewBox="0 0 14 16"
                                  fill="none">
