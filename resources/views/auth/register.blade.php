@@ -80,6 +80,16 @@
                               </div>
                            </div>
 
+                           <!-- Provider list (when Handyman is selected) -->
+                           <div class="col-lg-12" id="provider_section" style="display: none;">
+                              <div class="form-group">
+                                 <label for="providerdata" class="text-secondary">{{ __('messages.provider') }}</label>
+                                 <select name="provider_id" class="form-control mb-3" id="providerdata">
+                                    <option value="">{{ __('messages.select_provider') }}</option>
+                                 </select>
+                              </div>
+                           </div>
+
                            <!-- Commission Section (native selects only) -->
                            <div class="col-lg-12" id="commission_section">
                               <div class="form-group" id="providertype_group">
@@ -156,7 +166,7 @@
             type: 'GET',
             data: {
                 type: userType === 'provider' ? 'providertype' : 'handymantype',
-                provider_id: providerId // Include provider_id if available
+                provider_id: providerId
             },
             success: function(response) {
                 if (response.status === 'true') {
@@ -173,14 +183,38 @@
         });
     }
 
+    function fetchProviders() {
+        var baseURL = "{{ url('/') }}";
+        $.ajax({
+            url: baseURL + '/api/user-list',
+            type: 'GET',
+            data: { user_type: 'provider', status: 1, per_page: 25, page: 1 },
+            success: function(response) {
+                var $sel = $('#providerdata').empty().append($('<option>', { value: '', text: '{{ __('messages.select_provider') }}' }));
+                if (response && response.data && response.data.length) {
+                    $.each(response.data, function(index, item) {
+                        $sel.append($('<option>', { value: item.id, text: (item.first_name || '') + ' ' + (item.last_name || '') }));
+                    });
+                } else {
+                    $sel.append($('<option>', { value: '', text: '{{ __('messages.no_providers_found') }}' }));
+                }
+            },
+            error: function() {
+                console.error('Error fetching providers');
+            }
+        });
+    }
+
     $('#user_type').change(function() {
         const selectedUserType = $(this).val();
         
         if (selectedUserType === 'user') {
+            $('#provider_section').hide();
             $('#commission_section').hide();
             $('#providertype').prop('required', false);
             $('#handymantype').prop('required', false);
         } else {
+            $('#provider_section').toggle(selectedUserType === 'handyman');
             $('#commission_section').show();
             $('#providertype_group').toggle(selectedUserType === 'provider');
             $('#handymantype_group').toggle(selectedUserType === 'handyman');
@@ -190,12 +224,21 @@
             } else if (selectedUserType === 'handyman') {
                 $('#providertype').prop('required', false);
                 $('#handymantype').prop('required', true);
+                fetchProviders();
             }
             fetchTypes(selectedUserType);
             $('#providertype').val('');
             $('#handymantype').val('');
+            $('#providerdata').val('');
         }
     }).trigger('change');
+
+    $('#providerdata').change(function() {
+        if ($('#user_type').val() === 'handyman') {
+            var providerId = $(this).val();
+            fetchTypes('handyman', providerId);
+        }
+    });
 });
 
       </script>
