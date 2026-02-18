@@ -1,6 +1,23 @@
 <template>
     <section ref="remoteservicesection">
-
+      <!-- Search bar: type here then click Search to filter services -->
+      <div class="row align-items-center mb-3">
+        <div class="col-auto flex-grow-1 pe-2">
+          <input
+            type="text"
+            class="form-control"
+            :placeholder="searchPlaceholder"
+            v-model="searchInput"
+            @keyup.enter="onSearchClick"
+            aria-label="Search services"
+          />
+        </div>
+        <div class="col-auto">
+          <button type="button" class="btn btn-primary" @click="onSearchClick">
+            {{ searchButtonLabel }}
+          </button>
+        </div>
+      </div>
       <div class="table-responsive rounded py-4">
             <table id="remote-service-datatable" ref="tableRef" class="table custom-card-table service-card-table"></table>
       </div>
@@ -39,22 +56,35 @@
   watch(() => selectedSortOption.value, () => ajaxReload())
 
   const search = ref('')
+  const searchInput = ref('')
+  const searchPlaceholder = ref(typeof window.__categorySearchPlaceholder === 'string' ? window.__categorySearchPlaceholder : 'Search services...')
+  const searchButtonLabel = ref(typeof window.__categorySearchButtonLabel === 'string' ? window.__categorySearchButtonLabel : 'Search')
   watch(() => search.value, () => ajaxReload())
 
   const columns = ref([
     { data: 'name', title: '', orderable: false, order: 'desc'}
   ]);
 
-  const ajaxReload = () => window.$(tableRef.value).DataTable().ajax.reload(null, false)
+  const ajaxReload = () => tableRef.value && window.$(tableRef.value).DataTable && window.$(tableRef.value).DataTable().ajax.reload(null, false)
   const tableRef = ref(null);
+
+  const onSearchClick = () => {
+    search.value = searchInput.value ? String(searchInput.value).trim() : ''
+  }
 
   useDataTable({
     tableRef: tableRef,
     columns: columns.value,
     url: props.link,
     dom: '<"row align-items-center"><"table-responsive my-3" rt><"row align-items-center" <"col-md-2" l><"col-md-2 mt-md-0 mt-3" p>><"clear">',
-     advanceFilter : undefined,
-     per_page: 6
+    advanceFilter: () => ({
+      search: search.value,
+      selectedCategory: selectedCategory.value,
+      selectedProvider: selectedProvider.value,
+      selectedPriceRange: selectedPriceRange.value,
+      selectedSortOption: selectedSortOption.value
+    }),
+    per_page: 6
   });
 
   const store = useSection();
@@ -142,6 +172,7 @@
 
   const clearSearch = () =>{
     search.value = '';
+    searchInput.value = '';
   }
 
   </script>

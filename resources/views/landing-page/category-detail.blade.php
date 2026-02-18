@@ -1,5 +1,11 @@
 @extends('landing-page.layouts.default')
 
+@section('before_script')
+<script>
+  window.__categorySearchPlaceholder = 'Text here';
+  window.__categorySearchButtonLabel = 'Search';
+</script>
+@endsection
 
 @section('content')
 <div class="section-padding">
