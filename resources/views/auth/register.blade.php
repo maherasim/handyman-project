@@ -1,4 +1,10 @@
 <x-guest-layout>
+   <style>
+      /* Native selects only - no Select2; prevent overlapping */
+      .login-content .form-group { margin-bottom: 1rem; }
+      .login-content select.form-control { width: 100%; min-height: 38px; display: block; }
+      .login-content #commission_section .form-group { margin-bottom: 1rem; }
+   </style>
    <section class="login-content">
       <div class="container h-100">
          <div class="row align-items-center justify-content-center h-100">
@@ -62,11 +68,11 @@
 
                               </div>
                            </div>
-                           <!-- User Type Selection -->
+                           <!-- User Type Selection (native select - no Select2 to avoid broken layout) -->
                            <div class="col-lg-12">
                               <div class="form-group">
                                  <label for="user_type" class="text-secondary">{{ __('messages.user_type') }} <span class="text-danger">*</span></label>
-                                 <select name="usertype" class="form-control select2 mb-5" id="user_type" style="width:100%">
+                                 <select name="usertype" class="form-control mb-3" id="user_type">
                                     <option value="user">{{ __('landingpage.user') }}</option>
                                     <option value="provider">{{ __('messages.provider') }}</option>
                                     <option value="handyman">{{ __('messages.handyman') }}</option>
@@ -74,24 +80,17 @@
                               </div>
                            </div>
 
-                           <!-- Provider Section -->
-                           <div class="col-lg-12" id="provider_section" style="display: none;">
-                              <div class="form-group">
-                                 <label for="providerdata" class="text-secondary">{{ __('messages.provider') }}</label>
-                                 <select name="provider_id" class="form-control select2 mb-5" id="providerdata" style="width:100%">
-                                    <option value="">{{ __('messages.select_provider') }}</option>
-                                 </select>
-                              </div>
-                           </div>
-
-                           <!-- Commission Section -->
+                           <!-- Commission Section (native selects only) -->
                            <div class="col-lg-12" id="commission_section">
-                              <div class="form-group">
-                                 <label for="user_commission" class="text-secondary">{{ __('messages.user_commission') }} <span class="text-danger" id="commission_required">*</span></label>
-                                 <select name="providertype_id" class="form-control select2 mb-5" id="providertype" style="width:100%">
+                              <div class="form-group" id="providertype_group">
+                                 <label for="providertype" class="text-secondary">{{ __('messages.user_commission') }} <span class="text-danger" id="commission_required">*</span></label>
+                                 <select name="providertype_id" class="form-control mb-3" id="providertype">
                                     <option value="">{{ __('messages.select_provider_type') }}</option>
                                  </select>
-                                 <select name="handymantype_id" class="form-control select2 mb-5 d-none" id="handymantype" style="width:100%">
+                              </div>
+                              <div class="form-group d-none" id="handymantype_group">
+                                 <label for="handymantype" class="text-secondary">{{ __('messages.user_commission') }} <span class="text-danger">*</span></label>
+                                 <select name="handymantype_id" class="form-control mb-3" id="handymantype">
                                     <option value="">{{ __('messages.select_handyman_type') }}</option>
                                  </select>
                               </div>
@@ -160,13 +159,9 @@
                 provider_id: providerId // Include provider_id if available
             },
             success: function(response) {
-                const providerDropdown = $('#providertype').toggleClass('d-none', userType !== 'provider');
-                const handymanDropdown = $('#handymantype').toggleClass('d-none', userType !== 'handyman');
-
                 if (response.status === 'true') {
-                    const targetDropdown = userType === 'provider' ? providerDropdown : handymanDropdown;
+                    const targetDropdown = userType === 'provider' ? $('#providertype') : $('#handymantype');
                     targetDropdown.empty().append($('<option>', { value: '', text: userType === 'provider' ? '{{ __('messages.select_provider_type') }}' : '{{ __('messages.select_handyman_type') }}' }));
-
                     $.each(response.results, function(index, item) {
                         targetDropdown.append($('<option>', { value: item.id, text: item.text }));
                     });
@@ -178,48 +173,17 @@
         });
     }
 
-    function fetchProviders() {
-
-
-        var baseURL = "{{ url('/') }}";
-        $.ajax({
-            url:baseURL + '/api/user-list',
-            type: 'GET',
-            data: { user_type: 'provider', status: 1, per_page: 25, page: 1 },
-            success: function(response) {
-                const providerData = $('#providerdata').empty().append($('<option>', { value: '', text: '{{ __('messages.select_provider') }}' }));
-
-                if (response?.data?.length) {
-                    $.each(response.data, function(index, item) {
-                        providerData.append($('<option>', { value: item.id, text: item.first_name + ' ' + item.last_name }));
-                    });
-                } else {
-                    providerData.append($('<option>', { value: '', text: '{{ __('messages.no_providers_found') }}' }));
-                }
-            },
-            error: function(xhr, status, error) {
-                console.error('Error fetching providers:', error);
-            }
-        });
-    }
-
     $('#user_type').change(function() {
         const selectedUserType = $(this).val();
         
-        // Hide/show sections based on user type
         if (selectedUserType === 'user') {
-            $('#provider_section').hide();
             $('#commission_section').hide();
-            // Make commission fields not required for users
             $('#providertype').prop('required', false);
             $('#handymantype').prop('required', false);
         } else {
-            $('#provider_section').toggle(selectedUserType === 'handyman');
             $('#commission_section').show();
-            $('#providertype').closest('.form-group').toggle(selectedUserType === 'provider');
-            $('#handymantype').closest('.form-group').toggle(selectedUserType === 'handyman');
-            
-            // Make commission fields required for provider/handyman
+            $('#providertype_group').toggle(selectedUserType === 'provider');
+            $('#handymantype_group').toggle(selectedUserType === 'handyman');
             if (selectedUserType === 'provider') {
                 $('#providertype').prop('required', true);
                 $('#handymantype').prop('required', false);
@@ -227,25 +191,11 @@
                 $('#providertype').prop('required', false);
                 $('#handymantype').prop('required', true);
             }
-            
-        fetchTypes(selectedUserType);
-            
-        $('#providertype').val('');  // Clear provider type selection
-        $('#handymantype').val('');  // Clear handyman type selection
-
-        if (selectedUserType === 'handyman') {
-            fetchProviders(); // Fetch provider list when handyman is selected
-            }
+            fetchTypes(selectedUserType);
+            $('#providertype').val('');
+            $('#handymantype').val('');
         }
     }).trigger('change');
-
-    $('#providerdata').change(function() {
-        if ($('#user_type').val() === 'handyman') {
-            const providerId = $(this).val();
-
-            fetchTypes('handyman', providerId); // Fetch handyman types based on selected provider
-        }
-    });
 });
 
       </script>
