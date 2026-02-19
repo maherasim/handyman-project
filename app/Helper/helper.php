@@ -2081,9 +2081,14 @@ function getstripepayments($data){
         // Normalize to integer minor units
         $unit_amount = stripe_unit_amount_from_decimal($total_amount, $data['currency_code']);
         $stripe = new \Stripe\StripeClient($stripe_secret);
+        // Use API success URL for Flutter/mobile so redirect returns JSON instead of web page
+        $useApiSuccess = !empty($data['platform']) && in_array(strtolower((string)$data['platform']), ['flutter', 'mobile', 'app'], true);
+        $successPath = $useApiSuccess
+            ? 'api/save-stripe-payment/'.$data['booking_id'].'?type='.$data['type']
+            : 'save-stripe-payment/'.$data['booking_id'].'?type='.$data['type'];
         $checkout_session = $stripe->checkout->sessions->create([
 
-            'success_url' => $baseURL.'/save-stripe-payment/'.$data['booking_id'].'?type='.$data['type'],
+            'success_url' => $baseURL.'/'.$successPath,
             'payment_method_types' => ['card'],
             'billing_address_collection' => 'required',
             'line_items' => [

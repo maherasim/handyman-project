@@ -1408,20 +1408,83 @@ public function bookingAssigned(Request $request)
 
     public function createStripePayment(Request $request)
     {
-
         $data = $request->all();
+
+        // Flutter in-app: use PaymentIntent (no WebView/redirect). Pass platform=flutter or use_payment_intent=1
+        $usePaymentIntent = $request->boolean('use_payment_intent')
+            || (isset($data['platform']) && in_array(strtolower((string) $data['platform']), ['flutter', 'mobile', 'app'], true));
+
+        if ($usePaymentIntent) {
+            return $this->createBookingStripePaymentIntent($request, $data);
+        }
 
         $checkout_session = getstripepayments($data);
         if (isset($checkout_session['message'])) {
-
-            return comman_custom_response($checkout_session);
-
-        } else {
-            Payment::where('booking_id', $data['booking_id'])->update(['other_transaction_detail' => $checkout_session['id']]);
-
             return comman_custom_response($checkout_session);
         }
 
+        Payment::where('booking_id', $data['booking_id'])->update(['other_transaction_detail' => $checkout_session['id']]);
+        return comman_custom_response($checkout_session);
+    }
+
+    /**
+     * Create Stripe PaymentIntent for in-app (Flutter) payment. Returns client_secret for Stripe SDK.
+     */
+    protected function createBookingStripePaymentIntent(Request $request, array $data)
+    {
+        $booking = Booking::where('id', $data['booking_id'])->with('service')->first();
+        if (!$booking) {
+            return response()->json(['status' => false, 'message' => __('messages.booking_not_found')], 404);
+        }
+
+        $stripe_key_data = getPaymentMethodkey($data['payment_type'] ?? 'stripe');
+        $stripe_secret = $stripe_key_data['stripe_key'] ?? null;
+        if (!$stripe_secret) {
+            return response()->json(['status' => false, 'message' => 'Stripe not configured'], 500);
+        }
+
+        try {
+            $sitesetup = Setting::where('type', 'site-setup')->where('key', 'site-setup')->first();
+            $sitesetupdata = $sitesetup ? json_decode($sitesetup->value, true) : null;
+            $countryId = $sitesetupdata['default_currency'] ?? null;
+            $country = $countryId ? Country::find($countryId) : null;
+            $currencyCode = strtoupper((string) ($country->currency_code ?? 'EUR'));
+        } catch (\Throwable $e) {
+            $currencyCode = 'EUR';
+        }
+
+        $type = $data['type'] ?? 'advance_payment';
+        if (($type ?? '') === 'full_payment') {
+            $total_amount = $booking->total_amount - ($booking->advance_paid_amount ?? 0);
+        } else {
+            $total_amount = (float) ($data['total_amount'] ?? $booking->advance_paid_amount ?? $booking->total_amount);
+        }
+
+        $stripe = new \Stripe\StripeClient($stripe_secret);
+        $intent = $stripe->paymentIntents->create([
+            'amount' => stripe_unit_amount_from_decimal($total_amount, $currencyCode),
+            'currency' => strtolower($currencyCode),
+            'description' => 'Booking #' . $booking->id . ' - ' . ($type === 'advance_payment' ? 'Advance' : 'Remaining') . ' Payment',
+            'payment_method_types' => ['card'],
+            'metadata' => [
+                'booking_id' => (string) $booking->id,
+                'type' => $type,
+                'customer_id' => (string) ($data['customer_id'] ?? $booking->customer_id),
+                'provider_id' => (string) $booking->provider_id,
+            ],
+        ]);
+
+        Payment::where('booking_id', $data['booking_id'])->update([
+            'other_transaction_detail' => $intent->id,
+        ]);
+
+        return response()->json([
+            'status' => true,
+            'client_secret' => $intent->client_secret,
+            'payment_intent_id' => $intent->id,
+            'booking_id' => (int) $data['booking_id'],
+            'type' => $type,
+        ]);
     }
 
 public function saveStripePayment(Request $request, $id)
@@ -1615,9 +1678,198 @@ public function saveStripePayment(Request $request, $id)
         'booking' => $booking,
     ]);
 
+    // API / Flutter: return JSON instead of redirect so app can show success and close WebView
+    if ($request->expectsJson() || $request->is('api/*')) {
+        return response()->json([
+            'status'  => true,
+            'message' => __('messages.payment_completed'),
+            'booking_id' => (int) $id,
+        ]);
+    }
+
     return redirect('/booking-list');
 }
 
+    /**
+     * Confirm Stripe payment after in-app (Flutter) PaymentIntent success. Call this after Stripe SDK confirms payment.
+     * POST body: booking_id, payment_intent_id, type (advance_payment|full_payment)
+     */
+    public function confirmStripePaymentIntent(Request $request)
+    {
+        $request->validate([
+            'booking_id' => 'required|integer|exists:bookings,id',
+            'payment_intent_id' => 'required|string',
+            'type' => 'required|in:advance_payment,full_payment',
+        ]);
+
+        $bookingId = (int) $request->booking_id;
+        $intentId = (string) $request->payment_intent_id;
+        $type = $request->type;
+
+        $result = Payment::where('booking_id', $bookingId)->latest()->first();
+        if (!$result || (string) $result->other_transaction_detail !== $intentId) {
+            return response()->json(['status' => false, 'message' => 'Payment record not found or intent mismatch'], 422);
+        }
+
+        $stripe_key_data = getPaymentMethodkey($result->payment_type ?? 'stripe');
+        $stripe_secret = $stripe_key_data['stripe_key'] ?? null;
+        if (!$stripe_secret) {
+            return response()->json(['status' => false, 'message' => 'Stripe not configured'], 500);
+        }
+
+        $stripe = new \Stripe\StripeClient($stripe_secret);
+        try {
+            $intent = $stripe->paymentIntents->retrieve($intentId, []);
+        } catch (\Exception $e) {
+            return response()->json(['status' => false, 'message' => 'Stripe verification failed: ' . $e->getMessage()], 422);
+        }
+
+        if (($intent->status ?? '') !== 'succeeded') {
+            return response()->json(['status' => false, 'message' => 'Payment not completed', 'intent_status' => $intent->status ?? null], 422);
+        }
+
+        $payAmount = (float) (($intent->amount_received ?? $intent->amount ?? 0) / 100.0);
+        $result->txn_id = $intent->id;
+        $result->payment_status = $type === 'advance_payment' ? 'advanced_paid' : 'paid';
+        $result->total_amount = $payAmount;
+        $result->save();
+
+        $booking = Booking::find($bookingId);
+        $id = $bookingId;
+        $admin_user_id = User::where('user_type', 'admin')->value('id');
+        $admin_commission_percentage = Setting::getValueByKey('admin_commission_percentage', 'site-setup')->value ?? 10;
+
+        if (!empty($result) && $result->payment_status == 'advanced_paid') {
+            $booking->advance_paid_amount = $result->total_amount;
+            $advance_paid_amount = $result->total_amount;
+            $admin_commission_amount = ($advance_paid_amount * $admin_commission_percentage) / 100;
+            Wallet::firstOrCreate(['user_id' => $admin_user_id])->increment('amount', $admin_commission_amount);
+            CommissionEarning::create([
+                'booking_id' => $booking->id,
+                'user_type' => 'admin',
+                'employee_id' => $admin_user_id,
+                'commission_amount' => $admin_commission_amount,
+                'commission_status' => 'paid',
+            ]);
+        }
+
+        if (!empty($result) && $result->payment_status == 'paid') {
+            $booking->status = 'completed';
+            $booking->update();
+            $advance_paid = $booking->advance_paid_amount ?? 0;
+            $total_amount = $booking->total_amount;
+            $remaining_amount = $total_amount - $advance_paid;
+            $result->total_amount = $remaining_amount;
+            $result->save();
+            $remaining_admin_commission = ($remaining_amount > 0) ? ($remaining_amount * $admin_commission_percentage) / 100 : 0;
+            $extra_total = $booking->getExtraChargeValue();
+            $provider_side_advance = ($advance_paid * (100 - $admin_commission_percentage)) / 100;
+            $provider_side_remaining = ($remaining_amount * (100 - $admin_commission_percentage)) / 100;
+            $pool = $provider_side_advance + max(0, $provider_side_remaining - $extra_total);
+            $handymen = BookingHandymanMapping::where('booking_id', $booking->id)->pluck('handyman_id');
+            $handyman_payouts = [];
+            $total_handyman_share = 0;
+            foreach ($handymen as $handyman_id) {
+                $handyman = User::find($handyman_id);
+                if (!$handyman || $handyman->handyman_commission === null) continue;
+                $commission_percent = max(1, min(85, $handyman->handyman_commission));
+                $handyman_share = ($pool * $commission_percent) / 100;
+                $total_handyman_share += $handyman_share;
+                $handyman_payouts[] = ['handyman_id' => $handyman_id, 'amount' => $handyman_share];
+            }
+            $provider_from_pool = $pool - $total_handyman_share;
+            if ($provider_from_pool < 0) $provider_from_pool = 0;
+            $provider_final_earning = $provider_from_pool + $extra_total;
+            foreach ($handyman_payouts as $payout) {
+                Wallet::firstOrCreate(['user_id' => $payout['handyman_id']])->increment('amount', $payout['amount']);
+                HandymanPayout::create([
+                    'handyman_id' => $payout['handyman_id'],
+                    'booking_id' => $booking->id,
+                    'amount' => $payout['amount'],
+                    'status' => 'paid',
+                    'paid_date' => Carbon::now(),
+                    'payment_method' => 'wallet',
+                    'payment_gateway' => 'wallet',
+                ]);
+                CommissionEarning::create([
+                    'booking_id' => $booking->id,
+                    'user_type' => 'handyman',
+                    'employee_id' => $payout['handyman_id'],
+                    'commission_amount' => $payout['amount'],
+                    'commission_status' => 'paid',
+                ]);
+            }
+            if ($remaining_admin_commission > 0) {
+                Wallet::firstOrCreate(['user_id' => $admin_user_id])->increment('amount', $remaining_admin_commission);
+                CommissionEarning::create([
+                    'booking_id' => $booking->id,
+                    'user_type' => 'admin',
+                    'employee_id' => $admin_user_id,
+                    'commission_amount' => $remaining_admin_commission,
+                    'commission_status' => 'paid',
+                ]);
+            }
+            Wallet::firstOrCreate(['user_id' => $booking->provider_id])->increment('amount', $provider_final_earning);
+            ProviderPayout::create([
+                'provider_id' => $booking->provider_id,
+                'amount' => $provider_final_earning,
+                'payment_method' => 'wallet',
+                'paid_date' => Carbon::now(),
+                'status' => 'paid',
+                'booking_id' => $booking->id,
+                'payment_gateway' => 'wallet',
+            ]);
+            CommissionEarning::create([
+                'booking_id' => $booking->id,
+                'user_type' => 'provider',
+                'employee_id' => $booking->provider_id,
+                'commission_amount' => $provider_final_earning,
+                'commission_status' => 'paid',
+            ]);
+            CommissionEarning::where('booking_id', $booking->id)->update(['commission_status' => 'paid']);
+        }
+
+        $firstHandymanId = optional($booking->handymanAdded->first())->handyman_id;
+        $assignedUserData = User::find($firstHandymanId);
+        if ($firstHandymanId && $assignedUserData && $assignedUserData->user_type == 'provider') {
+            $payment_history = [
+                'payment_id' => $result->id,
+                'booking_id' => $result->booking_id,
+                'parent_id' => $result->booking_id,
+                'action' => config('constant.PAYMENT_HISTORY_ACTION.CUSTOMER_SEND_PROVIDER'),
+                'status' => config('constant.PAYMENT_HISTORY_STATUS.PENDING_PROVIDER'),
+                'sender_id' => $booking->customer_id,
+                'receiver_id' => $firstHandymanId,
+                'datetime' => now(),
+                'total_amount' => $payAmount,
+                'txn_id' => $result->txn_id,
+                'type' => $result->payment_type,
+                'text' => __('messages.payment_transfer', [
+                    'from' => get_user_name($booking->customer_id),
+                    'to' => get_user_name($firstHandymanId),
+                    'amount' => getPriceFormat($result->payment_status == 'paid' ? ($booking->total_amount - ($booking->advance_paid_amount ?? 0)) : (float) $payAmount),
+                ]),
+            ];
+            $res = PaymentHistory::create($payment_history);
+            $res->parent_id = $res->id;
+            $res->save();
+        }
+        $result->update();
+        $booking->payment_id = $result->id;
+        $booking->update();
+        $this->sendNotification([
+            'activity_type' => 'payment_message_status',
+            'payment_status' => str_replace('_', ' ', ucfirst($result->payment_status)),
+            'booking_id' => $booking->id,
+            'booking' => $booking,
+        ]);
+
+        return response()->json([
+            'status' => true,
+            'message' => __('messages.payment_completed'),
+            'booking_id' => $bookingId,
+        ]);
+    }
 
     public function getEarningsBreakdown(Request $request)
     {
