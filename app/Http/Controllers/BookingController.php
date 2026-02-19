@@ -1410,9 +1410,10 @@ public function bookingAssigned(Request $request)
     {
         $data = $request->all();
 
-        // Flutter in-app: use PaymentIntent (no WebView/redirect). Pass platform=flutter or use_payment_intent=1
+        // Flutter / API in-app: use PaymentIntent (no WebView/redirect). Use when: platform=flutter, use_payment_intent=1, or API expects JSON
         $usePaymentIntent = $request->boolean('use_payment_intent')
-            || (isset($data['platform']) && in_array(strtolower((string) $data['platform']), ['flutter', 'mobile', 'app'], true));
+            || (isset($data['platform']) && in_array(strtolower((string) $data['platform']), ['flutter', 'mobile', 'app'], true))
+            || $request->expectsJson();
 
         if ($usePaymentIntent) {
             return $this->createBookingStripePaymentIntent($request, $data);

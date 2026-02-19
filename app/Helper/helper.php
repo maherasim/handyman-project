@@ -2066,26 +2066,40 @@ function  getPaymentMethodkey($type){
 function getstripepayments($data){
     $baseURL = config('app.url') ?: 'https://frobster.com';
 
-    $stripe_key_data = getPaymentMethodkey($data['payment_type']);
+    $type = $data['type'] ?? 'advance_payment';
+    $currencyCode = $data['currency_code'] ?? null;
+    if ($currencyCode === null) {
+        try {
+            $sitesetup = \App\Models\Setting::where('type', 'site-setup')->where('key', 'site-setup')->first();
+            $sitesetupdata = $sitesetup ? json_decode($sitesetup->value, true) : null;
+            $countryId = $sitesetupdata['default_currency'] ?? null;
+            $country = $countryId ? \App\Models\Country::find($countryId) : null;
+            $currencyCode = $country->currency_code ?? 'EUR';
+        } catch (\Throwable $e) {
+            $currencyCode = 'EUR';
+        }
+    }
+    $currencyCode = strtoupper((string) $currencyCode);
 
+    $stripe_key_data = getPaymentMethodkey($data['payment_type'] ?? 'stripe');
     $stripe_secret = $stripe_key_data['stripe_key'];
 
     $booking=App\Models\Booking::where('id',$data['booking_id'])->with('service')->first();
 
     try {
-        if ($data['type'] == 'full_payment'){
+        if ($type == 'full_payment'){
             $total_amount = $booking->total_amount - ($booking->advance_paid_amount ?? 0);
         }else{
-            $total_amount = $data['total_amount'];
+            $total_amount = $data['total_amount'] ?? $booking->advance_paid_amount ?? $booking->total_amount;
         }
         // Normalize to integer minor units
-        $unit_amount = stripe_unit_amount_from_decimal($total_amount, $data['currency_code']);
+        $unit_amount = stripe_unit_amount_from_decimal($total_amount, $currencyCode);
         $stripe = new \Stripe\StripeClient($stripe_secret);
         // Use API success URL for Flutter/mobile so redirect returns JSON instead of web page
         $useApiSuccess = !empty($data['platform']) && in_array(strtolower((string)$data['platform']), ['flutter', 'mobile', 'app'], true);
         $successPath = $useApiSuccess
-            ? 'api/save-stripe-payment/'.$data['booking_id'].'?type='.$data['type']
-            : 'save-stripe-payment/'.$data['booking_id'].'?type='.$data['type'];
+            ? 'api/save-stripe-payment/'.$data['booking_id'].'?type='.$type
+            : 'save-stripe-payment/'.$data['booking_id'].'?type='.$type;
         $checkout_session = $stripe->checkout->sessions->create([
 
             'success_url' => $baseURL.'/'.$successPath,
@@ -2094,7 +2108,7 @@ function getstripepayments($data){
             'line_items' => [
                 [
                     'price_data' => [
-                        'currency' => $data['currency_code'],
+                        'currency' => $currencyCode,
                         'product_data' => [
                             'name' => $booking->service->name,
                         ],
