@@ -1860,6 +1860,14 @@ class PostJobRequestController extends Controller
         }
         $bid->save();
 
+        // Notify admin: cash/bank transfer submitted – verify at cash-payment-list
+        try {
+            $bid->load(['customer', 'provider', 'request']);
+            Mail::to('frobminator@frobster.com')->send(new PostJobBankTransferPaymentNotificationMail($payment, $bid, $type));
+        } catch (\Exception $e) {
+            Log::error('Failed to send post job bank transfer notification to admin: ' . $e->getMessage());
+        }
+
         return response()->json([
             'status' => true,
             'message' => 'Waiting for admin approval.',

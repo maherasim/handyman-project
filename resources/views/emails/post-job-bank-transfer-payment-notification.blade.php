@@ -119,15 +119,16 @@
 <body>
     <div class="email-container">
         <div class="header">
-            <h1>🏦 Post Job Bank Transfer Payment Notification</h1>
+            <h1>Cash Payment – Verification Required (Post Job)</h1>
         </div>
         
         <div class="content">
             <h2>Dear Admin,</h2>
             
             <div class="alert-box">
-                <h3>⚠️ Action Required</h3>
-                <p>A new bank transfer payment has been received for a post job request and requires your verification. Please review the payment details below and verify the transaction in your bank account.</p>
+                <h3>Cash / Bank Transfer Payment Submitted</h3>
+                <p>A customer has submitted a cash payment (bank transfer) for the following post job bid. Please check your bank account for the corresponding transfer.</p>
+                <p><strong>If you have received the amount, you may proceed</strong> to verify and approve this payment in the admin panel. To review and manage all cash payments, please use the link below.</p>
             </div>
             
             <div class="payment-details">
@@ -184,19 +185,18 @@
                 @endif
             </div>
             
-            <p><strong>Next Steps:</strong></p>
+            <p><strong>What to do next:</strong></p>
             <ol>
-                <li>Verify the payment has been received in your bank account</li>
-                <li>Check that the amount matches: <strong>${{ number_format($payment->total_amount, 2) }}</strong></li>
-                <li>Verify the transaction ID: <strong>{{ $payment->txn_id ?? 'N/A' }}</strong></li>
-                <li>Approve or reject the payment in the admin panel</li>
+                <li>Check your bank account to confirm whether the amount has been received.</li>
+                <li>If the amount matches (<strong>${{ number_format($payment->total_amount, 2) }}</strong>) and the transaction is correct, you can proceed to approve the payment.</li>
+                <li>Verify and manage this payment (and all cash payments) in the admin panel using the link below.</li>
             </ol>
             
             <div style="text-align: center; margin: 30px 0;">
-                <a href="https://frobster.com/cash-payment-list" class="cta-button">Review Payment →</a>
+                <a href="https://frobster.com/cash-payment-list" class="cta-button">Verify &amp; manage cash payments</a>
             </div>
             
-            <p style="margin-top: 30px;">Please verify this payment as soon as possible to ensure timely processing of the post job request.</p>
+            <p style="margin-top: 30px;">Thank you for your attention. Timely verification helps ensure a smooth experience for customers and providers.</p>
         </div>
         
         <div class="footer">
