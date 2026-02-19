@@ -74,7 +74,7 @@
               <div class="bg-light p-3 rounded border">
                 <h6 class="text-primary mb-2"><i class="bi bi-credit-card-2-front-fill me-2"></i>Bank Information</h6>
                 <ul class="list-unstyled mb-0">
-                  <li><strong>Recipient:</strong> Ben Ghezaiel</li>
+                  <li><strong>Recipient:</strong>Frobster international</li>
                   <li><strong>IBAN:</strong> DE02 1001 0178 1361 6331 79</li>
                   <li><strong>BIC:</strong> REVODEB2</li>
                   <li class="mt-2"><strong>Bank Name and Address:</strong></li>

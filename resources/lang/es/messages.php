@@ -54,6 +54,7 @@
     'update' => 'Actualizar',
     'profile' => 'Perfil',
     'demo_permission_denied' => 'No tienes permiso para realizar esta acción.',
+    'service_has_bookings_cannot_edit' => 'Este servicio no se puede editar porque tiene reservas existentes.',
     'old_new_pass_same' => 'La contraseña anterior es igual a la nueva, por favor intenta con otra nueva contraseña.',
     'check_old_password' => 'Por favor, verifica tu contraseña anterior.',
     'password_change' => '¡Tu contraseña ha sido cambiada exitosamente!',

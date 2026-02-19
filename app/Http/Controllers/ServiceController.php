@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Service;
+use App\Models\Booking;
 use App\Models\User;
 use App\Models\Setting;
 use App\Http\Requests\ServiceRequest;
@@ -317,6 +318,14 @@ class ServiceController extends Controller
 
         $servicedata = Service::find($id);
 
+        // If editing and service has any bookings, do not allow edit
+        if ($id && $servicedata && Booking::where('service_id', $id)->exists()) {
+            if ($request->wantsJson() || $request->ajax()) {
+                return response()->json(['message' => __('messages.service_has_bookings_cannot_edit')], 403);
+            }
+            return redirect()->route('service.index')->withErrors(__('messages.service_has_bookings_cannot_edit'));
+        }
+
         $visittype = config('constant.VISIT_TYPE');
 
         $settingdata = Setting::where('type','=','service-configurations')->first();
@@ -369,6 +378,14 @@ public function store(ServiceRequest $request)
    // dd($request->all());
     if (demoUserPermission()) {
         return redirect()->back()->withErrors(trans('messages.demo_permission_denied'));
+    }
+
+    // If updating and service has any bookings, do not allow update
+    if (!empty($request->id) && Booking::where('service_id', $request->id)->exists()) {
+        if ($request->is('api/*')) {
+            return comman_message_response(__('messages.service_has_bookings_cannot_edit'), 403);
+        }
+        return redirect()->route('service.index')->withErrors(__('messages.service_has_bookings_cannot_edit'));
     }
 
     $services = $request->all();

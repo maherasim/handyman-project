@@ -54,6 +54,7 @@
     'update' => 'Atualizar',
     'profile' => 'Perfil',
     'demo_permission_denied' => 'Você não tem permissão para executar esta ação.',
+    'service_has_bookings_cannot_edit' => 'Este serviço não pode ser editado porque possui reservas existentes.',
     'old_new_pass_same' => 'A senha antiga é igual à nova senha, por favor, tente com outra nova senha.',
     'check_old_password' => 'Verifique sua senha antiga.',
     'password_change' => 'Sua senha foi alterada com sucesso!',

@@ -75,7 +75,7 @@
                                 'class' => 'form-control',
                                 'type' => 'number',
                                 'step' => '0.01',
-                                'min' => '50',
+                                'min' => '5',
                                 'required' => true,
                                 'placeholder' => __('messages.amount'),
                                 'id' => 'amount_input',
@@ -86,7 +86,7 @@
                                     <span class="text-success">{{ getPriceFormat($walletBalance ?? 0) }}</span>
                                 </small>
                                 <small class="form-text text-danger mt-1 d-none" id="min_amount_error">
-                                    <i class="fa fa-exclamation-circle"></i> {{ __('messages.minimum_withdrawal_amount') ?? 'Minimum withdrawal amount is 50' }}
+                                    <i class="fa fa-exclamation-circle"></i> {{ __('messages.minimum_withdrawal_amount') ?? 'Minimum withdrawal amount is 5' }}
                                 </small>
                             @endif
                         </div>
@@ -204,7 +204,7 @@
 
     $(document).ready(function() {
         // Minimum withdrawal amount validation
-        const minAmount = 50;
+        const minAmount = 5;
         const amountInput = $('#amount_input');
         const minAmountError = $('#min_amount_error');
         
@@ -234,11 +234,11 @@
                     Swal.fire({
                         icon: 'error',
                         title: 'Validation Error',
-                        text: '{{ __('messages.minimum_withdrawal_amount') ?? 'Minimum withdrawal amount is 50' }}',
+                        text: '{{ __('messages.minimum_withdrawal_amount') ?? 'Minimum withdrawal amount is 5' }}',
                         confirmButtonText: 'OK'
                     });
                 } else {
-                    alert('{{ __('messages.minimum_withdrawal_amount') ?? 'Minimum withdrawal amount is 50' }}');
+                    alert('{{ __('messages.minimum_withdrawal_amount') ?? 'Minimum withdrawal amount is 5' }}');
                 }
                 return false;
             }

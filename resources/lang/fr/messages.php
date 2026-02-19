@@ -54,6 +54,7 @@
     'update' => 'Mettre à Jour',
     'profile' => 'Profil',
     'demo_permission_denied' => 'Vous n\'avez pas la permission d\'effectuer cette action.',
+    'service_has_bookings_cannot_edit' => 'Ce service ne peut pas être modifié car il possède des réservations.',
     'old_new_pass_same' => 'L\'ancien mot de passe est identique au nouveau mot de passe, veuillez essayer avec un autre nouveau mot de passe.',
     'check_old_password' => 'Veuillez vérifier votre ancien mot de passe.',
     'password_change' => 'Votre mot de passe a été changé avec succès !',
