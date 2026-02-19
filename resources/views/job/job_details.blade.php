@@ -688,7 +688,7 @@
                                         </span>
                                     </div>
                                     <div class="detail-item mb-2">
-                                        <span class="detail-label"><b>Total Bids:</b></span>
+                                        <span class="detail-label"><b>Total Applications:</b></span>
                                         <span class="detail-value"> {{ $totalBids }}</span>
                                     </div>
                                     <div class="detail-item mb-2">
@@ -795,7 +795,7 @@
                                         </span>
                                     </div>
                                     <div class="detail-item mb-2">
-                                        <span class="detail-label"><b>Total bids:</b></span>
+                                        <span class="detail-label"><b>Total Applications:</b></span>
                                         <span class="detail-value"> {{ $totalBids }}</span>
                                     </div>
                                     <div class="detail-item mb-2">
