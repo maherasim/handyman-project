@@ -310,7 +310,10 @@ class PaymentController extends Controller
             return comman_message_response(__('messages.payment_failed'), 400);
         }
 
-        return comman_message_response(__('messages.payment_completed'), 200);
+        return response()->json([
+            'status'  => true,
+            'message' => __('messages.payment_success_proceed'),
+        ], 200);
     }
 
 

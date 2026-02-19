@@ -165,6 +165,7 @@
     'failed' => 'Failed',
     'refunded' => 'Refunded',
     'payment_completed' => 'Your payment has been successfully completed',
+    'payment_success_proceed' => 'Payment has been done successfully. Proceed further.',
     'payment_pending_admin_approval' => 'Payment pending approval by admin. Please wait for verification.',
     'payment_message' => 'Your payment is :status',
     'timezone' => 'Timezone',

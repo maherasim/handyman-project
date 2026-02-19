@@ -163,6 +163,7 @@
     'failed' => 'Fallido',
     'refunded' => 'Reembolsado',
     'payment_completed' => 'Su pago se ha completado con éxito',
+    'payment_success_proceed' => 'El pago se ha realizado correctamente. Puede continuar.',
     'payment_message' => 'Su pago está :status',
     'timezone' => 'Zona horaria',
     'default_notification_body' => 'Tienes una nueva notificación',
