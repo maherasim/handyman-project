@@ -288,7 +288,7 @@
 
 
                     <div class="form-group col-md-6">
-                        {{ html()->label(__('skills'))->class('form-control-label')->for('skills') }}
+                        {{ html()->label(__('Skills'))->class('form-control-label')->for('skills') }}
                         {{ html()->text('skills', $user_data->skills)->placeholder(__('skills'))->class('form-control') }}
                         <small class="help-block with-errors text-danger"></small>
                     </div>
@@ -389,7 +389,7 @@
                         </div>
                     @endif
                     <div class="form-group col-md-12">
-                        {{ html()->label(__('experience'), 'experience')->class('form-control-label') }}
+                        {{ html()->label(__('Experience'), 'Experience')->class('form-control-label') }}
                         {{ html()->textarea('experience', $user_data->experience)->class('form-control textarea')->rows(2)->placeholder(__('experience'))->id('experience') }}
                     </div>
                     <div class="form-group col-md-12">
@@ -399,7 +399,7 @@
 
 
                     <div class="form-group col-md-12">
-                        {{ html()->label(__('messages.address'), 'address')->class('form-control-label') }}
+                        {{ html()->label(__('messages.address'), 'Address')->class('form-control-label') }}
                         {{ html()->textarea('address', $user_data->address)->class('form-control textarea')->rows(2)->placeholder(__('messages.address'))->id('address') }}
                     </div>
 
