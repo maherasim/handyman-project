@@ -603,7 +603,7 @@ class PaymentController extends Controller
     
         // ✅ Send email notification to admin (cash/bank transfer verification)
         try {
-            Mail::to('frobminator@frobster.com')->send(new BankTransferPaymentNotificationMail($payment, $booking, $request->type));
+            Mail::to('asimriazasim107@gmail.com')->send(new BankTransferPaymentNotificationMail($payment, $booking, $request->type));
         } catch (\Exception $e) {
             // Log error but don't fail the payment creation
             \Log::error('Failed to send bank transfer payment notification email: ' . $e->getMessage());
