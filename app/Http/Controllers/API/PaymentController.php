@@ -98,13 +98,20 @@ class PaymentController extends Controller
             $result->total_amount = $remaining_amount;
             $result->save();
 
-            $remaining_admin_commission = ($remaining_amount > 0)
-                ? ($remaining_amount * $admin_commission_percentage) / 100
-                : 0;
-
             $extra_total = $booking->getExtraChargeValue();
+            
+            // New logic: Admin gets 5% from remaining amount + 5% from extra charges
+            $admin_commission_from_remaining = ($remaining_amount > 0)
+                ? ($remaining_amount * 5) / 100
+                : 0;
+            $admin_commission_from_extra = ($extra_total > 0)
+                ? ($extra_total * 5) / 100
+                : 0;
+            $remaining_admin_commission = $admin_commission_from_remaining + $admin_commission_from_extra;
+
             $provider_side_advance = ($advance_paid * (100 - $admin_commission_percentage)) / 100;
-            $provider_side_remaining = ($remaining_amount * (100 - $admin_commission_percentage)) / 100;
+            // Provider gets 95% of remaining amount (after 5% admin commission)
+            $provider_side_remaining = ($remaining_amount * 95) / 100;
             $pool = $provider_side_advance + max(0, $provider_side_remaining - $extra_total);
 
             $handymen = BookingHandymanMapping::where('booking_id', $booking->id)->pluck('handyman_id');
@@ -128,7 +135,9 @@ class PaymentController extends Controller
             if ($provider_from_pool < 0) {
                 $provider_from_pool = 0;
             }
-            $provider_final_earning = $provider_from_pool + $extra_total;
+            // Provider gets 95% of extra charges (after 5% admin commission)
+            $provider_extra_earning = ($extra_total * 95) / 100;
+            $provider_final_earning = $provider_from_pool + $provider_extra_earning;
 
             foreach ($handyman_payouts as $payout) {
                 Wallet::firstOrCreate(['user_id' => $payout['handyman_id']])->increment('amount', $payout['amount']);
@@ -465,11 +474,20 @@ class PaymentController extends Controller
             $payment->total_amount = $remaining_amount;
             $payment->save();
 
-            $remaining_admin_commission = ($remaining_amount * $admin_commission_percentage) / 100;
-
             $extra_total = $booking->getExtraChargeValue();
+            
+            // New logic: Admin gets 5% from remaining amount + 5% from extra charges
+            $admin_commission_from_remaining = ($remaining_amount > 0)
+                ? ($remaining_amount * 5) / 100
+                : 0;
+            $admin_commission_from_extra = ($extra_total > 0)
+                ? ($extra_total * 5) / 100
+                : 0;
+            $remaining_admin_commission = $admin_commission_from_remaining + $admin_commission_from_extra;
+
             $provider_side_advance = ($advance_paid * (100 - $admin_commission_percentage)) / 100;
-            $provider_side_remaining = ($remaining_amount * (100 - $admin_commission_percentage)) / 100;
+            // Provider gets 95% of remaining amount (after 5% admin commission)
+            $provider_side_remaining = ($remaining_amount * 95) / 100;
             $pool = $provider_side_advance + max(0, $provider_side_remaining - $extra_total);
 
             $handymen = BookingHandymanMapping::where('booking_id', $booking->id)->pluck('handyman_id');
@@ -492,7 +510,9 @@ class PaymentController extends Controller
 
             $provider_from_pool = $pool - $total_handyman_share;
             if ($provider_from_pool < 0) $provider_from_pool = 0;
-            $provider_final_earning = $provider_from_pool + $extra_total;
+            // Provider gets 95% of extra charges (after 5% admin commission)
+            $provider_extra_earning = ($extra_total * 95) / 100;
+            $provider_final_earning = $provider_from_pool + $provider_extra_earning;
 
             foreach ($handyman_payouts as $payout) {
                 HandymanPayout::create([
