@@ -365,11 +365,9 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
     Route::get('pages/imprint', [SettingController::class, 'imprint'])->name('imprint');
     Route::post('imprint-save', [SettingController::class, 'saveImprint'])->name('imprint-save');
 
-    Route::group(['middleware' => ['permission:terms condition']], function () {
-        Route::get('pages/content', [PageController::class, 'index'])->name('page.index');
-        Route::get('pages/content/edit/{id}', [PageController::class, 'edit'])->name('page.edit');
-        Route::post('pages/content/update', [PageController::class, 'update'])->name('page.update');
-    });
+    Route::get('pages/content', [PageController::class, 'index'])->name('page.index');
+    Route::get('pages/content/edit/{id}', [PageController::class, 'edit'])->name('page.edit');
+    Route::post('pages/content/update', [PageController::class, 'update'])->name('page.update');
 
     Route::post('general-setting-save', [SettingController::class, 'generalSetting'])->name('generalsetting');
     Route::post('theme-setup-save', [SettingController::class, 'themeSetup'])->name('themesetup');
