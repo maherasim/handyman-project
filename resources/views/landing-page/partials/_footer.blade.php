@@ -191,22 +191,22 @@
                 </div>
                 <div class="col-md-6 text-md-end text-center">
                     @php $footerPages = \App\Models\Page::active()->ordered()->get(); @endphp
-                    <div class="d-inline-flex align-items-center gap-2 flex-wrap justify-content-md-end justify-content-center" style="flex-wrap: nowrap !important; white-space: nowrap !important;">
+                    <div class="footer-bottom-links d-flex flex-wrap align-items-center gap-2 justify-content-md-end justify-content-center">
                         @foreach($footerPages as $fp)
-                            <a href="{{ route('user.page', $fp->slug) }}" style="color: rgba(255, 255, 255, 0.7) !important; text-decoration: none !important; font-size: 0.85rem !important; transition: all 0.3s ease !important; white-space: nowrap !important;">{{ $fp->title }}</a>
-                            <span style="color: rgba(255, 255, 255, 0.3) !important;">|</span>
+                            <a href="{{ route('user.page', $fp->slug) }}" class="footer-bottom-link">{{ $fp->title }}</a>
+                            <span class="footer-bottom-sep" aria-hidden="true">|</span>
                         @endforeach
-                        <a target="_blank" href="{{ route('user.term_conditions') }}" style="color: rgba(255, 255, 255, 0.7) !important; text-decoration: none !important; font-size: 0.85rem !important; transition: all 0.3s ease !important; white-space: nowrap !important;">{{__('landingpage.terms_conditions')}}</a>
-                        <span style="color: rgba(255, 255, 255, 0.3) !important;">|</span>
-                        <a target="_blank" href="{{ route('user.privacy_policy') }}" style="color: rgba(255, 255, 255, 0.7) !important; text-decoration: none !important; font-size: 0.85rem !important; transition: all 0.3s ease !important; white-space: nowrap !important;">{{__('landingpage.privacy_policy')}}</a>
-                        <span style="color: rgba(255, 255, 255, 0.3) !important;">|</span>
-                        <a target="_blank" href="{{ route('user.help_support') }}" style="color: rgba(255, 255, 255, 0.7) !important; text-decoration: none !important; font-size: 0.85rem !important; transition: all 0.3s ease !important; white-space: nowrap !important;">{{__('landingpage.help_support')}}</a>
-                        <span style="color: rgba(255, 255, 255, 0.3) !important;">|</span>
-                        <a target="_blank" href="{{ route('user.refund_policy') }}" style="color: rgba(255, 255, 255, 0.7) !important; text-decoration: none !important; font-size: 0.85rem !important; transition: all 0.3s ease !important; white-space: nowrap !important;">{{__('landingpage.refund_policy')}}</a>
-                        <span style="color: rgba(255, 255, 255, 0.3) !important;">|</span>
-                        <a target="_blank" href="{{ route('user.imprint') }}" style="color: rgba(255, 255, 255, 0.7) !important; text-decoration: none !important; font-size: 0.85rem !important; transition: all 0.3s ease !important; white-space: nowrap !important;">{{__('landingpage.imprint')}}</a>
-                        <span style="color: rgba(255, 255, 255, 0.3) !important;">|</span>
-                        <a target="_blank" href="{{ route('user.data_deletion_request') }}" style="color: rgba(255, 255, 255, 0.7) !important; text-decoration: none !important; font-size: 0.85rem !important; transition: all 0.3s ease !important; white-space: nowrap !important;">{{__('landingpage.data_deletion_request')}}</a>
+                        <a target="_blank" href="{{ route('user.term_conditions') }}" class="footer-bottom-link">{{__('landingpage.terms_conditions')}}</a>
+                        <span class="footer-bottom-sep" aria-hidden="true">|</span>
+                        <a target="_blank" href="{{ route('user.privacy_policy') }}" class="footer-bottom-link">{{__('landingpage.privacy_policy')}}</a>
+                        <span class="footer-bottom-sep" aria-hidden="true">|</span>
+                        <a target="_blank" href="{{ route('user.help_support') }}" class="footer-bottom-link">{{__('landingpage.help_support')}}</a>
+                        <span class="footer-bottom-sep" aria-hidden="true">|</span>
+                        <a target="_blank" href="{{ route('user.refund_policy') }}" class="footer-bottom-link">{{__('landingpage.refund_policy')}}</a>
+                        <span class="footer-bottom-sep" aria-hidden="true">|</span>
+                        <a target="_blank" href="{{ route('user.imprint') }}" class="footer-bottom-link">{{__('landingpage.imprint')}}</a>
+                        <span class="footer-bottom-sep" aria-hidden="true">|</span>
+                        <a target="_blank" href="{{ route('user.data_deletion_request') }}" class="footer-bottom-link">{{__('landingpage.data_deletion_request')}}</a>
                     </div>
                 </div>
             </div>
@@ -560,6 +560,27 @@
         -webkit-background-clip: text !important;
         -webkit-text-fill-color: transparent !important;
         background-clip: text !important;
+    }
+    
+    /* Footer bottom links: wrap into multiple rows instead of overflowing */
+    body .footer-bottom-links {
+        flex-wrap: wrap !important;
+        gap: 0.35rem 0.75rem !important;
+        max-width: 100% !important;
+    }
+    body .footer-bottom-link {
+        color: rgba(255, 255, 255, 0.7) !important;
+        text-decoration: none !important;
+        font-size: 0.85rem !important;
+        transition: all 0.3s ease !important;
+        white-space: nowrap !important;
+    }
+    body .footer-bottom-sep:last-child {
+        display: none !important;
+    }
+    body .footer-bottom-sep {
+        color: rgba(255, 255, 255, 0.3) !important;
+        user-select: none !important;
     }
     
     /* Contact Links */
