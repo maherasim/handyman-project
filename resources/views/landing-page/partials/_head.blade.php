@@ -292,5 +292,36 @@
     .landing-section-head { font-weight: 700; letter-spacing: -0.02em; color: #1a1a2e; margin-bottom: 0.5rem; }
     .landing-for-pros-banner { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); color: #fff; border-radius: 16px; padding: 2.5rem; }
     .landing-first-booking-banner { background: linear-gradient(135deg, #3333ff 0%, #2929e6 100%); color: #fff; border-radius: 12px; padding: 1rem 1.5rem; }
+
+    /* Category pills (browse by category) */
+    .landing-category-pills { }
+    .landing-pill { display: inline-block; padding: 0.4rem 1rem; border-radius: 50px; font-size: 0.85rem; font-weight: 600; color: #3333ff; background: rgba(51,51,255,.08); border: 1px solid rgba(51,51,255,.2); text-decoration: none; transition: all 0.25s ease; }
+    .landing-pill:hover { background: #3333ff; color: #fff; transform: translateY(-2px); box-shadow: 0 4px 14px rgba(51,51,255,.3); }
+    .landing-two-path-live { background: linear-gradient(135deg, #0ea5e9 0%, #06b6d4 100%) !important; color: #fff !important; font-size: 0.7rem !important; padding: 0.35rem 0.65rem !important; border-radius: 50px !important; animation: landing-pulse 2s ease-in-out infinite; }
+    @keyframes landing-pulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(14, 165, 233, .4); } 50% { box-shadow: 0 0 0 8px rgba(14, 165, 233, 0); } }
+
+    /* Testimonials */
+    .landing-testimonials-wrap { position: relative; }
+    .landing-testimonials-title { font-weight: 700; letter-spacing: -0.02em; color: #1a1a2e; }
+    .landing-testimonials-lead { max-width: 28em; margin-left: auto; margin-right: auto; font-size: 0.95rem; }
+    .landing-testimonial-card { background: #fff; border-radius: 18px; padding: 1.5rem; height: 100%; border: 1px solid #e8ecf0; box-shadow: 0 4px 20px rgba(0,0,0,.05); transition: all 0.3s ease; position: relative; overflow: hidden; }
+    .landing-testimonial-card::before { content: '"'; position: absolute; top: 0.5rem; left: 1rem; font-size: 3rem; line-height: 1; color: rgba(51,51,255,.12); font-family: Georgia, serif; }
+    .landing-testimonial-card:hover { border-color: rgba(51,51,255,.25); box-shadow: 0 12px 40px rgba(51,51,255,.1); transform: translateY(-4px); }
+    .landing-testimonial-stars { margin-bottom: 0.75rem; }
+    .landing-testimonial-star { color: #e5e7eb; font-size: 1rem; }
+    .landing-testimonial-star.filled { color: #f59e0b; }
+    .landing-testimonial-quote { font-size: 0.9rem; line-height: 1.6; color: #374151; margin-bottom: 1rem; position: relative; z-index: 1; }
+    .landing-testimonial-meta { display: flex; flex-direction: column; gap: 0.15rem; }
+    .landing-testimonial-name { font-weight: 700; color: #1a1a2e; font-size: 0.9rem; }
+    .landing-testimonial-service { font-size: 0.8rem; color: #3333ff; font-weight: 600; }
+
+    /* Sticky CTA bar */
+    .landing-sticky-cta { position: fixed; bottom: 0; left: 0; right: 0; z-index: 1030; background: rgba(255,255,255,.97); backdrop-filter: blur(12px); border-top: 1px solid rgba(51,51,255,.15); box-shadow: 0 -4px 24px rgba(0,0,0,.08); transform: translateY(100%); opacity: 0; visibility: hidden; transition: transform 0.35s ease, opacity 0.35s ease, visibility 0.35s ease; }
+    .landing-sticky-cta.is-visible { transform: translateY(0); opacity: 1; visibility: visible; }
+    .landing-sticky-cta-text { font-weight: 600; color: #1a1a2e; font-size: 0.95rem; }
+
+    /* Scroll-in animation */
+    .landing-animate-in { opacity: 0; transform: translateY(24px); transition: opacity 0.6s ease, transform 0.6s ease; }
+    .landing-animate-in.is-visible { opacity: 1; transform: translateY(0); }
 </style>
 

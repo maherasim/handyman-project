@@ -138,6 +138,23 @@ class FrontendController extends Controller
             $q->whereNull('expire_date')->orWhere('expire_date', '>=', now()->toDateString());
         })->first();
 
+        // Landing: testimonials (reviews with text) for "What customers say"
+        $landingTestimonials = BookingRating::with(['customer', 'service'])
+            ->whereNotNull('review')
+            ->where('review', '!=', '')
+            ->where('rating', '>=', 4)
+            ->orderByDesc('created_at')
+            ->take(4)
+            ->get()
+            ->map(function ($r) {
+                return [
+                    'review' => \Str::limit($r->review, 120),
+                    'rating' => (int) $r->rating,
+                    'customer_name' => $r->customer ? $r->customer->display_name : __('landingpage.customer'),
+                    'service_name' => $r->service ? $r->service->name : null,
+                ];
+            });
+
         $favouriteServiceData = [];
         $apiRequest = new Request(['service_id' => $service_id, 'per_page' => 'all']);
         $serviceController = app(ServiceController::class);
@@ -158,7 +175,8 @@ class FrontendController extends Controller
         return view('landing-page.index', compact(
             'sectionData', 'favouriteService', 'postjobservice', 'auth_user_id', 'favourite', 'totalRating',
             'jobRequests', 'categoryrequest', 'servicerequest', 'featuredrequest',
-            'totalBookings', 'totalProviders', 'bookingsLast24h', 'recentBookings', 'areasWeCover', 'firstBookingCoupon'
+            'totalBookings', 'totalProviders', 'bookingsLast24h', 'recentBookings', 'areasWeCover', 'firstBookingCoupon',
+            'landingTestimonials'
         ));
     }
 

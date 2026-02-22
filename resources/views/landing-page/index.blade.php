@@ -105,18 +105,29 @@
     @endif
 
     <!-- Two paths: Book a service / Post a job -->
-    <div class="section-padding bg-light landing-two-path-wrap">
+    <div class="section-padding bg-light landing-two-path-wrap landing-animate-in">
         <div class="container">
             <p class="landing-two-path-eyebrow text-center text-uppercase small fw-semibold text-body-secondary mb-3">{{ __('landingpage.two_path_eyebrow') }}</p>
+            @if (isset($categoryrequest) && $categoryrequest->count() > 0)
+                <p class="text-center small text-body-secondary mb-3">{{ __('landingpage.popular_services_browse') }}</p>
+                <div class="landing-category-pills d-flex flex-wrap justify-content-center gap-2 mb-4">
+                    @foreach ($categoryrequest->take(6) as $cat)
+                        <a href="{{ route('category.detail', $cat->id) }}" class="landing-pill">{{ $cat->name }}</a>
+                    @endforeach
+                </div>
+            @endif
             <div class="row g-4">
                 <div class="col-md-6">
                     <a href="{{ route('service.list') }}" class="text-decoration-none d-block h-100">
                         <div class="landing-two-path-card card-popular">
-                            <div class="d-flex align-items-center gap-3 mb-4">
+                            <div class="d-flex align-items-center gap-3 mb-4 flex-wrap">
                                 <div class="landing-two-path-icon-wrap">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-primary"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
                                 </div>
                                 <span class="badge landing-two-path-badge text-uppercase small">{{ __('landingpage.most_popular') }}</span>
+                                @if (($bookingsLast24h ?? 0) > 0)
+                                    <span class="badge landing-two-path-live ms-auto">{{ __('landingpage.booked_last_24h', ['count' => $bookingsLast24h]) }}</span>
+                                @endif
                             </div>
                             <h3 class="h4 mb-2 text-dark fw-bold">{{ __('landingpage.book_a_service') }}</h3>
                             <p class="landing-two-path-desc text-body text-dark mb-4 flex-grow-1">{{ __('landingpage.book_a_service_lead') }}</p>
@@ -143,9 +154,10 @@
     </div>
 
     <!-- How it works -->
-    <div class="section-padding bg-white landing-how-wrap">
+    <div class="section-padding bg-white landing-how-wrap landing-animate-in">
         <div class="container position-relative">
-            <h2 class="text-center mb-5 landing-how-title">{{ __('landingpage.how_it_works_title') }}</h2>
+            <h2 class="text-center mb-2 landing-how-title">{{ __('landingpage.how_it_works_title') }}</h2>
+            <p class="text-center text-muted mb-5 landing-how-lead mx-auto">{{ __('landingpage.how_it_works_lead') }}</p>
             <div class="landing-how-connector d-none d-lg-block" aria-hidden="true"></div>
             <div class="row g-0">
                 <div class="col-6 col-lg-3">
@@ -181,7 +193,7 @@
     </div>
 
     <!-- Why us -->
-    <div class="section-padding bg-light landing-why-wrap">
+    <div class="section-padding bg-light landing-why-wrap landing-animate-in">
         <div class="container">
             <h2 class="text-center mb-2 landing-why-title">{{ __('landingpage.why_us_title') }}</h2>
             <p class="text-center text-muted mb-5 landing-why-lead mx-auto">{{ __('landingpage.why_us_lead') }}</p>
@@ -218,9 +230,39 @@
         </div>
     </div>
 
+    <!-- What customers say (testimonials) -->
+    @if (isset($landingTestimonials) && count($landingTestimonials) > 0)
+    <div class="section-padding bg-white landing-testimonials-wrap landing-animate-in">
+        <div class="container">
+            <h2 class="text-center mb-2 landing-testimonials-title">{{ __('landingpage.testimonials_title') }}</h2>
+            <p class="text-center text-muted mb-5 landing-testimonials-lead">{{ __('landingpage.testimonials_lead') }}</p>
+            <div class="row g-4">
+                @foreach ($landingTestimonials as $t)
+                <div class="col-md-6 col-lg-3">
+                    <div class="landing-testimonial-card">
+                        <div class="landing-testimonial-stars">
+                            @for ($i = 1; $i <= 5; $i++)
+                                <span class="landing-testimonial-star {{ $i <= ($t['rating'] ?? 0) ? 'filled' : '' }}">★</span>
+                            @endfor
+                        </div>
+                        <p class="landing-testimonial-quote">"{{ $t['review'] }}"</p>
+                        <div class="landing-testimonial-meta">
+                            <span class="landing-testimonial-name">{{ $t['customer_name'] }}</span>
+                            @if (!empty($t['service_name']))
+                                <span class="landing-testimonial-service">{{ $t['service_name'] }}</span>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+                @endforeach
+            </div>
+        </div>
+    </div>
+    @endif
+
     <!-- Recently booked + Areas we cover -->
     @if (count($recentBookings ?? []) > 0 || count($areasWeCover ?? []) > 0)
-    <div class="section-padding bg-white landing-recent-areas-wrap">
+    <div class="section-padding bg-white landing-recent-areas-wrap landing-animate-in">
         <div class="container">
             <div class="row g-4 align-items-stretch">
                 @if (count($recentBookings ?? []) > 0)
@@ -337,7 +379,7 @@
 
 
 
-etc 
+
 
             </div>
         </div>
@@ -1847,8 +1889,17 @@ etc
             </div>
         </div>
     @endif
- 
 
+    {{-- <!-- Sticky CTA bar (appears on scroll) -->
+    <div id="landing-sticky-cta" class="landing-sticky-cta" aria-hidden="true">
+        <div class="container d-flex flex-wrap align-items-center justify-content-between gap-3 py-2">
+            <span class="landing-sticky-cta-text">{{ __('landingpage.sticky_cta_ready') }}</span>
+            <div class="d-flex flex-wrap gap-2">
+                <a href="{{ route('service.list') }}" class="btn btn-primary btn-sm">{{ __('landingpage.sticky_cta_book') }}</a>
+                <a href="{{ route('post.job.list') }}" class="btn btn-outline-primary btn-sm">{{ __('landingpage.sticky_cta_post_job') }}</a>
+            </div>
+        </div>
+    </div> --}}
 
 @endsection
 
@@ -2165,4 +2216,42 @@ etc
             }
         }
     </style>
+
+@section('after_script')
+<script>
+(function() {
+    var stickyCta = document.getElementById('landing-sticky-cta');
+    var animateEls = document.querySelectorAll('.landing-animate-in');
+    var scrollThreshold = 380;
+    var ticking = false;
+
+    function onScroll() {
+        if (!ticking) {
+            requestAnimationFrame(function() {
+                var y = window.pageYOffset || document.documentElement.scrollTop;
+                if (stickyCta) {
+                    if (y > scrollThreshold) {
+                        stickyCta.classList.add('is-visible');
+                        stickyCta.setAttribute('aria-hidden', 'false');
+                    } else {
+                        stickyCta.classList.remove('is-visible');
+                        stickyCta.setAttribute('aria-hidden', 'true');
+                    }
+                }
+                if (animateEls.length) {
+                    var viewH = window.innerHeight;
+                    animateEls.forEach(function(el) {
+                        var rect = el.getBoundingClientRect();
+                        if (rect.top < viewH - 80) el.classList.add('is-visible');
+                    });
+                }
+                ticking = false;
+            });
+            ticking = true;
+        }
+    }
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('load', onScroll);
+})();
+</script>
 @endsection
