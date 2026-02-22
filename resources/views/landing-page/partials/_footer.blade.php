@@ -190,7 +190,12 @@
                     </p>
                 </div>
                 <div class="col-md-6 text-md-end text-center">
+                    @php $footerPages = \App\Models\Page::active()->ordered()->get(); @endphp
                     <div class="d-inline-flex align-items-center gap-2 flex-wrap justify-content-md-end justify-content-center" style="flex-wrap: nowrap !important; white-space: nowrap !important;">
+                        @foreach($footerPages as $fp)
+                            <a href="{{ route('user.page', $fp->slug) }}" style="color: rgba(255, 255, 255, 0.7) !important; text-decoration: none !important; font-size: 0.85rem !important; transition: all 0.3s ease !important; white-space: nowrap !important;">{{ $fp->title }}</a>
+                            <span style="color: rgba(255, 255, 255, 0.3) !important;">|</span>
+                        @endforeach
                         <a target="_blank" href="{{ route('user.term_conditions') }}" style="color: rgba(255, 255, 255, 0.7) !important; text-decoration: none !important; font-size: 0.85rem !important; transition: all 0.3s ease !important; white-space: nowrap !important;">{{__('landingpage.terms_conditions')}}</a>
                         <span style="color: rgba(255, 255, 255, 0.3) !important;">|</span>
                         <a target="_blank" href="{{ route('user.privacy_policy') }}" style="color: rgba(255, 255, 255, 0.7) !important; text-decoration: none !important; font-size: 0.85rem !important; transition: all 0.3s ease !important; white-space: nowrap !important;">{{__('landingpage.privacy_policy')}}</a>

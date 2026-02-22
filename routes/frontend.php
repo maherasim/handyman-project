@@ -51,6 +51,7 @@ Route::middleware([CheckInstallation::class])->group(function () {
     Route::get('/data-deletion-request', [FrontendController::class, 'DataDeletion'])->name('user.data_deletion_request');
     Route::get('/imprint', [FrontendController::class, 'Imprint'])->name('user.imprint');
     Route::get('/agb', [FrontendController::class, 'agb'])->name('user.agb');
+    Route::get('/pages/{slug}', [FrontendController::class, 'showPage'])->name('user.page')->where('slug', '[a-z0-9\-]+');
 
     Route::get('/favourite-service', [FrontendController::class, 'favouriteServiceList'])->name('favourite.service');
     Route::get('/service-packages', [FrontendController::class, 'servicePackageList'])->name('service.package');

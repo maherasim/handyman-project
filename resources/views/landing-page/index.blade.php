@@ -1,167 +1,53 @@
 @extends('landing-page.layouts.default')
 @section('content')
 
-
-    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
-
-        body {
-            font-family: "Montserrat", sans-serif;
-        }
-
-        .heading_text {
-            font-weight: 600;
-        }
-
-        .service {
-            margin-top: -30px;
-        }
-
-        .service-asim {
-            height: 10.5rem !important;
-        }
-        .stats-section {
-            background: #f8f9fa;
-            border-radius: 8px;
-            padding: 12px 8px;
-            margin: 12px 0;
-            border: 1px solid #eef0f2;
-        }
-        .stats-item {
-            text-align: center;
-            padding: 4px;
-        }
-        .stats-icon {
-            width: 16px;
-            height: 16px;
-            margin-right: 4px;
-        }
-        .stats-value {
-            font-weight: 600;
-            font-size: 14px;
-            color: #2c3e50;
-        }
-        .stats-label {
-            font-size: 11px;
-            color: #6c757d;
-            margin-top: 2px;
-        }
-        
-<style>
-   .price-box {
-      background-color: #007bff; /* Blue background */
-      color: white; /* White text for better visibility */
-      font-size: 18px; /* Increased text size */
-      font-weight: bold;
-      color: red; /* Red text for price */
-      text-align: center;
-      padding: 10px 15px; /* Added consistent padding */
-      border-radius: 10px; /* Rounded corners */
-      display: inline-block;
-      radius: 15%;
-      width: 180px; /* Increased width */
-      margin: 5px 0; /* Optional: Adds spacing around the box */
-   }
-   .service-asim {
-            height: 10.5rem !important;
-            object-fit: cover;
-        }
-        .provider-info {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    white-space: nowrap;
-}
-
-.provider-name {
-    display: inline-block;
-    line-height: 1.2;
-    word-break: break-word;
-}
-
-.provider-name span {
-    display: block;
-}
-
-/* Card polish */
-.service-box-card { 
-    border: 1px solid #eef0f2; 
-    transition: box-shadow .2s ease, transform .2s ease; 
-    background: #fff; 
-    padding: 15px;
-    border-radius: 12px;
-}
-.service-box-card:hover { 
-    box-shadow: 0 10px 24px rgba(18,38,63,.08); 
-    transform: translateY(-2px); 
-}
-.social-share img, .social-share svg { 
-    width: 28px; 
-    height: 28px; 
-    border-radius: 6px; 
-}
-
-/* Statistics section improvements */
-.stats-section {
-    background: #f8f9fa;
-    border-radius: 8px;
-    padding: 12px 8px;
-    margin: 12px 0;
-}
-
-.stats-item {
-    text-align: center;
-    padding: 4px;
-}
-
-.stats-icon {
-    width: 16px;
-    height: 16px;
-    margin-right: 4px;
-}
-
-.stats-value {
-    font-weight: 600;
-    font-size: 14px;
-    color: #2c3e50;
-}
-
-.stats-label {
-    font-size: 11px;
-    color: #6c757d;
-    margin-top: 2px;
-}
-
-</style>
-    </style>
     <!-- Banner -->
-    <div class="padding-top-bottom-90 bg-light">
+    <div class="padding-top-bottom-90 landing-hero-wrap">
         <div class="container-fluid">
             <div class="row align-items-center">
                 <div class="col-xl-6">
                     <div class="me-0 pe-0 me-xl-5 pe-xl-5">
                         @if ($sectionData && isset($sectionData['section_1']) && $sectionData['section_1']['section_1'] == 1)
-                            <div class="iq-title-box mb-5">
-                                <div class="iq-title-box">
-                                    <h2 class="text-capitalize line-count-3">
-                                        Find Expert Frosbter Services
-                                        <span class="highlighted-text">
-                                            <span class="highlighted-text-swipe"></span>
-                                            <span class="highlighted-image">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="254" height="11"
-                                                    viewBox="0 0 254 11" fill="none">
-                                                    <path d="M2 9C3.11607 8.76081 129.232 -2.95948 252 4.4554"
-                                                        stroke="currentColor" stroke-width="4" stroke-linecap="round"
-                                                        stroke-linejoin="round" />
-                                                </svg>
-                                            </span>
+                            @php
+                                $heroTitle = $sectionData['section_1']['title'] ?? 'Repairs Done Right. Book in 60 Seconds.';
+                                $heroDesc  = $sectionData['section_1']['description'] ?? 'Connect with vetted local pros for repairs, maintenance and home improvement. Transparent pricing, easy booking, quality guaranteed.';
+                            @endphp
+                            <div class="iq-title-box mb-4">
+                                <span class="landing-hero-badge">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                                    {{ __('landingpage.trusted_by_thousands') }}
+                                </span>
+                                <h1 class="landing-hero-title text-capitalize line-count-3 mb-0">
+                                    {{ $heroTitle }}
+                                    <span class="highlighted-text">
+                                        <span class="highlighted-text-swipe"></span>
+                                        <span class="highlighted-image">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="254" height="11"
+                                                viewBox="0 0 254 11" fill="none">
+                                                <path d="M2 9C3.11607 8.76081 129.232 -2.95948 252 4.4554"
+                                                    stroke="currentColor" stroke-width="4" stroke-linecap="round"
+                                                    stroke-linejoin="round" />
+                                            </svg>
                                         </span>
-                                    </h2>
-                                    <p class="iq-title-desc line-count-3 text-body mt-3 mb-0">
-                                        Connect with skilled professionals for all your repair, maintenance, and home improvement needs. Book trusted handymen and get quality service delivered right to your doorstep.
-                                    </p>
+                                    </span>
+                                </h1>
+                                <p class="landing-hero-desc iq-title-desc line-count-3 mb-0">
+                                    {{ $heroDesc }}
+                                </p>
+                                <div class="landing-hero-trust">
+                                    <span><span class="trust-rating">{{ number_format((float) $totalRating, 1) }}★</span> {{ __('landingpage.overall_rating') }}</span>
+                                    <span class="trust-dot" aria-hidden="true"></span>
+                                    <span><span class="trust-rating">{{ number_format($totalBookings ?? 0) }}+</span> {{ __('landingpage.completed_jobs') }}</span>
+                                    <span class="trust-dot" aria-hidden="true"></span>
+                                    <span><span class="trust-rating">{{ $totalProviders ?? 0 }}+</span> {{ __('landingpage.local_pros') }}</span>
+                                    <span class="trust-dot" aria-hidden="true"></span>
+                                    <span>{{ __('landingpage.free_quotes') }}</span>
                                 </div>
+                                @if (($bookingsLast24h ?? 0) > 0)
+                                    <p class="landing-live-cue mb-0 mt-2 small text-muted">
+                                        {{ __('landingpage.live_cue_booked', ['count' => $bookingsLast24h]) }}
+                                    </p>
+                                @endif
                             </div>
                             <location-search :user_id="{{ json_encode($auth_user_id) }}"
                                 :postjobservice="{{ $postjobservice }}"></location-search>
@@ -173,7 +59,7 @@
                 <div class="col-xl-6 px-xl-0 mt-xl-0 mt-5">
                     <div class="position-relative swiper provider-banner-slider overflow-hidden">
                         <div class="swiper-wrapper">
-                            @foreach ($sectionData['section_1']['provider_id'] as $providerId)
+                            @foreach (($sectionData['section_1']['provider_id'] ?? []) as $providerId)
                                 @php
                                     $user = App\Models\User::with('getServiceRating')
                                         ->where('user_type', 'provider')
@@ -206,6 +92,165 @@
             </div>
         </div>
     </div>
+
+    @if (!empty($firstBookingCoupon))
+        <div class="container py-3">
+            <a href="{{ route('user.register') }}" class="d-block text-decoration-none">
+                <div class="landing-first-booking-banner d-flex flex-wrap align-items-center justify-content-between gap-3">
+                    <span class="fw-semibold">{{ __('landingpage.first_booking_off', ['discount' => $firstBookingCoupon->discount_type === 'percentage' ? $firstBookingCoupon->discount . '%' : getPriceFormat($firstBookingCoupon->discount)]) }}</span>
+                    <span class="btn btn-light btn-sm">{{ __('landingpage.first_booking_cta') }}</span>
+                </div>
+            </a>
+        </div>
+    @endif
+
+    <!-- Two paths: Book a service / Post a job -->
+    <div class="section-padding bg-light landing-two-path-wrap">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <a href="{{ route('service.list') }}" class="text-decoration-none d-block h-100">
+                        <div class="landing-two-path-card card-popular">
+                            <div class="d-flex align-items-center gap-3 mb-4">
+                                <div class="landing-two-path-icon-wrap">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-primary"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+                                </div>
+                                <span class="badge landing-two-path-badge text-uppercase small">{{ __('landingpage.most_popular') }}</span>
+                            </div>
+                            <h3 class="h4 mb-2 text-dark fw-bold">{{ __('landingpage.book_a_service') }}</h3>
+                            <p class="text-body text-dark mb-4 flex-grow-1 opacity-90">{{ __('landingpage.book_a_service_lead') }}</p>
+                            <span class="btn btn-primary text-white align-self-start">{{ __('landingpage.browse_services') }}</span>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-md-6">
+                    <a href="{{ route('post.job.list') }}" class="text-decoration-none d-block h-100">
+                        <div class="landing-two-path-card">
+                            <div class="d-flex align-items-center gap-3 mb-4">
+                                <div class="landing-two-path-icon-wrap">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-primary"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+                                </div>
+                            </div>
+                            <h3 class="h4 mb-2 text-dark fw-bold">{{ __('landingpage.post_a_job') }}</h3>
+                            <p class="text-body text-dark mb-4 flex-grow-1 opacity-90">{{ __('landingpage.post_a_job_lead') }}</p>
+                            <span class="btn btn-primary text-white align-self-start">{{ __('landingpage.post_a_job') }}</span>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- How it works -->
+    <div class="section-padding bg-white landing-how-wrap">
+        <div class="container position-relative">
+            <h2 class="text-center mb-5 landing-how-title">{{ __('landingpage.how_it_works_title') }}</h2>
+            <div class="landing-how-connector d-none d-lg-block" aria-hidden="true"></div>
+            <div class="row g-0">
+                <div class="col-6 col-lg-3">
+                    <div class="landing-how-step">
+                        <div class="step-num">1</div>
+                        <h4 class="h6">{{ __('landingpage.how_step_1') }}</h4>
+                        <p class="small text-muted mb-0">{{ __('landingpage.how_step_1_desc') }}</p>
+                    </div>
+                </div>
+                <div class="col-6 col-lg-3">
+                    <div class="landing-how-step">
+                        <div class="step-num">2</div>
+                        <h4 class="h6">{{ __('landingpage.how_step_2') }}</h4>
+                        <p class="small text-muted mb-0">{{ __('landingpage.how_step_2_desc') }}</p>
+                    </div>
+                </div>
+                <div class="col-6 col-lg-3">
+                    <div class="landing-how-step">
+                        <div class="step-num">3</div>
+                        <h4 class="h6">{{ __('landingpage.how_step_3') }}</h4>
+                        <p class="small text-muted mb-0">{{ __('landingpage.how_step_3_desc') }}</p>
+                    </div>
+                </div>
+                <div class="col-6 col-lg-3">
+                    <div class="landing-how-step">
+                        <div class="step-num">4</div>
+                        <h4 class="h6">{{ __('landingpage.how_step_4') }}</h4>
+                        <p class="small text-muted mb-0">{{ __('landingpage.how_step_4_desc') }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Why us -->
+    <div class="section-padding bg-light landing-why-wrap">
+        <div class="container">
+            <h2 class="text-center mb-5 landing-why-title">{{ __('landingpage.why_us_title') }}</h2>
+            <div class="row g-4">
+                <div class="col-md-6 col-lg-3">
+                    <div class="landing-why-item">
+                        <div class="landing-why-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-primary"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+                        <h4 class="h6 mb-1">{{ __('landingpage.why_vetted') }}</h4>
+                        <p class="small text-muted mb-0">{{ __('landingpage.why_vetted_desc') }}</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="landing-why-item">
+                        <div class="landing-why-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-primary"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div>
+                        <h4 class="h6 mb-1">{{ __('landingpage.why_pricing') }}</h4>
+                        <p class="small text-muted mb-0">{{ __('landingpage.why_pricing_desc') }}</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="landing-why-item">
+                        <div class="landing-why-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-primary"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg></div>
+                        <h4 class="h6 mb-1">{{ __('landingpage.why_secure') }}</h4>
+                        <p class="small text-muted mb-0">{{ __('landingpage.why_secure_desc') }}</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="landing-why-item">
+                        <div class="landing-why-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-primary"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg></div>
+                        <h4 class="h6 mb-1">{{ __('landingpage.why_rebook') }}</h4>
+                        <p class="small text-muted mb-0">{{ __('landingpage.why_rebook_desc') }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recently booked + Areas we cover -->
+    @if (count($recentBookings ?? []) > 0 || count($areasWeCover ?? []) > 0)
+    <div class="section-padding bg-white landing-recent-areas-wrap">
+        <div class="container">
+            <div class="row g-4 align-items-stretch">
+                @if (count($recentBookings ?? []) > 0)
+                    <div class="col-lg-6">
+                        <h3 class="h5 mb-3 landing-section-head">{{ __('landingpage.recently_booked_title') }}</h3>
+                        <div class="landing-recent-card h-100">
+                            @foreach ($recentBookings as $rb)
+                                <div class="landing-recent-job-item">
+                                    <span>{{ $rb['service_name'] }}</span>
+                                    <span class="time-ago">{{ $rb['created_at']->diffForHumans() }}</span>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                @endif
+                @if (count($areasWeCover ?? []) > 0)
+                    <div class="col-lg-6">
+                        <h3 class="h5 mb-3 landing-section-head">{{ __('landingpage.areas_we_cover_title') }}</h3>
+                        <p class="text-muted small mb-3">{{ __('landingpage.areas_we_cover_lead') }}</p>
+                        <div class="landing-areas-card">
+                            <div class="landing-areas-list">
+                                @foreach ($areasWeCover as $area)
+                                    <span>{{ $area }}</span>
+                                @endforeach
+                            </div>
+                        </div>
+                    </div>
+                @endif
+            </div>
+        </div>
+    </div>
+    @endif
 
     <!-- Categories -->
     @if ($sectionData && isset($sectionData['section_2']) && $sectionData['section_2']['section_2'] == 1)
@@ -287,7 +332,7 @@
 
 
 
-
+etc 
 
             </div>
         </div>
@@ -1693,6 +1738,23 @@
             }
         </style>
     @endif
+
+    <!-- For pros / providers -->
+    <div class="section-padding">
+        <div class="container">
+            <div class="landing-for-pros-banner">
+                <div class="row align-items-center">
+                    <div class="col-lg-8">
+                        <h2 class="h4 mb-2 text-white">{{ __('landingpage.for_pros_title') }}</h2>
+                        <p class="mb-0 text-white opacity-90">{{ __('landingpage.for_pros_lead') }}</p>
+                    </div>
+                    <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
+                        <a href="{{ route('partner.register') }}" class="btn btn-primary btn-lg">{{ __('landingpage.register_as_provider') }}</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     @if ($sectionData && isset($sectionData['section_6']) && $sectionData['section_6']['section_6'] == 1)
         <div class="section-padding">

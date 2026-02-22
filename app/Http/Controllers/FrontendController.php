@@ -17,6 +17,7 @@ use App\Models\City;
 use App\Models\Country;
 use App\Models\Coupon;
 use App\Models\FrontendSetting;
+use App\Models\Page;
 use App\Models\HandymanRating;
 use App\Models\HelpDesk;
 use App\Models\PostJobRequest;
@@ -117,6 +118,26 @@ class FrontendController extends Controller
         $ratings = BookingRating::pluck('rating')->toArray();
         $averageRating = count($ratings) > 0 ? array_sum($ratings) / count($ratings) : 0;
         $totalRating = number_format($averageRating, 2);
+
+        // Landing upgrade: real stats for trust bar, live cue, recently booked, areas, first-booking offer
+        $totalBookings = Booking::count();
+        $totalProviders = User::where('user_type', 'provider')->where('status', 1)->count();
+        $bookingsLast24h = Booking::where('created_at', '>=', now()->subHours(24))->count();
+        $recentBookings = Booking::with('service')
+            ->orderByDesc('created_at')
+            ->take(6)
+            ->get()
+            ->map(function ($b) {
+                return [
+                    'service_name' => $b->service ? $b->service->name : __('landingpage.service'),
+                    'created_at' => $b->created_at,
+                ];
+            });
+        $areasWeCover = City::orderBy('name')->take(10)->pluck('name')->toArray();
+        $firstBookingCoupon = Coupon::where('status', 1)->where(function ($q) {
+            $q->whereNull('expire_date')->orWhere('expire_date', '>=', now()->toDateString());
+        })->first();
+
         $favouriteServiceData = [];
         $apiRequest = new Request(['service_id' => $service_id, 'per_page' => 'all']);
         $serviceController = app(ServiceController::class);
@@ -134,7 +155,11 @@ class FrontendController extends Controller
             $userId = 0;
         }
 
-        return view('landing-page.index', compact('sectionData', 'favouriteService', 'postjobservice', 'auth_user_id', 'favourite', 'totalRating', 'jobRequests', 'categoryrequest', 'servicerequest', 'featuredrequest'));
+        return view('landing-page.index', compact(
+            'sectionData', 'favouriteService', 'postjobservice', 'auth_user_id', 'favourite', 'totalRating',
+            'jobRequests', 'categoryrequest', 'servicerequest', 'featuredrequest',
+            'totalBookings', 'totalProviders', 'bookingsLast24h', 'recentBookings', 'areasWeCover', 'firstBookingCoupon'
+        ));
     }
 
     public function userLoginView(Request $request)
@@ -744,6 +769,15 @@ class FrontendController extends Controller
         $imprint = Setting::where('type', 'imprint')->where('key', 'imprint')->first();
 
         return view('landing-page.imprint', compact('imprint'));
+    }
+
+    /**
+     * Show a static page by slug (Discover, About us, Investors, Careers, Partnership, etc.)
+     */
+    public function showPage(Request $request, string $slug)
+    {
+        $page = Page::where('slug', $slug)->where('is_active', true)->firstOrFail();
+        return view('landing-page.page', compact('page'));
     }
 
     public function AGB(Request $request)

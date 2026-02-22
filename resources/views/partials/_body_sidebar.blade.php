@@ -1214,6 +1214,17 @@ $menu->add('<span>'.__('Favourit Provider').'</span><span class="custom-tooltip"
             ->href('#pages');
 
         $menu->pages
+            ->add('<span>' . __('messages.content_pages') . '</span>', [
+                'class' => 'sidebar-layout',
+                'route' => 'page.index',
+            ])
+            ->data('permission', 'terms condition')
+            ->prepend(
+                '<svg width="15" height="15" class="sidebar-menu-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M14 2H6C4.9 2 4 2.9 4 4V20C4 21.1 4.9 22 6 22H18C19.1 22 20 21.1 20 20V8L14 2ZM16 18H8V16H16V18ZM16 14H8V12H16V14ZM13 9V3.5L18.5 9H13Z" fill="#6C757D"/></svg>',
+            )
+            ->link->attr(['class' => '']);
+
+        $menu->pages
             ->add('<span>' . __('messages.terms_condition') . '</span>', [
                 'class' => 'sidebar-layout',
                 'route' => 'term-condition',

@@ -217,6 +217,10 @@ use Lavary\Menu\Menu;
                 ->data('permission', 'pages')
                 ->link->attr(["class" => ""])
                 ->href('#pages');
+                $menu->pages->add('<span>'.__('messages.content_pages').'</span>', ['class' => 'sidebar-layout' ,'route' => 'page.index'])
+                    ->data('permission', 'terms condition')
+                    ->prepend('<i class="ri-file-list-3-line"></i>')
+                    ->link->attr(['class' => '']);
                 $menu->pages->add('<span>'.__('messages.terms_condition').'</span>', ['class' => 'sidebar-layout' ,'route' => 'term-condition'])
                     ->data('permission', 'terms condition')
                     ->prepend('<i class="fas fa-file-contract"></i>')

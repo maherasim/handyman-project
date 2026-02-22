@@ -17,6 +17,7 @@
 
                 $serviceconfig = $settings->has('service-configurations') ? json_decode($settings['service-configurations']->value) : null;
                 $othersetting = $settings->has('OTHER_SETTING') ? json_decode($settings['OTHER_SETTING']->value) : null;
+                $navPages = \App\Models\Page::active()->ordered()->get();
         @endphp
          @if ($sectionData && isset($sectionData['header_setting']) && $sectionData['header_setting'] == 1)
         <ul class="navbar-nav iq-nav-menu list-unstyled" id="header-menu">
@@ -54,6 +55,19 @@
                     <a class="nav-link {{ request()->routeIs('booking.*') ? 'active' : '' }}" href="{{ route('booking.list') }}">{{__('landingpage.bookings')}}</a>
                 </li>
             @endif
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle {{ request()->routeIs('user.page') ? 'active' : '' }}" href="#" id="navbarPagesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Pages</a>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarPagesDropdown">
+                    @foreach($navPages as $p)
+                        <li><a class="dropdown-item {{ request()->routeIs('user.page') && request()->route('slug') === $p->slug ? 'active' : '' }}" href="{{ route('user.page', $p->slug) }}">{{ $p->title }}</a></li>
+                    @endforeach
+                    @if($navPages->isNotEmpty())<li><hr class="dropdown-divider"></li>@endif
+                    <li><a class="dropdown-item" href="{{ route('user.term_conditions') }}">{{__('landingpage.terms_conditions')}}</a></li>
+                    <li><a class="dropdown-item" href="{{ route('user.privacy_policy') }}">{{__('landingpage.privacy_policy')}}</a></li>
+                    <li><a class="dropdown-item" href="{{ route('user.help_support') }}">{{__('landingpage.help_support')}}</a></li>
+                    <li><a class="dropdown-item" href="{{ route('user.refund_policy') }}">{{__('landingpage.refund_policy')}}</a></li>
+                </ul>
+            </li>
             {{-- @if(auth()->check() && auth()->user()->user_type == 'user' && optional($serviceconfig)->post_services == 1)
             <li class="nav-item">
                 <a class="nav-link {{ request()->routeIs('post.job.*') ? 'active' : '' }}" href="{{ route('post.job.list') }}">{{__('landingpage.job_request')}}</a>
