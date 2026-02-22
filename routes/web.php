@@ -51,6 +51,7 @@ use App\Http\Controllers\VerificationController;
 use App\Http\Controllers\HelpDeskController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\StripeWebhookController;
+use App\Http\Controllers\FrontendController;
 
 
 use App\Http\Controllers\Installer\WelcomeController;
@@ -607,6 +608,11 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
     Route::get('save-wallet-stripe-payment/{id}', [App\Http\Controllers\WalletController::class, 'saveWalletStripePayment']);
     Route::get('check-image/{id}', [App\Http\Controllers\HomeController::class, 'checkImage'])->name('check-image');
 });
+
+// DB-driven content pages (Discover, About us, Investors, etc.) – must be registered after admin routes so
+// /pages/privacy-policy, /pages/content, /pages/help-support, /pages/imprint, etc. are matched first
+Route::get('pages/{slug}', [FrontendController::class, 'showPage'])->middleware('CheckInstallation')->name('user.page')->where('slug', '[a-z0-9\-]+');
+
 Route::get('/ajax-list', [HomeController::class, 'getAjaxList'])->name('ajax-list');
 Route::post('/service-list', [HomeController::class, 'getAjaxServiceList'])->name('service-list');
 
