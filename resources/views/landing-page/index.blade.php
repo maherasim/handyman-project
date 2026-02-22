@@ -107,6 +107,7 @@
     <!-- Two paths: Book a service / Post a job -->
     <div class="section-padding bg-light landing-two-path-wrap">
         <div class="container">
+            <p class="landing-two-path-eyebrow text-center text-uppercase small fw-semibold text-body-secondary mb-3">{{ __('landingpage.two_path_eyebrow') }}</p>
             <div class="row g-4">
                 <div class="col-md-6">
                     <a href="{{ route('service.list') }}" class="text-decoration-none d-block h-100">
@@ -118,7 +119,7 @@
                                 <span class="badge landing-two-path-badge text-uppercase small">{{ __('landingpage.most_popular') }}</span>
                             </div>
                             <h3 class="h4 mb-2 text-dark fw-bold">{{ __('landingpage.book_a_service') }}</h3>
-                            <p class="text-body text-dark mb-4 flex-grow-1 opacity-90">{{ __('landingpage.book_a_service_lead') }}</p>
+                            <p class="landing-two-path-desc text-body text-dark mb-4 flex-grow-1">{{ __('landingpage.book_a_service_lead') }}</p>
                             <span class="btn btn-primary text-white align-self-start">{{ __('landingpage.browse_services') }}</span>
                         </div>
                     </a>
@@ -132,7 +133,7 @@
                                 </div>
                             </div>
                             <h3 class="h4 mb-2 text-dark fw-bold">{{ __('landingpage.post_a_job') }}</h3>
-                            <p class="text-body text-dark mb-4 flex-grow-1 opacity-90">{{ __('landingpage.post_a_job_lead') }}</p>
+                            <p class="landing-two-path-desc text-body text-dark mb-4 flex-grow-1">{{ __('landingpage.post_a_job_lead') }}</p>
                             <span class="btn btn-primary text-white align-self-start">{{ __('landingpage.post_a_job') }}</span>
                         </div>
                     </a>
@@ -182,7 +183,8 @@
     <!-- Why us -->
     <div class="section-padding bg-light landing-why-wrap">
         <div class="container">
-            <h2 class="text-center mb-5 landing-why-title">{{ __('landingpage.why_us_title') }}</h2>
+            <h2 class="text-center mb-2 landing-why-title">{{ __('landingpage.why_us_title') }}</h2>
+            <p class="text-center text-muted mb-5 landing-why-lead mx-auto">{{ __('landingpage.why_us_lead') }}</p>
             <div class="row g-4">
                 <div class="col-md-6 col-lg-3">
                     <div class="landing-why-item">
@@ -223,12 +225,14 @@
             <div class="row g-4 align-items-stretch">
                 @if (count($recentBookings ?? []) > 0)
                     <div class="col-lg-6">
-                        <h3 class="h5 mb-3 landing-section-head">{{ __('landingpage.recently_booked_title') }}</h3>
+                        <h3 class="h5 mb-1 landing-section-head">{{ __('landingpage.recently_booked_title') }}</h3>
+                        <p class="text-muted small mb-3">{{ __('landingpage.recently_booked_lead') }}</p>
                         <div class="landing-recent-card h-100">
                             @foreach ($recentBookings as $rb)
                                 <div class="landing-recent-job-item">
-                                    <span>{{ $rb['service_name'] }}</span>
-                                    <span class="time-ago">{{ $rb['created_at']->diffForHumans() }}</span>
+                                    <span class="landing-recent-dot" aria-hidden="true"></span>
+                                    <span class="landing-recent-service-name">{{ $rb['service_name'] }}</span>
+                                    <span class="landing-recent-time">{{ $rb['created_at']->diffForHumans() }}</span>
                                 </div>
                             @endforeach
                         </div>
@@ -236,12 +240,13 @@
                 @endif
                 @if (count($areasWeCover ?? []) > 0)
                     <div class="col-lg-6">
-                        <h3 class="h5 mb-3 landing-section-head">{{ __('landingpage.areas_we_cover_title') }}</h3>
+                        <h3 class="h5 mb-1 landing-section-head">{{ __('landingpage.areas_we_cover_title') }}</h3>
                         <p class="text-muted small mb-3">{{ __('landingpage.areas_we_cover_lead') }}</p>
                         <div class="landing-areas-card">
+                            <p class="landing-areas-sub small text-body-secondary mb-2">{{ __('landingpage.areas_find_near_you') }}</p>
                             <div class="landing-areas-list">
                                 @foreach ($areasWeCover as $area)
-                                    <span>{{ $area }}</span>
+                                    <span class="landing-areas-tag">{{ $area }}</span>
                                 @endforeach
                             </div>
                         </div>

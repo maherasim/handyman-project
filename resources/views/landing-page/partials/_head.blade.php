@@ -240,6 +240,8 @@
 
     /* Two-path cards */
     .landing-two-path-wrap { position: relative; }
+    .landing-two-path-eyebrow { letter-spacing: 0.08em; opacity: 0.9; }
+    .landing-two-path-desc { opacity: 0.9; line-height: 1.55; max-width: 28em; }
     .landing-two-path-card { border: none; border-radius: 20px; padding: 2rem; height: 100%; transition: all 0.35s cubic-bezier(0.4,0,0.2,1); background: #fff; display: flex; flex-direction: column; position: relative; overflow: hidden; box-shadow: 0 4px 24px rgba(0,0,0,.06); }
     .landing-two-path-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, #3333ff 0%, #6366f1 50%, #8b5cf6 100%); opacity: 0; transition: opacity 0.3s ease; }
     .landing-two-path-card.card-popular::before { opacity: 1; }
@@ -254,6 +256,7 @@
     /* How it works */
     .landing-how-wrap { position: relative; }
     .landing-how-title { font-weight: 700; letter-spacing: -0.02em; color: #1a1a2e; }
+    .landing-how-lead { max-width: 26em; font-size: 0.95rem; line-height: 1.5; }
     .landing-how-step { text-align: center; padding: 1.5rem 0.75rem; position: relative; z-index: 1; }
     .landing-how-step .step-num { width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(145deg, #3333ff 0%, #6366f1 100%); color: #fff; font-weight: 800; font-size: 1.25rem; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 1rem; box-shadow: 0 8px 24px rgba(51,51,255,.35); transition: transform 0.3s ease; }
     .landing-how-step:hover .step-num { transform: scale(1.1); }
@@ -264,6 +267,7 @@
     /* Why us */
     .landing-why-wrap { position: relative; }
     .landing-why-title { font-weight: 700; letter-spacing: -0.02em; color: #1a1a2e; }
+    .landing-why-lead { max-width: 28em; font-size: 0.95rem; line-height: 1.5; }
     .landing-why-item { padding: 1.5rem; border-radius: 18px; background: #fff; border: 1px solid #e8ecf0; height: 100%; transition: all 0.35s ease; position: relative; overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,.04); }
     .landing-why-item::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, #3333ff, #6366f1); transform: scaleX(0); transform-origin: left; transition: transform 0.35s ease; border-radius: 0 0 18px 18px; }
     .landing-why-item:hover { border-color: rgba(51,51,255,.2); box-shadow: 0 12px 40px rgba(51,51,255,.1); transform: translateY(-4px); }
@@ -274,14 +278,17 @@
     /* Recently booked + Areas we cover */
     .landing-recent-areas-wrap { position: relative; }
     .landing-recent-card { background: #fff; border-radius: 20px; padding: 1.5rem; border: 1px solid #e8ecf0; box-shadow: 0 4px 20px rgba(0,0,0,.05); }
-    .landing-recent-job-item { font-size: 0.95rem; color: #374151; padding: 0.6rem 0; border-bottom: 1px solid #f3f4f6; display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; transition: background 0.2s ease; border-radius: 10px; }
+    .landing-recent-job-item { font-size: 0.95rem; color: #374151; padding: 0.65rem 0.85rem; border-bottom: 1px solid #f3f4f6; display: flex; align-items: center; gap: 0.75rem; transition: background 0.2s ease, transform 0.2s ease; border-radius: 12px; }
     .landing-recent-job-item:last-child { border-bottom: none; }
-    .landing-recent-job-item:hover { background: rgba(51,51,255,.04); }
-    .landing-recent-job-item .time-ago { font-size: 0.8rem; color: #3333ff; font-weight: 600; }
+    .landing-recent-job-item:hover { background: rgba(51,51,255,.06); }
+    .landing-recent-dot { width: 8px; height: 8px; border-radius: 50%; background: linear-gradient(135deg, #3333ff 0%, #6366f1 100%); flex-shrink: 0; box-shadow: 0 0 0 3px rgba(51,51,255,.2); }
+    .landing-recent-service-name { flex: 1; font-weight: 500; color: #1a1a2e; }
+    .landing-recent-time { font-size: 0.8rem; color: #3333ff; font-weight: 600; white-space: nowrap; }
     .landing-areas-card { background: #fff; border-radius: 20px; padding: 1.5rem; border: 1px solid #e8ecf0; box-shadow: 0 4px 20px rgba(0,0,0,.05); }
+    .landing-areas-sub { margin-bottom: 0.5rem; }
     .landing-areas-list { display: flex; flex-wrap: wrap; gap: 0.5rem 0.75rem; }
-    .landing-areas-list span { background: linear-gradient(135deg, rgba(51,51,255,.08) 0%, rgba(99,102,241,.06) 100%); color: #3333ff; padding: 0.5rem 1rem; border-radius: 50px; font-size: 0.9rem; font-weight: 600; border: 1px solid rgba(51,51,255,.15); transition: all 0.25s ease; }
-    .landing-areas-list span:hover { background: linear-gradient(135deg, #3333ff 0%, #6366f1 100%); color: #fff; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(51,51,255,.25); }
+    .landing-areas-list .landing-areas-tag { background: linear-gradient(135deg, rgba(51,51,255,.08) 0%, rgba(99,102,241,.06) 100%); color: #3333ff; padding: 0.5rem 1rem; border-radius: 50px; font-size: 0.9rem; font-weight: 600; border: 1px solid rgba(51,51,255,.15); transition: all 0.25s ease; }
+    .landing-areas-list .landing-areas-tag:hover { background: linear-gradient(135deg, #3333ff 0%, #6366f1 100%); color: #fff; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(51,51,255,.25); }
     .landing-section-head { font-weight: 700; letter-spacing: -0.02em; color: #1a1a2e; margin-bottom: 0.5rem; }
     .landing-for-pros-banner { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); color: #fff; border-radius: 16px; padding: 2.5rem; }
     .landing-first-booking-banner { background: linear-gradient(135deg, #3333ff 0%, #2929e6 100%); color: #fff; border-radius: 12px; padding: 1rem 1.5rem; }
