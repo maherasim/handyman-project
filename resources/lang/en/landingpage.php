@@ -40,6 +40,7 @@
   'trusted_by_thousands' => 'Trusted by thousands',
   'trusted_pros' => 'Trusted pros',
   'free_quotes' => 'Free quotes',
+  'no_obligation' => 'No obligation',
   'your' => 'Your',
   'remember_me' => 'Remember Me',
   'handyman_provider_register' => 'Want to register as Employer or Worker?',

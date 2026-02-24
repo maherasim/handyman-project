@@ -34,19 +34,71 @@
                                 <p class="landing-hero-desc iq-title-desc line-count-3 mb-0">
                                     {{ $heroDesc }}
                                 </p>
-                                <div class="landing-hero-trust">
-                                    <span><span class="trust-rating">{{ number_format((float) $totalRating, 1) }}★</span> {{ __('landingpage.overall_rating') }}</span>
-                                    <span class="trust-dot" aria-hidden="true"></span>
-                                    <span><span class="trust-rating">{{ number_format($totalBookings ?? 0) }}+</span> {{ __('landingpage.completed_jobs') }}</span>
-                                    <span class="trust-dot" aria-hidden="true"></span>
-                                    <span><span class="trust-rating">{{ $totalProviders ?? 0 }}+</span> {{ __('landingpage.local_pros') }}</span>
-                                    <span class="trust-dot" aria-hidden="true"></span>
-                                    <span>{{ __('landingpage.free_quotes') }}</span>
+                                <!-- Premium Trust Stats Bar -->
+                                <div class="trust-stats-row">
+                                    <div class="trust-stat-card">
+                                        <div class="trust-stat-icon-wrap" style="background: linear-gradient(135deg, rgba(255,193,7,0.15) 0%, rgba(255,193,7,0.08) 100%);">
+                                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" fill="#f59e0b"/>
+                                            </svg>
+                                        </div>
+                                        <div class="trust-stat-body">
+                                            <span class="trust-stat-number">{{ number_format((float) $totalRating, 1) }}<span class="trust-stat-suffix">★</span></span>
+                                            <span class="trust-stat-label">{{ __('landingpage.overall_rating') }}</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="trust-stat-divider"></div>
+
+                                    <div class="trust-stat-card">
+                                        <div class="trust-stat-icon-wrap" style="background: linear-gradient(135deg, rgba(34,197,94,0.15) 0%, rgba(34,197,94,0.08) 100%);">
+                                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" stroke="#22c55e" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                                            </svg>
+                                        </div>
+                                        <div class="trust-stat-body">
+                                            <span class="trust-stat-number">{{ number_format($totalBookings ?? 0) }}<span class="trust-stat-suffix">+</span></span>
+                                            <span class="trust-stat-label">{{ __('landingpage.completed_jobs') }}</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="trust-stat-divider"></div>
+
+                                    <div class="trust-stat-card">
+                                        <div class="trust-stat-icon-wrap" style="background: linear-gradient(135deg, rgba(51,51,255,0.15) 0%, rgba(99,102,241,0.08) 100%);">
+                                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" stroke="#3333ff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                                                <circle cx="9" cy="7" r="4" stroke="#3333ff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                                                <path d="M23 21v-2a4 4 0 0 0-3-3.87" stroke="#3333ff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                                                <path d="M16 3.13a4 4 0 0 1 0 7.75" stroke="#3333ff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                                            </svg>
+                                        </div>
+                                        <div class="trust-stat-body">
+                                            <span class="trust-stat-number">{{ number_format($totalProviders ?? 0) }}<span class="trust-stat-suffix">+</span></span>
+                                            <span class="trust-stat-label">{{ __('landingpage.local_pros') }}</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="trust-stat-divider"></div>
+
+                                    <div class="trust-stat-card">
+                                        <div class="trust-stat-icon-wrap" style="background: linear-gradient(135deg, rgba(168,85,247,0.15) 0%, rgba(168,85,247,0.08) 100%);">
+                                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M12 2C6.48 2 2 5.82 2 10.5c0 2.61 1.35 4.95 3.5 6.52V21l4.5-2.5a13.9 13.9 0 0 0 2 .15c5.52 0 10-3.82 10-8.5S17.52 2 12 2z" fill="#a855f7" opacity="0.9"/>
+                                            </svg>
+                                        </div>
+                                        <div class="trust-stat-body">
+                                            <span class="trust-stat-number trust-stat-free">{{ __('landingpage.free_quotes') }}</span>
+                                            <span class="trust-stat-label">{{ __('landingpage.no_obligation') }}</span>
+                                        </div>
+                                    </div>
                                 </div>
+
                                 @if (($bookingsLast24h ?? 0) > 0)
-                                    <p class="landing-live-cue mb-0 mt-2 small text-muted">
-                                        {{ __('landingpage.live_cue_booked', ['count' => $bookingsLast24h]) }}
-                                    </p>
+                                    <div class="landing-live-cue-pill mt-2">
+                                        <span class="live-dot"></span>
+                                        <span>{{ __('landingpage.live_cue_booked', ['count' => $bookingsLast24h]) }}</span>
+                                    </div>
                                 @endif
                             </div>
                             <location-search :user_id="{{ json_encode($auth_user_id) }}"
@@ -1493,150 +1545,122 @@
     
 
     @if ($sectionData && isset($sectionData['section_9']) && $sectionData['section_9']['section_9'] == 1)
-        <div class="testimonial-section-modern py-5" style="background: linear-gradient(135deg, rgba(255, 0, 0, 0.03) 0%, rgba(95, 96, 185, 0.03) 100%) !important; padding: 100px 0 !important; position: relative !important; overflow: hidden !important;">
-            <!-- Decorative Background Elements -->
-            <div class="testimonial-bg-decoration" style="position: absolute !important; top: -50px !important; right: -50px !important; width: 300px !important; height: 300px !important; background: linear-gradient(135deg, rgba(255, 0, 0, 0.05) 0%, rgba(95, 96, 185, 0.05) 100%) !important; border-radius: 50% !important; filter: blur(60px) !important; z-index: 0 !important;"></div>
-            <div class="testimonial-bg-decoration" style="position: absolute !important; bottom: -50px !important; left: -50px !important; width: 250px !important; height: 250px !important; background: linear-gradient(135deg, rgba(95, 96, 185, 0.05) 0%, rgba(255, 0, 0, 0.05) 100%) !important; border-radius: 50% !important; filter: blur(60px) !important; z-index: 0 !important;"></div>
-            
-            <div class="container" style="position: relative !important; z-index: 1 !important;">
-                <div class="row justify-content-center">
-                    <div class="col-12">
-                        <!-- Title Section with Icon -->
-                        <div class="text-center mb-5">
-                            <div class="testimonial-icon-wrapper mb-4" style="display: inline-flex !important; align-items: center !important; justify-content: center !important; width: 80px !important; height: 80px !important; background: #3333ff !important; border-radius: 50% !important; box-shadow: 0 10px 30px rgba(255, 0, 0, 0.2) !important; margin-bottom: 1.5rem !important;">
-                                <i class="ri-star-fill" style="font-size: 2.5rem !important; color: #fff !important;"></i>
-                            </div>
-                            <h2 class="testimonial-title fw-bold mb-3" style="font-size: 2.75rem !important; color: #1a1a1a !important; margin-bottom: 1rem !important; letter-spacing: -0.5px !important;">
-                                {{ $sectionData['section_9']['title'] }}
-                            </h2>
-                            <div class="title-underline mx-auto mb-4" style="width: 150px !important; height: 5px !important; background: #3333ff !important; border-radius: 3px !important; margin-bottom: 2rem !important;"></div>
-                        </div>
+        <div class="t9-section">
+            <div class="container">
+                <div class="t9-header text-center">
+                    <h2 class="t9-title">{{ $sectionData['section_9']['title'] }}</h2>
+                    @if (!empty($sectionData['section_9']['description']))
+                        <p class="t9-desc">{{ $sectionData['section_9']['description'] }}</p>
+                    @endif
+                </div>
 
-                        <!-- Enhanced Rating Card -->
-                        <div class="text-center mb-5">
-                            <div class="testimonial-rating-card-wrapper position-relative d-inline-block" style="position: relative !important;">
-                                <div class="testimonial-rating-card d-inline-flex align-items-center flex-sm-row flex-column gap-4 px-5 py-4 rounded-5 shadow-lg" style="background: #ffffff !important; border: 2px solid transparent !important; border-image: linear-gradient(135deg, rgba(255, 0, 0, 0.2) 0%, rgba(95, 96, 185, 0.2) 100%) 1 !important; box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12) !important; padding: 25px 40px !important; border-radius: 20px !important; position: relative !important; overflow: hidden !important;">
-                                    <!-- Gradient Top Border -->
-                                    <div style="position: absolute !important; top: 0 !important; left: 0 !important; right: 0 !important; height: 4px !important; background: #3333ff !important;"></div>
-                                    
-                                    <div class="vertical-center lh-1">
-                                        <rating-component :readonly="true" :showrating="false"
-                                            :ratingvalue="{{ $totalRating }}" />
-                                    </div>
-                                    @if (isset($sectionData['section_9']['overall_rating']) && $sectionData['section_9']['overall_rating'] == 'on')
-                                        <div class="d-flex flex-column align-items-center gap-1">
-                                            <h3 class="mb-0 fw-bold" style="color: #1a1a1a !important; font-size: 2.25rem !important; background: #3333ff !important; -webkit-background-clip: text !important; -webkit-text-fill-color: transparent !important; background-clip: text !important;">{{ round($totalRating, 1) }}</h3>
-                                            <h6 class="mb-0 text-muted fw-semibold" style="font-size: 0.95rem !important; font-weight: 600 !important; color: #6c757d !important; text-transform: uppercase !important; letter-spacing: 0.5px !important;">{{ __('landingpage.overall_rating') }}</h6>
-                                        </div>
-                                    @endif
-                                </div>
-                            </div>
-                            @if (!empty($sectionData['section_9']['description']))
-                                <p class="testimonial-description mt-5 mb-0" style="font-size: 1.15rem !important; color: #555 !important; line-height: 1.8 !important; max-width: 750px !important; margin-left: auto !important; margin-right: auto !important; font-weight: 400 !important;">
-                                    {{ $sectionData['section_9']['description'] }}
-                                </p>
-                            @endif
+                <!-- Single trust strip: large numbers, clear labels -->
+                <div class="t9-trust-strip">
+                    <div class="t9-trust-item">
+                        <div class="t9-trust-value">
+                            <rating-component :readonly="true" :showrating="false" :ratingvalue="{{ $totalRating }}" />
+                            <span class="t9-trust-num">{{ number_format((float) $totalRating, 1) }}</span>
                         </div>
+                        <div class="t9-trust-label">{{ __('landingpage.overall_rating') }}</div>
                     </div>
-                    <div class="col-12 mt-4">
-                        <testimonial-section />
+                    <div class="t9-trust-divider" aria-hidden="true"></div>
+                    <div class="t9-trust-item">
+                        <div class="t9-trust-value">{{ number_format($totalBookings ?? 0) }}+</div>
+                        <div class="t9-trust-label">{{ __('landingpage.completed_jobs') }}</div>
                     </div>
+                    <div class="t9-trust-divider" aria-hidden="true"></div>
+                    <div class="t9-trust-item">
+                        <div class="t9-trust-value">{{ $totalProviders ?? 0 }}+</div>
+                        <div class="t9-trust-label">{{ __('landingpage.local_pros') }}</div>
+                    </div>
+                    <div class="t9-trust-divider" aria-hidden="true"></div>
+                    <div class="t9-trust-item">
+                        <div class="t9-trust-value t9-trust-value-tag">{{ __('landingpage.free_quotes') }}</div>
+                        <div class="t9-trust-label">{{ __('landingpage.trusted_by_thousands') }}</div>
+                    </div>
+                </div>
+
+                <div class="t9-testimonial-wrap">
+                    <testimonial-section />
                 </div>
             </div>
         </div>
         
         <style>
-            /* Testimonial Section - Premium Enhanced Design */
-            body .testimonial-section-modern {
-                background: linear-gradient(135deg, rgba(255, 0, 0, 0.03) 0%, rgba(95, 96, 185, 0.03) 100%) !important;
-                padding: 100px 0 !important;
-                position: relative !important;
-                overflow: hidden !important;
+            /* Section 9: Trust strip – professional, large fonts, one clean bar */
+            .t9-section {
+                padding: 4.5rem 0 4rem;
+                background: #fafbfc;
+                border-top: 1px solid #eef1f5;
             }
-            
-            body .testimonial-icon-wrapper {
-                display: inline-flex !important;
-                align-items: center !important;
-                justify-content: center !important;
-                width: 80px !important;
-                height: 80px !important;
-                background: #3333ff !important;
-                border-radius: 50% !important;
-                box-shadow: 0 10px 30px rgba(255, 0, 0, 0.2) !important;
-                animation: pulse 2s ease-in-out infinite !important;
+            .t9-header { margin-bottom: 2.5rem; }
+            .t9-title {
+                font-size: 1.875rem;
+                font-weight: 700;
+                color: #111827;
+                letter-spacing: -0.02em;
+                margin-bottom: 0.5rem;
             }
-            
-            @keyframes pulse {
-                0%, 100% {
-                    transform: scale(1);
-                    box-shadow: 0 10px 30px rgba(255, 0, 0, 0.2);
-                }
-                50% {
-                    transform: scale(1.05);
-                    box-shadow: 0 15px 40px rgba(255, 0, 0, 0.3);
-                }
+            .t9-desc {
+                font-size: 1.0625rem;
+                color: #4b5563;
+                line-height: 1.6;
+                max-width: 560px;
+                margin: 0 auto;
             }
-            
-            body .testimonial-title {
-                font-size: 2.75rem !important;
-                color: #1a1a1a !important;
-                margin-bottom: 1rem !important;
-                font-weight: 700 !important;
-                letter-spacing: -0.5px !important;
+            .t9-trust-strip {
+                display: flex;
+                flex-wrap: wrap;
+                align-items: stretch;
+                justify-content: center;
+                background: #fff;
+                border-radius: 16px;
+                padding: 2rem 1.5rem;
+                box-shadow: 0 1px 3px rgba(0,0,0,.06);
+                border: 1px solid #e5e7eb;
+                margin-bottom: 2.5rem;
             }
-            
-            body .title-underline {
-                width: 150px !important;
-                height: 5px !important;
-                background: #3333ff !important;
-                border-radius: 3px !important;
-                margin-bottom: 2rem !important;
-                animation: expandWidth 1s ease-out !important;
+            .t9-trust-item {
+                flex: 1 1 0;
+                min-width: 140px;
+                text-align: center;
+                padding: 0.5rem 1rem;
             }
-            
-            @keyframes expandWidth {
-                from {
-                    width: 0;
-                }
-                to {
-                    width: 150px;
-                }
+            .t9-trust-value {
+                font-size: 2rem;
+                font-weight: 700;
+                color: #111827;
+                line-height: 1.2;
+                margin-bottom: 0.35rem;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 6px;
+                flex-wrap: wrap;
             }
-            
-            body .testimonial-rating-card {
-                background: #ffffff !important;
-                border: 2px solid transparent !important;
-                box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12) !important;
-                padding: 25px 40px !important;
-                border-radius: 20px !important;
-                position: relative !important;
-                overflow: hidden !important;
-                transition: all 0.3s ease !important;
+            .t9-trust-value-tag { font-size: 1.25rem; font-weight: 700; color: #3333ff; }
+            .t9-trust-num { font-size: inherit; font-weight: inherit; }
+            .t9-trust-label {
+                font-size: 0.9375rem;
+                font-weight: 600;
+                color: #6b7280;
+                letter-spacing: 0.01em;
             }
-            
-            body .testimonial-rating-card:hover {
-                transform: translateY(-3px) !important;
-                box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15) !important;
+            .t9-trust-divider {
+                width: 1px;
+                background: #e5e7eb;
+                margin: 0.5rem 0;
+                align-self: stretch;
             }
-            
-            body .testimonial-rating-card::before {
-                content: '' !important;
-                position: absolute !important;
-                top: 0 !important;
-                left: 0 !important;
-                right: 0 !important;
-                height: 4px !important;
-                background: #3333ff !important;
-            }
-            
-            body .testimonial-description {
-                font-size: 1.15rem !important;
-                color: #555 !important;
-                line-height: 1.8 !important;
-                max-width: 750px !important;
-                margin-left: auto !important;
-                margin-right: auto !important;
-                font-weight: 400 !important;
+            .t9-testimonial-wrap { margin-top: 0; }
+            @media (max-width: 767px) {
+                .t9-trust-strip { flex-direction: column; padding: 1.75rem 1rem; }
+                .t9-trust-divider { width: 100%; height: 1px; margin: 0.75rem 0; }
+                .t9-trust-item { min-width: 100%; padding: 0.75rem 0; }
+                .t9-trust-value { font-size: 1.75rem; }
+                .t9-trust-value-tag { font-size: 1.125rem; }
+                .t9-trust-label { font-size: 0.875rem; }
+                .t9-title { font-size: 1.5rem; }
             }
             
             /* Enhanced Testimonial Slider Navigation */

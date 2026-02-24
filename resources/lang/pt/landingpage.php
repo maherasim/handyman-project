@@ -41,6 +41,7 @@ return [
     'trusted_by_thousands' => 'Confiado por milhares',
     'trusted_pros' => 'Profissionais de confiança',
     'free_quotes' => 'Orçamentos grátis',
+    'no_obligation' => 'Sem compromisso',
     'your' => 'Seu',
     'remember_me' => 'Lembrar de Mim',
     'handyman_provider_register' => 'Quer se registrar como fornecedor ou profissional?',

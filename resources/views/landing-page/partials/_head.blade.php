@@ -232,11 +232,138 @@
     .landing-hero-badge { display: inline-flex; align-items: center; gap: 6px; font-size: 0.8rem; font-weight: 600; color: #3333ff; background: rgba(51, 51, 255, 0.1); border: 1px solid rgba(51, 51, 255, 0.2); padding: 6px 14px; border-radius: 50px; margin-bottom: 1rem; letter-spacing: 0.3px; }
     .landing-hero-title { font-size: clamp(1.75rem, 4vw, 2.5rem); font-weight: 700; line-height: 1.2; color: #1a1a2e; letter-spacing: -0.02em; }
     .landing-hero-desc { font-size: 1.05rem; line-height: 1.6; color: #4a5568; margin-top: 1rem; margin-bottom: 1.5rem; }
-    .landing-hero-trust { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem 1.5rem; margin-bottom: 1.5rem; font-size: 0.9rem; color: #5a6578; }
-    .landing-hero-trust span { display: inline-flex; align-items: center; gap: 6px; }
-    .landing-hero-trust .trust-rating { font-weight: 700; color: #1a1a2e; }
-    .landing-hero-trust .trust-dot { width: 4px; height: 4px; border-radius: 50%; background: #3333ff; opacity: 0.6; }
-    .landing-live-cue { font-size: 0.85rem; }
+    /* =============================================================
+       Premium Trust Stats Row — replaces the old plain trust bar
+    ============================================================= */
+    .trust-stats-row {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: stretch;
+        gap: 10px 6px;
+        margin-bottom: 1.6rem;
+        margin-top: 0.4rem;
+    }
+    .trust-stat-card {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: #fff;
+        border: 1px solid rgba(51,51,255,0.1);
+        border-radius: 14px;
+        padding: 10px 14px;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+        transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+        cursor: default;
+        flex: 1 1 auto;
+        min-width: 120px;
+    }
+    .trust-stat-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 28px rgba(51,51,255,0.14);
+        border-color: rgba(51,51,255,0.25);
+    }
+    .trust-stat-icon-wrap {
+        width: 42px;
+        height: 42px;
+        border-radius: 11px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+    .trust-stat-body {
+        display: flex;
+        flex-direction: column;
+        gap: 1px;
+        min-width: 0;
+    }
+    .trust-stat-number {
+        font-size: 1.35rem;
+        font-weight: 800;
+        color: #1a1a2e;
+        line-height: 1.1;
+        letter-spacing: -0.02em;
+        white-space: nowrap;
+    }
+    .trust-stat-number.trust-stat-free {
+        font-size: 1.05rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, #a855f7 0%, #7c3aed 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    .trust-stat-suffix {
+        font-size: 0.9rem;
+        font-weight: 700;
+        margin-left: 1px;
+        color: #3333ff;
+    }
+    .trust-stat-label {
+        font-size: 0.72rem;
+        font-weight: 600;
+        color: #6b7280;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        white-space: nowrap;
+    }
+    .trust-stat-divider {
+        width: 1px;
+        background: rgba(51,51,255,0.12);
+        align-self: stretch;
+        border-radius: 1px;
+        display: none; /* hidden on mobile, shown on md+ */
+    }
+    @media (min-width: 640px) {
+        .trust-stat-divider { display: block; }
+        .trust-stats-row { flex-wrap: nowrap; gap: 0; background: #fff; border: 1px solid rgba(51,51,255,0.12); border-radius: 18px; padding: 6px 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.07); overflow: hidden; }
+        .trust-stat-card { border: none; box-shadow: none; border-radius: 12px; flex: 1; background: transparent; }
+        .trust-stat-card:hover { box-shadow: none; background: rgba(51,51,255,0.03); border-color: transparent; }
+    }
+    /* Live cue pill */
+    .landing-live-cue-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(14,165,233,0.08);
+        border: 1px solid rgba(14,165,233,0.25);
+        color: #0ea5e9;
+        font-size: 0.8rem;
+        font-weight: 600;
+        padding: 5px 12px;
+        border-radius: 50px;
+        width: fit-content;
+    }
+    .live-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: #0ea5e9;
+        flex-shrink: 0;
+        animation: livePulse 1.8s ease-in-out infinite;
+    }
+    @keyframes livePulse {
+        0%, 100% { box-shadow: 0 0 0 0 rgba(14,165,233,0.5); }
+        50%       { box-shadow: 0 0 0 6px rgba(14,165,233,0); }
+    }
+    /* Hero trust line: visible, larger fonts */
+    .landing-hero-trust {
+        display: flex !important;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 1rem 1.75rem;
+        margin-bottom: 1.5rem;
+        font-size: 1.125rem;
+        color: #4b5563;
+    }
+    .landing-hero-trust span { display: inline-flex; align-items: center; gap: 8px; }
+    .landing-hero-trust .trust-rating { font-weight: 800; font-size: 1.35rem; color: #111827; }
+    .landing-hero-trust .trust-dot { width: 5px; height: 5px; border-radius: 50%; background: #3333ff; opacity: 0.6; }
+    @media (min-width: 576px) {
+        .landing-hero-trust { font-size: 1.2rem; gap: 1.5rem 2.25rem; }
+        .landing-hero-trust .trust-rating { font-size: 1.45rem; }
+    }
+    .landing-live-cue { font-size: 0.95rem; }
 
     /* Two-path cards */
     .landing-two-path-wrap { position: relative; }

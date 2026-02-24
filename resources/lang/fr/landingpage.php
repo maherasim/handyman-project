@@ -42,6 +42,7 @@ return [
     'trusted_by_thousands' => 'Approuvé par des milliers',
     'trusted_pros' => 'Pros de confiance',
     'free_quotes' => 'Devis gratuits',
+    'no_obligation' => 'Sans engagement',
     'your' => 'Votre',
     'remember_me' => 'Se souvenir de moi',
     'handyman_provider_register' => 'Vous voulez vous inscrire en tant que fournisseur ou bricoleur?',

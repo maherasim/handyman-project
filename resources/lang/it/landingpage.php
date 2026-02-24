@@ -41,6 +41,7 @@ return [
     'trusted_by_thousands' => 'Fidati da migliaia',
     'trusted_pros' => 'Professionisti fidati',
     'free_quotes' => 'Preventivi gratuiti',
+    'no_obligation' => 'Nessun impegno',
     'your' => 'Il tuo',
     'remember_me' => 'Ricordami',
     'handyman_provider_register' => 'Vuoi registrarti come fornitore o bricolage?',
