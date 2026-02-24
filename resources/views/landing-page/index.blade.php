@@ -159,9 +159,9 @@
     <!-- Two paths: Book a service / Post a job -->
     <div class="section-padding bg-light landing-two-path-wrap landing-animate-in">
         <div class="container">
-            <p class="landing-two-path-eyebrow text-center text-uppercase small fw-semibold text-body-secondary mb-3">{{ __('landingpage.two_path_eyebrow') }}</p>
+            <p class="landing-two-path-eyebrow">{{ __('landingpage.two_path_eyebrow') }}</p>
             @if (isset($categoryrequest) && $categoryrequest->count() > 0)
-                <p class="text-center small text-body-secondary mb-3">{{ __('landingpage.popular_services_browse') }}</p>
+                <p class="landing-two-path-browse-label">{{ __('landingpage.popular_services_browse') }}</p>
                 <div class="landing-category-pills d-flex flex-wrap justify-content-center gap-2 mb-4">
                     @foreach ($categoryrequest->take(6) as $cat)
                         <a href="{{ route('category.detail', $cat->id) }}" class="landing-pill">{{ $cat->name }}</a>
@@ -176,14 +176,14 @@
                                 <div class="landing-two-path-icon-wrap">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-primary"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
                                 </div>
-                                <span class="badge landing-two-path-badge text-uppercase small">{{ __('landingpage.most_popular') }}</span>
+                                <span class="landing-two-path-badge">{{ __('landingpage.most_popular') }}</span>
                                 @if (($bookingsLast24h ?? 0) > 0)
-                                    <span class="badge landing-two-path-live ms-auto">{{ __('landingpage.booked_last_24h', ['count' => $bookingsLast24h]) }}</span>
+                                    <span class="landing-two-path-live ms-auto">{{ __('landingpage.booked_last_24h', ['count' => $bookingsLast24h]) }}</span>
                                 @endif
                             </div>
-                            <h3 class="h4 mb-2 text-dark fw-bold">{{ __('landingpage.book_a_service') }}</h3>
-                            <p class="landing-two-path-desc text-body text-dark mb-4 flex-grow-1">{{ __('landingpage.book_a_service_lead') }}</p>
-                            <span class="btn btn-primary text-white align-self-start">{{ __('landingpage.browse_services') }}</span>
+                            <h3 class="landing-two-path-card-title">{{ __('landingpage.book_a_service') }}</h3>
+                            <p class="landing-two-path-desc">{{ __('landingpage.book_a_service_lead') }}</p>
+                            <span class="btn btn-primary landing-two-path-btn">{{ __('landingpage.browse_services') }}</span>
                         </div>
                     </a>
                 </div>
@@ -195,9 +195,9 @@
                                     <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-primary"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
                                 </div>
                             </div>
-                            <h3 class="h4 mb-2 text-dark fw-bold">{{ __('landingpage.post_a_job') }}</h3>
-                            <p class="landing-two-path-desc text-body text-dark mb-4 flex-grow-1">{{ __('landingpage.post_a_job_lead') }}</p>
-                            <span class="btn btn-primary text-white align-self-start">{{ __('landingpage.post_a_job') }}</span>
+                            <h3 class="landing-two-path-card-title">{{ __('landingpage.post_a_job') }}</h3>
+                            <p class="landing-two-path-desc">{{ __('landingpage.post_a_job_lead') }}</p>
+                            <span class="btn btn-primary landing-two-path-btn">{{ __('landingpage.post_a_job') }}</span>
                         </div>
                     </a>
                 </div>
@@ -208,36 +208,36 @@
     <!-- How it works -->
     <div class="section-padding bg-white landing-how-wrap landing-animate-in">
         <div class="container position-relative">
-            <h2 class="text-center mb-2 landing-how-title">{{ __('landingpage.how_it_works_title') }}</h2>
-            <p class="text-center text-muted mb-5 landing-how-lead mx-auto">{{ __('landingpage.how_it_works_lead') }}</p>
+            <h2 class="landing-how-title">{{ __('landingpage.how_it_works_title') }}</h2>
+            <p class="landing-how-lead">{{ __('landingpage.how_it_works_lead') }}</p>
             <div class="landing-how-connector d-none d-lg-block" aria-hidden="true"></div>
             <div class="row g-0">
                 <div class="col-6 col-lg-3">
                     <div class="landing-how-step">
                         <div class="step-num">1</div>
-                        <h4 class="h6">{{ __('landingpage.how_step_1') }}</h4>
-                        <p class="small text-muted mb-0">{{ __('landingpage.how_step_1_desc') }}</p>
+                        <h4 class="landing-how-step-title">{{ __('landingpage.how_step_1') }}</h4>
+                        <p class="landing-how-step-desc">{{ __('landingpage.how_step_1_desc') }}</p>
                     </div>
                 </div>
                 <div class="col-6 col-lg-3">
                     <div class="landing-how-step">
                         <div class="step-num">2</div>
-                        <h4 class="h6">{{ __('landingpage.how_step_2') }}</h4>
-                        <p class="small text-muted mb-0">{{ __('landingpage.how_step_2_desc') }}</p>
+                        <h4 class="landing-how-step-title">{{ __('landingpage.how_step_2') }}</h4>
+                        <p class="landing-how-step-desc">{{ __('landingpage.how_step_2_desc') }}</p>
                     </div>
                 </div>
                 <div class="col-6 col-lg-3">
                     <div class="landing-how-step">
                         <div class="step-num">3</div>
-                        <h4 class="h6">{{ __('landingpage.how_step_3') }}</h4>
-                        <p class="small text-muted mb-0">{{ __('landingpage.how_step_3_desc') }}</p>
+                        <h4 class="landing-how-step-title">{{ __('landingpage.how_step_3') }}</h4>
+                        <p class="landing-how-step-desc">{{ __('landingpage.how_step_3_desc') }}</p>
                     </div>
                 </div>
                 <div class="col-6 col-lg-3">
                     <div class="landing-how-step">
                         <div class="step-num">4</div>
-                        <h4 class="h6">{{ __('landingpage.how_step_4') }}</h4>
-                        <p class="small text-muted mb-0">{{ __('landingpage.how_step_4_desc') }}</p>
+                        <h4 class="landing-how-step-title">{{ __('landingpage.how_step_4') }}</h4>
+                        <p class="landing-how-step-desc">{{ __('landingpage.how_step_4_desc') }}</p>
                     </div>
                 </div>
             </div>
@@ -247,35 +247,35 @@
     <!-- Why us -->
     <div class="section-padding bg-light landing-why-wrap landing-animate-in">
         <div class="container">
-            <h2 class="text-center mb-2 landing-why-title">{{ __('landingpage.why_us_title') }}</h2>
-            <p class="text-center text-muted mb-5 landing-why-lead mx-auto">{{ __('landingpage.why_us_lead') }}</p>
+            <h2 class="landing-why-title">{{ __('landingpage.why_us_title') }}</h2>
+            <p class="landing-why-lead">{{ __('landingpage.why_us_lead') }}</p>
             <div class="row g-4">
                 <div class="col-md-6 col-lg-3">
                     <div class="landing-why-item">
                         <div class="landing-why-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-primary"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
-                        <h4 class="h6 mb-1">{{ __('landingpage.why_vetted') }}</h4>
-                        <p class="small text-muted mb-0">{{ __('landingpage.why_vetted_desc') }}</p>
+                        <h4 class="landing-why-item-title">{{ __('landingpage.why_vetted') }}</h4>
+                        <p class="landing-why-item-desc">{{ __('landingpage.why_vetted_desc') }}</p>
                     </div>
                 </div>
                 <div class="col-md-6 col-lg-3">
                     <div class="landing-why-item">
                         <div class="landing-why-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-primary"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div>
-                        <h4 class="h6 mb-1">{{ __('landingpage.why_pricing') }}</h4>
-                        <p class="small text-muted mb-0">{{ __('landingpage.why_pricing_desc') }}</p>
+                        <h4 class="landing-why-item-title">{{ __('landingpage.why_pricing') }}</h4>
+                        <p class="landing-why-item-desc">{{ __('landingpage.why_pricing_desc') }}</p>
                     </div>
                 </div>
                 <div class="col-md-6 col-lg-3">
                     <div class="landing-why-item">
                         <div class="landing-why-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-primary"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg></div>
-                        <h4 class="h6 mb-1">{{ __('landingpage.why_secure') }}</h4>
-                        <p class="small text-muted mb-0">{{ __('landingpage.why_secure_desc') }}</p>
+                        <h4 class="landing-why-item-title">{{ __('landingpage.why_secure') }}</h4>
+                        <p class="landing-why-item-desc">{{ __('landingpage.why_secure_desc') }}</p>
                     </div>
                 </div>
                 <div class="col-md-6 col-lg-3">
                     <div class="landing-why-item">
                         <div class="landing-why-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-primary"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg></div>
-                        <h4 class="h6 mb-1">{{ __('landingpage.why_rebook') }}</h4>
-                        <p class="small text-muted mb-0">{{ __('landingpage.why_rebook_desc') }}</p>
+                        <h4 class="landing-why-item-title">{{ __('landingpage.why_rebook') }}</h4>
+                        <p class="landing-why-item-desc">{{ __('landingpage.why_rebook_desc') }}</p>
                     </div>
                 </div>
             </div>
@@ -286,8 +286,8 @@
     @if (isset($landingTestimonials) && count($landingTestimonials) > 0)
     <div class="section-padding bg-white landing-testimonials-wrap landing-animate-in">
         <div class="container">
-            <h2 class="text-center mb-2 landing-testimonials-title">{{ __('landingpage.testimonials_title') }}</h2>
-            <p class="text-center text-muted mb-5 landing-testimonials-lead">{{ __('landingpage.testimonials_lead') }}</p>
+            <h2 class="landing-testimonials-title">{{ __('landingpage.testimonials_title') }}</h2>
+            <p class="landing-testimonials-lead">{{ __('landingpage.testimonials_lead') }}</p>
             <div class="row g-4">
                 @foreach ($landingTestimonials as $t)
                 <div class="col-md-6 col-lg-3">
@@ -319,8 +319,8 @@
             <div class="row g-4 align-items-stretch">
                 @if (count($recentBookings ?? []) > 0)
                     <div class="col-lg-6">
-                        <h3 class="h5 mb-1 landing-section-head">{{ __('landingpage.recently_booked_title') }}</h3>
-                        <p class="text-muted small mb-3">{{ __('landingpage.recently_booked_lead') }}</p>
+                        <h3 class="landing-section-head">{{ __('landingpage.recently_booked_title') }}</h3>
+                        <p class="landing-section-lead mb-3">{{ __('landingpage.recently_booked_lead') }}</p>
                         <div class="landing-recent-card h-100">
                             @foreach ($recentBookings as $rb)
                                 <div class="landing-recent-job-item">
@@ -334,10 +334,10 @@
                 @endif
                 @if (count($areasWeCover ?? []) > 0)
                     <div class="col-lg-6">
-                        <h3 class="h5 mb-1 landing-section-head">{{ __('landingpage.areas_we_cover_title') }}</h3>
-                        <p class="text-muted small mb-3">{{ __('landingpage.areas_we_cover_lead') }}</p>
+                        <h3 class="landing-section-head">{{ __('landingpage.areas_we_cover_title') }}</h3>
+                        <p class="landing-section-lead mb-3">{{ __('landingpage.areas_we_cover_lead') }}</p>
                         <div class="landing-areas-card">
-                            <p class="landing-areas-sub small text-body-secondary mb-2">{{ __('landingpage.areas_find_near_you') }}</p>
+                            <p class="landing-areas-sub">{{ __('landingpage.areas_find_near_you') }}</p>
                             <div class="landing-areas-list">
                                 @foreach ($areasWeCover as $area)
                                     <span class="landing-areas-tag">{{ $area }}</span>
@@ -1544,39 +1544,38 @@
 @endif
     
 
-    @if ($sectionData && isset($sectionData['section_9']) && $sectionData['section_9']['section_9'] == 1)
-        <div class="t9-section">
+    {{-- @if ($sectionData && isset($sectionData['section_9']) && $sectionData['section_9']['section_9'] == 1)
+        <section class="t9-section" aria-labelledby="t9-title">
             <div class="container">
-                <div class="t9-header text-center">
-                    <h2 class="t9-title">{{ $sectionData['section_9']['title'] }}</h2>
+                <header class="t9-header">
+                    <h2 id="t9-title" class="t9-title">{{ $sectionData['section_9']['title'] }}</h2>
                     @if (!empty($sectionData['section_9']['description']))
                         <p class="t9-desc">{{ $sectionData['section_9']['description'] }}</p>
                     @endif
-                </div>
+                </header>
 
-                <!-- Single trust strip: large numbers, clear labels -->
-                <div class="t9-trust-strip">
+                <div class="t9-trust-strip" role="region" aria-label="{{ __('landingpage.overall_rating') }}">
                     <div class="t9-trust-item">
-                        <div class="t9-trust-value">
+                        <span class="t9-trust-value">
                             <rating-component :readonly="true" :showrating="false" :ratingvalue="{{ $totalRating }}" />
                             <span class="t9-trust-num">{{ number_format((float) $totalRating, 1) }}</span>
-                        </div>
-                        <div class="t9-trust-label">{{ __('landingpage.overall_rating') }}</div>
+                        </span>
+                        <span class="t9-trust-label">{{ __('landingpage.overall_rating') }}</span>
                     </div>
-                    <div class="t9-trust-divider" aria-hidden="true"></div>
+                    <span class="t9-trust-divider" aria-hidden="true"></span>
                     <div class="t9-trust-item">
-                        <div class="t9-trust-value">{{ number_format($totalBookings ?? 0) }}+</div>
-                        <div class="t9-trust-label">{{ __('landingpage.completed_jobs') }}</div>
+                        <span class="t9-trust-value">{{ number_format($totalBookings ?? 0) }}+</span>
+                        <span class="t9-trust-label">{{ __('landingpage.completed_jobs') }}</span>
                     </div>
-                    <div class="t9-trust-divider" aria-hidden="true"></div>
+                    <span class="t9-trust-divider" aria-hidden="true"></span>
                     <div class="t9-trust-item">
-                        <div class="t9-trust-value">{{ $totalProviders ?? 0 }}+</div>
-                        <div class="t9-trust-label">{{ __('landingpage.local_pros') }}</div>
+                        <span class="t9-trust-value">{{ $totalProviders ?? 0 }}+</span>
+                        <span class="t9-trust-label">{{ __('landingpage.local_pros') }}</span>
                     </div>
-                    <div class="t9-trust-divider" aria-hidden="true"></div>
-                    <div class="t9-trust-item">
-                        <div class="t9-trust-value t9-trust-value-tag">{{ __('landingpage.free_quotes') }}</div>
-                        <div class="t9-trust-label">{{ __('landingpage.trusted_by_thousands') }}</div>
+                    <span class="t9-trust-divider" aria-hidden="true"></span>
+                    <div class="t9-trust-item t9-trust-item-accent">
+                        <span class="t9-trust-value t9-trust-value-tag">{{ __('landingpage.free_quotes') }}</span>
+                        <span class="t9-trust-label">{{ __('landingpage.trusted_by_thousands') }}</span>
                     </div>
                 </div>
 
@@ -1584,121 +1583,112 @@
                     <testimonial-section />
                 </div>
             </div>
-        </div>
+        </section>
         
         <style>
-            /* Section 9: Trust strip – professional, large fonts, one clean bar */
+            /* Section 9 – professional ratings & testimonials */
             .t9-section {
-                padding: 4.5rem 0 4rem;
-                background: #fafbfc;
-                border-top: 1px solid #eef1f5;
+                padding: 5rem 0 4.5rem;
+                background: #f8fafc;
+                border-top: 1px solid #e2e8f0;
             }
-            .t9-header { margin-bottom: 2.5rem; }
+            .t9-header {
+                text-align: center;
+                margin-bottom: 3rem;
+            }
             .t9-title {
-                font-size: 1.875rem;
+                font-size: 2rem;
                 font-weight: 700;
-                color: #111827;
-                letter-spacing: -0.02em;
-                margin-bottom: 0.5rem;
+                color: #0f172a;
+                letter-spacing: -0.025em;
+                margin: 0 0 0.75rem;
+                line-height: 1.25;
             }
             .t9-desc {
-                font-size: 1.0625rem;
-                color: #4b5563;
-                line-height: 1.6;
-                max-width: 560px;
+                font-size: 1.125rem;
+                color: #475569;
+                line-height: 1.65;
+                max-width: 36rem;
                 margin: 0 auto;
+                font-weight: 400;
             }
             .t9-trust-strip {
                 display: flex;
                 flex-wrap: wrap;
-                align-items: stretch;
+                align-items: center;
                 justify-content: center;
                 background: #fff;
-                border-radius: 16px;
-                padding: 2rem 1.5rem;
-                box-shadow: 0 1px 3px rgba(0,0,0,.06);
-                border: 1px solid #e5e7eb;
-                margin-bottom: 2.5rem;
+                border-radius: 12px;
+                padding: 2.25rem 2rem;
+                margin-bottom: 3rem;
+                border: 1px solid #e2e8f0;
+                box-shadow: 0 1px 3px rgba(0,0,0,.04);
             }
             .t9-trust-item {
                 flex: 1 1 0;
-                min-width: 140px;
+                min-width: 10rem;
                 text-align: center;
                 padding: 0.5rem 1rem;
             }
+            .t9-trust-item-accent .t9-trust-value-tag { color: #3333ff; }
             .t9-trust-value {
-                font-size: 2rem;
-                font-weight: 700;
-                color: #111827;
-                line-height: 1.2;
-                margin-bottom: 0.35rem;
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                gap: 6px;
+                gap: 0.35rem;
                 flex-wrap: wrap;
+                font-size: 2.25rem;
+                font-weight: 700;
+                color: #0f172a;
+                line-height: 1.2;
+                margin-bottom: 0.4rem;
             }
-            .t9-trust-value-tag { font-size: 1.25rem; font-weight: 700; color: #3333ff; }
+            .t9-trust-value-tag { font-size: 1.25rem; font-weight: 700; }
             .t9-trust-num { font-size: inherit; font-weight: inherit; }
             .t9-trust-label {
-                font-size: 0.9375rem;
+                font-size: 1rem;
                 font-weight: 600;
-                color: #6b7280;
+                color: #64748b;
                 letter-spacing: 0.01em;
             }
             .t9-trust-divider {
                 width: 1px;
-                background: #e5e7eb;
-                margin: 0.5rem 0;
-                align-self: stretch;
+                height: 2.5rem;
+                background: #e2e8f0;
+                flex-shrink: 0;
             }
             .t9-testimonial-wrap { margin-top: 0; }
-            @media (max-width: 767px) {
-                .t9-trust-strip { flex-direction: column; padding: 1.75rem 1rem; }
-                .t9-trust-divider { width: 100%; height: 1px; margin: 0.75rem 0; }
-                .t9-trust-item { min-width: 100%; padding: 0.75rem 0; }
-                .t9-trust-value { font-size: 1.75rem; }
-                .t9-trust-value-tag { font-size: 1.125rem; }
-                .t9-trust-label { font-size: 0.875rem; }
-                .t9-title { font-size: 1.5rem; }
-            }
-            
-            /* Enhanced Testimonial Slider Navigation */
+
+            /* Testimonial slider – professional nav & cards */
             body .ratingSlider .swiper-button-next,
             body .ratingSlider .swiper-button-prev {
                 background: #3333ff !important;
-                width: 50px !important;
-                height: 50px !important;
+                width: 48px !important;
+                height: 48px !important;
                 border-radius: 50% !important;
-                box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25) !important;
-                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-                border: 2px solid rgba(255, 255, 255, 0.2) !important;
+                box-shadow: 0 2px 8px rgba(51,51,255,.25) !important;
+                transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+                border: none !important;
             }
-            
             body .ratingSlider .swiper-button-next:hover,
             body .ratingSlider .swiper-button-prev:hover {
-                transform: scale(1.15) translateY(-2px) !important;
-                box-shadow: 0 8px 25px rgba(255, 0, 0, 0.4) !important;
+                transform: scale(1.08) !important;
+                box-shadow: 0 4px 14px rgba(51,51,255,.35) !important;
             }
-            
             body .ratingSlider .swiper-button-next::after,
             body .ratingSlider .swiper-button-prev::after {
-                font-size: 20px !important;
+                font-size: 18px !important;
                 color: #fff !important;
                 font-weight: bold !important;
             }
-            
-            /* Premium Testimonial Cards Enhancement */
             body .iq-testimonial {
-                border: 1px solid #e9ecef !important;
-                box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1) !important;
-                transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
-                border-radius: 20px !important;
-                background: #ffffff !important;
-                position: relative !important;
+                border: 1px solid #e2e8f0 !important;
+                border-radius: 12px !important;
+                background: #fff !important;
+                box-shadow: 0 1px 3px rgba(0,0,0,.05) !important;
+                transition: box-shadow 0.25s ease, transform 0.25s ease, border-color 0.25s ease !important;
                 overflow: hidden !important;
             }
-            
             body .iq-testimonial::before {
                 content: '' !important;
                 position: absolute !important;
@@ -1706,109 +1696,68 @@
                 left: 0 !important;
                 right: 0 !important;
                 height: 3px !important;
-                background: linear-gradient(135deg, rgba(255, 0, 0, 0.3) 0%, rgba(95, 96, 185, 0.3) 100%) !important;
+                background: #3333ff !important;
                 transform: scaleX(0) !important;
-                transition: transform 0.4s ease !important;
+                transition: transform 0.25s ease !important;
             }
-            
-            body .iq-testimonial:hover::before {
-                transform: scaleX(1) !important;
-            }
-            
             body .iq-testimonial:hover {
-                transform: translateY(-8px) scale(1.02) !important;
-                box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15) !important;
-                border-color: rgba(255, 0, 0, 0.2) !important;
+                border-color: rgba(51,51,255,.2) !important;
+                box-shadow: 0 8px 24px rgba(0,0,0,.08) !important;
+                transform: translateY(-4px) !important;
             }
-            
+            body .iq-testimonial:hover::before { transform: scaleX(1) !important; }
             body .iq-testimonial .quote {
-                background: linear-gradient(135deg, rgba(255, 0, 0, 0.1) 0%, rgba(95, 96, 185, 0.1) 100%) !important;
-                transition: all 0.3s ease !important;
+                background: rgba(51,51,255,.06) !important;
             }
-            
-            body .iq-testimonial:hover .quote {
-                background: linear-gradient(135deg, rgba(255, 0, 0, 0.15) 0%, rgba(95, 96, 185, 0.15) 100%) !important;
-                transform: scale(1.1) !important;
-            }
-            
             body .iq-testimonial .about-review-title {
-                color: #1a1a1a !important;
+                color: #0f172a !important;
                 font-weight: 600 !important;
-                font-size: 1.1rem !important;
+                font-size: 1.0625rem !important;
             }
-            
             body .iq-testimonial .testimonial-content {
-                color: #555 !important;
-                line-height: 1.7 !important;
-                font-size: 0.95rem !important;
+                color: #475569 !important;
+                line-height: 1.65 !important;
+                font-size: 1rem !important;
             }
-            
             body .iq-testimonial .testimonial-user {
-                color: #1a1a1a !important;
+                color: #0f172a !important;
                 font-weight: 600 !important;
                 font-size: 1rem !important;
             }
-            
             body .iq-testimonial .testimonial-user-image img {
-                border: 3px solid rgba(255, 0, 0, 0.1) !important;
-                transition: all 0.3s ease !important;
+                border: 2px solid #e2e8f0 !important;
+                transition: border-color 0.25s ease !important;
             }
-            
             body .iq-testimonial:hover .testimonial-user-image img {
-                border-color: rgba(255, 0, 0, 0.3) !important;
-                transform: scale(1.05) !important;
+                border-color: rgba(51,51,255,.25) !important;
             }
-            
-            /* Swiper Pagination Enhancement */
             body .ratingSlider .swiper-pagination-bullet {
-                background: #3333ff !important;
-                width: 12px !important;
-                height: 12px !important;
-                opacity: 0.4 !important;
-                transition: all 0.3s ease !important;
-            }
-            
-            body .ratingSlider .swiper-pagination-bullet-active {
+                background: #cbd5e1 !important;
+                width: 8px !important;
+                height: 8px !important;
                 opacity: 1 !important;
-                transform: scale(1.3) !important;
-                box-shadow: 0 2px 8px rgba(255, 0, 0, 0.4) !important;
+                transition: background 0.2s ease, transform 0.2s ease !important;
             }
-            
-            @media (max-width: 768px) {
-                body .testimonial-section-modern {
-                    padding: 70px 0 !important;
-                }
-                
-                body .testimonial-icon-wrapper {
-                    width: 60px !important;
-                    height: 60px !important;
-                }
-                
-                body .testimonial-icon-wrapper i {
-                    font-size: 2rem !important;
-                }
-                
-                body .testimonial-title {
-                    font-size: 2rem !important;
-                }
-                
-                body .testimonial-rating-card {
-                    padding: 20px 25px !important;
-                }
-                
-                body .testimonial-description {
-                    font-size: 1rem !important;
-                    padding: 0 15px !important;
-                }
-                
+            body .ratingSlider .swiper-pagination-bullet-active {
+                background: #3333ff !important;
+                transform: scale(1.25) !important;
+            }
+            @media (max-width: 767px) {
+                .t9-section { padding: 3.5rem 0 3rem; }
+                .t9-header { margin-bottom: 2rem; }
+                .t9-title { font-size: 1.5rem; }
+                .t9-desc { font-size: 1rem; }
+                .t9-trust-strip { flex-direction: column; padding: 1.75rem 1.25rem; margin-bottom: 2.5rem; }
+                .t9-trust-divider { width: 100%; height: 1px; margin: 0.5rem 0; }
+                .t9-trust-item { min-width: 100%; padding: 0.75rem 0; }
+                .t9-trust-value { font-size: 1.875rem; }
+                .t9-trust-value-tag { font-size: 1.125rem; }
+                .t9-trust-label { font-size: 0.9375rem; }
                 body .ratingSlider .swiper-button-next,
-                body .ratingSlider .swiper-button-prev {
-                    width: 40px !important;
-                    height: 40px !important;
-                }
+                body .ratingSlider .swiper-button-prev { width: 44px !important; height: 44px !important; }
             }
         </style>
-    @endif
+    @endif --}}
 
     <!-- For pros / providers -->
     <div class="section-padding">

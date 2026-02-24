@@ -1,8 +1,5 @@
-<footer class="footer-modern" style="position: relative !important; overflow: hidden !important; background: #3333ff !important;">
-    <!-- Decorative Background Elements -->
-    <div class="footer-bg-decoration-1"></div>
-    <div class="footer-bg-decoration-2"></div>
-    
+<footer class="footer-ultra" id="main-footer">
+
     @php
     $settings = App\Models\Setting::whereIn('type', ['general-setting', 'social-media', 'site-setup'])
         ->whereIn('key', ['general-setting', 'social-media', 'site-setup'])
@@ -21,619 +18,888 @@
             $second_part = '';
         }
     @endphp
-    <div class="footer-top py-5" style="position: relative !important; z-index: 1 !important; padding: 80px 0 60px 0 !important;">
+
+    {{-- ===== ANIMATED BACKGROUND MESH ===== --}}
+    <div class="footer-mesh-bg" aria-hidden="true">
+        <div class="footer-orb footer-orb-1"></div>
+        <div class="footer-orb footer-orb-2"></div>
+        <div class="footer-orb footer-orb-3"></div>
+        <svg class="footer-grid-svg" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+            <defs>
+                <pattern id="footer-grid" x="0" y="0" width="60" height="60" patternUnits="userSpaceOnUse">
+                    <path d="M 60 0 L 0 0 0 60" fill="none" stroke="rgba(255,255,255,0.03)" stroke-width="1"/>
+                </pattern>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#footer-grid)" />
+        </svg>
+    </div>
+
+    {{-- ===== NEWSLETTER BANNER ===== --}}
+    <div class="footer-newsletter-wrap">
         <div class="container">
-            <div class="row g-4">
-                <!-- Brand Section -->
-                <div class="col-lg-5 col-md-6">
-                    <div class="footer-brand-section">
-                        @include('landing-page.components.widgets.logo')
-                        <p class="mt-4 mb-3 readmore-text" style="color: rgba(255, 255, 255, 0.8) !important; font-size: 0.95rem !important; line-height: 1.7 !important;">
+            <div class="footer-newsletter-card">
+                <div class="footer-nl-glow" aria-hidden="true"></div>
+                <div class="row align-items-center g-4">
+                    <div class="col-lg-6">
+                        <div class="footer-nl-icon-row">
+                            <div class="footer-nl-icon-badge">
+                                <i class="ri-mail-send-line"></i>
+                            </div>
+                            <span class="footer-nl-tag">Newsletter</span>
+                        </div>
+                        <h3 class="footer-nl-title">Get the best deals <span class="footer-nl-accent">in your inbox</span></h3>
+                        <p class="footer-nl-desc">Expert tips, exclusive offers, and new service launches — delivered weekly.</p>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="footer-nl-form-wrap">
+                            <div class="footer-nl-input-group">
+                                <i class="ri-mail-line footer-nl-input-icon"></i>
+                                <input type="email" id="email" class="footer-nl-input" placeholder="Enter your email address…" autocomplete="email">
+                                <button class="footer-nl-btn" id="submit_btn" type="button">
+                                    <span>Subscribe</span>
+                                    <i class="ri-arrow-right-line"></i>
+                                </button>
+                            </div>
+                            <p class="footer-nl-note"><i class="ri-shield-check-line"></i> No spam, ever. Unsubscribe anytime.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- ===== MAIN FOOTER BODY ===== --}}
+    <div class="footer-body">
+        <div class="container">
+            <div class="row g-5">
+
+                {{-- Brand Column --}}
+                <div class="col-lg-4 col-md-12">
+                    <div class="footer-brand-col">
+                        <div class="footer-logo-wrap">
+                            @include('landing-page.components.widgets.logo')
+                        </div>
+
+                        <p class="footer-brand-desc readmore-text">
                             {{ optional($generalsetting)->site_description }}
                         </p>
-                        <a href="javascript:void(0);" class="readmore-btn" style="color: #3333ff !important; text-decoration: none !important; font-weight: 600 !important; font-size: 0.9rem !important; transition: all 0.3s ease !important; display: inline-flex !important; align-items: center !important; gap: 5px !important;">
-                            {{__('landingpage.read_more')}}
-                            <i class="ri-arrow-right-line" style="transition: transform 0.3s ease !important;"></i>
+                        <a href="javascript:void(0);" class="footer-readmore readmore-btn">
+                            {{__('landingpage.read_more')}} <i class="ri-arrow-right-line"></i>
                         </a>
-                        
-                        <!-- Contact Information -->
-                        @if(optional($generalsetting)->inquriy_email  || optional($generalsetting)->helpline_number)
-                        <div class="mt-5">
-                            <div class="d-flex flex-column gap-4">
-                                @if(optional($generalsetting)->inquriy_email)
-                                <div class="d-flex align-items-center gap-3">
-                                    <div class="contact-icon-wrapper footer-contact-icon">
-                                        <i class="ri-mail-line"></i>
-                                    </div>
-                                    <div>
-                                        <h6 class="mb-1" style="color: rgba(255, 255, 255, 0.9) !important; font-size: 0.85rem !important; font-weight: 600 !important; text-transform: uppercase !important; letter-spacing: 0.5px !important;">{{__('landingpage.business_inquries')}}</h6>
-                                        <a href="mailto:{{ optional($generalsetting)->inquriy_email }}" style="color: #ffffff !important; text-decoration: none !important; font-size: 0.95rem !important; font-weight: 500 !important; transition: all 0.3s ease !important; text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3) !important;">{{ optional($generalsetting)->inquriy_email }}</a>
-                                    </div>
+
+                        {{-- Contact Cards --}}
+                        @if(optional($generalsetting)->inquriy_email || optional($generalsetting)->helpline_number)
+                        <div class="footer-contact-cards">
+                            @if(optional($generalsetting)->inquriy_email)
+                            <a href="mailto:{{ optional($generalsetting)->inquriy_email }}" class="footer-contact-card">
+                                <div class="footer-contact-icon-wrap">
+                                    <i class="ri-mail-line"></i>
                                 </div>
-                                @endif
-                                @if(optional($generalsetting)->helpline_number)
-                                <div class="d-flex align-items-center gap-3">
-                                    <div class="contact-icon-wrapper footer-contact-icon">
-                                        <i class="ri-phone-line"></i>
-                                    </div>
-                                    <div>
-                                        <h6 class="mb-1" style="color: rgba(255, 255, 255, 0.9) !important; font-size: 0.85rem !important; font-weight: 600 !important; text-transform: uppercase !important; letter-spacing: 0.5px !important;">{{__('landingpage.helpline_number')}}</h6>
-                                        <a href="tel:{{optional($generalsetting)->helpline_number}}" style="color: #ffffff !important; text-decoration: none !important; font-size: 0.95rem !important; font-weight: 500 !important; transition: all 0.3s ease !important; text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3) !important;">{{optional($generalsetting)->helpline_number}}</a>
-                                    </div>
+                                <div>
+                                    <span class="footer-contact-label">{{__('landingpage.business_inquries')}}</span>
+                                    <span class="footer-contact-value">{{ optional($generalsetting)->inquriy_email }}</span>
                                 </div>
-                                @endif
-                            </div>
+                            </a>
+                            @endif
+                            @if(optional($generalsetting)->helpline_number)
+                            <a href="tel:{{optional($generalsetting)->helpline_number}}" class="footer-contact-card">
+                                <div class="footer-contact-icon-wrap">
+                                    <i class="ri-phone-line"></i>
+                                </div>
+                                <div>
+                                    <span class="footer-contact-label">{{__('landingpage.helpline_number')}}</span>
+                                    <span class="footer-contact-value">{{optional($generalsetting)->helpline_number}}</span>
+                                </div>
+                            </a>
+                            @endif
                         </div>
                         @endif
-                        
-                        <!-- Social Media Links -->
+
+                        {{-- Social Links --}}
                         @if($socialmedia !== null)
-                        <div class="mt-5">
-                            <h6 class="mb-3" style="color: rgba(255, 255, 255, 0.9) !important; font-size: 0.9rem !important; font-weight: 600 !important; text-transform: uppercase !important; letter-spacing: 0.5px !important;">{{__('landingpage.follow_us')}}</h6>
-                            <div class="d-flex align-items-center gap-3 flex-wrap">
+                        <div class="footer-social-wrap">
+                            <span class="footer-social-label">{{__('landingpage.follow_us')}}</span>
+                            <div class="footer-social-icons">
                                 @if(optional($socialmedia)->facebook_url)
-                                    <a href="{{ optional($socialmedia)->facebook_url }}" target="_blank" class="social-icon-link" style="width: 42px !important; height: 42px !important; background: rgba(255, 255, 255, 0.25) !important; border-radius: 10px !important; display: flex !important; align-items: center !important; justify-content: center !important; color: #fff !important; text-decoration: none !important; transition: all 0.3s ease !important; border: 1px solid rgba(255, 255, 255, 0.3) !important; backdrop-filter: blur(10px) !important;">
-                                        <i class="ri-facebook-fill" style="font-size: 1.3rem !important; color: #ffffff !important; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5) !important; font-family: 'remixicon' !important; font-style: normal !important; display: inline-block !important; line-height: 1 !important;"></i>
-                                    </a>
+                                <a href="{{ optional($socialmedia)->facebook_url }}" target="_blank" class="footer-social-btn footer-social-fb" title="Facebook">
+                                    <i class="ri-facebook-fill"></i>
+                                </a>
                                 @endif
                                 @if(optional($socialmedia)->twitter_url)
-                                    <a href="{{ optional($socialmedia)->twitter_url }}" target="_blank" class="social-icon-link" style="width: 42px !important; height: 42px !important; background: rgba(255, 255, 255, 0.25) !important; border-radius: 10px !important; display: flex !important; align-items: center !important; justify-content: center !important; color: #fff !important; text-decoration: none !important; transition: all 0.3s ease !important; border: 1px solid rgba(255, 255, 255, 0.3) !important; backdrop-filter: blur(10px) !important;">
-                                        <i class="ri-twitter-fill" style="font-size: 1.3rem !important; color: #ffffff !important; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5) !important; font-family: 'remixicon' !important; font-style: normal !important; display: inline-block !important; line-height: 1 !important;"></i>
-                                    </a>
+                                <a href="{{ optional($socialmedia)->twitter_url }}" target="_blank" class="footer-social-btn footer-social-tw" title="Twitter / X">
+                                    <i class="ri-twitter-x-fill"></i>
+                                </a>
                                 @endif
                                 @if(optional($socialmedia)->instagram_url)
-                                    <a href="{{ optional($socialmedia)->instagram_url }}" target="_blank" class="social-icon-link" style="width: 42px !important; height: 42px !important; background: rgba(255, 255, 255, 0.25) !important; border-radius: 10px !important; display: flex !important; align-items: center !important; justify-content: center !important; color: #fff !important; text-decoration: none !important; transition: all 0.3s ease !important; border: 1px solid rgba(255, 255, 255, 0.3) !important; backdrop-filter: blur(10px) !important;">
-                                        <i class="ri-instagram-fill" style="font-size: 1.3rem !important; color: #ffffff !important; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5) !important; font-family: 'remixicon' !important; font-style: normal !important; display: inline-block !important; line-height: 1 !important;"></i>
-                                    </a>
+                                <a href="{{ optional($socialmedia)->instagram_url }}" target="_blank" class="footer-social-btn footer-social-ig" title="Instagram">
+                                    <i class="ri-instagram-line"></i>
+                                </a>
                                 @endif
                                 @if(optional($socialmedia)->youtube_url)
-                                    <a href="{{ optional($socialmedia)->youtube_url }}" target="_blank" class="social-icon-link" style="width: 42px !important; height: 42px !important; background: rgba(255, 255, 255, 0.25) !important; border-radius: 10px !important; display: flex !important; align-items: center !important; justify-content: center !important; color: #fff !important; text-decoration: none !important; transition: all 0.3s ease !important; border: 1px solid rgba(255, 255, 255, 0.3) !important; backdrop-filter: blur(10px) !important;">
-                                        <i class="ri-youtube-fill" style="font-size: 1.3rem !important; color: #ffffff !important; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5) !important; font-family: 'remixicon' !important; font-style: normal !important; display: inline-block !important; line-height: 1 !important;"></i>
-                                    </a>
+                                <a href="{{ optional($socialmedia)->youtube_url }}" target="_blank" class="footer-social-btn footer-social-yt" title="YouTube">
+                                    <i class="ri-youtube-fill"></i>
+                                </a>
                                 @endif
                                 @if(optional($socialmedia)->linkedin_url)
-                                    <a href="{{ optional($socialmedia)->linkedin_url }}" target="_blank" class="social-icon-link" style="width: 42px !important; height: 42px !important; background: rgba(255, 255, 255, 0.25) !important; border-radius: 10px !important; display: flex !important; align-items: center !important; justify-content: center !important; color: #fff !important; text-decoration: none !important; transition: all 0.3s ease !important; border: 1px solid rgba(255, 255, 255, 0.3) !important; backdrop-filter: blur(10px) !important;">
-                                        <i class="ri-linkedin-fill" style="font-size: 1.3rem !important; color: #ffffff !important; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5) !important; font-family: 'remixicon' !important; font-style: normal !important; display: inline-block !important; line-height: 1 !important;"></i>
-                                    </a>
+                                <a href="{{ optional($socialmedia)->linkedin_url }}" target="_blank" class="footer-social-btn footer-social-li" title="LinkedIn">
+                                    <i class="ri-linkedin-fill"></i>
+                                </a>
                                 @endif
                             </div>
                         </div>
                         @endif
                     </div>
                 </div>
-                
-                <!-- Categories & Services Section -->
+
+                {{-- Categories & Services Columns --}}
                 @php
                 $footerSection = App\Models\FrontendSetting::where('key', 'footer-setting')->first();
                 $sectionData = $footerSection ? json_decode($footerSection->value, true) : null;
                 @endphp
+
                 @if ($sectionData && isset($sectionData['footer_setting']) && $sectionData['footer_setting'] == 1)
-                <div class="col-lg-7 col-md-6">
-                    <div class="row g-4">
-                        @if ($sectionData['footer_setting'] == 1 && isset($sectionData['enable_popular_category']) && $sectionData['enable_popular_category'] == 1)
-                        <div class="col-md-6">
-                            <div class="footer-links-section">
-                                <h5 class="mb-4 footer-section-title">
-                                    {{__('landingpage.handyman_category')}}
-                                    <span class="footer-title-underline"></span>
-                                </h5>
-                                <ul class="footer-links-list" style="list-style: none !important; padding: 0 !important; margin: 0 !important;">
-                                    @foreach ($sectionData['category_id'] as $categoryId)
-                                    @php
-                                        $category = App\Models\Category::find($categoryId);
-                                    @endphp
-                                        @if($category && $category->status==1)
-                                        <li class="mb-2">
-                                            <a href="{{ route('category.detail', $category->id) }}" style="color: rgba(255, 255, 255, 0.75) !important; text-decoration: none !important; font-size: 0.9rem !important; transition: all 0.3s ease !important; display: inline-flex !important; align-items: center !important; padding: 4px 0 !important;">
-                                                <i class="ri-arrow-right-s-line me-2" style="font-size: 0.85rem !important; color: #3333ff !important; transition: all 0.3s ease !important;"></i>{{ $category->name }}
-                                            </a>
-                                        </li>
-                                        @endif
-                                    @endforeach
-                                </ul>
-                            </div>
+
+                    @if ($sectionData['footer_setting'] == 1 && isset($sectionData['enable_popular_category']) && $sectionData['enable_popular_category'] == 1)
+                    <div class="col-lg-3 col-sm-6">
+                        <div class="footer-links-col">
+                            <h5 class="footer-col-title">
+                                <span class="footer-col-title-dot"></span>
+                                {{__('landingpage.handyman_category')}}
+                            </h5>
+                            <ul class="footer-link-list">
+                                @foreach ($sectionData['category_id'] as $categoryId)
+                                @php $category = App\Models\Category::find($categoryId); @endphp
+                                @if($category && $category->status==1)
+                                <li>
+                                    <a href="{{ route('category.detail', $category->id) }}" class="footer-link-item">
+                                        <span class="footer-link-arrow"><i class="ri-arrow-right-s-line"></i></span>
+                                        <span>{{ $category->name }}</span>
+                                    </a>
+                                </li>
+                                @endif
+                                @endforeach
+                            </ul>
                         </div>
-                        @endif
-                        
-                        @php
-                        $footerServiceSection = App\Models\FrontendSetting::where('key', 'footer-setting')->first();
-                        $sectionData = $footerServiceSection ? json_decode($footerServiceSection->value, true) : null;
-                        @endphp
-                        @if ($sectionData && isset($sectionData['footer_setting']) && $sectionData['footer_setting'] == 1 && isset($sectionData['enable_popular_service']) && $sectionData['enable_popular_service'] == 1)
-                        <div class="col-md-6">
-                            <div class="footer-services-section">
-                                <h5 class="mb-4 footer-section-title">
-                                    {{__('landingpage.popular_services')}}
-                                    <span class="footer-title-underline"></span>
-                                </h5>
-                                <ul class="footer-services-list d-flex flex-wrap gap-3" style="list-style: none !important; padding: 0 !important; margin: 0 !important;">
-                                    @foreach ($sectionData['service_id'] as $serviceId)
-                                    @php
-                                        $service = App\Models\Service::find($serviceId);
-                                        $mediaServiceImages = $service ? $service->getMedia('service_attachment') : null;
-                                    @endphp
-                                    @if ($service && $mediaServiceImages->isNotEmpty())
-                                        @php
-                                            $firstMedia = $mediaServiceImages->first();
-                                        @endphp
-                                        @if ($firstMedia && getFileExistsCheck($firstMedia))
-                                        <li>
-                                            <a href="{{ route('service.detail', $service->id) }}" class="service-link-item" style="display: flex !important; flex-direction: column !important; align-items: center !important; text-decoration: none !important; transition: all 0.3s ease !important;">
-                                                <div style="width: 85px !important; height: 85px !important; border-radius: 14px !important; overflow: hidden !important; background: rgba(95, 96, 185, 0.1) !important; border: 2px solid rgba(95, 96, 185, 0.3) !important; margin-bottom: 10px !important; transition: all 0.3s ease !important; position: relative !important;">
-                                                    <img src="{{ url($firstMedia->getUrl()) }}" alt="service-image" style="width: 100% !important; height: 100% !important; object-fit: cover !important; position: relative !important; z-index: 0 !important;">
-                                                </div>
-                                                <span style="color: rgba(255, 255, 255, 0.75) !important; font-size: 0.8rem !important; text-align: center !important; max-width: 85px !important; line-height: 1.3 !important; font-weight: 500 !important; transition: all 0.3s ease !important;">{{$service->name}}</span>
-                                            </a>
-                                        </li>
-                                        @endif
-                                    @endif
-                                    @endforeach
-                                </ul>
-                            </div>
-                        </div>
-                        @endif
                     </div>
-                </div>
+                    @endif
+
+                    @php
+                    $footerServiceSection = App\Models\FrontendSetting::where('key', 'footer-setting')->first();
+                    $sectionData = $footerServiceSection ? json_decode($footerServiceSection->value, true) : null;
+                    @endphp
+
+                    @if ($sectionData && isset($sectionData['footer_setting']) && $sectionData['footer_setting'] == 1 && isset($sectionData['enable_popular_service']) && $sectionData['enable_popular_service'] == 1)
+                    <div class="col-lg-5 col-sm-6">
+                        <div class="footer-services-col">
+                            <h5 class="footer-col-title">
+                                <span class="footer-col-title-dot"></span>
+                                {{__('landingpage.popular_services')}}
+                            </h5>
+                            <div class="footer-service-grid">
+                                @foreach ($sectionData['service_id'] as $serviceId)
+                                @php
+                                    $service = App\Models\Service::find($serviceId);
+                                    $mediaServiceImages = $service ? $service->getMedia('service_attachment') : null;
+                                @endphp
+                                @if ($service && $mediaServiceImages->isNotEmpty())
+                                    @php $firstMedia = $mediaServiceImages->first(); @endphp
+                                    @if ($firstMedia && getFileExistsCheck($firstMedia))
+                                    <a href="{{ route('service.detail', $service->id) }}" class="footer-service-tile">
+                                        <div class="footer-service-img-wrap">
+                                            <img src="{{ url($firstMedia->getUrl()) }}" alt="{{ $service->name }}">
+                                            <div class="footer-service-overlay">
+                                                <i class="ri-external-link-line"></i>
+                                            </div>
+                                        </div>
+                                        <span class="footer-service-name">{{$service->name}}</span>
+                                    </a>
+                                    @endif
+                                @endif
+                                @endforeach
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+
+                @else
+                    {{-- Fallback Quick Links if footer setting disabled --}}
+                    <div class="col-lg-4 col-sm-6">
+                        <div class="footer-links-col">
+                            <h5 class="footer-col-title">
+                                <span class="footer-col-title-dot"></span>
+                                Quick Links
+                            </h5>
+                            <ul class="footer-link-list">
+                                <li><a href="{{ route('service.list') }}" class="footer-link-item"><span class="footer-link-arrow"><i class="ri-arrow-right-s-line"></i></span><span>All Services</span></a></li>
+                                <li><a href="{{ route('post.job.list') }}" class="footer-link-item"><span class="footer-link-arrow"><i class="ri-arrow-right-s-line"></i></span><span>Post a Job</span></a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-sm-6">
+                        <div class="footer-links-col">
+                            <h5 class="footer-col-title">
+                                <span class="footer-col-title-dot"></span>
+                                Support
+                            </h5>
+                            <ul class="footer-link-list">
+                                <li><a href="{{ route('user.help_support') }}" class="footer-link-item"><span class="footer-link-arrow"><i class="ri-arrow-right-s-line"></i></span><span>Help & Support</span></a></li>
+                                <li><a href="{{ route('user.privacy_policy') }}" class="footer-link-item"><span class="footer-link-arrow"><i class="ri-arrow-right-s-line"></i></span><span>Privacy Policy</span></a></li>
+                                <li><a href="{{ route('user.term_conditions') }}" class="footer-link-item"><span class="footer-link-arrow"><i class="ri-arrow-right-s-line"></i></span><span>Terms & Conditions</span></a></li>
+                            </ul>
+                        </div>
+                    </div>
                 @endif
+
             </div>
         </div>
     </div>
-    
-    <!-- Footer Bottom -->
-    <div class="footer-bottom">
+
+    {{-- ===== DIVIDER WITH TAGLINE ===== --}}
+    <div class="footer-divider-wrap">
         <div class="container">
-            <div class="row align-items-center">
-                <div class="col-md-6 text-md-start text-center mb-md-0 mb-3">
-                    <p class="mb-0" style="color: rgba(255, 255, 255, 0.7) !important; font-size: 0.9rem !important;">
+            <div class="footer-divider-inner">
+                <span class="footer-divider-line"></span>
+                <span class="footer-divider-icon"><i class="ri-tools-fill"></i></span>
+                <span class="footer-divider-line"></span>
+            </div>
+        </div>
+    </div>
+
+    {{-- ===== BOTTOM BAR ===== --}}
+    <div class="footer-bottom-bar">
+        <div class="container">
+            <div class="row align-items-center g-3">
+                <div class="col-md-5 text-md-start text-center">
+                    <p class="footer-copyright">
                         {{ $first_part }}
-                        <a target="_blank" href="{{ optional($generalsetting)->website }}" style="color: #3333ff !important; text-decoration: none !important; font-weight: 600 !important; transition: all 0.3s ease !important;">{{ $second_part }}</a>
+                        <a target="_blank" href="{{ optional($generalsetting)->website }}" class="footer-copyright-link">{{ $second_part }}</a>
                     </p>
                 </div>
-                <div class="col-md-6 text-md-end text-center">
+                <div class="col-md-7">
                     @php $footerPages = \App\Models\Page::active()->ordered()->get(); @endphp
-                    <div class="footer-bottom-links d-flex flex-wrap align-items-center gap-2 justify-content-md-end justify-content-center">
+                    <div class="footer-bottom-links">
                         @foreach($footerPages as $fp)
                             <a href="{{ route('user.page', $fp->slug) }}" class="footer-bottom-link">{{ $fp->title }}</a>
-                            <span class="footer-bottom-sep" aria-hidden="true">|</span>
                         @endforeach
-                        <a target="_blank" href="{{ route('user.term_conditions') }}" class="footer-bottom-link">{{__('landingpage.terms_conditions')}}</a>
-                        <span class="footer-bottom-sep" aria-hidden="true">|</span>
-                        <a target="_blank" href="{{ route('user.privacy_policy') }}" class="footer-bottom-link">{{__('landingpage.privacy_policy')}}</a>
-                        <span class="footer-bottom-sep" aria-hidden="true">|</span>
-                        <a target="_blank" href="{{ route('user.help_support') }}" class="footer-bottom-link">{{__('landingpage.help_support')}}</a>
-                        <span class="footer-bottom-sep" aria-hidden="true">|</span>
-                        <a target="_blank" href="{{ route('user.refund_policy') }}" class="footer-bottom-link">{{__('landingpage.refund_policy')}}</a>
-                        <span class="footer-bottom-sep" aria-hidden="true">|</span>
-                        <a target="_blank" href="{{ route('user.imprint') }}" class="footer-bottom-link">{{__('landingpage.imprint')}}</a>
-                        <span class="footer-bottom-sep" aria-hidden="true">|</span>
-                        <a target="_blank" href="{{ route('user.data_deletion_request') }}" class="footer-bottom-link">{{__('landingpage.data_deletion_request')}}</a>
+                        <a href="{{ route('user.term_conditions') }}" target="_blank" class="footer-bottom-link">{{__('landingpage.terms_conditions')}}</a>
+                        <a href="{{ route('user.privacy_policy') }}" target="_blank" class="footer-bottom-link">{{__('landingpage.privacy_policy')}}</a>
+                        <a href="{{ route('user.help_support') }}" target="_blank" class="footer-bottom-link">{{__('landingpage.help_support')}}</a>
+                        <a href="{{ route('user.refund_policy') }}" target="_blank" class="footer-bottom-link">{{__('landingpage.refund_policy')}}</a>
+                        <a href="{{ route('user.imprint') }}" target="_blank" class="footer-bottom-link">{{__('landingpage.imprint')}}</a>
+                        <a href="{{ route('user.data_deletion_request') }}" target="_blank" class="footer-bottom-link">{{__('landingpage.data_deletion_request')}}</a>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
 </footer>
 
 <style>
-    /* Professional Footer with Clear Red-Blue Gradient Theme */
-    body .footer-modern,
-    body footer.footer-modern,
-    footer.footer-modern,
-    .footer-modern {
-        background: #3333ff !important;
-        background-image: #3333ff !important;
-        background-color: transparent !important;
-        color: #ffffff !important;
-        position: relative !important;
-        overflow: hidden !important;
-    }
-    
-    /* Remove any overlays that might dim the gradient */
-    body .footer-modern::before,
-    body .footer-modern::after,
-    footer.footer-modern::before,
-    footer.footer-modern::after {
-        display: none !important;
-        content: none !important;
-    }
-    
-    /* Decorative Background Elements - Very subtle to keep gradient clear */
-    body .footer-bg-decoration-1 {
-        position: absolute !important;
-        top: -150px !important;
-        right: -150px !important;
-        width: 500px !important;
-        height: 500px !important;
-        background: radial-gradient(circle, rgba(255, 0, 0, 0.05) 0%, rgba(95, 96, 185, 0.05) 100%) !important;
-        border-radius: 50% !important;
-        filter: blur(150px) !important;
-        z-index: 0 !important;
-        opacity: 0.3 !important;
-        animation: floatFooter 8s ease-in-out infinite !important;
-    }
-    
-    body .footer-bg-decoration-2 {
-        position: absolute !important;
-        bottom: -150px !important;
-        left: -150px !important;
-        width: 450px !important;
-        height: 450px !important;
-        background: radial-gradient(circle, rgba(95, 96, 185, 0.05) 0%, rgba(255, 0, 0, 0.05) 100%) !important;
-        border-radius: 50% !important;
-        filter: blur(150px) !important;
-        z-index: 0 !important;
-        opacity: 0.3 !important;
-        animation: floatFooter 10s ease-in-out infinite reverse !important;
-    }
-    
-    @keyframes floatFooter {
-        0%, 100% {
-            transform: translateY(0px) scale(1);
-        }
-        50% {
-            transform: translateY(-30px) scale(1.1);
-        }
-    }
-    
-    body .footer-top {
-        position: relative !important;
-        z-index: 1 !important;
-        padding: 90px 0 70px 0 !important;
-    }
-    
-    /* Contact Icons with Gradient */
-    body .footer-contact-icon {
-        width: 60px !important;
-        height: 60px !important;
-        background: rgba(255, 255, 255, 0.25) !important;
-        border-radius: 16px !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        flex-shrink: 0 !important;
-        border: 2px solid rgba(255, 255, 255, 0.4) !important;
-        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3) !important;
-        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
-        backdrop-filter: blur(10px) !important;
-    }
-    
-    body .footer-contact-icon i {
-        font-size: 1.8rem !important;
-        color: #ffffff !important;
-        text-shadow: 0 3px 8px rgba(0, 0, 0, 0.6) !important;
-        filter: drop-shadow(0 3px 8px rgba(0, 0, 0, 0.6)) !important;
-        -webkit-text-fill-color: #ffffff !important;
-        background: transparent !important;
-        -webkit-background-clip: unset !important;
-        background-clip: unset !important;
-    }
-    
-    body .footer-contact-icon:hover {
-        background: rgba(255, 255, 255, 0.35) !important;
-        border-color: rgba(255, 255, 255, 0.6) !important;
-        transform: translateY(-5px) scale(1.1) rotate(5deg) !important;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4) !important;
-    }
-    
-    body .footer-contact-icon:hover i {
-        transform: scale(1.15) !important;
-        color: #ffffff !important;
-        text-shadow: 0 4px 10px rgba(0, 0, 0, 0.7) !important;
-        filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.7)) !important;
-    }
-    
-    /* Section Titles with Gradient */
-    body .footer-section-title {
-        color: #fff !important;
-        font-size: 1.2rem !important;
-        font-weight: 700 !important;
-        position: relative !important;
-        padding-bottom: 15px !important;
-        margin-bottom: 20px !important;
-    }
-    
-    body .footer-title-underline {
-        position: absolute !important;
-        bottom: 0 !important;
-        left: 0 !important;
-        width: 60px !important;
-        height: 4px !important;
-        background: #3333ff !important;
-        border-radius: 3px !important;
-        box-shadow: 0 2px 8px rgba(255, 0, 0, 0.4) !important;
-    }
-    
-    /* Read More Button */
-    body .readmore-btn {
-        color: #3333ff !important;
-        text-decoration: none !important;
-        font-weight: 600 !important;
-        font-size: 0.95rem !important;
-        transition: all 0.3s ease !important;
-        display: inline-flex !important;
-        align-items: center !important;
-        gap: 6px !important;
-    }
-    
-    body .readmore-btn:hover {
-        background: #3333ff !important;
-        -webkit-background-clip: text !important;
-        -webkit-text-fill-color: transparent !important;
-        background-clip: text !important;
-        transform: translateX(5px) !important;
-    }
-    
-    body .readmore-btn:hover i {
-        transform: translateX(4px) !important;
-    }
-    
-    /* Social Media Icons with Gradient - Enhanced Visibility */
-    body .social-icon-link {
-        position: relative !important;
-        overflow: visible !important;
-        width: 45px !important;
-        height: 45px !important;
-        background: rgba(255, 255, 255, 0.25) !important;
-        border-radius: 12px !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        color: #fff !important;
-        text-decoration: none !important;
-        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
-        border: 1px solid rgba(255, 255, 255, 0.3) !important;
-        backdrop-filter: blur(10px) !important;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2) !important;
-    }
-    
-    body .social-icon-link::before {
-        content: '' !important;
-        position: absolute !important;
-        inset: 0 !important;
-        background: #3333ff !important;
-        opacity: 0 !important;
-        transition: opacity 0.4s ease !important;
-        z-index: 0 !important;
-    }
-    
-    body .social-icon-link i {
-        position: relative !important;
-        z-index: 1 !important;
-        font-size: 1.3rem !important;
-        color: #ffffff !important;
-        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5) !important;
-        filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5)) !important;
-        font-family: 'remixicon' !important;
-        font-style: normal !important;
-        -webkit-font-smoothing: antialiased !important;
-        -moz-osx-font-smoothing: grayscale !important;
-        display: inline-block !important;
-        line-height: 1 !important;
-    }
-    
-    body .social-icon-link:hover::before {
-        opacity: 1 !important;
-    }
-    
-    body .social-icon-link:hover {
-        background: rgba(255, 255, 255, 0.35) !important;
-        transform: translateY(-5px) scale(1.15) rotate(5deg) !important;
-        box-shadow: 0 10px 25px rgba(255, 0, 0, 0.4) !important;
-        border-color: rgba(255, 255, 255, 0.5) !important;
-    }
-    
-    body .social-icon-link:hover i {
-        color: #fff !important;
-        transform: scale(1.1) !important;
-        text-shadow: 0 3px 6px rgba(0, 0, 0, 0.6) !important;
-    }
-    
-    /* Footer Links with Gradient Hover */
-    body .footer-links-list a {
-        color: rgba(255, 255, 255, 0.75) !important;
-        text-decoration: none !important;
-        font-size: 0.9rem !important;
-        transition: all 0.3s ease !important;
-        display: inline-flex !important;
-        align-items: center !important;
-        padding: 6px 0 !important;
-    }
-    
-    body .footer-links-list a:hover {
-        background: #3333ff !important;
-        -webkit-background-clip: text !important;
-        -webkit-text-fill-color: transparent !important;
-        background-clip: text !important;
-        transform: translateX(10px) !important;
-        padding-left: 8px !important;
-    }
-    
-    body .footer-links-list a:hover i {
-        background: #3333ff !important;
-        -webkit-background-clip: text !important;
-        -webkit-text-fill-color: transparent !important;
-        background-clip: text !important;
-        transform: translateX(5px) !important;
-    }
-    
-    /* Service Cards with Gradient */
-    body .service-link-item {
-        display: flex !important;
-        flex-direction: column !important;
-        align-items: center !important;
-        text-decoration: none !important;
-        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
-    }
-    
-    body .service-link-item > div {
-        width: 90px !important;
-        height: 90px !important;
-        border-radius: 16px !important;
-        overflow: hidden !important;
-        background: linear-gradient(135deg, rgba(255, 0, 0, 0.1) 0%, rgba(95, 96, 185, 0.1) 100%) !important;
-        border: 2px solid rgba(255, 0, 0, 0.3) !important;
-        margin-bottom: 12px !important;
-        transition: all 0.4s ease !important;
-        position: relative !important;
-    }
-    
-    body .service-link-item > div::before {
-        content: '' !important;
-        position: absolute !important;
-        inset: 0 !important;
-        background: linear-gradient(135deg, rgba(255, 0, 0, 0.2) 0%, rgba(95, 96, 185, 0.2) 100%) !important;
-        opacity: 0 !important;
-        transition: opacity 0.4s ease !important;
-        z-index: 1 !important;
-    }
-    
-    body .service-link-item > div img {
-        width: 100% !important;
-        height: 100% !important;
-        object-fit: cover !important;
-        position: relative !important;
-        z-index: 0 !important;
-    }
-    
-    body .service-link-item:hover {
-        transform: translateY(-10px) !important;
-    }
-    
-    body .service-link-item:hover > div {
-        border-color: rgba(255, 0, 0, 0.6) !important;
-        box-shadow: 0 12px 35px rgba(255, 0, 0, 0.35) !important;
-        transform: scale(1.08) rotate(2deg) !important;
-    }
-    
-    body .service-link-item:hover > div::before {
-        opacity: 1 !important;
-    }
-    
-    body .service-link-item span {
-        color: rgba(255, 255, 255, 0.75) !important;
-        font-size: 0.8rem !important;
-        text-align: center !important;
-        max-width: 90px !important;
-        line-height: 1.4 !important;
-        font-weight: 500 !important;
-        transition: all 0.3s ease !important;
-    }
-    
-    body .service-link-item:hover span {
-        background: #3333ff !important;
-        -webkit-background-clip: text !important;
-        -webkit-text-fill-color: transparent !important;
-        background-clip: text !important;
-        font-weight: 600 !important;
-    }
-    
-    /* Footer Bottom with Gradient Border */
-    body .footer-bottom {
-        position: relative !important;
-        z-index: 1 !important;
-        padding: 35px 0 !important;
-        border-top: 2px solid transparent !important;
-        border-image: linear-gradient(135deg, rgba(255, 0, 0, 0.4) 0%, rgba(95, 96, 185, 0.4) 100%) 1 !important;
-        background: linear-gradient(135deg, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.3) 100%) !important;
-    }
-    
-    body .footer-bottom a {
-        color: rgba(255, 255, 255, 0.7) !important;
-        text-decoration: none !important;
-        font-size: 0.85rem !important;
-        transition: all 0.3s ease !important;
-    }
-    
-    body .footer-bottom a:hover,
-    body .footer-bottom a:active,
-    body .footer-bottom a:focus,
-    body .footer-bottom a:visited {
-        color: rgba(255, 255, 255, 0.9) !important;
-        -webkit-text-fill-color: rgba(255, 255, 255, 0.9) !important;
-        background: transparent !important;
-        transform: translateY(-2px) !important;
-        text-decoration: underline !important;
-    }
-    
-    body .footer-bottom span {
-        background: linear-gradient(135deg, rgba(255, 0, 0, 0.5) 0%, rgba(95, 96, 185, 0.5) 100%) !important;
-        -webkit-background-clip: text !important;
-        -webkit-text-fill-color: transparent !important;
-        background-clip: text !important;
-    }
-    
-    /* Footer bottom links: wrap into multiple rows instead of overflowing */
-    body .footer-bottom-links {
-        flex-wrap: wrap !important;
-        gap: 0.35rem 0.75rem !important;
-        max-width: 100% !important;
-    }
-    body .footer-bottom-link {
-        color: rgba(255, 255, 255, 0.7) !important;
-        text-decoration: none !important;
-        font-size: 0.85rem !important;
-        transition: all 0.3s ease !important;
-        white-space: nowrap !important;
-    }
-    body .footer-bottom-sep:last-child {
-        display: none !important;
-    }
-    body .footer-bottom-sep {
-        color: rgba(255, 255, 255, 0.3) !important;
-        user-select: none !important;
-    }
-    
-    /* Contact Links */
-    body .footer-brand-section a[href^="mailto:"],
-    body .footer-brand-section a[href^="tel:"] {
-        color: #ffffff !important;
-        text-decoration: none !important;
-        font-size: 0.95rem !important;
-        font-weight: 500 !important;
-        transition: all 0.3s ease !important;
-        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3) !important;
-    }
-    
-    body .footer-brand-section a[href^="mailto:"]:hover,
-    body .footer-brand-section a[href^="tel:"]:hover {
-        color: #ffffff !important;
-        -webkit-text-fill-color: #ffffff !important;
-        text-decoration: underline !important;
-        text-shadow: 0 2px 6px rgba(0, 0, 0, 0.5) !important;
-        transform: translateY(-1px) !important;
-    }
-    
-    /* Responsive Design */
-    @media (max-width: 768px) {
-        body .footer-top {
-            padding: 70px 0 50px 0 !important;
-        }
-        
-        body .footer-brand-section,
-        body .footer-links-section,
-        body .footer-services-section {
-            margin-bottom: 2.5rem !important;
-        }
-        
-        body .footer-contact-icon {
-            width: 50px !important;
-            height: 50px !important;
-        }
-        
-        body .footer-contact-icon i {
-            font-size: 1.5rem !important;
-        }
-        
-        body .service-link-item > div {
-            width: 75px !important;
-            height: 75px !important;
-        }
-        
-        body .social-icon-link {
-            width: 40px !important;
-            height: 40px !important;
-        }
-    }
+/* ===================================================================
+   ULTRA FOOTER — Complete redesign
+   Primary: #3333ff | Deep dark background with neon glow accents
+=================================================================== */
+
+/* ------ ROOT ------ */
+.footer-ultra {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(160deg, #0b0b1e 0%, #0e0e2a 40%, #12103a 70%, #0c0c22 100%);
+    color: #e2e4f0;
+    font-family: "Montserrat", sans-serif;
+}
+
+/* ------ ANIMATED MESH BACKGROUND ------ */
+.footer-mesh-bg {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.footer-grid-svg {
+    position: absolute;
+    inset: 0;
+    opacity: 1;
+}
+
+.footer-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(90px);
+    animation: orbFloat 12s ease-in-out infinite;
+    pointer-events: none;
+}
+.footer-orb-1 {
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(51, 51, 255, 0.18) 0%, transparent 70%);
+    top: -180px; right: -100px;
+    animation-duration: 14s;
+}
+.footer-orb-2 {
+    width: 380px; height: 380px;
+    background: radial-gradient(circle, rgba(99, 102, 241, 0.12) 0%, transparent 70%);
+    bottom: -100px; left: -60px;
+    animation-duration: 18s;
+    animation-direction: reverse;
+}
+.footer-orb-3 {
+    width: 260px; height: 260px;
+    background: radial-gradient(circle, rgba(168, 85, 247, 0.10) 0%, transparent 70%);
+    top: 40%; left: 40%;
+    animation-duration: 22s;
+}
+@keyframes orbFloat {
+    0%, 100% { transform: translateY(0) scale(1); }
+    33% { transform: translateY(-40px) scale(1.05); }
+    66% { transform: translateY(20px) scale(0.97); }
+}
+
+/* ------ NEWSLETTER STRIP ------ */
+.footer-newsletter-wrap {
+    position: relative;
+    z-index: 2;
+    padding: 60px 0 0;
+}
+
+.footer-newsletter-card {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(135deg, rgba(51, 51, 255, 0.22) 0%, rgba(99, 102, 241, 0.18) 50%, rgba(168, 85, 247, 0.15) 100%);
+    border: 1px solid rgba(99, 102, 241, 0.28);
+    border-radius: 24px;
+    padding: 44px 48px;
+    backdrop-filter: blur(20px);
+    box-shadow: 0 0 60px rgba(51, 51, 255, 0.12), inset 0 1px 0 rgba(255,255,255,0.08);
+}
+
+.footer-nl-glow {
+    position: absolute;
+    top: -60px; right: -60px;
+    width: 260px; height: 260px;
+    background: radial-gradient(circle, rgba(99, 102, 241, 0.3) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+    animation: nlGlowPulse 4s ease-in-out infinite;
+}
+@keyframes nlGlowPulse {
+    0%, 100% { opacity: 0.6; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.15); }
+}
+
+.footer-nl-icon-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 14px;
+}
+.footer-nl-icon-badge {
+    width: 46px; height: 46px;
+    background: linear-gradient(135deg, #3333ff 0%, #6366f1 100%);
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 24px rgba(51, 51, 255, 0.45);
+    font-size: 1.4rem;
+    color: #fff;
+    flex-shrink: 0;
+}
+.footer-nl-tag {
+    background: rgba(99, 102, 241, 0.2);
+    border: 1px solid rgba(99, 102, 241, 0.4);
+    color: #a5b4fc;
+    border-radius: 50px;
+    padding: 4px 14px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+.footer-nl-title {
+    font-size: clamp(1.35rem, 2.5vw, 1.75rem);
+    font-weight: 800;
+    color: #fff;
+    line-height: 1.25;
+    margin-bottom: 8px;
+    letter-spacing: -0.02em;
+}
+.footer-nl-accent {
+    background: linear-gradient(90deg, #818cf8 0%, #a78bfa 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+.footer-nl-desc {
+    font-size: 0.97rem;
+    color: rgba(200, 204, 230, 0.8);
+    line-height: 1.55;
+    margin: 0;
+}
+
+.footer-nl-form-wrap { }
+
+.footer-nl-input-group {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(99, 102, 241, 0.35);
+    border-radius: 16px;
+    padding: 6px 6px 6px 18px;
+    gap: 10px;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    backdrop-filter: blur(10px);
+}
+.footer-nl-input-group:focus-within {
+    border-color: rgba(99, 102, 241, 0.7);
+    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15), 0 0 30px rgba(51, 51, 255, 0.12);
+}
+.footer-nl-input-icon {
+    color: rgba(200, 204, 230, 0.5);
+    font-size: 1.1rem;
+    flex-shrink: 0;
+}
+.footer-nl-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: #fff;
+    font-size: 0.95rem;
+    font-family: "Montserrat", sans-serif;
+    padding: 10px 0;
+}
+.footer-nl-input::placeholder { color: rgba(200, 204, 230, 0.4); }
+
+.footer-nl-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: linear-gradient(135deg, #3333ff 0%, #6366f1 100%);
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    padding: 13px 22px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    font-family: "Montserrat", sans-serif;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: all 0.3s ease;
+    box-shadow: 0 6px 20px rgba(51, 51, 255, 0.4);
+}
+.footer-nl-btn:hover {
+    background: linear-gradient(135deg, #2929e6 0%, #4f52d4 100%);
+    box-shadow: 0 10px 30px rgba(51, 51, 255, 0.55);
+    transform: translateY(-2px);
+}
+.footer-nl-btn:hover i { transform: translateX(4px); }
+.footer-nl-btn i { transition: transform 0.3s ease; }
+
+.footer-nl-note {
+    margin: 12px 0 0;
+    font-size: 0.8rem;
+    color: rgba(200, 204, 230, 0.5);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.footer-nl-note i { color: #6366f1; font-size: 0.9rem; }
+
+/* ------ MAIN FOOTER BODY ------ */
+.footer-body {
+    position: relative;
+    z-index: 2;
+    padding: 64px 0 48px;
+}
+
+/* ------ BRAND COLUMN ------ */
+.footer-brand-col { }
+
+.footer-logo-wrap {
+    margin-bottom: 20px;
+}
+.footer-logo-wrap img,
+.footer-logo-wrap a {
+    display: inline-block;
+}
+
+.footer-brand-desc {
+    font-size: 0.93rem;
+    line-height: 1.7;
+    color: rgba(200, 204, 230, 0.65);
+    margin-bottom: 10px;
+}
+
+.footer-readmore {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: #818cf8 !important;
+    text-decoration: none !important;
+    font-size: 0.88rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    -webkit-text-fill-color: #818cf8 !important;
+    background: none !important;
+    -webkit-background-clip: unset !important;
+    background-clip: unset !important;
+}
+.footer-readmore:hover {
+    color: #a5b4fc !important;
+    -webkit-text-fill-color: #a5b4fc !important;
+    gap: 10px;
+}
+
+/* ------ CONTACT CARDS ------ */
+.footer-contact-cards {
+    margin-top: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.footer-contact-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(99, 102, 241, 0.2);
+    border-radius: 16px;
+    padding: 14px 18px;
+    text-decoration: none !important;
+    transition: all 0.35s ease;
+    backdrop-filter: blur(8px);
+}
+.footer-contact-card:hover {
+    background: rgba(99, 102, 241, 0.12);
+    border-color: rgba(99, 102, 241, 0.45);
+    transform: translateX(6px);
+    box-shadow: 0 8px 24px rgba(51, 51, 255, 0.15);
+}
+
+.footer-contact-icon-wrap {
+    width: 44px; height: 44px;
+    background: linear-gradient(135deg, rgba(51, 51, 255, 0.35) 0%, rgba(99, 102, 241, 0.25) 100%);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 1.3rem;
+    color: #818cf8;
+    transition: all 0.3s ease;
+}
+.footer-contact-card:hover .footer-contact-icon-wrap {
+    background: linear-gradient(135deg, #3333ff, #6366f1);
+    color: #fff;
+    box-shadow: 0 6px 16px rgba(51, 51, 255, 0.4);
+}
+
+.footer-contact-label {
+    display: block;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    font-weight: 700;
+    color: rgba(200, 204, 230, 0.5);
+    margin-bottom: 2px;
+}
+.footer-contact-value {
+    display: block;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #e2e4f0;
+}
+
+/* ------ SOCIAL ICONS ------ */
+.footer-social-wrap {
+    margin-top: 30px;
+}
+.footer-social-label {
+    display: block;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-weight: 700;
+    color: rgba(200, 204, 230, 0.45);
+    margin-bottom: 14px;
+}
+.footer-social-icons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+.footer-social-btn {
+    width: 44px; height: 44px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none !important;
+    font-size: 1.2rem;
+    color: #fff !important;
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.07);
+    position: relative;
+    overflow: hidden;
+}
+.footer-social-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    border-radius: inherit;
+    transition: opacity 0.35s ease;
+}
+.footer-social-btn:hover { transform: translateY(-5px) rotate(5deg); border-color: transparent; }
+.footer-social-btn:hover::before { opacity: 1; }
+
+.footer-social-fb::before  { background: #1877f2; }
+.footer-social-tw::before  { background: #000; }
+.footer-social-ig::before  { background: linear-gradient(135deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); }
+.footer-social-yt::before  { background: #ff0000; }
+.footer-social-li::before  { background: #0077b5; }
+
+.footer-social-btn i { position: relative; z-index: 1; }
+
+/* ------ LINKS COLUMN ------ */
+.footer-links-col,
+.footer-services-col { }
+
+.footer-col-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    letter-spacing: 0.01em;
+}
+
+.footer-col-title-dot {
+    display: inline-block;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #3333ff 0%, #818cf8 100%);
+    box-shadow: 0 0 10px rgba(51, 51, 255, 0.6);
+    flex-shrink: 0;
+    animation: dotPulse 2.5s ease-in-out infinite;
+}
+@keyframes dotPulse {
+    0%, 100% { box-shadow: 0 0 10px rgba(51, 51, 255, 0.6); }
+    50% { box-shadow: 0 0 20px rgba(51, 51, 255, 1); }
+}
+
+.footer-link-list {
+    list-style: none;
+    padding: 0; margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+.footer-link-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: rgba(200, 204, 230, 0.65) !important;
+    text-decoration: none !important;
+    font-size: 0.9rem;
+    font-weight: 500;
+    padding: 7px 10px;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+    -webkit-text-fill-color: rgba(200, 204, 230, 0.65) !important;
+    background: none !important;
+    -webkit-background-clip: unset !important;
+    background-clip: unset !important;
+}
+.footer-link-item:hover {
+    background: rgba(99, 102, 241, 0.1) !important;
+    color: #818cf8 !important;
+    -webkit-text-fill-color: #818cf8 !important;
+    padding-left: 16px;
+}
+.footer-link-arrow {
+    font-size: 1rem;
+    color: #4f6eff;
+    transition: transform 0.3s ease;
+    flex-shrink: 0;
+}
+.footer-link-item:hover .footer-link-arrow { transform: translateX(3px); }
+
+/* ------ SERVICE TILES ------ */
+.footer-service-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+}
+.footer-service-tile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none !important;
+    transition: all 0.35s ease;
+    width: 90px;
+}
+.footer-service-tile:hover { transform: translateY(-8px); }
+
+.footer-service-img-wrap {
+    width: 86px; height: 86px;
+    border-radius: 18px;
+    overflow: hidden;
+    position: relative;
+    border: 2px solid rgba(99, 102, 241, 0.25);
+    background: rgba(99, 102, 241, 0.08);
+    transition: all 0.35s ease;
+}
+.footer-service-tile:hover .footer-service-img-wrap {
+    border-color: rgba(99, 102, 241, 0.65);
+    box-shadow: 0 10px 30px rgba(51, 51, 255, 0.3), 0 0 0 3px rgba(99, 102, 241, 0.15);
+}
+.footer-service-img-wrap img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+}
+.footer-service-tile:hover .footer-service-img-wrap img { transform: scale(1.1); }
+
+.footer-service-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(51, 51, 255, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.35s ease;
+    font-size: 1.3rem;
+    color: #fff;
+    border-radius: inherit;
+}
+.footer-service-tile:hover .footer-service-overlay { opacity: 1; }
+
+.footer-service-name {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: rgba(200, 204, 230, 0.7);
+    text-align: center;
+    line-height: 1.3;
+    max-width: 90px;
+    transition: color 0.3s ease;
+}
+.footer-service-tile:hover .footer-service-name { color: #a5b4fc; }
+
+/* ------ DIVIDER ------ */
+.footer-divider-wrap {
+    position: relative;
+    z-index: 2;
+    padding: 0 0 10px;
+}
+.footer-divider-inner {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+.footer-divider-line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, transparent 0%, rgba(99, 102, 241, 0.35) 50%, transparent 100%);
+}
+.footer-divider-icon {
+    width: 36px; height: 36px;
+    background: rgba(99, 102, 241, 0.15);
+    border: 1px solid rgba(99, 102, 241, 0.3);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    color: #818cf8;
+    flex-shrink: 0;
+    animation: spinIcon 20s linear infinite;
+}
+@keyframes spinIcon {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* ------ BOTTOM BAR ------ */
+.footer-bottom-bar {
+    position: relative;
+    z-index: 2;
+    padding: 24px 0 28px;
+    border-top: 1px solid rgba(99, 102, 241, 0.15);
+}
+
+.footer-copyright {
+    margin: 0;
+    font-size: 0.88rem;
+    color: rgba(200, 204, 230, 0.5);
+    font-weight: 500;
+}
+.footer-copyright-link {
+    color: #818cf8 !important;
+    text-decoration: none !important;
+    font-weight: 700;
+    transition: color 0.3s ease;
+    -webkit-text-fill-color: #818cf8 !important;
+}
+.footer-copyright-link:hover {
+    color: #a5b4fc !important;
+    -webkit-text-fill-color: #a5b4fc !important;
+    text-decoration: underline !important;
+}
+
+.footer-bottom-links {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 6px;
+    justify-content: flex-end;
+}
+@media (max-width: 767px) {
+    .footer-bottom-links { justify-content: center; }
+}
+.footer-bottom-link {
+    font-size: 0.82rem;
+    color: rgba(200, 204, 230, 0.5) !important;
+    text-decoration: none !important;
+    font-weight: 500;
+    padding: 4px 8px;
+    border-radius: 6px;
+    transition: all 0.25s ease;
+    white-space: nowrap;
+    -webkit-text-fill-color: rgba(200, 204, 230, 0.5) !important;
+}
+.footer-bottom-link:hover {
+    color: #818cf8 !important;
+    -webkit-text-fill-color: #818cf8 !important;
+    background: rgba(99, 102, 241, 0.1);
+}
+
+/* ------ RESPONSIVE ------ */
+@media (max-width: 991px) {
+    .footer-newsletter-card { padding: 36px 32px; }
+    .footer-body { padding: 48px 0 36px; }
+}
+@media (max-width: 767px) {
+    .footer-nl-input-group { flex-wrap: wrap; gap: 8px; padding: 10px 14px; }
+    .footer-nl-btn { width: 100%; justify-content: center; border-radius: 10px; }
+    .footer-nl-input { width: 100%; }
+    .footer-service-grid { justify-content: flex-start; }
+    .footer-body { padding: 40px 0 32px; }
+    .footer-newsletter-card { padding: 28px 22px; }
+}
+@media (max-width: 480px) {
+    .footer-service-tile { width: 80px; }
+    .footer-service-img-wrap { width: 75px; height: 75px; }
+}
 </style>
 
 @include('partials._scripts')
@@ -705,7 +971,7 @@
         var readmoreBtn = document.querySelector('.readmore-btn');
 
         if (description && description.offsetHeight < description.scrollHeight) {
-            readmoreBtn.style.display = 'block';
+            readmoreBtn.style.display = 'inline-flex';
         } else if (readmoreBtn) {
             readmoreBtn.style.display = 'none';
         }

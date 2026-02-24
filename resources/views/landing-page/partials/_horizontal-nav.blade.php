@@ -55,6 +55,7 @@
                     <a class="nav-link {{ request()->routeIs('booking.*') ? 'active' : '' }}" href="{{ route('booking.list') }}">{{__('landingpage.bookings')}}</a>
                 </li>
             @endif
+            {{-- Pages dropdown – commented out per request
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle {{ request()->routeIs('user.page') ? 'active' : '' }}" href="#" id="navbarPagesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Pages</a>
                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarPagesDropdown">
@@ -68,6 +69,7 @@
                     <li><a class="dropdown-item" href="{{ route('user.refund_policy') }}">{{__('landingpage.refund_policy')}}</a></li>
                 </ul>
             </li>
+            --}}
             {{-- @if(auth()->check() && auth()->user()->user_type == 'user' && optional($serviceconfig)->post_services == 1)
             <li class="nav-item">
                 <a class="nav-link {{ request()->routeIs('post.job.*') ? 'active' : '' }}" href="{{ route('post.job.list') }}">{{__('landingpage.job_request')}}</a>
