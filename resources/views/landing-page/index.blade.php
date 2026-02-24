@@ -1769,7 +1769,24 @@
                         <p class="mb-0 text-white opacity-90">{{ __('landingpage.for_pros_lead') }}</p>
                     </div>
                     <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
-                        <a href="{{ route('partner.register') }}" class="btn btn-primary btn-lg">{{ __('landingpage.register_as_provider') }}</a>
+                        <a href="{{ route('auth.register') }}" class="btn btn-primary btn-lg">{{ __('landingpage.register_as_provider') }}</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- For customers -->
+    <div class="section-padding pt-0">
+        <div class="container">
+            <div class="landing-for-customer-banner">
+                <div class="row align-items-center">
+                    <div class="col-lg-8">
+                        <h2 class="h4 mb-2 text-white">{{ __('landingpage.for_customer_title') }}</h2>
+                        <p class="mb-0 text-white opacity-90">{{ __('landingpage.for_customer_lead') }}</p>
+                    </div>
+                    <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
+                        <a href="{{ route('auth.register') }}" class="btn btn-light btn-lg">{{ __('landingpage.register_as_customer') }}</a>
                     </div>
                 </div>
             </div>

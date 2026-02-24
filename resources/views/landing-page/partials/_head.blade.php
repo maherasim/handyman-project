@@ -690,6 +690,8 @@
         line-height: 1.5;
     }
     .landing-for-pros-banner { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); color: #fff; border-radius: 16px; padding: 2.5rem; }
+    .landing-for-customer-banner { background: linear-gradient(135deg, #0f3460 0%, #16213e 100%); color: #fff; border-radius: 16px; padding: 2.5rem; border: 1px solid rgba(255,255,255,0.08); }
+    .landing-for-customer-banner .btn-light { color: #0f3460; font-weight: 600; }
     .landing-first-booking-banner { background: linear-gradient(135deg, #3333ff 0%, #2929e6 100%); color: #fff; border-radius: 12px; padding: 1rem 1.5rem; }
 
     /* Category pills – larger, readable */
