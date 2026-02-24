@@ -25,13 +25,13 @@
                 <div class="row ">
 
                     <div class="form-group col-md-6">
-                        {{ html()->label(__('messages.first_name') . ' <span class="text-danger">*</span>')->class('form-control-label')->for('first_name') }}
+                        {{ html()->label(__('messages.first_name') . ' <span class="text-danger">*</span>')->class('form-control-label text-danger')->for('first_name') }}
                         {{ html()->text('first_name', $user_data->first_name)->placeholder(__('messages.first_name'))->class('form-control')->required() }}
                         <small class="help-block with-errors text-danger"></small>
                     </div>
 
                     <div class="form-group col-md-6">
-                        {{ html()->label(__('messages.last_name') . ' <span class="text-danger">*</span>')->class('form-control-label')->for('last_name') }}
+                        {{ html()->label(__('messages.last_name') . ' <span class="text-danger">*</span>')->class('form-control-label text-danger')->for('last_name') }}
                         {{ html()->text('last_name', $user_data->last_name)->placeholder(__('messages.last_name'))->class('form-control')->required() }}
                         <small class="help-block with-errors text-danger"></small>
                     </div>
@@ -176,7 +176,7 @@
 
 
                     <div class="form-group col-md-6">
-                        {{ html()->label(__('messages.username') . ' <span class="text-danger">*</span>')->class('form-control-label')->for('username') }}
+                        {{ html()->label(__('messages.username') . ' <span class="text-danger">*</span>')->class('form-control-label text-danger')->for('username') }}
                         {{ html()->text('username', $user_data->username)->placeholder(__('messages.username'))->class('form-control')->required() }}
                         <small class="help-block with-errors text-danger"></small>
                     </div>
@@ -222,13 +222,13 @@
 
 
                     <div class="form-group col-md-6">
-                        {{ html()->label(__('messages.email') . ' <span class="text-danger">*</span>', 'email')->class('form-control-label') }}
+                        {{ html()->label(__('messages.email') . ' <span class="text-danger">*</span>', 'email')->class('form-control-label text-danger') }}
                         {{ html()->email('email', $user_data->email)->placeholder(__('messages.email'))->class('form-control')->required()->attribute('pattern', '[^@]+@[^@]+\.[a-zA-Z]{2,}')->attribute('title', 'Please enter a valid email address') }}
                         <small class="help-block with-errors text-danger"></small>
                     </div>
 
                     <div class="form-group col-md-6">
-                        {{ html()->label(__('messages.contact_number') . ' <span class="text-danger">*</span>', 'contact_number')->class('form-control-label') }}
+                        {{ html()->label(__('messages.contact_number') . ' <span class="text-danger">*</span>', 'contact_number')->class('form-control-label text-danger') }}
                         {{ html()->text('contact_number', $user_data->contact_number)->placeholder(__('messages.contact_number'))->class('form-control contact_number')->required() }}
                         <small class="help-block with-errors text-danger " id="contact_number_err"></small>
                     </div>
@@ -262,7 +262,7 @@
                     @endif
 
                     <div class="form-group col-md-6">
-                        {{ html()->label(__('messages.status') . ' <span class="text-danger">*</span>', 'status')->class('form-control-label') }}
+                        {{ html()->label(__('messages.status') . ' <span class="text-danger">*</span>', 'status')->class('form-control-label text-danger') }}
                         {{ html()->select('status', ['1' => __('messages.active'), '0' => __('messages.inactive')], $user_data->status)->class('form-control select2js')->required() }}
                     </div>
 

@@ -26,14 +26,21 @@ class UserRequest extends FormRequest
     public function rules()
     {
         $id = request()->id;
-
-        return [
+        $rules = [
                 'username'          => 'required|max:255|unique:users,username,'.$id,
                 'email'             => 'required|email|max:255|unique:users,email,'.$id,
                 'contact_number'    => 'nullable', //unique:users,contact_number,'.$id,
                 'profile_image'     => 'mimetypes:image/jpeg,image/png,image/jpg,image/gif',
                 'handyman_commission' => 'nullable|numeric|min:1|max:85',
         ];
+
+        if (request()->user_type === 'handyman') {
+            $rules['handyman_commission'] = 'required|numeric|min:1|max:85';
+            $rules['languages'] = 'required|array|min:1';
+            $rules['languages.*'] = 'string';
+        }
+
+        return $rules;
     }
 
     public function messages()

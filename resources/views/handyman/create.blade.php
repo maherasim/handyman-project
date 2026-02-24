@@ -65,7 +65,7 @@
                                 <small class="help-block with-errors text-danger"></small>
                             </div>
                             <div class="form-group col-md-3">
-                                {{ html()->label(__('messages.select_name', ['select' => __('Language')]), 'languages')->class('form-control-label') }}
+                                {{ html()->label(__('messages.select_name', ['select' => __('Language')]) . ' <span class="text-danger">*</span>', 'languages')->class('form-control-label') }}
                                 <br />
                                 {{ html()->select(
                                         'languages[]', // Use [] to allow multiple selections
@@ -78,7 +78,8 @@
                                             'german' => 'German',
                                         ], // Static language options
                                         old('languages', $handymandata->languages ?? []), // Retain old value or user data
-                                    )->class('form-group select2js')->multiple()->attribute('data-placeholder', __('select_name', ['select' => __('messages.language')])) }}
+                                    )->class('form-group select2js')->multiple()->attribute('data-placeholder', __('select_name', ['select' => __('messages.language')]))->attribute('required', true)->id('languages_select') }}
+                                <small class="help-block with-errors text-danger" id="languages_error"></small>
                             </div>
                             <div class="form-group col-md-3">
                                 {{ html()->label(__('Education') . ' <span class="text-danger">*</span>')->class('form-control-label')->for('education') }}
@@ -143,11 +144,12 @@
                             </div> --}}
 
                            <div class="form-group col-md-3">
-                                {{ html()->label(__('Handyman Commission (%)'), 'handyman_commission')->class('form-control-label') }}
+                                {{ html()->label(__('Handyman Commission (%)') . ' <span class="text-danger">*</span>', 'handyman_commission')->class('form-control-label') }}
                                 {{ html()->number('handyman_commission', $handymandata->handyman_commission ?? null)
                                     ->attributes(['min' => 1, 'max' => 85, 'step' => 'any', 'placeholder' => 'e.g. 34.5'])
                                     ->class('form-control')
-                                    ->id('handyman_commission') }}
+                                    ->id('handyman_commission')
+                                    ->required() }}
                                 <small class="text-muted">Enter 1 to 85. Decimals allowed (e.g., 34.5).</small>
                                 <small class="help-block text-danger" id="commission_error"></small>
                             </div>
@@ -421,6 +423,16 @@
         errorField.text('');
     }
 });
+
+            $('#handyman').on('submit', function () {
+                var lang = $('#languages_select').val();
+                var err = $('#languages_error');
+                if (!lang || (Array.isArray(lang) && lang.length === 0)) {
+                    err.text('Please select at least one language.');
+                    return false;
+                }
+                err.text('');
+            });
 
         </script>
     @endsection

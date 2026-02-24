@@ -4,6 +4,12 @@
       .login-content .form-group { margin-bottom: 1rem; }
       .login-content select.form-control { width: 100%; min-height: 38px; display: block; }
       .login-content #commission_section .form-group { margin-bottom: 1rem; }
+      /* Required field indicators in red */
+      .login-content label .text-danger,
+      .login-content .form-group label span.text-danger {
+         color: #dc3545 !important;
+         font-weight: 600;
+      }
    </style>
    <section class="login-content">
       <div class="container h-100">
@@ -92,12 +98,14 @@
 
                            <!-- Commission Section (native selects only) -->
                            <div class="col-lg-12" id="commission_section">
+                              {{-- Provider commission / provider type – commented out per request
                               <div class="form-group" id="providertype_group">
                                  <label for="providertype" class="text-secondary">{{ __('messages.user_commission') }} <span class="text-danger" id="commission_required">*</span></label>
                                  <select name="providertype_id" class="form-control mb-3" id="providertype">
                                     <option value="">{{ __('messages.select_provider_type') }}</option>
                                  </select>
                               </div>
+                              --}}
                               <div class="form-group d-none" id="handymantype_group">
                                  <label for="handymantype" class="text-secondary">{{ __('messages.user_commission') }} <span class="text-danger">*</span></label>
                                  <select name="handymantype_id" class="form-control mb-3" id="handymantype">
@@ -216,17 +224,18 @@
         } else {
             $('#provider_section').toggle(selectedUserType === 'handyman');
             $('#commission_section').show();
-            $('#providertype_group').toggle(selectedUserType === 'provider');
+            // providertype_group commented out – do not show or require for provider
+            $('#providertype_group').hide();
             $('#handymantype_group').toggle(selectedUserType === 'handyman');
             if (selectedUserType === 'provider') {
-                $('#providertype').prop('required', true);
+                $('#providertype').prop('required', false);
                 $('#handymantype').prop('required', false);
             } else if (selectedUserType === 'handyman') {
                 $('#providertype').prop('required', false);
                 $('#handymantype').prop('required', true);
                 fetchProviders();
             }
-            fetchTypes(selectedUserType);
+            if (selectedUserType !== 'provider') fetchTypes(selectedUserType);
             $('#providertype').val('');
             $('#handymantype').val('');
             $('#providerdata').val('');
