@@ -1156,18 +1156,26 @@
 
                         <!-- Provider Information Cards -->
                         <div class="provider-info-section mt-4">
-                            <!-- Available Location Card -->
-                            @if(!empty($serviceData['service_detail']['service_address_mapping']))
+                        <!-- Location (City & Country) Card -->
+                            @php
+                                $serviceCity = $serviceData['service_detail']['city_name'] ?? null;
+                                $serviceCountry = $serviceData['service_detail']['country_name'] ?? null;
+                            @endphp
+                            @if($serviceCity || $serviceCountry)
                             <div class="info-card mb-3">
                                 <div class="info-card-header" style="background: #3333ff !important; color: #fff !important; display: flex !important; justify-content: center !important; align-items: center !important; padding: 6px 15px !important; min-height: 40px !important;">
                                     <i class="ri-map-pin-line me-2" style="font-size: 16px;"></i>
                                     <h6 class="mb-0" style="color: #fff !important; font-size: 13px; font-weight: 700;">{{ __('landingpage.available_location') }}</h6>
                                 </div>
                                 <div class="info-card-body">
-                                    <div class="d-flex flex-wrap gap-2">
-                            @foreach ($serviceData['service_detail']['service_address_mapping'] as $service_address)
-                                            <span class="location-badge">{{ $service_address['provider_address_mapping']['address'] }}</span>
-                            @endforeach
+                                    <div class="d-flex flex-wrap gap-2 align-items-center">
+                                        @if($serviceCity && $serviceCountry)
+                                            <span class="location-badge">{{ $serviceCity }}, {{ $serviceCountry }}</span>
+                                        @elseif($serviceCity)
+                                            <span class="location-badge">{{ $serviceCity }}</span>
+                                        @else
+                                            <span class="location-badge">{{ $serviceCountry }}</span>
+                                        @endif
                                     </div>
                                 </div>
                             </div>
