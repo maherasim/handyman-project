@@ -33,9 +33,11 @@
                                     </li>
 
                                     @role('provider')
+                                    {{-- Time Slot – commented out per request
                                     <li class="nav-item">
                                         <a href="javascript:void(0)" data-href="{{ route('layout_page') }}?page=time_slot" data-target=".paste_here" class="nav-link {{$page=='time_slot'?'active':''}}" data-toggle="tabajax" rel="tooltip"> {{ __('messages.slot') }} </a>
                                     </li>
+                                    --}}
                                     @endrole
                                     @else
                                     @hasanyrole('admin|demo_admin')
