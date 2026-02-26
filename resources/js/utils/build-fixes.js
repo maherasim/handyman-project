@@ -22,7 +22,7 @@ export class BuildFixes {
         this.fixDropdownConflicts();
         this.fixZIndexConflicts();
         this.fixCacheIssues();
-        
+
         this.initialized = true;
         console.log('Build fixes initialized successfully');
     }
@@ -55,21 +55,28 @@ export class BuildFixes {
 
     /**
      * Fix Select2 initialization conflicts
+     * NOTE: Skips elements with data-ajax--url — those are Ajax-powered selects
+     * initialized by page-level scripts (e.g. category, country, provider dropdowns).
      */
     fixSelect2Conflicts() {
-        if (window.$ && !window.select2GlobalInitialized) {
+        if (window.$) {
             // Initialize Select2 for all relevant elements
             const selectors = ['.select2', '.select2js', 'select[class*="select2"]'];
-            
+
             selectors.forEach(selector => {
                 document.querySelectorAll(selector).forEach(element => {
                     const $element = $(element);
+                    // Skip Ajax-powered selects — they handle their own initialization
+                    if ($element.attr('data-ajax--url') || $element.data('ajax--url')) {
+                        return;
+                    }
                     if (!$element.hasClass('select2-hidden-accessible')) {
                         try {
                             $element.select2({
                                 width: '100%',
                                 dropdownParent: $element.parent(),
-                                allowClear: true
+                                allowClear: true,
+                                placeholder: $element.attr('data-placeholder') || 'Select an option...'
                             });
                         } catch (error) {
                             console.warn('Select2 initialization failed:', error);
@@ -77,8 +84,6 @@ export class BuildFixes {
                     }
                 });
             });
-            
-            window.select2GlobalInitialized = true;
         }
     }
 
@@ -95,7 +100,7 @@ export class BuildFixes {
 
         // Fix Select2 dropdown z-index
         if (window.$) {
-            $(document).on('select2:open', function(e) {
+            $(document).on('select2:open', function (e) {
                 const dropdown = $('.select2-dropdown');
                 dropdown.css('z-index', '9999');
             });

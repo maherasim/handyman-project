@@ -11,6 +11,14 @@ export function initializeSelect2(element, options = {}) {
 
     const $element = $(element);
 
+    // IMPORTANT: Skip elements that use data-ajax--url.
+    // These are Ajax-powered selects (e.g. category, country, provider dropdowns)
+    // that MUST be initialized by their page-level scripts with proper Ajax config.
+    // If we initialize them here with generic options, Ajax loading breaks silently.
+    if ($element.attr('data-ajax--url') || $element.data('ajax--url') || $element.data('ajaxUrl')) {
+        return null;
+    }
+
     // Check if already initialized
     if ($element.hasClass('select2-hidden-accessible')) {
         return $element;
@@ -21,7 +29,7 @@ export function initializeSelect2(element, options = {}) {
             width: '100%',
             dropdownParent: $element.parent(),
             allowClear: true,
-            placeholder: $element.attr('placeholder') || 'Select an option...',
+            placeholder: $element.attr('placeholder') || $element.attr('data-placeholder') || 'Select an option...',
             ...options
         };
 
@@ -54,11 +62,8 @@ export function reinitializeSelect2(element, options = {}) {
 }
 
 // Global initialization for elements with select2 class
+// NOTE: Elements with data-ajax--url are skipped — they are initialized by page-level scripts.
 export function initializeAllSelect2() {
-    if (window.select2GlobalInitialized) {
-        return;
-    }
-
     // Initialize elements with .select2 class
     document.querySelectorAll('.select2').forEach(element => {
         initializeSelect2(element);
@@ -68,8 +73,6 @@ export function initializeAllSelect2() {
     document.querySelectorAll('.select2js').forEach(element => {
         initializeSelect2(element);
     });
-
-    window.select2GlobalInitialized = true;
 }
 
 // Auto-initialize on DOM ready
