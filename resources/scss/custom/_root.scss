@@ -9,15 +9,15 @@ h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
 }
 
 .section-padding {
-    padding: 8.125rem 1rem 8.125rem 1rem;
+    padding: 3rem 1rem 3rem 1rem;
 }
 
 .section-padding-top {
-    padding: 8.125rem 1rem 0 1rem
+    padding: 3rem 1rem 0 1rem
 }
 
 .section-padding-bottom {
-    padding: 0 1rem 8.125rem 1rem
+    padding: 0 1rem 3rem 1rem
 }
 
 .blog-inner{
@@ -25,16 +25,16 @@ h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
 }
 
 .padding-top-bottom-90{
-    padding-top: 5.625rem;
-    padding-bottom: 5.625rem;
+    padding-top: 3rem;
+    padding-bottom: 3rem;
 }
 
 .padding-top-bottom-80{
-    padding: 5rem 0;
+    padding: 2.75rem 0;
 }
 
 .padding-top-bottom-70{
-    padding: 4.375rem 0;
+    padding: 2.5rem 0;
 }
 
 .padding-50{
@@ -166,15 +166,15 @@ h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
     }
 
     .section-padding {
-        padding: 4.375rem 1rem;
+        padding: 2.5rem 1rem;
     }
 
     .section-padding-top {
-        padding: 4.375rem 1rem 0 1rem
+        padding: 2.5rem 1rem 0 1rem
     }
 
     .section-padding-bottom {
-        padding: 0 1rem 4.375rem 1rem
+        padding: 0 1rem 2.5rem 1rem
     }
 }
 
@@ -189,15 +189,15 @@ h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
 
 @media (max-width: 767px){
     .section-padding,.padding-top-bottom-90,.padding-top-bottom-80{
-        padding: 3.125rem 0;
+        padding: 2rem 0;
     }
 
     .section-padding-top {
-        padding: 3.125rem 0 0
+        padding: 2rem 0 0
     }
 
     .section-padding-bottom {
-        padding: 0 0 3.125rem
+        padding: 0 0 2rem
     }
 
     .container-fluid{

@@ -156,201 +156,6 @@
         </div>
     @endif
 
-    <!-- Two paths: Book a service / Post a job -->
-    <div class="section-padding bg-light landing-two-path-wrap landing-animate-in">
-        <div class="container">
-            <p class="landing-two-path-eyebrow">{{ __('landingpage.two_path_eyebrow') }}</p>
-            @if (isset($categoryrequest) && $categoryrequest->count() > 0)
-                <p class="landing-two-path-browse-label">{{ __('landingpage.popular_services_browse') }}</p>
-                <div class="landing-category-pills d-flex flex-wrap justify-content-center gap-2 mb-4">
-                    @foreach ($categoryrequest->take(6) as $cat)
-                        <a href="{{ route('category.detail', $cat->id) }}" class="landing-pill">{{ $cat->name }}</a>
-                    @endforeach
-                </div>
-            @endif
-            <div class="row g-4">
-                <div class="col-md-6">
-                    <a href="{{ route('service.list') }}" class="text-decoration-none d-block h-100">
-                        <div class="landing-two-path-card card-popular">
-                            <div class="d-flex align-items-center gap-3 mb-4 flex-wrap">
-                                <div class="landing-two-path-icon-wrap">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-primary"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
-                                </div>
-                                <span class="landing-two-path-badge">{{ __('landingpage.most_popular') }}</span>
-                                @if (($bookingsLast24h ?? 0) > 0)
-                                    <span class="landing-two-path-live ms-auto">{{ __('landingpage.booked_last_24h', ['count' => $bookingsLast24h]) }}</span>
-                                @endif
-                            </div>
-                            <h3 class="landing-two-path-card-title">{{ __('landingpage.book_a_service') }}</h3>
-                            <p class="landing-two-path-desc">{{ __('landingpage.book_a_service_lead') }}</p>
-                            <span class="btn btn-primary landing-two-path-btn">{{ __('landingpage.browse_services') }}</span>
-                        </div>
-                    </a>
-                </div>
-                <div class="col-md-6">
-                    <a href="{{ route('post.job.list') }}" class="text-decoration-none d-block h-100">
-                        <div class="landing-two-path-card">
-                            <div class="d-flex align-items-center gap-3 mb-4">
-                                <div class="landing-two-path-icon-wrap">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-primary"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
-                                </div>
-                            </div>
-                            <h3 class="landing-two-path-card-title">{{ __('landingpage.post_a_job') }}</h3>
-                            <p class="landing-two-path-desc">{{ __('landingpage.post_a_job_lead') }}</p>
-                            <span class="btn btn-primary landing-two-path-btn">{{ __('landingpage.post_a_job') }}</span>
-                        </div>
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- How it works -->
-    <div class="section-padding bg-white landing-how-wrap landing-animate-in">
-        <div class="container position-relative">
-            <h2 class="landing-how-title">{{ __('landingpage.how_it_works_title') }}</h2>
-            <p class="landing-how-lead">{{ __('landingpage.how_it_works_lead') }}</p>
-            <div class="landing-how-connector d-none d-lg-block" aria-hidden="true"></div>
-            <div class="row g-0">
-                <div class="col-6 col-lg-3">
-                    <div class="landing-how-step">
-                        <div class="step-num">1</div>
-                        <h4 class="landing-how-step-title">{{ __('landingpage.how_step_1') }}</h4>
-                        <p class="landing-how-step-desc">{{ __('landingpage.how_step_1_desc') }}</p>
-                    </div>
-                </div>
-                <div class="col-6 col-lg-3">
-                    <div class="landing-how-step">
-                        <div class="step-num">2</div>
-                        <h4 class="landing-how-step-title">{{ __('landingpage.how_step_2') }}</h4>
-                        <p class="landing-how-step-desc">{{ __('landingpage.how_step_2_desc') }}</p>
-                    </div>
-                </div>
-                <div class="col-6 col-lg-3">
-                    <div class="landing-how-step">
-                        <div class="step-num">3</div>
-                        <h4 class="landing-how-step-title">{{ __('landingpage.how_step_3') }}</h4>
-                        <p class="landing-how-step-desc">{{ __('landingpage.how_step_3_desc') }}</p>
-                    </div>
-                </div>
-                <div class="col-6 col-lg-3">
-                    <div class="landing-how-step">
-                        <div class="step-num">4</div>
-                        <h4 class="landing-how-step-title">{{ __('landingpage.how_step_4') }}</h4>
-                        <p class="landing-how-step-desc">{{ __('landingpage.how_step_4_desc') }}</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Why us -->
-    <div class="section-padding bg-light landing-why-wrap landing-animate-in">
-        <div class="container">
-            <h2 class="landing-why-title">{{ __('landingpage.why_us_title') }}</h2>
-            <p class="landing-why-lead">{{ __('landingpage.why_us_lead') }}</p>
-            <div class="row g-4">
-                <div class="col-md-6 col-lg-3">
-                    <div class="landing-why-item">
-                        <div class="landing-why-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-primary"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
-                        <h4 class="landing-why-item-title">{{ __('landingpage.why_vetted') }}</h4>
-                        <p class="landing-why-item-desc">{{ __('landingpage.why_vetted_desc') }}</p>
-                    </div>
-                </div>
-                <div class="col-md-6 col-lg-3">
-                    <div class="landing-why-item">
-                        <div class="landing-why-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-primary"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div>
-                        <h4 class="landing-why-item-title">{{ __('landingpage.why_pricing') }}</h4>
-                        <p class="landing-why-item-desc">{{ __('landingpage.why_pricing_desc') }}</p>
-                    </div>
-                </div>
-                <div class="col-md-6 col-lg-3">
-                    <div class="landing-why-item">
-                        <div class="landing-why-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-primary"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg></div>
-                        <h4 class="landing-why-item-title">{{ __('landingpage.why_secure') }}</h4>
-                        <p class="landing-why-item-desc">{{ __('landingpage.why_secure_desc') }}</p>
-                    </div>
-                </div>
-                <div class="col-md-6 col-lg-3">
-                    <div class="landing-why-item">
-                        <div class="landing-why-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-primary"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg></div>
-                        <h4 class="landing-why-item-title">{{ __('landingpage.why_rebook') }}</h4>
-                        <p class="landing-why-item-desc">{{ __('landingpage.why_rebook_desc') }}</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- What customers say (testimonials) -->
-    @if (isset($landingTestimonials) && count($landingTestimonials) > 0)
-    <div class="section-padding bg-white landing-testimonials-wrap landing-animate-in">
-        <div class="container">
-            <h2 class="landing-testimonials-title">{{ __('landingpage.testimonials_title') }}</h2>
-            <p class="landing-testimonials-lead">{{ __('landingpage.testimonials_lead') }}</p>
-            <div class="row g-4">
-                @foreach ($landingTestimonials as $t)
-                <div class="col-md-6 col-lg-3">
-                    <div class="landing-testimonial-card">
-                        <div class="landing-testimonial-stars">
-                            @for ($i = 1; $i <= 5; $i++)
-                                <span class="landing-testimonial-star {{ $i <= ($t['rating'] ?? 0) ? 'filled' : '' }}">★</span>
-                            @endfor
-                        </div>
-                        <p class="landing-testimonial-quote">"{{ $t['review'] }}"</p>
-                        <div class="landing-testimonial-meta">
-                            <span class="landing-testimonial-name">{{ $t['customer_name'] }}</span>
-                            @if (!empty($t['service_name']))
-                                <span class="landing-testimonial-service">{{ $t['service_name'] }}</span>
-                            @endif
-                        </div>
-                    </div>
-                </div>
-                @endforeach
-            </div>
-        </div>
-    </div>
-    @endif
-
-    <!-- Recently booked + Areas we cover -->
-    @if (count($recentBookings ?? []) > 0 || count($areasWeCover ?? []) > 0)
-    <div class="section-padding bg-white landing-recent-areas-wrap landing-animate-in">
-        <div class="container">
-            <div class="row g-4 align-items-stretch">
-                @if (count($recentBookings ?? []) > 0)
-                    <div class="col-lg-6">
-                        <h3 class="landing-section-head">{{ __('landingpage.recently_booked_title') }}</h3>
-                        <p class="landing-section-lead mb-3">{{ __('landingpage.recently_booked_lead') }}</p>
-                        <div class="landing-recent-card h-100">
-                            @foreach ($recentBookings as $rb)
-                                <div class="landing-recent-job-item">
-                                    <span class="landing-recent-dot" aria-hidden="true"></span>
-                                    <span class="landing-recent-service-name">{{ $rb['service_name'] }}</span>
-                                    <span class="landing-recent-time">{{ $rb['created_at']->diffForHumans() }}</span>
-                                </div>
-                            @endforeach
-                        </div>
-                    </div>
-                @endif
-                @if (count($areasWeCover ?? []) > 0)
-                    <div class="col-lg-6">
-                        <h3 class="landing-section-head">{{ __('landingpage.areas_we_cover_title') }}</h3>
-                        <p class="landing-section-lead mb-3">{{ __('landingpage.areas_we_cover_lead') }}</p>
-                        <div class="landing-areas-card">
-                            <p class="landing-areas-sub">{{ __('landingpage.areas_find_near_you') }}</p>
-                            <div class="landing-areas-list">
-                                @foreach ($areasWeCover as $area)
-                                    <span class="landing-areas-tag">{{ $area }}</span>
-                                @endforeach
-                            </div>
-                        </div>
-                    </div>
-                @endif
-            </div>
-        </div>
-    </div>
-    @endif
-
     <!-- Categories -->
     @if ($sectionData && isset($sectionData['section_2']) && $sectionData['section_2']['section_2'] == 1)
         <div class="section-padding">
@@ -1377,7 +1182,7 @@
 
     <!-- Provider Contact Section - Modern Design -->
     @if ($sectionData && isset($sectionData['section_5']) && $sectionData['section_5']['section_5'] == 1)
-    <div class="provider-contact-section py-5" style="background: linear-gradient(135deg, rgba(255, 0, 0, 0.05) 0%, rgba(95, 96, 185, 0.05) 100%) !important; padding: 80px 0 !important;">
+    <div class="provider-contact-section py-5" style="background: linear-gradient(135deg, rgba(255, 0, 0, 0.05) 0%, rgba(95, 96, 185, 0.05) 100%) !important; padding: 3rem 0 !important;">
         <div class="container">
             <div class="row justify-content-center">
                 <div class="col-lg-10 col-xl-8">
@@ -1421,7 +1226,7 @@
         /* Provider Contact Section - High Specificity with !important */
         body .provider-contact-section {
             background: linear-gradient(135deg, rgba(255, 0, 0, 0.05) 0%, rgba(95, 96, 185, 0.05) 100%) !important;
-            padding: 80px 0 !important;
+            padding: 3rem 0 !important;
         }
         
         body .provider-contact-card {
@@ -1513,7 +1318,7 @@
         
         @media (max-width: 768px) {
             body .provider-contact-section {
-                padding: 60px 0 !important;
+                padding: 2rem 0 !important;
             }
             
             body .provider-contact-card {
@@ -1542,6 +1347,201 @@
         }
     </style>
 @endif
+    <!-- Two paths: Book a service / Post a job -->
+    <div class="section-padding bg-light landing-two-path-wrap landing-animate-in">
+        <div class="container">
+            <p class="landing-two-path-eyebrow">{{ __('landingpage.two_path_eyebrow') }}</p>
+            @if (isset($categoryrequest) && $categoryrequest->count() > 0)
+                <p class="landing-two-path-browse-label">{{ __('landingpage.popular_services_browse') }}</p>
+                <div class="landing-category-pills d-flex flex-wrap justify-content-center gap-2 mb-4">
+                    @foreach ($categoryrequest->take(6) as $cat)
+                        <a href="{{ route('category.detail', $cat->id) }}" class="landing-pill">{{ $cat->name }}</a>
+                    @endforeach
+                </div>
+            @endif
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <a href="{{ route('service.list') }}" class="text-decoration-none d-block h-100">
+                        <div class="landing-two-path-card card-popular">
+                            <div class="d-flex align-items-center gap-3 mb-4 flex-wrap">
+                                <div class="landing-two-path-icon-wrap">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-primary"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+                                </div>
+                                <span class="landing-two-path-badge">{{ __('landingpage.most_popular') }}</span>
+                                @if (($bookingsLast24h ?? 0) > 0)
+                                    <span class="landing-two-path-live ms-auto">{{ __('landingpage.booked_last_24h', ['count' => $bookingsLast24h]) }}</span>
+                                @endif
+                            </div>
+                            <h3 class="landing-two-path-card-title">{{ __('landingpage.book_a_service') }}</h3>
+                            <p class="landing-two-path-desc">{{ __('landingpage.book_a_service_lead') }}</p>
+                            <span class="btn btn-primary landing-two-path-btn">{{ __('landingpage.browse_services') }}</span>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-md-6">
+                    <a href="{{ route('post.job.list') }}" class="text-decoration-none d-block h-100">
+                        <div class="landing-two-path-card">
+                            <div class="d-flex align-items-center gap-3 mb-4">
+                                <div class="landing-two-path-icon-wrap">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-primary"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+                                </div>
+                            </div>
+                            <h3 class="landing-two-path-card-title">{{ __('landingpage.post_a_job') }}</h3>
+                            <p class="landing-two-path-desc">{{ __('landingpage.post_a_job_lead') }}</p>
+                            <span class="btn btn-primary landing-two-path-btn">{{ __('landingpage.post_a_job') }}</span>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- How it works -->
+    <div class="section-padding bg-white landing-how-wrap landing-animate-in">
+        <div class="container position-relative">
+            <h2 class="landing-how-title">{{ __('landingpage.how_it_works_title') }}</h2>
+            <p class="landing-how-lead">{{ __('landingpage.how_it_works_lead') }}</p>
+            <div class="landing-how-connector d-none d-lg-block" aria-hidden="true"></div>
+            <div class="row g-0">
+                <div class="col-6 col-lg-3">
+                    <div class="landing-how-step">
+                        <div class="step-num">1</div>
+                        <h4 class="landing-how-step-title">{{ __('landingpage.how_step_1') }}</h4>
+                        <p class="landing-how-step-desc">{{ __('landingpage.how_step_1_desc') }}</p>
+                    </div>
+                </div>
+                <div class="col-6 col-lg-3">
+                    <div class="landing-how-step">
+                        <div class="step-num">2</div>
+                        <h4 class="landing-how-step-title">{{ __('landingpage.how_step_2') }}</h4>
+                        <p class="landing-how-step-desc">{{ __('landingpage.how_step_2_desc') }}</p>
+                    </div>
+                </div>
+                <div class="col-6 col-lg-3">
+                    <div class="landing-how-step">
+                        <div class="step-num">3</div>
+                        <h4 class="landing-how-step-title">{{ __('landingpage.how_step_3') }}</h4>
+                        <p class="landing-how-step-desc">{{ __('landingpage.how_step_3_desc') }}</p>
+                    </div>
+                </div>
+                <div class="col-6 col-lg-3">
+                    <div class="landing-how-step">
+                        <div class="step-num">4</div>
+                        <h4 class="landing-how-step-title">{{ __('landingpage.how_step_4') }}</h4>
+                        <p class="landing-how-step-desc">{{ __('landingpage.how_step_4_desc') }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Why us -->
+    <div class="section-padding bg-light landing-why-wrap landing-animate-in">
+        <div class="container">
+            <h2 class="landing-why-title">{{ __('landingpage.why_us_title') }}</h2>
+            <p class="landing-why-lead">{{ __('landingpage.why_us_lead') }}</p>
+            <div class="row g-4">
+                <div class="col-md-6 col-lg-3">
+                    <div class="landing-why-item">
+                        <div class="landing-why-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-primary"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+                        <h4 class="landing-why-item-title">{{ __('landingpage.why_vetted') }}</h4>
+                        <p class="landing-why-item-desc">{{ __('landingpage.why_vetted_desc') }}</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="landing-why-item">
+                        <div class="landing-why-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-primary"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div>
+                        <h4 class="landing-why-item-title">{{ __('landingpage.why_pricing') }}</h4>
+                        <p class="landing-why-item-desc">{{ __('landingpage.why_pricing_desc') }}</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="landing-why-item">
+                        <div class="landing-why-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-primary"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg></div>
+                        <h4 class="landing-why-item-title">{{ __('landingpage.why_secure') }}</h4>
+                        <p class="landing-why-item-desc">{{ __('landingpage.why_secure_desc') }}</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="landing-why-item">
+                        <div class="landing-why-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-primary"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg></div>
+                        <h4 class="landing-why-item-title">{{ __('landingpage.why_rebook') }}</h4>
+                        <p class="landing-why-item-desc">{{ __('landingpage.why_rebook_desc') }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- What customers say (testimonials) -->
+    @if (isset($landingTestimonials) && count($landingTestimonials) > 0)
+    <div class="section-padding bg-white landing-testimonials-wrap landing-animate-in">
+        <div class="container">
+            <h2 class="landing-testimonials-title">{{ __('landingpage.testimonials_title') }}</h2>
+            <p class="landing-testimonials-lead">{{ __('landingpage.testimonials_lead') }}</p>
+            <div class="row g-4">
+                @foreach ($landingTestimonials as $t)
+                <div class="col-md-6 col-lg-3">
+                    <div class="landing-testimonial-card">
+                        <div class="landing-testimonial-stars">
+                            @for ($i = 1; $i <= 5; $i++)
+                                <span class="landing-testimonial-star {{ $i <= ($t['rating'] ?? 0) ? 'filled' : '' }}">★</span>
+                            @endfor
+                        </div>
+                        <p class="landing-testimonial-quote">"{{ $t['review'] }}"</p>
+                        <div class="landing-testimonial-meta">
+                            <span class="landing-testimonial-name">{{ $t['customer_name'] }}</span>
+                            @if (!empty($t['service_name']))
+                                <span class="landing-testimonial-service">{{ $t['service_name'] }}</span>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+                @endforeach
+            </div>
+        </div>
+    </div>
+    @endif
+
+    <!-- Recently booked + Areas we cover -->
+    @if (count($recentBookings ?? []) > 0 || count($areasWeCover ?? []) > 0)
+    <div class="section-padding bg-white landing-recent-areas-wrap landing-animate-in">
+        <div class="container">
+            <div class="row g-4 align-items-stretch">
+                @if (count($recentBookings ?? []) > 0)
+                    <div class="col-lg-6">
+                        <h3 class="landing-section-head">{{ __('landingpage.recently_booked_title') }}</h3>
+                        <p class="landing-section-lead mb-3">{{ __('landingpage.recently_booked_lead') }}</p>
+                        <div class="landing-recent-card h-100">
+                            @foreach ($recentBookings as $rb)
+                                <div class="landing-recent-job-item">
+                                    <span class="landing-recent-dot" aria-hidden="true"></span>
+                                    <span class="landing-recent-service-name">{{ $rb['service_name'] }}</span>
+                                    <span class="landing-recent-time">{{ $rb['created_at']->diffForHumans() }}</span>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                @endif
+                @if (count($areasWeCover ?? []) > 0)
+                    <div class="col-lg-6">
+                        <h3 class="landing-section-head">{{ __('landingpage.areas_we_cover_title') }}</h3>
+                        <p class="landing-section-lead mb-3">{{ __('landingpage.areas_we_cover_lead') }}</p>
+                        <div class="landing-areas-card">
+                            <p class="landing-areas-sub">{{ __('landingpage.areas_find_near_you') }}</p>
+                            <div class="landing-areas-list">
+                                @foreach ($areasWeCover as $area)
+                                    <span class="landing-areas-tag">{{ $area }}</span>
+                                @endforeach
+                            </div>
+                        </div>
+                    </div>
+                @endif
+            </div>
+        </div>
+    </div>
+    @endif
+
     
 
     {{-- @if ($sectionData && isset($sectionData['section_9']) && $sectionData['section_9']['section_9'] == 1)
@@ -1588,13 +1588,13 @@
         <style>
             /* Section 9 – professional ratings & testimonials */
             .t9-section {
-                padding: 5rem 0 4.5rem;
+                padding: 3rem 0 2.75rem;
                 background: #f8fafc;
                 border-top: 1px solid #e2e8f0;
             }
             .t9-header {
                 text-align: center;
-                margin-bottom: 3rem;
+                margin-bottom: 1.75rem;
             }
             .t9-title {
                 font-size: 2rem;
@@ -1743,7 +1743,7 @@
                 transform: scale(1.25) !important;
             }
             @media (max-width: 767px) {
-                .t9-section { padding: 3.5rem 0 3rem; }
+                .t9-section { padding: 2rem 0 1.75rem; }
                 .t9-header { margin-bottom: 2rem; }
                 .t9-title { font-size: 1.5rem; }
                 .t9-desc { font-size: 1rem; }
