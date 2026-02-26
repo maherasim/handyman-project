@@ -1057,7 +1057,7 @@
                                         </span>
                                         <span class="cta-stat">
                                             <i class="fas fa-wallet"></i>
-                                            {{ getPriceFormat($subtotal) }}
+                                            {{ getPriceFormat($serviceData['service_detail']['price']) }} / {{ $serviceData['service_detail']['type'] }}
                                         </span>
                                         @if(!empty($serviceData['service_detail']['duration']))
                                         <span class="cta-stat">
