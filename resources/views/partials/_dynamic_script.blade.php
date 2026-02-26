@@ -3,8 +3,11 @@
     "use strict";
     
     $(document).ready(function(){
-        // Initialize Select2 only if not already initialized
+        // Initialize Select2 only if not already initialized (skip ajax selects - page scripts init them)
         $('.select2js').each(function() {
+            if ($(this).attr('data-ajax--url')) {
+                return;
+            }
             if (!$(this).hasClass('select2-hidden-accessible')) {
                 $(this).select2({
                     width: '100%',

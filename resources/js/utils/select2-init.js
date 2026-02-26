@@ -64,8 +64,11 @@ export function initializeAllSelect2() {
         initializeSelect2(element);
     });
 
-    // Initialize elements with .select2js class
+    // Initialize elements with .select2js class (skip ajax selects - they need page-level init)
     document.querySelectorAll('.select2js').forEach(element => {
+        if (element.hasAttribute('data-ajax--url')) {
+            return;
+        }
         initializeSelect2(element);
     });
 
