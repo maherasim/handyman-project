@@ -1261,7 +1261,7 @@ const getCurrentLocation = async () => {
   isLoading.value = true;
   const options = {
     enableHighAccuracy: true,
-    timeout: 15000,
+    timeout: 20000,
     maximumAge: 0
   };
   navigator.geolocation.getCurrentPosition(
@@ -1269,18 +1269,34 @@ const getCurrentLocation = async () => {
       try {
         const currentLatitude = position.coords.latitude;
         const currentLongitude = position.coords.longitude;
+        const accuracy = position.coords.accuracy != null ? position.coords.accuracy : 0;
+
+        // Reject obviously invalid coordinates (e.g. 0,0 or browser default)
+        if (!currentLatitude || !currentLongitude || (currentLatitude === 0 && currentLongitude === 0)) {
+          locationError.value = t('landingpage.location_error_fallback') || 'Could not get location. Please enter your address manually.';
+          isLoading.value = false;
+          return;
+        }
+
+        // Warn when accuracy is poor (likely IP-based, not GPS) – often wrong country
+        if (accuracy > 3000) {
+          locationError.value = t('landingpage.location_approximate') || 'Location may be approximate. Please confirm the address below or enter it manually.';
+        } else {
+          locationError.value = '';
+        }
+
         let formattedAddress = null;
         if (googlemapkey) {
           const response = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${currentLatitude},${currentLongitude}&key=${googlemapkey}`);
           const data = await response.json();
-          if (data.results && data.results[0]) {
+          if (data.status === 'OK' && data.results && data.results[0]) {
             formattedAddress = data.results[0].formatted_address;
           }
         }
         if (!formattedAddress) {
           const nominatimRes = await fetch(
-            `https://nominatim.openstreetmap.org/reverse?lat=${currentLatitude}&lon=${currentLongitude}&format=json`,
-            { headers: { 'Accept-Language': 'en', 'User-Agent': 'FrobsterBooking/1.0' } }
+            `https://nominatim.openstreetmap.org/reverse?lat=${currentLatitude}&lon=${currentLongitude}&format=json&addressdetails=1`,
+            { headers: { 'Accept-Language': 'en', 'User-Agent': 'FrobsterHandymanApp/1.0 (Booking; contact@frobster.com)' } }
           );
           const nominatimData = await nominatimRes.json();
           if (nominatimData && nominatimData.display_name) {
@@ -1290,6 +1306,7 @@ const getCurrentLocation = async () => {
         setValues({ address: formattedAddress || `${currentLatitude}, ${currentLongitude}` });
       } catch (err) {
         console.error('Error fetching current location:', err);
+        locationError.value = t('landingpage.location_error_fallback') || 'Could not get address. Please enter your address manually.';
         setValues({ address: `${position.coords.latitude}, ${position.coords.longitude}` });
       } finally {
         isLoading.value = false;

@@ -166,6 +166,7 @@
   'location_unavailable' => 'Location unavailable. Please check your device location settings.',
   'location_timeout' => 'Location request timed out. Please try again.',
   'location_error_fallback' => 'Could not get your location. Please try again.',
+  'location_approximate' => 'Location may be approximate (e.g. from network). Please confirm the address below or enter it manually.',
   'refund_policy' => 'Refund Policy',
   'help_support' => 'Help & Support',
   'imprint' => 'Imprint',

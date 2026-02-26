@@ -5,8 +5,8 @@
          <img :src="BookingImage" alt="booking" class="img-fluid rounded-3 object-cover w-100 booking-img">
       </div>
       <div class="col-lg-8 mt-5 mt-lg-0">
-         <h5 class="booking-title text-capitalize line-count-1">
-            <a :href="`${baseUrl}/booking-detail/${BookingId}`">#{{BookingId}} {{ServiceName}} test</a>
+         <h5 class="booking-title text-capitalize line-count-1 mb-0">
+            #{{BookingId}} {{ServiceName}}
          </h5>
          <div class="d-flex align-items-center gap-1 mt-3">
             <div class="ratting d-flex gap-1 align-items-center">

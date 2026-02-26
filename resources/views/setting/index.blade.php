@@ -19,7 +19,7 @@
                     <div class="card-body setting-pills">
                         <div class="row">
                             <div class="col-sm-12 col-lg-12">
-                                <ul class="nav flex-column nav-pills nav-fill tabslink" id="tabs-text" role="tablist">
+                                <ul class="nav xzflex-column nav-pills nav-fill tabslink" id="tabs-text" role="tablist">
                                     @if(in_array( $page,['profile_form','password_form','time_slot']))
                                         <li class="nav-item">
                                             <a href="javascript:void(0)" data-href="{{ route('layout_page') }}?page=profile_form" data-target=".paste_here" class="nav-link {{$page=='profile_form'?'active':''}}"  data-toggle="tabajax" rel="tooltip"> {{ __('messages.profile')}} </a>
