@@ -352,6 +352,49 @@
                                 }
                             }
 
+    /* Service CTA card - same style as job details "Ready to win this project?" */
+    .service-cta-card {
+        background: linear-gradient(145deg, #5F60BA 0%, #4a4b9e 50%, #3d3e85 100%);
+        border-radius: 16px;
+        padding: 0;
+        overflow: hidden;
+        box-shadow: 0 12px 40px rgba(95, 96, 186, 0.35), 0 4px 12px rgba(0,0,0,0.08);
+        border: none;
+        position: relative;
+    }
+    .service-cta-card::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        opacity: 0.6;
+        pointer-events: none;
+    }
+    .service-cta-card .cta-inner { position: relative; z-index: 1; padding: 1.5rem 1.35rem; }
+    .service-cta-card .cta-badge {
+        display: inline-flex; align-items: center; gap: 6px;
+        background: rgba(255,255,255,0.2); color: #fff; font-size: 11px; font-weight: 600;
+        text-transform: uppercase; letter-spacing: 0.05em; padding: 6px 12px; border-radius: 20px; margin-bottom: 1rem;
+    }
+    .service-cta-card .cta-headline { color: #fff; font-size: 1.15rem; font-weight: 700; margin-bottom: 1rem; line-height: 1.35; text-shadow: 0 1px 2px rgba(0,0,0,0.1); }
+    .service-cta-card .cta-stats { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 1.1rem; }
+    .service-cta-card .cta-stat {
+        display: inline-flex; align-items: center; gap: 6px;
+        background: rgba(255,255,255,0.18); color: #fff; font-size: 12px; font-weight: 500;
+        padding: 8px 12px; border-radius: 10px; backdrop-filter: blur(6px);
+    }
+    .service-cta-card .cta-stat i { opacity: 0.95; font-size: 13px; }
+    .service-cta-card .cta-trust { color: rgba(255,255,255,0.88); font-size: 12px; margin-bottom: 1rem; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .service-cta-card .cta-trust span { display: inline-flex; align-items: center; gap: 4px; }
+    .service-cta-card .cta-btn {
+        display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 100%;
+        padding: 14px 20px; background: #fff; color: #5F60BA; font-weight: 700; font-size: 15px;
+        border-radius: 12px; text-decoration: none; border: none; box-shadow: 0 4px 14px rgba(0,0,0,0.15);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .service-cta-card .cta-btn:hover { color: #4a4b9e; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.2); }
+    .service-cta-card .cta-btn:active { transform: translateY(0); }
+
 </style>
 @endsection
 
@@ -438,6 +481,7 @@
                             </p>
                         </div>
                     @endif
+
                     <!-- Tabbed Service Information Section -->
                     <div class="service-details-tabs mt-4">
                         <!-- Tab Navigation -->
@@ -995,13 +1039,50 @@
                         @endif
 
                         <div class="mt-4 pt-4 border-top">
-                            @if (auth()->check() && auth()->user()->user_type == 'user')
-                                <a href="{{ route('book.service', ['id' => $serviceData['service_detail']['id']]) }}"
-                                    class="btn btn-primary w-100 continue-button">{{ __('messages.continue') }}</a>
-                            @else
-                                <a href="{{ route('login', ['service_id' => $serviceData['service_detail']['id']]) }}"
-                                    class="btn btn-primary w-100">{{ __('messages.continue') }}</a>
-                            @endif
+                            {{-- CTA card in place of Continue button --}}
+                            <div class="service-cta-card mb-0">
+                                <div class="cta-inner">
+                                    <div class="cta-badge">
+                                        <i class="fas fa-star"></i>
+                                        <span>{{ __('Great opportunity') }}</span>
+                                    </div>
+                                    <h3 class="cta-headline mb-0">
+                                        {{ __('Ready to book this service?') }}<br>
+                                        <span style="font-size: 0.92em; opacity: 0.95;">{{ __('Sign in and book in minutes.') }}</span>
+                                    </h3>
+                                    <div class="cta-stats">
+                                        <span class="cta-stat">
+                                            <i class="fas fa-map-marker-alt"></i>
+                                            {{ $serviceData['service_detail']['city_name'] ?? '—' }}, {{ $serviceData['service_detail']['country_name'] ?? '—' }}
+                                        </span>
+                                        <span class="cta-stat">
+                                            <i class="fas fa-wallet"></i>
+                                            {{ getPriceFormat($subtotal) }}
+                                        </span>
+                                        @if(!empty($serviceData['service_detail']['duration']))
+                                        <span class="cta-stat">
+                                            <i class="fas fa-clock"></i>
+                                            {{ $serviceData['service_detail']['duration'] }}
+                                        </span>
+                                        @endif
+                                        <span class="cta-stat">
+                                            <i class="fas fa-tag"></i>
+                                            {{ $serviceData['service_detail']['type'] ?? __('messages.service') }}
+                                        </span>
+                                    </div>
+                                    <div class="cta-trust">
+                                        <span><i class="fas fa-shield-alt"></i> {{ __('Secure') }}</span>
+                                        <span><i class="fas fa-comments"></i> {{ __('Direct contact') }}</span>
+                                        <span><i class="fas fa-calendar-check"></i> {{ __('Easy booking') }}</span>
+                                    </div>
+                                    <div class="cta-btn-wrap">
+                                        <a href="{{ auth()->check() && auth()->user()->user_type == 'user' ? route('book.service', ['id' => $serviceData['service_detail']['id']]) : route('login', ['service_id' => $serviceData['service_detail']['id']]) }}" class="cta-btn continue-button">
+                                            <i class="fas fa-rocket"></i>
+                                            {{ auth()->check() && auth()->user()->user_type == 'user' ? __('Book now') : __('Sign in and book') }}
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         <div class="d-flex align-items-center justify-content-center gap-3 mt-3">
                             @php
