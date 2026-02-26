@@ -1336,7 +1336,7 @@
             
             body .provider-contact-card h2 {
                 font-size: 2rem !important;
-            }
+            } 
             
             body .contact-btn {
                 padding: 12px 25px !important;
