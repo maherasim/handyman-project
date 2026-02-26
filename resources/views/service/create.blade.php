@@ -794,65 +794,29 @@
                     var subcategory_id =
                         "{{ old('subcategory_id', isset($servicedata->subcategory_id) ? $servicedata->subcategory_id : '') }}";
 
-                    // Simple select2 for state, city, tax_country_id_display (options loaded by script)
-                    $('#state_id, #city_id, #tax_country_id_display').select2({
+                    // Initialize select2 on all selects (including tax_country_id_display)
+                    $('#country_id, #state_id, #city_id, #tax_country_id_display').select2({
                         width: '100%',
                         placeholder: "{{ __('messages.select_name', ['select' => __('messages.country')]) }}"
                     });
 
-                    // Country with ajax (so dropdown loads options)
-                    var countryAjaxUrl = $('#country_id').attr('data-ajax--url') || $('#country_id').data('ajaxUrl');
-                    if (countryAjaxUrl) {
-                        $('#country_id').select2({
-                            width: '100%',
-                            placeholder: "{{ __('messages.select_name', ['select' => __('messages.country')]) }}",
-                            dropdownParent: $('#country_id').parent(),
-                            ajax: {
-                                url: countryAjaxUrl,
-                                dataType: 'json',
-                                delay: 250,
-                                data: function(params) { return { q: params.term, page: params.page || 1 }; },
-                                processResults: function(data) { return { results: data.results || [] }; }
-                            },
-                            minimumInputLength: 0
-                        });
-                    } else {
-                        $('#country_id').select2({ width: '100%', placeholder: "{{ __('messages.select_name', ['select' => __('messages.country')]) }}" });
-                    }
-
-                    // Initialize all other select2js dropdowns (with ajax when data-ajax--url is set)
+                    // Initialize all other select2js dropdowns that aren't already initialized
                     $('.select2js').each(function() {
                         var $this = $(this);
                         var id = $this.attr('id');
-                        if ($this.hasClass('select2-hidden-accessible')) {
+                        
+                        // Skip if already initialized or if it's one of the ones initialized above
+                        if ($this.hasClass('select2-hidden-accessible') || 
+                            ['country_id', 'state_id', 'city_id', 'tax_country_id_display'].includes(id)) {
                             return;
                         }
-                        if (['country_id', 'state_id', 'city_id', 'tax_country_id_display'].includes(id)) {
-                            return;
-                        }
-                        var ajaxUrl = $this.attr('data-ajax--url') || $this.data('ajaxUrl');
-                        var placeholder = $this.attr('data-placeholder') || $this.data('placeholder') || 'Select an option...';
-                        if (ajaxUrl) {
-                            $this.select2({
-                                width: '100%',
-                                dropdownParent: $this.parent(),
-                                placeholder: placeholder,
-                                ajax: {
-                                    url: ajaxUrl,
-                                    dataType: 'json',
-                                    delay: 250,
-                                    data: function(params) { return { q: params.term, page: params.page || 1 }; },
-                                    processResults: function(data) { return { results: data.results || [] }; }
-                                },
-                                minimumInputLength: 0
-                            });
-                        } else {
-                            $this.select2({
-                                width: '100%',
-                                dropdownParent: $this.parent(),
-                                placeholder: placeholder
-                            });
-                        }
+                        
+                        // Initialize select2
+                        $this.select2({
+                            width: '100%',
+                            dropdownParent: $this.parent(),
+                            placeholder: $this.attr('data-placeholder') || $this.data('placeholder') || 'Select an option...'
+                        });
                     });
 
                     // Load dependent dropdown data on page load
