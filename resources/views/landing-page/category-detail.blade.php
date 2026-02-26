@@ -2,8 +2,26 @@
 
 @section('before_script')
 <script>
-  window.__categorySearchPlaceholder = 'Text here';
-  window.__categorySearchButtonLabel = 'Search';
+  document.addEventListener('DOMContentLoaded', function() {
+    var input = document.getElementById('category-search-input');
+    var btn = document.getElementById('category-search-btn');
+    var tabLinks = document.querySelectorAll('.category-tab-list .nav-link[data-bs-toggle="tab"]');
+    if (!input || !btn) return;
+    function filterTabs() {
+      var q = (input.value || '').trim().toLowerCase();
+      var firstMatch = null;
+      tabLinks.forEach(function(link) {
+        var title = (link.querySelector('.category-title') || {}).textContent || '';
+        var show = !q || title.toLowerCase().indexOf(q) !== -1;
+        var li = link.closest('.nav-item');
+        if (li) li.style.display = show ? '' : 'none';
+        if (show && !firstMatch) firstMatch = link;
+      });
+      if (firstMatch && q) firstMatch.click();
+    }
+    btn.addEventListener('click', filterTabs);
+    input.addEventListener('keydown', function(e) { if (e.key === 'Enter') filterTabs(); });
+  });
 </script>
 @endsection
 
@@ -17,6 +35,12 @@
                     <h4 class="mb-2 text-capitalize">{{ $category->name ?? '-'}}</h4>
                     <p class="readmore-text m-0">{{ $category->description ?? '-' }}</p>
                     <a href="javascript:void(0);" class="readmore-btn">{{__('landingpage.read_more')}}</a>
+
+                    <div class="d-flex gap-2 mt-4 mb-4">
+                        <input type="text" id="category-search-input" class="form-control" placeholder="{{ __('Text here') }}" aria-label="Search">
+                        <button type="button" id="category-search-btn" class="btn btn-primary text-nowrap">{{ __('Search') }}</button>
+                    </div>
+
                     <ul class="nav nav-tabs align-items-start gap-5 bg-transparent pb-0 mt-5 mb-0">
                         <li class="nav-item">
                             <a class="nav-link rounded-3 active" data-bs-toggle="tab" href="#all">
