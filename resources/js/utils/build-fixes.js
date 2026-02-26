@@ -55,28 +55,21 @@ export class BuildFixes {
 
     /**
      * Fix Select2 initialization conflicts
-     * NOTE: Skips elements with data-ajax--url — those are Ajax-powered selects
-     * initialized by page-level scripts (e.g. category, country, provider dropdowns).
      */
     fixSelect2Conflicts() {
-        if (window.$) {
+        if (window.$ && !window.select2GlobalInitialized) {
             // Initialize Select2 for all relevant elements
             const selectors = ['.select2', '.select2js', 'select[class*="select2"]'];
 
             selectors.forEach(selector => {
                 document.querySelectorAll(selector).forEach(element => {
                     const $element = $(element);
-                    // Skip Ajax-powered selects — they handle their own initialization
-                    if ($element.attr('data-ajax--url') || $element.data('ajax--url')) {
-                        return;
-                    }
                     if (!$element.hasClass('select2-hidden-accessible')) {
                         try {
                             $element.select2({
                                 width: '100%',
                                 dropdownParent: $element.parent(),
-                                allowClear: true,
-                                placeholder: $element.attr('data-placeholder') || 'Select an option...'
+                                allowClear: true
                             });
                         } catch (error) {
                             console.warn('Select2 initialization failed:', error);
@@ -84,6 +77,8 @@ export class BuildFixes {
                     }
                 });
             });
+
+            window.select2GlobalInitialized = true;
         }
     }
 
