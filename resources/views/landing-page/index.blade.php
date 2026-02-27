@@ -1480,7 +1480,7 @@
             <h2 class="landing-testimonials-title">{{ __('landingpage.testimonials_title') }}</h2>
             <p class="landing-testimonials-lead">{{ __('landingpage.testimonials_lead') }}</p>
             <div class="row g-4">
-                @foreach ($landingTestimonials as $t) 
+                @foreach ($landingTestimonials as $t)
                 <div class="col-md-6 col-lg-3">
                     <div class="landing-testimonial-card">
                         <div class="landing-testimonial-stars">
