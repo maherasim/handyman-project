@@ -381,6 +381,7 @@
                               <span v-if="isLoading" class="spinner-border spinner-border-sm me-1" role="status"
                                 aria-hidden="true"></span>
                               <span v-else>{{ $t('landingpage.get_current_location') }}</span>
+                              <span v-if="isLoading" class="ms-1">{{ $t('landingpage.getting_location') || 'Getting precise location…' }}</span>
                             </button>
                             <p v-if="locationError" class="text-danger small mt-2 mb-0">{{ locationError }}</p>
                           </div>
@@ -1261,7 +1262,7 @@ const getCurrentLocation = async () => {
   isLoading.value = true;
   const options = {
     enableHighAccuracy: true,
-    timeout: 20000,
+    timeout: 30000,
     maximumAge: 0
   };
   navigator.geolocation.getCurrentPosition(
@@ -1271,43 +1272,63 @@ const getCurrentLocation = async () => {
         const currentLongitude = position.coords.longitude;
         const accuracy = position.coords.accuracy != null ? position.coords.accuracy : 0;
 
-        // Reject obviously invalid coordinates (e.g. 0,0 or browser default)
         if (!currentLatitude || !currentLongitude || (currentLatitude === 0 && currentLongitude === 0)) {
           locationError.value = t('landingpage.location_error_fallback') || 'Could not get location. Please enter your address manually.';
           isLoading.value = false;
           return;
         }
 
-        // Warn when accuracy is poor (likely IP-based, not GPS) – often wrong country
-        if (accuracy > 3000) {
-          locationError.value = t('landingpage.location_approximate') || 'Location may be approximate. Please confirm the address below or enter it manually.';
+        if (accuracy > 2000) {
+          locationError.value = t('landingpage.location_approximate') || 'Location may be approximate (this device may not have GPS). Please confirm the address below or enter it manually.';
+        } else if (accuracy > 200) {
+          locationError.value = t('landingpage.location_approximate') || 'Location may be approximate. Please confirm the address below.';
         } else {
           locationError.value = '';
         }
 
         let formattedAddress = null;
         if (googlemapkey) {
-          const response = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${currentLatitude},${currentLongitude}&key=${googlemapkey}`);
-          const data = await response.json();
-          if (data.status === 'OK' && data.results && data.results[0]) {
-            formattedAddress = data.results[0].formatted_address;
+          try {
+            const response = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${currentLatitude},${currentLongitude}&key=${googlemapkey}`);
+            const data = await response.json();
+            if (data.status === 'OK' && data.results && data.results.length > 0) {
+              const preferred = data.results.find(r => r.geometry && r.geometry.location_type === 'ROOFTOP')
+                || data.results.find(r => r.geometry && r.geometry.location_type === 'RANGE_INTERPOLATED')
+                || data.results[0];
+              formattedAddress = preferred.formatted_address;
+            } else {
+              locationError.value = t('landingpage.location_api_unavailable') || 'Location service is temporarily unavailable. Please enter your address manually.';
+              setValues({ address: '', latitude: currentLatitude, longitude: currentLongitude });
+              isLoading.value = false;
+              return;
+            }
+          } catch (err) {
+            console.warn('Geocode request failed:', err);
+            locationError.value = t('landingpage.location_api_unavailable') || 'Location service is temporarily unavailable. Please enter your address manually.';
+            setValues({ address: '', latitude: currentLatitude, longitude: currentLongitude });
+            isLoading.value = false;
+            return;
           }
+        } else {
+          locationError.value = t('landingpage.location_api_not_configured') || 'Address lookup is not configured. Please enter your address manually.';
+          setValues({ address: '', latitude: currentLatitude, longitude: currentLongitude });
+          isLoading.value = false;
+          return;
         }
-        if (!formattedAddress) {
-          const nominatimRes = await fetch(
-            `https://nominatim.openstreetmap.org/reverse?lat=${currentLatitude}&lon=${currentLongitude}&format=json&addressdetails=1`,
-            { headers: { 'Accept-Language': 'en', 'User-Agent': 'FrobsterHandymanApp/1.0 (Booking; contact@frobster.com)' } }
-          );
-          const nominatimData = await nominatimRes.json();
-          if (nominatimData && nominatimData.display_name) {
-            formattedAddress = nominatimData.display_name;
-          }
-        }
-        setValues({ address: formattedAddress || `${currentLatitude}, ${currentLongitude}` });
+        const addressToSet = formattedAddress || `${currentLatitude}, ${currentLongitude}`;
+        setValues({
+          address: addressToSet,
+          latitude: currentLatitude,
+          longitude: currentLongitude
+        });
       } catch (err) {
         console.error('Error fetching current location:', err);
         locationError.value = t('landingpage.location_error_fallback') || 'Could not get address. Please enter your address manually.';
-        setValues({ address: `${position.coords.latitude}, ${position.coords.longitude}` });
+        setValues({
+          address: `${position.coords.latitude}, ${position.coords.longitude}`,
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude
+        });
       } finally {
         isLoading.value = false;
       }

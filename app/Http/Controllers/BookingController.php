@@ -604,6 +604,14 @@ class BookingController extends Controller
             ];
 
             $result->addressAdded()->create($booking_address_data);
+        } elseif ($request->filled('address') && $request->filled('latitude') && $request->filled('longitude')) {
+            $booking_address_data = [
+                'booking_id' => $result->id,
+                'address' => $request->address,
+                'latitude' => $request->latitude,
+                'longitude' => $request->longitude,
+            ];
+            $result->addressAdded()->create($booking_address_data);
         }
 
         if ($request->has('service_addon_id') && is_array($request->service_addon_id) != null) {
