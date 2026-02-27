@@ -37,6 +37,10 @@ class ServiceRequest extends FormRequest
             'travel_required'                => 'required|in:0,1',
         ];
 
+        if (in_array($this->input('type'), ['fixed', 'free']) && $this->filled('duration')) {
+            $rules['duration'] = ['required', 'regex:/^(\d+(\.\d+)?|\d+:(?:[0-5]\d|[0-9]))$/'];
+        }
+
         // Require at least one attachment when creating via web (non-API)
         if (empty($id) && !$this->is('api/*')) {
             $rules['service_attachment'] = 'required';
@@ -46,7 +50,9 @@ class ServiceRequest extends FormRequest
     }
     public function messages()
     {
-        return [];
+        return [
+            'duration.regex' => 'Duration must be a number (hours, e.g. 40 or 48) or HH:MM (e.g. 46:30). Do not enter text like "2 days".',
+        ];
     }
 
     protected function failedValidation(Validator $validator)

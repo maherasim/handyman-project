@@ -171,8 +171,8 @@
 
 
                             <div class="form-group col-md-3">
-                                {{ html()->label(__('messages.duration') . ' (hours or HH:MM) ', 'duration')->class('form-control-label') }}
-                                {{ html()->text('duration', old('duration', $servicedata->duration))->placeholder(__('messages.duration') . ' (e.g., 46 or 46:30)')->class('form-control duration-input')->id('duration') }}
+                                {{ html()->label(__('messages.duration') . ' (hours)', 'duration')->class('form-control-label') }}
+                                {{ html()->text('duration', old('duration', $servicedata->duration))->placeholder('e.g. 40 or 46:30')->class('form-control duration-input')->id('duration')->attribute('autocomplete', 'off') }}
                                 <small class="help-block with-errors text-danger"></small>
                                 <small id="duration-error" class="text-danger"></small>
                             </div>
@@ -665,6 +665,34 @@
                 handleDurationField(initialType);
                 addDurationValidation();
 
+                $('#service').on('submit', function() {
+                    var priceType = $('#price_type').val();
+                    if (priceType && priceType.toLowerCase() === 'fixed') {
+                        var durationInput = document.getElementById('duration');
+                        if (durationInput && !durationInput.readOnly && !durationInput.disabled) {
+                            var v = (durationInput.value || '').trim();
+                            if (v !== '') {
+                                if (/[a-zA-Z]/.test(v)) {
+                                    document.getElementById('duration-error').textContent = 'Do not enter text (e.g. "2 days"). Enter only a number (hours) or HH:MM (e.g. 40 or 46:30).';
+                                    durationInput.focus();
+                                    return false;
+                                }
+                                if (v.indexOf(':') !== -1) {
+                                    if (!/^(\d+):([0-5]?\d)$/.test(v) || parseInt(v.split(':')[1], 10) >= 60) {
+                                        document.getElementById('duration-error').textContent = 'Invalid HH:MM. Use e.g. 46:30.';
+                                        durationInput.focus();
+                                        return false;
+                                    }
+                                } else if (!/^\d+(\.\d+)?$/.test(v) || isNaN(parseFloat(v)) || parseFloat(v) < 0) {
+                                    document.getElementById('duration-error').textContent = 'Enter only a number (hours) or HH:MM.';
+                                    durationInput.focus();
+                                    return false;
+                                }
+                            }
+                        }
+                    }
+                });
+
                 $("#price_type").on('change', function() {
                     handleDurationField($(this).val());
                 });
@@ -722,18 +750,33 @@
                     var durationInput = document.getElementById('duration');
                     var durationError = document.getElementById('duration-error');
 
+                    function isValidDuration(val) {
+                        var v = val.trim();
+                        if (v === '') return true;
+                        if (/[a-zA-Z]/.test(v)) return false;
+                        if (v.includes(':')) {
+                            return /^(\d+):([0-5]?\d)$/.test(v) && parseInt(v.split(':')[1], 10) < 60;
+                        }
+                        var n = parseFloat(v);
+                        return !isNaN(n) && n >= 0 && /^\d+(\.\d+)?$/.test(v);
+                    }
+
+                    function setDurationError(msg) {
+                        durationError.textContent = msg || '';
+                    }
+
                     if (durationInput) {
                         durationInput.addEventListener('input', function() {
                             var durationValue = durationInput.value.trim();
                             var priceType = $("#price_type").val();
-                            
-                            // Only validate if field is not readonly/disabled
+
                             if (!durationInput.readOnly && !durationInput.disabled) {
                                 var isValid = false;
                                 var errorMessage = "";
-                                
-                                // Check if it's in HH:MM format
-                                if (durationValue.includes(':')) {
+
+                                if (/[a-zA-Z]/.test(durationValue)) {
+                                    errorMessage = "Do not enter text (e.g. \"2 days\"). Enter only a number (hours) or HH:MM (e.g. 40 or 46:30).";
+                                } else if (durationValue.includes(':')) {
                                     var timePattern = /^(\d+):([0-5]?\d)$/;
                                     if (timePattern.test(durationValue)) {
                                         var parts = durationValue.split(':');
@@ -742,33 +785,58 @@
                                         if (hours >= 0 && minutes >= 0 && minutes < 60) {
                                             isValid = true;
                                         } else {
-                                            errorMessage = "Invalid time format. Minutes must be 0-59. Use HH:MM (e.g., 46:30)";
+                                            errorMessage = "Invalid time. Minutes must be 0-59. Use HH:MM (e.g., 46:30)";
                                         }
                                     } else {
-                                        errorMessage = "Invalid time format. Use HH:MM (e.g., 46:30)";
+                                        errorMessage = "Invalid format. Use HH:MM (e.g., 46:30)";
                                     }
-                                } 
-                                // Check if it's a numeric value (hours)
-                                else if (durationValue !== '') {
+                                } else if (durationValue !== '') {
                                     var numericValue = parseFloat(durationValue);
-                                    if (!isNaN(numericValue) && numericValue >= 0) {
+                                    if (!isNaN(numericValue) && numericValue >= 0 && /^\d+(\.\d+)?$/.test(durationValue)) {
                                         isValid = true;
                                     } else {
-                                        errorMessage = "Duration must be a valid number";
+                                        errorMessage = "Enter only a number (hours) or HH:MM. No text.";
                                     }
                                 }
-                                
+
                                 if (priceType === 'fixed') {
                                     if (!isValid && durationValue !== '') {
-                                        durationError.textContent = errorMessage || "Duration must be at least 0 hours. Enter numeric hours (e.g., 46) or time format (e.g., 46:30)";
+                                        setDurationError(errorMessage || "Enter number (e.g. 40) or HH:MM (e.g. 46:30). Do not use text like \"2 days\".");
                                     } else {
-                                        durationError.textContent = "";
+                                        setDurationError("");
                                     }
                                 }
                             } else {
-                                // Clear error when field is readonly
-                                durationError.textContent = "";
+                                setDurationError("");
                             }
+                        });
+
+                        durationInput.addEventListener('keypress', function(e) {
+                            if (durationInput.readOnly || durationInput.disabled) return;
+                            var key = e.key;
+                            var val = durationInput.value;
+                            if (/[a-zA-Z\s]/.test(key)) {
+                                e.preventDefault();
+                                return;
+                            }
+                            if (key === ':' && val.indexOf(':') !== -1) e.preventDefault();
+                            if (key === '.' && (val.indexOf('.') !== -1 || val.indexOf(':') !== -1)) e.preventDefault();
+                        });
+
+                        durationInput.addEventListener('paste', function(e) {
+                            if (durationInput.readOnly || durationInput.disabled) return;
+                            setTimeout(function() {
+                                var raw = durationInput.value;
+                                var filtered = raw.replace(/[^0-9.:]/g, '');
+                                var firstColon = filtered.indexOf(':');
+                                if (firstColon !== -1) {
+                                    var after = filtered.slice(firstColon + 1).replace(/:/g, '');
+                                    filtered = filtered.slice(0, firstColon + 1) + after;
+                                }
+                                var parts = filtered.split('.');
+                                if (parts.length > 2) filtered = parts[0] + '.' + parts.slice(1).join('');
+                                durationInput.value = filtered;
+                            }, 0);
                         });
                     }
                 }
