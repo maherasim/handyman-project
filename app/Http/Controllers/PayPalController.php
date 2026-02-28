@@ -380,8 +380,8 @@ class PayPalController extends Controller
                     if ($provider_from_pool < 0) {
                         $provider_from_pool = 0;
                     }
-                    // Provider gets 90% of extra charges
-                    $provider_extra_earning = ($extra_total * 90) / 100;
+                    // Extra charges 100% to provider (no admin commission on extra)
+                    $provider_extra_earning = $extra_total;
                     $provider_final_earning = $provider_from_pool + $provider_extra_earning;
 
                     foreach ($handyman_payouts as $payout) {
