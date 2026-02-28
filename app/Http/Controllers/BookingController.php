@@ -1549,11 +1549,10 @@ public function saveStripePayment(Request $request, $id)
         $result->total_amount = $remaining_amount;
         $result->save();
 
-        // Admin: single 10% commission on this transaction (remaining + extra)
+        // Admin: 10% on remaining amount only (not on extra charges); once per remaining payment
         $extra_total = $booking->getExtraChargeValue();
-        $transaction_total = $remaining_amount + $extra_total;
-        $remaining_admin_commission = ($transaction_total > 0)
-            ? ($transaction_total * 10) / 100
+        $remaining_admin_commission = ($remaining_amount > 0)
+            ? ($remaining_amount * $admin_commission_percentage) / 100
             : 0;
 
         // Pool = 90% of advance (held) + (90% of remaining - extra charges). Provider gets 90% of extra charges.
@@ -1776,10 +1775,9 @@ public function saveStripePayment(Request $request, $id)
             $result->save();
             $extra_total = $booking->getExtraChargeValue();
             
-            // Admin: single 10% commission on this transaction (remaining + extra)
-            $transaction_total = $remaining_amount + $extra_total;
-            $remaining_admin_commission = ($transaction_total > 0)
-                ? ($transaction_total * 10) / 100
+            // Admin: 10% on remaining amount only (not on extra charges); once per remaining payment
+            $remaining_admin_commission = ($remaining_amount > 0)
+                ? ($remaining_amount * $admin_commission_percentage) / 100
                 : 0;
 
             $provider_side_advance = ($advance_paid * (100 - $admin_commission_percentage)) / 100;
