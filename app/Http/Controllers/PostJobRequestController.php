@@ -2230,7 +2230,7 @@ class PostJobRequestController extends Controller
             'remote_work_level' => 'required|in:onsite,25_remote,50_remote,75_remote,100_remote',
             'career_level' => 'required|in:not_specified,entry_level,intermediate_level,experienced,professional,middle_management,executive_management,senior_management,director,technician,leader,manager',
             'travel_required' => 'required|in:0,1',
-            'education_level' => 'required|in:high_school,associate,undergraduate,graduate,doctorate',
+            'education_level' => 'required|in:not_specified,any_graduate,apprenticeship_degree,traineeship_degree,secondary_degree,undergraduate_diploma,high_school_graduate,associate_degree,college_degree,university_degree,bachelors_degree,masters_degree,doctorate_degree,professional_degree',
             'duties' => 'required|string',
             'benefits' => 'required|string',
             'image.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:203480', // 20MB to match PHP limit

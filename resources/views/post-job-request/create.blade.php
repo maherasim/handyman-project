@@ -210,11 +210,20 @@
                                     <label for="education_level">{{ __('Education Level') }} <span class="text-danger">*</span></label>
                                     <select name="education_level" id="education_level" class="form-control" required>
                                         @php $oldEdu = old('education_level', $postJob->education_level); @endphp
-                                        <option value="high_school" {{ $oldEdu == 'high_school' ? 'selected' : '' }}>{{ __('High School') }}</option>
-                                        <option value="associate" {{ $oldEdu == 'associate' ? 'selected' : '' }}>{{ __('Associate Degree') }}</option>
-                                        <option value="undergraduate" {{ $oldEdu == 'undergraduate' ? 'selected' : '' }}>{{ __('Undergraduate Degree') }}</option>
-                                        <option value="graduate" {{ $oldEdu == 'graduate' ? 'selected' : '' }}>{{ __('Graduate/Master\'s') }}</option>
-                                        <option value="doctorate" {{ $oldEdu == 'doctorate' ? 'selected' : '' }}>{{ __('Doctorate') }}</option>
+                                        <option value="not_specified" {{ $oldEdu == 'not_specified' ? 'selected' : '' }}>{{ __('Not Specified') }}</option>
+                                        <option value="any_graduate" {{ $oldEdu == 'any_graduate' ? 'selected' : '' }}>{{ __('Any Graduate') }}</option>
+                                        <option value="apprenticeship_degree" {{ $oldEdu == 'apprenticeship_degree' ? 'selected' : '' }}>{{ __('Apprenticeship Degree') }}</option>
+                                        <option value="traineeship_degree" {{ $oldEdu == 'traineeship_degree' ? 'selected' : '' }}>{{ __('Traineeship Degree') }}</option>
+                                        <option value="secondary_degree" {{ $oldEdu == 'secondary_degree' ? 'selected' : '' }}>{{ __('Secondary Degree') }}</option>
+                                        <option value="undergraduate_diploma" {{ $oldEdu == 'undergraduate_diploma' ? 'selected' : '' }}>{{ __('Undergraduate Diploma') }}</option>
+                                        <option value="high_school_graduate" {{ $oldEdu == 'high_school_graduate' ? 'selected' : '' }}>{{ __('High school graduate') }}</option>
+                                        <option value="associate_degree" {{ $oldEdu == 'associate_degree' ? 'selected' : '' }}>{{ __('Associate degree') }}</option>
+                                        <option value="college_degree" {{ $oldEdu == 'college_degree' ? 'selected' : '' }}>{{ __('College Degree') }}</option>
+                                        <option value="university_degree" {{ $oldEdu == 'university_degree' ? 'selected' : '' }}>{{ __('University Degree') }}</option>
+                                        <option value="bachelors_degree" {{ $oldEdu == 'bachelors_degree' ? 'selected' : '' }}>{{ __("Bachelor's Degree") }}</option>
+                                        <option value="masters_degree" {{ $oldEdu == 'masters_degree' ? 'selected' : '' }}>{{ __("Master's Degree") }}</option>
+                                        <option value="doctorate_degree" {{ $oldEdu == 'doctorate_degree' ? 'selected' : '' }}>{{ __('Doctorate Degree') }}</option>
+                                        <option value="professional_degree" {{ $oldEdu == 'professional_degree' ? 'selected' : '' }}>{{ __('Professional Degree') }}</option>
                                     </select>
                                 </div>
                             
