@@ -676,7 +676,7 @@ Route::get('/test-mail', function () {
             $message->to('frobminator@frobster.com')
                     ->subject('SMTP Test Email');
         });
-        return 'Test email sent successfully to asimriazasim107@gmail.com';
+        return 'Test email sent successfully to frobminator@frobster.com';
     } catch (\Exception $e) {
         return 'Failed to send email: ' . $e->getMessage();
     }
