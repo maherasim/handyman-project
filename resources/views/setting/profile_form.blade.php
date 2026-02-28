@@ -288,8 +288,8 @@
 
 
                     <div class="form-group col-md-6">
-                        {{ html()->label(__('Skills') . ' <span class="text-danger">*</span>')->class('form-control-label text-danger')->for('skills') }}
-                        {{ html()->text('skills', $user_data->skills)->placeholder(__('skills'))->class('form-control')->required() }}
+                        {{ html()->label(__('Skills'))->class('form-control-label')->for('skills') }}
+                        {{ html()->text('skills', $user_data->skills)->placeholder(__('skills'))->class('form-control') }}
                         <small class="help-block with-errors text-danger"></small>
                     </div>
 

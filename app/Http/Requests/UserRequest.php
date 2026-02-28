@@ -47,7 +47,7 @@ class UserRequest extends FormRequest
             $rules['city_id'] = 'required|exists:cities,id';
             $rules['company_name'] = 'nullable|string|max:255';
             $rules['vat_number'] = 'required|string|max:255';
-            $rules['skills'] = 'required|string|max:500';
+            $rules['skills'] = 'nullable|string|max:500';
             $rules['education'] = 'nullable|string|max:100';
             $rules['career_level'] = 'required|string|max:100';
             $rules['availability'] = 'nullable|in:full_time,part_time';
