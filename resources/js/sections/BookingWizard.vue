@@ -1262,7 +1262,7 @@ const getCurrentLocation = async () => {
   isLoading.value = true;
   const options = {
     enableHighAccuracy: true,
-    timeout: 30000,
+    timeout: 60000,
     maximumAge: 0
   };
   navigator.geolocation.getCurrentPosition(
@@ -1289,12 +1289,22 @@ const getCurrentLocation = async () => {
         let formattedAddress = null;
         if (googlemapkey) {
           try {
-            const response = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${currentLatitude},${currentLongitude}&key=${googlemapkey}`);
-            const data = await response.json();
+            let geocodeUrl = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${currentLatitude},${currentLongitude}&key=${googlemapkey}&result_type=street_address|premise|subpremise|establishment|point_of_interest`;
+            let response = await fetch(geocodeUrl);
+            let data = await response.json();
+            if (data.status !== 'OK' || !data.results || data.results.length === 0) {
+              geocodeUrl = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${currentLatitude},${currentLongitude}&key=${googlemapkey}`;
+              response = await fetch(geocodeUrl);
+              data = await response.json();
+            }
             if (data.status === 'OK' && data.results && data.results.length > 0) {
-              const preferred = data.results.find(r => r.geometry && r.geometry.location_type === 'ROOFTOP')
-                || data.results.find(r => r.geometry && r.geometry.location_type === 'RANGE_INTERPOLATED')
-                || data.results[0];
+              const results = data.results;
+              const hasStreetAddress = (r) => r.types && (r.types.includes('street_address') || r.types.includes('premise') || r.types.includes('subpremise') || r.types.includes('establishment'));
+              const preferred = results.find(r => r.geometry && r.geometry.location_type === 'ROOFTOP' && hasStreetAddress(r))
+                || results.find(r => r.geometry && r.geometry.location_type === 'ROOFTOP')
+                || results.find(r => r.geometry && r.geometry.location_type === 'RANGE_INTERPOLATED' && hasStreetAddress(r))
+                || results.find(r => r.geometry && r.geometry.location_type === 'RANGE_INTERPOLATED')
+                || results[0];
               formattedAddress = preferred.formatted_address;
             } else {
               locationError.value = t('landingpage.location_api_unavailable') || 'Location service is temporarily unavailable. Please enter your address manually.';
