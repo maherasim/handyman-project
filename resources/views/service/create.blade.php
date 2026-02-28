@@ -32,13 +32,13 @@
 
                         <div class="row">
                             <div class="form-group col-md-3">
-                                {{ html()->label(__('messages.name') . ' <span class="text-danger">*</span>', 'name')->class('form-control-label') }}
+                                {{ html()->label(__('messages.name'), 'name')->class('form-control-label') }}
                                 {{ html()->text('name', old('name', $servicedata->name))->placeholder(__('messages.name'))->class('form-control')->required()->attributes(['title' => 'Please enter alphabetic characters and spaces only']) }}
                                 <small class="help-block with-errors text-danger"></small>
                             </div>
 
                             <div class="form-group col-md-3">
-                                {{ html()->label(__('messages.select_name', ['select' => __('messages.category')]) . ' <span class="text-danger">*</span>', 'name')->class('form-control-label') }}
+                                {{ html()->label(__('messages.select_name', ['select' => __('messages.category')]), 'name')->class('form-control-label') }}
                                 <br />
                                 {{ html()->select(
                                         'category_id',
@@ -48,7 +48,7 @@
 
                             </div>
                             <div class="form-group col-md-3">
-                                {{ html()->label(__('messages.select_name', ['select' => __('messages.subcategory')]) . ' <span class="text-danger">*</span>', 'subcategory_id')->class('form-control-label text-danger') }}
+                                {{ html()->label(__('messages.select_name', ['select' => __('messages.subcategory')]), 'subcategory_id')->class('form-control-label') }}
                                 <br />
                                 {{ html()->select('subcategory_id', [])->class('select2js form-group subcategory_id')->required()->id('subcategory_id')->attribute('data-placeholder', __('messages.select_name', ['select' => __('messages.subcategory')])) }}
                             </div>
@@ -80,8 +80,7 @@
 
                             <div class="form-group col-md-3">
                                 <label
-                                    for="state_id">{{ __('messages.select_name', ['select' => __('messages.state')]) }}
-                                    <span class="text-danger">*</span></label>
+                                    for="state_id">{{ __('messages.select_name', ['select' => __('messages.state')]) }}</label>
                                 <select name="state_id" id="state_id" class="select2js form-group category" required
                                     data-placeholder="{{ __('messages.select_name', ['select' => __('messages.state')]) }}">
                                     <!-- State options will be populated dynamically -->
@@ -90,8 +89,7 @@
 
                             <div class="form-group col-md-3">
                                 <label
-                                    for="city_id">{{ __('messages.select_name', ['select' => __('messages.city')]) }}
-                                    <span class="text-danger">*</span></label>
+                                    for="city_id">{{ __('messages.select_name', ['select' => __('messages.city')]) }}</label>
                                 <select name="city_id" id="city_id" class="select2js form-group category" required
                                     data-placeholder="{{ __('messages.select_name', ['select' => __('messages.city')]) }}">
                                     <!-- City options will be populated dynamically -->
@@ -109,7 +107,7 @@
 
                             @if (auth()->user()->hasAnyRole(['admin', 'demo_admin']))
                                 <div class="form-group col-md-3">
-                                    {{ html()->label(__('messages.select_name', ['select' => __('messages.provider')]) . ' <span class="text-danger">*</span>', 'name')->class('form-control-label') }}
+                                    {{ html()->label(__('messages.select_name', ['select' => __('messages.provider')]), 'name')->class('form-control-label') }}
                                     <br />
                                     {{ html()->select(
                                             'provider_id',
@@ -119,7 +117,7 @@
                                 </div>
                             @endif
                             <div class="form-group col-md-3">
-                                {{ html()->label(__('messages.select_name', ['select' => __('messages.provider_address')]) . ' <span class="text-danger">*</span>', 'provider_address_id')->class('form-control-label text-danger') }}
+                                {{ html()->label(__('messages.select_name', ['select' => __('messages.provider_address')]), 'provider_address_id')->class('form-control-label') }}
                                 <br />
                                 {{ html()->select('provider_address_id[]', [], old('provider_address_id'))->class('select2js form-group provider_address_id')->id('provider_address_id')->multiple()->required()->attribute('data-placeholder', __('messages.select_name', ['select' => __('messages.provider_address')])) }}
 
@@ -137,7 +135,7 @@
                             </div>
 
                             <div class="form-group col-md-3">
-                                {{ html()->label(__('messages.price_type') . ' <span class="text-danger">*</span>', 'type')->class('form-control-label') }}
+                                {{ html()->label(__('messages.price_type'), 'type')->class('form-control-label') }}
                                 {{ html()->select(
                                         'type',
                                         [
@@ -149,7 +147,7 @@
                                     )->class('form-control select2js')->required()->id('price_type') }}
                             </div>
                             <div class="form-group col-md-3" id="price_div">
-                                {{ html()->label(__('messages.price') . ' <span class="text-danger">*</span>', 'price')->class('form-control-label') }}
+                                {{ html()->label(__('messages.price'), 'price')->class('form-control-label') }}
                                 {{ html()->text('price', old('price', $servicedata->price))->attributes(['min' => 1, 'step' => 'any', 'pattern' => '^\\d+(\\.\\d{1,2})?$'])->placeholder(__('messages.price'))->class('form-control')->required()->id('price') }}
                                 <small class="help-block with-errors text-danger"></small>
                             </div>
@@ -157,7 +155,7 @@
 
                             <div class="form-group col-md-3" id="minimum_booking_div">
                                 {{ html()->label(__('Minimum Booking'), 'minimum_booking')->class('form-control-label') }}
-                                {{ html()->text('minimum_booking', old('minimum_booking', $servicedata->minimum_booking))->attributes(['step' => 'any'])->placeholder(__('minimum booking'))->class('form-control')->id('minimum_booking') }}
+                                {{ html()->text('minimum_booking', old('minimum_booking', $servicedata->minimum_booking))->attributes(['step' => 'any'])->placeholder(__('minimum booking'))->class('form-control')->required()->id('minimum_booking') }}
                                 <small class="help-block with-errors text-danger"></small>
                             </div>
 
@@ -171,14 +169,14 @@
 
 
                             <div class="form-group col-md-3">
-                                {{ html()->label(__('messages.duration') . ' (hours) <span class="text-danger">*</span>', 'duration')->class('form-control-label text-danger') }}
+                                {{ html()->label(__('messages.duration') . ' (hours)', 'duration')->class('form-control-label') }}
                                 {{ html()->text('duration', old('duration', $servicedata->duration))->placeholder('e.g. 40 or 46:30')->class('form-control duration-input')->id('duration')->required()->attribute('autocomplete', 'off') }}
                                 <small class="help-block with-errors text-danger"></small>
                                 <small id="duration-error" class="text-danger"></small>
                             </div>
 
                             <div class="form-group col-md-3">
-                                {{ html()->label(__('messages.status') . ' <span class="text-danger">*</span>', 'status')->class('form-control-label') }}
+                                {{ html()->label(__('messages.status'), 'status')->class('form-control-label') }}
                                 {{ html()->select('status', ['1' => __('messages.active'), '0' => __('messages.inactive')], old('status', $servicedata->status))->class('form-control select2js')->required() }}
                             </div>
 
@@ -189,7 +187,7 @@
                             </div>
 
                             <div class="form-group col-md-3">
-                                {{ html()->label(__('Remote Work Level') . ' <span class="text-danger">*</span>', 'remote_work_level')->class('form-control-label') }}
+                                {{ html()->label(__('Remote Work Level'), 'remote_work_level')->class('form-control-label') }}
                                 {{ html()->select(
                                         'remote_work_level',
                                         [
@@ -204,7 +202,7 @@
                             </div>
 
                             <div class="form-group col-md-3">
-                                {{ html()->label(__('Career Level') . ' <span class="text-danger">*</span>', 'career_level')->class('form-control-label') }}
+                                {{ html()->label(__('Career Level'), 'career_level')->class('form-control-label') }}
                                 {{ html()->select(
                                         'career_level',
                                         [
@@ -221,7 +219,7 @@
                             </div>
 
                             <div class="form-group col-md-3">
-                                {{ html()->label(__('Travel Required') . ' <span class="text-danger">*</span>', 'travel_required')->class('form-control-label') }}
+                                {{ html()->label(__('Travel Required'), 'travel_required')->class('form-control-label') }}
                                 {{ html()->select(
                                         'travel_required',
                                         [
@@ -237,9 +235,7 @@
 
 
                             <div class="form-group col-md-3">
-                                <label class="form-control-label" for="service_attachment">{{ __('messages.image') }}
-                                    <span class="text-danger">*</span>
-                                </label>
+                                <label class="form-control-label" for="service_attachment">{{ __('messages.image') }}</label>
                                 <div class="custom-file">
                                     <input type="file" onchange="previewSelectedImages(this)"
                                         name="service_attachment[]" class="custom-file-input"
