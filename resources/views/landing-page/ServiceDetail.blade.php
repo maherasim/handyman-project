@@ -1283,6 +1283,26 @@
                                         <span class="info-value">{{ ucfirst(trim($serviceData['provider']['designation'])) }}</span>
                                     </div>
                                     @endif
+                                    @if(!empty($serviceData['provider']['years_of_experience']))
+                                    @php
+                                        $yearsKey = $serviceData['provider']['years_of_experience'];
+                                        $yearsLabels = [
+                                            'less_than_1' => __('messages.years_of_experience_less_than_1'),
+                                            '1_to_3' => __('messages.years_of_experience_1_to_3'),
+                                            '3_to_5' => __('messages.years_of_experience_3_to_5'),
+                                            '5_to_8' => __('messages.years_of_experience_5_to_8'),
+                                            '8_to_10' => __('messages.years_of_experience_8_to_10'),
+                                            'more_than_10' => __('messages.years_of_experience_more_than_10'),
+                                        ];
+                                        $yearsLabel = $yearsLabels[$yearsKey] ?? $yearsKey;
+                                    @endphp
+                                    <div class="info-row">
+                                        <span class="info-label">
+                                            <i class="ri-time-line me-1"></i> {{ __('messages.years_of_experience') }}:
+                                        </span>
+                                        <span class="info-value">{{ $yearsLabel }}</span>
+                                    </div>
+                                    @endif
                                     @if(!empty($completed_services))
                                     <div class="info-row">
                                         <span class="info-label">
