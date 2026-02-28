@@ -36,7 +36,7 @@
                         <small class="help-block with-errors text-danger"></small>
                     </div>
                     <div class="form-group col-md-6">
-                        {{ html()->label(__('messages.select_name', ['select' => __('Language')]), 'languages')->class('form-control-label') }}
+                        {{ html()->label(__('messages.select_name', ['select' => __('Language')]) . ' <span class="text-danger">*</span>', 'languages')->class('form-control-label')->for('languages') }}
                         <br />
                         {{ html()->select(
                                 'languages[]',
@@ -275,8 +275,8 @@
                         </div>
                     </div>
                     <div class="form-group col-md-6">
-                        {{ html()->label(__('Company Name') . ' <span class="text-danger">*</span>')->class('form-control-label text-danger')->for('company_name') }}
-                        {{ html()->text('company_name', $user_data->company_name)->placeholder(__('Company Name'))->class('form-control')->required() }}
+                        {{ html()->label(__('Company Name'), 'company_name')->class('form-control-label')->for('company_name') }}
+                        {{ html()->text('company_name', $user_data->company_name)->placeholder(__('Company Name'))->class('form-control') }}
                         <small class="help-block with-errors text-danger"></small>
                     </div>
 
@@ -294,7 +294,7 @@
                     </div>
 
                     <div class="form-group col-md-6">
-                        {{ html()->label(__('Education') . ' <span class="text-danger">*</span>')->class('form-control-label text-danger')->for('education') }}
+                        {{ html()->label(__('Education'), 'education')->class('form-control-label')->for('education') }}
                         {{ html()->select(
                                 'education',
                                 [
@@ -366,7 +366,7 @@
                     </div>
 
                     <div class="form-group col-md-6">
-                        {{ html()->label(__('Availability') . ' <span class="text-danger">*</span>', 'availability')->class('form-control-label text-danger') }}
+                        {{ html()->label(__('Availability'), 'availability')->class('form-control-label') }}
                         @php
                             // Convert old values (1/0 or 'Full-time'/'Part-time') to new format for display
                             $availabilityValue = $user_data->availability;
@@ -408,8 +408,8 @@
                         </div>
                     @endif
                     <div class="form-group col-md-12">
-                        {{ html()->label(__('Experience') . ' <span class="text-danger">*</span>', 'Experience')->class('form-control-label text-danger') }}
-                        {{ html()->textarea('experience', $user_data->experience)->class('form-control textarea')->rows(2)->placeholder(__('experience'))->id('experience')->required() }}
+                        {{ html()->label(__('Experience'), 'experience')->class('form-control-label') }}
+                        {{ html()->textarea('experience', $user_data->experience)->class('form-control textarea')->rows(2)->placeholder(__('experience'))->id('experience') }}
                     </div>
                     <div class="form-group col-md-12">
                         {{ html()->label(__('About Me'))->class('form-control-label')->for('about_me') }}

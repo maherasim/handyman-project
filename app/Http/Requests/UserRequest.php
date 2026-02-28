@@ -40,18 +40,18 @@ class UserRequest extends FormRequest
             $rules['languages.*'] = 'string';
         }
 
-        // Profile form (setting/profile_form) – make these fields required
+        // Profile form (setting/profile_form) – Language mandatory; Company Name, Education, Availability, Experience optional
         if (request()->has('profile') && request()->profile === 'profile') {
             $rules['country_id'] = 'required|exists:countries,id';
             $rules['state_id'] = 'required|exists:states,id';
             $rules['city_id'] = 'required|exists:cities,id';
-            $rules['company_name'] = 'required|string|max:255';
+            $rules['company_name'] = 'nullable|string|max:255';
             $rules['vat_number'] = 'required|string|max:255';
             $rules['skills'] = 'required|string|max:500';
-            $rules['education'] = 'required|string|max:100';
+            $rules['education'] = 'nullable|string|max:100';
             $rules['career_level'] = 'required|string|max:100';
-            $rules['availability'] = 'required|in:full_time,part_time';
-            $rules['experience'] = 'required|string';
+            $rules['availability'] = 'nullable|in:full_time,part_time';
+            $rules['experience'] = 'nullable|string';
             $rules['languages'] = 'required|array|min:1';
             $rules['languages.*'] = 'string';
         }
