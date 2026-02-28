@@ -57,7 +57,7 @@
 
                             <div class="col-md-3">
                                 <label
-                                    for="country_id">{{ __('messages.select_name', ['select' => __('messages.country')]) }}</label>
+                                    for="country_id">{{ __('messages.select_name', ['select' => __('messages.country')]) }} <span class="text-danger">*</span></label>
                                 <br />
                                 <select name="country_id" id="country_id" class="select2js country" required
                                     data-placeholder="{{ __('messages.select_name', ['select' => __('messages.country')]) }}"
@@ -176,7 +176,7 @@
                             </div>
 
                             <div class="form-group col-md-3">
-                                {{ html()->label(__('messages.status'), 'status')->class('form-control-label') }}
+                                {{ html()->label(__('messages.status') . ' <span class="text-danger">*</span>', 'status')->class('form-control-label') }}
                                 {{ html()->select('status', ['1' => __('messages.active'), '0' => __('messages.inactive')], old('status', $servicedata->status))->class('form-control select2js')->required() }}
                             </div>
 
@@ -314,8 +314,8 @@
 
                         <div class="row">
                             <div class="form-group col-md-6 quill-group">
-                                {{ html()->label(__('messages.description'), 'description')->class('form-control-label') }}
-                                {{ html()->textarea('description', old('description', $servicedata->description))->class('form-control textarea js-richtext')->rows(3)->placeholder(__('messages.description'))->id('description') }}
+                                {{ html()->label(__('messages.description') . ' <span class="text-danger">*</span>', 'description')->class('form-control-label') }}
+                                {{ html()->textarea('description', old('description', $servicedata->description))->class('form-control textarea js-richtext')->rows(3)->placeholder(__('messages.description'))->id('description')->attribute('data-required', '1') }}
                             </div>
                             <div class="form-group col-md-6 quill-group">
                                 {{ html()->label(__('Cancellation Policy & Fees') . ' <span class="text-danger">*</span>', 'cancellation_policy')->class('form-control-label') }}

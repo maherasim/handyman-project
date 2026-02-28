@@ -68,7 +68,6 @@ class UserRequest extends FormRequest
            'city_id.required' => __('messages.select_name', ['select' => __('messages.city')]),
            'company_name.required' => __('Company Name') . ' ' . __('messages.is_required'),
            'vat_number.required' => __('Vat Number') . ' ' . __('messages.is_required'),
-           'skills.required' => __('Skills') . ' ' . __('messages.is_required'),
            'education.required' => __('Education') . ' ' . __('messages.is_required'),
            'career_level.required' => __('Career Level') . ' ' . __('messages.is_required'),
            'availability.required' => __('Availability') . ' ' . __('messages.is_required'),
