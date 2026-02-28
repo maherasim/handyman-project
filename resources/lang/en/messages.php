@@ -989,5 +989,12 @@
     'advance_pay' => 'Advance Pay',
     'service_proof_submitted_successfully' => 'Your service proof has been submitted successfully.',
     'upload_multiple_images' => 'You can upload multiple images.',
+    'years_of_experience' => 'Years of Experience',
+    'years_of_experience_less_than_1' => 'Less than 1 Year',
+    'years_of_experience_1_to_3' => '1 to 3 Years',
+    'years_of_experience_3_to_5' => '3 to 5 Years',
+    'years_of_experience_5_to_8' => '5 to 8 Years',
+    'years_of_experience_8_to_10' => '8 to 10 Years',
+    'years_of_experience_more_than_10' => 'More than 10 Years',
 
 );

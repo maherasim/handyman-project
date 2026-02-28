@@ -685,7 +685,7 @@
 
 
     <!-- Service -->
-    <div class="section-padding bg-light our-service">
+    <div class="section-padding section-padding--less-top bg-light our-service">
         <div class="container">
             @if ($sectionData && isset($sectionData['section_3']) && $sectionData['section_3']['section_3'] == 1)
                 <div>
@@ -954,9 +954,11 @@
 
                 </div>
             @endif
+        </div>
+    </div>
 
- <!-- Why us -->
- <div class="section-padding bg-light landing-why-wrap landing-animate-in">
+    <!-- Why us -->
+    <div class="section-padding bg-white landing-why-wrap landing-animate-in">
     <div class="container">
         <h2 class="landing-why-title">{{ __('landingpage.why_us_title') }}</h2>
         <p class="landing-why-lead">{{ __('landingpage.why_us_lead') }}</p>
@@ -993,19 +995,10 @@
     </div>
 </div>
 
-
-
-
-
-
-
-
-
-
-
-            {{-- //Featured Service --}}
+            {{-- Featured Services (separate section) --}}
             @if ($sectionData && isset($sectionData['section_4']) && $sectionData['section_4']['section_4'] == 1)
-            <div>
+            <div class="section-padding landing-featured-section landing-section-alt">
+                <div class="container">
                 <div class="service-img d-flex align-items-center justify-content-between flex-wrap gap-2">
                     <div class="iq-title-box mb-0">
                         <h3 class="text-capitalize line-count-1">{{ $sectionData['section_4']['title'] }}
@@ -1024,9 +1017,8 @@
                     </div>
                     <a href="{{ route('service.list') }}"
                         class="btn btn-link p-0 flex-shrink-0">{{ __('messages.view_all') }}</a>
-                </div> 
-                <div class="container">
-                    <div class="row">
+                </div>
+                <div class="row">
                         @foreach ($featuredrequest  as $data)
                             <div class="col-md-3"> <!-- Changed from col-md-4 to col-md-3 -->
                                 <div class="service-box-card bg-white rounded-3 mb-5 shadow-sm"
@@ -1243,16 +1235,8 @@
                         @endforeach
                     </div>
                 </div>
-
-
-
-
-
             </div>
         @endif
-          
-        </div>
-    </div>
 
     @if ($auth_user_id)
         <!-- Recently Viewed Service -->

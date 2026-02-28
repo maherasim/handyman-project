@@ -548,6 +548,23 @@
         .landing-how-step-desc { font-size: 0.9375rem; }
     }
 
+    /* Section background alternation – ensures sections never blend together on refresh */
+    .landing-section-alt {
+        background: #eef2ff !important; /* stronger indigo-blue tint – clearly different from bg-light and bg-white */
+    }
+    /* Optional top-border helper – add class 'section-top-border' to any section div for a hairline separator */
+    .section-top-border {
+        border-top: 1px solid #e5e9f0;
+    }
+    /* Service section (bg-light our-service) gets a strong bottom border to separate from Why Us (bg-white) */
+    .our-service {
+        border-bottom: 3px solid #d0d7e8;
+    }
+    /* Why us section (bg-white) gets a strong bottom border to separate from Featured section */
+    .landing-why-wrap {
+        border-bottom: 3px solid #d0d7e8;
+    }
+
     /* Why us – larger fonts, readable descriptions */
     .landing-why-wrap { position: relative; }
     .landing-why-title {
