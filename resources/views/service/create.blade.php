@@ -816,7 +816,7 @@
                                 });
                             }
                         }, 100);
-                        $duration.val('01:00').prop('readonly', true).prop('disabled', true);
+                        $duration.val('01:00').prop('readonly', true).prop('disabled', false);
                     } else if (type.toLowerCase() === 'daily') {
                         // Use time picker for daily
                         $duration.removeClass('duration-input').addClass('min-datetimepicker-time');
@@ -832,7 +832,7 @@
                                 });
                             }
                         }, 100);
-                        $duration.val('08:00').prop('readonly', true).prop('disabled', true);
+                        $duration.val('08:00').prop('readonly', true).prop('disabled', false);
                     } else if (type === 'fixed') {
                         // Use text input for fixed - accepts both numeric hours and HH:MM format
                         $duration.removeClass('min-datetimepicker-time').addClass('duration-input');
