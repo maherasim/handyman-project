@@ -85,7 +85,7 @@ $logoPath = public_path('assets/frobster logo.png');
                     <td style="width: 60%; border: 0;">
                         <div class="title">{{ __('Invoice') }}</div>
                         <div class="text-muted">{{ __('Invoice No:') }} #{{ $bookingdata->id }}</div>
-                        <div class="text-muted">{{ __('Currency:') }} {{ $bookingdata->currency ?? 'EUR' }}</div>
+                        <div class="text-muted">{{ __('Currency:') }} {{ $bookingdata->currency ?? 'USD' }}</div>
                         <div class="text-muted">{{ __('Date Issued:') }} {{ optional($bookingdata->created_at)->format('d M Y') }}</div>
                     </td>
                     <td class="text-right" style="width: 40%; border: 0;">
@@ -116,8 +116,8 @@ $logoPath = public_path('assets/frobster logo.png');
                         <div class="fw-bold mb-6">{{ __('Bill To') }}</div>
                         <div class="mb-6">{{ optional($bookingdata->customer)->display_name ?? '-' }}</div>
                         <div class="mb-6">{{ optional($bookingdata->customer)->company_name ?? '-' }}</div>
-                        <div class="text-muted">{{ optional($bookingdata->customer)->address ?? '-' }}</div>
-                        <div class="text-muted">{{ optional($bookingdata->customer)->vat_number ?? '-' }}</div>
+                        <div class="text-muted">{{ __('Addres:') }}{{ optional($bookingdata->customer)->address ?? '-' }}</div>
+                        <div class="text-muted">{{ __('VAT Number:') }}{{ optional($bookingdata->customer)->vat_number ?? '-' }}</div>
                     </td>
                 </tr>
                 <tr>
@@ -143,8 +143,8 @@ $logoPath = public_path('assets/frobster logo.png');
                     <tr>
                         <td>{{ optional($bookingdata->service)->name ?? '-' }}</td>
                         <td class="text-right">{{ $quantity }}</td>
-                        <td class="text-right">{{ getPriceFormat($unitPrice) }}</td>
-                        <td class="text-right">{{ getPriceFormat($baseTotal) }}</td>
+                        <td class="text-right">{{ $fmt($unitPrice) }}</td>
+                        <td class="text-right">{{ $fmt($baseTotal) }}</td>
                     </tr>
                 </tbody>
             </table>
@@ -153,52 +153,52 @@ $logoPath = public_path('assets/frobster logo.png');
                 <tbody>
                     <tr>
                         <td>{{ __('Sub Total') }}</td>
-                        <td class="text-right">{{ getPriceFormat($baseTotal) }}</td>
+                        <td class="text-right">{{ $fmt($baseTotal) }}</td>
                     </tr>
                     @if ($discountAmount > 0)
                     <tr>
                         <td>{{ __('Discount') }} ({{ $bookingdata->discount }}%)</td>
-                        <td class="text-right">-{{ getPriceFormat($discountAmount) }}</td>
+                        <td class="text-right">-{{ $fmt($discountAmount) }}</td>
                     </tr>
                     @endif
                     @if ($couponAmount > 0)
                     <tr>
                         <td>{{ __('Coupon') }} {{ optional($bookingdata->couponAdded)->code ? '(' . optional($bookingdata->couponAdded)->code . ')' : '' }}</td>
-                        <td class="text-right">-{{ getPriceFormat($couponAmount) }}</td>
+                        <td class="text-right">-{{ $fmt($couponAmount) }}</td>
                     </tr>
                     @endif
                     @if ($addonTotal > 0)
                     <tr>
                         <td>{{ __('Service Addons') }}</td>
-                        <td class="text-right">{{ getPriceFormat($addonTotal) }}</td>
+                        <td class="text-right">{{ $fmt($addonTotal) }}</td>
                     </tr>
                     @endif
                     @if ($extraChargeTotal > 0)
                     <tr>
                         <td>{{ __('Extra Charges') }}</td>
-                        <td class="text-right">{{ getPriceFormat($extraChargeTotal) }}</td>
+                        <td class="text-right">{{ $fmt($extraChargeTotal) }}</td>
                     </tr>
                     @endif
                     <tr>
                         <td>{{ __('Total') }}</td>
-                        <td class="text-right">{{ getPriceFormat($totalBeforeTax) }}</td>
+                        <td class="text-right">{{ $fmt($totalBeforeTax) }}</td>
                     </tr>
                     <tr>
                         <td>{{ __('Tax') }} ({{ $taxRate }}%)</td>
-                        <td class="text-right">{{ getPriceFormat($taxAmount) }}</td>
+                        <td class="text-right">{{ $fmt($taxAmount) }}</td>
                     </tr>
                     <tr>
                         <td>{{ __('Grand Total') }}</td>
-                        <td class="text-right">{{ getPriceFormat($grandTotal) }}</td>
+                        <td class="text-right">{{ $fmt($grandTotal) }}</td>
                     </tr>
                     @if ($showAdvance)
                     <tr>
                         <td>{{ __('Advance Payment') }}</td>
-                        <td class="text-right">{{ getPriceFormat($advancePaid) }}</td>
+                        <td class="text-right">{{ $fmt($advancePaid) }}</td>
                     </tr>
                     <tr>
                         <td>{{ __('Remaining Amount') }}</td>
-                        <td class="text-right">{{ getPriceFormat($remainingAmount) }}</td>
+                        <td class="text-right">{{ $fmt($remainingAmount) }}</td>
                     </tr>
                     @endif
                 </tbody>
