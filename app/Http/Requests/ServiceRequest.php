@@ -35,7 +35,7 @@ class ServiceRequest extends FormRequest
             'city_id'                        => 'required|exists:cities,id',
             'type'                           => 'required|in:fixed,hourly,Daily',
             'price'                          => 'required|numeric|min:0',
-            'minimum_booking'                 => 'required|numeric|min:0',
+            'minimum_booking'                 => 'required',
             'duration'                       => ['required', 'regex:/^(\d+(\.\d+)?|\d+:(?:[0-5]\d|[0-9]))$/'],
             'status'                         => 'required|in:0,1',
             'visit_type'                     => 'required|string|max:50',

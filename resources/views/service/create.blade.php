@@ -155,7 +155,7 @@
 
                             <div class="form-group col-md-3" id="minimum_booking_div">
                                 {{ html()->label(__('Minimum Booking'), 'minimum_booking')->class('form-control-label') }}
-                                {{ html()->text('minimum_booking', old('minimum_booking', $servicedata->minimum_booking))->attributes(['step' => 'any'])->placeholder(__('minimum booking'))->class('form-control')->required()->id('minimum_booking') }}
+                                {{ html()->text('minimum_booking', old('minimum_booking', $servicedata->minimum_booking))->placeholder(__('minimum booking'))->class('form-control')->required()->id('minimum_booking') }}
                                 <small class="help-block with-errors text-danger"></small>
                             </div>
 
