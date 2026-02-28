@@ -660,9 +660,12 @@
         <script type="text/javascript">
             document.addEventListener('DOMContentLoaded', function() {
                 var $duration = $('#duration');
-                var initialType = $("#price_type").val();
-                
-                // Initialize based on current type
+                function getPriceType() {
+                    var v = $("#price_type").val();
+                    return (v && typeof v === 'string') ? v.trim() : (v || '');
+                }
+                // Initialize duration from current price type (hourly -> 1:00 readonly, daily -> 8:00 readonly, fixed -> editable)
+                var initialType = getPriceType();
                 handleDurationField(initialType);
                 addDurationValidation();
 
@@ -795,51 +798,53 @@
                 });
 
                 function handleDurationField(type) {
+                    var t = (type && typeof type === 'string') ? type.trim().toLowerCase() : '';
                     // Destroy flatpickr instance if it exists
                     if ($duration.data('flatpickr')) {
                         $duration.flatpickr().destroy();
                         $duration.removeData('flatpickr');
                     }
 
-                    if (type === 'hourly') {
-                        // Use time picker for hourly
+                    if (t === 'hourly') {
                         $duration.removeClass('duration-input').addClass('min-datetimepicker-time');
                         $duration.attr('type', 'text');
-                        // Re-initialize flatpickr
+                        $duration.val('1:00');
+                        $duration.prop('readonly', true).prop('disabled', false).attr('readonly', 'readonly');
+                        $duration.css('pointer-events', 'none').css('background-color', '#e9ecef');
                         setTimeout(function() {
                             if (!$duration.data('flatpickr')) {
                                 $duration.flatpickr({
                                     enableTime: true,
                                     noCalendar: true,
                                     dateFormat: "H:i",
-                                    time_24hr: true
+                                    time_24hr: true,
+                                    clickOpens: false
                                 });
                             }
                         }, 100);
-                        $duration.val('01:00').prop('readonly', true).prop('disabled', false);
-                    } else if (type.toLowerCase() === 'daily') {
-                        // Use time picker for daily
+                    } else if (t === 'daily') {
                         $duration.removeClass('duration-input').addClass('min-datetimepicker-time');
                         $duration.attr('type', 'text');
-                        // Re-initialize flatpickr
+                        $duration.val('8:00');
+                        $duration.prop('readonly', true).prop('disabled', false).attr('readonly', 'readonly');
+                        $duration.css('pointer-events', 'none').css('background-color', '#e9ecef');
                         setTimeout(function() {
                             if (!$duration.data('flatpickr')) {
                                 $duration.flatpickr({
                                     enableTime: true,
                                     noCalendar: true,
                                     dateFormat: "H:i",
-                                    time_24hr: true
+                                    time_24hr: true,
+                                    clickOpens: false
                                 });
                             }
                         }, 100);
-                        $duration.val('08:00').prop('readonly', true).prop('disabled', false);
-                    } else if (type === 'fixed') {
-                        // Use text input for fixed - accepts both numeric hours and HH:MM format
+                    } else {
+                        // fixed or any other: editable
                         $duration.removeClass('min-datetimepicker-time').addClass('duration-input');
                         $duration.attr('type', 'text');
-                        $duration.removeAttr('min').removeAttr('max').removeAttr('step');
-                        $duration.prop('readonly', false).prop('disabled', false);
-                        // Keep existing value as-is (could be numeric or HH:MM format)
+                        $duration.removeAttr('min').removeAttr('max').removeAttr('step').removeAttr('readonly');
+                        $duration.prop('readonly', false).prop('disabled', false).css('pointer-events', 'auto').css('background-color', '');
                     }
                 }
 
