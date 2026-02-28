@@ -285,7 +285,7 @@
                                         'tax_country_id',
                                         [optional($providerdata->country)->id => optional($providerdata->country)->name],
                                         optional($providerdata->country)->id,
-                                    )->class('form-group select2js tax_country')->attribute('data-placeholder', __('messages.select_name', ['select' => __('messages.tax_country')]))->attribute('data-ajax--url', route('ajax-list', ['type' => 'country']))->attribute('disabled', true) }}
+                                    )->class('form-group select2js tax_country')->attribute('data-placeholder', __('messages.select_name', ['select' => __('Tax Country')]))->attribute('data-ajax--url', route('ajax-list', ['type' => 'country']))->attribute('disabled', true) }}
                             </div>
                             <input type="hidden" name="tax_country_id" value="{{ optional($providerdata->country)->id }}">
 

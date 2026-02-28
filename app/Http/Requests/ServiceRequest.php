@@ -40,7 +40,7 @@ class ServiceRequest extends FormRequest
             'status'                         => 'required|in:0,1',
             'visit_type'                     => 'required|string|max:50',
             'remote_work_level'              => 'required|in:onsite,25_remote,50_remote,75_remote,100_remote',
-            'career_level'                   => 'required|in:intern,entry,junior,mid,senior,lead,manager',
+            'career_level'                   => 'required|in:not_specified,entry_level,intermediate_level,experienced,professional,middle_management,executive_management,senior_management,director,technician,leader,manager',
             'travel_required'                => 'required|in:0,1',
             'description'                    => 'required|string',
             'cancellation_policy'            => 'required|string',

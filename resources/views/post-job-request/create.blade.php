@@ -181,12 +181,17 @@
                                     <label for="career_level">{{ __('Career Level') }} <span class="text-danger">*</span></label>
                                     <select name="career_level" id="career_level" class="form-control" required>
                                         @php $oldCareer = old('career_level', $postJob->career_level); @endphp
-                                        <option value="intern" {{ $oldCareer == 'intern' ? 'selected' : '' }}>{{ __('Intern') }}</option>
-                                        <option value="entry" {{ $oldCareer == 'entry' ? 'selected' : '' }}>{{ __('Entry') }}</option>
-                                        <option value="junior" {{ $oldCareer == 'junior' ? 'selected' : '' }}>{{ __('Junior') }}</option>
-                                        <option value="mid" {{ $oldCareer == 'mid' ? 'selected' : '' }}>{{ __('Mid-Level') }}</option>
-                                        <option value="senior" {{ $oldCareer == 'senior' ? 'selected' : '' }}>{{ __('Senior') }}</option>
-                                        <option value="lead" {{ $oldCareer == 'lead' ? 'selected' : '' }}>{{ __('Lead') }}</option>
+                                        <option value="not_specified" {{ $oldCareer == 'not_specified' ? 'selected' : '' }}>{{ __('Not Specified') }}</option>
+                                        <option value="entry_level" {{ $oldCareer == 'entry_level' ? 'selected' : '' }}>{{ __('Entry Level') }}</option>
+                                        <option value="intermediate_level" {{ $oldCareer == 'intermediate_level' ? 'selected' : '' }}>{{ __('Intermediate Level') }}</option>
+                                        <option value="experienced" {{ $oldCareer == 'experienced' ? 'selected' : '' }}>{{ __('Experienced') }}</option>
+                                        <option value="professional" {{ $oldCareer == 'professional' ? 'selected' : '' }}>{{ __('Professional') }}</option>
+                                        <option value="middle_management" {{ $oldCareer == 'middle_management' ? 'selected' : '' }}>{{ __('Middle Management') }}</option>
+                                        <option value="executive_management" {{ $oldCareer == 'executive_management' ? 'selected' : '' }}>{{ __('Executive Management') }}</option>
+                                        <option value="senior_management" {{ $oldCareer == 'senior_management' ? 'selected' : '' }}>{{ __('Senior Management') }}</option>
+                                        <option value="director" {{ $oldCareer == 'director' ? 'selected' : '' }}>{{ __('Director') }}</option>
+                                        <option value="technician" {{ $oldCareer == 'technician' ? 'selected' : '' }}>{{ __('Technician') }}</option>
+                                        <option value="leader" {{ $oldCareer == 'leader' ? 'selected' : '' }}>{{ __('Leader') }}</option>
                                         <option value="manager" {{ $oldCareer == 'manager' ? 'selected' : '' }}>{{ __('Manager') }}</option>
                                     </select>
                                 </div>

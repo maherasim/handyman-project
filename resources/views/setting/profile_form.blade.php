@@ -216,7 +216,7 @@
                                 'tax_country_id',
                                 [optional($user_data->country)->id => optional($user_data->country)->name],
                                 optional($user_data->country)->id,
-                            )->class('form-group select2js tax_country')->attribute('data-placeholder', __('messages.select_name', ['select' => __('messages.tax_country')]))->attribute('data-ajax--url', route('ajax-list', ['type' => 'country']))->attribute('disabled', true) }}
+                            )->class('form-group select2js tax_country')->attribute('data-placeholder', __('messages.select_name', ['select' => __('Tax Country')]))->attribute('data-ajax--url', route('ajax-list', ['type' => 'country']))->attribute('disabled', true) }}
                     </div>
                     <input type="hidden" name="tax_country_id" value="{{ optional($user_data->country)->id }}">
 
@@ -323,20 +323,20 @@
                         {{ html()->select(
                                 'career_level',
                                 [
-                                    '' => 'Not Specified',
-                                    'entry_level' => 'Entry Level',
-                                    'intermediate_level' => 'Intermediate Level',
-                                    'experienced' => 'Experienced',
-                                    'professional' => 'Professional',
-                                    'middle_management' => 'Middle Management',
-                                    'executive_management' => 'Executive Management',
-                                    'senior_management' => 'Senior Management',
-                                    'director' => 'Director',
-                                    'technician' => 'Technician',
-                                    'leader' => 'Leader',
-                                    'manager' => 'Manager',
+                                    'not_specified' => __('Not Specified'),
+                                    'entry_level' => __('Entry Level'),
+                                    'intermediate_level' => __('Intermediate Level'),
+                                    'experienced' => __('Experienced'),
+                                    'professional' => __('Professional'),
+                                    'middle_management' => __('Middle Management'),
+                                    'executive_management' => __('Executive Management'),
+                                    'senior_management' => __('Senior Management'),
+                                    'director' => __('Director'),
+                                    'technician' => __('Technician'),
+                                    'leader' => __('Leader'),
+                                    'manager' => __('Manager'),
                                 ],
-                                $user_data->career_level ?? '',
+                                old('career_level', $user_data->career_level ?: 'not_specified'),
                             )->class('form-control')->required()->attribute('data-placeholder', __('Career Level')) }}
                         <small class="help-block with-errors text-danger"></small>
                     </div>

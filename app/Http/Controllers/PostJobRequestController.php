@@ -2226,7 +2226,7 @@ class PostJobRequestController extends Controller
             'description' => 'nullable|string',
             'job_schedule' => 'required|in:full_time,part_time,contract,temporary,internship',
             'remote_work_level' => 'required|in:onsite,25_remote,50_remote,75_remote,100_remote',
-            'career_level' => 'required|in:intern,entry,junior,mid,senior,lead,manager',
+            'career_level' => 'required|in:not_specified,entry_level,intermediate_level,experienced,professional,middle_management,executive_management,senior_management,director,technician,leader,manager',
             'travel_required' => 'required|in:0,1',
             'education_level' => 'required|in:high_school,associate,undergraduate,graduate,doctorate',
             'duties' => 'nullable|string',

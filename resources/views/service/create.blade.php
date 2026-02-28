@@ -75,7 +75,7 @@
                                         optional($servicedata->tax_country)
                                             ? [optional($servicedata->tax_country)->id => optional($servicedata->tax_country)->name]
                                             : [],
-                                    )->class('form-group select2js tax_country')->attribute('data-placeholder', __('messages.select_name', ['select' => __('messages.tax_country')]))->attribute('data-ajax--url', route('ajax-list', ['type' => 'country']))->attribute('disabled', true)->id('tax_country_id_display') }}
+                                    )->class('form-group select2js tax_country')->attribute('data-placeholder', __('messages.select_name', ['select' => __('Tax Country')]))->attribute('data-ajax--url', route('ajax-list', ['type' => 'country']))->attribute('disabled', true)->id('tax_country_id_display') }}
                             </div>
 
                             <div class="form-group col-md-3">
@@ -206,15 +206,20 @@
                                 {{ html()->select(
                                         'career_level',
                                         [
-                                            'intern' => __('Intern'),
-                                            'entry' => __('Entry'),
-                                            'junior' => __('Junior'),
-                                            'mid' => __('Mid-Level'),
-                                            'senior' => __('Senior'),
-                                            'lead' => __('Lead'),
+                                            'not_specified' => __('Not Specified'),
+                                            'entry_level' => __('Entry Level'),
+                                            'intermediate_level' => __('Intermediate Level'),
+                                            'experienced' => __('Experienced'),
+                                            'professional' => __('Professional'),
+                                            'middle_management' => __('Middle Management'),
+                                            'executive_management' => __('Executive Management'),
+                                            'senior_management' => __('Senior Management'),
+                                            'director' => __('Director'),
+                                            'technician' => __('Technician'),
+                                            'leader' => __('Leader'),
                                             'manager' => __('Manager'),
                                         ],
-                                        old('career_level', $servicedata->career_level ?? 'entry'),
+                                        old('career_level', $servicedata->career_level ?? 'entry_level'),
                                     )->class('form-control select2js')->required()->id('career_level') }}
                             </div>
 
