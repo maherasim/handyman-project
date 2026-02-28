@@ -28,22 +28,39 @@ class ServiceRequest extends FormRequest
         $id = request()->id;
         $rules = [
             'name'                           => 'required|unique:services,name,'.$id,
-            'category_id'                    => 'required',
-            'type'                           => 'required',
-            'price'                          => 'required|min:0',
-            'status'                         => 'required',
+            'category_id'                    => 'required|exists:categories,id',
+            'subcategory_id'                 => 'required|exists:sub_categories,id',
+            'country_id'                     => 'required|exists:countries,id',
+            'state_id'                       => 'required|exists:states,id',
+            'city_id'                        => 'required|exists:cities,id',
+            'type'                           => 'required|in:fixed,hourly,Daily',
+            'price'                          => 'required|numeric|min:0',
+            'minimum_booking'                 => 'required|numeric|min:0',
+            'duration'                       => ['required', 'regex:/^(\d+(\.\d+)?|\d+:(?:[0-5]\d|[0-9]))$/'],
+            'status'                         => 'required|in:0,1',
+            'visit_type'                     => 'required|string|max:50',
             'remote_work_level'              => 'required|in:onsite,25_remote,50_remote,75_remote,100_remote',
             'career_level'                   => 'required|in:intern,entry,junior,mid,senior,lead,manager',
             'travel_required'                => 'required|in:0,1',
+            'description'                    => 'required|string',
+            'cancellation_policy'            => 'required|string',
+            'provider_address_id'            => 'required|array|min:1',
+            'provider_address_id.*'           => 'required',
+            'discount'                       => 'nullable|numeric|min:0|max:99',
         ];
 
-        if (in_array($this->input('type'), ['fixed', 'free']) && $this->filled('duration')) {
-            $rules['duration'] = ['required', 'regex:/^(\d+(\.\d+)?|\d+:(?:[0-5]\d|[0-9]))$/'];
+        if ($this->has('provider_id') && $this->filled('provider_id')) {
+            $rules['provider_id'] = 'required|exists:users,id';
         }
 
         // Require at least one attachment when creating via web (non-API)
         if (empty($id) && !$this->is('api/*')) {
             $rules['service_attachment'] = 'required';
+        }
+
+        // Advance payment amount required when advance payment is enabled
+        if ($this->boolean('is_enable_advance_payment')) {
+            $rules['advance_payment_amount'] = 'required|numeric|min:1|max:99';
         }
 
         return $rules;

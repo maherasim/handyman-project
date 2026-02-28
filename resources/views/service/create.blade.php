@@ -33,7 +33,7 @@
                         <div class="row">
                             <div class="form-group col-md-3">
                                 {{ html()->label(__('messages.name') . ' <span class="text-danger">*</span>', 'name')->class('form-control-label') }}
-                                {{ html()->text('name', old('name', $servicedata->name))->placeholder(__('messages.name'))->class('form-control')->attributes(['title' => 'Please enter alphabetic characters and spaces only']) }}
+                                {{ html()->text('name', old('name', $servicedata->name))->placeholder(__('messages.name'))->class('form-control')->required()->attributes(['title' => 'Please enter alphabetic characters and spaces only']) }}
                                 <small class="help-block with-errors text-danger"></small>
                             </div>
 
@@ -48,9 +48,9 @@
 
                             </div>
                             <div class="form-group col-md-3">
-                                {{ html()->label(__('messages.select_name', ['select' => __('messages.subcategory')]), 'subcategory_id')->class('form-control-label') }}
+                                {{ html()->label(__('messages.select_name', ['select' => __('messages.subcategory')]) . ' <span class="text-danger">*</span>', 'subcategory_id')->class('form-control-label text-danger') }}
                                 <br />
-                                {{ html()->select('subcategory_id', [])->class('select2js form-group subcategory_id')->attribute('data-placeholder', __('messages.select_name', ['select' => __('messages.subcategory')])) }}
+                                {{ html()->select('subcategory_id', [])->class('select2js form-group subcategory_id')->required()->id('subcategory_id')->attribute('data-placeholder', __('messages.select_name', ['select' => __('messages.subcategory')])) }}
                             </div>
 
 
@@ -119,9 +119,9 @@
                                 </div>
                             @endif
                             <div class="form-group col-md-3">
-                                {{ html()->label(__('messages.select_name', ['select' => __('messages.provider_address')]), 'name')->class('form-control-label') }}
+                                {{ html()->label(__('messages.select_name', ['select' => __('messages.provider_address')]) . ' <span class="text-danger">*</span>', 'provider_address_id')->class('form-control-label text-danger') }}
                                 <br />
-                                {{ html()->select('provider_address_id[]', [], old('provider_address_id'))->class('select2js form-group provider_address_id')->id('provider_address_id')->multiple()->attribute('data-placeholder', __('messages.select_name', ['select' => __('messages.provider_address')])) }}
+                                {{ html()->select('provider_address_id[]', [], old('provider_address_id'))->class('select2js form-group provider_address_id')->id('provider_address_id')->multiple()->required()->attribute('data-placeholder', __('messages.select_name', ['select' => __('messages.provider_address')])) }}
 
                                 @if (auth()->user()->hasAnyRole(['provider']))
                                     <a href="{{ route('provideraddress.create', ['provideraddress' => auth()->id()]) }}"
@@ -171,8 +171,8 @@
 
 
                             <div class="form-group col-md-3">
-                                {{ html()->label(__('messages.duration') . ' (hours)', 'duration')->class('form-control-label') }}
-                                {{ html()->text('duration', old('duration', $servicedata->duration))->placeholder('e.g. 40 or 46:30')->class('form-control duration-input')->id('duration')->attribute('autocomplete', 'off') }}
+                                {{ html()->label(__('messages.duration') . ' (hours) <span class="text-danger">*</span>', 'duration')->class('form-control-label text-danger') }}
+                                {{ html()->text('duration', old('duration', $servicedata->duration))->placeholder('e.g. 40 or 46:30')->class('form-control duration-input')->id('duration')->required()->attribute('autocomplete', 'off') }}
                                 <small class="help-block with-errors text-danger"></small>
                                 <small id="duration-error" class="text-danger"></small>
                             </div>
@@ -366,7 +366,7 @@
                             </div>
                             {{-- @endif --}}
                             <div class="form-group col-md-3" id="amount">
-                                {{ html()->label(__('messages.advance_payment_amount') . ' <span class="text-danger"></span> (%)', 'advance_payment_amount')->class('form-control-label') }}
+                                {{ html()->label(__('messages.advance_payment_amount') . ' (%)', 'advance_payment_amount')->class('form-control-label') }}
                                 {{ html()->number('advance_payment_amount', $servicedata->advance_payment_amount)->placeholder(__('messages.amount'))->class('form-control')->id('advance_payment_amount')->attributes(['min' => 1, 'max' => 99]) }}
                                 <small class="help-block with-errors text-danger"></small>
                             </div>
@@ -665,7 +665,103 @@
                 handleDurationField(initialType);
                 addDurationValidation();
 
-                $('#service').on('submit', function() {
+                $('#service').on('submit', function(e) {
+                    // Required field validation (all except Discount %)
+                    var $form = $(this);
+                    var requiredFields = [
+                        { id: 'name', name: '{{ __("messages.name") }}' },
+                        { id: 'category_id', name: '{{ __("messages.select_name", ["select" => __("messages.category")]) }}' },
+                        { id: 'subcategory_id', name: '{{ __("messages.select_name", ["select" => __("messages.subcategory")]) }}' },
+                        { id: 'country_id', name: '{{ __("messages.select_name", ["select" => __("messages.country")]) }}' },
+                        { id: 'state_id', name: '{{ __("messages.select_name", ["select" => __("messages.state")]) }}' },
+                        { id: 'city_id', name: '{{ __("messages.select_name", ["select" => __("messages.city")]) }}' },
+                        { id: 'provider_address_id', name: '{{ __("messages.select_name", ["select" => __("messages.provider_address")]) }}', isMulti: true },
+                        { id: 'price_type', name: '{{ __("messages.price_type") }}' },
+                        { id: 'price', name: '{{ __("messages.price") }}' },
+                        { id: 'minimum_booking', name: '{{ __("Minimum Booking") }}' },
+                        { id: 'duration', name: '{{ __("messages.duration") }}' },
+                        { id: 'status', name: '{{ __("messages.status") }}' },
+                        { id: 'visit_type', name: '{{ __("messages.visit_type") }}' },
+                        { id: 'remote_work_level', name: '{{ __("Remote Work Level") }}' },
+                        { id: 'career_level', name: '{{ __("Career Level") }}' },
+                        { id: 'travel_required', name: '{{ __("Travel Required") }}' }
+                    ];
+                    if ($('#provider_id').length && $('#provider_id').is(':visible')) {
+                        requiredFields.push({ id: 'provider_id', name: '{{ __("messages.select_name", ["select" => __("messages.provider")]) }}' });
+                    }
+                    for (var i = 0; i < requiredFields.length; i++) {
+                        var f = requiredFields[i];
+                        var $el = $('#' + f.id);
+                        if (!$el.length) continue;
+                        var val = $el.val();
+                        if (f.isMulti) {
+                            val = $el.val();
+                            if (!val || (Array.isArray(val) && val.length === 0)) {
+                                if (typeof Snackbar !== 'undefined') {
+                                    Snackbar.show({ text: f.name + ' {{ __("messages.is_required") }}', pos: 'bottom-center', backgroundColor: '#d32f2f', actionTextColor: '#fff' });
+                                } else {
+                                    alert(f.name + ' {{ __("messages.is_required") }}');
+                                }
+                                $el.select2('open');
+                                e.preventDefault();
+                                return false;
+                            }
+                        } else if (val === '' || val === null || val === undefined) {
+                            if (typeof Snackbar !== 'undefined') {
+                                Snackbar.show({ text: f.name + ' {{ __("messages.is_required") }}', pos: 'bottom-center', backgroundColor: '#d32f2f', actionTextColor: '#fff' });
+                            } else {
+                                alert(f.name + ' {{ __("messages.is_required") }}');
+                            }
+                            $el.focus();
+                            e.preventDefault();
+                            return false;
+                        }
+                    }
+                    var descEl = document.querySelector('#description_quill .ql-editor');
+                    var descVal = descEl ? (descEl.innerHTML || '') : ($('#description').val() || '');
+                    if (typeof descVal === 'string') {
+                        var descStrip = descVal.replace(/<[^>]+>/g, '').trim();
+                        if (descStrip === '') {
+                            if (typeof Snackbar !== 'undefined') {
+                                Snackbar.show({ text: '{{ __("messages.description") }} {{ __("messages.is_required") }}', pos: 'bottom-center', backgroundColor: '#d32f2f', actionTextColor: '#fff' });
+                            } else {
+                                alert('{{ __("messages.description") }} {{ __("messages.is_required") }}');
+                            }
+                            var q = document.querySelector('#description_quill');
+                            if (q) q.scrollIntoView();
+                            e.preventDefault();
+                            return false;
+                        }
+                    }
+                    var cancelEl = document.querySelector('#cancellation_policy_quill .ql-editor');
+                    var cancelVal = cancelEl ? (cancelEl.innerHTML || '') : ($('#cancellation_policy').val() || '');
+                    if (typeof cancelVal === 'string') {
+                        var cancelStrip = cancelVal.replace(/<[^>]+>/g, '').trim();
+                        if (cancelStrip === '') {
+                            if (typeof Snackbar !== 'undefined') {
+                                Snackbar.show({ text: '{{ __("Cancellation Policy & Fees") }} {{ __("messages.is_required") }}', pos: 'bottom-center', backgroundColor: '#d32f2f', actionTextColor: '#fff' });
+                            } else {
+                                alert('{{ __("Cancellation Policy & Fees") }} {{ __("messages.is_required") }}');
+                            }
+                            var q2 = document.querySelector('#cancellation_policy_quill');
+                            if (q2) q2.scrollIntoView();
+                            e.preventDefault();
+                            return false;
+                        }
+                    }
+                    if ($('#amount').length && $('#amount').is(':visible') && $('#advance_payment_amount').prop('required')) {
+                        var adv = $('#advance_payment_amount').val();
+                        if (adv === '' || isNaN(parseFloat(adv))) {
+                            if (typeof Snackbar !== 'undefined') {
+                                Snackbar.show({ text: '{{ __("messages.advance_payment_amount") }} {{ __("messages.is_required") }}', pos: 'bottom-center', backgroundColor: '#d32f2f', actionTextColor: '#fff' });
+                            } else {
+                                alert('{{ __("messages.advance_payment_amount") }} {{ __("messages.is_required") }}');
+                            }
+                            $('#advance_payment_amount').focus();
+                            e.preventDefault();
+                            return false;
+                        }
+                    }
                     var priceType = $('#price_type').val();
                     if (priceType && priceType.toLowerCase() === 'fixed') {
                         var durationInput = document.getElementById('duration');

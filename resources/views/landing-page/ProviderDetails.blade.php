@@ -483,6 +483,33 @@
                         </div>
                         @endif
 
+                        <!-- Years of Experience Card -->
+                        @if(!empty($providerData['data']['years_of_experience']))
+                        @php
+                            $yearsKey = $providerData['data']['years_of_experience'];
+                            $yearsLabels = [
+                                'less_than_1' => __('messages.years_of_experience_less_than_1'),
+                                '1_to_3' => __('messages.years_of_experience_1_to_3'),
+                                '3_to_5' => __('messages.years_of_experience_3_to_5'),
+                                '5_to_8' => __('messages.years_of_experience_5_to_8'),
+                                '8_to_10' => __('messages.years_of_experience_8_to_10'),
+                                'more_than_10' => __('messages.years_of_experience_more_than_10'),
+                            ];
+                            $yearsLabel = $yearsLabels[$yearsKey] ?? $yearsKey;
+                        @endphp
+                        <div class="info-card-modern mb-4">
+                            <div class="info-card-header-modern" style="opacity: 1 !important; visibility: visible !important; display: flex !important; justify-content: center !important; background: #3333ff !important; padding: 6px 15px !important; min-height: 40px !important;">
+                                <i class="ri-time-line me-2" style="opacity: 1 !important; visibility: visible !important; font-size: 16px;"></i>
+                                <h5 class="mb-0" style="opacity: 1 !important; visibility: visible !important; color: #ffffff !important; font-size: 13px; font-weight: 700;">{{ __('messages.years_of_experience') }}</h5>
+                            </div>
+                            <div class="info-card-body-modern">
+                                <div class="info-value-modern">
+                                    <span class="badge-modern bg-info-modern">{{ $yearsLabel }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        @endif
+
                         <!-- Experience Card -->
                         @if(!empty($providerData['data']['experience']))
                         <div class="info-card-modern mb-4">

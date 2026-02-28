@@ -110,6 +110,7 @@ class UserResource extends JsonResource
             'language_option' => $this->language_option,
             'availability' => $this->availability,
             'experience' => $this->experience,
+            'years_of_experience' => $this->years_of_experience,
             'mobility' => $this->mobility,
             'education' => $this->education,
             'certification' => $this->certification,
