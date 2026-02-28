@@ -607,7 +607,13 @@
                 </div>
 
                 <div class="text-center">
-                    @if(($bookingData['service']['is_enable_advance_payment']==1 && $bookingData['booking_detail']['payment_id'] == null) || ($bookingData['service']['is_enable_advance_payment']==1 && $bookingData['booking_detail']['status'] !== 'cancelled' && ($bookingData['booking_detail']['payment_status'] == 'failed' || $bookingData['booking_detail']['payment_status'] == 'pending')))
+                    @php
+                        $paymentStatus = strtolower((string)($bookingData['booking_detail']['payment_status'] ?? ''));
+                        $showAdvancePaymentBtn = $bookingData['service']['is_enable_advance_payment'] == 1
+                            && $bookingData['booking_detail']['status'] !== 'cancelled'
+                            && ($bookingData['booking_detail']['payment_id'] == null || in_array($paymentStatus, ['pending', 'failed']));
+                    @endphp
+                    @if($showAdvancePaymentBtn)
                     <div id="payment-component" style="display: none;">
                         <payment
                             :booking_id="{{ $bookingData['booking_detail']['id'] }}"
