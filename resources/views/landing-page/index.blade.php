@@ -57,7 +57,7 @@
                                             </svg>
                                         </div>
                                         <div class="trust-stat-body">
-                                            @php $completedJobsRandom = rand(100, 120); @endphp
+                                            @php $completedJobsRandom = rand(100, 200); @endphp
                                             <span class="trust-stat-number">{{ number_format($completedJobsRandom) }}<span class="trust-stat-suffix">+</span></span>
                                             <span class="trust-stat-label">{{ __('landingpage.completed_jobs') }}</span>
                                         </div>
@@ -75,7 +75,7 @@
                                             </svg>
                                         </div>
                                         <div class="trust-stat-body">
-                                            @php $localProsRandom = rand(100, 120); @endphp
+                                            @php $localProsRandom = rand(200, 500); @endphp
                                             <span class="trust-stat-number">{{ number_format($localProsRandom) }}<span class="trust-stat-suffix">+</span></span>
                                             <span class="trust-stat-label">{{ __('landingpage.local_pros') }}</span>
                                         </div>
