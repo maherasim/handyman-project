@@ -767,7 +767,14 @@ const calculateDuration = (index) => {
                 if (!isNaN(hours)) end.add(hours, 'hours');
                 if (!isNaN(minutes)) end.add(minutes, 'minutes');
 
-                slot.endTime = end.format('HH:mm');
+                // Hours only: round displayed end time to full hour (round up if minutes)
+                const endRounded = end.clone();
+                if (endRounded.minute() !== 0 || endRounded.second() !== 0) {
+                    endRounded.add(1, 'hour').startOf('hour');
+                } else {
+                    endRounded.startOf('hour');
+                }
+                slot.endTime = endRounded.format('HH:mm');
                 console.log("Calculated End Time (non-hourly):", slot.endTime);
             } else {
                 console.warn("Invalid time format in duration:", durationString);
@@ -837,7 +844,14 @@ const calculateDuration = (index) => {
                     if (!isNaN(hours)) end.add(hours, 'hours');
                     if (!isNaN(minutes)) end.add(minutes, 'minutes');
 
-                    slot.endTime = end.format('HH:mm');
+                    // Hours only: round displayed end time to full hour (round up if minutes)
+                    const endRounded = end.clone();
+                    if (endRounded.minute() !== 0 || endRounded.second() !== 0) {
+                        endRounded.add(1, 'hour').startOf('hour');
+                    } else {
+                        endRounded.startOf('hour');
+                    }
+                    slot.endTime = endRounded.format('HH:mm');
                     console.log("Calculated End Time (hourly):", slot.endTime);
                 } else {
                     console.warn("Invalid hourly duration format:", durationString);
