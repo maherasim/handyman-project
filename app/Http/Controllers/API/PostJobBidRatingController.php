@@ -24,10 +24,11 @@ class PostJobBidRatingController extends Controller
 
         $bid = PostJobBid::findOrFail((int) $request->post_job_bid_id);
         $userId = (int) Auth::id();
-        // Only the customer of this bid may rate
+        // Only the customer of this bid may rate the provider
         abort_unless($userId && $userId === (int) ($bid->customer_id ?? 0), 403);
 
-        $rating = PostJobBidRating::updateOrCreate(
+        // Customer rates provider → post_job_bid_customer_ratings
+        $rating = PostJobBidCustomerRating::updateOrCreate(
             [
                 'post_job_bid_id' => (int) $request->post_job_bid_id,
                 'customer_id' => $userId,
@@ -68,9 +69,9 @@ class PostJobBidRatingController extends Controller
     public function delete(Request $request)
     {
         $request->validate([
-            'id' => 'required|integer|exists:post_job_bid_ratings,id',
+            'id' => 'required|integer|exists:post_job_bid_customer_ratings,id',
         ]);
-        $rating = PostJobBidRating::findOrFail((int) $request->id);
+        $rating = PostJobBidCustomerRating::findOrFail((int) $request->id);
         abort_unless((int) Auth::id() === (int) $rating->customer_id, 403);
         $rating->delete();
         return response()->json(['status' => true]);
@@ -134,14 +135,14 @@ class PostJobBidRatingController extends Controller
 
     /**
      * Provider deletes their rating of the customer.
-     * POST postbid/rating-by-provider/delete
+     * POST postbid/rating-by-provider/delete (stored in post_job_bid_ratings)
      */
     public function deleteByProvider(Request $request)
     {
         $request->validate([
-            'id' => 'required|integer|exists:post_job_bid_customer_ratings,id',
+            'id' => 'required|integer|exists:post_job_bid_ratings,id',
         ]);
-        $rating = PostJobBidCustomerRating::findOrFail((int) $request->id);
+        $rating = PostJobBidRating::findOrFail((int) $request->id);
         abort_unless((int) Auth::id() === (int) $rating->provider_id, 403);
         $rating->delete();
         return response()->json(['status' => true]);

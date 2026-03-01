@@ -225,6 +225,8 @@ class PostJobRequestController extends Controller
             'postrequest.country:id,name',
             'postrequest.postBidList:id,post_request_id',
             'extraCharges',
+            'ratings.provider',
+            'customerRatings.customer',
         ])->findOrFail($bidId);
     
         // ✅ Get country_id from related PostJobRequest
@@ -251,11 +253,11 @@ class PostJobRequestController extends Controller
             ];
         }
 
-        // provider_rating_exists: from post_job_bid_ratings = customer has already rated the provider for this bid
-        $providerRatingExists = PostJobBidRating::where('post_job_bid_id', $bid->id)->exists();
+        // provider_rating_exists: customer has already rated the provider for this bid (post_job_bid_customer_ratings)
+        $providerRatingExists = PostJobBidCustomerRating::where('post_job_bid_id', $bid->id)->exists();
 
-        // show_rate_customer_button: provider has NOT yet rated the customer (from post_job_bid_customer_ratings)
-        $providerHasRatedCustomer = PostJobBidCustomerRating::where('post_job_bid_id', $bid->id)
+        // show_rate_customer_button: provider has NOT yet rated the customer (post_job_bid_ratings = provider rates customer)
+        $providerHasRatedCustomer = PostJobBidRating::where('post_job_bid_id', $bid->id)
             ->where('provider_id', $bid->provider_id)
             ->exists();
         $canProviderRate = in_array(strtolower((string)($bid->status ?? '')), ['remaining_paid', 'completed']);
@@ -269,6 +271,28 @@ class PostJobRequestController extends Controller
             $bid->postrequest->makeHidden(['street_address', 'house_number']);
         }
 
+        // Both reviews for this bid: provider review (customer→provider, post_job_bid_customer_ratings) and customer review (provider→customer, post_job_bid_ratings)
+        $provider_review = $bid->customerRatings->map(function ($r) {
+            return [
+                'id' => $r->id,
+                'rating' => $r->rating,
+                'review' => $r->review,
+                'rater_name' => optional($r->customer)->display_name,
+                'rater_id' => $r->customer_id,
+                'created_at' => $r->created_at ? $r->created_at->format('Y-m-d') : null,
+            ];
+        })->values()->all();
+        $customer_review = $bid->ratings->map(function ($r) {
+            return [
+                'id' => $r->id,
+                'rating' => $r->rating,
+                'review' => $r->review,
+                'rater_name' => optional($r->provider)->display_name,
+                'rater_id' => $r->provider_id,
+                'created_at' => $r->created_at ? $r->created_at->format('Y-m-d') : null,
+            ];
+        })->values()->all();
+
         return response()->json([
             'success' => true,
             'data' => $bid,
@@ -276,6 +300,8 @@ class PostJobRequestController extends Controller
             'bank_transfer' => $bankTransfer,
             'provider_rating_exists' => $providerRatingExists,
             'show_rate_customer_button' => $showRateCustomerButton,
+            'provider_review' => $provider_review,
+            'customer_review' => $customer_review,
         ]);
     }
     

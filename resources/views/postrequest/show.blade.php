@@ -646,14 +646,14 @@
             <div class="col-lg-8">
                 <div class="card shadow-sm border-0">
                     <div class="card-header bg-primary text-white fw-bold">
-                        Ratings
+                        Customer review (by provider)
                     </div>
                     <div class="card-body p-0">
                         <div class="table-responsive">
                             <table class="table table-hover mb-0">
                                 <thead>
                                     <tr>
-                                        <th>Customer</th>
+                                        <th>Provider (rater)</th>
                                         <th class="text-center">Rating</th>
                                         <th>Review</th>
                                         <th class="text-end">Date</th>
@@ -662,7 +662,49 @@
                                 <tbody>
                                     @foreach($bid->ratings as $r)
                                         <tr>
-                                            <td>{{ $bid->customer->display_name ?? ('#'.$r->customer_id) }}</td>
+                                            <td>{{ optional($r->provider)->display_name ?? ('#'.$r->provider_id) }}</td>
+                                            <td class="text-center">
+                                                @php $stars = max(1, min(5, (int)($r->rating ?? 0))); @endphp
+                                                <span class="text-warning">{!! str_repeat('★', $stars) !!}</span>
+                                                <span class="text-muted">{!! str_repeat('☆', 5 - $stars) !!}</span>
+                                            </td>
+                                            <td>{{ $r->review ?: '-' }}</td>
+                                            <td class="text-end">{{ optional($r->created_at)->format('Y-m-d') ?? '-' }}</td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @endif
+
+    @if($bid->customerRatings && $bid->customerRatings->count() > 0)
+    <div class="container py-3">
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="card shadow-sm border-0">
+                    <div class="card-header bg-primary text-white fw-bold">
+                        Provider review (by customer)
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Customer (rater)</th>
+                                        <th class="text-center">Rating</th>
+                                        <th>Review</th>
+                                        <th class="text-end">Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($bid->customerRatings as $r)
+                                        <tr>
+                                            <td>{{ optional($r->customer)->display_name ?? ('#'.$r->customer_id) }}</td>
                                             <td class="text-center">
                                                 @php $stars = max(1, min(5, (int)($r->rating ?? 0))); @endphp
                                                 <span class="text-warning">{!! str_repeat('★', $stars) !!}</span>

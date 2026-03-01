@@ -10,6 +10,7 @@ use App\Models\BookingRating;
 use App\Models\HandymanRating;
 use App\Models\CustomerRating;
 use App\Models\PostJobBidCustomerRating;
+use App\Models\PostJobBidRating;
 use App\Models\BookingActivity;
 use App\Models\Payment;
 use App\Models\PaymentHistory;
@@ -273,12 +274,12 @@ class BookingController extends Controller
 
         $customer_id = (int) $booking_detail->customer_id;
 
-        // Get customer rating info from customer_ratings (booking) and post_job_bid_customer_ratings
+        // Get customer rating info from customer_ratings (booking) and post_job_bid_ratings (provider rates customer)
         $customerRatingInfo = CustomerRating::where('customer_id', $customer_id)
             ->with(['provider', 'customer'])
             ->orderBy('created_at', 'desc')
             ->get();
-        $postJobBidRatings = PostJobBidCustomerRating::where('customer_id', $customer_id)
+        $postJobBidRatings = PostJobBidRating::where('customer_id', $customer_id)
             ->with(['provider', 'customer'])
             ->orderBy('created_at', 'desc')
             ->get();
@@ -1016,8 +1017,8 @@ class BookingController extends Controller
             ->orderBy('created_at', 'desc')
             ->get();
 
-        // Get customer ratings from post_job_bid_customer_ratings — customer_id = customer being rated (rated)
-        $postJobBidRatings = PostJobBidCustomerRating::where('customer_id', $customer_id)
+        // Get customer ratings from post_job_bid_ratings — provider rates customer (customer_id = customer being rated)
+        $postJobBidRatings = PostJobBidRating::where('customer_id', $customer_id)
             ->with(['provider'])
             ->orderBy('created_at', 'desc')
             ->get();
@@ -1147,7 +1148,7 @@ class BookingController extends Controller
             return response()->json(['message' => 'Unauthenticated'], 401);
         }
 
-        // Ratings OF the customer (received): from customer_ratings and post_job_bid_customer_ratings (customer_id = customer being rated)
+        // Ratings OF the customer (received): from customer_ratings and post_job_bid_ratings (provider rates customer, customer_id = customer being rated)
         $customer_id = $request->customer_id ?? $user->id;
         $customer_id = (int) $customer_id;
 
@@ -1160,7 +1161,7 @@ class BookingController extends Controller
             ->with(['provider', 'customer'])
             ->orderBy('created_at', 'desc')
             ->get();
-        $postJobBidRatings = PostJobBidCustomerRating::where('customer_id', $customer_id)
+        $postJobBidRatings = PostJobBidRating::where('customer_id', $customer_id)
             ->with(['provider', 'customer'])
             ->orderBy('created_at', 'desc')
             ->get();
