@@ -682,6 +682,63 @@
                 @endif
                 @endif
 
+                {{-- Review by customer (booking_ratings: customer rates provider) --}}
+                @php
+                    $reviewByCustomer = $bookingData['customer_review'] ?? null;
+                    if (!$reviewByCustomer && !empty($bookingData['rating_data']) && count($bookingData['rating_data']) > 0) {
+                        $reviewByCustomer = $bookingData['rating_data'][0];
+                    }
+                @endphp
+                @if($reviewByCustomer)
+                <div class="pt-lg-5 pt-3 mt-lg-5 mt-3">
+                    <h5 class="mb-4 text-capitalize">{{ __('Review by customer') }}</h5>
+                    <p class="text-muted small mb-3">{{ __('Customer\'s review of the provider') }}</p>
+                    <div class="comment-box p-4 bg-light rounded-3 border">
+                        <div class="d-flex align-items-sm-center align-items-start flex-sm-row flex-column justify-content-between gap-3 mb-3">
+                            <div class="d-inline-flex align-items-center gap-3">
+                                <img src="{{ ($reviewByCustomer['profile_image'] ?? null) ? asset($reviewByCustomer['profile_image']) : asset('images/user/user.png') }}"
+                                    class="avatar-70 object-cover rounded-circle" alt="customer" />
+                                <div>
+                                    <h6 class="font-size-18 text-capitalize mb-1">{{ $reviewByCustomer['customer_name'] ?? __('Customer') }}</h6>
+                                    <rating-component :readonly="true" :showrating="false" :ratingvalue="{{ (float)($reviewByCustomer['rating'] ?? 0) }}" />
+                                </div>
+                            </div>
+                            <div class="date text-capitalize text-muted">{{ !empty($reviewByCustomer['created_at']) ? date($date_time['date_format'], strtotime($reviewByCustomer['created_at'])) : '' }}</div>
+                        </div>
+                        @if(!empty($reviewByCustomer['review']))
+                        <p class="commnet-content m-0">{{ $reviewByCustomer['review'] }}</p>
+                        @endif
+                    </div>
+                </div>
+                @endif
+
+                {{-- Review by provider (customer_ratings: provider rates customer) --}}
+                @php
+                    $reviewByProvider = $bookingData['provider_review'] ?? null;
+                @endphp
+                @if($reviewByProvider)
+                <div class="pt-lg-5 pt-3 mt-lg-5 mt-3">
+                    <h5 class="mb-4 text-capitalize">{{ __('Review by provider') }}</h5>
+                    <p class="text-muted small mb-3">{{ __('Provider\'s review of the customer') }}</p>
+                    <div class="comment-box p-4 bg-light rounded-3 border">
+                        <div class="d-flex align-items-sm-center align-items-start flex-sm-row flex-column justify-content-between gap-3 mb-3">
+                            <div class="d-inline-flex align-items-center gap-3">
+                                <img src="{{ (!empty($reviewByProvider['provider_profile_image'])) ? asset($reviewByProvider['provider_profile_image']) : asset('images/user/user.png') }}"
+                                    class="avatar-70 object-cover rounded-circle" alt="provider" />
+                                <div>
+                                    <h6 class="font-size-18 text-capitalize mb-1">{{ $reviewByProvider['provider_name'] ?? __('Provider') }}</h6>
+                                    <rating-component :readonly="true" :showrating="false" :ratingvalue="{{ (float)($reviewByProvider['rating'] ?? 0) }}" />
+                                </div>
+                            </div>
+                            <div class="date text-capitalize text-muted">{{ !empty($reviewByProvider['created_at']) ? date($date_time['date_format'], strtotime($reviewByProvider['created_at'])) : '' }}</div>
+                        </div>
+                        @if(!empty($reviewByProvider['review']))
+                        <p class="commnet-content m-0">{{ $reviewByProvider['review'] }}</p>
+                        @endif
+                    </div>
+                </div>
+                @endif
+
                 @if(count($bookingData['rating_data']) !== 0)
                 <div class="pt-lg-5 pt-3 mt-lg-5 mt-3">
                     <div class="mt-3">

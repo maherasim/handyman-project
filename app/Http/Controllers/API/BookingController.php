@@ -425,9 +425,29 @@ class BookingController extends Controller
         // Check if customer rating already exists for this booking
         // Return meaningful message instead of true/false
         $rating_exists = CustomerRating::where('booking_id', $id)->exists();
-        $show_rate_customer_button = $rating_exists 
-            ? 'Rating already submitted' 
+        $show_rate_customer_button = $rating_exists
+            ? 'Rating already submitted'
             : 'Rate Customer';
+
+        // Provider's review of the customer for THIS booking (from customer_ratings)
+        $provider_review = CustomerRating::where('booking_id', $id)
+            ->with('provider')
+            ->first();
+        $provider_review_payload = null;
+        if ($provider_review) {
+            $provider_review_payload = [
+                'id' => $provider_review->id,
+                'booking_id' => $provider_review->booking_id,
+                'rating' => (float) $provider_review->rating,
+                'review' => $provider_review->review,
+                'provider_id' => $provider_review->provider_id,
+                'provider_name' => optional($provider_review->provider)->display_name,
+                'provider_profile_image' => optional($provider_review->provider)->login_type != null
+                    ? optional($provider_review->provider)->social_image
+                    : getSingleMedia($provider_review->provider, 'profile_image', null),
+                'created_at' => $provider_review->created_at ? $provider_review->created_at->format('Y-m-d') : null,
+            ];
+        }
 
         $response = [
             'booking_detail'    => $booking_detail,
@@ -439,6 +459,7 @@ class BookingController extends Controller
             'provider_data'     => $provider_data,
             'coupon_data'       => $booking_detail->couponAdded,
             'customer_review'   => $customer_review,
+            'provider_review'   => $provider_review_payload,
             'service_proof'     => $serviceProof,
             'post_request_detail' => $post_job_object,
             'show_rate_customer_button' => $show_rate_customer_button,
