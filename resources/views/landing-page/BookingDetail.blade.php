@@ -688,7 +688,7 @@
                 </div>
                 {{-- Review by customer (booking_ratings: customer rates provider) — always show with clear message --}}
                 @php
-                    $reviewByCustomer = $bookingData['customer_review'] ?? null;
+                    $reviewByCustomer = $bookingData['review_by_customer_for_booking'] ?? $bookingData['customer_review'] ?? null;
                     if (!$reviewByCustomer && !empty($bookingData['rating_data']) && count($bookingData['rating_data']) > 0) {
                         $reviewByCustomer = $bookingData['rating_data'][0];
                     }

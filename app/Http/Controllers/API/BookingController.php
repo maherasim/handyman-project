@@ -392,6 +392,10 @@ class BookingController extends Controller
 
         $handyman_data = HandymanResource::collection($booking_detail->handymanAdded);
 
+        // Customer's review of the provider for THIS booking — always load by booking_id so both customer and provider see it
+        $review_by_customer_for_booking = BookingRating::where('booking_id', $id)->with('customer')->first();
+        $review_by_customer_payload = $review_by_customer_for_booking ? (new BookingRatingResource($review_by_customer_for_booking))->toArray($request) : null;
+
         $customer_review = null;
         if($request->customer_id != null){
             $customer_review = BookingRating::where('customer_id',$request->customer_id)->where('service_id',$booking_detail->service_id)->where('booking_id',$id)->first();
@@ -459,6 +463,7 @@ class BookingController extends Controller
             'provider_data'     => $provider_data,
             'coupon_data'       => $booking_detail->couponAdded,
             'customer_review'   => $customer_review,
+            'review_by_customer_for_booking' => $review_by_customer_payload,
             'provider_review'   => $provider_review_payload,
             'service_proof'     => $serviceProof,
             'post_request_detail' => $post_job_object,

@@ -1402,13 +1402,13 @@
         </div>
     @endif
 
-    {{-- Review by customer (booking_ratings: customer rates provider) — always visible --}}
+    {{-- Review by customer (booking_ratings: customer rates provider) — always visible; same for customer and provider --}}
     <div class="col-md-12 mt-4">
         <div class="card">
             <div class="card-body">
                 <h4 class="mb-3">{{ __('Review by customer') }}</h4>
                 <p class="text-muted small mb-3">{{ __('Customer\'s review of the provider') }}</p>
-                @if (!empty($customer_review))
+                @if (!empty($review_by_customer_for_booking))
                 <div class="table-responsive">
                     <table class="table table-bordered align-middle">
                         <thead>
@@ -1420,10 +1420,10 @@
                         </thead>
                         <tbody>
                             <tr>
-                                <td>{{ $customer_review->customer->first_name ?? '' }}
-                                    {{ $customer_review->customer->last_name ?? '' }}</td>
-                                <td>{{ $customer_review->rating }}</td>
-                                <td>{{ $customer_review->review }}</td>
+                                <td>{{ $review_by_customer_for_booking->customer->first_name ?? '' }}
+                                    {{ $review_by_customer_for_booking->customer->last_name ?? '' }}</td>
+                                <td>{{ $review_by_customer_for_booking->rating }}</td>
+                                <td>{{ $review_by_customer_for_booking->review }}</td>
                             </tr>
                         </tbody>
                     </table>

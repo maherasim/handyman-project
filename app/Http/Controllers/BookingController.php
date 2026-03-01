@@ -1269,6 +1269,9 @@ public function bookingAssigned(Request $request)
  
         $is_enable_advance_payment = $bookingdata->service->is_enable_advance_payment;
         $serviceProof = ServiceProof::where('booking_id',$id)->get();
+        // "Review by customer" = customer's review of the provider for THIS booking — load by booking_id so both customer and provider see it
+        $review_by_customer_for_booking = BookingRating::with('customer')->where('booking_id', $id)->first();
+        // Logged-in user's own review (for "Rate Now" / edit when user is the customer)
         $customer_review = BookingRating::with('customer')->where('customer_id',$user_id)->where('service_id',$bookingdata->service_id)->where('booking_id',$id)->first();
         
         // Provider's review of the customer for THIS booking (from customer_ratings) — load by booking_id only so it always displays when present
@@ -1288,7 +1291,7 @@ public function bookingAssigned(Request $request)
 
         switch ($tabpage) {
             case 'info':
-                $data = view('booking.' . $tabpage, compact('user_data', 'tabpage', 'auth_user', 'bookingdata', 'payment','advanceservice', 'customer_review', 'customer_rating', 'serviceProof', 'is_enable_advance_payment', 'customer_rating_exists'))->render();
+                $data = view('booking.' . $tabpage, compact('user_data', 'tabpage', 'auth_user', 'bookingdata', 'payment','advanceservice', 'customer_review', 'review_by_customer_for_booking', 'customer_rating', 'serviceProof', 'is_enable_advance_payment', 'customer_rating_exists'))->render();
                 break;
             case 'status':
                 $data = view('booking.' . $tabpage, compact('user_data', 'tabpage', 'auth_user', 'bookingdata', 'payment'))->render();
