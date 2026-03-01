@@ -95,13 +95,7 @@
                                 </div>
 
                                 {{-- Dynamic count (commented): uncomment and remove random block below to restore real booking count --}}
-                                {{-- @if (($bookingsLast24h ?? 0) > 0)
-                                    <div class="landing-live-cue-pill mt-2">
-                                        <span class="live-dot"></span>
-                                        <span>{{ __('landingpage.live_cue_booked', ['count' => $bookingsLast24h]) }}</span>
-                                    </div>
-                                @endif --}}
-                                @php $liveCueCount = rand(80, 100); @endphp
+                                                            @php $liveCueCount = rand(80, 100); @endphp
                                 <div class="landing-live-cue-pill mt-2">
                                     <span class="live-dot"></span>
                                     <span>{{ __('landingpage.live_cue_booked', ['count' => $liveCueCount]) }}</span>
@@ -268,10 +262,6 @@
                                 <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-primary"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
                             </div>
                             <span class="landing-two-path-badge">{{ __('landingpage.most_popular') }}</span>
-                            {{-- Dynamic count (commented): uncomment and remove random block below to restore real booking count --}}
-                            {{-- @if (($bookingsLast24h ?? 0) > 0)
-                                <span class="landing-two-path-live ms-auto">{{ __('landingpage.booked_last_24h', ['count' => $bookingsLast24h]) }}</span>
-                            @endif --}}
                             @php $bookedLast24hRandom = rand(80, 100); @endphp
                             <span class="landing-two-path-live ms-auto">{{ __('landingpage.booked_last_24h', ['count' => $bookedLast24hRandom]) }}</span>
                         </div>
