@@ -85,7 +85,7 @@ $logoPath = public_path('assets/frobster logo.png');
                     <td style="width: 60%; border: 0;">
                         <div class="title">{{ __('Invoice') }}</div>
                         <div class="text-muted">{{ __('Invoice No:') }} #{{ $bookingdata->id }}</div>
-                        <div class="text-muted">{{ __('Currency:') }} {{ $bookingdata->currency ?? 'EUR' }}</div>
+                        <div class="text-muted">{{ __('Currency:') }} {{ $bookingdata->currency ?? 'USD' }}</div>
                         <div class="text-muted">{{ __('Date Issued:') }} {{ optional($bookingdata->created_at)->format('d M Y') }}</div>
                     </td>
                     <td class="text-right" style="width: 40%; border: 0;">
