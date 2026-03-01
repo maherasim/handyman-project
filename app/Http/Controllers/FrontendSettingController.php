@@ -56,9 +56,9 @@ class FrontendSettingController extends Controller
                     }
                     break;
                 case 'footer-setting':
-                    $keys = ['footer_setting', 'enable_popular_category', 'category_id', 'enable_popular_service', 'service_id'];
+                    $keys = ['footer_setting', 'enable_popular_category', 'category_id', 'enable_for_customers', 'enable_for_employers'];
                     foreach ($keys as $key) {
-                        $landing_page_data[$key] = $decodedata->$key;
+                        $landing_page_data[$key] = $decodedata->$key ?? null;
                     }
                     break;
                 case 'login-register-setting':
@@ -296,8 +296,8 @@ class FrontendSettingController extends Controller
             'footer_setting' => $status,
             'enable_popular_category' => (isset($data['enable_popular_category']) && $data['enable_popular_category'] == 'on') ? 1 : 0,
             'category_id' => isset($data['category_id']) ? $data['category_id'] : [],
-            'enable_popular_service' => (isset($data['enable_popular_service']) && $data['enable_popular_service'] == 'on') ? 1 : 0,
-            'service_id' => isset($data['service_id']) ? $data['service_id'] : [],
+            'enable_for_customers' => (isset($data['enable_for_customers']) && $data['enable_for_customers'] == 'on') ? 1 : 0,
+            'enable_for_employers' => (isset($data['enable_for_employers']) && $data['enable_for_employers'] == 'on') ? 1 : 0,
         ];
 
         $res = FrontendSetting::updateOrCreate(

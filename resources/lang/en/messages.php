@@ -721,6 +721,8 @@
     'blogs' => 'Blogs',
     'enable_header_setting' => 'Enable Header Setting',
     'enable_popular_category' => 'Enable Categories',
+    'enable_for_customers' => 'Enable For Customers',
+    'enable_for_employers' => 'Enable For Employers',
     'enable_footer_setting' => 'Enable Footer Setting',
     'section_8' => 'Section 8',
     'enable_section_8' => 'Enable Section 8',

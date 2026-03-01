@@ -94,12 +94,18 @@
                                     </div>
                                 </div>
 
-                                @if (($bookingsLast24h ?? 0) > 0)
+                                {{-- Dynamic count (commented): uncomment and remove random block below to restore real booking count --}}
+                                {{-- @if (($bookingsLast24h ?? 0) > 0)
                                     <div class="landing-live-cue-pill mt-2">
                                         <span class="live-dot"></span>
                                         <span>{{ __('landingpage.live_cue_booked', ['count' => $bookingsLast24h]) }}</span>
                                     </div>
-                                @endif
+                                @endif --}}
+                                @php $liveCueCount = rand(80, 100); @endphp
+                                <div class="landing-live-cue-pill mt-2">
+                                    <span class="live-dot"></span>
+                                    <span>{{ __('landingpage.live_cue_booked', ['count' => $liveCueCount]) }}</span>
+                                </div>
                             </div>
                             <location-search :user_id="{{ json_encode($auth_user_id) }}"
                                 :postjobservice="{{ $postjobservice }}"></location-search>
@@ -262,9 +268,12 @@
                                 <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-primary"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
                             </div>
                             <span class="landing-two-path-badge">{{ __('landingpage.most_popular') }}</span>
-                            @if (($bookingsLast24h ?? 0) > 0)
+                            {{-- Dynamic count (commented): uncomment and remove random block below to restore real booking count --}}
+                            {{-- @if (($bookingsLast24h ?? 0) > 0)
                                 <span class="landing-two-path-live ms-auto">{{ __('landingpage.booked_last_24h', ['count' => $bookingsLast24h]) }}</span>
-                            @endif
+                            @endif --}}
+                            @php $bookedLast24hRandom = rand(80, 100); @endphp
+                            <span class="landing-two-path-live ms-auto">{{ __('landingpage.booked_last_24h', ['count' => $bookedLast24hRandom]) }}</span>
                         </div>
                         <h3 class="landing-two-path-card-title">{{ __('landingpage.book_a_service') }}</h3>
                         <p class="landing-two-path-desc">{{ __('landingpage.book_a_service_lead') }}</p>
@@ -2066,12 +2075,16 @@
                 jQuery(document).trigger('after_slider_init');
             }
 
-            // Initialize Provider Banner Slider - One at a time with navigation arrows
+            // Initialize Provider Banner Slider - One at a time with navigation arrows + auto-rotate
             if (document.querySelector('.provider-banner-slider')) {
                 var providerBannerSwiper = new Swiper('.provider-banner-slider', {
                     slidesPerView: 1,
                     spaceBetween: 0,
                     loop: true,
+                    autoplay: {
+                        delay: 3000,
+                        disableOnInteraction: false,
+                    },
                     navigation: {
                         nextEl: '.provider-nav-next',
                         prevEl: '.provider-nav-prev',

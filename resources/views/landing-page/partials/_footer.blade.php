@@ -183,43 +183,65 @@
                     </div>
                     @endif
 
-                    @php
-                    $footerServiceSection = App\Models\FrontendSetting::where('key', 'footer-setting')->first();
-                    $sectionData = $footerServiceSection ? json_decode($footerServiceSection->value, true) : null;
-                    @endphp
-
-                    @if ($sectionData && isset($sectionData['footer_setting']) && $sectionData['footer_setting'] == 1 && isset($sectionData['enable_popular_service']) && $sectionData['enable_popular_service'] == 1)
-                    <div class="col-lg-5 col-sm-6">
-                        <div class="footer-services-col">
+                    {{-- For Customers — always shown --}}
+                    <div class="col-lg-3 col-sm-6">
+                        <div class="footer-links-col">
                             <h5 class="footer-col-title">
                                 <span class="footer-col-title-dot"></span>
-                                {{__('landingpage.popular_services')}}
+                                {{ __('landingpage.for_customers') }}
                             </h5>
-                            <div class="footer-service-grid">
-                                @foreach ($sectionData['service_id'] as $serviceId)
-                                @php
-                                    $service = App\Models\Service::find($serviceId);
-                                    $mediaServiceImages = $service ? $service->getMedia('service_attachment') : null;
-                                @endphp
-                                @if ($service && $mediaServiceImages->isNotEmpty())
-                                    @php $firstMedia = $mediaServiceImages->first(); @endphp
-                                    @if ($firstMedia && getFileExistsCheck($firstMedia))
-                                    <a href="{{ route('service.detail', $service->id) }}" class="footer-service-tile">
-                                        <div class="footer-service-img-wrap">
-                                            <img src="{{ url($firstMedia->getUrl()) }}" alt="{{ $service->name }}">
-                                            <div class="footer-service-overlay">
-                                                <i class="ri-external-link-line"></i>
-                                            </div>
-                                        </div>
-                                        <span class="footer-service-name">{{$service->name}}</span>
+                            <ul class="footer-link-list">
+                                <li>
+                                    <a href="{{ route('post.job.list') }}" class="footer-link-item">
+                                        <span class="footer-link-arrow"><i class="ri-arrow-right-s-line"></i></span>
+                                        <span>{{ __('landingpage.post_job_request') }}</span>
                                     </a>
-                                    @endif
-                                @endif
-                                @endforeach
-                            </div>
+                                </li>
+                                <li>
+                                    <a href="{{ route('frontend.provider') }}" class="footer-link-item">
+                                        <span class="footer-link-arrow"><i class="ri-arrow-right-s-line"></i></span>
+                                        <span>{{ __('landingpage.find_workers') }}</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{{ route('user.page', 'how-it-works') }}" class="footer-link-item">
+                                        <span class="footer-link-arrow"><i class="ri-arrow-right-s-line"></i></span>
+                                        <span>{{ __('landingpage.how_it_works') }}</span>
+                                    </a>
+                                </li>
+                            </ul>
                         </div>
                     </div>
-                    @endif
+
+                    {{-- For Employers — always shown (col-lg-2 so row totals 12 with category) --}}
+                    <div class="col-lg-2 col-md-4 col-sm-6">
+                        <div class="footer-links-col">
+                            <h5 class="footer-col-title">
+                                <span class="footer-col-title-dot"></span>
+                                {{ __('landingpage.for_employers') }}
+                            </h5>
+                            <ul class="footer-link-list">
+                                <li>
+                                    <a href="{{ route('partner.register') }}" class="footer-link-item">
+                                        <span class="footer-link-arrow"><i class="ri-arrow-right-s-line"></i></span>
+                                        <span>{{ __('landingpage.post_services') }}</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{{ route('job.data') }}" class="footer-link-item">
+                                        <span class="footer-link-arrow"><i class="ri-arrow-right-s-line"></i></span>
+                                        <span>{{ __('landingpage.find_job') }}</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{{ route('user.page', 'how-it-works') }}" class="footer-link-item">
+                                        <span class="footer-link-arrow"><i class="ri-arrow-right-s-line"></i></span>
+                                        <span>{{ __('landingpage.how_it_works') }}</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
 
                 @else
                     {{-- Fallback Quick Links if footer setting disabled --}}

@@ -55,35 +55,23 @@
                 </div>
                 <div class="form-group">
                     <div class="form-control d-flex align-items-center justify-content-between">
-                        <label class="mb-0"
-                            for="enable_popular_service">{{ __('messages.enable_popular_services') }}</label>
-                        <div
-                            class="custom-control custom-switch custom-switch-text custom-switch-color custom-control-inline">
-                            <input type="checkbox" class="custom-control-input" name="enable_popular_service"
-                                id="enable_popular_service"
-                                {{ !empty($landing_page_data->enable_popular_service) ? 'checked' : '' }}>
-                            <label class="custom-control-label" for="enable_popular_service"></label>
+                        <label class="mb-0" for="enable_for_customers">{{ __('messages.enable_for_customers') }}</label>
+                        <div class="custom-control custom-switch custom-switch-text custom-switch-color custom-control-inline">
+                            <input type="checkbox" class="custom-control-input" name="enable_for_customers" id="enable_for_customers"
+                                {{ !empty($landing_page_data->enable_for_customers) ? 'checked' : '' }}>
+                            <label class="custom-control-label" for="enable_for_customers"></label>
                         </div>
                     </div>
                 </div>
-                @php
-                    $selectedServiceIds = [];
-                    $serviceNames = [];
-
-                    if ($landing_page_data) {
-                        $decodedData = json_decode($landing_page_data->value, true);
-                        $selectedServiceIds = isset($decodedData['service_id']) ? $decodedData['service_id'] : [];
-                        if ($selectedServiceIds) {
-                            $serviceNames = \App\Models\Service::whereIn('id', $selectedServiceIds)
-                                ->pluck('name', 'id')
-                                ->toArray();
-                        }
-                    }
-                @endphp
-                <div class="form-group col-md-12" id='enable_select_provider'>
-                    {{ html()->label(__('messages.select_name', ['select' => __('messages.service')]) . ' <span class="text-danger">*</span>', 'service_id[]')->class('form-control-label') }}
-                    <br />
-                    {{ html()->select('service_id[]', $serviceNames, old('service_id', $selectedServiceIds))->class('select2js form-control service_id')->id('service_id')->attribute('data-placeholder', __('messages.select_name', ['select' => __('messages.provider')]))->attribute('data-ajax--url', route('ajax-list', ['type' => 'service']))->multiple() }}
+                <div class="form-group">
+                    <div class="form-control d-flex align-items-center justify-content-between">
+                        <label class="mb-0" for="enable_for_employers">{{ __('messages.enable_for_employers') }}</label>
+                        <div class="custom-control custom-switch custom-switch-text custom-switch-color custom-control-inline">
+                            <input type="checkbox" class="custom-control-input" name="enable_for_employers" id="enable_for_employers"
+                                {{ !empty($landing_page_data->enable_for_employers) ? 'checked' : '' }}>
+                            <label class="custom-control-label" for="enable_for_employers"></label>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -128,27 +116,6 @@
         }
     }
 
-
-    ///// open select popular provider ///////////
-
-    var enable_popular_service = $("input[name='enable_popular_service']").prop('checked');
-    checkEnableProvider(enable_popular_service);
-
-    $('#enable_popular_service').change(function() {
-        value = $(this).prop('checked') == true ? true : false;
-        checkEnableProvider(value);
-    });
-
-    function checkEnableProvider(value) {
-        if (value == true) {
-            $('#enable_select_provider').removeClass('d-none');
-            $('#service_id').prop('required', true);
-        } else {
-            $('#enable_select_provider').addClass('d-none');
-            $('#service_id').prop('required', false);
-        }
-    }
-
     $(document).ready(function() {
         $('.select2js').select2();
         $('#category_id').on('change', function() {
@@ -159,14 +126,5 @@
                 $(this).val(selectedOptions).trigger('change.select2');
             }
         });
-        $('#service_id').on('change', function() {
-
-            var selectedOptions = $(this).val();
-            if (selectedOptions && selectedOptions.length > 6) {
-                selectedOptions.pop();
-                $(this).val(selectedOptions).trigger('change.select2');
-            }
-        });
-
     });
 </script>
