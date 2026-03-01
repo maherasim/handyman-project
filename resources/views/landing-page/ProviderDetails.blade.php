@@ -690,48 +690,44 @@
                     </div>
 
                     <ul class="comment-list list-inline m-0">
-                        @php $counter=1; @endphp
-                        @foreach ($providerData['service'] as $service)
-                            @php
-                                $data = App\Models\BookingRating::where('service_id', $service['id'])->get();
-                            @endphp
-                            @foreach ($data as $ratingData)
-                                @if ($counter <= 10)
-                                    <li class="comment mb-5 pb-5 border-bottom">
-                                        <div class="comment-box">
-                                            <div
-                                                class="d-flex align-items-sm-center align-items-start flex-sm-row flex-column justify-content-between gap-3">
-                                                <div
-                                                    class="d-inline-flex align-items-sm-center align-items-start flex-sm-row flex-column gap-3">
-                                                    <div class="user-image flex-shrink-0">
-                                                        <img src="{{ getSingleMedia($ratingData->customer, 'profile_image', null) }}"
-                                                            class="avatar-70 object-cover rounded-circle"
-                                                            alt="comment-user" />
-                                                    </div>
-                                                    <div class="comment-user-info">
-                                                        <h6 class="font-size-18 text-capitalize mb-2">
-                                                            {{ $ratingData->customer->display_name }}</h6>
-                                                        <span class="text-primary">
-                                                            <rating-component :readonly=true :showrating="false"
-                                                                :ratingvalue="{{ $ratingData['rating'] }}" />
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                                <div class="date text-capitalize">
-                                                    {{ date($datetime->date_format ?? 'Y-m-d', strtotime($ratingData['created_at'])) }}
-                                                </div>
+                        @forelse ($providerReviews as $ratingData)
+                            <li class="comment mb-5 pb-5 border-bottom">
+                                <div class="comment-box">
+                                    <div
+                                        class="d-flex align-items-sm-center align-items-start flex-sm-row flex-column justify-content-between gap-3">
+                                        <div
+                                            class="d-inline-flex align-items-sm-center align-items-start flex-sm-row flex-column gap-3">
+                                            <div class="user-image flex-shrink-0">
+                                                @php $cust = $ratingData->customer; @endphp
+                                                <img src="{{ $cust ? (optional($cust)->login_type ? (optional($cust)->social_image ?? getSingleMedia($cust, 'profile_image', null)) : getSingleMedia($cust, 'profile_image', null)) : asset('images/default.png') }}"
+                                                    class="avatar-70 object-cover rounded-circle"
+                                                    alt="comment-user" />
                                             </div>
-                                            <div class="mt-4">
-                                                <p class="commnet-content m-0">
-                                                    {{ $ratingData['review'] }}
-                                                </p>
+                                            <div class="comment-user-info">
+                                                <h6 class="font-size-18 text-capitalize mb-2">
+                                                    {{ optional($ratingData->customer)->display_name ?? __('messages.customer') }}</h6>
+                                                <span class="text-primary">
+                                                    <rating-component :readonly="true" :showrating="false"
+                                                        :ratingvalue="{{ $ratingData->rating ?? 0 }}" />
+                                                </span>
                                             </div>
                                         </div>
-                                    </li>
-                                @endif
-                                @php $counter++; @endphp
-                            @endforeach
-                        @endforeach
+                                        <div class="date text-capitalize">
+                                            {{ date($datetime->date_format ?? 'Y-m-d', strtotime($ratingData->created_at)) }}
+                                        </div>
+                                    </div>
+                                    <div class="mt-4">
+                                        <p class="commnet-content m-0">
+                                            {{ $ratingData->review ?: '-' }}
+                                        </p>
+                                    </div>
+                                </div>
+                            </li>
+                        @empty
+                            <li class="comment mb-5 pb-5">
+                                <p class="text-muted m-0">{{ __('messages.no_reviews_yet') ?? 'No reviews yet.' }}</p>
+                            </li>
+                        @endforelse
                     </ul>
 
                 </div>

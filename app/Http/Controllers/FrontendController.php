@@ -21,6 +21,7 @@ use App\Models\Page;
 use App\Models\HandymanRating;
 use App\Models\HelpDesk;
 use App\Models\PostJobRequest;
+use App\Models\PostJobBidCustomerRating;
 use App\Models\ProviderServiceAddressMapping;
 use App\Models\ProviderSubscription;
 use App\Models\Service;
@@ -641,7 +642,21 @@ class FrontendController extends Controller
                 $imagePath = 'images/freepng.png';
             }
         }
-        // dd( $imagePath);
+
+        // Combined provider reviews: booking_ratings (via services) + post_job_bid_customer_ratings (customer rates provider)
+        $provider_id_int = (int) $provider_id;
+        $bookingReviews = BookingRating::with('customer')
+            ->whereHas('service', function ($q) use ($provider_id_int) {
+                $q->where('provider_id', $provider_id_int);
+            })
+            ->orderBy('created_at', 'desc')
+            ->get();
+        $postJobReviews = PostJobBidCustomerRating::with('customer')
+            ->where('provider_id', $provider_id_int)
+            ->orderBy('created_at', 'desc')
+            ->get();
+        $providerReviews = $bookingReviews->concat($postJobReviews)->sortByDesc('created_at')->take(10)->values();
+
         return view('landing-page.ProviderDetails', compact(
             'providerData',
             'why_choose_me',
@@ -650,7 +665,8 @@ class FrontendController extends Controller
             'satisfy_customers',
             'auth_user_id',
             'favourite',
-            'imagePath'
+            'imagePath',
+            'providerReviews'
         ));
     }
 
@@ -1036,11 +1052,15 @@ class FrontendController extends Controller
             $id = $request->provider_id;
             $type = "provider-rating";
 
+            $bookingCount = BookingRating::whereHas('service', function ($q) use ($id) {
+                $q->where('provider_id', $id);
+            })->count();
+            $postJobCount = PostJobBidCustomerRating::where('provider_id', $id)->count();
+            $review_count = $bookingCount + $postJobCount;
+
             $query = $query->whereHas('service', function ($q) use ($id) {
                 $q->where('provider_id', $id);
             });
-
-            $review_count = count($query->get());
         } else if ($request->handyman_id) {
             $id = $request->handyman_id;
             $type = 'handyman-rating';
@@ -1543,14 +1563,54 @@ class FrontendController extends Controller
         if ($request->type == 'handyman-rating') {
             $query = HandymanRating::query()->orderBy('created_at', 'desc');
             $query = $query->where('handyman_id', $id);
-        } else {
-            $query = BookingRating::query()->orderBy('created_at', 'desc');
+            $filter = $request->filter;
+            if (isset($filter['search'])) {
+                $query->WhereHas('customer', function ($q) use ($filter) {
+                    $q->where('display_name', 'LIKE', '%' . $filter['search'] . '%');
+                });
+            }
+            $datatable = $datatable->eloquent($query)
+                ->editColumn('name', function ($data) {
+                    return view('ratingreview.datatable-card', compact('data'));
+                });
+            return $datatable->rawColumns(['name'])
+                ->toJson();
         }
+
         if ($request->type == 'provider-rating') {
-            $query = $query->whereHas('service', function ($q) use ($id) {
-                $q->where('provider_id', $id);
-            });
-        } elseif ($request->type == 'service-rating') {
+            // Combined: booking_ratings (via provider's services) + post_job_bid_customer_ratings (customer rates provider)
+            $bookingRatings = BookingRating::with('customer')
+                ->whereHas('service', function ($q) use ($id) {
+                    $q->where('provider_id', $id);
+                })
+                ->orderBy('created_at', 'desc')
+                ->get();
+            $postJobRatings = PostJobBidCustomerRating::with('customer')
+                ->where('provider_id', $id)
+                ->orderBy('created_at', 'desc')
+                ->get();
+            $merged = $bookingRatings->concat($postJobRatings)->sortByDesc('created_at')->values();
+
+            $filter = $request->filter;
+            if (isset($filter['search']) && trim((string) $filter['search']) !== '') {
+                $search = trim($filter['search']);
+                $merged = $merged->filter(function ($row) use ($search) {
+                    $name = optional($row->customer)->display_name ?? '';
+                    return stripos($name, $search) !== false;
+                })->values();
+            }
+
+            $datatable = $datatable->collection($merged)
+                ->editColumn('name', function ($data) {
+                    return view('ratingreview.datatable-card', compact('data'));
+                });
+            return $datatable->rawColumns(['name'])
+                ->toJson();
+        }
+
+        // service-rating or default (booking only)
+        $query = BookingRating::query()->orderBy('created_at', 'desc');
+        if ($request->type == 'service-rating') {
             $query = $query->where('service_id', $id);
         }
 

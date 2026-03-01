@@ -646,14 +646,14 @@
             <div class="col-lg-8">
                 <div class="card shadow-sm border-0">
                     <div class="card-header bg-primary text-white fw-bold">
-                        Customer review (by provider)
+                        Customer review (by Employer)
                     </div>
                     <div class="card-body p-0">
                         <div class="table-responsive">
                             <table class="table table-hover mb-0">
                                 <thead>
                                     <tr>
-                                        <th>Provider (rater)</th>
+                                        <th>Employer (rater)</th>
                                         <th class="text-center">Rating</th>
                                         <th>Review</th>
                                         <th class="text-end">Date</th>
@@ -688,7 +688,7 @@
             <div class="col-lg-8">
                 <div class="card shadow-sm border-0">
                     <div class="card-header bg-primary text-white fw-bold">
-                        Provider review (by customer)
+                        Employer review (by customer)
                     </div>
                     <div class="card-body p-0">
                         <div class="table-responsive">
