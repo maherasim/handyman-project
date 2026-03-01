@@ -1402,35 +1402,74 @@
         </div>
     @endif
 
-    @if (!empty($customer_review))
-        <div class="col-md-12 mt-4">
-            <div class="card">
-                <div class="card-body">
-                    <div class="table-responsive mb-4">
-                        <h4 class="mb-3">{{ __('messages.my_review') }}</h4>
-                        <table class="table table-bordered align-middle">
-                            <thead>
-                                <tr>
-                                    <th>{{ __('messages.name') }}</th>
-                                    <th>{{ __('messages.rating') }}</th>
-                                    <th>{{ __('messages.review') }}</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>{{ $customer_review->customer->first_name ?? '' }}
-                                        {{ $customer_review->customer->last_name ?? '' }}</td>
-                                    <td>{{ $customer_review->rating }}</td>
-                                    <td>{{ $customer_review->review }}</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-
+    {{-- Review by customer (booking_ratings: customer rates provider) — always visible --}}
+    <div class="col-md-12 mt-4">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="mb-3">{{ __('Review by customer') }}</h4>
+                <p class="text-muted small mb-3">{{ __('Customer\'s review of the provider') }}</p>
+                @if (!empty($customer_review))
+                <div class="table-responsive">
+                    <table class="table table-bordered align-middle">
+                        <thead>
+                            <tr>
+                                <th>{{ __('messages.name') }}</th>
+                                <th>{{ __('messages.rating') }}</th>
+                                <th>{{ __('messages.review') }}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>{{ $customer_review->customer->first_name ?? '' }}
+                                    {{ $customer_review->customer->last_name ?? '' }}</td>
+                                <td>{{ $customer_review->rating }}</td>
+                                <td>{{ $customer_review->review }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
+                @else
+                <div class="p-3 bg-light rounded border text-muted">
+                    <p class="m-0">{{ __('No review by customer yet.') }} {{ __('The customer has not left a review for the provider.') }}</p>
+                </div>
+                @endif
             </div>
         </div>
-    @endif
+    </div>
+
+    {{-- Review by provider (customer_ratings: provider rates customer) — always visible --}}
+    <div class="col-md-12 mt-4">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="mb-3">{{ __('Review by provider') }}</h4>
+                <p class="text-muted small mb-3">{{ __('Provider\'s review of the customer') }}</p>
+                @if (!empty($customer_rating))
+                <div class="table-responsive">
+                    <table class="table table-bordered align-middle">
+                        <thead>
+                            <tr>
+                                <th>{{ __('messages.name') }}</th>
+                                <th>{{ __('messages.rating') }}</th>
+                                <th>{{ __('messages.review') }}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>{{ optional($customer_rating->provider)->display_name ?? optional($customer_rating->provider)->first_name ?? '-' }}</td>
+                                <td>{{ $customer_rating->rating }}</td>
+                                <td>{{ $customer_rating->review ?? '-' }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                @else
+                <div class="p-3 bg-light rounded border text-muted">
+                    <p class="m-0">{{ __('No review by provider yet.') }} {{ __('The provider has not rated the customer for this booking.') }}</p>
+                </div>
+                @endif
+            </div>
+        </div>
+    </div>
 
     @if (!empty($serviceProof) && count($serviceProof) > 0)
         <div class="col-md-12 mt-4">

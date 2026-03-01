@@ -682,17 +682,21 @@
                 @endif
                 @endif
 
-                {{-- Review by customer (booking_ratings: customer rates provider) --}}
+                {{-- Reviews for this booking: always visible — Frontend URL: /booking-detail/{id} (e.g. /booking-detail/2) --}}
+                <div class="pt-lg-5 pt-3 mt-lg-5 mt-3">
+                    <h4 class="mb-4">{{ __('Reviews for this booking') }}</h4>
+                </div>
+                {{-- Review by customer (booking_ratings: customer rates provider) — always show with clear message --}}
                 @php
                     $reviewByCustomer = $bookingData['customer_review'] ?? null;
                     if (!$reviewByCustomer && !empty($bookingData['rating_data']) && count($bookingData['rating_data']) > 0) {
                         $reviewByCustomer = $bookingData['rating_data'][0];
                     }
                 @endphp
-                @if($reviewByCustomer)
                 <div class="pt-lg-5 pt-3 mt-lg-5 mt-3">
-                    <h5 class="mb-4 text-capitalize">{{ __('Review by customer') }}</h5>
+                    <h5 class="mb-2 text-capitalize">{{ __('Review by customer') }}</h5>
                     <p class="text-muted small mb-3">{{ __('Customer\'s review of the provider') }}</p>
+                    @if($reviewByCustomer)
                     <div class="comment-box p-4 bg-light rounded-3 border">
                         <div class="d-flex align-items-sm-center align-items-start flex-sm-row flex-column justify-content-between gap-3 mb-3">
                             <div class="d-inline-flex align-items-center gap-3">
@@ -709,17 +713,21 @@
                         <p class="commnet-content m-0">{{ $reviewByCustomer['review'] }}</p>
                         @endif
                     </div>
+                    @else
+                    <div class="p-4 bg-light rounded-3 border text-muted">
+                        <p class="m-0">{{ __('No review by customer yet.') }} {{ __('The customer has not left a review for the provider.') }}</p>
+                    </div>
+                    @endif
                 </div>
-                @endif
 
-                {{-- Review by provider (customer_ratings: provider rates customer) --}}
+                {{-- Review by provider (customer_ratings: provider rates customer) — always show with clear message --}}
                 @php
                     $reviewByProvider = $bookingData['provider_review'] ?? null;
                 @endphp
-                @if($reviewByProvider)
                 <div class="pt-lg-5 pt-3 mt-lg-5 mt-3">
-                    <h5 class="mb-4 text-capitalize">{{ __('Review by provider') }}</h5>
+                    <h5 class="mb-2 text-capitalize">{{ __('Review by provider') }}</h5>
                     <p class="text-muted small mb-3">{{ __('Provider\'s review of the customer') }}</p>
+                    @if($reviewByProvider)
                     <div class="comment-box p-4 bg-light rounded-3 border">
                         <div class="d-flex align-items-sm-center align-items-start flex-sm-row flex-column justify-content-between gap-3 mb-3">
                             <div class="d-inline-flex align-items-center gap-3">
@@ -736,8 +744,12 @@
                         <p class="commnet-content m-0">{{ $reviewByProvider['review'] }}</p>
                         @endif
                     </div>
+                    @else
+                    <div class="p-4 bg-light rounded-3 border text-muted">
+                        <p class="m-0">{{ __('No review by provider yet.') }} {{ __('The provider has not rated the customer for this booking.') }}</p>
+                    </div>
+                    @endif
                 </div>
-                @endif
 
                 @if(count($bookingData['rating_data']) !== 0)
                 <div class="pt-lg-5 pt-3 mt-lg-5 mt-3">
