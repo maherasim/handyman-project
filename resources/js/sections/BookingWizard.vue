@@ -241,11 +241,12 @@
                                         :config="{
     enableTime: true,
     noCalendar: true,
-    dateFormat: 'H:i',
-    time_24hr: true
+    dateFormat: 'H:00',
+    time_24hr: true,
+    minuteIncrement: 60
   }"
                                         class="form-control"
-                                        placeholder="Start time"
+                                        placeholder="Start time (hour)"
                                         @input="$nextTick(() => calculateDuration(index))"
                                     />
 
@@ -256,9 +257,15 @@
                                     <label class="form-label">End Time</label>
                                     <flat-pickr
                                         v-model="slot.endTime"
-                                        :config="{ enableTime: true, noCalendar: true, dateFormat: 'H:i', time_24hr: true }"
+                                        :config="{
+    enableTime: true,
+    noCalendar: true,
+    dateFormat: 'H:00',
+    time_24hr: true,
+    minuteIncrement: 60
+  }"
                                         class="form-control"
-                                        placeholder="End time"
+                                        placeholder="End time (hour)"
                                         @input="$nextTick(() => calculateDuration(index))"
                                     />
                                 </div>
