@@ -722,7 +722,7 @@
 
                 {{-- Review by provider (customer_ratings: provider rates customer) — always show with clear message --}}
                 @php
-                    $reviewByProvider = $bookingData['provider_review'] ?? null;
+                    $reviewByProvider = $bookingData['provider_review'] ?? $bookingData['data']['provider_review'] ?? null;
                 @endphp
                 <div class="pt-lg-5 pt-3 mt-lg-5 mt-3">
                     <h5 class="mb-2 text-capitalize">{{ __('Review by provider') }}</h5>
