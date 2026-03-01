@@ -1331,7 +1331,7 @@ class FrontendController extends Controller
 
         $datatable = $datatable->eloquent($query)
             ->editColumn('name', function ($data) {
-                // Combined provider rating from both: service booking (booking_ratings) and post-job bid (post_job_bid_ratings)
+                // Combined provider rating from both: service booking (booking_ratings) and post-job bid (post_job_bid_customer_ratings)
                 $combined = \App\Models\User::getCombinedProviderRating((int) $data->id);
                 $providerRating = $combined['rating'];
                 $totalReviews = $combined['total_reviews'];

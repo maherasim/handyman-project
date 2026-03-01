@@ -13,7 +13,7 @@ use App\Http\Resources\API\ServiceResource;
 use Illuminate\Support\Facades\Password;
 use App\Models\Booking;
 use App\Models\BookingRating;
-use App\Models\PostJobBidRating;
+use App\Models\PostJobBidCustomerRating;
 use App\Models\Wallet;
 use App\Models\HandymanRating;
 use App\Http\Resources\API\HandymanRatingResource;
@@ -755,7 +755,7 @@ public function register(UserRequest $request)
             return comman_message_response(__('messages.provider_id_required'), 400);
         }
 
-        // Provider reviews from booking_ratings (bookings) and post_job_bid_ratings (post job) — same as listing count
+        // Provider reviews from booking_ratings (bookings) and post_job_bid_customer_ratings (post job) — same as listing count
         $bookingIds = Booking::where('provider_id', $providerId)->pluck('id');
         $bookingRatings = $bookingIds->isEmpty()
             ? collect()
@@ -763,7 +763,7 @@ public function register(UserRequest $request)
                 ->with(['customer', 'booking', 'service'])
                 ->orderBy('created_at', 'desc')
                 ->get();
-        $postJobBidRatings = PostJobBidRating::where('provider_id', $providerId)
+        $postJobBidRatings = PostJobBidCustomerRating::where('provider_id', $providerId)
             ->with(['customer'])
             ->orderBy('created_at', 'desc')
             ->get();
