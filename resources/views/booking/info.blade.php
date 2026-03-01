@@ -1369,7 +1369,7 @@
             </div>
         </div>
     @endif
-
+{{-- 
     @if (count($bookingdata->bookingRating) > 0)
         <div class="col-md-12 mt-4">
             <div class="card">
@@ -1400,14 +1400,14 @@
                 </div>
             </div>
         </div>
-    @endif
+    @endif --}}
 
     {{-- Review by customer (booking_ratings: customer rates provider) — always visible; same for customer and provider --}}
     <div class="col-md-12 mt-4">
         <div class="card">
             <div class="card-body">
                 <h4 class="mb-3">{{ __('Review by customer') }}</h4>
-                <p class="text-muted small mb-3">{{ __('Customer\'s review of the provider') }}</p>
+                <p class="text-muted small mb-3">{{ __('Customer\'s review of the Employer') }}</p>
                 @if (!empty($review_by_customer_for_booking))
                 <div class="table-responsive">
                     <table class="table table-bordered align-middle">
@@ -1441,8 +1441,8 @@
     <div class="col-md-12 mt-4">
         <div class="card">
             <div class="card-body">
-                <h4 class="mb-3">{{ __('Review by provider') }}</h4>
-                <p class="text-muted small mb-3">{{ __('Provider\'s review of the customer') }}</p>
+                <h4 class="mb-3">{{ __('Review by Employer') }}</h4>
+                <p class="text-muted small mb-3">{{ __('Employer\'s review of the customer') }}</p>
                 @if (!empty($customer_rating))
                 <div class="table-responsive">
                     <table class="table table-bordered align-middle">
