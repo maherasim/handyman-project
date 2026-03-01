@@ -10,7 +10,7 @@
     :user_id="{{ $user_id }}"
     :availableserviceslot='@json($availableserviceslot)'
     :serviceaddon='@json(isset($serviceaddon) ? $serviceaddon : null)'
-    :googlemapkey="'{{ $googlemapkey ?? 'AIzaSyDYkCm563wRVvdjW7xIKuyVVxEczMuKg-A' }}'"
+    :googlemapkey="'{{ $googlemapkey ?? 'AIzaSyC3i-Z7lyrfdQ_-60DcQEoOxEguVaKgzvg' }}'"
     :wallet_amount="{{ $wallet_amount }}"
     :payment_type='@json($payment_type)'
     :booking_id="{{ $booking_id }}"

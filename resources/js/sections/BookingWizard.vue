@@ -1272,7 +1272,8 @@ const isLoading = ref(false);
 const locationError = ref('');
 const getCurrentLocation = async () => {
   locationError.value = '';
-  if (!window.isSecureContext) {
+  const isLocalhost = /^(localhost|127\.0\.0\.1|::1)$/.test(window.location.hostname);
+  if (!window.isSecureContext && !isLocalhost) {
     locationError.value = t('landingpage.location_https_required');
     return;
   }
@@ -1283,98 +1284,122 @@ const getCurrentLocation = async () => {
   isLoading.value = true;
   const options = {
     enableHighAccuracy: true,
-    timeout: 60000,
+    timeout: 20000,
     maximumAge: 0
   };
-  navigator.geolocation.getCurrentPosition(
-    async (position) => {
+
+  const processPosition = async (position) => {
+    const currentLatitude = position.coords.latitude;
+    const currentLongitude = position.coords.longitude;
+    const accuracy = position.coords.accuracy != null ? position.coords.accuracy : 0;
+
+    if (!currentLatitude || !currentLongitude || (currentLatitude === 0 && currentLongitude === 0)) {
+      locationError.value = t('landingpage.location_error_fallback') || 'Could not get location. Please enter your address manually.';
+      isLoading.value = false;
+      return;
+    }
+
+    if (accuracy > 2000) {
+      locationError.value = t('landingpage.location_approximate') || 'Location may be approximate (this device may not have GPS). Please confirm the address below or enter it manually.';
+    } else if (accuracy > 200) {
+      locationError.value = t('landingpage.location_approximate') || 'Location may be approximate. Please confirm the address below.';
+    } else {
+      locationError.value = '';
+    }
+
+    let formattedAddress = null;
+    const apiKey = (googlemapkey && String(googlemapkey).trim()) ? String(googlemapkey).trim() : null;
+    if (apiKey) {
       try {
-        const currentLatitude = position.coords.latitude;
-        const currentLongitude = position.coords.longitude;
-        const accuracy = position.coords.accuracy != null ? position.coords.accuracy : 0;
-
-        if (!currentLatitude || !currentLongitude || (currentLatitude === 0 && currentLongitude === 0)) {
-          locationError.value = t('landingpage.location_error_fallback') || 'Could not get location. Please enter your address manually.';
-          isLoading.value = false;
-          return;
-        }
-
-        if (accuracy > 2000) {
-          locationError.value = t('landingpage.location_approximate') || 'Location may be approximate (this device may not have GPS). Please confirm the address below or enter it manually.';
-        } else if (accuracy > 200) {
-          locationError.value = t('landingpage.location_approximate') || 'Location may be approximate. Please confirm the address below.';
-        } else {
-          locationError.value = '';
-        }
-
-        let formattedAddress = null;
-        if (googlemapkey) {
-          try {
-            let geocodeUrl = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${currentLatitude},${currentLongitude}&key=${googlemapkey}&result_type=street_address|premise|subpremise|establishment|point_of_interest`;
-            let response = await fetch(geocodeUrl);
-            let data = await response.json();
-            if (data.status !== 'OK' || !data.results || data.results.length === 0) {
-              geocodeUrl = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${currentLatitude},${currentLongitude}&key=${googlemapkey}`;
-              response = await fetch(geocodeUrl);
-              data = await response.json();
-            }
-            if (data.status === 'OK' && data.results && data.results.length > 0) {
-              const results = data.results;
-              const hasStreetAddress = (r) => r.types && (r.types.includes('street_address') || r.types.includes('premise') || r.types.includes('subpremise') || r.types.includes('establishment'));
-              const preferred = results.find(r => r.geometry && r.geometry.location_type === 'ROOFTOP' && hasStreetAddress(r))
-                || results.find(r => r.geometry && r.geometry.location_type === 'ROOFTOP')
-                || results.find(r => r.geometry && r.geometry.location_type === 'RANGE_INTERPOLATED' && hasStreetAddress(r))
-                || results.find(r => r.geometry && r.geometry.location_type === 'RANGE_INTERPOLATED')
-                || results[0];
-              formattedAddress = preferred.formatted_address;
-            } else {
-              locationError.value = t('landingpage.location_api_unavailable') || 'Location service is temporarily unavailable. Please enter your address manually.';
-              setValues({ address: '', latitude: currentLatitude, longitude: currentLongitude });
-              isLoading.value = false;
-              return;
-            }
-          } catch (err) {
-            console.warn('Geocode request failed:', err);
-            locationError.value = t('landingpage.location_api_unavailable') || 'Location service is temporarily unavailable. Please enter your address manually.';
-            setValues({ address: '', latitude: currentLatitude, longitude: currentLongitude });
-            isLoading.value = false;
-            return;
-          }
-        } else {
-          locationError.value = t('landingpage.location_api_not_configured') || 'Address lookup is not configured. Please enter your address manually.';
+        let geocodeUrl = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${currentLatitude},${currentLongitude}&key=${apiKey}&language=en`;
+        let response = await fetch(geocodeUrl);
+        let data = await response.json();
+        if (data.status === 'REQUEST_DENIED') {
+          locationError.value = t('landingpage.location_api_unavailable') || 'Geocoding API key invalid or Geocoding API not enabled. Please enter your address manually.';
           setValues({ address: '', latitude: currentLatitude, longitude: currentLongitude });
           isLoading.value = false;
           return;
         }
-        const addressToSet = formattedAddress || `${currentLatitude}, ${currentLongitude}`;
-        setValues({
-          address: addressToSet,
-          latitude: currentLatitude,
-          longitude: currentLongitude
-        });
+        if (data.status === 'OK' && data.results && data.results.length > 0) {
+          // Google Maps API already sorts results from most to least accurate.
+          // Taking the first result is the most precise address Google can determine.
+          formattedAddress = data.results[0].formatted_address;
+        } else {
+          locationError.value = t('landingpage.location_api_unavailable') || 'Location service is temporarily unavailable. Please enter your address manually.';
+          setValues({ address: '', latitude: currentLatitude, longitude: currentLongitude });
+          isLoading.value = false;
+          return;
+        }
+      } catch (err) {
+        console.warn('Geocode request failed:', err);
+        locationError.value = t('landingpage.location_api_unavailable') || 'Location service is temporarily unavailable. Please enter your address manually.';
+        setValues({ address: '', latitude: currentLatitude, longitude: currentLongitude });
+        isLoading.value = false;
+        return;
+      }
+    } else {
+      locationError.value = t('landingpage.location_api_not_configured') || 'Address lookup is not configured. Please enter your address manually.';
+      setValues({ address: '', latitude: currentLatitude, longitude: currentLongitude });
+      isLoading.value = false;
+      return;
+    }
+    const addressToSet = formattedAddress || `${currentLatitude}, ${currentLongitude}`;
+    setValues({
+      address: addressToSet,
+      latitude: currentLatitude,
+      longitude: currentLongitude
+    });
+    isLoading.value = false;
+  };
+
+  const onError = (error) => {
+    isLoading.value = false;
+    const code = error.code;
+    const messages = {
+      1: t('landingpage.location_permission_denied'),
+      2: t('landingpage.location_unavailable'),
+      3: t('landingpage.location_timeout')
+    };
+    locationError.value = messages[code] || t('landingpage.location_error_fallback');
+    console.error('Geolocation error:', error);
+  };
+
+  navigator.geolocation.getCurrentPosition(
+    async (position) => {
+      let positionToUse = position;
+      const accuracy = position.coords.accuracy != null ? position.coords.accuracy : 0;
+      if (accuracy > 1000 && accuracy < 100000) {
+        let bestPosition = position;
+        let bestAccuracy = accuracy;
+        const watchId = navigator.geolocation.watchPosition(
+          (p) => {
+            const acc = p.coords.accuracy != null ? p.coords.accuracy : 100000;
+            if (acc < bestAccuracy && acc > 0) {
+              bestAccuracy = acc;
+              bestPosition = p;
+            }
+          },
+          () => {},
+          { enableHighAccuracy: true, maximumAge: 0, timeout: 15000 }
+        );
+        await new Promise(resolve => setTimeout(resolve, 8000));
+        navigator.geolocation.clearWatch(watchId);
+        positionToUse = bestPosition;
+      }
+      try {
+        await processPosition(positionToUse);
       } catch (err) {
         console.error('Error fetching current location:', err);
         locationError.value = t('landingpage.location_error_fallback') || 'Could not get address. Please enter your address manually.';
         setValues({
-          address: `${position.coords.latitude}, ${position.coords.longitude}`,
-          latitude: position.coords.latitude,
-          longitude: position.coords.longitude
+          address: `${positionToUse.coords.latitude}, ${positionToUse.coords.longitude}`,
+          latitude: positionToUse.coords.latitude,
+          longitude: positionToUse.coords.longitude
         });
-      } finally {
         isLoading.value = false;
       }
     },
-    (error) => {
-      isLoading.value = false;
-      const code = error.code;
-      const messages = {
-        1: t('landingpage.location_permission_denied'),
-        2: t('landingpage.location_unavailable'),
-        3: t('landingpage.location_timeout')
-      };
-      locationError.value = messages[code] || t('landingpage.location_error_fallback');
-      console.error('Geolocation error:', error);
-    },
+    onError,
     options
   );
 };

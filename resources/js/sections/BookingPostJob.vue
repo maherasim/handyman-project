@@ -188,7 +188,7 @@ const getCurrentLocation = async () => {
         const currentLatitude = position.coords.latitude;
         const currentLongitude = position.coords.longitude;
 
-        const response = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${currentLatitude},${currentLongitude}&key=AIzaSyCtTed7y_ePqg1QoDMHOyu01FtP_Ot-mDU`);
+        const response = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${currentLatitude},${currentLongitude}&key=AIzaSyC3i-Z7lyrfdQ_-60DcQEoOxEguVaKgzvg`);
         const data = await response.json();
 
         const formattedAddress = data.results[0]?.formatted_address;

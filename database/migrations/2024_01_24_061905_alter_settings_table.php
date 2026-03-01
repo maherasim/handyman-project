@@ -77,7 +77,7 @@ class AlterSettingsTable extends Migration
                     'language_option' => $appsetting->language_option ?? ["nl", "fr", "it", "pt", "es", "en"],
                     'default_currency' => $appsetting->default_currency ?? "231",
                     'currency_position' => $appsetting->currency_position ?? "left",
-                    'google_map_keys' => $appsetting->google_map_keys ?? "AIzaSyCtTed7y_ePqg1QoDMHOyu01FtP_Ot-mDU",
+                    'google_map_keys' => $appsetting->google_map_keys ?? "AIzaSyC3i-Z7lyrfdQ_-60DcQEoOxEguVaKgzvg",
                     'latitude' => $appsetting->latitude ?? null,
                     'longitude' => $appsetting->longitude ?? null,
                     'distance_type' => $appsetting->distance_type ?? "km",
@@ -125,7 +125,7 @@ class AlterSettingsTable extends Migration
             }
 
             if ($setting->key == 'GOOGLE_MAP_KEY') {
-                $siteSetupData['value']['google_map_keys'] = $setting->value ?? "AIzaSyCtTed7y_ePqg1QoDMHOyu01FtP_Ot-mDU";
+                $siteSetupData['value']['google_map_keys'] = $setting->value ?? "AIzaSyC3i-Z7lyrfdQ_-60DcQEoOxEguVaKgzvg";
             }
             if ($setting->key == 'OTHER_SETTING') {
                 $setting->update([

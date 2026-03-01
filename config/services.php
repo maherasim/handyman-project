@@ -42,4 +42,8 @@ return [
         'access_token' => env('FACEBOOK_PAGE_ACCESS_TOKEN'),
     ],
 
+    'google_maps' => [
+        'api_key' => env('GOOGLE_MAP_KEY'),
+    ],
+
 ];

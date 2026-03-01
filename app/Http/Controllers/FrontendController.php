@@ -906,7 +906,7 @@ class FrontendController extends Controller
         }
         $sitesetup = Setting::where('type', 'site-setup')->where('key', 'site-setup')->first();
         $sitesetupdata = $sitesetup ? json_decode($sitesetup->value) : null;
-        $googlemapkey = ($sitesetupdata && !empty($sitesetupdata->google_map_keys)) ? $sitesetupdata->google_map_keys : 'AIzaSyDYkCm563wRVvdjW7xIKuyVVxEczMuKg-A';
+        $googlemapkey = config('services.google_maps.api_key') ?? (($sitesetupdata && !empty($sitesetupdata->google_map_keys)) ? $sitesetupdata->google_map_keys : 'AIzaSyC3i-Z7lyrfdQ_-60DcQEoOxEguVaKgzvg');
         $user = auth()->user();
         $wallet = $user ? $user->wallet : null;
         $wallet_amount = $wallet ? $wallet->amount : 0;
