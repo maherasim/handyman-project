@@ -53,12 +53,13 @@ class PostJobBid extends Model
         return $this->hasMany(PostJobExtraCharge::class, 'post_job_bid_id');
     }
 
+    /** Customer rates provider (post_job_bid_ratings). */
     public function ratings()
     {
         return $this->hasMany(PostJobBidRating::class, 'post_job_bid_id');
     }
 
-    /** Provider review by customer (post_job_bid_customer_ratings): customer rates provider. */
+    /** Provider rates customer (post_job_bid_customer_ratings). */
     public function customerRatings()
     {
         return $this->hasMany(PostJobBidCustomerRating::class, 'post_job_bid_id');

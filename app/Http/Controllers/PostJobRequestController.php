@@ -149,7 +149,9 @@ class PostJobRequestController extends Controller
             'postrequest.postBidList:id,post_request_id',
             'extraCharges',
             'ratings.provider',
+            'ratings.customer',
             'customerRatings.customer',
+            'customerRatings.provider',
         ])->where('post_request_id', $postRequestId);
 
         // Try to get bid matching the post's current status
@@ -170,12 +172,12 @@ class PostJobRequestController extends Controller
                 ->with('info', 'No proposals yet for this job. Please check back later.');
         }
 
-        // Rate buttons: customer rates provider → post_job_bid_customer_ratings; provider rates customer → post_job_bid_ratings
-        $customerHasRatedProvider = PostJobBidCustomerRating::where('post_job_bid_id', $bid->id)->exists();
+        // Rate buttons: customer rates provider → post_job_bid_ratings; provider rates customer → post_job_bid_customer_ratings
+        $customerHasRatedProvider = PostJobBidRating::where('post_job_bid_id', $bid->id)->exists();
         $canCustomerRate = strtolower((string)($bid->status ?? '')) === 'remaining_paid';
         $showRateNowButton = $canCustomerRate && !$customerHasRatedProvider;
 
-        $providerHasRatedCustomer = PostJobBidRating::where('post_job_bid_id', $bid->id)
+        $providerHasRatedCustomer = PostJobBidCustomerRating::where('post_job_bid_id', $bid->id)
             ->where('provider_id', $bid->provider_id)
             ->exists();
         $canProviderRate = in_array(strtolower((string)($bid->status ?? '')), ['remaining_paid', 'completed']);
@@ -198,16 +200,18 @@ class PostJobRequestController extends Controller
             'postrequest.postBidList:id,post_request_id',
             'extraCharges',
             'ratings.provider',
+            'ratings.customer',
             'customerRatings.customer',
+            'customerRatings.provider',
         ])->findOrFail($bidId);
 
-        $providerHasRatedCustomer = PostJobBidRating::where('post_job_bid_id', $bid->id)
+        $providerHasRatedCustomer = PostJobBidCustomerRating::where('post_job_bid_id', $bid->id)
             ->where('provider_id', $bid->provider_id)
             ->exists();
         $canProviderRate = in_array(strtolower((string)($bid->status ?? '')), ['remaining_paid', 'completed']);
         $showRateCustomerButton = $canProviderRate && !$providerHasRatedCustomer;
 
-        $customerHasRatedProvider = PostJobBidCustomerRating::where('post_job_bid_id', $bid->id)->exists();
+        $customerHasRatedProvider = PostJobBidRating::where('post_job_bid_id', $bid->id)->exists();
         $canCustomerRate = strtolower((string)($bid->status ?? '')) === 'remaining_paid';
         $showRateNowButton = $canCustomerRate && !$customerHasRatedProvider;
 

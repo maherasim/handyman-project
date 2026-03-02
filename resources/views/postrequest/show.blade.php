@@ -646,14 +646,14 @@
             <div class="col-lg-8">
                 <div class="card shadow-sm border-0">
                     <div class="card-header bg-primary text-white fw-bold">
-                        Customer review (by Employer)
+                        Customer's review of Employer
                     </div>
                     <div class="card-body p-0">
                         <div class="table-responsive">
                             <table class="table table-hover mb-0">
                                 <thead>
                                     <tr>
-                                        <th>Employer (rater)</th>
+                                        <th>Customer (rater)</th>
                                         <th class="text-center">Rating</th>
                                         <th>Review</th>
                                         <th class="text-end">Date</th>
@@ -662,7 +662,7 @@
                                 <tbody>
                                     @foreach($bid->ratings as $r)
                                         <tr>
-                                            <td>{{ optional($r->provider)->display_name ?? ('#'.$r->provider_id) }}</td>
+                                            <td>{{ optional($r->customer)->display_name ?? ('#'.$r->customer_id) }}</td>
                                             <td class="text-center">
                                                 @php $stars = max(1, min(5, (int)($r->rating ?? 0))); @endphp
                                                 <span class="text-warning">{!! str_repeat('★', $stars) !!}</span>
@@ -688,14 +688,14 @@
             <div class="col-lg-8">
                 <div class="card shadow-sm border-0">
                     <div class="card-header bg-primary text-white fw-bold">
-                        Employer review (by customer)
+                        Employer's review of Customer
                     </div>
                     <div class="card-body p-0">
                         <div class="table-responsive">
                             <table class="table table-hover mb-0">
                                 <thead>
                                     <tr>
-                                        <th>Customer (rater)</th>
+                                        <th>Employer (rater)</th>
                                         <th class="text-center">Rating</th>
                                         <th>Review</th>
                                         <th class="text-end">Date</th>
@@ -704,7 +704,7 @@
                                 <tbody>
                                     @foreach($bid->customerRatings as $r)
                                         <tr>
-                                            <td>{{ optional($r->customer)->display_name ?? ('#'.$r->customer_id) }}</td>
+                                            <td>{{ optional($r->provider)->display_name ?? ('#'.$r->provider_id) }}</td>
                                             <td class="text-center">
                                                 @php $stars = max(1, min(5, (int)($r->rating ?? 0))); @endphp
                                                 <span class="text-warning">{!! str_repeat('★', $stars) !!}</span>
