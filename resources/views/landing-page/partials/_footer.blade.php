@@ -192,7 +192,7 @@
                             </h5>
                             <ul class="footer-link-list">
                                 <li>
-                                    <a href="{{ route('post.job.list') }}" class="footer-link-item">
+                                    <a href="{{ route('register') }}" class="footer-link-item">
                                         <span class="footer-link-arrow"><i class="ri-arrow-right-s-line"></i></span>
                                         <span>{{ __('landingpage.post_job_request') }}</span>
                                     </a>

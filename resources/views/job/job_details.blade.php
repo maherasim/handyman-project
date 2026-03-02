@@ -3,7 +3,7 @@
 @section('before_head')
     @php
         $shareTitle = $jobrequest->title;
-        $shareDescription = trim(Str::limit(strip_tags($jobrequest->description ?? ''), 150));
+        $shareDescription = trim(Str::limit(html_entity_decode(strip_tags($jobrequest->description ?? ''), ENT_QUOTES | ENT_HTML5, 'UTF-8'), 150));
         $shareUrl = route('job.details', $jobrequest->id);
         $shareImage = !empty($attachments) && count($attachments) > 0 ? $attachments[0] : asset('images/post-job/ac_refresh_and_revive.png');
         $priceType = $jobrequest->price_type ?: 'fixed';
@@ -452,15 +452,17 @@
                     <div class="bg-light p-4 rounded-3 mb-4">
                         @php
                             $priceLabel = $jobrequest->price_type === 'fixed' ? 'Fixed Price' : ($jobrequest->price_type === 'daily' ? '/ Day' : '/ Hour');
+                            $descriptionPlain = html_entity_decode(strip_tags($jobrequest->description ?? ''), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+                            $descriptionShort = Str::words($descriptionPlain, 10, '...');
                         @endphp
                         <h4 class="text-primary mb-2">{{ getPriceFormat($jobrequest->price) }} <span class="text-dark"><b>{{ $priceLabel }}</b></span></h4>
                         <p class="mb-0 text-muted" id="description">
-                            {{ Str::words(strip_tags($jobrequest->description), 10, '...') }}
+                            {{ $descriptionShort }}
                         </p>
                         
                         <button id="readMoreBtn" class="btn btn-link p-0 mt-2" style="display: none;">Read More</button>
                         <p id="fullDescription" class="mb-0 mt-2" style="display: none;">
-                            {{ Str::words(strip_tags($jobrequest->description), 10, '...') }}
+                            {{ $descriptionPlain }}
                         </p>
                     </div>
 
