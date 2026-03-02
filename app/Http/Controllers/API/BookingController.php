@@ -9,7 +9,7 @@ use App\Models\BookingStatus;
 use App\Models\BookingRating;
 use App\Models\HandymanRating;
 use App\Models\CustomerRating;
-use App\Models\PostJobBidRating;
+use App\Models\PostJobBidCustomerRating;
 use App\Models\BookingActivity;
 use App\Models\Payment;
 use App\Models\PaymentHistory;
@@ -328,7 +328,7 @@ class BookingController extends Controller
         $provider_data = new UserResource($booking_detail->provider);
         $provider_data = $provider_data->toArray($request);
 
-        // Provider reviews from booking_ratings and post_job_bid_ratings (same combined logic as UserResource rating)
+        // Provider reviews from booking_ratings and post_job_bid_customer_ratings (same combined logic as UserResource rating)
         $provider_id = (int) $booking_detail->provider_id;
         $providerBookingIds = Booking::where('provider_id', $provider_id)->pluck('id');
         $bookingRatingsForProvider = $providerBookingIds->isEmpty()
@@ -337,7 +337,7 @@ class BookingController extends Controller
                 ->with(['customer', 'service'])
                 ->orderBy('created_at', 'desc')
                 ->get();
-        $postJobBidRatingsForProvider = PostJobBidRating::where('provider_id', $provider_id)
+        $postJobBidRatingsForProvider = PostJobBidCustomerRating::where('provider_id', $provider_id)
             ->with(['customer'])
             ->orderBy('created_at', 'desc')
             ->get();

@@ -13,6 +13,7 @@ use App\Models\User;
 use App\Models\PostJobRequest;
 use App\Models\PostJobBid;
 use App\Models\PostJobBidRating;
+use App\Models\PostJobBidCustomerRating;
 use App\Models\PaymentPostJOb;
 use App\Http\Resources\API\PostJobRequestResource;
 use App\Http\Resources\API\PostJobBiderResource;
@@ -252,8 +253,8 @@ class PostJobRequestController extends Controller
             ];
         }
 
-        // provider_rating_exists: customer has already rated the provider for this bid (post_job_bid_ratings)
-        $providerRatingExists = PostJobBidRating::where('post_job_bid_id', $bid->id)->where('customer_id', $bid->customer_id)->exists();
+        // provider_rating_exists: customer has already rated the provider for this bid (post_job_bid_customer_ratings)
+        $providerRatingExists = PostJobBidCustomerRating::where('post_job_bid_id', $bid->id)->exists();
 
         // show_rate_customer_button: provider has NOT yet rated the customer (post_job_bid_ratings = provider rates customer)
         $providerHasRatedCustomer = PostJobBidRating::where('post_job_bid_id', $bid->id)
@@ -270,7 +271,7 @@ class PostJobRequestController extends Controller
             $bid->postrequest->makeHidden(['street_address', 'house_number']);
         }
 
-        // Both reviews for this bid: provider review (customer→provider, post_job_bid_ratings) and customer review (provider→customer, post_job_bid_ratings)
+        // Both reviews for this bid: provider review (customer→provider, post_job_bid_customer_ratings) and customer review (provider→customer, post_job_bid_ratings)
         $provider_review = $bid->customerRatings->map(function ($r) {
             return [
                 'id' => $r->id,
