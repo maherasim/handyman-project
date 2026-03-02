@@ -204,7 +204,7 @@
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="{{ route('user.page', 'how-it-works') }}" class="footer-link-item">
+                                    <a href="{{ route('user.page', 'how-it-works-for-customer') }}" class="footer-link-item">
                                         <span class="footer-link-arrow"><i class="ri-arrow-right-s-line"></i></span>
                                         <span>{{ __('landingpage.how_it_works') }}</span>
                                     </a>
