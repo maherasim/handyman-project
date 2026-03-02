@@ -320,7 +320,7 @@ public function register(UserRequest $request)
     {
         $id = $request->id;
 
-        $user = User::find($id);
+        $user = User::with(['country', 'state', 'city', 'providertype', 'handymantype'])->find($id);
         $message = __('messages.detail');
         if(empty($user)){
             $message = __('messages.user_not_found');
