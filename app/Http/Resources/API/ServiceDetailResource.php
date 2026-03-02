@@ -98,6 +98,7 @@ class ServiceDetailResource extends JsonResource
             'total_views' => (int) ($this->total_views ?? 0),
             'total_booking_count' => (int) $this->serviceBooking->count(),
             'completed_booking_count' => (int) $this->serviceBooking->where('status', 'completed')->count(),
+            'show_edit_delete_buttons' => (bool) ($this->serviceBooking->count() === 0),
             'is_favourite'  => $this->getUserFavouriteService->where('user_id',$user_id)->first() ? 1 : 0,
             'service_address_mapping' => $this->providerServiceAddress->map(function($mapping) {
                 return array_merge($mapping->toArray(), [
