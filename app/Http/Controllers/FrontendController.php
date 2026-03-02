@@ -21,7 +21,7 @@ use App\Models\Page;
 use App\Models\HandymanRating;
 use App\Models\HelpDesk;
 use App\Models\PostJobRequest;
-use App\Models\PostJobBidCustomerRating;
+use App\Models\PostJobBidRating;
 use App\Models\ProviderServiceAddressMapping;
 use App\Models\ProviderSubscription;
 use App\Models\Service;
@@ -655,7 +655,7 @@ class FrontendController extends Controller
             }
         }
 
-        // Combined provider reviews: booking_ratings (via services) + post_job_bid_customer_ratings (customer rates provider)
+        // Combined provider reviews: booking_ratings (via services) + post_job_bid_ratings (customer rates provider)
         $provider_id_int = (int) $provider_id;
         $bookingReviews = BookingRating::with('customer')
             ->whereHas('service', function ($q) use ($provider_id_int) {
@@ -663,7 +663,7 @@ class FrontendController extends Controller
             })
             ->orderBy('created_at', 'desc')
             ->get();
-        $postJobReviews = PostJobBidCustomerRating::with('customer')
+        $postJobReviews = PostJobBidRating::with('customer')
             ->where('provider_id', $provider_id_int)
             ->orderBy('created_at', 'desc')
             ->get();
@@ -1067,7 +1067,7 @@ class FrontendController extends Controller
             $bookingCount = BookingRating::whereHas('service', function ($q) use ($id) {
                 $q->where('provider_id', $id);
             })->count();
-            $postJobCount = PostJobBidCustomerRating::where('provider_id', $id)->count();
+            $postJobCount = PostJobBidRating::where('provider_id', $id)->count();
             $review_count = $bookingCount + $postJobCount;
 
             $query = $query->whereHas('service', function ($q) use ($id) {
@@ -1363,7 +1363,7 @@ class FrontendController extends Controller
 
         $datatable = $datatable->eloquent($query)
             ->editColumn('name', function ($data) {
-                // Combined provider rating from both: service booking (booking_ratings) and post-job bid (post_job_bid_customer_ratings)
+                // Combined provider rating from both: service booking (booking_ratings) and post-job bid (post_job_bid_ratings)
                 $combined = \App\Models\User::getCombinedProviderRating((int) $data->id);
                 $providerRating = $combined['rating'];
                 $totalReviews = $combined['total_reviews'];
@@ -1590,14 +1590,14 @@ class FrontendController extends Controller
         }
 
         if ($request->type == 'provider-rating') {
-            // Combined: booking_ratings (via provider's services) + post_job_bid_customer_ratings (customer rates provider)
+            // Combined: booking_ratings (via provider's services) + post_job_bid_ratings (customer rates provider)
             $bookingRatings = BookingRating::with('customer')
                 ->whereHas('service', function ($q) use ($id) {
                     $q->where('provider_id', $id);
                 })
                 ->orderBy('created_at', 'desc')
                 ->get();
-            $postJobRatings = PostJobBidCustomerRating::with('customer')
+            $postJobRatings = PostJobBidRating::with('customer')
                 ->where('provider_id', $id)
                 ->orderBy('created_at', 'desc')
                 ->get();

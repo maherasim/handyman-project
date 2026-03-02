@@ -208,8 +208,8 @@
             <span>Rate Now</span>
         </button>
     @endif
-    @if(auth()->user()->user_type === 'user' && (int)auth()->id() === (int)($bid->customer_id ?? 0) && ($customerHasRatedProvider ?? false) && in_array(strtolower((string)($bid->status ?? '')), ['remaining_paid', 'confirm_done', 'completed']))
-        <span class="badge bg-secondary rounded-pill px-3 py-2 mt-2 me-2">You have already rated the Employer</span>
+    @if(auth()->user()->user_type === 'user' && (int)auth()->id() === (int)($bid->customer_id ?? 0))
+        <span id="postbid-already-rated-badge" class="badge bg-secondary rounded-pill px-3 py-2 mt-2 me-2" style="{{ ($customerHasRatedProvider ?? false) ? '' : 'display:none;' }}">You have already rated the Employer</span>
     @endif
 
     @php
@@ -1343,7 +1343,8 @@
                 success: function(){
                     Swal.fire('Thank you!','Your rating has been submitted.','success');
                     $('#postBidRatingModal').modal('hide');
-                    window.location.reload();
+                    $('#postbid-rate-now-btn').hide();
+                    $('#postbid-already-rated-badge').show();
                 },
                 error: function(xhr){
                     var msg = 'Failed to submit rating.';

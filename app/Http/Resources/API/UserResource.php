@@ -25,7 +25,7 @@ class UserResource extends JsonResource
         $verified_sticker_icon = asset('images/icon/notverifiedpng.png');
         if($this->user_type == 'provider')
         {
-            // Combined rating from service booking (booking_ratings) and post-job bid (post_job_bid_customer_ratings)
+            // Combined rating from service booking (booking_ratings) and post-job bid (post_job_bid_ratings)
             $combined = \App\Models\User::getCombinedProviderRating((int) $this->id);
             $providers_service_rating = $combined['rating'];
             $total_service_rating = $combined['total_reviews'];

@@ -5,7 +5,6 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Models\PostJobBid;
 use App\Models\PostJobBidRating;
-use App\Models\PostJobBidCustomerRating;
 use App\Notifications\CommonNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -27,8 +26,8 @@ class PostJobBidRatingController extends Controller
         // Only the customer of this bid may rate the provider
         abort_unless($userId && $userId === (int) ($bid->customer_id ?? 0), 403);
 
-        // Customer rates provider → post_job_bid_customer_ratings
-        $rating = PostJobBidCustomerRating::updateOrCreate(
+        // Customer rates provider → post_job_bid_ratings (customer_id = rater, provider_id = rated)
+        $rating = PostJobBidRating::updateOrCreate(
             [
                 'post_job_bid_id' => (int) $request->post_job_bid_id,
                 'customer_id' => $userId,
@@ -69,9 +68,9 @@ class PostJobBidRatingController extends Controller
     public function delete(Request $request)
     {
         $request->validate([
-            'id' => 'required|integer|exists:post_job_bid_customer_ratings,id',
+            'id' => 'required|integer|exists:post_job_bid_ratings,id',
         ]);
-        $rating = PostJobBidCustomerRating::findOrFail((int) $request->id);
+        $rating = PostJobBidRating::findOrFail((int) $request->id);
         abort_unless((int) Auth::id() === (int) $rating->customer_id, 403);
         $rating->delete();
         return response()->json(['status' => true]);
@@ -95,7 +94,8 @@ class PostJobBidRatingController extends Controller
         $userId = (int) Auth::id();
         abort_unless($userId && $userId === (int) ($bid->provider_id ?? 0), 403);
 
-        $rating = PostJobBidCustomerRating::updateOrCreate(
+        // Provider rates customer → post_job_bid_ratings (provider_id = rater, customer_id = rated)
+        $rating = PostJobBidRating::updateOrCreate(
             [
                 'post_job_bid_id' => (int) $request->post_job_bid_id,
                 'provider_id' => $userId,

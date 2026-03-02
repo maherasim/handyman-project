@@ -232,9 +232,9 @@ public function providerSubscription()
         return $this->hasMany(HandymanRating::class, 'handyman_id','id');
     }
 
-    /** Ratings given to this user as provider from post-job bids (post_job_bid_customer_ratings). */
+    /** Ratings given to this user as provider from post-job bids (post_job_bid_ratings: customer rates provider). */
     public function postJobBidRatings(){
-        return $this->hasMany(PostJobBidCustomerRating::class, 'provider_id','id');
+        return $this->hasMany(PostJobBidRating::class, 'provider_id','id');
     }
 
     public function providerDocument(){
@@ -271,7 +271,7 @@ public function providerSubscription()
     }
 
     /**
-     * Combined provider rating from both modules: service booking (booking_ratings) and post-job bid (post_job_bid_customer_ratings).
+     * Combined provider rating from both modules: service booking (booking_ratings) and post-job bid (post_job_bid_ratings).
      * Use this wherever you display "provider rating" so job and booking ratings are shown together.
      *
      * @param int $providerId Provider user id
@@ -283,7 +283,7 @@ public function providerSubscription()
         $bookingRatingValues = $bookingIds->isEmpty()
             ? collect()
             : BookingRating::whereIn('booking_id', $bookingIds)->whereNotNull('rating')->pluck('rating');
-        $postJobRatingValues = PostJobBidCustomerRating::where('provider_id', $providerId)->whereNotNull('rating')->pluck('rating');
+        $postJobRatingValues = PostJobBidRating::where('provider_id', $providerId)->whereNotNull('rating')->pluck('rating');
         $allRatings = $bookingRatingValues->merge($postJobRatingValues);
         $totalReviews = $allRatings->count();
         $rating = $totalReviews > 0 ? (float) number_format($allRatings->avg(), 2) : 0.0;
