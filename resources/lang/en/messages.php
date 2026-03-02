@@ -805,6 +805,7 @@
     'customer_job_request' => 'Customer Job Request',
     'reviews' => 'reviews',
     'all_reviews' => 'All Reviews',
+    'no_reviews_yet' => 'No reviews yet.',
     'wallet_balance' => 'Wallet Balance',
     'insufficient_balance' => 'Insufficient balance',
     'manage_slot' => 'Slot',
