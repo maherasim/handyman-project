@@ -1501,7 +1501,11 @@
                             @foreach ($recentBookings as $rb)
                                 <div class="landing-recent-job-item">
                                     <span class="landing-recent-dot" aria-hidden="true"></span>
-                                    <span class="landing-recent-service-name">{{ $rb['service_name'] }}</span>
+                                    @if(!empty($rb['service_id']))
+                                        <a href="{{ route('service.detail', $rb['service_id']) }}" class="landing-recent-service-name text-decoration-none">{{ $rb['service_name'] }}</a>
+                                    @else
+                                        <span class="landing-recent-service-name">{{ $rb['service_name'] }}</span>
+                                    @endif
                                     <span class="landing-recent-time">{{ $rb['created_at']->diffForHumans() }}</span>
                                 </div>
                             @endforeach

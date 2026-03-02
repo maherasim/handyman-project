@@ -131,10 +131,22 @@ class FrontendController extends Controller
             ->map(function ($b) {
                 return [
                     'service_name' => $b->service ? $b->service->name : __('landingpage.service'),
+                    'service_id' => $b->service_id,
                     'created_at' => $b->created_at,
                 ];
             });
-        $areasWeCover = City::orderBy('name')->take(10)->pluck('name')->toArray();
+        $areasWeCover = [
+            'New York, USA',
+            'London, UK',
+            'Paris, France',
+            'Tokyo, Japan',
+            'Dubai, UAE',
+            'Sydney, Australia',
+            'Singapore',
+            'Berlin, Germany',
+            'Rome, Italy',
+            'Barcelona, Spain',
+        ];
         $firstBookingCoupon = Coupon::where('status', 1)->where(function ($q) {
             $q->whereNull('expire_date')->orWhere('expire_date', '>=', now()->toDateString());
         })->first();
