@@ -295,9 +295,14 @@ class PostJobRequestController extends Controller
             ];
         })->values()->all();
 
+        // Include reviews inside data so clients that only read data still get them
+        $data = $bid->toArray();
+        $data['provider_review'] = $provider_review;
+        $data['customer_review'] = $customer_review;
+
         return response()->json([
             'success' => true,
-            'data' => $bid,
+            'data' => $data,
             'tax_percent' => $tax_percent,
             'bank_transfer' => $bankTransfer,
             'provider_rating_exists' => $providerRatingExists,

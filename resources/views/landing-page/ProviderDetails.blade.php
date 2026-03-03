@@ -571,7 +571,7 @@
                         <div class="info-card-modern mb-4">
                             <div class="info-card-header-modern" style="opacity: 1 !important; visibility: visible !important; display: flex !important; justify-content: center !important; background: #3333ff !important; padding: 6px 15px !important; min-height: 40px !important;">
                                 <i class="ri-graduation-cap-line me-2" style="opacity: 1 !important; visibility: visible !important; font-size: 16px;"></i>
-                                <h5 class="mb-0" style="opacity: 1 !important; visibility: visible !important; color: #ffffff !important; font-size: 13px; font-weight: 700;">Education</h5>
+                                <h5 class="mb-0" style="opacity: 1 !important; visibility: visible !important; color: #ffffff !important; font-size: 13px; font-weight: 700;">{{ __('landingpage.pd_education') }}</h5>
                             </div>
                             <div class="info-card-body-modern">
                                 <div class="skills-badge-container">
@@ -594,7 +594,7 @@
                                         }
                                     @endphp
                                     @foreach($educations as $edu)
-                                        <span class="skill-badge-modern">{{ ucwords(trim($edu)) }}</span>
+                                        <span class="skill-badge-modern">{{ ucwords(str_replace('_', ' ', trim($edu))) }}</span>
                                     @endforeach
                                 </div>
                             </div>
