@@ -10,6 +10,7 @@ use App\Models\BookingRating;
 use App\Models\HandymanRating;
 use App\Models\CustomerRating;
 use App\Models\PostJobBidCustomerRating;
+use App\Models\PostJobBidRating;
 use App\Models\BookingActivity;
 use App\Models\Payment;
 use App\Models\PaymentHistory;
