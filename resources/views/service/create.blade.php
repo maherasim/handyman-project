@@ -368,7 +368,7 @@
                             {{-- @endif --}}
                             <div class="form-group col-md-3" id="amount">
                                 {{ html()->label(__('messages.advance_payment_amount') . ' (%) <span class="text-danger">*</span>', 'advance_payment_amount')->class('form-control-label') }}
-                                {{ html()->number('advance_payment_amount', $servicedata->advance_payment_amount)->placeholder(__('messages.amount'))->class('form-control')->id('advance_payment_amount')->attributes(['min' => 1, 'max' => 99]) }}
+                                {{ html()->number('advance_payment_amount', $servicedata->advance_payment_amount)->placeholder(__('messages.amount'))->class('form-control')->id('advance_payment_amount')->attributes(['min' => 10, 'max' => 99]) }}
                                 <small class="help-block with-errors text-danger"></small>
                             </div>
                         </div>
@@ -760,6 +760,17 @@
                                 Snackbar.show({ text: '{{ __("messages.advance_payment_amount") }} {{ __("messages.is_required") }}', pos: 'bottom-center', backgroundColor: '#d32f2f', actionTextColor: '#fff' });
                             } else {
                                 alert('{{ __("messages.advance_payment_amount") }} {{ __("messages.is_required") }}');
+                            }
+                            $('#advance_payment_amount').focus();
+                            e.preventDefault();
+                            return false;
+                        }
+                        var advNum = parseInt(adv, 10);
+                        if (advNum < 10 || advNum > 99) {
+                            if (typeof Snackbar !== 'undefined') {
+                                Snackbar.show({ text: '{{ __("messages.advance_payment_amount") }} must be between 10 and 99.', pos: 'bottom-center', backgroundColor: '#d32f2f', actionTextColor: '#fff' });
+                            } else {
+                                alert('{{ __("messages.advance_payment_amount") }} must be between 10 and 99.');
                             }
                             $('#advance_payment_amount').focus();
                             e.preventDefault();
