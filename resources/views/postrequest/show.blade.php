@@ -1451,13 +1451,13 @@
                         <div>
                             <div class="fw-bold">Advance payment guidelines</div>
                             <div class="small mb-0">
-                                You can request an advance between 1% and 99% of the total. Values outside this range are not allowed. The remainder will be due later.
+                                You can request an advance between 20% and 99% of the total. Values outside this range are not allowed. The remainder will be due later.
                             </div>
                         </div>
                     </div>
                     <div class="mb-3 text-start">
                         <label class="form-label fw-bold">Advance Percentage</label>
-                        <input type="number" id="advanceInput" class="form-control" value="${currentAdvance}" min="1" max="99" step="1" placeholder="1-99" />
+                        <input type="number" id="advanceInput" class="form-control" value="${currentAdvance}" min="20" max="99" step="1" placeholder="20-99" />
                     </div>
                     <div class="text-start">
                         <label class="form-label fw-bold">Remaining Percentage</label>
@@ -1499,12 +1499,12 @@
                         preConfirm: () => {
                             const raw = document.getElementById('advanceInput').value;
                             if (raw === '' || raw === null) {
-                                Swal.showValidationMessage("Advance must be between 1% and 99%.");
+                                Swal.showValidationMessage("Advance must be between 20% and 99%.");
                                 return false;
                             }
                             const advance = parseInt(raw, 10);
-                            if (isNaN(advance) || advance < 1 || advance > 99) {
-                                Swal.showValidationMessage("Advance must be between 1% and 99%.");
+                            if (isNaN(advance) || advance < 20 || advance > 99) {
+                                Swal.showValidationMessage("Advance must be between 20% and 99%.");
                                 return false;
                             }
                             return { advance, remaining: 100 - advance };

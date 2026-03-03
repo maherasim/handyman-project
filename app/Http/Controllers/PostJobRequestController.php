@@ -254,8 +254,11 @@ class PostJobRequestController extends Controller
     public function setAdvanceSplit(Request $request, $id)
     {
         $request->validate([
-            'advance_percent' => 'required|integer|min:0|max:100',
-            'remaining_percent' => 'required|integer|min:0|max:100',
+            'advance_percent' => 'required|integer|min:20|max:99',
+            'remaining_percent' => 'required|integer|min:1|max:80',
+        ], [
+            'advance_percent.min' => 'Advance must be between 20% and 99%.',
+            'advance_percent.max' => 'Advance must be between 20% and 99%.',
         ]);
 
         $post = PostJobRequest::findOrFail($id);
@@ -2687,6 +2690,14 @@ class PostJobRequestController extends Controller
 
     public function startWork(Request $request, $id)
     {
+        $request->validate([
+            'advance_percent' => 'required|integer|min:20|max:99',
+            'remaining_percent' => 'required|integer|min:1|max:80',
+        ], [
+            'advance_percent.min' => 'Advance must be between 20% and 99%.',
+            'advance_percent.max' => 'Advance must be between 20% and 99%.',
+        ]);
+
         // Find the bid
         $bid = PostJobBid::findOrFail($id);
 
