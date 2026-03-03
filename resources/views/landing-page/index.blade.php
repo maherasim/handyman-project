@@ -1300,10 +1300,10 @@
                                 </div>
                             </div>
                             <h2 class="fw-bold mb-3" style="font-size: 2.5rem !important; color: #333 !important;">
-                                Need Help? Get in Touch
+                                {{ __('landingpage.contact_need_help') }}
                             </h2>
                             <p class="text-muted mb-4" style="font-size: 1.1rem !important; line-height: 1.6 !important;">
-                                Have questions or need assistance? Our support team is here to help you. Reach out to us via email or phone, and we'll get back to you as soon as possible.
+                                {{ __('landingpage.contact_lead') }}
                             </p>
                         </div>
                         
@@ -1314,7 +1314,7 @@
                                 <span>{{ $sectionData['section_5']['email'] ?? 'support@example.com' }}</span>
                             </a>
                             
-                            <span class="contact-divider d-none d-md-inline" style="color: #6c757d !important; font-weight: 500 !important; font-size: 1rem !important;">or</span>
+                            <span class="contact-divider d-none d-md-inline" style="color: #6c757d !important; font-weight: 500 !important; font-size: 1rem !important;">{{ __('landingpage.contact_or') }}</span>
                             
                             <a href="tel:{{ $sectionData['section_5']['contact_number'] ?? '+1234567890' }}" 
                                class="contact-btn contact-btn-phone" style="display: inline-flex !important; align-items: center !important; padding: 15px 35px !important; border-radius: 50px !important; text-decoration: none !important; font-weight: 600 !important; font-size: 1.1rem !important; background: #fff !important; color: #333 !important; border: 2px solid #e9ecef !important; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1) !important; transition: all 0.3s ease !important;">

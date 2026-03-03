@@ -2,8 +2,8 @@
 
 @php
     $p = $providerData['data'] ?? [];
-    $shareTitle = $p['display_name'] ?? 'Provider';
-    $shareDescription = trim(\Illuminate\Support\Str::limit(strip_tags($p['description'] ?? $p['designation'] ?? 'Service provider on ' . config('app.name')), 150));
+    $shareTitle = $p['display_name'] ?? __('landingpage.pd_provider_fallback');
+    $shareDescription = trim(\Illuminate\Support\Str::limit(strip_tags($p['description'] ?? $p['designation'] ?? __('landingpage.pd_service_provider_on') . ' ' . config('app.name')), 150));
     $shareUrl = route('provider.detail', $p['id'] ?? 0);
     $shareImage = !empty($p['profile_image']) ? (str_starts_with($p['profile_image'], 'http') ? $p['profile_image'] : asset($p['profile_image'])) : asset('images/post-job/ac_refresh_and_revive.png');
 @endphp
@@ -238,7 +238,7 @@
                                     alt="image">
                             </div>
                             <div class="mt-3 text-center position-relative">
-                                <img src="{{ $providerData['data']['profile_image'] }}" alt="provider"
+                                <img src="{{ $providerData['data']['profile_image'] }}" alt="{{ __('landingpage.pd_alt_provider') }}"
                                     class="avatar-180 img-fluid rounded-circle object-cover border border-5 border-white bg-primary-subtle">
                                 <div class="d-flex align-items-center justify-content-center gap-2 mt-3">
                                     <img src="{{ asset($imagePath) }}" alt="icon" style="width: 14%; height: 23%;">
@@ -279,7 +279,7 @@
                                         <img src="{{ asset('images/icon/verifiedpng.png') }}" alt="Verified Icon"
                                             style="width: 14%; height: 23%; margin-right: 10px;">
                                     @else
-                                        <img src="{{ asset('images/icon/notverifiedpng.png') }}" alt="Non-Verified Icon"
+                                        <img src="{{ asset('images/icon/notverifiedpng.png') }}" alt="{{ __('landingpage.pd_alt_not_verified_icon') }}"
                                             style="width: 14%; height: 23%; margin-right: 10px;">
                                     @endif
                                 </div>
@@ -349,13 +349,13 @@
                                                         <img src="https://static.vecteezy.com/system/resources/previews/016/716/481/original/facebook-icon-free-png.png" style="width: 30px; border-radius: 8px;" alt="Facebook">
                                                     </span>
                                                     <span role="button" tabindex="0" class="social-link share-link" data-platform="instagram" data-share-url="{{ $detailShareUrl }}" data-quote="{{ $detailQuote }} — {{ $detailShareUrl }}" data-image-url="{{ $shareImage }}" onclick="return typeof window.__shareClickHandler === 'function' && window.__shareClickHandler(event, this);" style="cursor: pointer;">
-                                                        <img src="https://upload.wikimedia.org/wikipedia/commons/9/95/Instagram_logo_2022.svg" style="width: 30px; border-radius: 8px;" alt="Instagram">
+                                                        <img src="https://upload.wikimedia.org/wikipedia/commons/9/95/Instagram_logo_2022.svg" style="width: 30px; border-radius: 8px;" alt="{{ __('landingpage.pd_alt_instagram') }}">
                                                     </span>
                                                     <span role="button" tabindex="0" class="social-link share-link" data-platform="twitter" data-share-url="{{ $detailShareUrl }}" data-text="{{ $detailQuote }}" onclick="return typeof window.__shareClickHandler === 'function' && window.__shareClickHandler(event, this);" style="cursor: pointer;">
                                                         <img src="https://cdn.pixabay.com/photo/2015/03/10/17/30/twitter-667462_640.png" style="width: 30px; border-radius: 8px;" alt="Twitter">
                                                     </span>
                                                     <span role="button" tabindex="0" class="social-link share-link" data-platform="linkedin" data-share-url="{{ $detailShareUrl }}" onclick="return typeof window.__shareClickHandler === 'function' && window.__shareClickHandler(event, this);" style="cursor: pointer;">
-                                                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRokEYt0yyh6uNDKL8uksVLlhZ35laKNQgZ9g&s" style="width: 30px; border-radius: 8px;" alt="LinkedIn">
+                                                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRokEYt0yyh6uNDKL8uksVLlhZ35laKNQgZ9g&s" style="width: 30px; border-radius: 8px;" alt="{{ __('landingpage.pd_alt_linkedin') }}">
                                                     </span>
                                                 </div>
                                             </tr>
@@ -383,7 +383,7 @@
                                             </tr>
                                             <tr>
                                                 <td class="px-0">
-                                                    <h6 class="text-white m-0 lh-base">Language:</h6>
+                                                    <h6 class="text-white m-0 lh-base">{{ __('landingpage.pd_language') }}:</h6>
                                                 </td>
                                                 <td class=" pe-0">
                                                     @if (isset($providerData['data']['languages']) && is_array($providerData['data']['languages']))
@@ -391,7 +391,7 @@
                                                             {{ implode(', ', $providerData['data']['languages']) }}
                                                         </span>
                                                     @else
-                                                        <span class="text-white">{{ __('N/A') }}</span>
+                                                        <span class="text-white">{{ __('messages.na') }}</span>
                                                     @endif
                                                 </td>
                                             </tr>
@@ -399,12 +399,18 @@
 
                                             <tr>
                                                 <td class="px-0">
-                                                    <h6 class="text-white m-0 lh-base">Availability:</h6>
+                                                    <h6 class="text-white m-0 lh-base">{{ __('landingpage.sd_availability') }}:</h6>
                                                 </td>
                                                 <td class=" pe-0">
                                                     @if (isset($providerData['data']['availability']))
+                                                        @php
+                                                            $avKey = $providerData['data']['availability'];
+                                                            $avLabel = in_array($avKey, ['full_time', 'part_time'], true)
+                                                                ? __('messages.availability_' . $avKey)
+                                                                : ucwords(str_replace('_', ' ', $avKey));
+                                                        @endphp
                                                         <span
-                                                            class="text-white">{{ $providerData['data']['availability'] }}</span>
+                                                            class="text-white">{{ $avLabel }}</span>
                                                     @else
                                                         <span class="text-white">{{ __('messages.availability') }}</span>
                                                         <!-- Optional: Provide a default message if the language_option is not available -->
@@ -431,7 +437,7 @@
                         <div class="info-card-modern mb-4">
                             <div class="info-card-header-modern" style="opacity: 1 !important; visibility: visible !important; display: flex !important; justify-content: center !important; background: #3333ff !important; padding: 6px 15px !important; min-height: 40px !important;">
                                 <i class="ri-tools-line me-2" style="opacity: 1 !important; visibility: visible !important; font-size: 16px;"></i>
-                                <h5 class="mb-0" style="opacity: 1 !important; visibility: visible !important; color: #ffffff !important; font-size: 13px; font-weight: 700;">Full Skills</h5>
+                                <h5 class="mb-0" style="opacity: 1 !important; visibility: visible !important; color: #ffffff !important; font-size: 13px; font-weight: 700;">{{ __('landingpage.pd_full_skills') }}</h5>
                             </div>
                             <div class="info-card-body-modern">
                                 <div class="skills-badge-container">
@@ -466,7 +472,7 @@
                         <div class="info-card-modern mb-4">
                             <div class="info-card-header-modern" style="opacity: 1 !important; visibility: visible !important; display: flex !important; justify-content: center !important; background: #3333ff !important; padding: 6px 15px !important; min-height: 40px !important;">
                                 <i class="ri-map-pin-line me-2" style="opacity: 1 !important; visibility: visible !important; font-size: 16px;"></i>
-                                <h5 class="mb-0" style="opacity: 1 !important; visibility: visible !important; color: #ffffff !important; font-size: 13px; font-weight: 700;">Location</h5>
+                                <h5 class="mb-0" style="opacity: 1 !important; visibility: visible !important; color: #ffffff !important; font-size: 13px; font-weight: 700;">{{ __('landingpage.pd_location') }}</h5>
                             </div>
                             <div class="info-card-body-modern">
                                 <div class="info-value-modern">
@@ -515,7 +521,7 @@
                         <div class="info-card-modern mb-4">
                             <div class="info-card-header-modern" style="opacity: 1 !important; visibility: visible !important; display: flex !important; justify-content: center !important; background: #3333ff !important; padding: 6px 15px !important; min-height: 40px !important;">
                                 <i class="ri-briefcase-4-line me-2" style="opacity: 1 !important; visibility: visible !important; font-size: 16px;"></i>
-                                <h5 class="mb-0" style="opacity: 1 !important; visibility: visible !important; color: #ffffff !important; font-size: 13px; font-weight: 700;">Experience</h5>
+                                <h5 class="mb-0" style="opacity: 1 !important; visibility: visible !important; color: #ffffff !important; font-size: 13px; font-weight: 700;">{{ __('landingpage.pd_experience') }}</h5>
                             </div>
                             <div class="info-card-body-modern">
                                 <div class="skills-badge-container">
@@ -550,7 +556,7 @@
                         <div class="info-card-modern mb-4">
                             <div class="info-card-header-modern" style="opacity: 1 !important; visibility: visible !important; display: flex !important; justify-content: center !important; background: #3333ff !important; padding: 6px 15px !important; min-height: 40px !important;">
                                 <i class="ri-car-line me-2" style="opacity: 1 !important; visibility: visible !important; font-size: 16px;"></i>
-                                <h5 class="mb-0" style="opacity: 1 !important; visibility: visible !important; color: #ffffff !important; font-size: 13px; font-weight: 700;">Mobility</h5>
+                                <h5 class="mb-0" style="opacity: 1 !important; visibility: visible !important; color: #ffffff !important; font-size: 13px; font-weight: 700;">{{ __('landingpage.sd_mobility') }}</h5>
                             </div>
                             <div class="info-card-body-modern">
                                 <div class="info-value-modern">
@@ -600,7 +606,7 @@
                         <div class="info-card-modern mb-4">
                             <div class="info-card-header-modern" style="opacity: 1 !important; visibility: visible !important; display: flex !important; justify-content: center !important; background: #3333ff !important; padding: 6px 15px !important; min-height: 40px !important;">
                                 <i class="ri-file-certificate-2-line me-2" style="opacity: 1 !important; visibility: visible !important; font-size: 16px;"></i>
-                                <h5 class="mb-0" style="opacity: 1 !important; visibility: visible !important; color: #ffffff !important; font-size: 13px; font-weight: 700;">Certificate</h5>
+                                <h5 class="mb-0" style="opacity: 1 !important; visibility: visible !important; color: #ffffff !important; font-size: 13px; font-weight: 700;">{{ __('landingpage.pd_certificate') }}</h5>
                             </div>
                             <div class="info-card-body-modern">
                                 <div class="skills-badge-container">
@@ -725,7 +731,7 @@
                             </li>
                         @empty
                             <li class="comment mb-5 pb-5">
-                                <p class="text-muted m-0">{{ __('messages.no_reviews_yet') ?? 'No reviews yet.' }}</p>
+                                <p class="text-muted m-0">{{ __('messages.no_reviews_yet') }}</p>
                             </li>
                         @endforelse
                     </ul>
@@ -738,7 +744,7 @@
     <div class="modal fade" id="chooseme" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
             <div class="modal-content overflow-visible">
-                <span class="text-primary custom-btn-close" data-bs-dismiss="modal" aria-label="Close">
+                <span class="text-primary custom-btn-close" data-bs-dismiss="modal" aria-label="{{ __('messages.close') }}">
                     <svg xmlns="http://www.w3.org/2000/svg" width="40" height="41" viewBox="0 0 40 41"
                         fill="none">
                         <rect x="12" y="11.8381" width="17" height="17" fill="white"></rect>

@@ -6,7 +6,7 @@
         <!-- Top Filters -->
         <div class="card shadow-sm border-0 rounded-3 mb-4">
             <div class="card-header bg-white border-bottom p-3">
-                <h5 class="mb-0 text-primary fw-bold"><i class="fas fa-filter me-2"></i> Filters</h5>
+                <h5 class="mb-0 text-primary fw-bold"><i class="fas fa-filter me-2"></i> {{ __('landingpage.sl_filters') }}</h5>
             </div>
             <div class="card-body p-4">
                 <form method="GET" id="serviceFilterForm">
@@ -14,41 +14,41 @@
                     <div class="row g-3">
                         <!-- Search -->
                         <div class="col-lg-3 col-md-6">
-                            <label class="form-label small fw-bold text-muted text-uppercase">Search</label>
+                            <label class="form-label small fw-bold text-muted text-uppercase">{{ __('landingpage.sl_search') }}</label>
                             <div class="input-group">
                                 <span class="input-group-text bg-light border-end-0"><i class="fas fa-search text-muted"></i></span>
-                                <input type="text" class="form-control border-start-0 bg-light" name="q" value="{{ $filters['q'] ?? '' }}" placeholder="Search services...">
+                                <input type="text" class="form-control border-start-0 bg-light" name="q" value="{{ $filters['q'] ?? '' }}" placeholder="{{ __('landingpage.sl_search_placeholder') }}">
                             </div>
                         </div>
 
                         <!-- Sort -->
                         <div class="col-lg-3 col-md-6">
-                            <label class="form-label small fw-bold text-muted text-uppercase">Sort By</label>
+                            <label class="form-label small fw-bold text-muted text-uppercase">{{ __('landingpage.sl_sort_by') }}</label>
                             <select name="sort" class="form-select bg-light">
-                                <option value="newest" {{ ($filters['sort'] ?? 'newest')==='newest' ? 'selected' : '' }}>Most Recent</option>
-                                <option value="price_asc" {{ ($filters['sort'] ?? '')==='price_asc' ? 'selected' : '' }}>Price: Low to High</option>
-                                <option value="price_desc" {{ ($filters['sort'] ?? '')==='price_desc' ? 'selected' : '' }}>Price: High to Low</option>
+                                <option value="newest" {{ ($filters['sort'] ?? 'newest')==='newest' ? 'selected' : '' }}>{{ __('landingpage.sl_most_recent') }}</option>
+                                <option value="price_asc" {{ ($filters['sort'] ?? '')==='price_asc' ? 'selected' : '' }}>{{ __('landingpage.sl_price_low_high') }}</option>
+                                <option value="price_desc" {{ ($filters['sort'] ?? '')==='price_desc' ? 'selected' : '' }}>{{ __('landingpage.sl_price_high_low') }}</option>
                             </select>
                         </div>
 
                         <!-- Price Range -->
                         <div class="col-lg-6 col-md-12">
-                            <label class="form-label small fw-bold text-muted text-uppercase">Price Range</label>
+                            <label class="form-label small fw-bold text-muted text-uppercase">{{ __('landingpage.sl_price_range') }}</label>
                             <div class="row g-2">
                                 <div class="col-6">
-                                    <input type="number" step="0.01" class="form-control bg-light" name="price_min" value="{{ $filters['price_min'] ?? '' }}" placeholder="Min Price">
+                                    <input type="number" step="0.01" class="form-control bg-light" name="price_min" value="{{ $filters['price_min'] ?? '' }}" placeholder="{{ __('landingpage.sl_min_price') }}">
                                 </div>
                                 <div class="col-6">
-                                    <input type="number" step="0.01" class="form-control bg-light" name="price_max" value="{{ $filters['price_max'] ?? '' }}" placeholder="Max Price">
+                                    <input type="number" step="0.01" class="form-control bg-light" name="price_max" value="{{ $filters['price_max'] ?? '' }}" placeholder="{{ __('landingpage.sl_max_price') }}">
                                 </div>
                             </div>
                         </div>
 
                         <!-- Category -->
                         <div class="col-lg-3 col-md-6">
-                            <label class="form-label small fw-bold text-muted text-uppercase">Category</label>
+                            <label class="form-label small fw-bold text-muted text-uppercase">{{ __('landingpage.sl_category') }}</label>
                             <select name="category_id" id="categorySelect" class="form-select bg-light w-100">
-                                <option value="">All Categories</option>
+                                <option value="">{{ __('landingpage.sl_all_categories') }}</option>
                                 @foreach($categories as $c)
                                 <option value="{{ $c->id }}" {{ (string)($filters['category_id'] ?? '') === (string)$c->id ? 'selected' : '' }}>{{ $c->name }}</option>
                                 @endforeach
@@ -57,9 +57,9 @@
 
                         <!-- Subcategory -->
                         <div class="col-lg-3 col-md-6">
-                            <label class="form-label small fw-bold text-muted text-uppercase">Subcategory</label>
+                            <label class="form-label small fw-bold text-muted text-uppercase">{{ __('landingpage.sl_subcategory') }}</label>
                             <select name="subcategory_id" id="subcategorySelect" class="form-select bg-light w-100">
-                                <option value="">All Subcategories</option>
+                                <option value="">{{ __('landingpage.sl_all_subcategories') }}</option>
                                 @foreach($subcategories as $sc)
                                 <option value="{{ $sc->id }}" data-category="{{ $sc->category_id }}" {{ (string)($filters['subcategory_id'] ?? '') === (string)$sc->id ? 'selected' : '' }}>{{ $sc->name }}</option>
                                 @endforeach
@@ -68,9 +68,9 @@
 
                         <!-- Provider -->
                         <div class="col-lg-3 col-md-6">
-                            <label class="form-label small fw-bold text-muted text-uppercase">Provider</label>
+                            <label class="form-label small fw-bold text-muted text-uppercase">{{ __('landingpage.sl_provider') }}</label>
                             <select name="provider_id" id="providerSelect" class="form-select bg-light w-100">
-                                <option value="">All Providers</option>
+                                <option value="">{{ __('landingpage.sl_all_providers') }}</option>
                                 @foreach($providers as $p)
                                 <option value="{{ $p->id }}" {{ (string)($filters['provider_id'] ?? '') === (string)$p->id ? 'selected' : '' }}>{{ $p->display_name }}</option>
                                 @endforeach
@@ -81,18 +81,18 @@
                         <div class="col-lg-3 col-md-6">
                              <div class="row g-2">
                                 <div class="col-6">
-                                    <label class="form-label small fw-bold text-muted text-uppercase">Country</label>
+                                    <label class="form-label small fw-bold text-muted text-uppercase">{{ __('landingpage.sl_country') }}</label>
                                     <select name="country_id" id="countrySelect" class="form-select bg-light mb-2 w-100">
-                                        <option value="">All</option>
+                                        <option value="">{{ __('landingpage.sl_all') }}</option>
                                         @foreach($countries as $ct)
                                         <option value="{{ $ct->id }}" {{ (string)($filters['country_id'] ?? '') === (string)$ct->id ? 'selected' : '' }}>{{ $ct->name }}</option>
                                         @endforeach
                                     </select>
                                 </div>
                                 <div class="col-6">
-                                    <label class="form-label small fw-bold text-muted text-uppercase">City</label>
+                                    <label class="form-label small fw-bold text-muted text-uppercase">{{ __('landingpage.sl_city') }}</label>
                                     <select name="city_id" id="citySelect" class="form-select bg-light w-100">
-                                        <option value="">All</option>
+                                        <option value="">{{ __('landingpage.sl_all') }}</option>
                                         @foreach($cities as $cy)
                                         <option value="{{ $cy->id }}" data-country="{{ $cy->country_id }}" data-state="{{ $cy->state_id ?? '' }}" {{ (string)($filters['city_id'] ?? '') === (string)$cy->id ? 'selected' : '' }}>{{ $cy->name }}</option>
                                         @endforeach
@@ -103,8 +103,8 @@
 
                         <!-- Buttons -->
                         <div class="col-12 mt-4 text-end">
-                            <a href="{{ route('service.list') }}" class="btn btn-outline-secondary px-4 me-2">Clear All</a>
-                            <button id="applyBtn" type="submit" class="btn btn-primary px-4 fw-bold">Apply Filters</button>
+                            <a href="{{ route('service.list') }}" class="btn btn-outline-secondary px-4 me-2">{{ __('landingpage.sl_clear_all') }}</a>
+                            <button id="applyBtn" type="submit" class="btn btn-primary px-4 fw-bold">{{ __('landingpage.sl_apply_filters') }}</button>
                         </div>
                     </div>
                 </form>
@@ -146,8 +146,8 @@
                 <div class="col-12">
                     <div class="text-center py-5 bg-white rounded shadow-sm">
                         <img src="{{ asset('assets/search-no-data.png') }}" class="img-fluid mb-3" style="max-width: 200px;" alt="No services found">
-                        <h4 class="text-muted">No services found</h4>
-                        <p class="text-muted mb-0">Try adjusting your filters used to find what you're looking for.</p>
+                        <h4 class="text-muted">{{ __('landingpage.sl_no_services') }}</h4>
+                        <p class="text-muted mb-0">{{ __('landingpage.sl_try_adjusting') }}</p>
                     </div>
                 </div>
             @endforelse
@@ -172,7 +172,7 @@ document.addEventListener('DOMContentLoaded', function(){
     // Initialize Select2
     $('#categorySelect').select2({
         theme: 'bootstrap-5',
-        placeholder: 'All Categories',
+        placeholder: '{{ __("landingpage.sl_all_categories") }}',
         allowClear: true,
         ajax: {
             url: '{{ url("/api/category-list") }}',
@@ -197,7 +197,7 @@ document.addEventListener('DOMContentLoaded', function(){
 
     $('#subcategorySelect').select2({
         theme: 'bootstrap-5', 
-        placeholder: 'All Subcategories',
+        placeholder: '{{ __("landingpage.sl_all_subcategories") }}',
         allowClear: true,
         ajax: {
             url: '{{ url("/api/subcategory-list") }}',
@@ -223,7 +223,7 @@ document.addEventListener('DOMContentLoaded', function(){
 
     $('#providerSelect').select2({
         theme: 'bootstrap-5',
-        placeholder: 'All Providers', 
+        placeholder: '{{ __("landingpage.sl_all_providers") }}', 
         allowClear: true,
         ajax: {
             url: '{{ url("/api/user-list") }}',
@@ -262,7 +262,7 @@ document.addEventListener('DOMContentLoaded', function(){
         
         $('#countrySelect').empty().select2({
             theme: 'bootstrap-5',
-            placeholder: 'All Countries',
+            placeholder: '{{ __("landingpage.sl_all_countries") }}',
             allowClear: true,
             data: countryData
         });
@@ -276,7 +276,7 @@ document.addEventListener('DOMContentLoaded', function(){
 
     $('#citySelect').select2({
         theme: 'bootstrap-5',
-        placeholder: 'All Cities',
+        placeholder: '{{ __("landingpage.sl_all_cities") }}',
         allowClear: true,
         ajax: {
             url: '{{ route("ajax.list.cities") }}',

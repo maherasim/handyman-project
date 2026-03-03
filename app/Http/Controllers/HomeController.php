@@ -974,6 +974,19 @@ $data['remaining_payout'] = round($providerRemainingPayout, $digitafter_decimal_
 
     public function lang($locale)
     {
+        // Build allowed locales: site settings + always include German (de)
+        $setup = sitesetupSession('get');
+        $language_option = ($setup && isset($setup->language_option)) ? $setup->language_option : ['nl', 'fr', 'it', 'pt', 'es', 'en'];
+        if (is_array($language_option)) {
+            $language_option = array_values(array_unique(array_merge($language_option, ['de'])));
+        }
+        $langDir = resource_path('lang/' . $locale);
+        $localeAllowed = in_array($locale, $language_option) && \File::isDirectory($langDir);
+
+        if (!$localeAllowed) {
+            return redirect()->back();
+        }
+
         \App::setLocale($locale);
         session()->put('locale', $locale);
         \Artisan::call('cache:clear');

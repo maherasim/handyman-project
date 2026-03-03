@@ -34,7 +34,11 @@
 @php
         $currentLang = app()->getLocale();
         $langFolderPath = resource_path("lang/$currentLang");
-        $filePaths = \File::files($langFolderPath);
+        if (!\File::isDirectory($langFolderPath)) {
+            $currentLang = config('app.fallback_locale', 'en');
+            $langFolderPath = resource_path("lang/$currentLang");
+        }
+        $filePaths = \File::isDirectory($langFolderPath) ? \File::files($langFolderPath) : [];
         $sitesetup = App\Models\Setting::where('type','site-setup')->where('key', 'site-setup')->first();
         $date_time = $sitesetup ? json_decode($sitesetup->value, true) : null;
 

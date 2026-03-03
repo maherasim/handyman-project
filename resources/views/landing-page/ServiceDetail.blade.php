@@ -404,9 +404,9 @@
         <div class="section-padding">
             <div class="container">
                 <div class="alert alert-danger">
-                    <h4>{{ __('Service Not Found') }}</h4>
-                    <p>{{ __('The service you are looking for does not exist or is no longer available.') }}</p>
-                    <a href="{{ route('service.list') }}" class="btn btn-primary">{{ __('Back to Services') }}</a>
+                    <h4>{{ __('landingpage.sd_service_not_found') }}</h4>
+                    <p>{{ __('landingpage.sd_service_not_found_desc') }}</p>
+                    <a href="{{ route('service.list') }}" class="btn btn-primary">{{ __('landingpage.sd_back_to_services') }}</a>
                 </div>
             </div>
         </div>
@@ -415,7 +415,7 @@
         <div class="container">
             <div class="row">
                 <div class="col-lg-8 pe-xxl-5">
-                    <h3 class="text-capitalize mb-2">{{ $serviceData['service_detail']['name'] ?? 'Service' }}</h3>
+                    <h3 class="text-capitalize mb-2">{{ $serviceData['service_detail']['name'] ?? __('landingpage.service') }}</h3>
                     <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
                         <ul class="service-meta-list list-inline m-0 d-flex align-items-center flex-wrap">
                             <li>
@@ -436,7 +436,7 @@
                                                     {{ __('messages.reviews') }})</span></a></h6>
                                     @endif
 
-                                    <span class="ms-3 d-inline-flex align-items-center" title="Views">
+                                    <span class="ms-3 d-inline-flex align-items-center" title="{{ __('landingpage.sl_views') }}">
                                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns=" "><path d="M12 5c-7.633 0-10 7-10 7s2.367 7 10 7 10-7 10-7-2.367-7-10-7Zm0 12a5 5 0 1 1 0-10 5 5 0 0 1 0 10Zm0-8a3 3 0 1 0 .002 6.002A3 3 0 0 0 12 9Z" fill="currentColor"/></svg>
                                         <span class="ms-1">{{ $serviceData['service_detail']['total_views'] ?? 0 }}</span>
                                     </span>
@@ -474,7 +474,7 @@
                     @endif
                     @if (!empty($serviceData['service_detail']['description']))
                         <div class="mt-5 pt-lg-5 pt-3">
-                            <h5 class="mb-3">{{ __('Minimum Booking') }}</h5>
+                            <h5 class="mb-3">{{ __('landingpage.sd_minimum_booking') }}</h5>
                             <p class="m-0">
                                 {{ $serviceData['service_detail']['minimum_booking'] }}
 
@@ -489,17 +489,17 @@
                             <div class="row g-0">
                                 <div class="col-4">
                                     <button class="tab-btn active" data-tab="about-services">
-                                        About Services
+                                        {{ __('landingpage.sd_tab_about_services') }}
                                     </button>
                                 </div>
                                 <div class="col-4">
                                     <button class="tab-btn" data-tab="about-provider">
-                                        About Provider
+                                        {{ __('landingpage.sd_tab_about_provider') }}
                                     </button>
                                 </div>
                                 <div class="col-4">
                                     <button class="tab-btn" data-tab="cancellation-policy">
-                                        Cancellation Policy
+                                        {{ __('landingpage.sd_tab_cancellation_policy') }}
                                     </button>
                                 </div>
                             </div>
@@ -517,7 +517,7 @@
                                     @else
                                         <div class="no-content text-muted text-center py-4">
                                             <i class="fas fa-info-circle me-2"></i>
-                                            No service description available.
+                                            {{ __('landingpage.sd_no_description') }}
                                         </div>
                                     @endif
                                 </div>
@@ -1044,11 +1044,11 @@
                                 <div class="cta-inner">
                                     <div class="cta-badge">
                                         <i class="fas fa-star"></i>
-                                        <span>{{ __('Great opportunity') }}</span>
+                                        <span>{{ __('landingpage.sd_great_opportunity') }}</span>
                                     </div>
                                     <h3 class="cta-headline mb-0">
-                                        {{ __('Ready to book this service?') }}<br>
-                                        <span style="font-size: 0.92em; opacity: 0.95;">{{ __('Sign in and book in minutes.') }}</span>
+                                        {{ __('landingpage.sd_ready_to_book') }}<br>
+                                        <span style="font-size: 0.92em; opacity: 0.95;">{{ __('landingpage.sd_sign_in_book_minutes') }}</span>
                                     </h3>
                                     <div class="cta-stats">
                                         <span class="cta-stat">
@@ -1071,14 +1071,14 @@
                                         </span>
                                     </div>
                                     <div class="cta-trust">
-                                        <span><i class="fas fa-shield-alt"></i> {{ __('Secure') }}</span>
-                                        <span><i class="fas fa-comments"></i> {{ __('Direct contact') }}</span>
-                                        <span><i class="fas fa-calendar-check"></i> {{ __('Easy booking') }}</span>
+                                        <span><i class="fas fa-shield-alt"></i> {{ __('landingpage.sd_secure') }}</span>
+                                        <span><i class="fas fa-comments"></i> {{ __('landingpage.sd_direct_contact') }}</span>
+                                        <span><i class="fas fa-calendar-check"></i> {{ __('landingpage.sd_easy_booking') }}</span>
                                     </div>
                                     <div class="cta-btn-wrap">
                                         <a href="{{ auth()->check() && auth()->user()->user_type == 'user' ? route('book.service', ['id' => $serviceData['service_detail']['id']]) : route('login', ['service_id' => $serviceData['service_detail']['id']]) }}" class="cta-btn continue-button">
                                             <i class="fas fa-rocket"></i>
-                                            {{ auth()->check() && auth()->user()->user_type == 'user' ? __('Book now') : __('Sign in and book') }}
+                                            {{ auth()->check() && auth()->user()->user_type == 'user' ? __('landingpage.sd_book_now') : __('landingpage.sd_sign_in_and_book') }}
                                         </a>
                                     </div>
                                 </div>
@@ -1087,11 +1087,11 @@
                         <div class="d-flex align-items-center justify-content-center gap-3 mt-3">
                             @php
                                 $serviceId = $serviceData['service_detail']['id'] ?? null;
-                                $serviceName = Str::limit($serviceData['service_detail']['name'] ?? 'Service', 80);
+                                $serviceName = Str::limit($serviceData['service_detail']['name'] ?? __('landingpage.service'), 80);
                                 $servicePrice = getPriceFormat($serviceData['service_detail']['price'] ?? 0);
                                 $serviceType = ucfirst($serviceData['service_detail']['type'] ?? 'service');
-                                $cityName = $serviceData['service_detail']['city_name'] ?? 'City';
-                                $countryName = $serviceData['service_detail']['country_name'] ?? 'Country';
+                                $cityName = $serviceData['service_detail']['city_name'] ?? __('landingpage.sl_city_fallback');
+                                $countryName = $serviceData['service_detail']['country_name'] ?? __('landingpage.sl_country_fallback');
                                 $locationText = $cityName . ', ' . $countryName;
                                 $shareUrl = $serviceId ? route('service.detail', $serviceId) : url()->current();
                                 $shareQuote = $serviceName . ' • ' . $servicePrice . ' • ' . $serviceType . ' • ' . $locationText;
@@ -1170,7 +1170,7 @@
                                 visibility: visible;
                                 display: block;
                             ">
-                                Employer Details
+                                {{ __('landingpage.sd_provider_details') }}
                             </div>
                         </div>
 
@@ -1182,7 +1182,7 @@
                         <div class="position-relative d-flex m-auto" style="width: 164px; height: 140px;">
                             <img src="{{ asset('images/frame_img.jpg') }}" alt="Frame"
                                 style="width: 100%; height: 100%; position: absolute; z-index: 2;">
-                            <img src="{{ asset($serviceData['provider']['profile_image']) }}" alt="Employer"
+                            <img src="{{ asset($serviceData['provider']['profile_image']) }}" alt="{{ __('landingpage.sd_provider_details') }}"
                                 style="width: 80%; height: 80%; object-fit: cover; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 2;">
                         </div>
 
@@ -1266,7 +1266,7 @@
                             <div class="info-card mb-3">
                                 <div class="info-card-header" style="background: #3333ff !important; color: #fff !important; display: flex !important; justify-content: center !important; align-items: center !important; padding: 6px 15px !important; min-height: 40px !important;">
                                     <i class="ri-user-line me-2" style="font-size: 16px;"></i>
-                                    <h6 class="mb-0" style="color: #fff !important; font-size: 13px; font-weight: 700;">Basic Information</h6>
+                                    <h6 class="mb-0" style="color: #fff !important; font-size: 13px; font-weight: 700;">{{ __('landingpage.sd_basic_information') }}</h6>
                                 </div>
                                 <div class="info-card-body">
                                     <div class="info-row">
@@ -1278,7 +1278,7 @@
                                     @if(!empty($serviceData['provider']['designation']))
                                     <div class="info-row">
                                         <span class="info-label">
-                                            <i class="ri-briefcase-line me-1"></i> Designation:
+                                            <i class="ri-briefcase-line me-1"></i> {{ __('landingpage.designation') }}:
                                         </span>
                                         <span class="info-value">{{ ucfirst(trim($serviceData['provider']['designation'])) }}</span>
                                     </div>
@@ -1319,7 +1319,7 @@
                             <div class="info-card mb-3">
                                 <div class="info-card-header" style="background: #3333ff !important; color: #fff !important; display: flex !important; justify-content: center !important; align-items: center !important; padding: 6px 15px !important; min-height: 40px !important;">
                                     <i class="ri-time-line me-2" style="font-size: 16px;"></i>
-                                    <h6 class="mb-0" style="color: #fff !important; font-size: 13px; font-weight: 700;">Availability & Mobility</h6>
+                                    <h6 class="mb-0" style="color: #fff !important; font-size: 13px; font-weight: 700;">{{ __('landingpage.sd_availability_mobility') }}</h6>
                                 </div>
                                 <div class="info-card-body">
                                     @if(!empty($serviceData['provider']['availability']))
@@ -1335,7 +1335,7 @@
                                     @if(!empty($serviceData['provider']['mobility']))
                                     <div class="info-row">
                                         <span class="info-label">
-                                            <i class="ri-car-line me-1"></i> Mobility:
+                                            <i class="ri-car-line me-1"></i> {{ __('landingpage.sd_mobility') }}:
                                         </span>
                                         <span class="info-value">
                                             <span class="badge bg-info">{{ ucfirst(trim($serviceData['provider']['mobility'])) }}</span>
@@ -1358,7 +1358,7 @@
                             <div class="info-card mb-3">
                                 <div class="info-card-header" style="background: #3333ff !important; color: #fff !important; display: flex !important; justify-content: center !important; align-items: center !important; padding: 6px 15px !important; min-height: 40px !important;">
                                     <i class="ri-global-line me-2" style="font-size: 16px;"></i>
-                                    <h6 class="mb-0" style="color: #fff !important; font-size: 13px; font-weight: 700;">Languages</h6>
+                                    <h6 class="mb-0" style="color: #fff !important; font-size: 13px; font-weight: 700;">{{ __('landingpage.sd_languages') }}</h6>
                                 </div>
                                 <div class="info-card-body">
                                     <div class="d-flex flex-wrap gap-2">
@@ -1375,7 +1375,7 @@
                             <div class="info-card mb-3">
                                 <div class="info-card-header" style="background: #3333ff !important; color: #fff !important; display: flex !important; justify-content: center !important; align-items: center !important; padding: 6px 15px !important; min-height: 40px !important;">
                                     <i class="ri-graduation-cap-line me-2" style="font-size: 16px;"></i>
-                                    <h6 class="mb-0" style="color: #fff !important; font-size: 13px; font-weight: 700;">Education & Skills</h6>
+                                    <h6 class="mb-0" style="color: #fff !important; font-size: 13px; font-weight: 700;">{{ __('landingpage.sd_education_skills') }}</h6>
                                 </div>
                                 <div class="info-card-body">
                                     <div class="skills-list">
@@ -1413,7 +1413,7 @@
                             <div class="info-card mb-3">
                                 <div class="info-card-header" style="background: #3333ff !important; color: #fff !important; display: flex !important; justify-content: center !important; align-items: center !important; padding: 6px 15px !important; min-height: 40px !important;">
                                     <i class="ri-file-certificate-line me-2" style="font-size: 16px;"></i>
-                                    <h6 class="mb-0" style="color: #fff !important; font-size: 13px; font-weight: 700;">Diploma & Certifications</h6>
+                                    <h6 class="mb-0" style="color: #fff !important; font-size: 13px; font-weight: 700;">{{ __('landingpage.sd_diploma_certifications') }}</h6>
                                 </div>
                                 <div class="info-card-body">
                                     <div class="skills-list">
@@ -1451,7 +1451,7 @@
                             <div class="info-card mb-3">
                                 <div class="info-card-header" style="background: #3333ff !important; color: #fff !important; display: flex !important; justify-content: center !important; align-items: center !important; padding: 6px 15px !important; min-height: 40px !important;">
                                     <i class="ri-award-line me-2" style="font-size: 16px;"></i>
-                                    <h6 class="mb-0" style="color: #fff !important; font-size: 13px; font-weight: 700;">Certifications & Skills</h6>
+                                    <h6 class="mb-0" style="color: #fff !important; font-size: 13px; font-weight: 700;">{{ __('landingpage.sd_certifications_skills') }}</h6>
                                 </div>
                                 <div class="info-card-body">
                                     <div class="skills-list">

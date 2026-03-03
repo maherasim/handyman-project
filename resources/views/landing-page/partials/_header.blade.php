@@ -45,6 +45,10 @@
                      <div class="dropdown-menu dropdown-menu-end">
                         <?php
                               $language_option = sitesetupSession('get')->language_option ?? ["nl","fr","it","pt","es","en"];
+                              // Ensure German is available in the dropdown
+                              if (is_array($language_option)) {
+                                 $language_option = array_values(array_unique(array_merge($language_option, ['de'])));
+                              }
                               if (!empty($language_option)) {
                                  $language_array = languagesArray($language_option);
                               }
@@ -158,7 +162,7 @@
                       <!-- Wishlist -->
                       @if(empty(auth()->user()) || auth()->user()->user_type !== 'user')
                         <li class="ms-sm-2 ms-1">
-                           <a href="{{ url('/register') }}" class="btn btn-outline-primary me-1 me-sm-2" role="button">Register FREE</a>
+                           <a href="{{ url('/register') }}" class="btn btn-outline-primary me-1 me-sm-2" role="button">{{ __('landingpage.header_register_free') }}</a>
                         </li>
                         <li class="ms-sm-2 ms-1">
                            <a href="{{route('login')}}" class="btn btn-primary" role="button">
@@ -173,7 +177,7 @@
                                     stroke="currentColor" stroke-width="1.42857" stroke-linecap="round"
                                     stroke-linejoin="round" />
                               </svg>
-                              Login
+                              {{ __('messages.login') }}
                            </a>
                         </li>
                       @else

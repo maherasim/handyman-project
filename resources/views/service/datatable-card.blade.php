@@ -66,7 +66,7 @@
          backdrop-filter: blur(8px);
       ">
          @if($data->price==0)
-            Free
+            {{ __('messages.free') }}
          @else
             {{ getPriceFormat($data->price) }} @if(!empty($data->type)) / {{ ucfirst($data->type) }} @endif
          @endif
@@ -81,7 +81,7 @@
   </a>
   
   <h5  class="mt-0 mb-0 text-truncate" style="font-size: 12;">
-   <span style="font-size: 12px;"> {{ $data->city ? $data->city->name : 'City' }}-{{ $data->country ? $data->country->name : 'Country' }}</span>
+   <span style="font-size: 12px;"> {{ $data->city ? $data->city->name : __('landingpage.sl_city_fallback') }}-{{ $data->country ? $data->country->name : __('landingpage.sl_country_fallback') }}</span>
   
   </h5>  
 
@@ -158,7 +158,7 @@
                      </svg>
                      <span class="stats-value"style="font-size: 11px;">{{ $completedBookingCount }}</span>
                   </div>
-                  <div class="stats-label" style="font-size: 11px;">Bookings</div>
+                  <div class="stats-label" style="font-size: 11px;">{{ __('landingpage.bookings') }}</div>
                </div>
             </div>
             
@@ -171,7 +171,7 @@
                      </svg>
                      <span class="stats-value"style="font-size: 11px;">{{ $data->total_views ?? 0 }}</span>
                   </div>
-                  <div class="stats-label" style="font-size: 11px;">Views</div>
+                  <div class="stats-label" style="font-size: 11px;">{{ __('landingpage.sl_views') }}</div>
                </div>
             </div>
          </div>

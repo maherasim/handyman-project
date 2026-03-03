@@ -17,7 +17,7 @@ class TranslationServiceProvider extends ServiceProvider
     {
         Cache::rememberForever('translations', function () {
             $translations = collect();
-            $language_option =["nl","fr","it","pt","es","en"];
+            $language_option = ["nl", "fr", "it", "pt", "es", "en", "de"];
 
             if( Schema::hasTable('settings')) {
                 if(\Session::get('setup_data') == ''){

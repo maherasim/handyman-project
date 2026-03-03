@@ -278,6 +278,8 @@
     'register' => 'Register',
     'add_review' => 'Add Review',
     'availability' => 'Availability',
+    'availability_full_time' => 'Full Time',
+    'availability_part_time' => 'Part Time',
     'detail_information' => 'Detail information',
     'apply_coupon' => 'Apply Coupon',
     'no_coupon_available' => 'No coupon available',
@@ -999,5 +1001,6 @@
     'years_of_experience_5_to_8' => '5 to 8 Years',
     'years_of_experience_8_to_10' => '8 to 10 Years',
     'years_of_experience_more_than_10' => 'More than 10 Years',
+    'na' => 'N/A',
 
 );

@@ -48,7 +48,7 @@
             </li>
             @endif
             <li class="nav-item">
-                <a class="nav-link {{ request()->routeIs('job.data') || request()->routeIs('job.data.*') ? 'active' : '' }}" href="{{ route('job.data') }}">Jobs</a>
+                <a class="nav-link {{ request()->routeIs('job.data') || request()->routeIs('job.data.*') ? 'active' : '' }}" href="{{ route('job.data') }}">{{__('landingpage.jobs')}}</a>
             </li>
             @if(auth()->check() && auth()->user()->user_type == 'user' && $sectionData['bookings'] == 1)
                 <li class="nav-item">
