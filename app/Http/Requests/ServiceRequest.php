@@ -58,9 +58,9 @@ class ServiceRequest extends FormRequest
             $rules['service_attachment'] = 'required';
         }
 
-        // Advance payment amount required when advance payment is enabled (10–99%)
+        // Advance payment amount required when advance payment is enabled (20–99%)
         if ($this->boolean('is_enable_advance_payment')) {
-            $rules['advance_payment_amount'] = 'required|numeric|min:10|max:99';
+            $rules['advance_payment_amount'] = 'required|numeric|min:20|max:99';
         }
 
         return $rules;
@@ -69,8 +69,8 @@ class ServiceRequest extends FormRequest
     {
         return [
             'duration.regex' => 'Duration must be a number (hours, e.g. 40 or 48) or HH:MM (e.g. 46:30). Do not enter text like "2 days".',
-            'advance_payment_amount.min' => 'Advance payment amount must be between 10 and 99.',
-            'advance_payment_amount.max' => 'Advance payment amount must be between 10 and 99.',
+            'advance_payment_amount.min' => 'Advance payment amount must be between 20 and 99.',
+            'advance_payment_amount.max' => 'Advance payment amount must be between 20 and 99.',
         ];
     }
 
