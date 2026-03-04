@@ -3,7 +3,7 @@
 @php
     $p = $providerData['data'] ?? [];
     $shareTitle = $p['display_name'] ?? __('landingpage.pd_provider_fallback');
-    $shareDescription = trim(\Illuminate\Support\Str::limit(strip_tags($p['description'] ?? $p['designation'] ?? __('landingpage.pd_service_provider_on') . ' ' . config('app.name')), 150));
+    $shareDescription = trim(\Illuminate\Support\Str::limit(strip_tags($p['description'] ?? $p['designation'] ?? __('landingpage.pd_service_provider_on') . ' ' . config('app.display_name', 'Frobster')), 150));
     $shareUrl = route('provider.detail', $p['id'] ?? 0);
     $shareImage = !empty($p['profile_image']) ? (str_starts_with($p['profile_image'], 'http') ? $p['profile_image'] : asset($p['profile_image'])) : asset('images/post-job/ac_refresh_and_revive.png');
 @endphp
@@ -14,7 +14,7 @@
     <meta property="og:url" content="{{ $shareUrl }}" />
     <meta property="og:image" content="{{ $shareImage }}" />
     <meta property="og:image:secure_url" content="{{ $shareImage }}" />
-    <meta property="og:site_name" content="{{ config('app.name') }}" />
+    <meta property="og:site_name" content="{{ config('app.display_name', 'Frobster') }}" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="{{ $shareTitle }}" />
     <meta name="twitter:description" content="{{ $shareDescription }}" />

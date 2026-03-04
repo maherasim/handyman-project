@@ -15,6 +15,15 @@ return [
 
     'name' => env('APP_NAME', 'Laravel'),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Application Display Name (for browser title, PWA, etc.)
+    |--------------------------------------------------------------------------
+    | Use this for public-facing labels so the app icon/title shows "Frobster"
+    | even if APP_NAME in .env contains extra characters or quotes.
+    */
+    'display_name' => env('APP_DISPLAY_NAME', 'Frobster'),
+
     'version' => env('APP_VERSION', '11.10.0'),
 
     /*
