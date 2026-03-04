@@ -86,7 +86,7 @@
                                 <a href="{{ route('post-job-request.create') }}"
                                     class="float-right mr-1 btn btn-sm btn-primary">
                                     <i class="fa fa-plus-circle"></i>
-                                    {{ trans('messages.add_form_title', ['form' => trans(' Post Request')]) }}
+                                    {{ __('messages.pjr_add_post_request') }}
                                 </a>
                             @endif
 
