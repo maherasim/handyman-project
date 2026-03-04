@@ -156,15 +156,13 @@
 
                 @if($data->slots && $data->slots->count())
                     <div class="mt-4">
-                        <h6 class="text-danger fw-bold">Slot Details:</h6>
+                        <h6 class="text-danger fw-bold">{{ __('landingpage.bl_slot_details') }}</h6>
                         @foreach($data->slots as $slot)
                             <div class="mb-2 ps-2 border-start border-2 border-danger">
-                                <p class="mb-1"><strong>Start Date &
-                                        Time:</strong> {{ $slot->date }} {{ $slot->start_time }}</p>
-                                <p class="mb-1"><strong>End Date &
-                                        Time:</strong> {{ $slot->date }} {{ $slot->end_time }}</p>
-                                <p class="mb-1"><strong>Total Days:</strong> {{ $slot->total_days }}</p>
-                                <p class="mb-1"><strong>Total Hours:</strong> {{ $slot->total_hours }}</p>
+                                <p class="mb-1"><strong>{{ __('landingpage.bl_start_date_time') }}</strong> {{ $slot->date }} {{ $slot->start_time }}</p>
+                                <p class="mb-1"><strong>{{ __('landingpage.bl_end_date_time') }}</strong> {{ $slot->date }} {{ $slot->end_time }}</p>
+                                <p class="mb-1"><strong>{{ __('landingpage.bl_total_days') }}</strong> {{ $slot->total_days }}</p>
+                                <p class="mb-1"><strong>{{ __('landingpage.bl_total_hours') }}</strong> {{ $slot->total_hours }}</p>
                             </div>
                         @endforeach
                     </div>

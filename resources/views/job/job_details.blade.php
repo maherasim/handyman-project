@@ -8,7 +8,7 @@
         $shareUrl = route('job.details', $jobrequest->id);
         $shareImage = !empty($attachments) && count($attachments) > 0 ? $attachments[0] : asset('images/post-job/ac_refresh_and_revive.png');
         $priceType = $jobrequest->price_type ?: 'fixed';
-        $locationText = trim((optional($jobrequest->city)->name ?? 'City') . ', ' . (optional($jobrequest->country)->name ?? 'Country'));
+        $locationText = trim((optional($jobrequest->city)->name ?? __('messages.city')) . ', ' . (optional($jobrequest->country)->name ?? __('messages.country')));
         $priceFormatted = getPriceFormat($jobrequest->price);
         $enrichedTitle = $shareTitle . ' • ' . $priceFormatted . ' • ' . ucfirst($priceType) . ' • ' . $locationText;
     @endphp
@@ -257,9 +257,9 @@
         // Format label-like values (e.g. high_school → High School, onsite → Onsite)
         if (!function_exists('formatJobDetailLabel')) {
             function formatJobDetailLabel($value) {
-                if ($value === null || $value === '') return 'N/A';
+                if ($value === null || $value === '') return __('messages.na');
                 $v = (string) $value;
-                if (strtolower(trim($v)) === 'n/a') return 'N/A';
+                if (strtolower(trim($v)) === 'n/a') return __('messages.na');
                 return ucwords(str_replace('_', ' ', strtolower($v)));
             }
         }
@@ -271,8 +271,8 @@
                     <h2 class="heading_text">{{ $jobrequest->title }}</h2>
                     <div class="d-flex justify-content-between">
                         <p class="mb-0 text-dark"><b>
-                            {{ optional($jobrequest->city)->name ?? 'N/A' }} -
-                            {{ optional($jobrequest->country)->name ?? 'N/A' }}
+                            {{ optional($jobrequest->city)->name ?? __('messages.na') }} -
+                            {{ optional($jobrequest->country)->name ?? __('messages.na') }}
                         </b></p>
                     </div>
                     @if (!empty($attachments) && count($attachments) > 0)
@@ -290,7 +290,7 @@
                         <div class="text-center mt-4">
                             @php $statusLabel = ucfirst((string)($jobrequest->status ?? 'unknown')); @endphp
                             <div class="alert alert-info d-inline-block text-start" role="alert" style="max-width: 640px; border-radius: 12px;">
-                                This job is currently <strong>Reserved</strong>. New applications are not being accepted at this time.
+                                {{ __('landingpage.jdd_job_reserved') }}
                             </div>
                         </div>
                     @endif
@@ -331,7 +331,7 @@
                                         cursor: pointer;
                                         position: relative;
                                     ">
-                                        Duties & Responsibilities
+                                        {{ __('landingpage.jdd_duties_responsibilities') }}
                                     </button>
                                 </div>
                                 <div class="col-3">
@@ -365,7 +365,7 @@
                                         cursor: pointer;
                                         position: relative;
                                     ">
-                                        Benefits
+                                        {{ __('landingpage.jdd_benefits') }}
                                     </button>
                                 </div>
                             </div>
@@ -407,7 +407,7 @@
                                     @else
                                         <div class="no-content text-muted">
                                             <i class="fas fa-tasks me-2"></i>
-                                            No duties and responsibilities specified.
+                                            {{ __('landingpage.jdd_no_duties') }}
                                         </div>
                                     @endif
                                 </div>
@@ -439,7 +439,7 @@
                                     @else
                                         <div class="no-content text-muted">
                                             <i class="fas fa-gift me-2"></i>
-                                            No benefits specified.
+                                            {{ __('landingpage.jdd_no_benefits') }}
                                         </div>
                                     @endif
                                 </div>
@@ -460,7 +460,7 @@
                             {{ $descriptionShort }}
                         </p>
                         
-                        <button id="readMoreBtn" class="btn btn-link p-0 mt-2" style="display: none;">Read More</button>
+                        <button id="readMoreBtn" class="btn btn-link p-0 mt-2" style="display: none;">{{ __('landingpage.jdd_read_more') }}</button>
                         <p id="fullDescription" class="mb-0 mt-2" style="display: none;">
                             {{ $descriptionPlain }}
                         </p>
@@ -474,11 +474,11 @@
                         <div class="cta-inner">
                             <div class="cta-badge">
                                 <i class="fas fa-star"></i>
-                                <span>Great opportunity</span>
+                                <span>{{ __('landingpage.jdd_great_opportunity') }}</span>
                             </div>
                             <h3 class="cta-headline mb-0">
-                                Ready to win this project?<br>
-                                <span style="font-size: 0.92em; opacity: 0.95;">Sign in and place your bid in minutes.</span>
+                                {{ __('landingpage.jdd_ready_to_win') }}<br>
+                                <span style="font-size: 0.92em; opacity: 0.95;">{{ __('landingpage.jdd_sign_in_place_bid') }}</span>
                             </h3>
                             <div class="cta-stats">
                                 <span class="cta-stat">
@@ -501,14 +501,14 @@
                                 </span>
                             </div>
                             <div class="cta-trust">
-                                <span><i class="fas fa-shield-alt"></i> Secure</span>
-                                <span><i class="fas fa-comments"></i> Direct contact</span>
-                                <span><i class="fas fa-paper-plane"></i> Easy apply</span>
+                                <span><i class="fas fa-shield-alt"></i> {{ __('landingpage.jdd_secure') }}</span>
+                                <span><i class="fas fa-comments"></i> {{ __('landingpage.jdd_direct_contact') }}</span>
+                                <span><i class="fas fa-paper-plane"></i> {{ __('landingpage.jdd_easy_apply') }}</span>
                             </div>
                             <div class="cta-btn-wrap">
                                 <a href="{{ route('login') }}" class="cta-btn">
                                     <i class="fas fa-rocket"></i>
-                                    Apply now – Place your bid
+                                    {{ __('landingpage.jdd_apply_now_bid') }}
                                 </a>
                             </div>
                         </div>
@@ -520,17 +520,17 @@
                             <img src="https://static.vecteezy.com/system/resources/previews/016/716/447/non_2x/facebook-icon-free-png.png" 
                                  style="width: 30px; border-radius: 8px;" alt="Facebook">
                         </span>
-                        <span role="button" tabindex="0" class="social-link share-link" data-platform="instagram" data-image-url="{{ !empty($attachments) && count($attachments) > 0 ? $attachments[0] : asset('images/post-job/ac_refresh_and_revive.png') }}" data-quote="{{ $jobrequest->title }} • {{ getPriceFormat($jobrequest->price) }} • {{ ucfirst($jobrequest->price_type ?? 'fixed') }} • {{ data_get($jobrequest,'city.name','City') }}, {{ data_get($jobrequest,'country.name','Country') }} — {{ route('job.details', $jobrequest->id) }}" onclick="return window.__shareClickHandler(event, this);">
+                        <span role="button" tabindex="0" class="social-link share-link" data-platform="instagram" data-image-url="{{ !empty($attachments) && count($attachments) > 0 ? $attachments[0] : asset('images/post-job/ac_refresh_and_revive.png') }}" data-quote="{{ $jobrequest->title }} • {{ getPriceFormat($jobrequest->price) }} • {{ ucfirst($jobrequest->price_type ?? 'fixed') }} • {{ data_get($jobrequest,'city.name', __('messages.city')) }}, {{ data_get($jobrequest,'country.name', __('messages.country')) }} — {{ route('job.details', $jobrequest->id) }}" onclick="return window.__shareClickHandler(event, this);">
                             <img src="https://upload.wikimedia.org/wikipedia/commons/9/95/Instagram_logo_2022.svg" 
-                                 style="width: 30px; border-radius: 8px;" alt="Instagram">
+                                 style="width: 30px; border-radius: 8px;" alt="{{ __('landingpage.pd_alt_instagram') }}">
                         </span>
-                        <span role="button" tabindex="0" class="social-link share-link" data-platform="twitter" data-share-url="{{ route('job.details', $jobrequest->id) }}?v={{ optional($jobrequest->updated_at)->timestamp ?? time() }}" data-text="{{ $jobrequest->title }} • {{ getPriceFormat($jobrequest->price) }} • {{ ucfirst($jobrequest->price_type ?? 'fixed') }} • {{ data_get($jobrequest,'city.name','City') }}, {{ data_get($jobrequest,'country.name','Country') }}" onclick="return window.__shareClickHandler(event, this);">
+                        <span role="button" tabindex="0" class="social-link share-link" data-platform="twitter" data-share-url="{{ route('job.details', $jobrequest->id) }}?v={{ optional($jobrequest->updated_at)->timestamp ?? time() }}" data-text="{{ $jobrequest->title }} • {{ getPriceFormat($jobrequest->price) }} • {{ ucfirst($jobrequest->price_type ?? 'fixed') }} • {{ data_get($jobrequest,'city.name', __('messages.city')) }}, {{ data_get($jobrequest,'country.name', __('messages.country')) }}" onclick="return window.__shareClickHandler(event, this);">
                             <img src="https://cdn.pixabay.com/photo/2015/03/10/17/30/twitter-667462_640.png" 
-                                 style="width: 30px; border-radius: 8px;" alt="Twitter">
+                                 style="width: 30px; border-radius: 8px;" alt="{{ __('landingpage.pd_alt_twitter') }}">
                         </span>
                         <span role="button" tabindex="0" class="social-link share-link" data-platform="linkedin" data-share-url="{{ route('job.details', $jobrequest->id) }}?v={{ optional($jobrequest->updated_at)->timestamp ?? time() }}" onclick="return window.__shareClickHandler(event, this);">
                             <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRokEYt0yyh6uNDKL8uksVLlhZ35laKNQgZ9g&s" 
-                                 style="width: 30px; border-radius: 8px;" alt="LinkedIn">
+                                 style="width: 30px; border-radius: 8px;" alt="{{ __('landingpage.pd_alt_linkedin') }}">
                         </span>
                     </div>
 
@@ -610,7 +610,7 @@
                                         transition: all 0.3s ease;
                                         cursor: pointer;
                                     ">
-                                        Customer Details
+                                        {{ __('landingpage.jdd_customer_details') }}
                                     </button>
                                 </div>
                             </div>
@@ -622,68 +622,68 @@
                             <div class="tab-content active" id="job-details-content">
                                 <div class="job-details-list">
                                     <div class="detail-item mb-2">
-                                        <span class="detail-label"><b>Published at:</b></span>
-                                        <span class="detail-value"> {{ $jobrequest->created_at ? $jobrequest->created_at->format('M d, Y') : 'N/A' }}</span>
+                                        <span class="detail-label"><b>{{ __('landingpage.jdd_published_at') }}</b></span>
+                                        <span class="detail-value"> {{ $jobrequest->created_at ? $jobrequest->created_at->format('M d, Y') : __('messages.na') }}</span>
                                     </div>
                                     <div class="detail-item mb-2">
-                                        <span class="detail-label"><b>Location:</b></span>
-                                        <span class="detail-value"> {{ optional($jobrequest->city)->name ?? 'N/A' }} - {{ optional($jobrequest->country)->name ?? 'N/A' }}</span>
+                                        <span class="detail-label"><b>{{ __('landingpage.jdd_location') }}</b></span>
+                                        <span class="detail-value"> {{ optional($jobrequest->city)->name ?? __('messages.na') }} - {{ optional($jobrequest->country)->name ?? __('messages.na') }}</span>
                                     </div>
                                     <div class="detail-item mb-2">
-                                        <span class="detail-label"><b>Category:</b></span>
-                                        <span class="detail-value"> {{ $jobrequest->category->name ?? 'N/A' }}</span>
+                                        <span class="detail-label"><b>{{ __('messages.category') }}:</b></span>
+                                        <span class="detail-value"> {{ $jobrequest->category->name ?? __('messages.na') }}</span>
                                     </div>
                                     <div class="detail-item mb-2">
-                                        <span class="detail-label"><b>Total Budget:</b></span>
+                                        <span class="detail-label"><b>{{ __('landingpage.jdd_total_budget') }}</b></span>
                                         <span class="detail-value"> {{ getPriceFormat($jobrequest->total_budget ?? $jobrequest->price) }}</span>
                                     </div>
                                     <div class="detail-item mb-2">
-                                        <span class="detail-label"><b>Start Date:</b></span>
-                                        <span class="detail-value"> {{ $jobrequest->start_date ? \Carbon\Carbon::parse($jobrequest->start_date)->format('Y-m-d') : 'N/A' }}</span>
+                                        <span class="detail-label"><b>{{ __('landingpage.jdd_start_date') }}</b></span>
+                                        <span class="detail-value"> {{ $jobrequest->start_date ? \Carbon\Carbon::parse($jobrequest->start_date)->format('Y-m-d') : __('messages.na') }}</span>
                                     </div>
                                     <div class="detail-item mb-2">
-                                        <span class="detail-label"><b>End Date:</b></span>
-                                        <span class="detail-value"> {{ $jobrequest->end_date ? \Carbon\Carbon::parse($jobrequest->end_date)->format('Y-m-d') : 'N/A' }}</span>
+                                        <span class="detail-label"><b>{{ __('landingpage.jdd_end_date') }}</b></span>
+                                        <span class="detail-value"> {{ $jobrequest->end_date ? \Carbon\Carbon::parse($jobrequest->end_date)->format('Y-m-d') : __('messages.na') }}</span>
                                     </div>
                                     <div class="detail-item mb-2">
-                                        <span class="detail-label"><b>Total Hours:</b></span>
-                                        <span class="detail-value"> {{ $jobrequest->total_hours ?? 'N/A' }}</span>
+                                        <span class="detail-label"><b>{{ __('landingpage.jdd_total_hours') }}</b></span>
+                                        <span class="detail-value"> {{ $jobrequest->total_hours ?? __('messages.na') }}</span>
                                     </div>
                                     <div class="detail-item mb-2">
-                                        <span class="detail-label"><b>Total Days:</b></span>
-                                        <span class="detail-value"> {{ $jobrequest->total_days ?? 'N/A' }}</span>
+                                        <span class="detail-label"><b>{{ __('landingpage.jdd_total_days') }}</b></span>
+                                        <span class="detail-value"> {{ $jobrequest->total_days ?? __('messages.na') }}</span>
                                     </div>
                                     <div class="detail-item mb-2">
-                                        <span class="detail-label"><b>Type:</b></span>
+                                        <span class="detail-label"><b>{{ __('landingpage.jdd_type') }}</b></span>
                                         <span class="detail-value"> {{ formatJobDetailLabel($jobrequest->type ?? null) }}</span>
                                     </div>
                                     <div class="detail-item mb-2">
-                                        <span class="detail-label"><b>Remote Level:</b></span>
+                                        <span class="detail-label"><b>{{ __('landingpage.jdd_remote_level') }}</b></span>
                                         @php
                                             $remoteLevelRaw = $jobrequest->remote_work_level ?? null;
                                             $remoteLevelPercent = $remoteLevelRaw ? (int) preg_replace('/\D+/', '', $remoteLevelRaw) : null;
-                                            $remoteLevelDisplay = is_null($remoteLevelPercent) ? 'N/A' : ($remoteLevelPercent === 100 ? 'Remote 100%' : "{$remoteLevelPercent}% Remote");
+                                            $remoteLevelDisplay = is_null($remoteLevelPercent) ? __('messages.na') : ($remoteLevelPercent === 100 ? __('landingpage.jdd_remote_100') : "{$remoteLevelPercent}% Remote");
                                         @endphp
                                         <span class="detail-value"> {{ $remoteLevelDisplay }}</span>
                                     </div>
                                     <div class="detail-item mb-2">
-                                        <span class="detail-label"><b>Career Level:</b></span>
+                                        <span class="detail-label"><b>{{ __('landingpage.jdd_career_level') }}</b></span>
                                         <span class="detail-value"> {{ formatJobDetailLabel($jobrequest->career_level ?? null) }}</span>
                                     </div>
                                     <div class="detail-item mb-2">
-                                        <span class="detail-label"><b>Travel Required:</b></span>
-                                        <span class="detail-value"> {{ $jobrequest->travel_required ? 'Yes' : 'No' }}</span>
+                                        <span class="detail-label"><b>{{ __('landingpage.jdd_travel_required') }}</b></span>
+                                        <span class="detail-value"> {{ $jobrequest->travel_required ? __('landingpage.jdd_yes') : __('landingpage.jdd_no') }}</span>
                                     </div>
                                     <div class="detail-item mb-2">
-                                        <span class="detail-label"><b>Education Level:</b></span>
+                                        <span class="detail-label"><b>{{ __('landingpage.jdd_education_level') }}</b></span>
                                         <span class="detail-value"> {{ formatJobDetailLabel($jobrequest->education_level ?? null) }}</span>
                                     </div>
                                     <div class="detail-item mb-2">
-                                        <span class="detail-label"><b>Status:</b></span>
+                                        <span class="detail-label"><b>{{ __('messages.status') }}:</b></span>
                                         <span class="detail-value">
                                             @php
                                                 $statusKey = strtolower((string)($jobrequest->status ?? ''));
-                                                $statusDisplay = in_array($statusKey, ['confirm_done', 'completed']) ? 'Completed' : formatJobDetailLabel($jobrequest->status ?? null);
+                                                $statusDisplay = in_array($statusKey, ['confirm_done', 'completed']) ? __('landingpage.jd_completed') : formatJobDetailLabel($jobrequest->status ?? null);
                                                 $statusBg = in_array($statusKey, ['confirm_done', 'completed']) ? 'success' : ($jobrequest->status === 'active' ? 'success' : 'warning');
                                             @endphp
                                             <span class="badge bg-{{ $statusBg }} text-dark">{{ $statusDisplay }}</span>
@@ -704,32 +704,32 @@
                             <div class="tab-content" id="customer-details-content" style="display: none;">
                                 <div class="text-center mb-3">
                                     <img src="{{ getSingleMedia($jobrequest->customer,'profile_image', asset('images/default.png')) }}" 
-                                         alt="Customer Photo" 
+                                         alt="{{ __('landingpage.jdd_customer_photo') }}" 
                                          style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; margin: 0 auto;">
                                 </div>
                                 <div class="customer-details-list">
                                     <div class="detail-item mb-2">
-                                        <span class="detail-label"><b>Full Name:</b></span>
-                                        <span class="detail-value"> {{ $jobrequest->customer->display_name ?? $jobrequest->customer->username ?? 'N/A' }}</span>
+                                        <span class="detail-label"><b>{{ __('landingpage.jdd_full_name') }}</b></span>
+                                        <span class="detail-value"> {{ $jobrequest->customer->display_name ?? $jobrequest->customer->username ?? __('messages.na') }}</span>
                                     </div>
                                     <div class="detail-item mb-2">
-                                        <span class="detail-label"><b>Position:</b></span>
-                                        <span class="detail-value"> {{ $jobrequest->customer->designation ?? 'N/A' }}</span>
+                                        <span class="detail-label"><b>{{ __('landingpage.jdd_position') }}</b></span>
+                                        <span class="detail-value"> {{ $jobrequest->customer->designation ?? __('messages.na') }}</span>
                                     </div>
                                     <div class="detail-item mb-2">
-                                        <span class="detail-label"><b>Member Since:</b></span>
-                                        <span class="detail-value"> {{ optional($jobrequest->customer->created_at)->format('M d, Y') ?? 'N/A' }}</span>
+                                        <span class="detail-label"><b>{{ __('landingpage.jdd_member_since') }}</b></span>
+                                        <span class="detail-value"> {{ optional($jobrequest->customer->created_at)->format('M d, Y') ?? __('messages.na') }}</span>
                                     </div>
                                     <div class="detail-item mb-2">
-                                        <span class="detail-label"><b>Languages:</b></span>
-                                        <span class="detail-value"> {{ is_array($jobrequest->customer->languages ?? null) ? implode(', ', $jobrequest->customer->languages) : ($jobrequest->customer->languages ?? 'N/A') }}</span>
+                                        <span class="detail-label"><b>{{ __('landingpage.jdd_languages') }}</b></span>
+                                        <span class="detail-value"> {{ is_array($jobrequest->customer->languages ?? null) ? implode(', ', $jobrequest->customer->languages) : ($jobrequest->customer->languages ?? __('messages.na')) }}</span>
                                     </div>
                                     <div class="detail-item mb-2">
-                                        <span class="detail-label"><b>Location:</b></span>
-                                        <span class="detail-value"> {{ optional($jobrequest->customer->city)->name ?? 'N/A' }} - {{ optional($jobrequest->customer->country)->name ?? 'N/A' }}</span>
+                                        <span class="detail-label"><b>{{ __('landingpage.jdd_location') }}</b></span>
+                                        <span class="detail-value"> {{ optional($jobrequest->customer->city)->name ?? __('messages.na') }} - {{ optional($jobrequest->customer->country)->name ?? __('messages.na') }}</span>
                                     </div>
                                     <div class="detail-item mb-2">
-                                        <span class="detail-label"><b>Jobs Published:</b></span>
+                                        <span class="detail-label"><b>{{ __('landingpage.jdd_jobs_published') }}</b></span>
                                         <span class="detail-value"> {{ $jobsPublishedCount ?? 0 }}</span>
                                     </div>
                                     {{-- <div class="detail-item mb-2">
@@ -815,7 +815,7 @@
                             <a href="{{ auth()->check() ? route('post-job-request.index') : route('login') }}"
                                class="btn btn-success btn-lg"
                                style="background: #59E054; color: #fff; border: 5px solid #F0F0F0; padding: 12px 30px; border-radius: 50px; font-weight: 800; text-decoration: none;">
-                                APPLY NOW
+                                {{ __('landingpage.jdd_apply_now') }}
                             </a>
                         </div>
                     @endif

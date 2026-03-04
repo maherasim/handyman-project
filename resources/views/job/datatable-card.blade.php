@@ -193,16 +193,16 @@
          <div class="container mt-5">
         <div class="card shadow-sm border-0 rounded-3 mb-4">
             <div class="card-header bg-white border-bottom p-3">
-                <h5 class="mb-0 text-primary fw-bold"><i class="fas fa-filter me-2"></i> Find Your Perfect Job</h5>
+                <h5 class="mb-0 text-primary fw-bold"><i class="fas fa-filter me-2"></i> {{ __('landingpage.jd_find_perfect_job') }}</h5>
             </div>
             <div class="card-body p-4">
                 <form method="GET" action="{{ route('job.data') }}" id="jobFilterForm">
                     <div class="row g-3">
                         <!-- Category -->
                         <div class="col-lg-3 col-md-6">
-                            <label class="form-label small fw-bold text-muted text-uppercase">Category</label>
+                            <label class="form-label small fw-bold text-muted text-uppercase">{{ __('messages.category') }}</label>
                             <select name="category_id" id="category-select" class="form-select bg-light w-100">
-                                <option value="">All Categories</option>
+                                <option value="">{{ __('landingpage.jd_all_categories') }}</option>
                                 @foreach ($categories as $category)
                                     <option value="{{ $category->id }}" {{ request('category_id') == $category->id ? 'selected' : '' }}>
                                         {{ $category->name }}
@@ -213,9 +213,9 @@
 
                         <!-- Subcategory -->
                         <div class="col-lg-3 col-md-6">
-                            <label class="form-label small fw-bold text-muted text-uppercase">Sub-Category</label>
+                            <label class="form-label small fw-bold text-muted text-uppercase">{{ __('landingpage.jd_sub_category') }}</label>
                             <select name="subcategory_id" id="subcategory-select" class="form-select bg-light w-100">
-                                <option value="">All Sub-Categories</option>
+                                <option value="">{{ __('landingpage.jd_all_sub_categories') }}</option>
                                 @foreach ($subcategories as $subcategory)
                                     <option value="{{ $subcategory->id }}" {{ request('subcategory_id') == $subcategory->id ? 'selected' : '' }}>
                                         {{ $subcategory->name }}
@@ -226,9 +226,9 @@
 
                         <!-- Customer -->
                         <div class="col-lg-3 col-md-6">
-                            <label class="form-label small fw-bold text-muted text-uppercase">Customer</label>
+                            <label class="form-label small fw-bold text-muted text-uppercase">{{ __('messages.customer') }}</label>
                             <select name="customer_id" id="customer-select" class="form-select bg-light w-100">
-                                <option value="">All Customers</option>
+                                <option value="">{{ __('landingpage.jd_all_customers') }}</option>
                                 @foreach ($customers as $customer)
                                     <option value="{{ $customer->id }}" {{ request('customer_id') == $customer->id ? 'selected' : '' }}>
                                         {{ $customer->display_name }}
@@ -239,9 +239,9 @@
 
                          <!-- Country -->
                          <div class="col-lg-3 col-md-6">
-                            <label class="form-label small fw-bold text-muted text-uppercase">Country</label>
+                            <label class="form-label small fw-bold text-muted text-uppercase">{{ __('messages.country') }}</label>
                             <select name="country_id" id="country-select" class="form-select bg-light w-100">
-                                <option value="">All Countries</option>
+                                <option value="">{{ __('landingpage.jd_all_countries') }}</option>
                                 @foreach ($countries as $country)
                                     <option value="{{ $country->id }}" {{ request('country_id') == $country->id ? 'selected' : '' }}>
                                         {{ $country->name }}
@@ -252,9 +252,9 @@
 
                         <!-- City -->
                         <div class="col-lg-3 col-md-6">
-                            <label class="form-label small fw-bold text-muted text-uppercase">City</label>
+                            <label class="form-label small fw-bold text-muted text-uppercase">{{ __('messages.city') }}</label>
                             <select name="city_id" id="city-select" class="form-select bg-light w-100">
-                                <option value="">All Cities</option>
+                                <option value="">{{ __('landingpage.jd_all_cities') }}</option>
                                 @foreach ($cities as $city)
                                     <option value="{{ $city->id }}" {{ request('city_id') == $city->id ? 'selected' : '' }}>
                                         {{ $city->name }}
@@ -265,11 +265,11 @@
 
                         <!-- Sort By -->
                         <div class="col-lg-3 col-md-6">
-                            <label class="form-label small fw-bold text-muted text-uppercase">Sort By</label>
+                            <label class="form-label small fw-bold text-muted text-uppercase">{{ __('landingpage.jd_sort_by') }}</label>
                             <select name="sort" id="sort-select" class="form-select bg-light w-100">
-                                <option value="">Default</option>
-                                <option value="1" {{ request('sort') == '1' ? 'selected' : '' }}>Price: Low to High</option>
-                                <option value="2" {{ request('sort') == '2' ? 'selected' : '' }}>Price: High to Low</option>
+                                <option value="">{{ __('landingpage.jd_default') }}</option>
+                                <option value="1" {{ request('sort') == '1' ? 'selected' : '' }}>{{ __('landingpage.jd_price_low_high') }}</option>
+                                <option value="2" {{ request('sort') == '2' ? 'selected' : '' }}>{{ __('landingpage.jd_price_high_low') }}</option>
                             </select>
                         </div>
                         
@@ -277,10 +277,10 @@
                          <div class="col-lg-6 col-md-12 d-flex align-items-end">
                             <div class="d-flex gap-2 w-100">
                                 <button type="submit" class="btn btn-primary flex-grow-1">
-                                    <i class="fas fa-filter me-2"></i>Apply Filters
+                                    <i class="fas fa-filter me-2"></i>{{ __('landingpage.jd_apply_filters') }}
                                 </button>
                                 <a href="{{ route('job.data') }}" class="btn btn-light border flex-grow-1">
-                                    <i class="fas fa-times me-2"></i>Clear
+                                    <i class="fas fa-times me-2"></i>{{ __('landingpage.jd_clear') }}
                                 </a>
                             </div>
                         </div>
@@ -295,9 +295,9 @@
                  @if ($jobrequest->isEmpty())
                      <div class="col-12">
                          <div class="text-center py-5 bg-white rounded shadow-sm">
-                             <img src="{{ asset('assets/search-no-data.png') }}" class="img-fluid mb-3" style="max-width: 200px;" alt="No jobs found">
-                             <h4 class="text-muted">No jobs found</h4>
-                             <p class="text-muted mb-0">Try adjusting your filters to find what you're looking for.</p>
+                             <img src="{{ asset('assets/search-no-data.png') }}" class="img-fluid mb-3" style="max-width: 200px;" alt="{{ __('landingpage.jd_no_jobs_found') }}">
+                             <h4 class="text-muted">{{ __('landingpage.jd_no_jobs_found') }}</h4>
+                             <p class="text-muted mb-0">{{ __('landingpage.jd_try_adjusting_filters') }}</p>
                          </div>
                      </div>
                  @else
@@ -318,12 +318,12 @@
                                      <div class="image-container"
                                          style="position: relative; height: 120px; overflow: hidden;">
                                          @if (!empty($jobRequest->image))
-                                             <img src="{{ asset('storage/' . $jobRequest->image) }}" alt="Job Image"
+                                             <img src="{{ asset('storage/' . $jobRequest->image) }}" alt="{{ __('landingpage.jd_job_image') }}"
                                                  style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease;">
                                          @else
                                              <img class="default-image"
                                                  src="{{ asset('images/post-job/ac_refresh_and_revive.png') }}"
-                                                 alt="Default Image"
+                                                 alt="{{ __('landingpage.jd_default_image') }}"
                                                  style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease;">
                                          @endif
 
@@ -395,8 +395,8 @@
                                              color: #666;
                                              font-weight: 500;
                                          ">
-                                                     {{ $jobRequest->city ? $jobRequest->city->name : 'City' }},
-                                                     {{ $jobRequest->country ? $jobRequest->country->name : 'Country' }}
+                                                     {{ $jobRequest->city ? $jobRequest->city->name : __('messages.city') }},
+                                                     {{ $jobRequest->country ? $jobRequest->country->name : __('messages.country') }}
                                                  </span>
                                              </div>
                                          </div>
@@ -426,7 +426,7 @@
                                              color: #8e8e93;
                                              font-weight: 400;
                                          ">
-                                                     {{ number_format($jobRequest->total_views ?? 0) }} views
+                                                     {{ number_format($jobRequest->total_views ?? 0) }} {{ __('landingpage.jd_views') }}
                                                  </span>
                                              </div>
                                          </div>
@@ -454,7 +454,7 @@
                                                  color: #1a1a1a;
                                                  margin-bottom: 1px;
                                              ">
-                                                         {{ $jobRequest->customer->display_name ?? ($jobRequest->customer->username ?? 'Unknown') }}
+                                                         {{ $jobRequest->customer->display_name ?? ($jobRequest->customer->username ?? __('landingpage.jd_unknown')) }}
                                                      </div>
                                                      <div
                                                          style="
@@ -481,13 +481,13 @@
                                              text-transform: uppercase;
                                              letter-spacing: 0.5px;
                                          ">
-                                                     Status
-                                                 </span>
-                                                 @php
+{{ __('messages.status') }}
+                                                </span>
+                                                @php
                                                     $statusKey = strtolower((string)($jobRequest->status ?? ''));
                                                     $isCompleted = in_array($statusKey, ['confirm_done', 'completed']);
                                                     $isGreen = $isCompleted || $jobRequest->status === 'active';
-                                                    $statusLabel = $isCompleted ? 'Completed' : ucfirst($jobRequest->status ?? 'Pending');
+                                                    $statusLabel = $isCompleted ? __('landingpage.jd_completed') : ucfirst($jobRequest->status ?? __('landingpage.jd_pending'));
                                                 @endphp
                                                 <span class="status-badge"
                                                      style="
@@ -527,7 +527,7 @@
                                           text-decoration: none; cursor: pointer;
                                      ">
                                                  <img src="https://static.vecteezy.com/system/resources/previews/016/716/481/original/facebook-icon-free-png.png"
-                                                     alt="Facebook" style="width: 12px; height: 12px;">
+                                                     alt="{{ __('landingpage.pd_alt_facebook') }}" style="width: 12px; height: 12px;">
                                             </span>
                                             <span role="button" tabindex="0" class="social-link share-link" data-platform="instagram" data-job-id="{{ $jobRequest->id }}" data-quote="{{ $jobRequest->title }} • {{ getPriceFormat($jobRequest->price) }} • {{ ucfirst($jobRequest->price_type ?? 'fixed') }} • {{ data_get($jobRequest,'city.name','City') }}, {{ data_get($jobRequest,'country.name','Country') }} — {{ route('job.details', $jobRequest->id) }}" data-image-url="{{ !empty($jobRequest->image) ? asset('storage/' . ltrim($jobRequest->image, '/')) : asset('images/post-job/ac_refresh_and_revive.png') }}" onclick="return window.__shareClickHandler(event, this);"
                                                  style="
@@ -542,7 +542,7 @@
                                           text-decoration: none; cursor: pointer;
                                      ">
                                                  <img src="https://upload.wikimedia.org/wikipedia/commons/9/95/Instagram_logo_2022.svg"
-                                                     alt="Instagram" style="width: 12px; height: 12px;">
+                                                     alt="{{ __('landingpage.pd_alt_instagram') }}" style="width: 12px; height: 12px;">
                                             </span>
                                             <span role="button" tabindex="0" class="social-link share-link" data-platform="twitter" data-share-url="{{ route('job.details', $jobRequest->id) }}?v={{ optional($jobRequest->updated_at)->timestamp ?? time() }}" data-text="{{ $jobRequest->title }} • {{ getPriceFormat($jobRequest->price) }} • {{ ucfirst($jobRequest->price_type ?? 'fixed') }} • {{ data_get($jobRequest,'city.name','City') }}, {{ data_get($jobRequest,'country.name','Country') }}" onclick="return window.__shareClickHandler(event, this);"
                                                  style="
@@ -557,7 +557,7 @@
                                           text-decoration: none; cursor: pointer;
                                      ">
                                                  <img src="https://cdn.pixabay.com/photo/2015/03/10/17/30/twitter-667462_640.png"
-                                                     alt="Twitter" style="width: 12px; height: 12px;">
+                                                     alt="{{ __('landingpage.pd_alt_twitter') }}" style="width: 12px; height: 12px;">
                                             </span>
                                             <span role="button" tabindex="0" class="social-link share-link" data-platform="linkedin" data-share-url="{{ route('job.details', $jobRequest->id) }}?v={{ optional($jobRequest->updated_at)->timestamp ?? time() }}" onclick="return window.__shareClickHandler(event, this);"
                                                  style="
@@ -572,7 +572,7 @@
                                          justify-content: center;
                                      ">
                                                  <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRokEYt0yyh6uNDKL8uksVLlhZ35laKNQgZ9g&s"
-                                                     alt="LinkedIn" style="width: 12px; height: 12px;">
+                                                     alt="{{ __('landingpage.pd_alt_linkedin') }}" style="width: 12px; height: 12px;">
                                             </span>
                                          </div>
                                      </div>
@@ -614,7 +614,7 @@
 
                  $('#country-select').on('change', function() {
                      var countryId = $(this).val();
-                     $('#city-select').empty().append('<option value="">All Cities</option>');
+                     $('#city-select').empty().append('<option value="">' + @json(__('landingpage.jd_all_cities')) + '</option>');
                      
                      if (countryId) {
                          $.ajax({

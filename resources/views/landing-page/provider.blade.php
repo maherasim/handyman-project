@@ -4,7 +4,7 @@
 @section('content')
 <div class="blog-list section-padding ">
     <div class="container">
-        <provider-page link="{{ route('provider.data') }}"></provider-page>
+        <provider-page link="{{ route('provider.data') }}" search-placeholder="{{ __('landingpage.pl_search_placeholder') }}"></provider-page>
     </div>
 </div>
 
@@ -13,18 +13,18 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="providerReviewsModalLabel">Provider Reviews</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <h5 class="modal-title" id="providerReviewsModalLabel">{{ __('landingpage.pl_provider_reviews') }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ __('landingpage.pl_close') }}"></button>
             </div>
             <div class="modal-body" id="providerReviewsContent">
                 <div class="text-center">
                     <div class="spinner-border" role="status">
-                        <span class="sr-only">Loading...</span>
+                        <span class="sr-only">{{ __('landingpage.pl_loading') }}</span>
                     </div>
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('landingpage.pl_close') }}</button>
             </div>
         </div>
     </div>
@@ -75,7 +75,7 @@ document.addEventListener('DOMContentLoaded', function() {
         var baseUrl = "{{ url('/') }}";
         var csrfToken = "{{ csrf_token() }}";
         
-        $('#providerReviewsContent').html('<div class="text-center"><div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div></div>');
+        $('#providerReviewsContent').html('<div class="text-center"><div class="spinner-border" role="status"><span class="sr-only">' + @json(__('landingpage.pl_loading')) + '</span></div></div>');
         
         $.ajax({
             url: baseUrl + '/api/provider-reviews',
@@ -98,7 +98,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     var avgRating = (totalRating / response.data.length).toFixed(1);
                     
                     html += '<div class="mb-4">';
-                    html += '<h6>Average Rating: ' + avgRating + ' / 5.0</h6>';
+                    html += '<h6>' + @json(__('landingpage.pl_average_rating')) + ': ' + avgRating + ' / 5.0</h6>';
                     html += '<div class="mb-2">';
                     for (var i = 1; i <= 5; i++) {
                         if (i <= Math.floor(avgRating)) {
@@ -110,7 +110,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         }
                     }
                     html += '</div>';
-                    html += '<p class="text-muted">Based on ' + response.data.length + ' ' + (response.data.length === 1 ? 'review' : 'reviews') + '</p>';
+                    html += '<p class="text-muted">' + @json(__('landingpage.pl_based_on')) + ' ' + response.data.length + ' ' + (response.data.length === 1 ? @json(__('messages.review')) : @json(__('messages.reviews'))) + '</p>';
                     html += '</div>';
                     
                     html += '<hr>';
@@ -119,9 +119,9 @@ document.addEventListener('DOMContentLoaded', function() {
                         html += '<div class="review-item mb-4 p-3 border rounded">';
                         html += '<div class="d-flex justify-content-between align-items-start mb-2">';
                         html += '<div>';
-                        html += '<strong>' + (review.customer_name || 'Anonymous') + '</strong>';
+                        html += '<strong>' + (review.customer_name || @json(__('landingpage.pl_anonymous'))) + '</strong>';
                         if (review.service_name) {
-                            html += '<div class="text-muted small">Service: ' + review.service_name + '</div>';
+                            html += '<div class="text-muted small">' + @json(__('landingpage.pl_service')) + ': ' + review.service_name + '</div>';
                         }
                         html += '<div class="mt-1">';
                         for (var j = 1; j <= 5; j++) {
@@ -145,14 +145,14 @@ document.addEventListener('DOMContentLoaded', function() {
                     });
                     html += '</div>';
                 } else {
-                    html += '<div class="alert alert-info text-center">No reviews available for this provider yet.</div>';
+                    html += '<div class="alert alert-info text-center">' + @json(__('landingpage.pl_no_reviews_available')) + '</div>';
                 }
                 
                 $('#providerReviewsContent').html(html);
             },
             error: function(xhr) {
                 console.error('Error loading reviews:', xhr);
-                $('#providerReviewsContent').html('<div class="alert alert-danger">Failed to load reviews. Please try again later.</div>');
+                $('#providerReviewsContent').html('<div class="alert alert-danger">' + @json(__('landingpage.pl_failed_load_reviews')) + '</div>');
             }
         });
     }

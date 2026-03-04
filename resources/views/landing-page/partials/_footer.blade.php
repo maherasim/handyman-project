@@ -45,22 +45,22 @@
                             <div class="footer-nl-icon-badge">
                                 <i class="ri-mail-send-line"></i>
                             </div>
-                            <span class="footer-nl-tag">Newsletter</span>
+                            <span class="footer-nl-tag">{{ __('landingpage.ft_newsletter') }}</span>
                         </div>
-                        <h3 class="footer-nl-title">Get the best deals <span class="footer-nl-accent">in your inbox</span></h3>
-                        <p class="footer-nl-desc">Expert tips, exclusive offers, and new service launches — delivered weekly.</p>
+                        <h3 class="footer-nl-title">{{ __('landingpage.ft_get_best_deals') }} <span class="footer-nl-accent">{{ __('landingpage.ft_in_your_inbox') }}</span></h3>
+                        <p class="footer-nl-desc">{{ __('landingpage.ft_newsletter_desc') }}</p>
                     </div>
                     <div class="col-lg-6">
                         <div class="footer-nl-form-wrap">
                             <div class="footer-nl-input-group">
                                 <i class="ri-mail-line footer-nl-input-icon"></i>
-                                <input type="email" id="email" class="footer-nl-input" placeholder="Enter your email address…" autocomplete="email">
+                                <input type="email" id="email" class="footer-nl-input" placeholder="{{ __('landingpage.ft_enter_email') }}" autocomplete="email">
                                 <button class="footer-nl-btn" id="submit_btn" type="button">
-                                    <span>Subscribe</span>
+                                    <span>{{ __('landingpage.ft_subscribe') }}</span>
                                     <i class="ri-arrow-right-line"></i>
                                 </button>
                             </div>
-                            <p class="footer-nl-note"><i class="ri-shield-check-line"></i> No spam, ever. Unsubscribe anytime.</p>
+                            <p class="footer-nl-note"><i class="ri-shield-check-line"></i> {{ __('landingpage.ft_no_spam') }}</p>
                         </div>
                     </div>
                 </div>
@@ -249,11 +249,11 @@
                         <div class="footer-links-col">
                             <h5 class="footer-col-title">
                                 <span class="footer-col-title-dot"></span>
-                                Quick Links
+                                {{ __('landingpage.ft_quick_links') }}
                             </h5>
                             <ul class="footer-link-list">
-                                <li><a href="{{ route('service.list') }}" class="footer-link-item"><span class="footer-link-arrow"><i class="ri-arrow-right-s-line"></i></span><span>All Services</span></a></li>
-                                <li><a href="{{ route('post.job.list') }}" class="footer-link-item"><span class="footer-link-arrow"><i class="ri-arrow-right-s-line"></i></span><span>Post a Job</span></a></li>
+                                <li><a href="{{ route('service.list') }}" class="footer-link-item"><span class="footer-link-arrow"><i class="ri-arrow-right-s-line"></i></span><span>{{ __('landingpage.ft_all_services') }}</span></a></li>
+                                <li><a href="{{ route('post.job.list') }}" class="footer-link-item"><span class="footer-link-arrow"><i class="ri-arrow-right-s-line"></i></span><span>{{ __('landingpage.ft_post_a_job') }}</span></a></li>
                             </ul>
                         </div>
                     </div>
@@ -261,12 +261,12 @@
                         <div class="footer-links-col">
                             <h5 class="footer-col-title">
                                 <span class="footer-col-title-dot"></span>
-                                Support
+                                {{ __('landingpage.ft_support') }}
                             </h5>
                             <ul class="footer-link-list">
-                                <li><a href="{{ route('user.help_support') }}" class="footer-link-item"><span class="footer-link-arrow"><i class="ri-arrow-right-s-line"></i></span><span>Help & Support</span></a></li>
-                                <li><a href="{{ route('user.privacy_policy') }}" class="footer-link-item"><span class="footer-link-arrow"><i class="ri-arrow-right-s-line"></i></span><span>Privacy Policy</span></a></li>
-                                <li><a href="{{ route('user.term_conditions') }}" class="footer-link-item"><span class="footer-link-arrow"><i class="ri-arrow-right-s-line"></i></span><span>Terms & Conditions</span></a></li>
+                                <li><a href="{{ route('user.help_support') }}" class="footer-link-item"><span class="footer-link-arrow"><i class="ri-arrow-right-s-line"></i></span><span>{{ __('landingpage.help_support') }}</span></a></li>
+                                <li><a href="{{ route('user.privacy_policy') }}" class="footer-link-item"><span class="footer-link-arrow"><i class="ri-arrow-right-s-line"></i></span><span>{{ __('landingpage.privacy_policy') }}</span></a></li>
+                                <li><a href="{{ route('user.term_conditions') }}" class="footer-link-item"><span class="footer-link-arrow"><i class="ri-arrow-right-s-line"></i></span><span>{{ __('landingpage.terms_conditions') }}</span></a></li>
                             </ul>
                         </div>
                     </div>
@@ -929,11 +929,16 @@
 <script>
     $('#submit_btn').on('click', function () {
        const email = $('#email').val();
+       const errTitle = @json(__('landingpage.ft_error'));
+       const pleaseEmail = @json(__('landingpage.ft_please_enter_email'));
+       const invalidEmail = @json(__('landingpage.ft_invalid_email'));
+       const doneTitle = @json(__('landingpage.ft_done'));
+       const somethingWrong = @json(__('landingpage.ft_something_wrong'));
 
        if (!email.trim()) {
         Swal.fire({
-            title: 'Error',
-            text: 'Please enter an email address',
+            title: errTitle,
+            text: pleaseEmail,
             icon: 'error',
             iconColor: '#3333ff'
         });
@@ -941,8 +946,8 @@
     }
         if (!validateEmail(email)) {
             Swal.fire({
-                title: 'Error',
-                text: 'Invalid email address',
+                title: errTitle,
+                text: invalidEmail,
                 icon: 'error',
                 iconColor: '#3333ff'
             });
@@ -958,7 +963,7 @@
             },
             success: function (response) {
                Swal.fire({
-               title: 'Done',
+               title: doneTitle,
                text: response.message,
                icon: 'success',
                iconColor: '#3333ff'
@@ -971,8 +976,8 @@
             },
             error: function (error) {
                 Swal.fire({
-                title: 'Error',
-                text: 'Something Went Wrong!',
+                title: errTitle,
+                text: somethingWrong,
                 icon: 'error',
                 iconColor: '#3333ff'
                 }).then((result) => {

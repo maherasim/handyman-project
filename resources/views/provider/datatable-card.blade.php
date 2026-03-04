@@ -2,7 +2,7 @@
   <div class="iq-provider-img position-relative">
       <a href="{{ route('provider.detail', $data->id) }}"
           class="position-absolute w-100 h-100 start-0 top-0 d-block"></a>
-      <img src="{{ getSingleMedia($data, 'profile_image', null) }}" alt="provider"
+      <img src="{{ getSingleMedia($data, 'profile_image', null) }}" alt="{{ __('landingpage.pd_alt_provider') }}"
           class="provider-img img-fluid object-cover rounded-3 w-100" loading="lazy" />
 
   </div>
@@ -16,7 +16,7 @@
           <img src="{{ asset('images/icon/verifiedpng.png') }}" alt="verified icon"
                style="width: 14%; height: 23%; margin-right: 10px;">
       @else
-          <img src="{{ asset('images/icon/notverifiedpng.png') }}" alt="not verified icon"
+          <img src="{{ asset('images/icon/notverifiedpng.png') }}" alt="{{ __('landingpage.pd_alt_not_verified_icon') }}"
                style="width: 14%; height: 23%; margin-right: 10px;">
       @endif
 
@@ -33,7 +33,7 @@
       {{-- Removed duplicate per-document checkmark; top-left badge handles verification status --}}
 
       <!-- Second icon -->
-      <img src="{{ $plan_icon }}" alt="icon" style="width: 14%; height: 23%;">
+      <img src="{{ $plan_icon }}" alt="{{ __('landingpage.pl_plan_icon') }}" style="width: 14%; height: 23%;">
   </div>
 
 
@@ -65,7 +65,7 @@
           @endforeach
           <span class="rating-value">({{ round($providerRating ?? 0, 1) }})</span>
           @if ($reviewsCount > 0)
-              <span class="reviews-count text-muted" style="font-size: 0.85em;">{{ $reviewsCount }} {{ $reviewsCount == 1 ? 'review' : 'reviews' }}</span>
+              <span class="reviews-count text-muted" style="font-size: 0.85em;">{{ $reviewsCount }} {{ $reviewsCount == 1 ? __('messages.review') : __('messages.reviews') }}</span>
           @endif
       </a>
   </div>
@@ -86,16 +86,16 @@
 @endphp
 <div class="d-flex align-items-center justify-content-center gap-3 mt-1 social-icons">
     <span role="button" tabindex="0" class="social-link share-link" data-platform="facebook" data-share-url="{{ $providerShareUrl }}" data-quote="{{ $providerQuote }}" onclick="return typeof window.__shareClickHandler === 'function' && window.__shareClickHandler(event, this);" style="cursor: pointer;">
-        <img src="https://static.vecteezy.com/system/resources/previews/016/716/481/original/facebook-icon-free-png.png" style="width: 30px; border-radius: 8px;" alt="Facebook">
+        <img src="https://static.vecteezy.com/system/resources/previews/016/716/481/original/facebook-icon-free-png.png" style="width: 30px; border-radius: 8px;" alt="{{ __('landingpage.pd_alt_facebook') }}">
     </span>
     <span role="button" tabindex="0" class="social-link share-link" data-platform="instagram" data-share-url="{{ $providerShareUrl }}" data-quote="{{ $providerQuote }} — {{ $providerShareUrl }}" data-image-url="{{ $providerImageUrl }}" onclick="return typeof window.__shareClickHandler === 'function' && window.__shareClickHandler(event, this);" style="cursor: pointer;">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/9/95/Instagram_logo_2022.svg" style="width: 30px; border-radius: 8px;" alt="Instagram">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/9/95/Instagram_logo_2022.svg" style="width: 30px; border-radius: 8px;" alt="{{ __('landingpage.pd_alt_instagram') }}">
     </span>
     <span role="button" tabindex="0" class="social-link share-link" data-platform="twitter" data-share-url="{{ $providerShareUrl }}" data-text="{{ $providerQuote }}" onclick="return typeof window.__shareClickHandler === 'function' && window.__shareClickHandler(event, this);" style="cursor: pointer;">
-        <img src="https://cdn.pixabay.com/photo/2015/03/10/17/30/twitter-667462_640.png" style="width: 30px; border-radius: 8px;" alt="Twitter">
+        <img src="https://cdn.pixabay.com/photo/2015/03/10/17/30/twitter-667462_640.png" style="width: 30px; border-radius: 8px;" alt="{{ __('landingpage.pd_alt_twitter') }}">
     </span>
     <span role="button" tabindex="0" class="social-link share-link" data-platform="linkedin" data-share-url="{{ $providerShareUrl }}" onclick="return typeof window.__shareClickHandler === 'function' && window.__shareClickHandler(event, this);" style="cursor: pointer;">
-        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRokEYt0yyh6uNDKL8uksVLlhZ35laKNQgZ9g&s" style="width: 30px; border-radius: 8px;" alt="LinkedIn">
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRokEYt0yyh6uNDKL8uksVLlhZ35laKNQgZ9g&s" style="width: 30px; border-radius: 8px;" alt="{{ __('landingpage.pd_alt_linkedin') }}">
     </span>
 </div>
 

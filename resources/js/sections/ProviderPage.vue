@@ -5,7 +5,7 @@
             <div class="col-md-12">
                 <div class="float-end">
                     <div class="search-form input-group flex-nowrap align-items-center">
-                        <input type="search" class="form-control rounded-3" name="search" v-model="search" placeholder="Search...">
+                        <input type="search" class="form-control rounded-3" name="search" v-model="search" :placeholder="searchPlaceholder">
                         <span v-if="search" class="input-group-text search-icon position-absolute text-body" @click="clearSearch" style="cursor: pointer;">
                             <svg class="icon-20" width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <line x1="6" y1="18" x2="18" y2="6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></line>
@@ -34,7 +34,10 @@ import {useSection} from '../store/index'
 import {useObserveSection} from '../hooks/Observer'
 import useDataTable from '../hooks/Datatable'
 
-const props = defineProps(['link']);
+const props = defineProps({
+  link: { type: String, required: true },
+  searchPlaceholder: { type: String, default: 'Search...' }
+});
 
 const search = ref('')
 watch(() => search.value, () => ajaxReload())
