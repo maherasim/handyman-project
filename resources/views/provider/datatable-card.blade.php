@@ -85,16 +85,16 @@
     $providerImageUrl = $providerImageUrl ? (str_starts_with($providerImageUrl, 'http') ? $providerImageUrl : asset($providerImageUrl)) : asset('images/post-job/ac_refresh_and_revive.png');
 @endphp
 <div class="d-flex align-items-center justify-content-center gap-3 mt-1 social-icons">
-    <span role="button" tabindex="0" class="social-link share-link" data-platform="facebook" data-share-url="{{ $providerShareUrl }}" data-quote="{{ $providerQuote }}" onclick="return typeof window.__shareClickHandler === 'function' && window.__shareClickHandler(event, this);" style="cursor: pointer;">
+    <span role="button" tabindex="0" class="social-link share-link" data-platform="facebook" data-share-url="{{ $providerShareUrl }}" data-quote="{{ $providerQuote }}" style="cursor: pointer;" title="Facebook">
         <img src="https://static.vecteezy.com/system/resources/previews/016/716/481/original/facebook-icon-free-png.png" style="width: 30px; border-radius: 8px;" alt="{{ __('landingpage.pd_alt_facebook') }}">
     </span>
-    <span role="button" tabindex="0" class="social-link share-link" data-platform="instagram" data-share-url="{{ $providerShareUrl }}" data-quote="{{ $providerQuote }} — {{ $providerShareUrl }}" data-image-url="{{ $providerImageUrl }}" onclick="return typeof window.__shareClickHandler === 'function' && window.__shareClickHandler(event, this);" style="cursor: pointer;">
+    <span role="button" tabindex="0" class="social-link share-link" data-platform="instagram" data-share-url="{{ $providerShareUrl }}" data-quote="{{ $providerQuote }} — {{ $providerShareUrl }}" data-image-url="{{ $providerImageUrl }}" style="cursor: pointer;" title="Instagram">
         <img src="https://upload.wikimedia.org/wikipedia/commons/9/95/Instagram_logo_2022.svg" style="width: 30px; border-radius: 8px;" alt="{{ __('landingpage.pd_alt_instagram') }}">
     </span>
-    <span role="button" tabindex="0" class="social-link share-link" data-platform="twitter" data-share-url="{{ $providerShareUrl }}" data-text="{{ $providerQuote }}" onclick="return typeof window.__shareClickHandler === 'function' && window.__shareClickHandler(event, this);" style="cursor: pointer;">
+    <span role="button" tabindex="0" class="social-link share-link" data-platform="twitter" data-share-url="{{ $providerShareUrl }}" data-text="{{ $providerQuote }}" style="cursor: pointer;" title="Twitter">
         <img src="https://cdn.pixabay.com/photo/2015/03/10/17/30/twitter-667462_640.png" style="width: 30px; border-radius: 8px;" alt="{{ __('landingpage.pd_alt_twitter') }}">
     </span>
-    <span role="button" tabindex="0" class="social-link share-link" data-platform="linkedin" data-share-url="{{ $providerShareUrl }}" onclick="return typeof window.__shareClickHandler === 'function' && window.__shareClickHandler(event, this);" style="cursor: pointer;">
+    <span role="button" tabindex="0" class="social-link share-link" data-platform="linkedin" data-share-url="{{ $providerShareUrl }}" style="cursor: pointer;" title="LinkedIn">
         <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRokEYt0yyh6uNDKL8uksVLlhZ35laKNQgZ9g&s" style="width: 30px; border-radius: 8px;" alt="{{ __('landingpage.pd_alt_linkedin') }}">
     </span>
 </div>

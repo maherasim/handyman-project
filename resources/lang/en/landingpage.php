@@ -324,6 +324,7 @@
   'pd_alt_instagram' => 'Instagram',
   'pd_alt_twitter' => 'Twitter',
   'pd_alt_linkedin' => 'LinkedIn',
+  'share_link_copied_instagram' => 'Link copied! Paste in Instagram to share.',
   'pd_alt_provider' => 'Provider',
   'pd_alt_comment_user' => 'Comment user',
 

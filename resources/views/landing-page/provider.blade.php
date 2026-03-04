@@ -4,6 +4,20 @@
 @section('content')
 <div class="blog-list section-padding ">
     <div class="container">
+        {{-- How it works & Explore how we post --}}
+        <div class="row mb-4 align-items-center">
+            <div class="col-12">
+                <div class="d-flex flex-wrap align-items-center gap-3 gap-md-4">
+                    <a href="{{ url('pages/how-it-works-for-customer') }}" class="btn btn-outline-primary btn-sm text-nowrap">
+                        <i class="ri-information-line me-1"></i>{{ __('landingpage.how_it_works') }}
+                    </a>
+                    <a href="{{ route('register') }}" class="btn btn-primary btn-sm text-nowrap">
+                        <i class="ri-file-add-line me-1"></i>{{ __('landingpage.post_job_request') }}
+                    </a>
+                    <span class="text-muted small">{{ __('landingpage.how_it_works_lead') }}</span>
+                </div>
+            </div>
+        </div>
         <provider-page link="{{ route('provider.data') }}" search-placeholder="{{ __('landingpage.pl_search_placeholder') }}"></provider-page>
     </div>
 </div>
@@ -33,6 +47,18 @@
 
 @section('after_script')
 <script>
+(function() {
+    var shareCopyMsg = {!! json_encode(__('landingpage.share_link_copied_instagram')) !!};
+    window.__shareCopyToast = function() {
+        var msg = document.createElement('div');
+        msg.setAttribute('role', 'status');
+        msg.className = 'share-copy-toast';
+        msg.textContent = shareCopyMsg;
+        msg.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:10px 20px;border-radius:8px;font-size:14px;z-index:9999;box-shadow:0 4px 12px rgba(0,0,0,0.2);';
+        document.body.appendChild(msg);
+        setTimeout(function() { if (msg.parentNode) msg.parentNode.removeChild(msg); }, 2500);
+    };
+})();
 window.__shareClickHandler = function(e, el) {
     try { e.preventDefault(); e.stopPropagation(); } catch (_) {}
     function openPopup(url) { window.open(url, '_blank', 'noopener,noreferrer,width=600,height=600'); }
@@ -49,14 +75,40 @@ window.__shareClickHandler = function(e, el) {
     } else if (platform === 'linkedin') {
         openPopup('https://www.linkedin.com/sharing/share-offsite/?url=' + encodeURIComponent(shareUrl));
     } else if (platform === 'instagram') {
+        // Instagram has no web share URL; copy link so user can paste in Instagram
         var quote = el.getAttribute('data-quote') || '';
-        if (navigator.share) {
-            try { navigator.share({ text: quote, url: shareUrl }).catch(function() {}); } catch (_) { openPopup('https://www.instagram.com/'); }
-        } else { openPopup('https://www.instagram.com/'); }
+        var textToCopy = quote ? quote + ' ' + shareUrl : shareUrl;
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(textToCopy).then(function() {
+                if (typeof window.__shareCopyToast === 'function') window.__shareCopyToast();
+            }).catch(function() { fallbackCopy(textToCopy); });
+        } else {
+            fallbackCopy(textToCopy);
+        }
+        function fallbackCopy(str) {
+            var ta = document.createElement('textarea');
+            ta.value = str;
+            ta.setAttribute('readonly', '');
+            ta.style.position = 'fixed'; ta.style.left = '-9999px';
+            document.body.appendChild(ta);
+            ta.select();
+            try {
+                document.execCommand('copy');
+                if (typeof window.__shareCopyToast === 'function') window.__shareCopyToast();
+            } catch (err) {}
+            document.body.removeChild(ta);
+        }
     }
     return false;
 };
 document.addEventListener('DOMContentLoaded', function() {
+    // Event delegation: social share (Facebook, Twitter, LinkedIn) for provider cards loaded via AJAX
+    document.addEventListener('click', function(e) {
+        var el = e.target.closest && e.target.closest('.share-link');
+        if (el && typeof window.__shareClickHandler === 'function') {
+            window.__shareClickHandler(e, el);
+        }
+    });
     // Handle provider rating link clicks
     $(document).on('click', '.provider-rating-link', function(e) {
         e.preventDefault();
