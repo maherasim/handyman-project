@@ -110,24 +110,27 @@
     </div>
 
     <script>
-        var pjrJsLang = @json([
-            'update_payment_split' => __('messages.pjr_update_payment_split'),
-            'advance_percentage' => __('messages.pjr_advance_percentage'),
-            'remaining_percentage' => __('messages.pjr_remaining_percentage'),
-            'update' => __('messages.pjr_update'),
-            'advance_validation' => __('messages.pjr_advance_percentage_validation'),
-            'updated' => __('messages.pjr_updated'),
-            'payment_split_updated' => __('messages.pjr_payment_split_updated'),
-            'error' => __('messages.pjr_error'),
-            'unable_to_update' => __('messages.pjr_unable_to_update'),
-            'something_went_wrong' => __('messages.pjr_something_went_wrong_short'),
-            'set_payment_split' => __('messages.pjr_set_payment_split'),
-            'enter_advance_placeholder' => __('messages.pjr_enter_advance_placeholder'),
-            'submit' => __('messages.pjr_submit'),
-            'saved' => __('messages.pjr_saved'),
-            'payment_split_set' => __('messages.pjr_payment_split_set'),
-            'unable_to_save' => __('messages.pjr_unable_to_save'),
-        ]);
+        @php
+            $pjrJsLang = [
+                'update_payment_split' => __('messages.pjr_update_payment_split'),
+                'advance_percentage' => __('messages.pjr_advance_percentage'),
+                'remaining_percentage' => __('messages.pjr_remaining_percentage'),
+                'update' => __('messages.pjr_update'),
+                'advance_validation' => __('messages.pjr_advance_percentage_validation'),
+                'updated' => __('messages.pjr_updated'),
+                'payment_split_updated' => __('messages.pjr_payment_split_updated'),
+                'error' => __('messages.pjr_error'),
+                'unable_to_update' => __('messages.pjr_unable_to_update'),
+                'something_went_wrong' => __('messages.pjr_something_went_wrong_short'),
+                'set_payment_split' => __('messages.pjr_set_payment_split'),
+                'enter_advance_placeholder' => __('messages.pjr_enter_advance_placeholder'),
+                'submit' => __('messages.pjr_submit'),
+                'saved' => __('messages.pjr_saved'),
+                'payment_split_set' => __('messages.pjr_payment_split_set'),
+                'unable_to_save' => __('messages.pjr_unable_to_save'),
+            ];
+        @endphp
+        var pjrJsLang = @json($pjrJsLang);
         document.addEventListener('DOMContentLoaded', function() {
             const table = $('#postBidsTable').DataTable({
                 processing: true,
