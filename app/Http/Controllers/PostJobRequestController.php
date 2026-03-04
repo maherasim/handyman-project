@@ -1503,8 +1503,12 @@ class PostJobRequestController extends Controller
     
             $client = new PayPalHttpClient($environment);
     
-            // Base URL
+            // Base URL – use API return/cancel URLs when request is from API (mobile/app)
             $baseURL = config('app.url') ?: 'https://frobster.com';
+            $isApi = $request->expectsJson() || $request->is('api/*') || str_starts_with((string) $request->path(), 'api/');
+            if ($isApi) {
+                $baseURL = rtrim($baseURL, '/') . '/api';
+            }
     
             // Resolve currency dynamically from settings
             try {
@@ -1529,8 +1533,12 @@ class PostJobRequestController extends Controller
                     'description' => 'Payment for Post Job Bid #' . $bid->id . ' (' . $type . ')'
                 ]],
                 'application_context' => [
-                    'cancel_url' => $baseURL . '/postjob/bid/' . $bid->id,
-                    'return_url' => $baseURL . '/postjob/paypal-success/' . $bid->id . '?type=' . $type,
+                    'cancel_url' => $isApi
+                        ? ($baseURL . '/postjob/paypal/cancel')
+                        : ($baseURL . '/postjob/bid/' . $bid->id),
+                    'return_url' => $isApi
+                        ? ($baseURL . '/postjob/paypal/success/' . $bid->id . '?type=' . $type)
+                        : ($baseURL . '/postjob/paypal-success/' . $bid->id . '?type=' . $type),
                     'brand_name' => env('APP_NAME'),
                     'landing_page' => 'LOGIN',
                     'user_action' => 'PAY_NOW',
@@ -1747,7 +1755,202 @@ class PostJobRequestController extends Controller
     }
 }
 
+    /**
+     * PayPal success callback for API only (returns JSON).
+     * Used when payment is completed and user is redirected from PayPal to the API return_url.
+     * URL: GET /api/postjob/paypal/success/{id}?token=...&type=advance|remaining
+     */
+    public function postJobPayPalSuccessApi(Request $request, $id)
+    {
+        $token = $request->query('token');
+        $type  = strtolower((string) $request->query('type', 'advance'));
+        $bid   = PostJobBid::find($id);
 
+        if (!$bid) {
+            return response()->json(['status' => false, 'message' => 'Bid not found'], 404);
+        }
+        if (!$token) {
+            return response()->json(['status' => false, 'message' => 'Missing PayPal token'], 400);
+        }
+
+        $paymentGatewayValue = getPaymentMethodkey('paypal');
+        $clientId = $paymentGatewayValue['paypal_client_id'] ?? null;
+        $clientSecret = $paymentGatewayValue['paypal_secret_key'] ?? null;
+        $mode = $paymentGatewayValue['mode'] ?? 'sandbox';
+
+        if (!$clientId || !$clientSecret) {
+            return response()->json(['status' => false, 'message' => 'PayPal not configured'], 500);
+        }
+
+        $environment = $mode === 'live'
+            ? new ProductionEnvironment($clientId, $clientSecret)
+            : new SandboxEnvironment($clientId, $clientSecret);
+        $client = new PayPalHttpClient($environment);
+
+        $captureRequest = new OrdersCaptureRequest($token);
+        $captureRequest->prefer('return=representation');
+
+        try {
+            $response = $client->execute($captureRequest);
+
+            if (!in_array($response->statusCode, [200, 201])) {
+                return response()->json(['status' => false, 'message' => 'Payment not completed'], 400);
+            }
+
+            $txnId = $response->result->purchase_units[0]->payments->captures[0]->id ?? null;
+            $payAmount = (float) ($response->result->purchase_units[0]->amount->value ?? 0);
+
+            if ($payAmount <= 0) {
+                return response()->json(['status' => false, 'message' => 'Invalid payment amount'], 400);
+            }
+
+            $payment = PaymentPostJob::create([
+                'post_job_bid_request_id' => $bid->id,
+                'customer_id' => $bid->customer_id,
+                'payment_type'            => 'paypal',
+                'payment_status'          => 'completed',
+                'txn_id'                  => $txnId,
+                'total_amount'              => $payAmount,
+                'other_transaction_detail' => json_encode([
+                    'type' => $type,
+                    'order_id' => $token,
+                    'admin_commission' => 0,
+                    'provider_amount' => 0,
+                ])
+            ]);
+
+            $adminCommissionPercent = (float) (Setting::getValueByKey('admin_commission_percentage', 'site-setup')->value ?? 10);
+            $adminCommissionAmount  = ($payAmount * $adminCommissionPercent) / 100;
+            $providerAmount         = max(0, $payAmount - $adminCommissionAmount);
+
+            $payment->other_transaction_detail = json_encode([
+                'type' => $type,
+                'order_id' => $token,
+                'admin_commission' => $adminCommissionAmount,
+                'provider_amount' => $providerAmount,
+            ]);
+            $payment->save();
+
+            $adminUser  = User::where('user_type', 'admin')->first();
+            $providerId = $bid->provider_id;
+
+            if ($adminCommissionAmount > 0) {
+                CommissionEarning::create([
+                    'post_job_bid_request_id' => $bid->id,
+                    'user_type'               => 'admin',
+                    'employee_id'             => $adminUser?->id ?? 1,
+                    'commission_amount'       => $adminCommissionAmount,
+                    'commission_status'       => 'paid',
+                    'payment_id'              => $payment->id,
+                ]);
+            }
+
+            if ($providerAmount > 0) {
+                CommissionEarning::create([
+                    'post_job_bid_request_id' => $bid->id,
+                    'user_type'               => 'provider',
+                    'employee_id'             => $providerId,
+                    'commission_amount'       => $providerAmount,
+                    'commission_status'       => 'paid',
+                    'payment_id'              => $payment->id,
+                ]);
+                ProviderPayout::create([
+                    'provider_id'         => $providerId,
+                    'amount'              => $providerAmount,
+                    'payment_method'      => 'PayPal',
+                    'paid_date'           => now(),
+                    'status'              => 'paid',
+                    'booking_id'          => null,
+                    'post_job_request_id' => $bid->id,
+                    'payment_gateway'     => 'PayPal',
+                ]);
+                $providerWallet = Wallet::firstOrCreate(
+                    ['user_id' => $providerId],
+                    ['amount' => 0]
+                );
+                if ($providerWallet->amount === null) {
+                    $providerWallet->update(['amount' => 0]);
+                }
+                $providerWallet->increment('amount', $providerAmount);
+                $providerWallet->refresh();
+                WalletHistory::create([
+                    'datetime'         => now(),
+                    'user_id'          => $providerId,
+                    'activity_type'    => 'credit',
+                    'activity_message' => ($type === 'remaining' ? 'Remaining' : 'Advance') . " payment for Bid #{$bid->id} received (PayPal)",
+                    'activity_data'    => json_encode([
+                        'credit_debit_amount' => $providerAmount,
+                        'amount'              => $providerWallet->amount,
+                        'transaction_type'    => 'Credit',
+                    ]),
+                ]);
+                PaymentPostJObHistory::create([
+                    'payment_id'  => $payment->id,
+                    'booking_id'  => null,
+                    'parent_id'   => null,
+                    'action'      => 'customer_send_provider',
+                    'status'      => 'completed',
+                    'sender_id'   => $bid->customer_id,
+                    'receiver_id' => $providerId,
+                    'datetime'    => now(),
+                    'total_amount'=> $payAmount,
+                    'txn_id'      => $txnId,
+                    'type'        => 'paypal',
+                    'text'        => __('messages.payment_transfer', [
+                        'from'   => get_user_name($bid->customer_id),
+                        'to'     => get_user_name($providerId),
+                        'amount' => number_format($payAmount, 2),
+                    ]),
+                    'other_transaction_detail' => json_encode([
+                        'admin_commission' => $adminCommissionAmount,
+                        'provider_amount'  => $providerAmount,
+                    ]),
+                ]);
+            }
+
+            $bid->status = ($type === 'remaining') ? 'remaining_paid' : 'advance_paid';
+            $bid->save();
+
+            $bid->load(['provider', 'customer', 'postrequest']);
+            $this->sendNotification([
+                'activity_type'     => 'post_job_bid_status_update',
+                'post_job'          => $bid,
+                'notify_recipient'  => 'provider',
+                'bid_status'        => $type === 'remaining' ? 'Remaining paid' : 'Advance paid',
+            ]);
+
+            return response()->json([
+                'status'  => true,
+                'message' => 'PayPal payment completed and payout recorded.',
+                'data'    => [
+                    'bid_id'       => (int) $bid->id,
+                    'post_request_id' => (int) $bid->post_request_id,
+                    'payment_type' => $type,
+                    'amount'       => $payAmount,
+                    'txn_id'       => $txnId,
+                ]
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('PayPal API capture error: ' . $e->getMessage());
+            return response()->json([
+                'status'  => false,
+                'message' => 'Payment failed: ' . $e->getMessage()
+            ], 400);
+        }
+    }
+
+    /**
+     * PayPal cancel callback for API only (returns JSON).
+     * Used when user cancels on PayPal and is redirected to the API cancel_url.
+     * URL: GET /api/postjob/paypal/cancel
+     */
+    public function postJobPayPalCancelApi(Request $request)
+    {
+        return response()->json([
+            'status'  => false,
+            'message' => 'Payment cancelled by user.',
+        ], 200);
+    }
 
     public function getPostJobBankDetails($id)
     {

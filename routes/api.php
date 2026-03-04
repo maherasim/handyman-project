@@ -73,6 +73,10 @@ Route::post('service-reviews', [ API\ServiceController::class, 'serviceReviewsLi
 Route::get('post-job-status', [ API\PostJobRequestController::class, 'postRequestStatus' ] );
 // Route::get('booking-list', [ API\BookingController::class, 'getBookingList' ] );sinc
 
+// Post Job PayPal – pure API return/cancel (no auth; PayPal redirects the browser here)
+Route::get('postjob/paypal/success/{id}', [App\Http\Controllers\PostJobRequestController::class, 'postJobPayPalSuccessApi'])->name('api.postjob.paypal.success');
+Route::get('postjob/paypal/cancel', [App\Http\Controllers\PostJobRequestController::class, 'postJobPayPalCancelApi'])->name('api.postjob.paypal.cancel');
+
 Route::group(['middleware' => ['auth:sanctum']], function () {
     // ===== Chat API (Mobile/Web) =====
     // Open or create conversation by bid id
