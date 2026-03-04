@@ -836,19 +836,22 @@
         const DECIMALS = DEFAULT_CURRENCY?.afterdecimalpoint ?? 2;
         const POSITION = DEFAULT_CURRENCY?.defaultPosition ?? 'left';
         const CURRENCY_SYMBOL = DEFAULT_CURRENCY?.defaultCurrency?.symbol ?? '€';
-        var pjrJsLang = @json([
-            'update_payment_split' => __('messages.pjr_update_payment_split'),
-            'advance_percentage' => __('messages.pjr_advance_percentage'),
-            'remaining_percentage' => __('messages.pjr_remaining_percentage'),
-            'update' => __('messages.pjr_update'),
-            'updated' => __('messages.pjr_updated'),
-            'payment_split_updated' => __('messages.pjr_payment_split_updated'),
-            'error' => __('messages.pjr_error'),
-            'unable_to_update' => __('messages.pjr_unable_to_update'),
-            'unable_to_save' => __('messages.pjr_unable_to_save'),
-            'something_went_wrong' => __('messages.pjr_something_went_wrong_short'),
-            'advance_20_99' => __('messages.pjr_advance_20_99'),
-        ]);
+        @php
+            $pjrJsLang = [
+                'update_payment_split' => __('messages.pjr_update_payment_split'),
+                'advance_percentage' => __('messages.pjr_advance_percentage'),
+                'remaining_percentage' => __('messages.pjr_remaining_percentage'),
+                'update' => __('messages.pjr_update'),
+                'updated' => __('messages.pjr_updated'),
+                'payment_split_updated' => __('messages.pjr_payment_split_updated'),
+                'error' => __('messages.pjr_error'),
+                'unable_to_update' => __('messages.pjr_unable_to_update'),
+                'unable_to_save' => __('messages.pjr_unable_to_save'),
+                'something_went_wrong' => __('messages.pjr_something_went_wrong_short'),
+                'advance_20_99' => __('messages.pjr_advance_20_99'),
+            ];
+        @endphp
+        var pjrJsLang = @json($pjrJsLang);
         function formatCurrencyJS(amount) {
             const n = Number(amount || 0).toFixed(DECIMALS);
             switch (String(POSITION)) {
