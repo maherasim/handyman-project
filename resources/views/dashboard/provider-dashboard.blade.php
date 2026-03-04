@@ -254,7 +254,7 @@
 
         var options = {
             series: [{
-                name: 'revenue',
+                name: @json(__('messages.revenue')),
                 data: formattedData
             }],
             colors: ['#3333ff'], // Using blue from gradient for chart

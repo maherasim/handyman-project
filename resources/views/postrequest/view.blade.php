@@ -38,7 +38,7 @@
                         <h5 class="fw-bold mb-0">
                             {{ $pageTitle }}
                             @if(auth()->user()->user_type === 'provider')
-                                <span class="ms-3 text-muted" style="font-size: 0.9rem;">Average Bid: <strong>{{ number_format($averageBid, 2) }}</strong></span>
+                                <span class="ms-3 text-muted" style="font-size: 0.9rem;">{{ __('messages.pjr_average_bid') }} <strong>{{ number_format($averageBid, 2) }}</strong></span>
                             @endif
                         </h5>
 
@@ -55,13 +55,13 @@
                                 <button class="btn btn-success payAdvanceBtn" data-post-id="{{ $advance_payment->id }}"
                                     data-amount="{{ $advanceAmount }}">
                                     <i class="fas fa-wallet"></i>
-                                    Pay Advance {{ $advanceAmount }} ({{ $advance_payment->advance_percent }}%)
+                                    {{ __('messages.pjr_pay_advance') }} {{ $advanceAmount }} ({{ $advance_payment->advance_percent }}%)
                                 </button>
                                 <button class="btn btn-info payRemainingBtn" data-post-id="{{ $advance_payment->id }}"
                                     data-advance="{{ $advance_payment->advance_percent }}"
                                     data-remaining="{{ $advance_payment->remaining_percent }}">
                                     <i class="fas fa-credit-card"></i>
-                                    Pay Remaining {{ $remainingAmount }} ({{ $advance_payment->remaining_percent }}%)
+                                    {{ __('messages.pjr_pay_remaining') }} {{ $remainingAmount }} ({{ $advance_payment->remaining_percent }}%)
                                 </button>
                             @endif
                         </div>
@@ -89,16 +89,16 @@
                     <table id="postBidsTable" class="table table-striped table-bordered w-100">
                         <thead>
                             <tr>
-                                <th>ID</th>
-                                <th>Title</th>
-                                <th>Posted at</th>
-                                <th>Max. Budget</th>
-                                <th>Start Date</th>
-                                <th>End Date</th>
-                                <th>Employer</th>
-                                <th>Why Choose Me</th>
-                                <th>Bid Amount</th>
-                                <th>Action</th>
+                                <th>{{ __('messages.pjr_id') }}</th>
+                                <th>{{ __('messages.pjr_title') }}</th>
+                                <th>{{ __('messages.pjr_posted_at_th') }}</th>
+                                <th>{{ __('messages.pjr_max_budget') }}</th>
+                                <th>{{ __('messages.pjr_start_date') }}</th>
+                                <th>{{ __('messages.pjr_end_date') }}</th>
+                                <th>{{ __('messages.pjr_employer') }}</th>
+                                <th>{{ __('messages.pjr_why_choose_me_th') }}</th>
+                                <th>{{ __('messages.pjr_bid_amount_th') }}</th>
+                                <th>{{ __('messages.pjr_actions') }}</th>
                             </tr>
                         </thead>
                         <tbody></tbody>
@@ -110,6 +110,24 @@
     </div>
 
     <script>
+        var pjrJsLang = @json([
+            'update_payment_split' => __('messages.pjr_update_payment_split'),
+            'advance_percentage' => __('messages.pjr_advance_percentage'),
+            'remaining_percentage' => __('messages.pjr_remaining_percentage'),
+            'update' => __('messages.pjr_update'),
+            'advance_validation' => __('messages.pjr_advance_percentage_validation'),
+            'updated' => __('messages.pjr_updated'),
+            'payment_split_updated' => __('messages.pjr_payment_split_updated'),
+            'error' => __('messages.pjr_error'),
+            'unable_to_update' => __('messages.pjr_unable_to_update'),
+            'something_went_wrong' => __('messages.pjr_something_went_wrong_short'),
+            'set_payment_split' => __('messages.pjr_set_payment_split'),
+            'enter_advance_placeholder' => __('messages.pjr_enter_advance_placeholder'),
+            'submit' => __('messages.pjr_submit'),
+            'saved' => __('messages.pjr_saved'),
+            'payment_split_set' => __('messages.pjr_payment_split_set'),
+            'unable_to_save' => __('messages.pjr_unable_to_save'),
+        ]);
         document.addEventListener('DOMContentLoaded', function() {
             const table = $('#postBidsTable').DataTable({
                 processing: true,
@@ -136,7 +154,7 @@
                         render: function(data, type, row){
                             const safeId = row.id;
                             const payload = (typeof data === 'string') ? data : '';
-                            return `<button type=\"button\" class=\"btn btn-sm btn-outline-primary viewWhyBtn\" data-bid-id=\"${safeId}\" data-why=\"${encodeURIComponent(payload)}\" title=\"View\"><i class=\"far fa-eye\"></i></button>`;
+                            return `<button type=\"button\" class=\"btn btn-sm btn-outline-primary viewWhyBtn\" data-bid-id=\"${safeId}\" data-why=\"${encodeURIComponent(payload)}\" title=\"{{ __('messages.pjr_view') }}\"><i class=\"far fa-eye\"></i></button>`;
                         }
                     },
                     { data: 'bid_amount', name: 'bid_amount' },
@@ -151,20 +169,20 @@
                 const currentRemaining = $(this).data('remaining');
 
                 Swal.fire({
-                    title: "Update Payment Split",
+                    title: pjrJsLang.update_payment_split,
                     html: `
                 <div class="mb-3 text-start">
-                    <label class="form-label fw-bold">Advance Percentage</label>
+                    <label class="form-label fw-bold">${pjrJsLang.advance_percentage}</label>
                     <input type="number" id="advanceInput" class="form-control" value="${currentAdvance}" min="0" max="100" />
                 </div>
                 <div class="text-start">
-                    <label class="form-label fw-bold">Remaining Percentage</label>
+                    <label class="form-label fw-bold">${pjrJsLang.remaining_percentage}</label>
                     <input type="number" id="remainingInput" class="form-control" value="${currentRemaining}" readonly />
                 </div>
             `,
                     focusConfirm: false,
                     showCancelButton: true,
-                    confirmButtonText: "Update",
+                    confirmButtonText: pjrJsLang.update,
                     didOpen: () => {
                         const advanceInput = document.getElementById('advanceInput');
                         const remainingInput = document.getElementById('remainingInput');
@@ -205,16 +223,16 @@
                             },
                             success: function(response) {
                                 if (response.status) {
-                                    Swal.fire("Updated!", response.message ||
-                                        "Payment split updated.", "success");
+                                    Swal.fire(pjrJsLang.updated, response.message ||
+                                        pjrJsLang.payment_split_updated, "success");
                                     $('#datatable').DataTable().ajax.reload();
                                 } else {
-                                    Swal.fire("Error!", response.message ||
-                                        "Unable to update.", "error");
+                                    Swal.fire(pjrJsLang.error, response.message ||
+                                        pjrJsLang.unable_to_update, "error");
                                 }
                             },
                             error: function() {
-                                Swal.fire("Error!", "Something went wrong!", "error");
+                                Swal.fire(pjrJsLang.error, pjrJsLang.something_went_wrong, "error");
                             }
                         });
                     }
@@ -275,7 +293,7 @@
                     <div class="p-2" id="whyChooseMeContent"></div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ __('messages.pjr_close') }}</button>
                 </div>
             </div>
         </div>
@@ -370,7 +388,7 @@
                             }
                         })
                         .catch(function() {
-                            Swal.fire("Error", "Something went wrong!", "error");
+                            Swal.fire(pjrJsLang.error, pjrJsLang.something_went_wrong, "error");
                         });
                 });
             }, {
@@ -405,7 +423,7 @@
                                     Swal.fire("Accepted!", response.message, "success");
                                     $('#datatable').DataTable().ajax.reload();
                                 } else {
-                                    Swal.fire("Error!", response.message, "error");
+                                    Swal.fire(pjrJsLang.error, response.message, "error");
                                 }
                             },
                             error: function() {
@@ -445,13 +463,13 @@
                                 $('#datatable').DataTable().ajax.reload();
                             } else {
                                 Swal.fire('Error', (response && response.message) ?
-                                    response.message : 'Unable to update', 'error');
+                                    response.message : pjrJsLang.unable_to_update, 'error');
                             }
                         },
                         error: function(xhr) {
                             Swal.fire('Error', (xhr && xhr.responseJSON && xhr
                                     .responseJSON.message) ? xhr.responseJSON
-                                .message : 'Something went wrong', 'error');
+                                .message : pjrJsLang.something_went_wrong, 'error');
                         }
                     });
                 });
@@ -500,13 +518,13 @@
                                 $('#datatable').DataTable().ajax.reload();
                             } else {
                                 Swal.fire('Error', (response && response.message) ?
-                                    response.message : 'Unable to update', 'error');
+                                    response.message : pjrJsLang.unable_to_update, 'error');
                             }
                         },
                         error: function(xhr) {
                             Swal.fire('Error', (xhr && xhr.responseJSON && xhr
                                     .responseJSON.message) ? xhr.responseJSON
-                                .message : 'Something went wrong', 'error');
+                                .message : pjrJsLang.something_went_wrong, 'error');
                         }
                     });
                 });
@@ -577,17 +595,17 @@
                             },
                             success: function(response) {
                                 if (response.status) {
-                                    Swal.fire("Saved!", response.message ||
-                                        "Payment split set & work started.",
+                                    Swal.fire(pjrJsLang.saved, response.message ||
+                                        pjrJsLang.payment_split_set,
                                         "success");
                                     $('#datatable').DataTable().ajax.reload();
                                 } else {
-                                    Swal.fire("Error!", response.message ||
-                                        "Unable to save.", "error");
+                                    Swal.fire(pjrJsLang.error, response.message ||
+                                        pjrJsLang.unable_to_save, "error");
                                 }
                             },
                             error: function() {
-                                Swal.fire("Error!", "Something went wrong!", "error");
+                                Swal.fire(pjrJsLang.error, pjrJsLang.something_went_wrong, "error");
                             }
                         });
 

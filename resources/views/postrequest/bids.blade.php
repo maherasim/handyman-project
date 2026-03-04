@@ -8,7 +8,7 @@
                         <h5 class="fw-bold mb-0">{{ $pageTitle }}</h5>
                         <div>
                             <a href="{{ route('bidsshow') }}" class="btn btn-outline-secondary">
-                                <i class="fas fa-arrow-left"></i> Back to all bids
+                                <i class="fas fa-arrow-left"></i> {{ __('messages.pjr_back_to_all_bids') }}
                             </a>
                         </div>
                     </div>
@@ -25,7 +25,7 @@
                         <div class="d-flex justify-content-end">
                             <div class="input-group w-25">
                                 <span class="input-group-text"><i class="fas fa-search"></i></span>
-                                <input type="text" class="form-control dt-search" placeholder="Search bids...">
+                                <input type="text" class="form-control dt-search" placeholder="{{ __('messages.pjr_search_bids') }}">
                             </div>
                         </div>
                     </div>
@@ -36,13 +36,13 @@
                         <thead>
                             <tr>
                                 <th>#</th>
-                                <th>Post</th>
-                                <th>Provider</th>
-                                <th>Customer</th>
-                                <th>Budget</th>
-                                <th>Duration</th>
-                                <th>Status</th>
-                                <th>Actions</th>
+                                <th>{{ __('messages.pjr_post') }}</th>
+                                <th>{{ __('messages.pjr_provider') }}</th>
+                                <th>{{ __('messages.customer') }}</th>
+                                <th>{{ __('messages.pjr_budget') }}</th>
+                                <th>{{ __('messages.pjr_duration') }}</th>
+                                <th>{{ __('messages.status') }}</th>
+                                <th>{{ __('messages.pjr_actions') }}</th>
                             </tr>
                         </thead>
                         <tbody></tbody>

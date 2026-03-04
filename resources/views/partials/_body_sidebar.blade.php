@@ -24,11 +24,11 @@
             ->link->attr(['class' => '']);
 
         // Quick Access right after Dashboard
-        $menu->add(__('Quick Access'), ['class' => 'category-main']);
+        $menu->add(__('messages.sidebar_quick_access'), ['class' => 'category-main']);
 
         // Verify Account (provider-only) at top of Quick Access
         if(auth()->user()->user_type == 'provider'){
-        $menu->add('<span>'.__('Verify Account').'</span><span class="custom-tooltip"><span class="tooltip-text">'.__('Verify Account').'</span></span>', ['route' => ['providerdocument.show', auth()->user()->id]])
+        $menu->add('<span>'.__('messages.sidebar_verify_account').'</span><span class="custom-tooltip"><span class="tooltip-text">'.__('messages.sidebar_verify_account').'</span></span>', ['route' => ['providerdocument.show', auth()->user()->id]])
         ->prepend('<svg width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M9 12L10.6828 13.6828V13.6828C10.858 13.858 11.142 13.858 11.3172 13.6828V13.6828L15 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
         <path d="M21 7V13.5C21 17.2712 21 19.1569 19.8284 20.3284C18.6569 21.5 16.7712 21.5 13 21.5H11C7.22876 21.5 5.34315 21.5 4.17157 20.3284C3 19.1569 3 17.2712 3 13.5V7" stroke="currentColor" stroke-width="1.5"/>
@@ -39,7 +39,7 @@
         ->data('permission', 'providerdocument list');
 
         // My Bid List (provider-only) in Quick Access
-        $menu->add('<span>'.__('My Bid List').'</span><span class="custom-tooltip"><span class="tooltip-text">'.__('messages.messages.custom_job').'</span></span>', ['route' => 'bidsshow'])
+        $menu->add('<span>'.__('messages.sidebar_my_bid_list').'</span><span class="custom-tooltip"><span class="tooltip-text">'.__('messages.messages.custom_job').'</span></span>', ['route' => 'bidsshow'])
         ->prepend(' <svg width="15" height="15" class="sidebar-menu-icon" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
             
         <path d="M2 12C2 8.22876 2 6.34315 3.17157 5.17157C4.34315 4 6.22876 4 10 4H14C17.7712 4 19.6569 4 20.8284 5.17157C22 6.34315 22 8.22876 22 12C22 15.7712 22 17.6569 20.8284 18.8284C19.6569 20 17.7712 20 14 20H10C6.22876 20 4.34315 20 3.17157 18.8284C2 17.6569 2 15.7712 2 12Z" stroke="currentColor" stroke-width="1.5"/>
@@ -54,7 +54,7 @@
 
         // Job Request (quick link) - Hide for handyman
         if(auth()->user()->user_type != 'handyman'){
-            $menu->add('<span>'.__('Job Request').'</span><span class="custom-tooltip"><span class="tooltip-text">'.__('messages.messages.custom_job').'</span></span>', ['route' => 'post-job-request.index'])
+            $menu->add('<span>'.__('messages.sidebar_job_request').'</span><span class="custom-tooltip"><span class="tooltip-text">'.__('messages.messages.custom_job').'</span></span>', ['route' => 'post-job-request.index'])
             ->prepend(' <svg width="15" height="15" class="sidebar-menu-icon" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
         
 <path d="M2 12C2 8.22876 2 6.34315 3.17157 5.17157C4.34315 4 6.22876 4 10 4H14C17.7712 4 19.6569 4 20.8284 5.17157C22 6.34315 22 8.22876 22 12C22 15.7712 22 17.6569 20.8284 18.8284C19.6569 20 17.7712 20 14 20H10C6.22876 20 4.34315 20 3.17157 18.8284C2 17.6569 2 15.7712 2 12Z" stroke="currentColor" stroke-width="1.5"/>
@@ -548,7 +548,7 @@
             ->data('permission', 'user list');
 
         $menu
-            ->add(__('messages.sidebar_form_title', ['form' => __('Service Transactions')]), [
+            ->add(__('messages.sidebar_form_title', ['form' => __('messages.sidebar_service_transactions')]), [
                 'class' => 'category-main',
             ])
             ->data('permission', ['tax list', 'payment list', 'earning list']);
@@ -556,9 +556,9 @@
         $menu
             ->add(
                 '<span>' .
-                    __('Services Payment') .
+                    __('messages.sidebar_services_payment') .
                     '</span><span class="custom-tooltip"><span class="tooltip-text">' .
-                    __('Services Payment') .
+                    __('messages.sidebar_services_payment') .
                     '</span></span>',
                 ['route' => 'payment.index', 'class' => 'sidebar-layout'],
             )
@@ -578,9 +578,9 @@
             $menu
             ->add(
                 '<span>' .
-                    __('Service Cash Payment') .
+                    __('messages.sidebar_service_cash_payment') .
                     '</span><span class="custom-tooltip"><span class="tooltip-text">' .
-                    __('Service Cash Payment') .
+                    __('messages.sidebar_service_cash_payment') .
                     '</span></span>',
                 ['route' => 'cash.list', 'class' => 'sidebar-layout'],
             )
@@ -595,7 +595,7 @@
             ->nickname('service_cash_payment')
             ->data('permission', 'payment list');
             if(auth()->user()->user_type == 'user' || auth()->user()->user_type == 'provider'){
-$menu->add('<span>'.__('Service Wallet Balance').'</span><span class="custom-tooltip"><span class="tooltip-text">'.__('Service Wallet Balance').'</span></span>', ['route' => 'wallet.index', 'class' => 'sidebar-layout'])
+$menu->add('<span>'.__('messages.sidebar_service_wallet_balance').'</span><span class="custom-tooltip"><span class="tooltip-text">'.__('messages.sidebar_service_wallet_balance').'</span></span>', ['route' => 'wallet.index', 'class' => 'sidebar-layout'])
 ->prepend(' <svg class="sidebar-menu-icon mr-2" width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M3 7.5C3 6.11929 4.11929 5 5.5 5H16.5C17.8807 5 19 6.11929 19 7.5V9H6C4.34315 9 3 10.3431 3 12V7.5Z" stroke="currentColor" stroke-width="1.5"/>
 <rect x="3" y="9" width="18" height="10" rx="2.5" stroke="currentColor" stroke-width="1.5"/>
@@ -610,7 +610,7 @@ $menu->add('<span>'.__('Service Wallet Balance').'</span><span class="custom-too
         // Post Job Request Transactions heading (single line label) - Hide for handyman
         if(auth()->user()->user_type != 'handyman'){
             $menu
-                ->add('Transactions Job Request', [
+                ->add(__('messages.sidebar_transactions_job_request'), [
                     'class' => 'category-main',
                 ])
                 ->data('permission', ['payment list']);
@@ -625,9 +625,9 @@ $menu->add('<span>'.__('Service Wallet Balance').'</span><span class="custom-too
             $menu
                 ->add(
                     '<span>' .
-                        __('Job Request Payment') .
+                        __('messages.sidebar_job_request_payment') .
                         '</span><span class="custom-tooltip"><span class="tooltip-text">' .
-                        __('Job Request Payment') .
+                        __('messages.sidebar_job_request_payment') .
                         '</span></span>',
                     ['route' => 'paymentjobrequest', 'class' => 'sidebar-layout'],
                 )
@@ -648,9 +648,9 @@ $menu->add('<span>'.__('Service Wallet Balance').'</span><span class="custom-too
             $menu
                 ->add(
                     '<span>' .
-                        __('Job Request Cash Payment') .
+                        __('messages.sidebar_job_request_cash_payment') .
                         '</span><span class="custom-tooltip"><span class="tooltip-text">' .
-                        __('Job Request Cash Payment') .
+                        __('messages.sidebar_job_request_cash_payment') .
                         '</span></span>',
                     ['route' => 'paymentjobrequest.cash.index', 'class' => 'sidebar-layout'],
                 )
@@ -667,7 +667,7 @@ $menu->add('<span>'.__('Service Wallet Balance').'</span><span class="custom-too
 
 
 if(auth()->user()->user_type == 'user' || auth()->user()->user_type == 'provider'){
-$menu->add('<span>'.__('Job Request Wallet Balance').'</span><span class="custom-tooltip"><span class="tooltip-text">'.__('Job Request Wallet Balance').'</span></span>', ['route' => 'paymentjobrequest.wallet.index', 'class' => 'sidebar-layout'])
+$menu->add('<span>'.__('messages.sidebar_job_request_wallet_balance').'</span><span class="custom-tooltip"><span class="tooltip-text">'.__('messages.sidebar_job_request_wallet_balance').'</span></span>', ['route' => 'paymentjobrequest.wallet.index', 'class' => 'sidebar-layout'])
 ->prepend(' <svg class="sidebar-menu-icon mr-2" width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M4 8.5C4 7.11929 5.11929 6 6.5 6H17.5C18.8807 6 20 7.11929 20 8.5V10H7C5.34315 10 4 11.3431 4 13V8.5Z" stroke="currentColor" stroke-width="1.5"/>
 <rect x="4" y="10" width="16" height="9" rx="2.5" stroke="currentColor" stroke-width="1.5"/>
@@ -695,7 +695,7 @@ $menu->add('<span>'.__('Job Request Wallet Balance').'</span><span class="custom
 
 
 if(auth()->user()->user_type == 'admin'){
-$menu->add('<span>'.__('Transaction Request').'</span><span class="custom-tooltip"><span class="tooltip-text">'.__('messages.messages.custom_job').'</span></span>', ['route' => 'transaction-request.index'])
+$menu->add('<span>'.__('messages.sidebar_transaction_request').'</span><span class="custom-tooltip"><span class="tooltip-text">'.__('messages.messages.custom_job').'</span></span>', ['route' => 'transaction-request.index'])
 ->prepend(' <svg class="mr-2" width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M2 12C2 8.22876 2 6.34315 3.17157 5.17157C4.34315 4 6.22876 4 10 4H14C17.7712 4 19.6569 4 20.8284 5.17157C22 6.34315 22 8.22876 22 12C22 15.7712 22 17.6569 20.8284 18.8284C19.6569 20 17.7712 20 14 20H10C6.22876 20 4.34315 20 3.17157 18.8284C2 17.6569 2 15.7712 2 12Z" stroke="currentColor" stroke-width="1.5"/>
 <path d="M10 16H6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
@@ -710,7 +710,7 @@ $menu->add('<span>'.__('Transaction Request').'</span><span class="custom-toolti
 }
 
 if(auth()->user()->user_type == 'admin'){
-$menu->add('<span>'.__('Wallet Balance').'</span><span class="custom-tooltip"><span class="tooltip-text">'.__('messages.messages.custom_job').'</span></span>', ['route' => 'wallet_balance.index'])
+$menu->add('<span>'.__('messages.sidebar_wallet_balance').'</span><span class="custom-tooltip"><span class="tooltip-text">'.__('messages.messages.custom_job').'</span></span>', ['route' => 'wallet_balance.index'])
 ->prepend(' <svg class="mr-2" width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M2 12C2 8.22876 2 6.34315 3.17157 5.17157C4.34315 4 6.22876 4 10 4H14C17.7712 4 19.6569 4 20.8284 5.17157C22 6.34315 22 8.22876 22 12C22 15.7712 22 17.6569 20.8284 18.8284C19.6569 20 17.7712 20 14 20H10C6.22876 20 4.34315 20 3.17157 18.8284C2 17.6569 2 15.7712 2 12Z" stroke="currentColor" stroke-width="1.5"/>
 <path d="M10 16H6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
@@ -721,7 +721,7 @@ $menu->add('<span>'.__('Wallet Balance').'</span><span class="custom-tooltip"><s
 ->nickname('custom_job')
 ->data('permission', 'Wallet Balance');
 
-$menu->add('<span>'.__('Subscription Transactions').'</span><span class="custom-tooltip"><span class="tooltip-text">'.__('Manage subscription payments and verify bank transfers').'</span></span>', ['route' => 'admin.subscription-transactions.index'])
+$menu->add('<span>'.__('messages.sidebar_subscription_transactions').'</span><span class="custom-tooltip"><span class="tooltip-text">'.__('messages.sidebar_subscription_transactions_tooltip').'</span></span>', ['route' => 'admin.subscription-transactions.index'])
 ->prepend(' <svg class="mr-2" width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M2 12C2 8.22876 2 6.34315 3.17157 5.17157C4.34315 4 6.22876 4 10 4H14C17.7712 4 19.6569 4 20.8284 5.17157C22 6.34315 22 8.22876 22 12C22 15.7712 22 17.6569 20.8284 18.8284C19.6569 20 17.7712 20 14 20H10C6.22876 20 4.34315 20 3.17157 18.8284C2 17.6569 2 15.7712 2 12Z" stroke="currentColor" stroke-width="1.5"/>
 <path d="M8 12H16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
@@ -750,7 +750,7 @@ if(auth()->user()->user_type == 'user' ){
 $menu->add('favoritism', ['class' => 'category-main'])->data('permission', ['tax list','payment list','earning list']); 
 
 
-$menu->add('<span>'.__('Favourit Services').'</span><span class="custom-tooltip"><span class="tooltip-text">'.__('messages.messages.myservice').'</span></span>', ['route' => 'myservice'])
+$menu->add('<span>'.__('messages.sidebar_favourit_services').'</span><span class="custom-tooltip"><span class="tooltip-text">'.__('messages.messages.myservice').'</span></span>', ['route' => 'myservice'])
 ->prepend(' <svg width="15" height="12" class="sidebar-menu-icon" viewBox="0 0 15 12" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M2 12C2 8.22876 2 6.34315 3.17157 5.17157C4.34315 4 6.22876 4 10 4H14C17.7712 4 19.6569 4 20.8284 5.17157C22 6.34315 22 8.22876 22 12C22 15.7712 22 17.6569 20.8284 18.8284C19.6569 20 17.7712 20 14 20H10C6.22876 20 4.34315 20 3.17157 18.8284C2 17.6569 2 15.7712 2 12Z" stroke="currentColor" stroke-width="1.5"/>
 <path d="M10 16H6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
@@ -763,7 +763,7 @@ $menu->add('<span>'.__('Favourit Services').'</span><span class="custom-tooltip"
 
 
 
-$menu->add('<span>'.__('Favourit Provider').'</span><span class="custom-tooltip"><span class="tooltip-text">'.__('messages.messages.myservice').'</span></span>', ['route' => 'myprovider'])
+$menu->add('<span>'.__('messages.sidebar_favourit_provider').'</span><span class="custom-tooltip"><span class="tooltip-text">'.__('messages.messages.myservice').'</span></span>', ['route' => 'myprovider'])
 ->prepend(' <svg class="mr-2" width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
     
 <path d="M2 12C2 8.22876 2 6.34315 3.17157 5.17157C4.34315 4 6.22876 4 10 4H14C17.7712 4 19.6569 4 20.8284 5.17157C22 6.34315 22 8.22876 22 12C22 15.7712 22 17.6569 20.8284 18.8284C19.6569 20 17.7712 20 14 20H10C6.22876 20 4.34315 20 3.17157 18.8284C2 17.6569 2 15.7712 2 12Z" stroke="currentColor" stroke-width="1.5"/>
@@ -1422,11 +1422,11 @@ $menu->add('<span>'.__('Favourit Provider').'</span><span class="custom-tooltip"
                 @php
                     $userType = auth()->user()->user_type;
                     if ($userType === 'provider') {
-                        echo 'Employer';
+                        echo __('messages.sidebar_logo_employer');
                     } elseif ($userType === 'handyman') {
-                        echo 'Worker';
+                        echo __('messages.sidebar_logo_worker');
                     } elseif ($userType === 'user') {
-                        echo 'Customer';
+                        echo __('messages.sidebar_logo_customer');
                     } else {
                         echo ucfirst(str_replace('_', ' ', $userType));
                     }

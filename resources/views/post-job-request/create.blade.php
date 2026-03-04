@@ -18,7 +18,7 @@
                 <div class="card card-block card-stretch">
                     <div class="card-body p-0">
                         <div class="d-flex justify-content-between align-items-center p-3 flex-wrap gap-3">
-                            <h5 class="font-weight-bold">Create Job request</h5>
+                            <h5 class="font-weight-bold">{{ __('messages.pjr_create_job_request') }}</h5>
                             <a href="{{ route('post-job-request.index') }}" class="float-right btn btn-sm btn-primary"><i
                                     class="fa fa-angle-double-left"></i> {{ __('messages.back') }}</a>
                         </div>
@@ -88,20 +88,20 @@
 
                             <div class="row">
                                 <div class="form-group col-md-4">
-                                    <label for="price_type">{{ __('Price Type') }} <span class="text-danger">*</span></label>
+                                    <label for="price_type">{{ __('messages.pjr_price_type') }} <span class="text-danger">*</span></label>
                                     <select name="price_type" id="price_type" class="form-control" required>
                                         @php $oldPriceType = old('price_type', $postJob->price_type ?? 'fixed'); @endphp
-                                        <option value="fixed" {{ $oldPriceType == 'fixed' ? 'selected' : '' }}>{{ __('Fixed') }}</option>
-                                        <option value="hourly" {{ $oldPriceType == 'hourly' ? 'selected' : '' }}>{{ __('Hourly') }}</option>
-                                        <option value="daily" {{ $oldPriceType == 'daily' ? 'selected' : '' }}>{{ __('Daily') }}</option>
+                                        <option value="fixed" {{ $oldPriceType == 'fixed' ? 'selected' : '' }}>{{ __('messages.pjr_fixed') }}</option>
+                                        <option value="hourly" {{ $oldPriceType == 'hourly' ? 'selected' : '' }}>{{ __('messages.pjr_hourly') }}</option>
+                                        <option value="daily" {{ $oldPriceType == 'daily' ? 'selected' : '' }}>{{ __('messages.pjr_daily') }}</option>
                                     </select>
                                 </div>
                                 <div class="form-group col-md-4">
-                                    <label for="job_type">{{ __('Job Type') }} <span class="text-danger">*</span></label>
+                                    <label for="job_type">{{ __('messages.pjr_job_type') }} <span class="text-danger">*</span></label>
                                     <select name="type" id="type" class="form-control" required>
-                                        <option value="onsite" {{ old('type', $postJob->type) == 'onsite' ? 'selected' : '' }}>{{ __('Onsite') }}</option>
-                                        <option value="remote" {{ old('type', $postJob->type) == 'remote' ? 'selected' : '' }}>{{ __('Remote/Homeoffice') }}</option>
-                                        <option value="hybrid" {{ old('type', $postJob->type) == 'hybrid' ? 'selected' : '' }}>{{ __('Hybrid') }}</option>
+                                        <option value="onsite" {{ old('type', $postJob->type) == 'onsite' ? 'selected' : '' }}>{{ __('messages.pjr_onsite') }}</option>
+                                        <option value="remote" {{ old('type', $postJob->type) == 'remote' ? 'selected' : '' }}>{{ __('messages.pjr_remote_homeoffice') }}</option>
+                                        <option value="hybrid" {{ old('type', $postJob->type) == 'hybrid' ? 'selected' : '' }}>{{ __('messages.pjr_hybrid') }}</option>
                                     </select>
                                 </div>
                                 <div class="form-group col-md-4" id="price_div">
@@ -115,21 +115,21 @@
                             </div>
                             <div class="row">
                                 <div class="form-group col-md-4">
-                                    <label for="start_date">{{ __('Start Date') }} <span class="text-danger">*</span></label>
+                                    <label for="start_date">{{ __('messages.pjr_start_date') }} <span class="text-danger">*</span></label>
                                     <input type="date" name="start_date" id="start_date" class="form-control" required value="{{ old('start_date', optional($postJob->start_date)->format('Y-m-d')) }}">
                                     <small class="help-block with-errors text-danger"></small>
-                                    <small id="start_date_error" class="text-danger" style="display:none;">{{ __('Start date must be before end date') }}</small>
+                                    <small id="start_date_error" class="text-danger" style="display:none;">{{ __('messages.pjr_start_date_before_end') }}</small>
                                 </div>
                                 <div class="form-group col-md-4">
-                                    <label for="end_date">{{ __('End Date') }} <span class="text-danger">*</span></label>
+                                    <label for="end_date">{{ __('messages.pjr_end_date') }} <span class="text-danger">*</span></label>
                                     <input type="date" name="end_date" id="end_date" class="form-control" required value="{{ old('end_date', optional($postJob->end_date)->format('Y-m-d')) }}">
                                     <small class="help-block with-errors text-danger"></small>
                                 </div>
                                 <div class="form-group col-md-4">
-                                    <label for="total_day_div">{{ __('Total Days') }} <span class="text-danger">*</span></label>
+                                    <label for="total_day_div">{{ __('messages.pjr_total_days') }} <span class="text-danger">*</span></label>
                                     <div class="input-group">
                                         <span class="input-group-text">📅</span>
-                                        <input type="number" name="total_day" id="total_day_div" class="form-control" min="1" step="any" placeholder="{{ __('total days') }}" required>
+                                        <input type="number" name="total_day" id="total_day_div" class="form-control" min="1" step="any" placeholder="{{ __('messages.pjr_total_days_placeholder') }}" required>
                                     </div>
                                 </div>
                                 <input type="hidden" name="total_days" id="hidden_total_days" value="{{ old('total_days', $postJob->total_days) }}">
@@ -145,36 +145,36 @@
                                     <small class="help-block with-errors text-danger"></small>
                                 </div>
                                 <div class="form-group col-md-4" id="total_budget_div">
-                                    <label for="total_budget">{{ __('Total Budget') }} <span class="text-danger">*</span> @if($__currencyCode)<small class="text-muted">({{ $__currencyCode }})</small>@endif</label>
+                                    <label for="total_budget">{{ __('messages.pjr_total_budget') }} <span class="text-danger">*</span> @if($__currencyCode)<small class="text-muted">({{ $__currencyCode }})</small>@endif</label>
                                     <div class="input-group">
                                         <span class="input-group-text">{{ $__currencySymbol }}</span>
-                                        <input type="number" name="total_budget" id="total_budget" class="form-control" min="0" step="any" placeholder="{{ __('Total Budget') }}" value="{{ old('total_budget', $postJob->total_budget) }}" readonly>
+                                        <input type="number" name="total_budget" id="total_budget" class="form-control" min="0" step="any" placeholder="{{ __('messages.pjr_total_budget') }}" value="{{ old('total_budget', $postJob->total_budget) }}" readonly>
                                     </div>
                                     <small class="help-block with-errors text-danger"></small>
                                 </div>
                                 <div class="form-group col-md-4">
-                                    <label for="job_schedule">{{ __('Job Schedule') }} <span class="text-danger">*</span></label>
+                                    <label for="job_schedule">{{ __('messages.pjr_job_schedule') }} <span class="text-danger">*</span></label>
                                     <select name="job_schedule" id="job_schedule" class="form-control" required>
                                         @php $oldSchedule = old('job_schedule', $postJob->job_schedule); @endphp
-                                        <option value="full_time" {{ $oldSchedule == 'full_time' ? 'selected' : '' }}>Full time</option>
-                                        <option value="part_time" {{ $oldSchedule == 'part_time' ? 'selected' : '' }}>Part time</option>
-                                        <option value="contract" {{ $oldSchedule == 'contract' ? 'selected' : '' }}>Contract</option>
-                                        <option value="temporary" {{ $oldSchedule == 'temporary' ? 'selected' : '' }}>Temporary</option>
-                                        <option value="internship" {{ $oldSchedule == 'internship' ? 'selected' : '' }}>Internship</option>
+                                        <option value="full_time" {{ $oldSchedule == 'full_time' ? 'selected' : '' }}>{{ __('messages.pjr_full_time') }}</option>
+                                        <option value="part_time" {{ $oldSchedule == 'part_time' ? 'selected' : '' }}>{{ __('messages.pjr_part_time') }}</option>
+                                        <option value="contract" {{ $oldSchedule == 'contract' ? 'selected' : '' }}>{{ __('messages.pjr_contract') }}</option>
+                                        <option value="temporary" {{ $oldSchedule == 'temporary' ? 'selected' : '' }}>{{ __('messages.pjr_temporary') }}</option>
+                                        <option value="internship" {{ $oldSchedule == 'internship' ? 'selected' : '' }}>{{ __('messages.pjr_internship') }}</option>
                                     </select>
                                 </div>
                             </div>
 
                             <div class="row">
                                 <div class="form-group col-md-4">
-                                    <label for="remote_work_level">{{ __('Remote Work Level') }} <span class="text-danger">*</span></label>
+                                    <label for="remote_work_level">{{ __('messages.pjr_remote_work_level') }} <span class="text-danger">*</span></label>
                                     <select name="remote_work_level" id="remote_work_level" class="form-control" required>
                                         @php $oldRemote = old('remote_work_level', $postJob->remote_work_level); @endphp
-                                        <option value="onsite" {{ $oldRemote == 'onsite' ? 'selected' : '' }}>{{ __('Onsite (100%)') }}</option>
-                                        <option value="25_remote" {{ $oldRemote == '25_remote' ? 'selected' : '' }}>{{ __('25% Remote') }}</option>
-                                        <option value="50_remote" {{ $oldRemote == '50_remote' ? 'selected' : '' }}>{{ __('50% Remote') }}</option>
-                                        <option value="75_remote" {{ $oldRemote == '75_remote' ? 'selected' : '' }}>{{ __('75% Remote') }}</option>
-                                        <option value="100_remote" {{ $oldRemote == '100_remote' ? 'selected' : '' }}>{{ __('100% Remote') }}</option>
+                                        <option value="onsite" {{ $oldRemote == 'onsite' ? 'selected' : '' }}>{{ __('messages.pjr_onsite_100') }}</option>
+                                        <option value="25_remote" {{ $oldRemote == '25_remote' ? 'selected' : '' }}>{{ __('messages.pjr_25_remote') }}</option>
+                                        <option value="50_remote" {{ $oldRemote == '50_remote' ? 'selected' : '' }}>{{ __('messages.pjr_50_remote') }}</option>
+                                        <option value="75_remote" {{ $oldRemote == '75_remote' ? 'selected' : '' }}>{{ __('messages.pjr_75_remote') }}</option>
+                                        <option value="100_remote" {{ $oldRemote == '100_remote' ? 'selected' : '' }}>{{ __('messages.pjr_100_remote') }}</option>
                                     </select>
                                 </div>
                                 <div class="form-group col-md-4">
@@ -229,21 +229,21 @@
                             
                                 <!-- Working Address block -->
                                 <div class="col-md-8">
-                                    <h6 class="font-weight-bold mb-2">{{ __('Working Address') }}</h6>
-                                    <p class="text-muted small mb-3">{{ __('Specify where the work will be performed.') }}</p>
+                                    <h6 class="font-weight-bold mb-2">{{ __('messages.pjr_working_address') }}</h6>
+                                    <p class="text-muted small mb-3">{{ __('messages.pjr_specify_work_location') }}</p>
                             
                                     <div class="form-row">
                                         <div class="form-group col-md-3">
-                                            <label for="street_address">{{ __('Street & House Nr.') }} <span class="text-danger">*</span></label>
+                                            <label for="street_address">{{ __('messages.pjr_street_house_nr') }} <span class="text-danger">*</span></label>
                                             <input type="text" name="street_address" id="street_address" class="form-control" required
-                                                   placeholder="{{ __('Street name') }}"
+                                                   placeholder="{{ __('messages.pjr_street_name') }}"
                                                    value="{{ old('street_address', $postJob->street_address) }}">
                                         </div>
                             
                                         <div class="form-group col-md-3">
-                                            <label for="house_number">{{ __('Pobox & City-Country.') }} <span class="text-danger">*</span></label>
+                                            <label for="house_number">{{ __('messages.pjr_pobox_city_country') }} <span class="text-danger">*</span></label>
                                             <input type="text" name="house_number" id="house_number" class="form-control" required
-                                                   placeholder="{{ __('House/Unit No.') }}"
+                                                   placeholder="{{ __('messages.pjr_house_unit_no') }}"
                                                    value="{{ old('house_number', $postJob->house_number) }}">
                                         </div>
                                     </div>
@@ -257,8 +257,8 @@
                                     <textarea name="description" id="description" class="form-control textarea editor-fixed" rows="6" placeholder="{{ __('messages.description') }}" required>{{ old('description', $postJob->description) }}</textarea>
                                 </div>
                                 <div class="form-group col-md-6 quill-group">
-                                    <label for="requirement">{{ __('Skills & Requirements') }} <span class="text-danger">*</span></label>
-                                    <textarea name="requirement" id="requirement" class="form-control textarea editor-fixed" rows="6" placeholder="{{ __('requirements') }}" required>{{ old('requirement', $postJob->requirement) }}</textarea>
+                                    <label for="requirement">{{ __('messages.pjr_skills_requirements') }} <span class="text-danger">*</span></label>
+                                    <textarea name="requirement" id="requirement" class="form-control textarea editor-fixed" rows="6" placeholder="{{ __('messages.pjr_requirements_placeholder') }}" required>{{ old('requirement', $postJob->requirement) }}</textarea>
                                     <small class="help-block with-errors text-danger"></small>
                                 </div>
                             </div>
@@ -282,7 +282,7 @@
                                         multiple>
                                     <div id="imageContainer"></div>
                                     <button type="button" id="showMoreButton" class="btn btn-primary mt-3"
-                                        style="display: none;">Show More</button>
+                                        style="display: none;">{{ __('messages.pjr_show_more') }}</button>
                                 </div>
                             </div>
                             <div class="row mt-4 mb-4">
@@ -396,7 +396,7 @@
                                  urls.push({ wrapper });
                                  if (idx === files.length - 1) {
                                      showMoreBtn.style.display = files.length > MAX_VISIBLE ? 'inline-block' : 'none';
-                                     showMoreBtn.textContent = 'Show More';
+                                     showMoreBtn.textContent = pjrCreateLang.show_more;
                                      showMoreBtn.dataset.expanded = 'false';
                                  }
                              };
@@ -410,7 +410,7 @@
                                      child.style.display = expanded ? 'none' : 'inline-block';
                                  }
                              });
-                             showMoreBtn.textContent = expanded ? 'Show More' : 'Show Less';
+                             showMoreBtn.textContent = expanded ? pjrCreateLang.show_more : pjrCreateLang.show_less;
                              showMoreBtn.dataset.expanded = expanded ? 'false' : 'true';
                          };
                      }
@@ -441,7 +441,7 @@
                              
                              if (existingImages.length > MAX_VISIBLE) {
                                  showMoreBtn.style.display = 'inline-block';
-                                 showMoreBtn.textContent = 'Show More';
+                                 showMoreBtn.textContent = pjrCreateLang.show_more;
                                  showMoreBtn.dataset.expanded = 'false';
                                  showMoreBtn.onclick = () => {
                                      const expanded = showMoreBtn.dataset.expanded === 'true';
@@ -451,7 +451,7 @@
                                              child.style.display = expanded ? 'none' : 'inline-block';
                                          }
                                      });
-                                     showMoreBtn.textContent = expanded ? 'Show More' : 'Show Less';
+                                     showMoreBtn.textContent = expanded ? pjrCreateLang.show_more : pjrCreateLang.show_less;
                                      showMoreBtn.dataset.expanded = expanded ? 'false' : 'true';
                                  };
                              }

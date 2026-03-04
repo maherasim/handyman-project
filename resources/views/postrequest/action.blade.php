@@ -55,7 +55,7 @@ $hasProposals = $applicantCount > 0;
 					type="button" 
 					onclick="openBidModal({{ $post_job->id }}, {{ auth()->user()->id }})">
 				<i class="fas fa-gavel"></i>
-				{{ $hasProviderBid ? 'Update Bid' : 'BID' }}
+				{{ $hasProviderBid ? __('messages.pjr_update_bid') : __('messages.pjr_bid') }}
 			</button>
 
 		{{-- Show Start Work button only if status is assigned --}}
@@ -65,8 +65,8 @@ $hasProposals = $applicantCount > 0;
 					type="button" 
 					data-post-id="{{ $post_job->id }}">
 				<i class="las la-play-circle"></i>
-				Start Work
-			</button>
+{{ __('messages.pjr_start_work') }}
+            </button>
 		@endif
 	@endif
 </div>

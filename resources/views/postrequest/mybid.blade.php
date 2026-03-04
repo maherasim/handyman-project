@@ -22,7 +22,7 @@
                                 <button class="btn btn-success payAdvanceBtn" data-post-id="{{ $advance_payment->id }}"
                                     data-amount="{{ $advanceAmount }}">
                                     <i class="fas fa-wallet"></i>
-                                    Pay Advance {{ $advanceAmount }} ({{ $advance_payment->advance_percent }}%)
+                                    {{ __('messages.pjr_pay_advance') }} {{ $advanceAmount }} ({{ $advance_payment->advance_percent }}%)
                                 </button>
 
 
@@ -31,14 +31,14 @@
                                     data-advance="{{ $advance_payment->advance_percent }}"
                                     data-remaining="{{ $advance_payment->remaining_percent }}">
                                     <i class="fas fa-credit-card"></i>
-                                    Pay Remaining {{ $remainingAmount }} ({{ $advance_payment->remaining_percent }}%)
+                                    {{ __('messages.pjr_pay_remaining') }} {{ $remainingAmount }} ({{ $advance_payment->remaining_percent }}%)
                                 </button>
 
                                 <button class="btn btn-warning updateAdvanceBtn"
                                     data-post-id="{{ $advance_payment->id }}"
                                     data-advance="{{ $advance_payment->advance_percent }}"
                                     data-remaining="{{ $advance_payment->remaining_percent }}">
-                                    <i class="fas fa-edit"></i> Alter Payment
+                                    <i class="fas fa-edit"></i> {{ __('messages.pjr_alter_payment') }}
                                 </button>
                             @endif
 
@@ -54,7 +54,7 @@
                         <div class="d-flex justify-content-end">
                             <div class="input-group w-25">
                                 <span class="input-group-text"><i class="fas fa-search"></i></span>
-                                <input type="text" class="form-control dt-search" placeholder="Search bids...">
+                                <input type="text" class="form-control dt-search" placeholder="{{ __('messages.pjr_search_bids') }}">
                             </div>
                         </div>
                     </div>
@@ -64,15 +64,15 @@
                     <table id="myBidsTable" class="table table-striped table-bordered w-100">
                         <thead>
                             <tr>
-                                <th>ID</th>
-                                <th>Titel</th>
-                                <th>Posted at</th>
-                                <th>Max. Budget</th>
-                                <th>Start Date</th>
-                                <th>End Date</th>
-                                <th>Customer</th>
-                                <th>My Bids</th>
-                                <th>Status</th>
+                                <th>{{ __('messages.pjr_id') }}</th>
+                                <th>{{ __('messages.pjr_title') }}</th>
+                                <th>{{ __('messages.pjr_posted_at_th') }}</th>
+                                <th>{{ __('messages.pjr_max_budget') }}</th>
+                                <th>{{ __('messages.pjr_start_date') }}</th>
+                                <th>{{ __('messages.pjr_end_date') }}</th>
+                                <th>{{ __('messages.customer') }}</th>
+                                <th>{{ __('messages.pjr_my_bids') }}</th>
+                                <th>{{ __('messages.status') }}</th>
                             </tr>
                         </thead>
                         <tbody></tbody>
@@ -84,6 +84,18 @@
     </div>
 
     <script>
+        var pjrJsLang = @json([
+            'update_payment_split' => __('messages.pjr_update_payment_split'),
+            'advance_percentage' => __('messages.pjr_advance_percentage'),
+            'remaining_percentage' => __('messages.pjr_remaining_percentage'),
+            'update' => __('messages.pjr_update'),
+            'advance_validation' => __('messages.pjr_advance_percentage_validation'),
+            'updated' => __('messages.pjr_updated'),
+            'payment_split_updated' => __('messages.pjr_payment_split_updated'),
+            'error' => __('messages.pjr_error'),
+            'unable_to_update' => __('messages.pjr_unable_to_update'),
+            'something_went_wrong' => __('messages.pjr_something_went_wrong_short'),
+        ]);
         document.addEventListener('DOMContentLoaded', () => {
             let table = $('#myBidsTable').DataTable({
                 processing: true,
@@ -129,20 +141,20 @@
                 const currentRemaining = $(this).data('remaining');
 
                 Swal.fire({
-                    title: "Update Payment Split",
+                    title: pjrJsLang.update_payment_split,
                     html: `
                 <div class="mb-3 text-start">
-                    <label class="form-label fw-bold">Advance Percentage</label>
+                    <label class="form-label fw-bold">${pjrJsLang.advance_percentage}</label>
                     <input type="number" id="advanceInput" class="form-control" value="${currentAdvance}" min="0" max="100" />
                 </div>
                 <div class="text-start">
-                    <label class="form-label fw-bold">Remaining Percentage</label>
+                    <label class="form-label fw-bold">${pjrJsLang.remaining_percentage}</label>
                     <input type="number" id="remainingInput" class="form-control" value="${currentRemaining}" readonly />
                 </div>
             `,
                     focusConfirm: false,
                     showCancelButton: true,
-                    confirmButtonText: "Update",
+                    confirmButtonText: pjrJsLang.update,
                     didOpen: () => {
                         const advanceInput = document.getElementById('advanceInput');
                         const remainingInput = document.getElementById('remainingInput');
@@ -157,8 +169,7 @@
                         const advance = document.getElementById('advanceInput').value;
                         const remaining = document.getElementById('remainingInput').value;
                         if (!advance || advance < 0 || advance > 100) {
-                            Swal.showValidationMessage(
-                                "Please enter a valid advance percentage (0-100)");
+                            Swal.showValidationMessage(pjrJsLang.advance_validation);
                             return false;
                         }
                         return {
@@ -183,16 +194,16 @@
                             },
                             success: function(response) {
                                 if (response.status) {
-                                    Swal.fire("Updated!", response.message ||
-                                        "Payment split updated.", "success");
+                                    Swal.fire(pjrJsLang.updated, response.message ||
+                                        pjrJsLang.payment_split_updated, "success");
                                     $('#myBidsTable').DataTable().ajax.reload();
                                 } else {
-                                    Swal.fire("Error!", response.message ||
-                                        "Unable to update.", "error");
+                                    Swal.fire(pjrJsLang.error, response.message ||
+                                        pjrJsLang.unable_to_update, "error");
                                 }
                             },
                             error: function() {
-                                Swal.fire("Error!", "Something went wrong!", "error");
+                                Swal.fire(pjrJsLang.error, pjrJsLang.something_went_wrong, "error");
                             }
                         });
                     }
@@ -254,8 +265,8 @@
                                     window.jQuery('#myBidsTable').DataTable().ajax.reload();
                                 }
                             } else {
-                                Swal.fire("Error", (response && response.message) ? response
-                                    .message : "Unable to process.", "error");
+                                Swal.fire(pjrJsLang.error, (response && response.message) ? response
+                                    .message : pjrJsLang.unable_to_update, "error");
                             }
                         })
                         .catch(function() {
@@ -294,7 +305,7 @@
                                     Swal.fire("Accepted!", response.message, "success");
                                     $('#myBidsTable').DataTable().ajax.reload();
                                 } else {
-                                    Swal.fire("Error!", response.message, "error");
+                                    Swal.fire(pjrJsLang.error, response.message, "error");
                                 }
                             },
                             error: function() {
@@ -349,7 +360,7 @@
                             }
                         },
                         error: function(xhr) {
-                            Swal.fire('Error', (xhr && xhr.responseJSON && xhr.responseJSON.message) ? xhr.responseJSON.message : 'Something went wrong', 'error');
+                            Swal.fire(pjrJsLang.error, (xhr && xhr.responseJSON && xhr.responseJSON.message) ? xhr.responseJSON.message : pjrJsLang.something_went_wrong, 'error');
                         }
                     });
                 });
@@ -404,7 +415,7 @@
                             }
                         },
                         error: function(xhr) {
-                            Swal.fire('Error', (xhr && xhr.responseJSON && xhr.responseJSON.message) ? xhr.responseJSON.message : 'Something went wrong', 'error');
+                            Swal.fire(pjrJsLang.error, (xhr && xhr.responseJSON && xhr.responseJSON.message) ? xhr.responseJSON.message : pjrJsLang.something_went_wrong, 'error');
                         }
                     });
                 });
@@ -472,7 +483,7 @@
                             }
                         },
                         error: function(xhr) {
-                            Swal.fire('Error', (xhr && xhr.responseJSON && xhr.responseJSON.message) ? xhr.responseJSON.message : 'Something went wrong', 'error');
+                            Swal.fire(pjrJsLang.error, (xhr && xhr.responseJSON && xhr.responseJSON.message) ? xhr.responseJSON.message : pjrJsLang.something_went_wrong, 'error');
                         }
                     });
                 });

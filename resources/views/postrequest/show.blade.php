@@ -77,51 +77,51 @@
             switch ($status) {
                 case 'requested':
                     $nextActor = 'user';
-                    $nextText = 'Waiting for customer to accept the bid';
+                    $nextText = __('messages.pjr_waiting_customer_accept');
                     break;
                 case 'accepted':
                     $nextActor = 'provider';
-                    $nextText = 'Waiting for Employer to split the payment';
+                    $nextText = __('messages.pjr_waiting_employer_split');
                     break;
                 case 'Advance Payment Pending':
                     $nextActor = 'user';
-                    $nextText = 'Waiting for customer to pay the advance';
+                    $nextText = __('messages.pjr_waiting_customer_pay_advance');
                     break;
                 case 'advance_paid':
                     $nextActor = 'provider';
-                    $nextText = 'Waiting for Employer to start work';
+                    $nextText = __('messages.pjr_waiting_employer_start');
                     break;
                 case 'in_process':
                     $nextActor = 'user';
-                    $nextText = "Waiting for customer to confirm 'Let's Start Work'";
+                    $nextText = __('messages.pjr_waiting_confirm_start');
                     break;
                 case 'in_progress':
                     $nextActor = 'provider';
-                    $nextText = 'Work in progress — waiting for provider to update or mark done';
+                    $nextText = __('messages.pjr_work_in_progress');
                     break;
                 case 'hold':
                     $nextActor = 'provider';
-                    $nextText = 'Waiting for Employer to resume work';
+                    $nextText = __('messages.pjr_waiting_employer_resume');
                     break;
                 case 'done':
                     $nextActor = 'user';
-                    $nextText = 'Waiting for customer to confirm work done';
+                    $nextText = __('messages.pjr_waiting_customer_confirm_done');
                     break;
                 case 'confirm_done':
                     $nextActor = 'provider';
-                    $nextText = 'Waiting for Employer to mark the bid as completed';
+                    $nextText = __('messages.pjr_waiting_employer_complete');
                     break;
                 case 'remaining_paid':
                     $nextActor = null;
-                    $nextText = 'Payment completed. You can download the invoice.';
+                    $nextText = __('messages.pjr_payment_completed');
                     break;
                 case 'completed':
                     $nextActor = 'user';
-                    $nextText = 'Job is completed — waiting for customer to pay remaining amount';
+                    $nextText = __('messages.pjr_waiting_pay_remaining');
                     break;
                 case 'cancelled':
                     $nextActor = null;
-                    $nextText = 'This bid has been cancelled.';
+                    $nextText = __('messages.pjr_bid_cancelled');
                     break;
                 default:
                     $nextActor = null;
@@ -153,7 +153,7 @@
                 </button>
             @elseif($bid->status === 'advance_paid')
                 <button class="btn btn-primary updateStatusBtn" data-id="{{ $bid->id }}" data-status="in_process">
-                    Start Work
+                    {{ __('messages.pjr_start_work') }}
                 </button>
             @elseif($bid->status === 'in_progress')
                 <button class="btn btn-warning holdBidBtn" data-id="{{ $bid->id }}">
@@ -164,7 +164,7 @@
                 </button>
             @elseif($bid->status === 'hold')
                 <button class="btn btn-primary updateStatusBtn" data-id="{{ $bid->id }}" data-status="in_progress">
-                    Resume Work
+                    {{ __('messages.pjr_resume_work') }}
                 </button>
             @elseif($bid->status === 'confirm_done')
                 <button class="btn btn-primary updateStatusBtn" data-id="{{ $bid->id }}" data-status="completed">
@@ -175,7 +175,7 @@
                 </button>
             @elseif($bid->status === 'remaining_paid')
                 <a href="{{ route('postrequest.invoice', $bid->id) }}" class="btn btn-outline-success ms-2">
-                    <i class="fas fa-file-download"></i> Download Invoice
+                    <i class="fas fa-file-download"></i> {{ __('messages.pjr_download_invoice') }}
                 </a>
             @endif
 
@@ -205,7 +205,7 @@
         <button type="button" class="btn btn-warning rounded-pill px-4 py-2 shadow-sm me-2 d-inline-flex align-items-center gap-2 mt-2"
                 id="postbid-rate-now-btn" data-id="{{ $bid->id }}" data-bs-toggle="modal" data-bs-target="#postBidRatingModal">
             <i class="las la-star"></i>
-            <span>Rate Employer</span>
+            <span>{{ __('messages.pjr_rate_employer') }}</span>
         </button>
     @endif
     @if(auth()->user()->user_type === 'user' && (int)auth()->id() === (int)($bid->customer_id ?? 0) && ($customerHasRatedProvider ?? false) && in_array(strtolower((string)($bid->status ?? '')), ['remaining_paid', 'confirm_done', 'completed']))
@@ -221,7 +221,7 @@
         <button type="button" class="btn btn-info rounded-pill px-4 py-2 shadow-sm me-2 d-inline-flex align-items-center gap-2 mt-2"
                 id="postbid-rate-customer-btn" data-id="{{ $bid->id }}" data-bs-toggle="modal" data-bs-target="#postBidRateCustomerModal">
             <i class="las la-star"></i>
-            <span>Rate Customer</span>
+            <span>{{ __('messages.pjr_rate_customer') }}</span>
         </button>
     @endif
 
@@ -238,7 +238,7 @@
                     data-status="accepted">Accept</button>
             @elseif($bid->status === 'in_process')
                 <button class="btn btn-info updateStatusBtn" data-id="{{ $bid->id }}" data-status="in_progress">
-                    Let's Start Work
+                    {{ __('messages.pjr_lets_start_work') }}
                 </button>
             @elseif($bid->status === 'done')
                 <button class="btn btn-info updateStatusBtn" data-id="{{ $bid->id }}" data-status="confirm_done">
@@ -246,7 +246,7 @@
                 </button>
             @elseif($bid->status === 'accepted')
                 <button class="btn btn-info updateStatusBtn" data-id="{{ $bid->id }}" data-status="cancelled">
-                    Cancel
+                    {{ __('messages.pjr_cancel') }}
                 </button>
             @elseif($bid->status === 'remaining_paid')
                 <a href="{{ route('postrequest.invoice', $bid->id) }}" class="btn btn-outline-success ms-2">
@@ -256,7 +256,7 @@
                 <button class="btn btn-success rounded-pill px-4 py-2 shadow-sm payAdvanceBtn d-inline-flex align-items-center gap-2" data-post-id="{{ $bid->id }}"
                     data-amount="{{ $advAmount }}">
                     <i class="fas fa-wallet"></i>
-                    <span>Pay Advance {{ getPriceFormat($advAmount) }}</span>
+                    <span>{{ __('messages.pjr_pay_advance_btn') }} {{ getPriceFormat($advAmount) }}</span>
                     ({{ $advPct }}%)
                 </button>
             @elseif($bid->status === 'completed' && !$bid->has_advance_paid)
@@ -269,9 +269,9 @@
                 <div class="alert alert-warning d-flex align-items-start shadow-sm border rounded p-3 mt-2">
                     <i class="fas fa-exclamation-triangle fa-lg me-2 text-danger"></i>
                     <div>
-                        <h6 class="fw-bold mb-1">This bid is currently on hold</h6>
+                        <h6 class="fw-bold mb-1">{{ __('messages.pjr_bid_on_hold') }}</h6>
                         <p class="mb-0 text-muted">
-                            Reason: <span class="fw-bold">{{ $bid->hold_reason ?? 'No reason provided' }}</span>
+                            {{ __('messages.pjr_reason') }} <span class="fw-bold">{{ $bid->hold_reason ?? __('messages.pjr_no_reason_provided') }}</span>
                         </p>
                     </div>
                 </div>
@@ -302,7 +302,7 @@
                         <div class="card border-success shadow-sm h-100 hover-shadow">
                             <div class="card-body text-center">
                                 <i class="fas fa-map-marker-alt fa-2x text-success mb-2"></i>
-                                <h6 class="fw-bold mb-1">Location</h6>
+                                <h6 class="fw-bold mb-1">{{ __('messages.pjr_location') }}</h6>
                                 <p class="mb-0">
                                     {{ $bid->postrequest->city->name ?? '-' }},
                                     {{ $bid->postrequest->country->name ?? '-' }}
@@ -315,7 +315,7 @@
                         <div class="card border-warning shadow-sm h-100 hover-shadow">
                             <div class="card-body text-center">
                                 <i class="fas fa-briefcase fa-2x text-warning mb-2"></i>
-                                <h6 class="fw-bold mb-1">Job Type</h6>
+                                <h6 class="fw-bold mb-1">{{ __('messages.pjr_job_type') }}</h6>
                                 <p class="mb-0">{{ $bid->postrequest->type ?? '-' }}</p>
                             </div>
                         </div>
@@ -325,7 +325,7 @@
                         <div class="card border-warning shadow-sm h-100 hover-shadow">
                             <div class="card-body text-center">
                                 <i class="fas fa-dollar-sign fa-2x text-warning mb-2"></i>
-                                <h6 class="fw-bold mb-1">Rate Type</h6>
+                                <h6 class="fw-bold mb-1">{{ __('messages.pjr_rate_type') }}</h6>
                                 <p class="mb-0">{{ $bid->postrequest->job_price ?? '-' }}</p>
                             </div>
                         </div>
@@ -360,7 +360,7 @@
                             <div class="card border-secondary shadow-sm h-100 hover-shadow">
                                 <div class="card-body text-center">
                                     <i class="fas fa-map-marker-alt fa-2x text-secondary mb-2"></i>
-                                    <h6 class="fw-bold mb-1">Working Address</h6>
+                                    <h6 class="fw-bold mb-1">{{ __('messages.pjr_working_address') }}</h6>
                                     <p class="mb-0">{{ $bid->postrequest->street_address ?? '-' }}</p>
                                     <p class="mb-0">{{ $bid->postrequest->house_number ?? '-' }}</p>
                                 </div>
@@ -386,7 +386,7 @@
                         <div class="card border-dark shadow-sm h-100 hover-shadow">
                             <div class="card-body text-center">
                                 <i class="fas fa-users fa-2x text-dark mb-2"></i>
-                                <h6 class="fw-bold mb-1">Purposal</h6>
+                                <h6 class="fw-bold mb-1">{{ __('messages.pjr_purposal') }}</h6>
                                 <p class="mb-0">{{ $bid->postrequest->postBidList->count() ?? 0 }}</p>
                             </div>
                         </div>
@@ -836,6 +836,19 @@
         const DECIMALS = DEFAULT_CURRENCY?.afterdecimalpoint ?? 2;
         const POSITION = DEFAULT_CURRENCY?.defaultPosition ?? 'left';
         const CURRENCY_SYMBOL = DEFAULT_CURRENCY?.defaultCurrency?.symbol ?? '€';
+        var pjrJsLang = @json([
+            'update_payment_split' => __('messages.pjr_update_payment_split'),
+            'advance_percentage' => __('messages.pjr_advance_percentage'),
+            'remaining_percentage' => __('messages.pjr_remaining_percentage'),
+            'update' => __('messages.pjr_update'),
+            'updated' => __('messages.pjr_updated'),
+            'payment_split_updated' => __('messages.pjr_payment_split_updated'),
+            'error' => __('messages.pjr_error'),
+            'unable_to_update' => __('messages.pjr_unable_to_update'),
+            'unable_to_save' => __('messages.pjr_unable_to_save'),
+            'something_went_wrong' => __('messages.pjr_something_went_wrong_short'),
+            'advance_20_99' => __('messages.pjr_advance_20_99'),
+        ]);
         function formatCurrencyJS(amount) {
             const n = Number(amount || 0).toFixed(DECIMALS);
             switch (String(POSITION)) {
@@ -908,7 +921,7 @@
                                         response.message || 'Status updated', response
                                         .status ? 'success' : 'error')
                                     .then(() => location.reload());
-                            }).catch(() => Swal.fire('Error', 'Something went wrong',
+                            }).catch(() => Swal.fire(pjrJsLang.error, pjrJsLang.something_went_wrong,
                                 'error'));
                     });
                 });
@@ -994,7 +1007,7 @@
                                         if (session && session.status && session.url) {
                                             window.location.href = session.url;
                                         } else {
-                                            Swal.fire('Error', session
+                                            Swal.fire(pjrJsLang.error, session
                                                 .message ||
                                                 'Unable to initiate Stripe payment',
                                                 'error');
@@ -1171,7 +1184,7 @@
                                     'Error', response.message, response.status ? 'success' :
                                     'error')
                                 .then(() => location.reload()))
-                            .catch(() => Swal.fire('Error', 'Something went wrong!',
+                            .catch(() => Swal.fire(pjrJsLang.error, pjrJsLang.something_went_wrong,
                                 'error'));
                     });
                 });
@@ -1281,11 +1294,11 @@
                                 Swal.fire('Saved', response.message || 'Extra charges saved', 'success')
                                     .then(() => { window.location.reload(); });
                             } else {
-                                Swal.fire('Error', (response && response.message) ? response.message : 'Unable to save', 'error');
+                                Swal.fire('Error', (response && response.message) ? response.message : pjrJsLang.unable_to_save, 'error');
                             }
                         },
                         error: function(xhr) {
-                            Swal.fire('Error', (xhr && xhr.responseJSON && xhr.responseJSON.message) ? xhr.responseJSON.message : 'Something went wrong', 'error');
+                            Swal.fire(pjrJsLang.error, (xhr && xhr.responseJSON && xhr.responseJSON.message) ? xhr.responseJSON.message : pjrJsLang.something_went_wrong, 'error');
                         }
                     });
                 });
@@ -1351,7 +1364,7 @@
                     else if (xhr.status === 401) msg = 'Please sign in again, then try again.';
                     else if (xhr.status === 422 && xhr.responseJSON && xhr.responseJSON.message) msg = xhr.responseJSON.message;
                     else if (xhr.status === 422 && xhr.responseJSON && xhr.responseJSON.errors) msg = Object.values(xhr.responseJSON.errors).flat().join(' ');
-                    Swal.fire('Error', msg, 'error');
+                    Swal.fire(pjrJsLang.error, msg, 'error');
                 }
             });
         });
@@ -1412,7 +1425,7 @@
                     else if (xhr.status === 401) msg = 'Please sign in again, then try again.';
                     else if (xhr.status === 422 && xhr.responseJSON && xhr.responseJSON.message) msg = xhr.responseJSON.message;
                     else if (xhr.status === 422 && xhr.responseJSON && xhr.responseJSON.errors) msg = Object.values(xhr.responseJSON.errors).flat().join(' ');
-                    Swal.fire('Error', msg, 'error');
+                    Swal.fire(pjrJsLang.error, msg, 'error');
                 }
             });
         });
@@ -1444,29 +1457,20 @@
                     const currentRemaining = this.dataset.remaining || 100 - currentAdvance;
 
                     Swal.fire({
-                        title: "Update Payment Split",
+                        title: pjrJsLang.update_payment_split,
                         html: `
-                    <div class="alert alert-info d-flex align-items-start mb-3">
-                        <i class="fas fa-info-circle me-2 mt-1"></i>
-                        <div>
-                            <div class="fw-bold">Advance payment guidelines</div>
-                            <div class="small mb-0">
-                                You can request an advance between 20% and 99% of the total. Values outside this range are not allowed. The remainder will be due later.
-                            </div>
-                        </div>
-                    </div>
                     <div class="mb-3 text-start">
-                        <label class="form-label fw-bold">Advance Percentage</label>
+                        <label class="form-label fw-bold">${pjrJsLang.advance_percentage}</label>
                         <input type="number" id="advanceInput" class="form-control" value="${currentAdvance}" min="20" max="99" step="1" placeholder="20-99" />
                     </div>
                     <div class="text-start">
-                        <label class="form-label fw-bold">Remaining Percentage</label>
+                        <label class="form-label fw-bold">${pjrJsLang.remaining_percentage}</label>
                         <input type="number" id="remainingInput" class="form-control" value="${currentRemaining}" readonly />
                     </div>
                 `,
                         focusConfirm: false,
                         showCancelButton: true,
-                        confirmButtonText: "Update",
+                        confirmButtonText: pjrJsLang.update,
                         didOpen: () => {    
                             const advanceInput = document.getElementById('advanceInput');
                             const remainingInput = document.getElementById('remainingInput');
@@ -1529,14 +1533,14 @@
                                 }).then(res => res.json())
                                 .then(response => {
                                     if (response.status) {
-                                        Swal.fire("Updated!", response.message ||
-                                                "Payment split updated.", "success")
+                                        Swal.fire(pjrJsLang.updated, response.message ||
+                                                pjrJsLang.payment_split_updated, "success")
                                             .then(() => location.reload());
                                     } else {
-                                        Swal.fire("Error!", response.message ||
-                                            "Unable to update.", "error");
+                                        Swal.fire(pjrJsLang.error, response.message ||
+                                            pjrJsLang.unable_to_update, "error");
                                     }
-                                }).catch(() => Swal.fire("Error!", "Something went wrong!",
+                                }).catch(() => Swal.fire(pjrJsLang.error, pjrJsLang.something_went_wrong,
                                     "error"));
                         }
                     });

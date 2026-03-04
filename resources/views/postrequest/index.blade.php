@@ -86,7 +86,7 @@
                                 <a href="{{ route('post-job-request.create') }}"
                                     class="float-right mr-1 btn btn-sm btn-primary">
                                     <i class="fa fa-plus-circle"></i>
-                                    {{ trans('messages.add_form_title', ['form' => trans(' Post Request')]) }}
+                                    {{ __('messages.pjr_add_post_request') }}
                                 </a>
                             @endif
 
@@ -159,8 +159,8 @@
             <div class="modal-content">
 
                 <div class="modal-header">
-                    <h5 class="modal-title" id="bidModalLabel">Place Bid</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <h5 class="modal-title" id="bidModalLabel">{{ __('messages.pjr_place_bid') }}</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="{{ __('messages.pjr_close') }}">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
@@ -171,7 +171,7 @@
                 <div class="modal-body">
 
                     <!-- Bid Amount -->
-                    <label for="bidAmount">Bid Amount @if($__currencyCode)<small class="text-muted">({{ $__currencyCode }})</small>@endif:</label>
+                    <label for="bidAmount">{{ __('messages.pjr_bid_amount') }} @if($__currencyCode)<small class="text-muted">({{ $__currencyCode }})</small>@endif:</label>
                     <div class="input-group">
                         <span class="input-group-text">{{ $__currencySymbol }}</span>
                         <input type="number" id="bidAmount" name="bidAmount" class="form-control" min="1" step="any" required>
@@ -186,9 +186,8 @@
                 </div>
 
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary bid-button-submit" onclick="submitBid()">Submit
-                        Bid</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ __('messages.pjr_close') }}</button>
+                    <button type="button" class="btn btn-primary bid-button-submit" onclick="submitBid()">{{ __('messages.pjr_submit_bid') }}</button>
                 </div>
             </div>
         </div>
@@ -196,6 +195,20 @@
 
 
     <script>
+        var pjrLang = @json([
+            'bid_amount_required' => __('messages.pjr_bid_amount_required'),
+            'why_choose_me_required' => __('messages.pjr_why_choose_me_required'),
+            'submitting' => __('messages.pjr_submitting'),
+            'notice' => __('messages.pjr_notice'),
+            'already_placed_bid' => __('messages.pjr_already_placed_bid'),
+            'success_title' => __('messages.pjr_success_title'),
+            'bid_submitted_success' => __('messages.pjr_bid_submitted_success'),
+            'error' => __('messages.pjr_error'),
+            'something_went_wrong' => __('messages.pjr_something_went_wrong'),
+            'place_bid' => __('messages.pjr_place_bid'),
+            'update_bid' => __('messages.pjr_update_bid'),
+            'submit_bid' => __('messages.pjr_submit_bid'),
+        ]);
         document.addEventListener('DOMContentLoaded', (event) => {
 
             window.renderedDataTable = $('#datatable').DataTable({
@@ -249,10 +262,10 @@
 
                             // Rule 3: If there are no proposals (applicants == 0), keep it non-clickable and show tooltip
                             if (!applicants) {
-                                return `<span title="No proposals yet">${data}</span>`;
+                                return `<span title="{{ __('messages.pjr_no_proposals_yet') }}">${data}</span>`;
                             }
 
-                            return `<a href="{{ url('post-job-bid') }}/${row.id}" class="job-bid-link" title="View proposals">${data}</a>`;
+                            return `<a href="{{ url('post-job-bid') }}/${row.id}" class="job-bid-link" title="{{ __('messages.pjr_view_proposals') }}">${data}</a>`;
                         }
                     },
                     {
@@ -270,7 +283,7 @@
                     {
                         data: 'start_date',
                         name: 'start_date',
-                        title: "{{ __('Start Date') }}"
+                        title: "{{ __('messages.pjr_start_date') }}"
                     },
                     {
                         data: 'end_date',
@@ -287,7 +300,7 @@
                     @endif {
                         data: 'applicants',
                         name: 'applicants',
-                        title: "{{ __('Proposal') }}"
+                        title: "{{ __('messages.pjr_proposal') }}"
                     },
                     {
                         data: 'status',
@@ -300,7 +313,7 @@
                     {
                         data: 'price',
                         name: 'price',
-                        title: "{{ __('Max Budget') }}"
+                        title: "{{ __('messages.pjr_max_budget') }}"
                     },
                     {
                         data: 'action',
@@ -334,19 +347,19 @@
             clearErrorMessages();
 
             if (!bidAmount) {
-                displayErrorMessage('Bid Amount is required.', 'bidAmountError');
+                displayErrorMessage(pjrLang.bid_amount_required, 'bidAmountError');
                 return;
             }
 
             if (!why_choose_me || (typeof why_choose_me === 'string' && why_choose_me.replace(/<[^>]*>/g, '').trim() ===
                 '')) {
-                displayErrorMessage('Why Choose Me is required.', 'whyChooseMeError');
+                displayErrorMessage(pjrLang.why_choose_me_required, 'whyChooseMeError');
                 return;
             }
 
             bidSubmitInProgress = true;
             var btnText = $btn.text();
-            $btn.prop('disabled', true).text('Submitting...');
+            $btn.prop('disabled', true).text(pjrLang.submitting);
 
             $.ajax({
                 url: 'api/save-bid',
@@ -389,10 +402,10 @@
                 },
                 error: function(xhr) {
                     console.error('Error:', xhr);
-                    var msg = (xhr.responseJSON && xhr.responseJSON.message) ? xhr.responseJSON.message : 'Something went wrong while submitting your bid.';
+                    var msg = (xhr.responseJSON && xhr.responseJSON.message) ? xhr.responseJSON.message : pjrLang.something_went_wrong;
                     Swal.fire({
                         icon: 'error',
-                        title: 'Error',
+                        title: pjrLang.error,
                         text: msg,
                     });
                 },
@@ -413,8 +426,8 @@
         tinymce.get('why_choose_me').setContent('');
     }
     $('#why_choose_me').val('');
-    $('.bid-button-submit').prop('disabled', false).text('Submit Bid');
-    $('#bidModalLabel').text('Place Bid');
+    $('.bid-button-submit').prop('disabled', false).text(pjrLang.submit_bid);
+    $('#bidModalLabel').text(pjrLang.place_bid);
 
     // Store the postRequestId in the modal for later use
     $('#bidModal').data('post-request-id', postRequestId);
@@ -460,8 +473,8 @@
 				$('#bidId').val('');
 				$('#bidAmount').val('');
 				$('#bidAmount').prop('disabled', false);
-				$('.bid-button-submit').prop('disabled', false).text('Submit Bid');
-				$('#bidModalLabel').text('Place Bid');
+				$('.bid-button-submit').prop('disabled', false).text(pjrLang.submit_bid);
+				$('#bidModalLabel').text(pjrLang.place_bid);
                 // Ensure Why Choose Me is blank for new bid (editor or textarea)
                 if (window.tinymce && tinymce.get('why_choose_me')) {
                     tinymce.get('why_choose_me').setContent('');
@@ -490,8 +503,8 @@
             $('#bidAmount').val('');
             $('#bidAmount').prop('disabled', false);
             $('#bidId').val('');
-            $('.bid-button-submit').text('Submit Bid');
-            $('#bidModalLabel').text('Place Bid');
+            $('.bid-button-submit').text(pjrLang.submit_bid);
+            $('#bidModalLabel').text(pjrLang.place_bid);
             if (window.tinymce && tinymce.get('why_choose_me')) {
         tinymce.get('why_choose_me').setContent('');
             }

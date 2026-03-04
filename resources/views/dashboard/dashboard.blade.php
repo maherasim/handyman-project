@@ -101,7 +101,7 @@
                                             <div class="d-flex flex-wrap justify-content-start align-items-center">
                                                 <h4 class="mb-2 booking-text fw-bold fs-2">{{ getPriceFormat($data['versatile_earning']) }}</h4>
                                             </div>
-                                            <p class="mb-0 booking-text">Other Earnings</p>
+                                            <p class="mb-0 booking-text">{{ __('messages.dashboard_other_earnings') }}</p>
                                         </div>
                                         <div class="col-auto d-flex flex-column">
                                             <div class="iq-card-icon iq-card-icon-revenue icon-shape text-white rounded-circle shadow" style="background-color: rgba(255, 255, 255, 0.2) !important;">
@@ -147,8 +147,8 @@
                 <div class="card rounded-3 border-0 shadow-sm">
                     <div class="card-body p-3 p-md-4">
                         <div class="d-flex justify-content-between align-items-center flex-wrap border-bottom pb-2 mb-3">
-                            <h4 class="mb-0">{{__('messages.monthly_revenue')}}</h4>
-                            <small>Last 12 months</small>
+                            <h4 class="mb-0">{{ __('messages.monthly_revenue') }}</h4>
+                            <small>{{ __('messages.dashboard_last_12_months') }}</small>
                         </div>
                         <div id="monthly-revenue" class="custom-chart"></div>
                     </div>
@@ -260,7 +260,7 @@
     if(jQuery('#monthly-revenue').length){
         var options = {
         series: [{
-            name: 'revenue',
+            name: @json(__('messages.revenue')),
             data: [ {{ implode ( ',' ,$data['revenueData'] ) }} ]
             // data: [30, 39, 20, 28, 36, 33,20]
         }],
