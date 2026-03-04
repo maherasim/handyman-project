@@ -195,20 +195,23 @@
 
 
     <script>
-        var pjrLang = @json([
-            'bid_amount_required' => __('messages.pjr_bid_amount_required'),
-            'why_choose_me_required' => __('messages.pjr_why_choose_me_required'),
-            'submitting' => __('messages.pjr_submitting'),
-            'notice' => __('messages.pjr_notice'),
-            'already_placed_bid' => __('messages.pjr_already_placed_bid'),
-            'success_title' => __('messages.pjr_success_title'),
-            'bid_submitted_success' => __('messages.pjr_bid_submitted_success'),
-            'error' => __('messages.pjr_error'),
-            'something_went_wrong' => __('messages.pjr_something_went_wrong'),
-            'place_bid' => __('messages.pjr_place_bid'),
-            'update_bid' => __('messages.pjr_update_bid'),
-            'submit_bid' => __('messages.pjr_submit_bid'),
-        ]);
+        @php
+            $pjrLang = [
+                'bid_amount_required' => __('messages.pjr_bid_amount_required'),
+                'why_choose_me_required' => __('messages.pjr_why_choose_me_required'),
+                'submitting' => __('messages.pjr_submitting'),
+                'notice' => __('messages.pjr_notice'),
+                'already_placed_bid' => __('messages.pjr_already_placed_bid'),
+                'success_title' => __('messages.pjr_success_title'),
+                'bid_submitted_success' => __('messages.pjr_bid_submitted_success'),
+                'error' => __('messages.pjr_error'),
+                'something_went_wrong' => __('messages.pjr_something_went_wrong'),
+                'place_bid' => __('messages.pjr_place_bid'),
+                'update_bid' => __('messages.pjr_update_bid'),
+                'submit_bid' => __('messages.pjr_submit_bid'),
+            ];
+        @endphp
+        var pjrLang = @json($pjrLang);
         document.addEventListener('DOMContentLoaded', (event) => {
 
             window.renderedDataTable = $('#datatable').DataTable({
