@@ -113,11 +113,8 @@ class ServiceController extends Controller
             })
 
             ->editColumn('name', function($query){
-                if (auth()->user()->can('service edit')) {
-                    $link =  '<a class="btn-link btn-link-hover" href='.route('service.create', ['id' => $query->id]).'>'.$query->name.'</a>';
-                } else {
-                    $link = $query->name;
-                }
+                $detailUrl = route('service.detail', ['id' => $query->id]);
+                $link = '<a class="btn-link btn-link-hover" href="'.e($detailUrl).'">'.e($query->name).'</a>';
                 return $link;
             })
             ->editColumn('category_id' , function ($query){
@@ -203,11 +200,8 @@ class ServiceController extends Controller
                 return '<input type="checkbox" class="form-check-input select-table-row" id="datatable-row-'.$row->id.'" name="datatable_ids[]" value="'.$row->id.'" data-type="service" onclick="dataTableRowCheck('.$row->id.', this)">';
             })
             ->editColumn('name', function($query) {
-                if (auth()->user()->can('service edit')) {
-                    $link = '<a class="btn-link btn-link-hover" href='.route('service.create', ['id' => $query->id]).'>'.$query->name.'</a>';
-                } else {
-                    $link = $query->name;
-                }
+                $detailUrl = route('service.detail', ['id' => $query->id]);
+                $link = '<a class="btn-link btn-link-hover" href="'.e($detailUrl).'">'.e($query->name).'</a>';
                 return $link;
             })
             ->editColumn('category_id', function ($query) {
