@@ -59,16 +59,12 @@ class BookingPayPalController extends Controller
     {
         $baseURL = config('app.url') ?: 'https://frobster.com';
 
+        // Same logic as PayPalController::createPayment
         if ($request->type == 'full_payment') {
             $booking = Booking::find($request->booking_id);
             $amount = $booking->total_amount - $booking->advance_paid_amount;
         } else {
-            // App may send "amount" or "total_amount"
-            $amount = $request->input('amount') ?? $request->input('total_amount');
-            $amount = number_format((float)$amount, 2, '.', '');
-        }
-        if ($amount <= 0) {
-            return comman_custom_response(['error' => 'Invalid or missing payment amount.'], 400);
+            $amount = number_format((float)$request->total_amount, 2, '.', '');
         }
 
         $order = new OrdersCreateRequest();
@@ -168,9 +164,8 @@ class BookingPayPalController extends Controller
             return;
         }
 
-        // App may send "advance" or "advance_payment"
-        $isAdvance = in_array((string)$type, ['advance', 'advance_payment'], true);
-        if ($isAdvance) {
+        // Same as savePayment: payment_status from type (advance_payment => advanced_paid, else => paid)
+        if ($type == 'advance_payment') {
             $result->payment_status = 'advanced_paid';
         } else {
             $result->payment_status = 'paid';
