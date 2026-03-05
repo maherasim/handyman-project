@@ -170,18 +170,19 @@
                 const mine = m.sender_id === currentUserId;
                 wrap.className = 'd-flex mb-2 ' + (mine ? 'justify-content-end' : 'justify-content-start');
                 const bubble = document.createElement('div');
-                const isViolation = !!(m.hidden && m.policy_violation);
+                const isViolation = !!(m.hidden || m.policy_violation || m.violation_message || (m.pii_types && m.pii_types.length && !m.message && !m.attachment));
                 const bubbleCls = isViolation ? 'bg-white border border-danger policy-warning-bubble text-danger' : (mine ? 'bg-primary text-white' : 'bg-white border');
                 bubble.className = 'p-2 rounded ' + bubbleCls;
                 let html = '';
                 const name = safe(m.sender_name || 'User');
                 const avatar = safe(m.sender_avatar_url || '{{ $fallbackAvatar }}');
+                const violationText = safe(m.violation_message || chatPiiWarningBubble || 'You violated the rules. This message was hidden.');
                 html += `<div class="d-flex align-items-center mb-1 ${isViolation ? 'text-danger' : ''}">`+
                     `<img src="${avatar}" class="rounded-circle me-2" style="width:22px;height:22px;object-fit:cover;">`+
                     `<span class="small fw-bold">${name}</span>`+
                     `</div>`;
                 if (isViolation) {
-                    html += `<div class="small"><i class="fas fa-exclamation-triangle me-1"></i> ${safe(chatPiiWarningBubble)}</div>`;
+                    html += `<div class="small"><i class="fas fa-exclamation-triangle me-1"></i> ${violationText}</div>`;
                     const warn = document.getElementById('policyWarning');
                     if (warn) {
                         warn.textContent = chatPiiWarning;
@@ -222,11 +223,13 @@
                     const fragments = document.createDocumentFragment();
                     (j.messages || []).forEach(m => {
                         oldestId = Math.min(oldestId, m.id);
+                        const isViolation = !!(m.hidden || m.policy_violation || m.violation_message || (m.pii_types && m.pii_types.length && !m.message && !m.attachment));
                         const wrap = document.createElement('div');
                         const mine = m.sender_id === currentUserId;
                         wrap.className = 'd-flex mb-2 ' + (mine ? 'justify-content-end' : 'justify-content-start');
                         const bubble = document.createElement('div');
-                        bubble.className = 'p-2 rounded ' + (mine ? 'bg-primary text-white' : 'bg-white border');
+                        bubble.className = 'p-2 rounded ' + (isViolation ? 'bg-white border border-danger policy-warning-bubble text-danger' : (mine ? 'bg-primary text-white' : 'bg-white border'));
+                        const violationText = safe(m.violation_message || chatPiiWarningBubble || 'You violated the rules. This message was hidden.');
                         let html = '';
                         const name = safe(m.sender_name || 'User');
                         const avatar = safe(m.sender_avatar_url || '{{ $fallbackAvatar }}');
@@ -234,12 +237,11 @@
                             `<img src="${avatar}" class="rounded-circle me-2" style="width:22px;height:22px;object-fit:cover;">`+
                             `<span class="small fw-bold">${name}</span>`+
                             `</div>`;
-                        if (m.hidden && m.policy_violation) {
-                            const reason = (m.pii_types && m.pii_types.length) ? m.pii_types.join(', ') : 'policy violation';
-                            html += `<div class=\"small text-danger\"><i class=\"fas fa-shield-alt\"></i> Message hidden due to ${safe(reason)}.</div>`;
+                        if (isViolation) {
+                            html += `<div class=\"small text-danger\"><i class=\"fas fa-exclamation-triangle me-1\"></i> ${violationText}</div>`;
                         } else {
                             if (m.message) { html += `<div class=\"small\">${safe(m.message)}</div>`; }
-                            if (m.attachment) { const name = safe(m.attachment.name || 'attachment'); html += `<div class=\"mt-1\"><a href=\"${m.attachment.download_url}\" target=\"_blank\" class=\"text-decoration-underline ${mine ? 'text-white' : ''}\"><i class=\"fas fa-paperclip\"></i> ${name}</a></div>`; }
+                            if (m.attachment) { const attName = safe(m.attachment.name || 'attachment'); html += `<div class=\"mt-1\"><a href=\"${m.attachment.download_url}\" target=\"_blank\" class=\"text-decoration-underline ${mine ? 'text-white' : ''}\"><i class=\"fas fa-paperclip\"></i> ${attName}</a></div>`; }
                         }
                         html += `<div class="text-end small opacity-75 mt-1">${safe(m.created_at || '')}${m.read ? ' · <i class=\"fas fa-check-double\"></i>' : ''}</div>`;
                         bubble.innerHTML = html;

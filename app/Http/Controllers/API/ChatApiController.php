@@ -228,6 +228,7 @@ class ChatApiController extends Controller
                 'policy_violation' => (bool) $m->contains_pii,
                 'hidden' => $hidden,
                 'pii_types' => $m->pii_types ? explode(',', $m->pii_types) : [],
+                'violation_message' => $hidden ? __('messages.chat_pii_warning_bubble') : null,
             ];
         });
         return response()->json(['status' => true, 'messages' => $messages]);

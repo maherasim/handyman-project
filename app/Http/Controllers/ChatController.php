@@ -143,6 +143,7 @@ class ChatController extends Controller
                 'policy_violation' => (bool) $m->contains_pii,
                 'hidden' => $hidden,
                 'pii_types' => $m->pii_types ? explode(',', $m->pii_types) : [],
+                'violation_message' => $hidden ? __('messages.chat_pii_warning_bubble') : null,
             ];
         });
 
@@ -216,6 +217,7 @@ class ChatController extends Controller
                 'policy_violation' => (bool) $msg->contains_pii,
                 'hidden' => (bool) $msg->contains_pii,
                 'pii_types' => $msg->pii_types ? explode(',', $msg->pii_types) : [],
+                'violation_message' => $msg->contains_pii ? __('messages.chat_pii_warning_bubble') : null,
             ];
             broadcast(new ChatMessageSent((int) $conversation->id, $payload))->toOthers();
         } catch (\Throwable $e) {
