@@ -8,6 +8,7 @@ use Yajra\DataTables\DataTables;
 
 use App\Models\TransactionRequest;
 use App\Models\Wallet;
+use App\Models\WalletHistory;
 
 
 class TransactionRequestController extends Controller
@@ -67,22 +68,57 @@ class TransactionRequestController extends Controller
 
     public function bulk_action(Request $request)
     {
-        $ids = explode(',', $request->rowIds);
-
+        $ids = array_filter(array_map('intval', explode(',', $request->rowIds)));
         $actionType = $request->action_type;
 
         $message = 'Bulk Action Updated';
         switch ($actionType) {
             case 'change-status':
-                $branches = TransactionRequest::whereIn('id', $ids)->update(['status' => $request->status]);
-                $message = 'Bulk Payment Status Updated';
+                $newStatus = $request->status;
+                $transactions = TransactionRequest::whereIn('id', $ids)->get();
+                \DB::beginTransaction();
+                try {
+                    foreach ($transactions as $transaction) {
+                        $wasPending = $transaction->status === 'pending';
+                        $transaction->status = $newStatus;
+                        $transaction->save();
+                        if ($newStatus === 'completed' && $wasPending) {
+                            $userId = (int) $transaction->user_id;
+                            $amount = (float) $transaction->amount;
+                            $wallet = Wallet::firstOrCreate(
+                                ['user_id' => $userId],
+                                ['amount' => 0, 'status' => 1, 'title' => 'Wallet']
+                            );
+                            if ($wallet->amount === null) {
+                                $wallet->update(['amount' => 0]);
+                            }
+                            $wallet->increment('amount', $amount);
+                            $wallet->refresh();
+                            WalletHistory::create([
+                                'datetime'         => now(),
+                                'user_id'          => $userId,
+                                'activity_type'    => 'credit',
+                                'activity_message' => 'Add wallet balance (Transaction Request #' . $transaction->id . ')',
+                                'activity_data'    => json_encode([
+                                    'credit_debit_amount' => $amount,
+                                    'amount'              => $wallet->amount,
+                                    'transaction_type'    => 'Credit',
+                                    'transaction_request_id' => $transaction->id,
+                                ]),
+                            ]);
+                        }
+                    }
+                    \DB::commit();
+                } catch (\Throwable $e) {
+                    \DB::rollBack();
+                    \Log::error('TransactionRequest bulk_action: ' . $e->getMessage());
+                    return response()->json(['status' => false, 'message' => 'Failed to update.']);
+                }
+                $message = 'Bulk Payment Status Updated' . ($newStatus === 'completed' ? '. Balance added to wallets.' : '');
                 break;
-
-            
 
             default:
                 return response()->json(['status' => false, 'message' => 'Action Invalid']);
-                break;
         }
 
         return response()->json(['status' => true, 'message' => $message]);
@@ -165,10 +201,49 @@ public function walletindexData(Request $request)
 public function confirmSingle($id)
 {
     $transaction = TransactionRequest::findOrFail($id);
-    $transaction->status = 'completed';
-    $transaction->save();
 
-    return response()->json(['message' => 'Request confirmed successfully.']);
+    if ($transaction->status === 'completed') {
+        return response()->json(['message' => 'Request already confirmed.']);
+    }
+
+    \DB::beginTransaction();
+    try {
+        $transaction->status = 'completed';
+        $transaction->save();
+
+        $userId = (int) $transaction->user_id;
+        $amount = (float) $transaction->amount;
+
+        $wallet = Wallet::firstOrCreate(
+            ['user_id' => $userId],
+            ['amount' => 0, 'status' => 1, 'title' => 'Wallet']
+        );
+        if ($wallet->amount === null) {
+            $wallet->update(['amount' => 0]);
+        }
+        $wallet->increment('amount', $amount);
+        $wallet->refresh();
+
+        WalletHistory::create([
+            'datetime'        => now(),
+            'user_id'         => $userId,
+            'activity_type'   => 'credit',
+            'activity_message' => 'Add wallet balance (Transaction Request #' . $transaction->id . ')',
+            'activity_data'   => json_encode([
+                'credit_debit_amount' => $amount,
+                'amount'              => $wallet->amount,
+                'transaction_type'    => 'Credit',
+                'transaction_request_id' => $transaction->id,
+            ]),
+        ]);
+
+        \DB::commit();
+        return response()->json(['message' => 'Request confirmed successfully. Balance added to wallet.']);
+    } catch (\Throwable $e) {
+        \DB::rollBack();
+        \Log::error('TransactionRequest confirmSingle: ' . $e->getMessage());
+        return response()->json(['message' => 'Failed to confirm request.'], 500);
+    }
 }
 
 
