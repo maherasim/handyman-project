@@ -2351,8 +2351,8 @@ class PostJobRequestController extends Controller
     public function invoice($id)
     {
         $bid = \App\Models\PostJobBid::with([
-            'provider:id,display_name,address,vat_number',
-            'customer:id,display_name,address',
+            'provider:id,display_name,address,vat_number,company_name',
+            'customer:id,display_name,address,company_name,vat_number',
             'postrequest:id,title,price_type,job_price,total_days,total_hours,country_id,city_id',
             'postrequest.city:id,name',
             'postrequest.country:id,name',

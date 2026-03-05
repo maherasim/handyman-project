@@ -78,15 +78,13 @@
 		.party-block { display: table-cell; width: 50%; vertical-align: top; padding-right: 16px; }
 		.party-block:last-child { padding-right: 0; padding-left: 16px; border-left: 1px solid #e8eaed; }
 		.party-label {
-			font-size: 9px;
+			font-size: 13px;
 			font-weight: 700;
-			text-transform: uppercase;
-			letter-spacing: 0.6px;
-			color: #5c6370;
-			margin-bottom: 4px;
+			color: #222;
+			margin-bottom: 6px;
 		}
-		.party-name { font-size: 13px; font-weight: 600; color: #1a1a1a; margin-bottom: 4px; }
-		.party-detail { font-size: 11px; color: #5c6370; line-height: 1.4; }
+		.party-name { font-size: 13px; font-weight: 400; color: #222; margin-bottom: 6px; }
+		.party-detail { font-size: 13px; color: #6b7280; line-height: 1.5; margin-bottom: 6px; }
 		.job-ref-block { padding: 8px 20px; background: #f8f9fb; border-bottom: 1px solid #e8eaed; }
 		.job-ref-label { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; color: #5c6370; margin-bottom: 2px; }
 		.job-ref-title { font-size: 12px; font-weight: 600; color: #1a1a1a; }

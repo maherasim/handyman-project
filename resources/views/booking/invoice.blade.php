@@ -107,16 +107,16 @@ $logoPath = public_path('assets/frobster logo.png');
                     <td style="width: 50%; border: 0;">
                         <div class="fw-bold mb-6">{{ __('Bill From') }}</div>
                         <div class="mb-6">{{ optional($bookingdata->provider)->display_name ?? '-' }}</div>
-                        <div class="text-muted">{{ optional($bookingdata->provider)->company_name ?? '-' }}</div>
+                        <div class="text-muted">{{ __('Company Name:') }} {{ optional($bookingdata->provider)->company_name ?? '-' }}</div>
 
-                        <div class="text-muted">{{ optional($bookingdata->provider)->address ?? '-' }}</div>
+                        <div class="text-muted">{{ __('Address:') }}{{ optional($bookingdata->provider)->address ?? '-' }}</div>
                         <div class="text-muted">{{ __('VAT Number:') }} {{ optional($bookingdata->provider)->vat_number ?? '-' }}</div>
                     </td>
                     <td style="width: 50%; border: 0;">
                         <div class="fw-bold mb-6">{{ __('Bill To') }}</div>
                         <div class="mb-6">{{ optional($bookingdata->customer)->display_name ?? '-' }}</div>
-                        <div class="mb-6">{{ optional($bookingdata->customer)->company_name ?? '-' }}</div>
-                        <div class="text-muted">{{ __('Addres:') }}{{ optional($bookingdata->customer)->address ?? '-' }}</div>
+                        <div class="text-muted">{{ __('Company Name:') }} {{ optional($bookingdata->customer)->company_name ?? '-' }}</div>
+                        <div class="text-muted">{{ __('Address:') }}{{ optional($bookingdata->customer)->address ?? '-' }}</div>
                         <div class="text-muted">{{ __('VAT Number:') }}{{ optional($bookingdata->customer)->vat_number ?? '-' }}</div>
                     </td>
                 </tr>
