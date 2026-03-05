@@ -214,12 +214,7 @@
 
                 // Policy violation: message was hidden by the system
                 if (message.policy_violation || message.hidden) {
-                    const violationText = message.violation_message || 'This message was hidden because it violates our communication policy.';
-                    content += `<div class="chat-violation">
-                        <span class="chat-violation-icon">⚠</span>
-                        <strong>Policy Violation</strong>
-                        <div class="chat-violation-desc">${escapeHtml(violationText)}</div>
-                    </div>`;
+                    content += `<span class="chat-violation">🔒 Policy violation — message hidden</span>`;
                 } else {
                     // Message text
                     if (message.message) {
@@ -463,34 +458,22 @@
 
         /* Policy violation badge */
         .chat-violation {
-            display: flex;
-            flex-direction: column;
-            gap: 3px;
-            background: rgba(220, 38, 38, 0.12);
-            border: 1.5px solid rgba(220, 38, 38, 0.5);
-            border-radius: 8px;
-            padding: 7px 10px;
-            color: #dc2626;
+            display: inline-block;
+            font-size: 11.5px;
+            font-weight: 500;
+            color: #ef4444;
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 6px;
+            padding: 3px 8px;
+            white-space: normal;
+            word-break: break-word;
+            line-height: 1.4;
         }
         .chat-bubble.own .chat-violation {
-            background: rgba(255, 255, 255, 0.15);
-            border-color: rgba(255, 180, 180, 0.7);
-            color: #ffd0d0;
-        }
-        .chat-violation-icon {
-            font-size: 16px;
-            line-height: 1;
-            margin-right: 4px;
-        }
-        .chat-violation strong {
-            font-size: 13px;
-            font-weight: 700;
-            letter-spacing: 0.01em;
-        }
-        .chat-violation-desc {
-            font-size: 12px;
-            margin-top: 2px;
-            opacity: 0.9;
+            color: #fca5a5;
+            background: rgba(255, 255, 255, 0.12);
+            border-color: rgba(252, 165, 165, 0.4);
         }
     </style>
 </x-master-layout>
