@@ -63,7 +63,12 @@ class BookingPayPalController extends Controller
             $booking = Booking::find($request->booking_id);
             $amount = $booking->total_amount - $booking->advance_paid_amount;
         } else {
-            $amount = number_format((float)$request->total_amount, 2, '.', '');
+            // App may send "amount" or "total_amount"
+            $amount = $request->input('amount') ?? $request->input('total_amount');
+            $amount = number_format((float)$amount, 2, '.', '');
+        }
+        if ($amount <= 0) {
+            return comman_custom_response(['error' => 'Invalid or missing payment amount.'], 400);
         }
 
         $order = new OrdersCreateRequest();
@@ -163,7 +168,9 @@ class BookingPayPalController extends Controller
             return;
         }
 
-        if ($type == 'advance_payment') {
+        // App may send "advance" or "advance_payment"
+        $isAdvance = in_array((string)$type, ['advance', 'advance_payment'], true);
+        if ($isAdvance) {
             $result->payment_status = 'advanced_paid';
         } else {
             $result->payment_status = 'paid';
