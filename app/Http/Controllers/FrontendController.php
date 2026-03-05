@@ -126,7 +126,7 @@ class FrontendController extends Controller
         $bookingsLast24h = Booking::where('created_at', '>=', now()->subHours(24))->count();
         $recentBookings = Booking::with('service')
             ->orderByDesc('created_at')
-            ->take(6)
+            ->take(5)
             ->get()
             ->map(function ($b) {
                 return [
