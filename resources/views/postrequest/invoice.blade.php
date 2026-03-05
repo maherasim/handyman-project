@@ -276,12 +276,14 @@ $logoPath = public_path('assets/frobster logo.png');
 				<div class="party-label">{{ __('Bill From') }}</div>
 				<div class="party-name">{{ optional($bid->provider)->display_name ?? '—' }}</div>
 				<div class="party-detail">Address: {{ optional($bid->provider)->address ?? '—' }}</div>
+				<div class="party-detail">{{ __('Company Name:') }} {{ optional($bid->provider)->company_name ?? '—' }}</div>
 				<div class="party-detail">{{ __('VAT Number:') }} {{ optional($bid->provider)->vat_number ?? '—' }}</div>
 			</div>
 			<div class="party-block">
 				<div class="party-label">{{ __('Bill To') }}</div>
 				<div class="party-name">{{ optional($bid->customer)->display_name ?? '—' }}</div>
 				<div class="party-detail">Address: {{ optional($bid->customer)->address ?? '—' }}</div>
+				<div class="party-detail">{{ __('Company Name:') }} {{ optional($bid->customer)->company_name ?? '—' }}</div>
 				<div class="party-detail">{{ __('VAT Number:') }} {{ optional($bid->customer)->vat_number ?? '—' }}</div>
 			</div>
 		</div>
