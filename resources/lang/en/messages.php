@@ -166,6 +166,7 @@
     'refunded' => 'Refunded',
     'payment_completed' => 'Your payment has been successfully completed',
     'payment_success_proceed' => 'Payment has been done successfully. Proceed further.',
+    'payment_cancelled_return_to_app' => 'Payment was cancelled. You can try again from the app.',
     'payment_pending_admin_approval' => 'Payment pending approval by admin. Please wait for verification.',
     'payment_message' => 'Your payment is :status',
     'timezone' => 'Timezone',

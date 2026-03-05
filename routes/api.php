@@ -77,6 +77,10 @@ Route::get('post-job-status', [ API\PostJobRequestController::class, 'postReques
 Route::get('postjob/paypal/success/{id}', [App\Http\Controllers\PostJobRequestController::class, 'postJobPayPalSuccessApi'])->name('api.postjob.paypal.success');
 Route::get('postjob/paypal/cancel', [App\Http\Controllers\PostJobRequestController::class, 'postJobPayPalCancelApi'])->name('api.postjob.paypal.cancel');
 
+// Booking PayPal – standalone API flow (new controller; success/cancel return JSON for app)
+Route::get('booking-paypal/success/{booking_id}', [App\Http\Controllers\API\BookingPayPalController::class, 'successApi'])->name('api.booking-paypal.success');
+Route::get('booking-paypal/cancel', [App\Http\Controllers\API\BookingPayPalController::class, 'cancelApi'])->name('api.booking-paypal.cancel');
+
 Route::group(['middleware' => ['auth:sanctum']], function () {
     // ===== Chat API (Mobile/Web) =====
     // Open or create conversation by bid id
@@ -138,7 +142,10 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('notification-list',[API\NotificationController::class,'notificationList']);
     Route::post('remove-file', [ App\Http\Controllers\HomeController::class, 'removeFile' ] );
     Route::get('logout',[ API\User\UserController::class, 'logout' ]);
+    // Booking payment: save-payment = record payment (e.g. bank transfer). Unchanged.
     Route::post('save-payment',[API\PaymentController::class, 'savePayment']);
+    // Standalone booking PayPal API (create → redirect to booking-paypal/success or booking-paypal/cancel)
+    Route::post('booking-paypal/create', [API\BookingPayPalController::class, 'createPayment'])->name('api.booking-paypal.create');
     Route::get('payment-list-all',[API\PaymentController::class, 'getpaymentall']);
     Route::post('save-bank-transfer-payment',[API\PaymentController::class, 'saveBankTransferPayment']);
 

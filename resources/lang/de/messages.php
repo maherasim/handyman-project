@@ -165,6 +165,7 @@
     'refunded' => 'Erstattet',
     'payment_completed' => 'Ihre Zahlung wurde erfolgreich abgeschlossen',
     'payment_success_proceed' => 'Zahlung erfolgreich. Sie können fortfahren.',
+    'payment_cancelled_return_to_app' => 'Zahlung abgebrochen. Sie können es in der App erneut versuchen.',
     'payment_pending_admin_approval' => 'Zahlung wartet auf Freigabe durch den Admin. Bitte warten Sie auf die Bestätigung.',
     'payment_message' => 'Ihre Zahlung ist :status',
     'timezone' => 'Zeitzone',
