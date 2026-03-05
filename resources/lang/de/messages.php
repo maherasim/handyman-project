@@ -858,6 +858,7 @@
     'notification_template' => 'Benachrichtigungsvorlage',
     'mail_template' => 'E-Mail-Vorlage',
     'transfer_admin_contact' => 'Bei Ihrer Überweisung ist ein Problem aufgetreten. Bitte kontaktieren Sie den Admin.',
+    'withdrawal_insufficient_balance' => 'Auszahlung nicht möglich: Das Guthaben des Anbieters reicht für den angeforderten Betrag nicht aus. Bitten Sie den Anbieter, das Guthaben zu prüfen oder den Betrag zu reduzieren.',
     'update_notification_template' => 'Benachrichtigungsvorlage aktualisieren',
     'here_is_the_link' => 'Hier ist der Link',
     'info_message' => 'Wichtig: Aktivieren Sie RazorpayX unter ZAHLUNGSKONFIGURATION, damit Anbieter ihre Einnahmen auszahlen können.',

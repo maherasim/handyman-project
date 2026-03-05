@@ -860,6 +860,7 @@
     'notification_template' => 'Notification Template',
     'mail_template' => 'E-Mail Template',
     'transfer_admin_contact' => 'There was an issue with your transfer. Please contact the admin for assistance.',
+    'withdrawal_insufficient_balance' => 'Cannot process payout: the provider\'s wallet balance is insufficient for the requested withdrawal amount. Please ask the provider to check their balance or reduce the withdrawal amount.',
     'update_notification_template' => 'Update Notification Template',
     'here_is_the_link' => 'Here is the link',
     'info_message' => 'Important Notice: Please enable RazorpayX From PAYMENT CONFIGURATION tab to allow Employers to withdraw their funds.',

@@ -696,7 +696,7 @@ public function getWalletPaymentMethod(Request $request)
     $wallet = Wallet::where('user_id', $providerId)->first();
     if ($wallet) {
         if ($wallet->amount < $amount) {
-            return redirect(route('wallet_transaction'))->withErrors(__('messages.transfer_admin_contact'));
+            return redirect(route('wallet_transaction'))->withErrors(__('messages.withdrawal_insufficient_balance'));
         }
         $wallet->decrement('amount', $amount);
 
