@@ -211,19 +211,29 @@
                 bubble.className = `chat-bubble ${isOwn ? 'own' : 'other'}`;
                 
                 let content = '';
-                
-                // Message text
-                if (message.message) {
-                    content += `<div class="chat-text">${escapeHtml(message.message)}</div>`;
-                }
-                
-                // File attachment
-                if (message.attachment) {
-                    content += `<div class="mt-2">
-                        <a href="${message.attachment.download_url}" target="_blank" class="chat-attach ${isOwn ? 'text-white' : ''}">
-                            <i class="fas fa-paperclip me-1"></i> ${escapeHtml(message.attachment.name)}
-                        </a>
+
+                // Policy violation: message was hidden by the system
+                if (message.policy_violation || message.hidden) {
+                    const violationText = message.violation_message || 'This message was hidden because it violates our communication policy.';
+                    content += `<div class="chat-violation">
+                        <span class="chat-violation-icon">⚠</span>
+                        <strong>Policy Violation</strong>
+                        <div class="chat-violation-desc">${escapeHtml(violationText)}</div>
                     </div>`;
+                } else {
+                    // Message text
+                    if (message.message) {
+                        content += `<div class="chat-text">${escapeHtml(message.message)}</div>`;
+                    }
+                    
+                    // File attachment
+                    if (message.attachment) {
+                        content += `<div class="mt-2">
+                            <a href="${message.attachment.download_url}" target="_blank" class="chat-attach ${isOwn ? 'text-white' : ''}">
+                                <i class="fas fa-paperclip me-1"></i> ${escapeHtml(message.attachment.name)}
+                            </a>
+                        </div>`;
+                    }
                 }
                 
                 // Timestamp
@@ -450,5 +460,37 @@
         .composer-input { flex: 1; border: none; outline: none; background: transparent; padding: 6px 4px; }
         .composer-input:focus { outline: none; }
         .composer-send { border-radius: 999px; padding: 8px 14px; }
+
+        /* Policy violation badge */
+        .chat-violation {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            background: rgba(220, 38, 38, 0.12);
+            border: 1.5px solid rgba(220, 38, 38, 0.5);
+            border-radius: 8px;
+            padding: 7px 10px;
+            color: #dc2626;
+        }
+        .chat-bubble.own .chat-violation {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 180, 180, 0.7);
+            color: #ffd0d0;
+        }
+        .chat-violation-icon {
+            font-size: 16px;
+            line-height: 1;
+            margin-right: 4px;
+        }
+        .chat-violation strong {
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 0.01em;
+        }
+        .chat-violation-desc {
+            font-size: 12px;
+            margin-top: 2px;
+            opacity: 0.9;
+        }
     </style>
 </x-master-layout>
