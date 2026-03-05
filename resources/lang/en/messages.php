@@ -641,6 +641,8 @@
     'debit' => 'Debit',
     'providerpayout_list' => 'Employer Payout',
     'messages' => 'Messages',
+    'chat_pii_warning' => 'You have violated our policy. Do not share phone numbers, email addresses or other direct contact details. This message has been hidden and may be reported.',
+    'chat_pii_warning_bubble' => 'Message hidden — sharing personal contact info (phone/email) is not allowed.',
     'day' => 'Day',
     'slot' => 'Time Slot',
     'wallet_credited' => 'Wallet is Credited',

@@ -286,6 +286,7 @@ class ChatApiController extends Controller
             'id' => $msg->id,
             'flagged' => (bool) $containsPii,
             'pii_types' => $containsPii ? $piiTypes : [],
+            'warning_message' => $containsPii ? __('messages.chat_pii_warning') : null,
         ]);
     }
 

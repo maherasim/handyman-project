@@ -640,6 +640,8 @@
     'debit' => 'Lastschrift',
     'providerpayout_list' => 'Anbieter-Auszahlungen',
     'messages' => 'Nachrichten',
+    'chat_pii_warning' => 'Sie haben gegen unsere Richtlinie verstoßen. Geben Sie keine Telefonnummern, E-Mail-Adressen oder andere direkten Kontaktdaten an. Diese Nachricht wurde ausgeblendet und kann gemeldet werden.',
+    'chat_pii_warning_bubble' => 'Nachricht ausgeblendet — das Teilen von Kontaktdaten (Telefon/E-Mail) ist nicht erlaubt.',
     'day' => 'Tag',
     'slot' => 'Zeitslot',
     'wallet_credited' => 'Geldbörse wurde aufgeladen',

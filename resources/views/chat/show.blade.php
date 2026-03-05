@@ -108,6 +108,8 @@
         document.addEventListener('DOMContentLoaded', () => {
             const conversationId = {{ $conversation->id }};
             const currentUserId = {{ (int) auth()->id() }};
+            const chatPiiWarning = {!! json_encode(__('messages.chat_pii_warning')) !!};
+            const chatPiiWarningBubble = {!! json_encode(__('messages.chat_pii_warning_bubble')) !!};
             const messagesEl = document.getElementById('messages');
             const msgScroll = document.getElementById('msgScroll');
             const textInput = document.getElementById('textInput');
@@ -179,12 +181,10 @@
                     `<span class="small fw-bold">${name}</span>`+
                     `</div>`;
                 if (isViolation) {
-                    const reason = (m.pii_types && m.pii_types.length) ? m.pii_types.join(', ') : 'policy violation';
-                    html += `<div class="small"><i class="fas fa-shield-alt"></i> Message hidden due to ${safe(reason)}.</div>`;
-                    // Also surface a top composer warning for immediate feedback
+                    html += `<div class="small"><i class="fas fa-exclamation-triangle me-1"></i> ${safe(chatPiiWarningBubble)}</div>`;
                     const warn = document.getElementById('policyWarning');
                     if (warn) {
-                        warn.textContent = 'Your last message was hidden because it contained personal contact information (e.g., phone/email/social).';
+                        warn.textContent = chatPiiWarning;
                         warn.classList.remove('d-none');
                     }
                 } else if (m.message) {
@@ -328,11 +328,11 @@
                 if (violate) {
                     const warn = document.getElementById('policyWarning');
                     if (warn) {
-                        warn.textContent = 'Sharing personal contact info (email/phone/social) is not allowed. Your message may be hidden and reported.';
+                        warn.textContent = chatPiiWarning;
                         warn.classList.remove('d-none');
                     }
                     if (window.Swal) {
-                        Swal.fire({ icon:'warning', title:'Policy Warning', text:'Sharing personal contact info is not allowed. Your message may be hidden and reported.', confirmButtonText:'OK' });
+                        Swal.fire({ icon:'warning', title:'Policy violation', text: chatPiiWarning, confirmButtonText:'OK' });
                     }
                 }
                 if (text) fd.append('message', text);
@@ -357,8 +357,7 @@
                         if (j.flagged) {
                             const warn = document.getElementById('policyWarning');
                             if (warn) {
-                                const list = (j.pii_types && j.pii_types.length) ? ' (' + j.pii_types.join(', ') + ')' : '';
-                                warn.textContent = 'Your message was hidden due to policy violation' + list + '.';
+                                warn.textContent = chatPiiWarning;
                                 warn.classList.remove('d-none');
                             }
                             // Immediately render a local warning bubble so user sees it without waiting for poll
@@ -376,7 +375,7 @@
                                 pii_types: j.pii_types || []
                             });
                             if (window.Swal) {
-                                Swal.fire({ icon:'info', title:'Message hidden', text:'Your message contained personal contact information and was hidden for both users.' });
+                                Swal.fire({ icon:'warning', title:'Policy violation', text: chatPiiWarning });
                             }
                         }
                         pollNewer();
