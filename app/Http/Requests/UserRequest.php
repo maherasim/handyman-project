@@ -40,13 +40,14 @@ class UserRequest extends FormRequest
             $rules['languages.*'] = 'string';
         }
 
-        // Profile form (setting/profile_form) – Language mandatory; Company Name, Education, Availability, Experience optional
+        // Profile form (setting/profile_form) – VAT Number required only for provider & handyman; optional for customers
         if (request()->has('profile') && request()->profile === 'profile') {
             $rules['country_id'] = 'required|exists:countries,id';
             $rules['state_id'] = 'required|exists:states,id';
             $rules['city_id'] = 'required|exists:cities,id';
             $rules['company_name'] = 'nullable|string|max:255';
-            $rules['vat_number'] = 'required|string|max:255';
+            $userType = auth()->user()->user_type ?? request()->user_type ?? null;
+            $rules['vat_number'] = in_array($userType, ['provider', 'handyman'], true) ? 'required|string|max:255' : 'nullable|string|max:255';
             $rules['skills'] = 'nullable|string|max:500';
             $rules['education'] = 'nullable|string|max:100';
             $rules['career_level'] = 'required|string|max:100';

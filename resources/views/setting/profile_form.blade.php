@@ -281,8 +281,9 @@
                     </div>
 
                     <div class="form-group col-md-6">
-                        {{ html()->label(__('Vat Number') . ' <span class="text-danger">*</span>')->class('form-control-label text-danger')->for('vat_number') }}
-                        {{ html()->text('vat_number', $user_data->vat_number)->placeholder(__('Vat Number'))->class('form-control')->required() }}
+                        @php $vatRequired = in_array($user_data->user_type ?? '', ['provider', 'handyman'], true); @endphp
+                        {{ html()->label(__('Vat Number') . ($vatRequired ? ' <span class="text-danger">*</span>' : ''))->class('form-control-label' . ($vatRequired ? ' text-danger' : ''))->for('vat_number') }}
+                        {{ html()->text('vat_number', $user_data->vat_number)->placeholder(__('Vat Number'))->class('form-control')->required($vatRequired) }}
                         <small class="help-block with-errors text-danger"></small>
                     </div>
 
