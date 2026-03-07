@@ -8,20 +8,12 @@
     $location = trim(implode(', ', array_filter([$cityName, $countryName])));
     $designation = trim($p['designation'] ?? '');
     $aboutRaw = $p['about_me'] ?? '';
-    $aboutSnippet = $aboutRaw !== '' && $aboutRaw !== null ? \Illuminate\Support\Str::limit(strip_tags($aboutRaw), 280) : '';
+    $aboutSnippet = $aboutRaw !== '' && $aboutRaw !== null ? \Illuminate\Support\Str::limit(strip_tags($aboutRaw), 120) : '';
     $appName = config('app.display_name', 'Frobster');
-    $shareDescParts = [];
-    if ($designation !== '') {
-        $shareDescParts[] = $designation;
-    }
-    if ($location !== '') {
-        $shareDescParts[] = 'Location: ' . $location;
-    }
-    if ($aboutSnippet !== '') {
-        $shareDescParts[] = 'About me: ' . $aboutSnippet;
-    }
-    $shareDescription = $shareDescParts !== [] ? implode('. ', $shareDescParts) : __('landingpage.pd_service_provider_on') . ' ' . $appName;
-    $shareDescription = \Illuminate\Support\Str::limit($shareDescription, 300);
+    $sep = ' · ';
+    $shareDescParts = array_filter([$designation, $location, $aboutSnippet]);
+    $shareDescription = $shareDescParts !== [] ? implode($sep, $shareDescParts) : __('landingpage.pd_service_provider_on') . ' ' . $appName;
+    $shareDescription = \Illuminate\Support\Str::limit($shareDescription, 200);
     $shareUrl = route('provider.detail', $p['id'] ?? 0);
     $shareImage = !empty($p['profile_image'])
         ? (str_starts_with($p['profile_image'], 'http') ? $p['profile_image'] : url($p['profile_image']))
