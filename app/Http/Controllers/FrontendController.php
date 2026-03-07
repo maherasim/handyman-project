@@ -577,7 +577,10 @@ class FrontendController extends Controller
                     }
                 }
 
-                return view('service.datatable-card', compact('data', 'totalReviews', 'totalRating', 'favouriteService', 'completedBookingCount', 'col', 'plan_icon'));
+                $hasBookingStarted = Booking::where('service_id', $data->id)->whereNotNull('start_at')->exists();
+                $showEdit = auth()->check() && auth()->user()->hasRole('provider') && (int) auth()->id() === (int) $data->provider_id && ! $hasBookingStarted;
+
+                return view('service.datatable-card', compact('data', 'totalReviews', 'totalRating', 'favouriteService', 'completedBookingCount', 'col', 'plan_icon', 'showEdit'));
             })
             ->order(function ($query) {
                 $query->orderBy('id', 'desc');
@@ -1315,7 +1318,11 @@ class FrontendController extends Controller
                 $service = Service::find($data->id);
                 $serviceImage = $service ? getSingleMedia($service, 'service_attachment', null) : asset('images/default.png');
 
-                return view('service.datatable-card', compact('data', 'totalReviews', 'totalRating', 'favouriteService', 'completedBookingCount', 'plan_icon', 'serviceImage'));
+                // Hide edit when any booking for this service has start_at set (booking has started)
+                $hasBookingStarted = Booking::where('service_id', $data->id)->whereNotNull('start_at')->exists();
+                $showEdit = auth()->check() && auth()->user()->hasRole('provider') && (int) auth()->id() === (int) $data->provider_id && ! $hasBookingStarted;
+
+                return view('service.datatable-card', compact('data', 'totalReviews', 'totalRating', 'favouriteService', 'completedBookingCount', 'plan_icon', 'serviceImage', 'showEdit'));
             })
             ->order(function ($query) {
                 $query->orderBy('id', 'desc');
@@ -1561,7 +1568,9 @@ class FrontendController extends Controller
                         $plan_icon = asset('images/goldpng.png');
                     }
                 }
-                return view('service.datatable-card', compact('data', 'totalReviews', 'totalRating', 'favouriteService', 'plan_icon'));
+                $hasBookingStarted = Booking::where('service_id', $data->id)->whereNotNull('start_at')->exists();
+                $showEdit = auth()->check() && auth()->user()->hasRole('provider') && (int) auth()->id() === (int) $data->provider_id && ! $hasBookingStarted;
+                return view('service.datatable-card', compact('data', 'totalReviews', 'totalRating', 'favouriteService', 'plan_icon', 'showEdit'));
             });
 
         return $datatable->rawColumns(['name'])

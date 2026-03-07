@@ -1,5 +1,18 @@
+@php $showEdit = $showEdit ?? false; @endphp
 <div class="service-box-card bg-white rounded-3 mb-0 shadow-sm h-100" data-service-id="{{ $data->id }}" v-pre>
    <div class="iq-image position-relative" style="height: 200px; width: 100%; overflow: hidden; border-radius: 0.5rem;">
+      {{-- Action dropdown: View / Edit (Edit only for provider owner when no booking has started) --}}
+      <div class="dropdown position-absolute top-0 end-0 m-2" style="z-index: 5;" onclick="event.stopPropagation();">
+         <button class="btn btn-sm btn-light rounded-circle shadow-sm dropdown-toggle" type="button" id="serviceAction-{{ $data->id }}" data-bs-toggle="dropdown" aria-expanded="false" title="{{ __('messages.action') }}">
+            <i class="fa fa-ellipsis-v"></i>
+         </button>
+         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="serviceAction-{{ $data->id }}">
+            <li><a class="dropdown-item" href="{{ route('service.detail', $data->id) }}"><i class="fa fa-eye me-1"></i>{{ __('messages.view') }}</a></li>
+            @if($showEdit)
+            <li><a class="dropdown-item" href="{{ route('service.create', ['id' => $data->id]) }}"><i class="fa fa-edit me-1"></i>{{ __('messages.edit') }}</a></li>
+            @endif
+         </ul>
+      </div>
       @if($data->visit_type == 'ONLINE')
          <span class="online-service"></span>
       @endif
@@ -156,7 +169,7 @@
                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns=" " class="stats-icon text-success">
                         <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                      </svg>
-                     <span class="stats-value"style="font-size: 11px;">{{ $completedBookingCount }}</span>
+                     <span class="stats-value"style="font-size: 11px;">{{ $completedBookingCount ?? 0 }}</span>
                   </div>
                   <div class="stats-label" style="font-size: 11px;">{{ __('landingpage.bookings') }}</div>
                </div>
