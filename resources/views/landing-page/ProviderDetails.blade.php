@@ -8,12 +8,11 @@
     $location = trim(implode(', ', array_filter([$cityName, $countryName])));
     $designation = trim($p['designation'] ?? '');
     $aboutRaw = $p['about_me'] ?? '';
-    $aboutSnippet = $aboutRaw !== '' && $aboutRaw !== null ? \Illuminate\Support\Str::limit(strip_tags($aboutRaw), 120) : '';
+    $aboutSnippet = $aboutRaw !== '' && $aboutRaw !== null ? \Illuminate\Support\Str::limit(strip_tags($aboutRaw), 200) : '';
     $appName = config('app.display_name', 'Frobster');
-    $sep = ' · ';
     $shareDescParts = array_filter([$designation, $location, $aboutSnippet]);
-    $shareDescription = $shareDescParts !== [] ? implode($sep, $shareDescParts) : __('landingpage.pd_service_provider_on') . ' ' . $appName;
-    $shareDescription = \Illuminate\Support\Str::limit($shareDescription, 200);
+    $shareDescription = $shareDescParts !== [] ? implode("\n", $shareDescParts) : __('landingpage.pd_service_provider_on') . ' ' . $appName;
+    $shareDescription = \Illuminate\Support\Str::limit($shareDescription, 300);
     $shareUrl = route('provider.detail', $p['id'] ?? 0);
     $shareImage = !empty($p['profile_image'])
         ? (str_starts_with($p['profile_image'], 'http') ? $p['profile_image'] : url($p['profile_image']))
