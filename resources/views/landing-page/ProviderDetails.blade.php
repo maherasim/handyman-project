@@ -22,26 +22,29 @@
     }
     $shareDescription = $parts !== [] ? implode('. ', $parts) : ($shareTitle . ' - ' . __('landingpage.pd_service_provider_on') . ' ' . $appName);
     $shareDescription = \Illuminate\Support\Str::limit($shareDescription, 297);
+    $shareDescriptionOg = \Illuminate\Support\Str::limit($shareDescription, 256);
+    $shareDescriptionOg = str_replace(["\xE2\x80\xA6", "\xE2\x80\x94", "\xE2\x80\x93"], ['...', '-', '-'], $shareDescriptionOg);
     $shareUrl = route('provider.detail', $p['id'] ?? 0);
     $shareImage = !empty($p['profile_image'])
         ? (str_starts_with($p['profile_image'], 'http') ? $p['profile_image'] : url($p['profile_image']))
         : url('images/post-job/ac_refresh_and_revive.png');
+    $shareImageSecure = str_starts_with($shareImage, 'http://') ? 'https://' . substr($shareImage, 7) : $shareImage;
 @endphp
 @section('before_head')
     <meta name="description" content="{{ $shareDescription }}" />
     <meta property="og:type" content="profile" />
     <meta property="og:title" content="{{ $shareTitle }}" />
-    <meta property="og:description" content="{{ $shareDescription }}" />
+    <meta property="og:description" content="{{ $shareDescriptionOg }}" />
     <meta property="og:url" content="{{ $shareUrl }}" />
-    <meta property="og:image" content="{{ $shareImage }}" />
-    <meta property="og:image:secure_url" content="{{ $shareImage }}" />
+    <meta property="og:image" content="{{ $shareImageSecure }}" />
+    <meta property="og:image:secure_url" content="{{ $shareImageSecure }}" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta property="og:site_name" content="{{ config('app.display_name', 'Frobster') }}" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="{{ $shareTitle }}" />
-    <meta name="twitter:description" content="{{ $shareDescription }}" />
-    <meta name="twitter:image" content="{{ $shareImage }}" />
+    <meta name="twitter:description" content="{{ $shareDescriptionOg }}" />
+    <meta name="twitter:image" content="{{ $shareImageSecure }}" />
     <meta name="twitter:image:alt" content="{{ $shareTitle }} - {{ $designation ?: 'Provider' }}" />
 @endsection
 
