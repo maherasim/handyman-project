@@ -80,9 +80,54 @@
 </div>
 @php
     $providerShareUrl = route('provider.detail', $data->id);
-    $providerQuote = $data->display_name . ' • ' . ($data->designation ?? '') . ' • ' . ($data->city->name ?? '') . ', ' . ($data->country->name ?? '');
+    $location = trim(implode(', ', array_filter([optional($data->city)->name ?? '', optional($data->country)->name ?? ''])));
+    $skillsRaw = $data->skills ?? null;
+    $skillsStr = '';
+    if ($skillsRaw !== null && $skillsRaw !== '') {
+        if (is_string($skillsRaw)) {
+            $decoded = json_decode($skillsRaw, true);
+            $skillsStr = is_array($decoded) ? implode(', ', array_slice($decoded, 0, 5)) : \Illuminate\Support\Str::limit($skillsRaw, 80);
+        } elseif (is_array($skillsRaw)) {
+            $skillsStr = implode(', ', array_slice($skillsRaw, 0, 5));
+        }
+    }
+    $whyChoose = $data->why_choose_me ?? null;
+    $benefitStr = '';
+    if (is_string($whyChoose)) {
+        $whyChoose = json_decode($whyChoose, true);
+    }
+    if (is_array($whyChoose)) {
+        $title = $whyChoose['why_choose_me_title'] ?? '';
+        $reasons = $whyChoose['why_choose_me_reason'] ?? [];
+        $firstReason = is_array($reasons) ? (reset($reasons) ?: '') : (string) $reasons;
+        $benefitStr = trim($title . ($firstReason ? ' — ' . \Illuminate\Support\Str::limit($firstReason, 60) : ''));
+    }
+    $careerLevel = $data->career_level ?? null;
+    $careerStr = $careerLevel ? (is_string($careerLevel) ? ucwords(str_replace('_', ' ', $careerLevel)) : '') : '';
+    $experienceRaw = $data->experience ?? null;
+    $experienceStr = '';
+    if ($experienceRaw !== null && $experienceRaw !== '') {
+        if (is_string($experienceRaw)) {
+            $decoded = json_decode($experienceRaw, true);
+            $experienceStr = is_array($decoded) ? implode(', ', array_slice($decoded, 0, 3)) : \Illuminate\Support\Str::limit($experienceRaw, 60);
+        } elseif (is_array($experienceRaw)) {
+            $experienceStr = implode(', ', array_slice($experienceRaw, 0, 3));
+        }
+    }
+    $aboutMe = isset($data->about_me) && $data->about_me !== '' ? \Illuminate\Support\Str::limit(strip_tags($data->about_me), 100) : '';
+    $parts = array_filter([
+        $data->display_name,
+        $data->designation ?? '',
+        $location ?: null,
+        $careerStr ? 'Career: ' . $careerStr : null,
+        $skillsStr ? 'Skills: ' . $skillsStr : null,
+        $experienceStr ? 'Experience: ' . $experienceStr : null,
+        $benefitStr ? 'Why choose: ' . $benefitStr : null,
+        $aboutMe ? 'About: ' . $aboutMe : null,
+    ]);
+    $providerQuote = implode(' • ', $parts);
     $providerImageUrl = getSingleMedia($data, 'profile_image', null);
-    $providerImageUrl = $providerImageUrl ? (str_starts_with($providerImageUrl, 'http') ? $providerImageUrl : asset($providerImageUrl)) : asset('images/post-job/ac_refresh_and_revive.png');
+    $providerImageUrl = $providerImageUrl ? (str_starts_with($providerImageUrl, 'http') ? $providerImageUrl : url($providerImageUrl)) : url('images/post-job/ac_refresh_and_revive.png');
 @endphp
 <div class="d-flex align-items-center justify-content-center gap-3 mt-1 social-icons">
     <span role="button" tabindex="0" class="social-link share-link" data-platform="facebook" data-share-url="{{ $providerShareUrl }}" data-quote="{{ $providerQuote }}" style="cursor: pointer;" title="Facebook">

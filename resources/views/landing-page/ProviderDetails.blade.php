@@ -5,7 +5,10 @@
     $shareTitle = $p['display_name'] ?? __('landingpage.pd_provider_fallback');
     $shareDescription = trim(\Illuminate\Support\Str::limit(strip_tags($p['description'] ?? $p['designation'] ?? __('landingpage.pd_service_provider_on') . ' ' . config('app.display_name', 'Frobster')), 150));
     $shareUrl = route('provider.detail', $p['id'] ?? 0);
-    $shareImage = !empty($p['profile_image']) ? (str_starts_with($p['profile_image'], 'http') ? $p['profile_image'] : asset($p['profile_image'])) : asset('images/post-job/ac_refresh_and_revive.png');
+    // Use original profile photo with absolute URL so Facebook/social pick it when sharing
+    $shareImage = !empty($p['profile_image'])
+        ? (str_starts_with($p['profile_image'], 'http') ? $p['profile_image'] : url($p['profile_image']))
+        : url('images/post-job/ac_refresh_and_revive.png');
 @endphp
 @section('before_head')
     <meta property="og:type" content="profile" />
@@ -342,7 +345,54 @@
                                             <tr class=" pe-0">
                                                 @php
                                                     $detailShareUrl = route('provider.detail', $p['id'] ?? 0);
-                                                    $detailQuote = ($p['display_name'] ?? '') . ' • ' . ($p['designation'] ?? '') . ' • ' . (data_get($p, 'city.name', '')) . ', ' . (data_get($p, 'country.name', ''));
+                                                    $cityName = data_get($p, 'city.name') ?: ($p['city_name'] ?? '');
+                                                    $countryName = data_get($p, 'country.name') ?: ($p['country_name'] ?? '');
+                                                    $location = trim(implode(', ', array_filter([$cityName, $countryName])));
+                                                    $skillsRaw = $p['skills'] ?? null;
+                                                    $skillsStr = '';
+                                                    if ($skillsRaw !== null && $skillsRaw !== '') {
+                                                        if (is_string($skillsRaw)) {
+                                                            $decoded = json_decode($skillsRaw, true);
+                                                            $skillsStr = is_array($decoded) ? implode(', ', array_slice($decoded, 0, 5)) : \Illuminate\Support\Str::limit($skillsRaw, 80);
+                                                        } elseif (is_array($skillsRaw)) {
+                                                            $skillsStr = implode(', ', array_slice($skillsRaw, 0, 5));
+                                                        }
+                                                    }
+                                                    $whyChoose = $p['why_choose_me'] ?? null;
+                                                    $benefitStr = '';
+                                                    if (is_string($whyChoose)) {
+                                                        $whyChoose = json_decode($whyChoose, true);
+                                                    }
+                                                    if (is_array($whyChoose)) {
+                                                        $title = $whyChoose['why_choose_me_title'] ?? '';
+                                                        $reasons = $whyChoose['why_choose_me_reason'] ?? [];
+                                                        $firstReason = is_array($reasons) ? (reset($reasons) ?: '') : (string) $reasons;
+                                                        $benefitStr = trim($title . ($firstReason ? ' — ' . \Illuminate\Support\Str::limit($firstReason, 60) : ''));
+                                                    }
+                                                    $careerLevel = $p['career_level'] ?? null;
+                                                    $careerStr = $careerLevel ? (is_string($careerLevel) ? ucwords(str_replace('_', ' ', $careerLevel)) : '') : '';
+                                                    $experienceRaw = $p['experience'] ?? null;
+                                                    $experienceStr = '';
+                                                    if ($experienceRaw !== null && $experienceRaw !== '') {
+                                                        if (is_string($experienceRaw)) {
+                                                            $decoded = json_decode($experienceRaw, true);
+                                                            $experienceStr = is_array($decoded) ? implode(', ', array_slice($decoded, 0, 3)) : \Illuminate\Support\Str::limit($experienceRaw, 60);
+                                                        } elseif (is_array($experienceRaw)) {
+                                                            $experienceStr = implode(', ', array_slice($experienceRaw, 0, 3));
+                                                        }
+                                                    }
+                                                    $aboutMe = isset($p['about_me']) && $p['about_me'] !== '' ? \Illuminate\Support\Str::limit(strip_tags($p['about_me']), 100) : '';
+                                                    $parts = array_filter([
+                                                        $p['display_name'] ?? '',
+                                                        $p['designation'] ?? '',
+                                                        $location ?: null,
+                                                        $careerStr ? 'Career: ' . $careerStr : null,
+                                                        $skillsStr ? 'Skills: ' . $skillsStr : null,
+                                                        $experienceStr ? 'Experience: ' . $experienceStr : null,
+                                                        $benefitStr ? 'Why choose: ' . $benefitStr : null,
+                                                        $aboutMe ? 'About: ' . $aboutMe : null,
+                                                    ]);
+                                                    $detailQuote = implode(' • ', $parts);
                                                 @endphp
                                                 <div class="d-flex align-items-center justify-content-center gap-3 mt-3">
                                                     <span role="button" tabindex="0" class="social-link share-link" data-platform="facebook" data-share-url="{{ $detailShareUrl }}" data-quote="{{ $detailQuote }}" onclick="return typeof window.__shareClickHandler === 'function' && window.__shareClickHandler(event, this);" style="cursor: pointer;">
