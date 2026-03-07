@@ -53,12 +53,15 @@ class BookingPayPalController extends Controller
     }
 
     /**
-     * Create PayPal order for booking (same pattern as postjob: id in URL, type + amount in body).
+     * Create PayPal order for booking. Id from URL (create/{id}) or from body (booking_id).
      */
-    public function createPayment(Request $request, $id)
+    public function createPayment(Request $request, $id = null)
     {
         $baseURL = config('app.url') ?: 'https://frobster.com';
-        $bookingId = (int) $id;
+        $bookingId = (int) ($id ?? $request->input('booking_id'));
+        if ($bookingId <= 0) {
+            return comman_custom_response(['error' => 'Missing or invalid booking id.'], 400);
+        }
 
         // full_payment: amount from booking; else: type + amount from body (like postjob)
         $type = strtolower((string) $request->input('type', 'advance'));

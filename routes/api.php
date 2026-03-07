@@ -78,8 +78,8 @@ Route::post('postjob/paypal/create/{id}', [App\Http\Controllers\PostJobRequestCo
 Route::get('postjob/paypal/success/{id}', [App\Http\Controllers\PostJobRequestController::class, 'postJobPayPalSuccessApi'])->name('api.postjob.paypal.success');
 Route::get('postjob/paypal/cancel', [App\Http\Controllers\PostJobRequestController::class, 'postJobPayPalCancelApi'])->name('api.postjob.paypal.cancel');
 
-// Booking PayPal – same pattern as postjob: POST create/{id}, body { type, amount }; success/cancel return JSON
-Route::post('booking-paypal/create/{id}', [API\BookingPayPalController::class, 'createPayment'])->name('api.booking-paypal.create');
+// Booking PayPal – POST create (body: booking_id, type, amount) or POST create/{id} (body: type, amount); success/cancel return JSON
+Route::post('booking-paypal/create/{id?}', [API\BookingPayPalController::class, 'createPayment'])->name('api.booking-paypal.create');
 Route::get('booking-paypal/success/{booking_id}', [App\Http\Controllers\API\BookingPayPalController::class, 'successApi'])->name('api.booking-paypal.success');
 Route::get('booking-paypal/cancel', [App\Http\Controllers\API\BookingPayPalController::class, 'cancelApi'])->name('api.booking-paypal.cancel');
 
