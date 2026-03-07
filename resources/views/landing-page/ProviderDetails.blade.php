@@ -3,22 +3,32 @@
 @php
     $p = $providerData['data'] ?? [];
     $shareTitle = $p['display_name'] ?? __('landingpage.pd_provider_fallback');
-    $cityName = data_get($p, 'city.name') ?: ($p['city_name'] ?? '');
-    $countryName = data_get($p, 'country.name') ?: ($p['country_name'] ?? '');
+    $cityName = data_get($p, 'city.name') ?? ($p['city_name'] ?? '');
+    $countryName = data_get($p, 'country.name') ?? ($p['country_name'] ?? '');
     $location = trim(implode(', ', array_filter([$cityName, $countryName])));
-    $designation = trim($p['designation'] ?? '');
-    $aboutRaw = $p['about_me'] ?? '';
-    $aboutSnippet = $aboutRaw !== '' && $aboutRaw !== null ? \Illuminate\Support\Str::limit(strip_tags($aboutRaw), 200) : '';
+    $designation = trim((string)($p['designation'] ?? ''));
+    $aboutRaw = $p['about_me'] ?? null;
+    $aboutSnippet = ($aboutRaw !== '' && $aboutRaw !== null) ? \Illuminate\Support\Str::limit(strip_tags((string)$aboutRaw), 200) : '';
     $appName = config('app.display_name', 'Frobster');
-    $shareDescParts = array_filter([$designation, $location, $aboutSnippet]);
-    $shareDescription = $shareDescParts !== [] ? implode(' | ', $shareDescParts) : __('landingpage.pd_service_provider_on') . ' ' . $appName;
-    $shareDescription = \Illuminate\Support\Str::limit($shareDescription, 300);
+    $parts = [];
+    if ($designation !== '') {
+        $parts[] = 'Designation: ' . $designation;
+    }
+    if ($location !== '') {
+        $parts[] = 'Location: ' . $location;
+    }
+    if ($aboutSnippet !== '') {
+        $parts[] = 'About: ' . $aboutSnippet;
+    }
+    $shareDescription = $parts !== [] ? implode('. ', $parts) : ($shareTitle . ' - ' . __('landingpage.pd_service_provider_on') . ' ' . $appName);
+    $shareDescription = \Illuminate\Support\Str::limit($shareDescription, 297);
     $shareUrl = route('provider.detail', $p['id'] ?? 0);
     $shareImage = !empty($p['profile_image'])
         ? (str_starts_with($p['profile_image'], 'http') ? $p['profile_image'] : url($p['profile_image']))
         : url('images/post-job/ac_refresh_and_revive.png');
 @endphp
 @section('before_head')
+    <meta name="description" content="{{ $shareDescription }}" />
     <meta property="og:type" content="profile" />
     <meta property="og:title" content="{{ $shareTitle }}" />
     <meta property="og:description" content="{{ $shareDescription }}" />
@@ -32,7 +42,7 @@
     <meta name="twitter:title" content="{{ $shareTitle }}" />
     <meta name="twitter:description" content="{{ $shareDescription }}" />
     <meta name="twitter:image" content="{{ $shareImage }}" />
-    <meta name="twitter:image:alt" content="{{ $shareTitle }} - {{ $designation }}" />
+    <meta name="twitter:image:alt" content="{{ $shareTitle }} - {{ $designation ?: 'Provider' }}" />
 @endsection
 
 @section('after_head')
