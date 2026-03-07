@@ -4,21 +4,16 @@
     $sd = $serviceData['service_detail'] ?? [];
     $ogTitle = \Illuminate\Support\Str::limit($sd['name'] ?? __('landingpage.service'), 80);
     $ogPrice = getPriceFormat($sd['price'] ?? 0);
-    $ogType = ucfirst($sd['type'] ?? 'service');
+    $ogType = ucfirst($sd['type'] ?? 'Fixed');
     $ogCity = $sd['city_name'] ?? '';
     $ogCountry = $sd['country_name'] ?? '';
     $ogLocation = trim(implode(', ', array_filter([$ogCity, $ogCountry])));
     $ogDescRaw = $sd['description'] ?? '';
-    $ogDescSnippet = $ogDescRaw ? \Illuminate\Support\Str::limit(strip_tags($ogDescRaw), 150) : '';
-    $ogParts = ['Price: ' . $ogPrice . ' • ' . $ogType];
-    if ($ogLocation !== '') {
-        $ogParts[] = 'Location: ' . $ogLocation;
-    }
-    if ($ogDescSnippet !== '') {
-        $ogParts[] = $ogDescSnippet;
-    }
-    $ogDescription = $ogTitle . '. ' . implode('. ', $ogParts);
-    $ogDescription = \Illuminate\Support\Str::limit($ogDescription, 256);
+    $ogDescSnippet = $ogDescRaw ? \Illuminate\Support\Str::limit(strip_tags($ogDescRaw), 80) : '';
+    $ogLine1 = $ogTitle;
+    $ogLine2 = 'Price: ' . $ogPrice . ' • Type: ' . $ogType . ($ogLocation !== '' ? ' • Location: ' . $ogLocation : '');
+    $ogDescription = $ogLine2 . ($ogDescSnippet !== '' ? '. ' . $ogDescSnippet : '');
+    $ogDescription = \Illuminate\Support\Str::limit($ogDescription, 300);
     $ogUrl = !empty($sd['id']) ? route('service.detail', $sd['id']) : url()->current();
     $imgUrl = null;
     if (!empty($sd['attchments'][0])) {
