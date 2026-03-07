@@ -6,12 +6,23 @@
     $cityName = data_get($p, 'city.name') ?: ($p['city_name'] ?? '');
     $countryName = data_get($p, 'country.name') ?: ($p['country_name'] ?? '');
     $location = trim(implode(', ', array_filter([$cityName, $countryName])));
-    $designation = $p['designation'] ?? '';
-    $aboutSnippet = isset($p['about_me']) && $p['about_me'] !== '' ? \Illuminate\Support\Str::limit(strip_tags($p['about_me']), 250) : '';
-    $parts = array_filter([$designation, $location, $aboutSnippet ? 'About me: ' . $aboutSnippet : '']);
-    $shareDescription = $parts ? trim(implode(' • ', $parts)) : trim(\Illuminate\Support\Str::limit(strip_tags($p['description'] ?? __('landingpage.pd_service_provider_on') . ' ' . config('app.display_name', 'Frobster')), 150));
+    $designation = trim($p['designation'] ?? '');
+    $aboutRaw = $p['about_me'] ?? '';
+    $aboutSnippet = $aboutRaw !== '' && $aboutRaw !== null ? \Illuminate\Support\Str::limit(strip_tags($aboutRaw), 280) : '';
+    $appName = config('app.display_name', 'Frobster');
+    $shareDescParts = [];
+    if ($designation !== '') {
+        $shareDescParts[] = $designation;
+    }
+    if ($location !== '') {
+        $shareDescParts[] = 'Location: ' . $location;
+    }
+    if ($aboutSnippet !== '') {
+        $shareDescParts[] = 'About me: ' . $aboutSnippet;
+    }
+    $shareDescription = $shareDescParts !== [] ? implode('. ', $shareDescParts) : __('landingpage.pd_service_provider_on') . ' ' . $appName;
+    $shareDescription = \Illuminate\Support\Str::limit($shareDescription, 300);
     $shareUrl = route('provider.detail', $p['id'] ?? 0);
-    // Use original profile photo with absolute URL so Facebook/social pick it when sharing
     $shareImage = !empty($p['profile_image'])
         ? (str_starts_with($p['profile_image'], 'http') ? $p['profile_image'] : url($p['profile_image']))
         : url('images/post-job/ac_refresh_and_revive.png');
