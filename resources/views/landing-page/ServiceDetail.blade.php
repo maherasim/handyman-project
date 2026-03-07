@@ -9,14 +9,29 @@
     $ogCountry = $sd['country_name'] ?? '';
     $ogLocation = trim(implode(', ', array_filter([$ogCity, $ogCountry])));
     $ogDescRaw = $sd['description'] ?? '';
-    $ogDescSnippet = $ogDescRaw ? \Illuminate\Support\Str::limit(strip_tags($ogDescRaw), 200) : '';
-    $ogDescParts = array_filter([$ogTitle, $ogPrice . ' • ' . $ogType, $ogLocation, $ogDescSnippet]);
-    $ogDescription = implode('. ', $ogDescParts);
+    $ogDescSnippet = $ogDescRaw ? \Illuminate\Support\Str::limit(strip_tags($ogDescRaw), 150) : '';
+    $ogParts = ['Price: ' . $ogPrice . ' • ' . $ogType];
+    if ($ogLocation !== '') {
+        $ogParts[] = 'Location: ' . $ogLocation;
+    }
+    if ($ogDescSnippet !== '') {
+        $ogParts[] = $ogDescSnippet;
+    }
+    $ogDescription = $ogTitle . '. ' . implode('. ', $ogParts);
     $ogDescription = \Illuminate\Support\Str::limit($ogDescription, 256);
     $ogUrl = !empty($sd['id']) ? route('service.detail', $sd['id']) : url()->current();
-    $ogImage = !empty($sd['attchments'][0]) ? (str_starts_with($sd['attchments'][0], 'http') ? $sd['attchments'][0] : url($sd['attchments'][0])) : url('images/default.png');
+    $imgUrl = null;
+    if (!empty($sd['attchments'][0])) {
+        $imgUrl = is_string($sd['attchments'][0]) ? $sd['attchments'][0] : ($sd['attchments'][0]['url'] ?? null);
+    }
+    if (!$imgUrl && !empty($sd['attchments_array'][0]['url'])) {
+        $imgUrl = $sd['attchments_array'][0]['url'];
+    }
+    $ogImage = $imgUrl && $imgUrl !== '' ? (str_starts_with($imgUrl, 'http') ? $imgUrl : url($imgUrl)) : url('images/default.png');
+    $ogImage = str_starts_with($ogImage, 'http://') ? 'https://' . substr($ogImage, 7) : $ogImage;
 @endphp
 @section('before_head')
+    <title>{{ $ogTitle }} - {{ config('app.display_name', 'Frobster') }}</title>
     <meta name="description" content="{{ $ogDescription }}" />
     <meta property="og:type" content="website" />
     <meta property="og:title" content="{{ $ogTitle }}" />
@@ -24,6 +39,8 @@
     <meta property="og:url" content="{{ $ogUrl }}" />
     <meta property="og:image" content="{{ $ogImage }}" />
     <meta property="og:image:secure_url" content="{{ $ogImage }}" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
     <meta property="og:site_name" content="{{ config('app.display_name', 'Frobster') }}" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="{{ $ogTitle }}" />
