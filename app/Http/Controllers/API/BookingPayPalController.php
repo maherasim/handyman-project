@@ -60,7 +60,7 @@ class BookingPayPalController extends Controller
         $baseURL = config('app.url') ?: 'https://frobster.com';
         $bookingId = (int) ($id ?? $request->input('booking_id'));
         if ($bookingId <= 0) {
-            return comman_custom_response(['error' => 'Missing or invalid booking id.'], 400);
+            return comman_custom_response(['status' => false, 'error' => 'Missing or invalid booking id.'], 400);
         }
 
         // full_payment: amount from booking; else: type + amount from body (like postjob)
@@ -73,7 +73,27 @@ class BookingPayPalController extends Controller
             $amount = number_format((float)$amount, 2, '.', '');
         }
         if ((float)$amount <= 0) {
-            return comman_custom_response(['error' => 'Invalid or missing payment amount.'], 400);
+            return comman_custom_response(['status' => false, 'error' => 'Invalid or missing payment amount.'], 400);
+        }
+
+        // Create pending Payment so success callback can find and update it (same as web flow expects)
+        $booking = Booking::find($bookingId);
+        if (!$booking) {
+            return comman_custom_response(['status' => false, 'error' => 'Booking not found.'], 404);
+        }
+        $existing = Payment::where('booking_id', $bookingId)->where('payment_type', 'paypal')->where('payment_status', 'pending')->first();
+        if ($existing) {
+            $existing->update(['total_amount' => (float) $amount, 'datetime' => now()->format('Y-m-d H:i:s')]);
+        } else {
+            Payment::create([
+                'booking_id' => $bookingId,
+                'customer_id' => $booking->customer_id,
+                'datetime' => now()->format('Y-m-d H:i:s'),
+                'total_amount' => (float) $amount,
+                'payment_type' => 'paypal',
+                'payment_status' => 'pending',
+                'txn_id' => null,
+            ]);
         }
 
         $order = new OrdersCreateRequest();
@@ -113,9 +133,9 @@ class BookingPayPalController extends Controller
         try {
             $response = $this->client->execute($order);
             $approvalLink = collect($response->result->links)->firstWhere('rel', 'approve')->href;
-            return comman_custom_response(['url' => $approvalLink]);
+            return comman_custom_response(['status' => true, 'url' => $approvalLink]);
         } catch (\Exception $e) {
-            return comman_custom_response(['error' => 'PayPal Create Payment Error: ' . $e->getMessage()]);
+            return comman_custom_response(['status' => false, 'error' => 'PayPal Create Payment Error: ' . $e->getMessage()]);
         }
     }
 
@@ -138,6 +158,11 @@ class BookingPayPalController extends Controller
             $response = $this->client->execute($captureRequest);
             if ($response->statusCode !== 201 && $response->statusCode !== 200) {
                 return response()->json(['status' => false, 'message' => 'Payment not completed'], 400);
+            }
+            $paypalTxnId = $response->result->id ?? null;
+            $payment = Payment::where('booking_id', (int) $booking_id)->latest()->first();
+            if ($payment && $paypalTxnId) {
+                $payment->update(['txn_id' => $paypalTxnId]);
             }
             $this->processBookingPayPalSuccess((int) $booking_id, $type);
             return response()->json([
@@ -163,8 +188,9 @@ class BookingPayPalController extends Controller
     }
 
     /**
-     * Process booking after PayPal capture: payment, commission, wallet, notifications.
-     * Shared by successApi() (JSON) and success() (redirect).
+     * Process booking after PayPal capture – same logic as PayPalController::success (web).
+     * Updates: Payment, PaymentHistory, advance/paid commission, Wallet, CommissionEarning,
+     * HandymanPayout, ProviderPayout, booking payment_id/status/advance_paid_amount, sendNotification.
      */
     protected function processBookingPayPalSuccess(int $id, string $type): void
     {
