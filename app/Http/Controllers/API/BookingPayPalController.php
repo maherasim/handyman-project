@@ -141,6 +141,8 @@ class BookingPayPalController extends Controller
 
     /**
      * PayPal redirects here after payment. Capture order and run full booking payment flow; return JSON.
+     * When type is missing (e.g. app calls without type), default to advance_payment so booking is not marked completed.
+     * Idempotent: if this payment was already processed (has txn_id), return success without re-running.
      */
     public function successApi(Request $request, $booking_id)
     {
@@ -149,6 +151,19 @@ class BookingPayPalController extends Controller
 
         if (!$token) {
             return response()->json(['status' => false, 'message' => 'Missing PayPal token'], 400);
+        }
+
+        $payment = Payment::where('booking_id', (int) $booking_id)->latest()->first();
+        if ($payment && $payment->txn_id) {
+            return response()->json([
+                'status' => true,
+                'message' => __('messages.payment_success_proceed'),
+                'booking_id' => (int) $booking_id,
+            ]);
+        }
+
+        if ($type === '') {
+            $type = 'advance_payment';
         }
 
         $captureRequest = new OrdersCaptureRequest($token);
