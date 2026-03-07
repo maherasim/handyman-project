@@ -59,12 +59,16 @@ class BookingPayPalController extends Controller
     {
         $baseURL = config('app.url') ?: 'https://frobster.com';
 
-        // Same logic as PayPalController::createPayment
+        // full_payment: from booking; else: app may send "amount" or "total_amount"
         if ($request->type == 'full_payment') {
             $booking = Booking::find($request->booking_id);
-            $amount = $booking->total_amount - $booking->advance_paid_amount;
+            $amount = $booking ? ($booking->total_amount - $booking->advance_paid_amount) : 0;
         } else {
-            $amount = number_format((float)$request->total_amount, 2, '.', '');
+            $amount = $request->input('amount') ?? $request->input('total_amount');
+            $amount = number_format((float)$amount, 2, '.', '');
+        }
+        if ((float)$amount <= 0) {
+            return comman_custom_response(['error' => 'Invalid or missing payment amount.'], 400);
         }
 
         $order = new OrdersCreateRequest();
@@ -165,7 +169,9 @@ class BookingPayPalController extends Controller
             return;
         }
 
-        $result->payment_status = ($type == 'advance_payment') ? 'advanced_paid' : 'paid';
+        // App may send type "advance" or "advance_payment"
+        $isAdvance = in_array((string)$type, ['advance', 'advance_payment'], true);
+        $result->payment_status = $isAdvance ? 'advanced_paid' : 'paid';
 
         $firstHandymanId = optional($booking->handymanAdded()->first())->id;
         $assignedUserData = optional(User::find($firstHandymanId));
