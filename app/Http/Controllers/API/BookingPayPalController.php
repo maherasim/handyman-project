@@ -53,16 +53,18 @@ class BookingPayPalController extends Controller
     }
 
     /**
-     * Create PayPal order for booking; return/cancel URLs point to this API (for app).
+     * Create PayPal order for booking (same pattern as postjob: id in URL, type + amount in body).
      */
-    public function createPayment(Request $request)
+    public function createPayment(Request $request, $id)
     {
         $baseURL = config('app.url') ?: 'https://frobster.com';
+        $bookingId = (int) $id;
 
-        // full_payment: from booking; else: app may send "amount" or "total_amount"
-        if ($request->type == 'full_payment') {
-            $booking = Booking::find($request->booking_id);
-            $amount = $booking ? ($booking->total_amount - $booking->advance_paid_amount) : 0;
+        // full_payment: amount from booking; else: type + amount from body (like postjob)
+        $type = strtolower((string) $request->input('type', 'advance'));
+        if ($type === 'full_payment') {
+            $booking = Booking::find($bookingId);
+            $amount = $booking ? ($booking->total_amount - ($booking->advance_paid_amount ?? 0)) : 0;
         } else {
             $amount = $request->input('amount') ?? $request->input('total_amount');
             $amount = number_format((float)$amount, 2, '.', '');
@@ -83,7 +85,7 @@ class BookingPayPalController extends Controller
             $currencyCode = 'EUR';
         }
 
-        $returnUrl = $baseURL . '/api/booking-paypal/success/' . $request->booking_id . '?type=' . $request->type;
+        $returnUrl = $baseURL . '/api/booking-paypal/success/' . $bookingId . '?type=' . $type;
         $cancelUrl = $baseURL . '/api/booking-paypal/cancel';
 
         $order->prefer('return=representation');
@@ -94,7 +96,7 @@ class BookingPayPalController extends Controller
                     'currency_code' => $currencyCode,
                     'value' => $amount
                 ],
-                'description' => 'Payment for Booking #' . $request->booking_id
+                'description' => 'Payment for Booking #' . $bookingId
             ]],
             'application_context' => [
                 'cancel_url' => $cancelUrl,
