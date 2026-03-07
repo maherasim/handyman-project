@@ -2,18 +2,18 @@
 
 @php
     $sd = $serviceData['service_detail'] ?? [];
-    $ogTitle = \Illuminate\Support\Str::limit($sd['name'] ?? __('landingpage.service'), 80);
+    $ogName = \Illuminate\Support\Str::limit($sd['name'] ?? __('landingpage.service'), 60);
     $ogPrice = getPriceFormat($sd['price'] ?? 0);
-    $ogType = ucfirst($sd['type'] ?? 'Fixed');
-    $ogCity = $sd['city_name'] ?? '';
-    $ogCountry = $sd['country_name'] ?? '';
+    $ogType = ucfirst(trim($sd['type'] ?? 'fixed'));
+    $ogCity = trim($sd['city_name'] ?? '');
+    $ogCountry = trim($sd['country_name'] ?? '');
     $ogLocation = trim(implode(', ', array_filter([$ogCity, $ogCountry])));
+    $ogTitle = $ogName . ' | ' . $ogPrice . ' | ' . $ogType . ($ogLocation !== '' ? ' | ' . $ogLocation : '');
+    $ogTitle = \Illuminate\Support\Str::limit($ogTitle, 100);
     $ogDescRaw = $sd['description'] ?? '';
-    $ogDescSnippet = $ogDescRaw ? \Illuminate\Support\Str::limit(strip_tags($ogDescRaw), 80) : '';
-    $ogLine1 = $ogTitle;
-    $ogLine2 = 'Price: ' . $ogPrice . ' • Type: ' . $ogType . ($ogLocation !== '' ? ' • Location: ' . $ogLocation : '');
-    $ogDescription = $ogLine2 . ($ogDescSnippet !== '' ? '. ' . $ogDescSnippet : '');
-    $ogDescription = \Illuminate\Support\Str::limit($ogDescription, 300);
+    $ogDescSnippet = $ogDescRaw ? \Illuminate\Support\Str::limit(strip_tags($ogDescRaw), 100) : '';
+    $ogDescription = 'Price: ' . $ogPrice . ' | Type: ' . $ogType . ($ogLocation !== '' ? ' | Location: ' . $ogLocation : '') . ($ogDescSnippet !== '' ? '. ' . $ogDescSnippet : '');
+    $ogDescription = \Illuminate\Support\Str::limit($ogDescription, 256);
     $ogUrl = !empty($sd['id']) ? route('service.detail', $sd['id']) : url()->current();
     $imgUrl = null;
     if (!empty($sd['attchments'][0])) {
@@ -26,7 +26,7 @@
     $ogImage = str_starts_with($ogImage, 'http://') ? 'https://' . substr($ogImage, 7) : $ogImage;
 @endphp
 @section('before_head')
-    <title>{{ $ogTitle }} - {{ config('app.display_name', 'Frobster') }}</title>
+    <title>{{ $ogName }} - {{ config('app.display_name', 'Frobster') }}</title>
     <meta name="description" content="{{ $ogDescription }}" />
     <meta property="og:type" content="website" />
     <meta property="og:title" content="{{ $ogTitle }}" />
