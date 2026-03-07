@@ -25,3 +25,51 @@
 </div>
 
 @endsection
+
+@section('after_script')
+<script>
+(function() {
+    window.__shareClickHandler = function(e, el) {
+        try { e.preventDefault(); e.stopPropagation(); } catch (_) {}
+        function openPopup(url) { window.open(url, '_blank', 'noopener,noreferrer,width=600,height=600'); }
+        var platform = el.getAttribute('data-platform');
+        var shareUrl = el.getAttribute('data-share-url') || window.location.href;
+        if (platform === 'facebook') {
+            var fbUrl = encodeURIComponent(shareUrl);
+            var quote = encodeURIComponent(el.getAttribute('data-quote') || '');
+            openPopup('https://www.facebook.com/sharer/sharer.php?u=' + fbUrl + (quote ? '&quote=' + quote : ''));
+        } else if (platform === 'twitter') {
+            var text = encodeURIComponent(el.getAttribute('data-text') || el.getAttribute('data-quote') || '');
+            var url = encodeURIComponent(shareUrl);
+            openPopup('https://twitter.com/intent/tweet?url=' + url + '&text=' + text);
+        } else if (platform === 'linkedin') {
+            openPopup('https://www.linkedin.com/sharing/share-offsite/?url=' + encodeURIComponent(shareUrl));
+        } else if (platform === 'instagram') {
+            var quote = el.getAttribute('data-quote') || '';
+            var textToCopy = quote ? quote + ' ' + shareUrl : shareUrl;
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(textToCopy).then(function() {
+                    if (typeof window.__shareCopyToast === 'function') window.__shareCopyToast();
+                }).catch(function() { fallbackCopy(textToCopy); });
+            } else { fallbackCopy(textToCopy); }
+            function fallbackCopy(str) {
+                var ta = document.createElement('textarea');
+                ta.value = str; ta.setAttribute('readonly', ''); ta.style.position = 'fixed'; ta.style.left = '-9999px';
+                document.body.appendChild(ta); ta.select();
+                try { document.execCommand('copy'); if (typeof window.__shareCopyToast === 'function') window.__shareCopyToast(); } catch (err) {}
+                document.body.removeChild(ta);
+            }
+        }
+        return false;
+    };
+    document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('click', function(e) {
+            var el = e.target.closest && e.target.closest('.share-link');
+            if (el && typeof window.__shareClickHandler === 'function') {
+                window.__shareClickHandler(e, el);
+            }
+        });
+    });
+})();
+</script>
+@endsection

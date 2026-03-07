@@ -1,5 +1,35 @@
 @extends('landing-page.layouts.default')
 
+@php
+    $sd = $serviceData['service_detail'] ?? [];
+    $ogTitle = \Illuminate\Support\Str::limit($sd['name'] ?? __('landingpage.service'), 80);
+    $ogPrice = getPriceFormat($sd['price'] ?? 0);
+    $ogType = ucfirst($sd['type'] ?? 'service');
+    $ogCity = $sd['city_name'] ?? '';
+    $ogCountry = $sd['country_name'] ?? '';
+    $ogLocation = trim(implode(', ', array_filter([$ogCity, $ogCountry])));
+    $ogDescRaw = $sd['description'] ?? '';
+    $ogDescSnippet = $ogDescRaw ? \Illuminate\Support\Str::limit(strip_tags($ogDescRaw), 200) : '';
+    $ogDescParts = array_filter([$ogTitle, $ogPrice . ' • ' . $ogType, $ogLocation, $ogDescSnippet]);
+    $ogDescription = implode('. ', $ogDescParts);
+    $ogDescription = \Illuminate\Support\Str::limit($ogDescription, 256);
+    $ogUrl = !empty($sd['id']) ? route('service.detail', $sd['id']) : url()->current();
+    $ogImage = !empty($sd['attchments'][0]) ? (str_starts_with($sd['attchments'][0], 'http') ? $sd['attchments'][0] : url($sd['attchments'][0])) : url('images/default.png');
+@endphp
+@section('before_head')
+    <meta name="description" content="{{ $ogDescription }}" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="{{ $ogTitle }}" />
+    <meta property="og:description" content="{{ $ogDescription }}" />
+    <meta property="og:url" content="{{ $ogUrl }}" />
+    <meta property="og:image" content="{{ $ogImage }}" />
+    <meta property="og:image:secure_url" content="{{ $ogImage }}" />
+    <meta property="og:site_name" content="{{ config('app.display_name', 'Frobster') }}" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="{{ $ogTitle }}" />
+    <meta name="twitter:description" content="{{ $ogDescription }}" />
+    <meta name="twitter:image" content="{{ $ogImage }}" />
+@endsection
 
 @section('after_head')
  
