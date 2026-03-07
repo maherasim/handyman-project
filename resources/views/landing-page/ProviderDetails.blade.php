@@ -11,7 +11,7 @@
     $aboutSnippet = $aboutRaw !== '' && $aboutRaw !== null ? \Illuminate\Support\Str::limit(strip_tags($aboutRaw), 200) : '';
     $appName = config('app.display_name', 'Frobster');
     $shareDescParts = array_filter([$designation, $location, $aboutSnippet]);
-    $shareDescription = $shareDescParts !== [] ? implode("\n", $shareDescParts) : __('landingpage.pd_service_provider_on') . ' ' . $appName;
+    $shareDescription = $shareDescParts !== [] ? implode(' | ', $shareDescParts) : __('landingpage.pd_service_provider_on') . ' ' . $appName;
     $shareDescription = \Illuminate\Support\Str::limit($shareDescription, 300);
     $shareUrl = route('provider.detail', $p['id'] ?? 0);
     $shareImage = !empty($p['profile_image'])
@@ -25,11 +25,14 @@
     <meta property="og:url" content="{{ $shareUrl }}" />
     <meta property="og:image" content="{{ $shareImage }}" />
     <meta property="og:image:secure_url" content="{{ $shareImage }}" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
     <meta property="og:site_name" content="{{ config('app.display_name', 'Frobster') }}" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="{{ $shareTitle }}" />
     <meta name="twitter:description" content="{{ $shareDescription }}" />
     <meta name="twitter:image" content="{{ $shareImage }}" />
+    <meta name="twitter:image:alt" content="{{ $shareTitle }} - {{ $designation }}" />
 @endsection
 
 @section('after_head')
