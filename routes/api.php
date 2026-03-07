@@ -72,7 +72,7 @@ Route::get('provider-reviews',[API\User\UserController::class, 'providerReviewsL
 Route::post('service-reviews', [ API\ServiceController::class, 'serviceReviewsList' ] );
 Route::get('post-job-status', [ API\PostJobRequestController::class, 'postRequestStatus' ] );
 // Route::get('booking-list', [ API\BookingController::class, 'getBookingList' ] );sinc
-  
+
 // Post Job PayPal – pure API return/cancel (no auth; PayPal redirects the browser here)
 Route::post('postjob/paypal/create/{id}', [App\Http\Controllers\PostJobRequestController::class, 'createPostJobPayPalPayment'])->name('postjob.paypal.create');
 Route::get('postjob/paypal/success/{id}', [App\Http\Controllers\PostJobRequestController::class, 'postJobPayPalSuccessApi'])->name('api.postjob.paypal.success');
@@ -80,7 +80,7 @@ Route::get('postjob/paypal/cancel', [App\Http\Controllers\PostJobRequestControll
 
 // Booking PayPal API – same commission/wallet/payment logic as PayPalController::success (web)
 Route::post('booking-paypal/create/{id?}', [API\BookingPayPalController::class, 'createPayment'])->name('api.booking-paypal.create');
-Route::get('booking-paypal/success/{booking_id}', [App\Http\Controllers\PayPalController::class, 'success'])->name('api.booking-paypal.success');
+Route::get('booking-paypal/success/{booking_id}', [App\Http\Controllers\API\BookingPayPalController::class, 'successApi'])->name('api.booking-paypal.success');
 Route::get('booking-paypal/cancel', [App\Http\Controllers\API\BookingPayPalController::class, 'cancelApi'])->name('api.booking-paypal.cancel');
 
 Route::group(['middleware' => ['auth:sanctum']], function () {

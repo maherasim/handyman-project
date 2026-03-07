@@ -159,17 +159,18 @@ class BookingPayPalController extends Controller
             if ($response->statusCode !== 201 && $response->statusCode !== 200) {
                 return response()->json(['status' => false, 'message' => 'Payment not completed'], 400);
             }
+
             $paypalTxnId = $response->result->id ?? null;
-            $payment = Payment::where('booking_id', (int) $booking_id)->latest()->first();
-            if ($payment && $paypalTxnId) {
-                $payment->update(['txn_id' => $paypalTxnId]);
+            $status = $this->handleBookingSuccess((int) $booking_id, $type, $paypalTxnId);
+
+            if ($status) {
+                return response()->json([
+                    'status' => true,
+                    'message' => __('messages.payment_success_proceed'),
+                    'booking_id' => (int) $booking_id,
+                ]);
             }
-            $this->processBookingPayPalSuccess((int) $booking_id, $type);
-            return response()->json([
-                'status' => true,
-                'message' => __('messages.payment_success_proceed'),
-                'booking_id' => (int) $booking_id,
-            ]);
+            return response()->json(['status' => false, 'message' => 'Booking or Payment record not found'], 404);
         } catch (\Exception $e) {
             \Log::error('BookingPayPal API Success Error: ' . $e->getMessage());
             return response()->json(['status' => false, 'message' => 'Payment failed: ' . $e->getMessage()], 500);
@@ -177,33 +178,58 @@ class BookingPayPalController extends Controller
     }
 
     /**
-     * PayPal redirects here on cancel. Return JSON for app.
+     * Web redirect flow (if used from dashboard): capture then redirect to booking-list.
      */
-    public function cancelApi(Request $request)
+    public function success(Request $request, $booking_id = null)
     {
-        return response()->json([
-            'status' => false,
-            'message' => __('messages.payment_cancelled_return_to_app'),
-        ]);
+        $token = $request->query('token');
+        $id = $booking_id ?? $request->booking_id;
+        $type = $request->type;
+
+        if (!$token) {
+            return redirect()->back()->with('error', 'Missing PayPal token');
+        }
+
+        $captureRequest = new OrdersCaptureRequest($token);
+        $captureRequest->prefer('return=representation');
+
+        try {
+            $response = $this->client->execute($captureRequest);
+
+            if ($response->statusCode === 201 || $response->statusCode === 200) {
+                $paypalTxnId = $response->result->id ?? null;
+                $this->handleBookingSuccess((int) $id, (string) $type, $paypalTxnId);
+                return redirect('/booking-list');
+            }
+
+            return redirect()->back()->with('error', 'Payment not completed');
+        } catch (\Exception $e) {
+            \Log::error("PayPal Success Error: " . $e->getMessage());
+            return redirect()->back()->with('error', 'Payment failed: ' . $e->getMessage());
+        }
     }
 
     /**
-     * Process booking after PayPal capture – same logic as PayPalController::success (web).
-     * Updates: Payment, PaymentHistory, advance/paid commission, Wallet, CommissionEarning,
-     * HandymanPayout, ProviderPayout, booking payment_id/status/advance_paid_amount, sendNotification.
+     * Unified logic for processing booking after PayPal capture.
      */
-    protected function processBookingPayPalSuccess(int $id, string $type): void
+    private function handleBookingSuccess(int $id, string $type, ?string $paypalTxnId): bool
     {
         $result = Payment::where('booking_id', $id)->latest()->first();
         $booking = Booking::find($id);
+
         if (!$result || !$booking) {
-            return;
+            return false;
+        }
+
+        if ($paypalTxnId) {
+            $result->txn_id = $paypalTxnId;
         }
 
         // App may send type "advance" or "advance_payment"
         $isAdvance = in_array((string)$type, ['advance', 'advance_payment'], true);
         $result->payment_status = $isAdvance ? 'advanced_paid' : 'paid';
 
+        // Identify receiver ( first handyman assigned to booking )
         $firstHandymanId = optional($booking->handymanAdded()->first())->id;
         $assignedUserData = optional(User::find($firstHandymanId));
 
@@ -211,13 +237,13 @@ class BookingPayPalController extends Controller
             $payment_history = [
                 'payment_id' => $result->id,
                 'booking_id' => $result->booking_id,
-                'parent_id' => $result->booking_id,
+                'parent_id' => $result->booking_id, 
                 'action' => config('constant.PAYMENT_HISTORY_ACTION.CUSTOMER_SEND_PROVIDER'),
                 'status' => config('constant.PAYMENT_HISTORY_STATUS.PENDING_PROVIDER'),
                 'sender_id' => $booking->customer_id,
                 'receiver_id' => $firstHandymanId,
                 'datetime' => now(),
-                'total_amount' => $result->total_amount,
+                'total_amount' => (float)$result->total_amount,
                 'txn_id' => $result->txn_id,
                 'type' => $result->payment_type,
                 'text' => __('messages.payment_transfer', [
@@ -226,6 +252,7 @@ class BookingPayPalController extends Controller
                     'amount' => getPriceFormat((float)$result->total_amount),
                 ]),
             ];
+
             $res = PaymentHistory::create($payment_history);
             $res->parent_id = $res->id;
             $res->save();
@@ -236,31 +263,41 @@ class BookingPayPalController extends Controller
             $advance_paid_amount = $result->total_amount;
             $admin_commission_percentage = Setting::getValueByKey('admin_commission_percentage', 'site-setup')->value ?? 10;
             $admin_commission_amount = ($advance_paid_amount * $admin_commission_percentage) / 100;
+
             $admin_user_id = User::where('user_type', 'admin')->value('id');
-            Wallet::firstOrCreate(['user_id' => $admin_user_id])->increment('amount', $admin_commission_amount);
-            CommissionEarning::create([
-                'booking_id' => $booking->id,
-                'user_type' => 'admin',
-                'employee_id' => $admin_user_id,
-                'commission_amount' => $admin_commission_amount,
-                'commission_status' => 'paid',
-            ]);
+            if ($admin_user_id) {
+                Wallet::firstOrCreate(['user_id' => $admin_user_id])->increment('amount', $admin_commission_amount);
+
+                CommissionEarning::create([
+                    'booking_id' => $booking->id,
+                    'user_type' => 'admin',
+                    'employee_id' => $admin_user_id,
+                    'commission_amount' => $admin_commission_amount,
+                    'commission_status' => 'paid',
+                ]);
+            }
         }
 
         if ($result->payment_status == 'paid') {
             $booking->status = 'completed';
             $booking->update();
+
             $advance_paid = $booking->advance_paid_amount ?? 0;
             $total_amount = $booking->total_amount;
             $remaining_amount = $total_amount - $advance_paid;
+            
             $result->total_amount = $remaining_amount;
             $result->save();
+
             $admin_commission_percentage = Setting::getValueByKey('admin_commission_percentage', 'site-setup')->value ?? 10;
             $admin_user_id = User::where('user_type', 'admin')->value('id');
+
             $extra_total = $booking->getExtraChargeValue();
+            
             $remaining_admin_commission = ($remaining_amount > 0)
                 ? ($remaining_amount * $admin_commission_percentage) / 100
                 : 0;
+
             $provider_side_advance = ($advance_paid * (100 - $admin_commission_percentage)) / 100;
             $provider_side_remaining = ($remaining_amount * 90) / 100;
             $pool = $provider_side_advance + max(0, $provider_side_remaining - $extra_total);
@@ -278,6 +315,7 @@ class BookingPayPalController extends Controller
                 $total_handyman_share += $handyman_share;
                 $handyman_payouts[] = ['handyman_id' => $handyman_id, 'amount' => $handyman_share];
             }
+
             $provider_from_pool = max(0, $pool - $total_handyman_share);
             $provider_extra_earning = $extra_total;
             $provider_final_earning = $provider_from_pool + $provider_extra_earning;
@@ -293,6 +331,7 @@ class BookingPayPalController extends Controller
                     'payment_method' => 'wallet',
                     'payment_gateway' => 'wallet',
                 ]);
+
                 CommissionEarning::create([
                     'booking_id' => $booking->id,
                     'user_type' => 'handyman',
@@ -301,8 +340,10 @@ class BookingPayPalController extends Controller
                     'commission_status' => 'paid',
                 ]);
             }
-            if ($remaining_admin_commission > 0) {
+
+            if ($remaining_admin_commission > 0 && $admin_user_id) {
                 Wallet::firstOrCreate(['user_id' => $admin_user_id])->increment('amount', $remaining_admin_commission);
+
                 CommissionEarning::create([
                     'booking_id' => $booking->id,
                     'user_type' => 'admin',
@@ -311,7 +352,9 @@ class BookingPayPalController extends Controller
                     'commission_status' => 'paid',
                 ]);
             }
+
             Wallet::firstOrCreate(['user_id' => $booking->provider_id])->increment('amount', $provider_final_earning);
+
             ProviderPayout::create([
                 'provider_id' => $booking->provider_id,
                 'amount' => $provider_final_earning,
@@ -321,6 +364,7 @@ class BookingPayPalController extends Controller
                 'booking_id' => $booking->id,
                 'payment_gateway' => 'wallet',
             ]);
+
             CommissionEarning::create([
                 'booking_id' => $booking->id,
                 'user_type' => 'provider',
@@ -328,49 +372,34 @@ class BookingPayPalController extends Controller
                 'commission_amount' => $provider_final_earning,
                 'commission_status' => 'paid',
             ]);
+
             CommissionEarning::where('booking_id', $booking->id)->update(['commission_status' => 'paid']);
         }
 
         $booking->payment_id = $result->id;
         $booking->update();
         $result->update();
+
         $activity_data = [
             'activity_type' => 'payment_message_status',
-            'payment_status' => str_replace('_', ' ', ucfirst($result->payment_status)),
+            'payment_status' => str_replace("_", " ", ucfirst($result->payment_status)),
             'booking_id' => $booking->id,
             'booking' => $booking,
         ];
         $this->sendNotification($activity_data);
+
+        return true;
+    }
+    public function cancelApi(Request $request)
+    {
+        return response()->json([
+            'status' => false,
+            'message' => __('messages.payment_cancelled_return_to_app'),
+        ]);
     }
 
-    /**
-     * Web redirect flow (if used from dashboard): capture then redirect to booking-list.
-     */
-    public function success(Request $request)
+    public function cancel()
     {
-        $token = $request->query('token');
-        $id = $request->booking_id;
-        $type = $request->type;
-
-        if (!$token) {
-            return redirect()->back()->with('error', 'Missing PayPal token');
-        }
-
-        $captureRequest = new OrdersCaptureRequest($token);
-        $captureRequest->prefer('return=representation');
-
-        try {
-            $response = $this->client->execute($captureRequest);
-
-            if ($response->statusCode === 201 || $response->statusCode === 200) {
-                $this->processBookingPayPalSuccess((int) $id, (string) $type);
-                return redirect('/booking-list');
-            }
-
-            return redirect()->back()->with('error', 'Payment not completed');
-        } catch (\Exception $e) {
-            \Log::error("PayPal Success Error: " . $e->getMessage());
-            return redirect()->back()->with('error', 'Payment failed: ' . $e->getMessage());
-        }
+        return redirect()->back()->with('error', 'Payment was canceled');
     }
 }
