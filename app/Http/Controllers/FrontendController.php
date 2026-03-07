@@ -1358,7 +1358,7 @@ class FrontendController extends Controller
         $query = User::query()
             ->where('user_type', 'provider')
             ->where('status', 1)
-            ->with('providerSubscription'); // Make sure relation is eager loaded
+            ->with(['providerSubscription', 'city', 'country']); // Make sure relation is eager loaded
 
         $filter = $request->filter;
         if (isset($filter['search'])) {

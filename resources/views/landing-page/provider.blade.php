@@ -75,15 +75,39 @@ window.__shareClickHandler = function(e, el) {
     } else if (platform === 'linkedin') {
         openPopup('https://www.linkedin.com/sharing/share-offsite/?url=' + encodeURIComponent(shareUrl));
     } else if (platform === 'instagram') {
-        // Instagram has no web share URL; copy link so user can paste in Instagram
-        var quote = el.getAttribute('data-quote') || '';
+        // Instagram has no share URL like Facebook/LinkedIn. Use native Share so user can pick Instagram (share sheet → tap Instagram).
+        var quote = (el.getAttribute('data-quote') || '').trim();
+        var shareTitle = quote ? quote.split('|')[0].trim() : (document.title || 'Provider');
         var textToCopy = quote ? quote + ' ' + shareUrl : shareUrl;
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-            navigator.clipboard.writeText(textToCopy).then(function() {
-                if (typeof window.__shareCopyToast === 'function') window.__shareCopyToast();
-            }).catch(function() { fallbackCopy(textToCopy); });
+        if (navigator.share) {
+            navigator.share({
+                title: shareTitle,
+                text: quote || shareTitle,
+                url: shareUrl
+            }).then(function() {
+                if (typeof window.__shareCopyToast === 'function') {
+                    var msg = document.createElement('div');
+                    msg.setAttribute('role', 'status');
+                    msg.className = 'share-copy-toast';
+                    msg.textContent = 'Shared! Open Instagram to post if needed.';
+                    msg.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:10px 20px;border-radius:8px;font-size:14px;z-index:9999;box-shadow:0 4px 12px rgba(0,0,0,0.2);';
+                    document.body.appendChild(msg);
+                    setTimeout(function() { if (msg.parentNode) msg.parentNode.removeChild(msg); }, 2000);
+                }
+            }).catch(function(err) {
+                if (err && err.name !== 'AbortError') copyAndNotify();
+            });
         } else {
-            fallbackCopy(textToCopy);
+            copyAndNotify();
+        }
+        function copyAndNotify() {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(textToCopy).then(function() {
+                    if (typeof window.__shareCopyToast === 'function') window.__shareCopyToast();
+                }).catch(function() { fallbackCopy(textToCopy); });
+            } else {
+                fallbackCopy(textToCopy);
+            }
         }
         function fallbackCopy(str) {
             var ta = document.createElement('textarea');
@@ -96,7 +120,7 @@ window.__shareClickHandler = function(e, el) {
                 document.execCommand('copy');
                 if (typeof window.__shareCopyToast === 'function') window.__shareCopyToast();
             } catch (err) {}
-            document.body.removeChild(ta);
+            if (ta.parentNode) ta.parentNode.removeChild(ta);
         }
     }
     return false;
