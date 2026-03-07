@@ -79,8 +79,8 @@
   
 </div>
 @php
-    $providerShareUrl = route('provider.detail', $data->id);
-    $location = trim(implode(', ', array_filter([optional($data->city)->name ?? '', optional($data->country)->name ?? ''])));
+    $providerShareUrl = route('provider.detail', $data->id) . '?v=' . time();
+    $location = trim(implode(', ', array_filter([$data->city->name ?? null, $data->country->name ?? null])));
     $skillsRaw = $data->skills ?? null;
     $skillsStr = '';
     if ($skillsRaw !== null && $skillsRaw !== '') {
@@ -114,18 +114,16 @@
             $experienceStr = implode(', ', array_slice($experienceRaw, 0, 3));
         }
     }
-    $aboutMe = isset($data->about_me) && $data->about_me !== '' ? \Illuminate\Support\Str::limit(strip_tags($data->about_me), 100) : '';
+    $aboutMe = isset($data->about_me) && $data->about_me !== '' ? \Illuminate\Support\Str::limit(strip_tags($data->about_me), 250) : '';
     $parts = array_filter([
         $data->display_name,
-        $data->designation ?? '',
-        $location ?: null,
-        $careerStr ? 'Career: ' . $careerStr : null,
+        $data->designation ? $data->designation : null,
+        $location ? 'Location: ' . $location : null,
         $skillsStr ? 'Skills: ' . $skillsStr : null,
-        $experienceStr ? 'Experience: ' . $experienceStr : null,
-        $benefitStr ? 'Why choose: ' . $benefitStr : null,
         $aboutMe ? 'About: ' . $aboutMe : null,
+        'View full profile on ' . config('app.name')
     ]);
-    $providerQuote = implode(' • ', $parts);
+    $providerQuote = implode(' | ', $parts);
     $providerImageUrl = getSingleMedia($data, 'profile_image', null);
     $providerImageUrl = $providerImageUrl ? (str_starts_with($providerImageUrl, 'http') ? $providerImageUrl : url($providerImageUrl)) : url('images/post-job/ac_refresh_and_revive.png');
 @endphp

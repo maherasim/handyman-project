@@ -368,7 +368,7 @@
                                             </tr>
                                             <tr class=" pe-0">
                                                 @php
-                                                    $detailShareUrl = route('provider.detail', $p['id'] ?? 0);
+                                                    $detailShareUrl = route('provider.detail', $p['id'] ?? 0) . '?v=' . time();
                                                     $cityName = data_get($p, 'city.name') ?: ($p['city_name'] ?? '');
                                                     $countryName = data_get($p, 'country.name') ?: ($p['country_name'] ?? '');
                                                     $location = trim(implode(', ', array_filter([$cityName, $countryName])));
@@ -409,14 +409,12 @@
                                                     $parts = array_filter([
                                                         $p['display_name'] ?? '',
                                                         $p['designation'] ?? '',
-                                                        $location ?: null,
-                                                        $careerStr ? 'Career: ' . $careerStr : null,
+                                                        $location ? 'Location: ' . $location : null,
                                                         $skillsStr ? 'Skills: ' . $skillsStr : null,
-                                                        $experienceStr ? 'Experience: ' . $experienceStr : null,
-                                                        $benefitStr ? 'Why choose: ' . $benefitStr : null,
                                                         $aboutMe ? 'About: ' . $aboutMe : null,
+                                                        'View profile on ' . config('app.name')
                                                     ]);
-                                                    $detailQuote = implode(' • ', $parts);
+                                                    $detailQuote = implode(' | ', $parts);
                                                 @endphp
                                                 <div class="d-flex align-items-center justify-content-center gap-3 mt-3">
                                                     <span role="button" tabindex="0" class="social-link share-link" data-platform="facebook" data-share-url="{{ $detailShareUrl }}" data-quote="{{ $detailQuote }}" onclick="return typeof window.__shareClickHandler === 'function' && window.__shareClickHandler(event, this);" style="cursor: pointer;">
