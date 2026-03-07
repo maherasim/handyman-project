@@ -1786,41 +1786,59 @@
                     var shareLink = 'https://www.linkedin.com/sharing/share-offsite/?url=' + liUrl;
                     openPopup(shareLink);
                 } else if (platform === 'instagram') {
-                    // Instagram has no web share URL (unlike Facebook/LinkedIn). Copy link so user can paste in Instagram.
+                    // Instagram has no share URL like Facebook/LinkedIn. Use native Share so user can pick Instagram (opens share sheet → tap Instagram = post).
                     var urlToShare = shareUrl || window.location.href;
                     var quoteText = (el.getAttribute('data-quote') || '').trim();
-                    var textToCopy = quoteText ? quoteText + ' ' + urlToShare : urlToShare;
-                    if (navigator.clipboard && navigator.clipboard.writeText) {
-                        navigator.clipboard.writeText(textToCopy).then(function() {
+                    var shareTitle = (el.getAttribute('data-quote') || '').split('|')[0].trim() || document.title || 'Check this service';
+                    var shareText = quoteText ? quoteText + ' ' + urlToShare : urlToShare;
+                    if (navigator.share) {
+                        navigator.share({
+                            title: shareTitle,
+                            text: quoteText || shareTitle,
+                            url: urlToShare
+                        }).then(function() {
                             if (typeof Swal !== 'undefined') {
-                                Swal.fire({ title: 'Link copied!', text: 'Paste it in Instagram (post, story or bio) to share.', icon: 'success', timer: 2500, showConfirmButton: false });
-                            } else {
-                                alert('Link copied! Paste it in Instagram to share.');
+                                Swal.fire({ title: 'Shared!', text: 'You can now post to Instagram from the app.', icon: 'success', timer: 2000, showConfirmButton: false });
                             }
-                        }).catch(function() {
-                            fallbackCopyToClipboard(textToCopy);
+                        }).catch(function(err) {
+                            if (err && err.name !== 'AbortError') {
+                                copyAndNotify(shareText);
+                            }
                         });
                     } else {
-                        fallbackCopyToClipboard(textToCopy);
+                        copyAndNotify(shareText);
                     }
-                    function fallbackCopyToClipboard(str) {
-                        var ta = document.createElement('textarea');
-                        ta.value = str;
-                        ta.setAttribute('readonly', '');
-                        ta.style.position = 'fixed'; ta.style.left = '-9999px';
-                        document.body.appendChild(ta);
-                        ta.select();
-                        try {
-                            document.execCommand('copy');
-                            if (typeof Swal !== 'undefined') {
-                                Swal.fire({ title: 'Link copied!', text: 'Paste it in Instagram (post, story or bio) to share.', icon: 'success', timer: 2500, showConfirmButton: false });
-                            } else {
-                                alert('Link copied! Paste it in Instagram to share.');
-                            }
-                        } catch (_) {
-                            openPopup('https://www.instagram.com/');
+                    function copyAndNotify(str) {
+                        if (navigator.clipboard && navigator.clipboard.writeText) {
+                            navigator.clipboard.writeText(str).then(function() {
+                                if (typeof Swal !== 'undefined') {
+                                    Swal.fire({ title: 'Link copied!', text: 'Paste it in Instagram to share.', icon: 'success', timer: 2500, showConfirmButton: false });
+                                } else {
+                                    alert('Link copied! Paste it in Instagram to share.');
+                                }
+                            }).catch(function() { fallbackCopy(str); });
+                        } else {
+                            fallbackCopy(str);
                         }
-                        document.body.removeChild(ta);
+                        function fallbackCopy(s) {
+                            var ta = document.createElement('textarea');
+                            ta.value = s;
+                            ta.setAttribute('readonly', '');
+                            ta.style.position = 'fixed'; ta.style.left = '-9999px';
+                            document.body.appendChild(ta);
+                            ta.select();
+                            try {
+                                document.execCommand('copy');
+                                if (typeof Swal !== 'undefined') {
+                                    Swal.fire({ title: 'Link copied!', text: 'Paste it in Instagram to share.', icon: 'success', timer: 2500, showConfirmButton: false });
+                                } else {
+                                    alert('Link copied! Paste it in Instagram to share.');
+                                }
+                            } catch (_) {
+                                openPopup('https://www.instagram.com/');
+                            }
+                            document.body.removeChild(ta);
+                        }
                     }
                 }
 
