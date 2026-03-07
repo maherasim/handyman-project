@@ -74,10 +74,13 @@ Route::get('post-job-status', [ API\PostJobRequestController::class, 'postReques
 // Route::get('booking-list', [ API\BookingController::class, 'getBookingList' ] );sinc
 
 // Post Job PayPal – pure API return/cancel (no auth; PayPal redirects the browser here)
+Route::post('postjob/paypal/create/{id}', [App\Http\Controllers\PostJobRequestController::class, 'createPostJobPayPalPayment'])->name('postjob.paypal.create');
 Route::get('postjob/paypal/success/{id}', [App\Http\Controllers\PostJobRequestController::class, 'postJobPayPalSuccessApi'])->name('api.postjob.paypal.success');
 Route::get('postjob/paypal/cancel', [App\Http\Controllers\PostJobRequestController::class, 'postJobPayPalCancelApi'])->name('api.postjob.paypal.cancel');
 
 // Booking PayPal – standalone API flow (new controller; success/cancel return JSON for app)
+    // Separate PayPal API only: POST create → on success/cancel use GET booking-paypal/success/{booking_id} or booking-paypal/cancel (see above).
+Route::post('booking-paypal/create', [API\BookingPayPalController::class, 'createPayment'])->name('api.booking-paypal.create');
 Route::get('booking-paypal/success/{booking_id}', [App\Http\Controllers\API\BookingPayPalController::class, 'successApi'])->name('api.booking-paypal.success');
 Route::get('booking-paypal/cancel', [App\Http\Controllers\API\BookingPayPalController::class, 'cancelApi'])->name('api.booking-paypal.cancel');
 
@@ -144,8 +147,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('logout',[ API\User\UserController::class, 'logout' ]);
     // Booking payment: save-payment = record payment (e.g. bank transfer). Unchanged.
     Route::post('save-payment',[API\PaymentController::class, 'savePayment']);
-    // Standalone booking PayPal API (create → redirect to booking-paypal/success or booking-paypal/cancel)
-    Route::post('booking-paypal/create', [API\BookingPayPalController::class, 'createPayment'])->name('api.booking-paypal.create');
+
     Route::get('payment-list-all',[API\PaymentController::class, 'getpaymentall']);
     Route::post('save-bank-transfer-payment',[API\PaymentController::class, 'saveBankTransferPayment']);
 
@@ -217,7 +219,6 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('paythrough/wallet/{id}', [App\Http\Controllers\PostJobRequestController::class, 'payAdvance'])->name('post-job-request.pay-advance');
     Route::post('postjob/stripe/create/{id}', [App\Http\Controllers\PostJobRequestController::class, 'createPostJobStripePayment'])->name('postjob.stripe.create');
     Route::post('postjob/stripe/confirm/{id}', [App\Http\Controllers\PostJobRequestController::class, 'confirmPostJobStripePaymentIntent'])->name('postjob.stripe.confirm');
-    Route::post('postjob/paypal/create/{id}', [App\Http\Controllers\PostJobRequestController::class, 'createPostJobPayPalPayment'])->name('postjob.paypal.create');
     Route::post('postjob/bank-transfer/{id}', [App\Http\Controllers\PostJobRequestController::class, 'createPostJobBankTransfer'])->name('postjob.bank.transfer');
     Route::post('postjob-bid/{id}/extra-charges', [App\Http\Controllers\PostJobRequestController::class, 'addExtraCharges'])->name('postjob.addExtraCharges');
     Route::get('/post-job-bid/by-bid/{bidId}', [Api\PostJobRequestController::class, 'showBidById'])->name('post-job-bid.showByBid');

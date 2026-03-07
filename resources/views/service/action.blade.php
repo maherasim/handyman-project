@@ -1,11 +1,18 @@
 
 <?php
-    $auth_user= authSession();
+    $auth_user = authSession();
+    $hasBookingStarted = \App\Models\Booking::where('service_id', $data->id)->whereNotNull('start_at')->exists();
+    $canEdit = $auth_user->can('service edit') || auth()->user()->hasAnyRole(['admin', 'provider']);
+    $showEdit = !$data->trashed() && $canEdit && !$hasBookingStarted;
 ?>
 {{ html()->form('DELETE', route('service.destroy', $data->id))->attribute('data--submit', 'service'.$data->id)->open() }}
 <div class="d-flex justify-content-end align-items-center">
     @if(!$data->trashed())
-   
+        @if($showEdit)
+        <a class="me-2" href="{{ route('service.create', ['id' => $data->id]) }}" title="{{ __('messages.edit') }}">
+            <i class="far fa-edit text-primary"></i>
+        </a>
+        @endif
         @if($auth_user->can('service delete'))
         <a class="me-2" href="{{ route('service.destroy', $data->id) }}" data--submit="service{{$data->id}}"
             data--confirmation='true' 

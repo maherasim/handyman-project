@@ -155,6 +155,7 @@ class BookingPayPalController extends Controller
 
     /**
      * Process booking after PayPal capture: payment, commission, wallet, notifications.
+     * Shared by successApi() (JSON) and success() (redirect).
      */
     protected function processBookingPayPalSuccess(int $id, string $type): void
     {
@@ -164,12 +165,7 @@ class BookingPayPalController extends Controller
             return;
         }
 
-        // Same as savePayment: payment_status from type (advance_payment => advanced_paid, else => paid)
-        if ($type == 'advance_payment') {
-            $result->payment_status = 'advanced_paid';
-        } else {
-            $result->payment_status = 'paid';
-        }
+        $result->payment_status = ($type == 'advance_payment') ? 'advanced_paid' : 'paid';
 
         $firstHandymanId = optional($booking->handymanAdded()->first())->id;
         $assignedUserData = optional(User::find($firstHandymanId));
@@ -225,7 +221,9 @@ class BookingPayPalController extends Controller
             $admin_commission_percentage = Setting::getValueByKey('admin_commission_percentage', 'site-setup')->value ?? 10;
             $admin_user_id = User::where('user_type', 'admin')->value('id');
             $extra_total = $booking->getExtraChargeValue();
-            $remaining_admin_commission = ($remaining_amount > 0) ? ($remaining_amount * $admin_commission_percentage) / 100 : 0;
+            $remaining_admin_commission = ($remaining_amount > 0)
+                ? ($remaining_amount * $admin_commission_percentage) / 100
+                : 0;
             $provider_side_advance = ($advance_paid * (100 - $admin_commission_percentage)) / 100;
             $provider_side_remaining = ($remaining_amount * 90) / 100;
             $pool = $provider_side_advance + max(0, $provider_side_remaining - $extra_total);
@@ -235,7 +233,9 @@ class BookingPayPalController extends Controller
             $total_handyman_share = 0;
             foreach ($handymen as $handyman_id) {
                 $handyman = User::find($handyman_id);
-                if (!$handyman || $handyman->handyman_commission === null) continue;
+                if (!$handyman || $handyman->handyman_commission === null) {
+                    continue;
+                }
                 $commission_percent = max(1, min(85, $handyman->handyman_commission));
                 $handyman_share = ($pool * $commission_percent) / 100;
                 $total_handyman_share += $handyman_share;
@@ -299,10 +299,41 @@ class BookingPayPalController extends Controller
         $result->update();
         $activity_data = [
             'activity_type' => 'payment_message_status',
-            'payment_status' => str_replace("_", " ", ucfirst($result->payment_status)),
+            'payment_status' => str_replace('_', ' ', ucfirst($result->payment_status)),
             'booking_id' => $booking->id,
             'booking' => $booking,
         ];
         $this->sendNotification($activity_data);
+    }
+
+    /**
+     * Web redirect flow (if used from dashboard): capture then redirect to booking-list.
+     */
+    public function success(Request $request)
+    {
+        $token = $request->query('token');
+        $id = $request->booking_id;
+        $type = $request->type;
+
+        if (!$token) {
+            return redirect()->back()->with('error', 'Missing PayPal token');
+        }
+
+        $captureRequest = new OrdersCaptureRequest($token);
+        $captureRequest->prefer('return=representation');
+
+        try {
+            $response = $this->client->execute($captureRequest);
+
+            if ($response->statusCode === 201 || $response->statusCode === 200) {
+                $this->processBookingPayPalSuccess((int) $id, (string) $type);
+                return redirect('/booking-list');
+            }
+
+            return redirect()->back()->with('error', 'Payment not completed');
+        } catch (\Exception $e) {
+            \Log::error("PayPal Success Error: " . $e->getMessage());
+            return redirect()->back()->with('error', 'Payment failed: ' . $e->getMessage());
+        }
     }
 }
