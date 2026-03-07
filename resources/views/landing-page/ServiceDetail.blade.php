@@ -1786,18 +1786,41 @@
                     var shareLink = 'https://www.linkedin.com/sharing/share-offsite/?url=' + liUrl;
                     openPopup(shareLink);
                 } else if (platform === 'instagram') {
-                    var quoteText = el.getAttribute('data-quote') || '';
-                    if (navigator.share) {
+                    // Instagram has no web share URL (unlike Facebook/LinkedIn). Copy link so user can paste in Instagram.
+                    var urlToShare = shareUrl || window.location.href;
+                    var quoteText = (el.getAttribute('data-quote') || '').trim();
+                    var textToCopy = quoteText ? quoteText + ' ' + urlToShare : urlToShare;
+                    if (navigator.clipboard && navigator.clipboard.writeText) {
+                        navigator.clipboard.writeText(textToCopy).then(function() {
+                            if (typeof Swal !== 'undefined') {
+                                Swal.fire({ title: 'Link copied!', text: 'Paste it in Instagram (post, story or bio) to share.', icon: 'success', timer: 2500, showConfirmButton: false });
+                            } else {
+                                alert('Link copied! Paste it in Instagram to share.');
+                            }
+                        }).catch(function() {
+                            fallbackCopyToClipboard(textToCopy);
+                        });
+                    } else {
+                        fallbackCopyToClipboard(textToCopy);
+                    }
+                    function fallbackCopyToClipboard(str) {
+                        var ta = document.createElement('textarea');
+                        ta.value = str;
+                        ta.setAttribute('readonly', '');
+                        ta.style.position = 'fixed'; ta.style.left = '-9999px';
+                        document.body.appendChild(ta);
+                        ta.select();
                         try {
-                            navigator.share({ text: quoteText, url: shareUrl || window.location.href })
-                                .catch(function() {
-                                    openPopup('https://www.instagram.com/');
-                                });
+                            document.execCommand('copy');
+                            if (typeof Swal !== 'undefined') {
+                                Swal.fire({ title: 'Link copied!', text: 'Paste it in Instagram (post, story or bio) to share.', icon: 'success', timer: 2500, showConfirmButton: false });
+                            } else {
+                                alert('Link copied! Paste it in Instagram to share.');
+                            }
                         } catch (_) {
                             openPopup('https://www.instagram.com/');
                         }
-                    } else {
-                        openPopup('https://www.instagram.com/');
+                        document.body.removeChild(ta);
                     }
                 }
 
