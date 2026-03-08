@@ -91,24 +91,24 @@ class FrontendController extends Controller
                 return $service;
             });
 
-        $featuredrequest = $sectionData['section_4']['service_id'] ?? [];
-        $featuredrequest = Service::whereIn('id', $featuredrequest)
-            ->with(['serviceRating']) // Assuming a serviceRating relationship exists
-            ->get()
-            ->map(function ($service) {
-                $ratings = BookingRating::where('service_id', $service->id)->pluck('rating')->toArray();
-                $totalReviews = count($ratings);
-                $avgRating = $totalReviews > 0 ? array_sum($ratings) / $totalReviews : 0;
-
-                $service->total_reviews = $totalReviews;
-                $service->avg_rating = round($avgRating, 1);
-
-                // Count all bookings for this service (regardless of status)
-                $service->booking_count = Booking::where('service_id', $service->id)->count();
-
-                return $service;
-            });
-        // Featured Service List
+        // Featured Services: when section is enabled, fetch services marked as featured (is_featured = 1)
+        $featuredSectionEnabled = isset($sectionData['section_4']['section_4']) && (int) $sectionData['section_4']['section_4'] === 1;
+        $featuredrequest = $featuredSectionEnabled
+            ? Service::where('is_featured', 1)
+                ->with(['serviceRating'])
+                ->orderByDesc('id')
+                ->limit(16)
+                ->get()
+                ->map(function ($service) {
+                    $ratings = BookingRating::where('service_id', $service->id)->pluck('rating')->toArray();
+                    $totalReviews = count($ratings);
+                    $avgRating = $totalReviews > 0 ? array_sum($ratings) / $totalReviews : 0;
+                    $service->total_reviews = $totalReviews;
+                    $service->avg_rating = round($avgRating, 1);
+                    $service->booking_count = Booking::where('service_id', $service->id)->count();
+                    return $service;
+                })
+            : collect();
 
         // Service Configuration
         $settings = Setting::where('type', 'service-configurations')->where('key', 'service-configurations')->first();
