@@ -360,6 +360,7 @@
     'commission_setting' => 'Provisionseinstellungen',
     'handyman_payout' => 'Handwerker-Auszahlung',
     'handymantype' => 'Handwerker-Provision',
+    'worker_commission_rate' => 'Provisionssatz',
     'booking_not_found' => 'Buchung nicht gefunden',
     'dashboard_customizer' => 'Dashboard-Anpassung',
     'admin' => 'Admin',

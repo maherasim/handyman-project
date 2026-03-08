@@ -361,6 +361,7 @@
     'commission_setting' => 'Commission Setting',
     'handyman_payout' => 'Worker Payout',
     'handymantype' => 'Worker Commission',
+    'worker_commission_rate' => 'Commission Rate',
     'booking_not_found' => 'Booking not found',
     'dashboard_customizer' => 'Dashboard Customizer',
     'admin' => 'Admin',

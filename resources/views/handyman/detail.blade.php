@@ -28,6 +28,11 @@
                                 <h2>{{getPriceFormat($handymanData['wallet']) ?? 0}}</h2>
                                 <h3>{{__('messages.wallet_balance')}}</h3>
                             </div>
+
+                            <div class="statistics-card statistics-card__style2 statistics-card__commission" style="background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%); color: #fff; border-radius: 12px; padding: 1.25rem; min-height: 100px; display: flex; flex-direction: column; justify-content: center; align-items: center; box-shadow: 0 4px 14px rgba(0,0,0,0.1);">
+                                <h2 class="mb-0" style="color: #fff; font-size: 1.75rem; font-weight: 700;">{{ isset($handymandata->handyman_commission) && $handymandata->handyman_commission !== '' && $handymandata->handyman_commission !== null ? round((float) $handymandata->handyman_commission, 1) . '%' : '—' }}</h2>
+                                <h3 class="mb-0 mt-1" style="color: rgba(255,255,255,0.9); font-size: 0.875rem; font-weight: 600;">{{ __('messages.worker_commission_rate') }}</h3>
+                            </div>
                         </div>
                         <div class="provider-details-overview__order-overview">
                             <div class="statistics-card statistics-card__order-overview h-100 pb-2">
