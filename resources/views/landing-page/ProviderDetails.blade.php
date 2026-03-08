@@ -394,7 +394,12 @@
                                                         $benefitStr = trim($title . ($firstReason ? ' — ' . \Illuminate\Support\Str::limit($firstReason, 60) : ''));
                                                     }
                                                     $careerLevel = $p['career_level'] ?? null;
-                                                    $careerStr = $careerLevel ? (is_string($careerLevel) ? ucwords(str_replace('_', ' ', $careerLevel)) : '') : '';
+                                                    $careerStr = '';
+                                                    if ($careerLevel && is_string($careerLevel)) {
+                                                        $ck = str_replace(' ', '_', strtolower(trim($careerLevel)));
+                                                        $ct = __('messages.career_level_' . $ck);
+                                                        $careerStr = ($ct === 'messages.career_level_' . $ck) ? ucwords(str_replace('_', ' ', $ck)) : $ct;
+                                                    }
                                                     $experienceRaw = $p['experience'] ?? null;
                                                     $experienceStr = '';
                                                     if ($experienceRaw !== null && $experienceRaw !== '') {
@@ -649,24 +654,29 @@
                                 <div class="skills-badge-container">
                                     @php
                                         $educationData = $providerData['data']['education'];
-                                        
-                                        // Try to decode JSON first
                                         if (is_string($educationData)) {
                                             $decoded = json_decode($educationData, true);
                                             if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
-                                                $educations = $decoded;
+                                                $educationItems = $decoded;
                                             } else {
-                                                // Not JSON, try comma-separated string
-                                                $educations = array_map('trim', explode(',', $educationData));
+                                                $educationItems = array_map('trim', explode(',', $educationData));
                                             }
                                         } elseif (is_array($educationData)) {
-                                            $educations = $educationData;
+                                            $educationItems = $educationData;
                                         } else {
-                                            $educations = [trim($educationData)];
+                                            $educationItems = [trim($educationData)];
+                                        }
+                                        $educationLabels = [];
+                                        foreach ($educationItems as $edu) {
+                                            $key = is_string($edu) ? str_replace(' ', '_', strtolower(trim($edu))) : (string) $edu;
+                                            if ($key === '') continue;
+                                            $transKey = 'messages.education_' . $key;
+                                            $label = __($transKey);
+                                            $educationLabels[] = ($label === $transKey) ? ucwords(str_replace('_', ' ', $key)) : $label;
                                         }
                                     @endphp
-                                    @foreach($educations as $edu)
-                                        <span class="skill-badge-modern">{{ ucwords(str_replace('_', ' ', trim($edu))) }}</span>
+                                    @foreach($educationLabels as $eduLabel)
+                                        <span class="skill-badge-modern">{{ $eduLabel }}</span>
                                     @endforeach
                                 </div>
                             </div>

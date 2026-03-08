@@ -1,18 +1,6 @@
 @php $showEdit = $showEdit ?? false; @endphp
 <div class="service-box-card bg-white rounded-3 mb-0 shadow-sm h-100" data-service-id="{{ $data->id }}" v-pre>
    <div class="iq-image position-relative" style="height: 200px; width: 100%; overflow: hidden; border-radius: 0.5rem;">
-      {{-- Action dropdown: View / Edit (Edit only for provider owner when no booking has started) --}}
-      <div class="dropdown position-absolute top-0 end-0 m-2" style="z-index: 5;" onclick="event.stopPropagation();">
-         <button class="btn btn-sm btn-light rounded-circle shadow-sm dropdown-toggle" type="button" id="serviceAction-{{ $data->id }}" data-bs-toggle="dropdown" aria-expanded="false" title="{{ __('messages.action') }}">
-            <i class="fa fa-ellipsis-v"></i>
-         </button>
-         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="serviceAction-{{ $data->id }}">
-            <li><a class="dropdown-item" href="{{ route('service.detail', $data->id) }}"><i class="fa fa-eye me-1"></i>{{ __('messages.view') }}</a></li>
-            @if($showEdit)
-            <li><a class="dropdown-item" href="{{ route('service.create', ['id' => $data->id]) }}"><i class="fa fa-edit me-1"></i>{{ __('messages.edit') }}</a></li>
-            @endif
-         </ul>
-      </div>
       @if($data->visit_type == 'ONLINE')
          <span class="online-service"></span>
       @endif
@@ -21,10 +9,12 @@
          class="w-100 h-100" style="object-fit: cover;" onerror="this.src='{{ asset('images/default.png') }}'"> 
       </a>
 
+      {{-- Favorite (heart) icon top-right --}}
+      <div class="position-absolute top-0 end-0 m-2" style="z-index: 5;" onclick="event.stopPropagation();">
       @if(auth()->check() && auth()->user()->hasRole('user'))
 
          @if($favouriteService->isEmpty())
-            <form method="POST" id="favoriteForm">
+            <form method="POST" id="favoriteForm" class="d-inline">
                @csrf
 
                <input type="hidden" name="service_id" class="service_id" value="{{ $data->id }}" data-service-id="{{ $data->id }}">
@@ -39,9 +29,8 @@
                </button>
             </form>
          @else
-            <form method="POST" id="favoriteForm">
+            <form method="POST" id="favoriteForm" class="d-inline">
                @csrf
-
                <input type="hidden" name="service_id" class="service_id" value="{{ $data->id }}" data-service-id="{{ $data->id }}">
                @if(!empty(auth()->user()))
                   <input type="hidden" name="user_id" id="user_id" value="{{ Auth::user()->id }}">
@@ -55,7 +44,7 @@
             </form>
          @endif
       @else
-         <form method="GET" id="favoriteForm" action="{{ route('login') }}">
+         <form method="GET" id="favoriteForm" action="{{ route('login') }}" class="d-inline">
             @csrf
             <button type="submit" class="btn-link serv-whishlist text-primary">
                <svg width="12" height="13" viewBox="0 0 12 13" fill="none" xmlns=" ">
@@ -65,6 +54,7 @@
             </button>
          </form>
       @endif
+      </div>
       <div style="
          position: absolute;
          bottom: 10px;

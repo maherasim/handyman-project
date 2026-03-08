@@ -1325,6 +1325,22 @@
                                         <span class="info-value">{{ ucfirst(trim($serviceData['provider']['designation'])) }}</span>
                                     </div>
                                     @endif
+                                    @if(!empty($serviceData['provider']['career_level']))
+                                    @php
+                                        $careerKey = is_string($serviceData['provider']['career_level']) ? str_replace(' ', '_', strtolower(trim($serviceData['provider']['career_level']))) : '';
+                                        $careerTransKey = 'messages.career_level_' . $careerKey;
+                                        $careerLabel = __($careerTransKey);
+                                        if ($careerLabel === $careerTransKey) {
+                                            $careerLabel = ucwords(str_replace('_', ' ', $careerKey));
+                                        }
+                                    @endphp
+                                    <div class="info-row">
+                                        <span class="info-label">
+                                            <i class="ri-briefcase-4-line me-1"></i> {{ __('landingpage.jdd_career_level') }}
+                                        </span>
+                                        <span class="info-value">{{ $careerLabel }}</span>
+                                    </div>
+                                    @endif
                                     @if(!empty($serviceData['provider']['years_of_experience']))
                                     @php
                                         $yearsKey = $serviceData['provider']['years_of_experience'];
@@ -1423,27 +1439,31 @@
                                     <div class="skills-list">
                                         @php
                                             $educationData = $serviceData['provider']['education'];
-                                            
                                             // Try to decode JSON first
                                             if (is_string($educationData)) {
                                                 $decoded = json_decode($educationData, true);
                                                 if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
-                                                    // Successfully decoded JSON array
                                                     $educationItems = $decoded;
                                                 } else {
-                                                    // Not JSON, try comma-separated string
-                                                    $educationItems = explode(',', $educationData);
+                                                    $educationItems = array_map('trim', explode(',', $educationData));
                                                 }
                                             } elseif (is_array($educationData)) {
-                                                // Already an array
                                                 $educationItems = $educationData;
                                             } else {
-                                                // Single value, convert to array
                                                 $educationItems = [$educationData];
                                             }
+                                            // Map DB keys to readable labels (messages.education_*)
+                                            $educationLabels = [];
+                                            foreach ($educationItems as $edu) {
+                                                $key = is_string($edu) ? str_replace(' ', '_', strtolower(trim($edu))) : (string) $edu;
+                                                if ($key === '') continue;
+                                                $transKey = 'messages.education_' . $key;
+                                                $label = __($transKey);
+                                                $educationLabels[] = ($label === $transKey) ? ucwords(str_replace('_', ' ', $key)) : $label;
+                                            }
                                         @endphp
-                                        @foreach($educationItems as $edu)
-                                            <span class="skill-badge">{{ trim($edu) }}</span>
+                                        @foreach($educationLabels as $eduLabel)
+                                            <span class="skill-badge">{{ $eduLabel }}</span>
                                         @endforeach
                                     </div>
                                 </div>

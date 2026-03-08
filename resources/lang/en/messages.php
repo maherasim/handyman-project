@@ -1007,6 +1007,36 @@
     'years_of_experience_more_than_10' => 'More than 10 Years',
     'na' => 'N/A',
 
+    // Education (DB key => readable label)
+    'education_not_specified' => 'Not Specified',
+    'education_any_graduate' => 'Any Graduate',
+    'education_apprenticeship_degree' => 'Apprenticeship Degree',
+    'education_traineeship_degree' => 'Traineeship Degree',
+    'education_secondary_degree' => 'Secondary Degree',
+    'education_undergraduate_diploma' => 'Undergraduate Diploma',
+    'education_high_school_graduate' => 'High school graduate',
+    'education_associate_degree' => 'Associate degree',
+    'education_college_degree' => 'College Degree',
+    'education_university_degree' => 'University Degree',
+    'education_bachelor_degree' => 'Bachelor\'s Degree',
+    'education_master_degree' => 'Master\'s Degree',
+    'education_doctorate_degree' => 'Doctorate Degree',
+    'education_professional_degree' => 'Professional Degree',
+
+    // Career Level (DB key => readable label)
+    'career_level_not_specified' => 'Not Specified',
+    'career_level_entry_level' => 'Entry Level',
+    'career_level_intermediate_level' => 'Intermediate Level',
+    'career_level_experienced' => 'Experienced',
+    'career_level_professional' => 'Professional',
+    'career_level_middle_management' => 'Middle Management',
+    'career_level_executive_management' => 'Executive Management',
+    'career_level_senior_management' => 'Senior Management',
+    'career_level_director' => 'Director',
+    'career_level_technician' => 'Technician',
+    'career_level_leader' => 'Leader',
+    'career_level_manager' => 'Manager',
+
     // Sidebar – dynamic labels (en/de)
     'sidebar_quick_access' => 'Quick Access',
     'sidebar_verify_account' => 'Verify Account',

@@ -233,7 +233,8 @@
                         <small class="help-block with-errors text-danger " id="contact_number_err"></small>
                     </div>
 
-                    @if (auth()->user()->hasRole('handyman'))
+                    {{-- Worker Commission: only visible to provider/admin, hidden from handyman --}}
+                    @if (!auth()->user()->hasRole('handyman'))
                         <div class="form-group col-md-6">
                             {{ html()->label(
                                     __('messages.select_name', ['select' => __('messages.handymantype')]) . ' <span class="text-danger">*</span>',
@@ -246,7 +247,9 @@
                                     optional($user_data->handymantype)->id,
                                 )->class('select2js form-group handymantype')->required()->attribute('data-placeholder', __('messages.select_name', ['select' => __('messages.handymantype')]))->attribute('data-ajax--url', route('ajax-list', ['type' => 'handymantype'])) }}
                         </div>
+                    @endif
 
+                    @if (auth()->user()->hasRole('handyman'))
                         <div class="form-group col-md-6">
                             {{ html()->label(__('messages.select_name', ['select' => __('messages.provider_address')]), 'name')->class('form-control-label') }}
                             <br />

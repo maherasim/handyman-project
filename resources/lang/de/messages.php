@@ -1005,6 +1005,36 @@
     'years_of_experience_more_than_10' => 'Mehr als 10 Jahre',
     'na' => 'k. A.',
 
+    // Education (DB key => readable label)
+    'education_not_specified' => 'Nicht angegeben',
+    'education_any_graduate' => 'Abschluss (beliebig)',
+    'education_apprenticeship_degree' => 'Lehre / Ausbildungsabschluss',
+    'education_traineeship_degree' => 'Praktikum / Trainee-Abschluss',
+    'education_secondary_degree' => 'Sekundarabschluss',
+    'education_undergraduate_diploma' => 'Grundstudium-Diplom',
+    'education_high_school_graduate' => 'Abitur / Mittlere Reife',
+    'education_associate_degree' => 'Associate Degree',
+    'education_college_degree' => 'Fachhochschulabschluss',
+    'education_university_degree' => 'Universitätsabschluss',
+    'education_bachelor_degree' => 'Bachelor',
+    'education_master_degree' => 'Master',
+    'education_doctorate_degree' => 'Promotion / Doktor',
+    'education_professional_degree' => 'Fachabschluss / Professioneller Abschluss',
+
+    // Career Level (DB key => readable label)
+    'career_level_not_specified' => 'Nicht angegeben',
+    'career_level_entry_level' => 'Einsteiger',
+    'career_level_intermediate_level' => 'Mittleres Niveau',
+    'career_level_experienced' => 'Erfahren',
+    'career_level_professional' => 'Professionell',
+    'career_level_middle_management' => 'Mittleres Management',
+    'career_level_executive_management' => 'Führungsebene',
+    'career_level_senior_management' => 'Oberes Management',
+    'career_level_director' => 'Direktor',
+    'career_level_technician' => 'Techniker',
+    'career_level_leader' => 'Führungskraft',
+    'career_level_manager' => 'Manager',
+
     // Sidebar – dynamische Beschriftungen (en/de)
     'sidebar_quick_access' => 'Schnellzugriff',
     'sidebar_verify_account' => 'Konto verifizieren',
