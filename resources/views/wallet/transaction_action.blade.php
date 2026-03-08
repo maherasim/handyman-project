@@ -1,8 +1,7 @@
-@if($exists || $query->status == 'paid')
-<span class="text-center d-block"> - </span>
+@if($query->status == 'paid')
+<span class="text-center d-block"> — </span>
 @else
-<a href="#" onclick="confirmAction({{ $query->id }})" class="btn btn-md btn-link float-right"><u>{{__('confirm withdraw')}}</u></a>
-
+<a href="#" onclick="confirmAction({{ $query->id }})" class="btn btn-md btn-link float-right"><u>{{ __('confirm withdraw') }}</u></a>
 @endif
 
 <script>

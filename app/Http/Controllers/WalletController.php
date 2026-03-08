@@ -634,10 +634,7 @@ public function getWalletPaymentMethod(Request $request)
                 return $status;
             })
             ->addColumn('action', function($query){
-                $allData = WithdrawMoney::all();
-                $exists = $allData->contains('withdraw_money_id', $query->id);
-                return view('wallet.transaction_action',compact('query','exists'))->render();
-                
+                return view('wallet.transaction_action', compact('query'))->render();
             })
             ->addColumn('bank_details', function($query){
                 // Check if bank_id exists - if not, show message
