@@ -432,7 +432,7 @@ public function store(ServiceRequest $request)
         $services['is_slot'] = 0;
         $services['is_enable_advance_payment'] = 0;
 
-        if ($request->has('is_featured')) {
+        if ($request->has('is_featured') && auth()->user()->hasRole(['admin', 'demo_admin'])) {
             $services['is_featured'] = 1;
         }
         if ($request->has('is_enable_advance_payment')) {
