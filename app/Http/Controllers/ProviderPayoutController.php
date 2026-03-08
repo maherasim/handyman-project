@@ -16,6 +16,8 @@ use App\Traits\NotificationTrait;
 use App\Traits\EarningTrait;
 use App\Models\CommissionEarning;
 use App\Models\Setting;
+use App\Models\WalletHistory;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 class ProviderPayoutController extends Controller
 {
@@ -286,33 +288,61 @@ class ProviderPayoutController extends Controller
 
          }
         
-        // If payment method is 'bank', save to withdraw_money table instead of provider_payouts
+        // If payment method is 'bank', save to withdraw_money table and deduct wallet immediately
         if($data['payment_method'] === 'bank') {
+            $amount = (float) ($data['amount'] ?? 0);
+            $wallet = Wallet::where('user_id', $provider_id)->first();
+            if (!$wallet || $wallet->amount < $amount) {
+                $message = __('messages.withdrawal_insufficient_balance');
+                if ($request->is('api/*')) {
+                    return comman_message_response($message, 400);
+                }
+                return redirect()->back()->withErrors($message)->withInput();
+            }
+
             // Prepare data for withdraw_money table
             $withdrawData = [
                 'user_id' => $provider_id,
                 'amount' => $data['amount'],
                 'bank_id' => $data['bank'] ?? null,
                 'datetime' => Carbon::now(),
-                'payment_type' => 'manual', // or 'bank_transfer'
-                'status' => 'pending', // Admin will process this manually
+                'payment_type' => 'manual',
+                'status' => 'pending',
             ];
-            
-            // Create withdraw_money record
-            $withdrawResult = WithdrawMoney::create($withdrawData);
-            
-            // Also create provider_payout record for tracking (optional - you can remove this if not needed)
-            $result = ProviderPayout::create($data);
-            
-            // Link withdraw_money to provider_payout if needed
-            if(isset($withdrawResult->id) && isset($result->id)) {
-                $withdrawResult->withdraw_money_id = $result->id;
-                $withdrawResult->save();
-            }
-            
-            // Get wallet for notification
+
+            $created = [];
+            DB::transaction(function () use ($withdrawData, $data, $provider_id, $amount, &$created) {
+                $created['withdrawResult'] = WithdrawMoney::create($withdrawData);
+                $created['result'] = ProviderPayout::create($data);
+                $withdrawResult = $created['withdrawResult'];
+                $result = $created['result'];
+                if (isset($withdrawResult->id) && isset($result->id)) {
+                    $withdrawResult->withdraw_money_id = $result->id;
+                    $withdrawResult->save();
+                }
+                // Deduct from wallet immediately when request is submitted
+                $wallet = Wallet::where('user_id', $provider_id)->first();
+                if ($wallet) {
+                    $wallet->decrement('amount', $amount);
+                    WalletHistory::create([
+                        'datetime'         => now(),
+                        'user_id'          => $provider_id,
+                        'activity_type'    => 'debit',
+                        'activity_message' => __('messages.withdrawal_paid_activity', ['amount' => getPriceFormat($amount)]),
+                        'activity_data'    => json_encode([
+                            'credit_debit_amount' => $amount,
+                            'amount'              => $wallet->fresh()->amount,
+                            'transaction_type'    => 'Debit',
+                            'withdraw_money_id'   => $withdrawResult->id,
+                        ]),
+                    ]);
+                }
+            });
+
+            $withdrawResult = $created['withdrawResult'];
+            $result = $created['result'];
             $wallet = Wallet::where('user_id', $provider_id)->first();
-            
+
             $activity_data = [
                 'type' => 'withdraw_money',
                 'activity_type' => 'withdraw_money',
@@ -320,24 +350,18 @@ class ProviderPayoutController extends Controller
                 'user_id' => $provider_id,
                 'amount' => $data['amount'],
             ];
-            
-            // Include wallet if it exists
             if ($wallet) {
                 $activity_data['wallet'] = $wallet;
             }
-            
             $this->sendNotification($activity_data);
-            
-            // Update commission earnings
+
             CommissionEarning::where('employee_id', $provider_id)->where('commission_status','unpaid')->update(['commission_status' => 'paid']);
-            
+
             $message = __('messages.withdrawal_request_submitted');
             if($request->is('api/*')){
                 return comman_message_response($message);
             }
-            // Set success message in session
             Session::flash('success', $message);
-            // Redirect back to the same create page with success message
             return redirect()->route('providerpayout.create', ['id' => $provider_id]);
         } else {
             // For other payment methods (wallet, cash), use the original flow
