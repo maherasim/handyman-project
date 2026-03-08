@@ -600,7 +600,7 @@
                                                   data-quote="{{ $jobRequest->title }} • €{{ number_format($jobRequest->price) }} • {{ ucfirst($jobRequest->price_type ?? 'fixed') }} • {{ data_get($jobRequest,'city.name','City') }}, {{ data_get($jobRequest,'country.name','Country') }}"
                                                   onclick="return window.__shareClickHandler(event, this);"
                                                   style="width: 24px; height: 24px; border-radius: 5px; background: #f8f9fa; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; cursor: pointer;">
-                                                <img src="https://static.vecteezy.com/system/resources/previews/016/716/481/original/facebook-icon-free-png.png"
+                                                <img src="{{ asset('assets/fb.png') }}"
                                                     alt="Facebook" style="width: 12px; height: 12px;">
                                             </span>
                                             <span role="button" tabindex="0" class="social-link share-link"
@@ -609,8 +609,8 @@
                                                   data-quote="{{ $jobRequest->title }} • €{{ number_format($jobRequest->price) }} • {{ ucfirst($jobRequest->price_type ?? 'fixed') }} • {{ data_get($jobRequest,'city.name','City') }}, {{ data_get($jobRequest,'country.name','Country') }} — {{ route('job.details', $jobRequest->id) }}"
                                                   onclick="return window.__shareClickHandler(event, this);"
                                                   style="width: 24px; height: 24px; border-radius: 5px; background: #f8f9fa; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; cursor: pointer;">
-                                                <img src="https://upload.wikimedia.org/wikipedia/commons/9/95/Instagram_logo_2022.svg"
-                                                    alt="Instagram" style="width: 12px; height: 12px;">
+                                                <img src="{{ asset('assets/instagram.jpg') }}"
+                                                    alt="Instagram" style="width: 24px; height: 24px; object-fit: contain;">
                                             </span>
                                             <span role="button" tabindex="0" class="social-link share-link"
                                                   data-platform="twitter"
@@ -618,16 +618,16 @@
                                                   data-text="{{ $jobRequest->title }} • €{{ number_format($jobRequest->price) }} • {{ ucfirst($jobRequest->price_type ?? 'fixed') }} • {{ data_get($jobRequest,'city.name','City') }}, {{ data_get($jobRequest,'country.name','Country') }}"
                                                   onclick="return window.__shareClickHandler(event, this);"
                                                   style="width: 24px; height: 24px; border-radius: 5px; background: #f8f9fa; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; cursor: pointer;">
-                                                <img src="https://cdn.pixabay.com/photo/2015/03/10/17/30/twitter-667462_640.png"
-                                                    alt="Twitter" style="width: 12px; height: 12px;">
+                                                <img src="{{ asset('assets/twiter.png') }}"
+                                                    alt="Twitter" style="width: 24px; height: 24px; object-fit: contain;">
                                             </span>
                                             <span role="button" tabindex="0" class="social-link share-link"
                                                   data-platform="linkedin"
                                                   data-share-url="{{ route('job.details', $jobRequest->id) }}?v={{ optional($jobRequest->updated_at)->timestamp ?? time() }}"
                                                   onclick="return window.__shareClickHandler(event, this);"
                                                   style="width: 24px; height: 24px; border-radius: 5px; background: #f8f9fa; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; cursor: pointer;">
-                                                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRokEYt0yyh6uNDKL8uksVLlhZ35laKNQgZ9g&s"
-                                                    alt="LinkedIn" style="width: 12px; height: 12px;">
+                                                <img src="{{ asset('assets/linkedIn.jpg') }}"
+                                                    alt="LinkedIn" style="width: 24px; height: 24px; object-fit: contain;">
                                             </span>
                                         </div>
                                     </div>
@@ -919,27 +919,27 @@
                                                   data-share-url="{{ route('service.detail', $data->id) }}?v={{ optional($data->updated_at)->timestamp ?? time() }}"
                                                   data-quote="{{ Str::limit($data->name, 80) }} • {{ getPriceFormat($data->price) }} • {{ ucfirst($data->type) }} • {{ $data->city->name ?? 'City' }}, {{ $data->country->name ?? 'Country' }}"
                                                   onclick="return window.__shareClickHandler(event, this);">
-                                                <img src="https://static.vecteezy.com/system/resources/previews/016/716/481/original/facebook-icon-free-png.png" style="width: 30px; border-radius: 8px;" alt="Facebook">
+                                                <img src="{{ asset('assets/fb.png') }}" style="width: 28px; height: 28px; object-fit: contain; border-radius: 8px;" alt="Facebook">
                                             </span>
                                             <span role="button" tabindex="0" class="social-link share-link"
-                                                  data-platform="instagram"
-                                                  data-image-url="{{ getSingleMedia($data, 'service_attachment', null) }}"
-                                                  data-quote="{{ Str::limit($data->name, 80) }} • {{ getPriceFormat($data->price) }} • {{ ucfirst($data->type) }} • {{ $data->city->name ?? 'City' }}, {{ $data->country->name ?? 'Country' }} — {{ route('service.detail', $data->id) }}"
+                                                  data-platform="telegram"
+                                                  data-share-url="{{ route('service.detail', $data->id) }}?v={{ optional($data->updated_at)->timestamp ?? time() }}"
+                                                  data-quote="{{ Str::limit($data->name, 80) }} • {{ getPriceFormat($data->price) }} • {{ ucfirst($data->type) }} • {{ $data->city->name ?? 'City' }}, {{ $data->country->name ?? 'Country' }}"
                                                   onclick="return window.__shareClickHandler(event, this);">
-                                                <img src="https://upload.wikimedia.org/wikipedia/commons/9/95/Instagram_logo_2022.svg" style="width: 30px; border-radius: 8px;" alt="Instagram">
+                                                <img src="{{ asset('assets/telegram.png') }}" style="width: 28px; height: 28px; object-fit: contain; border-radius: 8px;" alt="Telegram">
                                             </span>
                                             <span role="button" tabindex="0" class="social-link share-link"
                                                   data-platform="twitter"
                                                   data-share-url="{{ route('service.detail', $data->id) }}?v={{ optional($data->updated_at)->timestamp ?? time() }}"
                                                   data-text="{{ Str::limit($data->name, 80) }} • {{ getPriceFormat($data->price) }} • {{ ucfirst($data->type) }} • {{ $data->city->name ?? 'City' }}, {{ $data->country->name ?? 'Country' }}"
                                                   onclick="return window.__shareClickHandler(event, this);">
-                                                <img src="https://cdn.pixabay.com/photo/2015/03/10/17/30/twitter-667462_640.png" style="width: 30px; border-radius: 8px;" alt="Twitter">
+                                                <img src="{{ asset('assets/twiter.png') }}" style="width: 28px; height: 28px; object-fit: contain; border-radius: 8px;" alt="Twitter">
                                             </span>
                                             <span role="button" tabindex="0" class="social-link share-link"
                                                   data-platform="linkedin"
                                                   data-share-url="{{ route('service.detail', $data->id) }}?v={{ optional($data->updated_at)->timestamp ?? time() }}"
                                                   onclick="return window.__shareClickHandler(event, this);">
-                                                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRokEYt0yyh6uNDKL8uksVLlhZ35laKNQgZ9g&s" style="width: 30px; border-radius: 8px;" alt="LinkedIn">
+                                                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRokEYt0yyh6uNDKL8uksVLlhZ35laKNQgZ9g&s" style="width: 28px; height: 28px; object-fit: contain; border-radius: 8px;" alt="LinkedIn">
                                             </span>
                                         </div>
 
@@ -1216,17 +1216,17 @@
                                             </div>
                                             <div class="d-flex mt-3 " style="gap: 18px; justify-content: center;">
                                                 <a href="#"><img
-                                                        src="https://static.vecteezy.com/system/resources/previews/016/716/481/original/facebook-icon-free-png.png"
-                                                        style="width: 30px; border-radius: 8px;" alt=""></a>
+                                                        src="{{ asset('assets/fb.png') }}"
+                                                        style="width: 28px; height: 28px; object-fit: contain; border-radius: 8px;" alt=""></a>
                                                 <a href="#"><img
-                                                        src="https://upload.wikimedia.org/wikipedia/commons/9/95/Instagram_logo_2022.svg"
-                                                        style="width: 30px; border-radius: 8px;" alt=""></a>
+                                                        src="{{ asset('assets/instagram.jpg') }}"
+                                                        style="width: 28px; height: 28px; object-fit: contain; border-radius: 8px;" alt=""></a>
                                                 <a href="#"><img
-                                                        src="https://cdn.pixabay.com/photo/2015/03/10/17/30/twitter-667462_640.png"
-                                                        style="width: 30px; border-radius: 8px;" alt=""></a>
+                                                        src="{{ asset('assets/twiter.png') }}"
+                                                        style="width: 28px; height: 28px; object-fit: contain; border-radius: 8px;" alt=""></a>
                                                 <a href="#"><img
-                                                        src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRokEYt0yyh6uNDKL8uksVLlhZ35laKNQgZ9g&s"
-                                                        style="width: 30px; border-radius: 8px;" alt=""></a>
+                                                        src="{{ asset('assets/linkedIn.jpg') }}"
+                                                        style="width: 28px; height: 28px; object-fit: contain; border-radius: 8px;" alt=""></a>
                                             </div>
     
                                         </div>
@@ -1905,18 +1905,10 @@
             } else if (platform === 'linkedin') {
                 var liUrl = encodeURIComponent(shareUrl || window.location.href);
                 openPopup('https://www.linkedin.com/sharing/share-offsite/?url=' + liUrl);
-            } else if (platform === 'instagram') {
-                var quoteText = el.getAttribute('data-quote') || '';
-                if (navigator.share) {
-                    try {
-                        navigator.share({ text: quoteText, url: shareUrl || window.location.href })
-                            .catch(function() {});
-                    } catch (_) {
-                        openPopup('https://www.instagram.com/');
-                    }
-                } else {
-                    openPopup('https://www.instagram.com/');
-                }
+            } else if (platform === 'telegram') {
+                var url = encodeURIComponent(shareUrl || window.location.href);
+                var text = encodeURIComponent(el.getAttribute('data-quote') || '');
+                openPopup('https://t.me/share/url?url=' + url + (text ? '&text=' + text : ''));
             }
 
             return false;

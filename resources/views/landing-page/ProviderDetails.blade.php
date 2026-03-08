@@ -423,16 +423,16 @@
                                                 @endphp
                                                 <div class="d-flex align-items-center justify-content-center gap-3 mt-3">
                                                     <span role="button" tabindex="0" class="social-link share-link" data-platform="facebook" data-share-url="{{ $detailShareUrl }}" data-quote="{{ $detailQuote }}" onclick="return typeof window.__shareClickHandler === 'function' && window.__shareClickHandler(event, this);" style="cursor: pointer;">
-                                                        <img src="https://static.vecteezy.com/system/resources/previews/016/716/481/original/facebook-icon-free-png.png" style="width: 30px; border-radius: 8px;" alt="Facebook">
+                                                        <img src="{{ asset('assets/fb.png') }}" style="width: 28px; height: 28px; object-fit: contain; border-radius: 8px;" alt="Facebook">
                                                     </span>
-                                                    <span role="button" tabindex="0" class="social-link share-link" data-platform="instagram" data-share-url="{{ $detailShareUrl }}" data-quote="{{ $detailQuote }} — {{ $detailShareUrl }}" data-image-url="{{ $shareImage }}" onclick="return typeof window.__shareClickHandler === 'function' && window.__shareClickHandler(event, this);" style="cursor: pointer;">
-                                                        <img src="https://upload.wikimedia.org/wikipedia/commons/9/95/Instagram_logo_2022.svg" style="width: 30px; border-radius: 8px;" alt="{{ __('landingpage.pd_alt_instagram') }}">
+                                                    <span role="button" tabindex="0" class="social-link share-link" data-platform="telegram" data-share-url="{{ $detailShareUrl }}" data-quote="{{ $detailQuote }}" onclick="return typeof window.__shareClickHandler === 'function' && window.__shareClickHandler(event, this);" style="cursor: pointer;">
+                                                        <img src="{{ asset('assets/telegram.png') }}" style="width: 28px; height: 28px; object-fit: contain; border-radius: 8px;" alt="{{ __('landingpage.pd_alt_telegram') }}">
                                                     </span>
                                                     <span role="button" tabindex="0" class="social-link share-link" data-platform="twitter" data-share-url="{{ $detailShareUrl }}" data-text="{{ $detailQuote }}" onclick="return typeof window.__shareClickHandler === 'function' && window.__shareClickHandler(event, this);" style="cursor: pointer;">
-                                                        <img src="https://cdn.pixabay.com/photo/2015/03/10/17/30/twitter-667462_640.png" style="width: 30px; border-radius: 8px;" alt="Twitter">
+                                                        <img src="{{ asset('assets/twiter.png') }}" style="width: 28px; height: 28px; object-fit: contain; border-radius: 8px;" alt="Twitter">
                                                     </span>
                                                     <span role="button" tabindex="0" class="social-link share-link" data-platform="linkedin" data-share-url="{{ $detailShareUrl }}" onclick="return typeof window.__shareClickHandler === 'function' && window.__shareClickHandler(event, this);" style="cursor: pointer;">
-                                                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRokEYt0yyh6uNDKL8uksVLlhZ35laKNQgZ9g&s" style="width: 30px; border-radius: 8px;" alt="{{ __('landingpage.pd_alt_linkedin') }}">
+                                                        <img src="{{ asset('assets/linkedIn.jpg') }}" style="width: 28px; height: 28px; object-fit: contain; border-radius: 8px;" alt="{{ __('landingpage.pd_alt_linkedin') }}">
                                                     </span>
                                                 </div>
                                             </tr>
@@ -895,11 +895,10 @@ window.__shareClickHandler = function(e, el) {
         openPopup('https://twitter.com/intent/tweet?url=' + url + '&text=' + text);
     } else if (platform === 'linkedin') {
         openPopup('https://www.linkedin.com/sharing/share-offsite/?url=' + encodeURIComponent(shareUrl));
-    } else if (platform === 'instagram') {
-        var quote = el.getAttribute('data-quote') || '';
-        if (navigator.share) {
-            try { navigator.share({ text: quote, url: shareUrl }).catch(function() {}); } catch (_) { openPopup('https://www.instagram.com/'); }
-        } else { openPopup('https://www.instagram.com/'); }
+    } else if (platform === 'telegram') {
+        var url = encodeURIComponent(shareUrl || window.location.href);
+        var text = encodeURIComponent(el.getAttribute('data-quote') || '');
+        openPopup('https://t.me/share/url?url=' + url + (text ? '&text=' + text : ''));
     }
     return false;
 };

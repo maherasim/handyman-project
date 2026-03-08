@@ -482,20 +482,10 @@ document.addEventListener('DOMContentLoaded', function(){
             var liUrl = encodeURIComponent(shareUrl || window.location.href);
             var shareLink = 'https://www.linkedin.com/sharing/share-offsite/?url=' + liUrl;
             openPopup(shareLink);
-        } else if (platform === 'instagram') {
-            var quoteText = el.getAttribute('data-quote') || '';
-            if (navigator.share) {
-                try {
-                    navigator.share({ text: quoteText, url: shareUrl || window.location.href })
-                        .catch(function() {
-                            openPopup('https://www.instagram.com/');
-                        });
-                } catch (_) {
-                    openPopup('https://www.instagram.com/');
-                }
-            } else {
-                openPopup('https://www.instagram.com/');
-            }
+        } else if (platform === 'telegram') {
+            var url = encodeURIComponent(shareUrl || window.location.href);
+            var text = encodeURIComponent(el.getAttribute('data-quote') || '');
+            openPopup('https://t.me/share/url?url=' + url + (text ? '&text=' + text : ''));
         }
 
         return false;

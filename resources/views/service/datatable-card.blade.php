@@ -194,7 +194,7 @@
                data-quote="{{ $serviceQuote }}"
                onclick="return window.__shareClickHandler(event, this);"
                style="cursor: pointer;">
-             <img src="https://static.vecteezy.com/system/resources/previews/016/716/481/original/facebook-icon-free-png.png"
+             <img src="{{ asset('assets/fb.png') }}"
                  style="width: 30px; border-radius: 8px;" alt="Share on Facebook">
          </span>
          <span role="button" tabindex="0" class="social-link share-link"
@@ -203,8 +203,8 @@
                data-text="{{ $serviceQuote }}"
                onclick="return window.__shareClickHandler(event, this);"
                style="cursor: pointer;">
-             <img src="https://cdn.pixabay.com/photo/2015/03/10/17/30/twitter-667462_640.png"
-                 style="width: 30px; border-radius: 8px;" alt="Share on Twitter">
+             <img src="{{ asset('assets/twiter.png') }}"
+                 style="width: 28px; height: 28px; object-fit: contain; border-radius: 8px;" alt="Share on Twitter">
          </span>
          <span role="button" tabindex="0" class="social-link share-link"
                data-platform="instagram"
@@ -220,8 +220,8 @@
                data-share-url="{{ $serviceShareUrl }}"
                onclick="return window.__shareClickHandler(event, this);"
                style="cursor: pointer;">
-             <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRokEYt0yyh6uNDKL8uksVLlhZ35laKNQgZ9g&s"
-                 style="width: 30px; border-radius: 8px;" alt="Share on LinkedIn">
+             <img src="{{ asset('assets/linkedIn.jpg') }}"
+                 style="width: 28px; height: 28px; object-fit: contain; border-radius: 8px;" alt="Share on LinkedIn">
          </span>
      </div>
      
@@ -440,18 +440,10 @@
             } else if (platform === 'linkedin') {
                 var liUrl = encodeURIComponent(shareUrl || window.location.href);
                 openPopup('https://www.linkedin.com/sharing/share-offsite/?url=' + liUrl);
-            } else if (platform === 'instagram') {
-                var quoteText = el.getAttribute('data-quote') || '';
-                if (navigator.share) {
-                    try {
-                        navigator.share({ text: quoteText, url: shareUrl || window.location.href })
-                            .catch(function() {});
-                    } catch (_) {
-                        openPopup('https://www.instagram.com/');
-                    }
-                } else {
-                    openPopup('https://www.instagram.com/');
-                }
+            } else if (platform === 'telegram') {
+                var url = encodeURIComponent(shareUrl || window.location.href);
+                var text = encodeURIComponent(el.getAttribute('data-quote') || '');
+                openPopup('https://t.me/share/url?url=' + url + (text ? '&text=' + text : ''));
             }
 
             return false;

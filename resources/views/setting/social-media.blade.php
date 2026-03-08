@@ -27,9 +27,9 @@
     <div class="col-lg-6">
 
         <div class="form-group">
-            <label for="" class="col-sm-6 form-control-label">{{ __('messages.instagram_url') }}</label>
+            <label for="" class="col-sm-6 form-control-label">{{ __('messages.telegram_url') }}</label>
             <div class="col-sm-12">
-                {{ html()->text('instagram_url', $socialmedia->instagram_url)->class('form-control')->placeholder(__('messages.instagram_url_placeholder'))}}
+                {{ html()->text('telegram_url', $socialmedia->telegram_url ?? null)->class('form-control')->placeholder(__('messages.telegram_url_placeholder'))}}
             </div>
         </div>
 

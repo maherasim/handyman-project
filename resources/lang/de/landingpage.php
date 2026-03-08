@@ -82,7 +82,7 @@
   'follow_us' => 'Folgen Sie uns',
   'facebook' => 'Facebook',
   'twitter' => 'Twitter',
-  'instagram' => 'Instagram',
+  'telegram' => 'Telegram',
   'youtube' => 'YouTube',
   'advance_payment' => 'Anzahlung',
   'off' => 'Aus',
@@ -324,7 +324,7 @@
   'pd_alt_instagram' => 'Instagram',
   'pd_alt_twitter' => 'Twitter',
   'pd_alt_linkedin' => 'LinkedIn',
-  'share_link_copied_instagram' => 'Link kopiert! In Instagram einfügen zum Teilen.',
+  'share_link_copied_telegram' => 'Link kopiert! In Telegram einfügen zum Teilen.',
   'pd_alt_provider' => 'Anbieter',
   'pd_alt_comment_user' => 'Kommentar-Benutzer',
 

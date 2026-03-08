@@ -138,7 +138,7 @@ class SettingController extends Controller
                 $socialmedia   = Setting::where('type', '=', 'social-media')->first();
                 if (!empty($socialmedia['value'])) {
                     $decodedata = json_decode($socialmedia['value']);
-                    $keys = ['facebook_url', 'linkedin_url', 'instagram_url', 'youtube_url', 'twitter_url'];
+                    $keys = ['facebook_url', 'linkedin_url', 'telegram_url', 'youtube_url', 'twitter_url'];
                     foreach ($keys as $key) {
                         $socialmedia[$key] = $decodedata->$key;
                     }
@@ -978,7 +978,7 @@ class SettingController extends Controller
             'facebook_url' => (isset($data['facebook_url'])) ? $data['facebook_url'] : null,
             'twitter_url' => (isset($data['twitter_url'])) ? $data['twitter_url'] : null,
             'linkedin_url' => (isset($data['linkedin_url'])) ? $data['linkedin_url'] : null,
-            'instagram_url' => (isset($data['instagram_url'])) ? $data['instagram_url'] : null,
+            'telegram_url' => (isset($data['telegram_url'])) ? $data['telegram_url'] : null,
             'youtube_url' => (isset($data['youtube_url'])) ? $data['youtube_url'] : null,
         ];
 

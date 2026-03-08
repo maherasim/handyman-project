@@ -1147,7 +1147,7 @@
                                   data-quote="{{ $shareQuote }}"
                                   onclick="return window.__shareClickHandler(event, this);"
                                   style="cursor: pointer;">
-                                <img src="https://static.vecteezy.com/system/resources/previews/016/716/481/original/facebook-icon-free-png.png"
+                                <img src="{{ asset('assets/fb.png') }}"
                                     style="width: 30px; border-radius: 8px;" alt="Share on Facebook">
                             </span>
                             <span role="button" tabindex="0" class="social-link share-link"
@@ -1156,15 +1156,15 @@
                                   data-text="{{ $shareQuote }}"
                                   onclick="return window.__shareClickHandler(event, this);"
                                   style="cursor: pointer;">
-                                <img src="https://cdn.pixabay.com/photo/2015/03/10/17/30/twitter-667462_640.png"
-                                    style="width: 30px; border-radius: 8px;" alt="Share on Twitter">
+                                <img src="{{ asset('assets/twiter.png') }}"
+                                    style="width: 28px; height: 28px; object-fit: contain; border-radius: 8px;" alt="Share on Twitter">
                             </span>
                             <span role="button" tabindex="0" class="social-link share-link"
                                   data-platform="linkedin"
                                   data-share-url="{{ $shareUrl }}"
                                   onclick="return window.__shareClickHandler(event, this);"
                                   style="cursor: pointer;">
-                                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRokEYt0yyh6uNDKL8uksVLlhZ35laKNQgZ9g&s"
+                                <img src="{{ asset('assets/linkedIn.jpg') }}"
                                     style="width: 30px; border-radius: 8px;" alt="Share on LinkedIn">
                             </span>
                             <span role="button" tabindex="0" class="social-link share-link"
@@ -1173,8 +1173,8 @@
                                   data-quote="{{ $shareQuote }} — {{ $shareUrl }}"
                                   onclick="return window.__shareClickHandler(event, this);"
                                   style="cursor: pointer;">
-                                <img src="https://upload.wikimedia.org/wikipedia/commons/9/95/Instagram_logo_2022.svg"
-                                    style="width: 30px; border-radius: 8px;" alt="Share on Instagram">
+                                <img src="{{ asset('assets/instagram.jpg') }}"
+                                    style="width: 28px; height: 28px; object-fit: contain; border-radius: 8px;" alt="Share on Instagram">
                             </span>
                         </div>
                     </div>
@@ -1805,61 +1805,10 @@
                     var liUrl = encodeURIComponent(shareUrl || window.location.href);
                     var shareLink = 'https://www.linkedin.com/sharing/share-offsite/?url=' + liUrl;
                     openPopup(shareLink);
-                } else if (platform === 'instagram') {
-                    // Instagram has no share URL like Facebook/LinkedIn. Use native Share so user can pick Instagram (opens share sheet → tap Instagram = post).
-                    var urlToShare = shareUrl || window.location.href;
-                    var quoteText = (el.getAttribute('data-quote') || '').trim();
-                    var shareTitle = (el.getAttribute('data-quote') || '').split('|')[0].trim() || document.title || 'Check this service';
-                    var shareText = quoteText ? quoteText + ' ' + urlToShare : urlToShare;
-                    if (navigator.share) {
-                        navigator.share({
-                            title: shareTitle,
-                            text: quoteText || shareTitle,
-                            url: urlToShare
-                        }).then(function() {
-                            if (typeof Swal !== 'undefined') {
-                                Swal.fire({ title: 'Shared!', text: 'You can now post to Instagram from the app.', icon: 'success', timer: 2000, showConfirmButton: false });
-                            }
-                        }).catch(function(err) {
-                            if (err && err.name !== 'AbortError') {
-                                copyAndNotify(shareText);
-                            }
-                        });
-                    } else {
-                        copyAndNotify(shareText);
-                    }
-                    function copyAndNotify(str) {
-                        if (navigator.clipboard && navigator.clipboard.writeText) {
-                            navigator.clipboard.writeText(str).then(function() {
-                                if (typeof Swal !== 'undefined') {
-                                    Swal.fire({ title: 'Link copied!', text: 'Paste it in Instagram to share.', icon: 'success', timer: 2500, showConfirmButton: false });
-                                } else {
-                                    alert('Link copied! Paste it in Instagram to share.');
-                                }
-                            }).catch(function() { fallbackCopy(str); });
-                        } else {
-                            fallbackCopy(str);
-                        }
-                        function fallbackCopy(s) {
-                            var ta = document.createElement('textarea');
-                            ta.value = s;
-                            ta.setAttribute('readonly', '');
-                            ta.style.position = 'fixed'; ta.style.left = '-9999px';
-                            document.body.appendChild(ta);
-                            ta.select();
-                            try {
-                                document.execCommand('copy');
-                                if (typeof Swal !== 'undefined') {
-                                    Swal.fire({ title: 'Link copied!', text: 'Paste it in Instagram to share.', icon: 'success', timer: 2500, showConfirmButton: false });
-                                } else {
-                                    alert('Link copied! Paste it in Instagram to share.');
-                                }
-                            } catch (_) {
-                                openPopup('https://www.instagram.com/');
-                            }
-                            document.body.removeChild(ta);
-                        }
-                    }
+                } else if (platform === 'telegram') {
+                    var url = encodeURIComponent(shareUrl || window.location.href);
+                    var text = encodeURIComponent((el.getAttribute('data-quote') || '').trim());
+                    openPopup('https://t.me/share/url?url=' + url + (text ? '&text=' + text : ''));
                 }
 
                 return false;

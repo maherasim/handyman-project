@@ -44,21 +44,10 @@
             openPopup('https://twitter.com/intent/tweet?url=' + url + '&text=' + text);
         } else if (platform === 'linkedin') {
             openPopup('https://www.linkedin.com/sharing/share-offsite/?url=' + encodeURIComponent(shareUrl));
-        } else if (platform === 'instagram') {
-            var quote = el.getAttribute('data-quote') || '';
-            var textToCopy = quote ? quote + ' ' + shareUrl : shareUrl;
-            if (navigator.clipboard && navigator.clipboard.writeText) {
-                navigator.clipboard.writeText(textToCopy).then(function() {
-                    if (typeof window.__shareCopyToast === 'function') window.__shareCopyToast();
-                }).catch(function() { fallbackCopy(textToCopy); });
-            } else { fallbackCopy(textToCopy); }
-            function fallbackCopy(str) {
-                var ta = document.createElement('textarea');
-                ta.value = str; ta.setAttribute('readonly', ''); ta.style.position = 'fixed'; ta.style.left = '-9999px';
-                document.body.appendChild(ta); ta.select();
-                try { document.execCommand('copy'); if (typeof window.__shareCopyToast === 'function') window.__shareCopyToast(); } catch (err) {}
-                document.body.removeChild(ta);
-            }
+        } else if (platform === 'telegram') {
+            var url = encodeURIComponent(shareUrl || window.location.href);
+            var text = encodeURIComponent(el.getAttribute('data-quote') || '');
+            openPopup('https://t.me/share/url?url=' + url + (text ? '&text=' + text : ''));
         }
         return false;
     };

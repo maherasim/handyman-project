@@ -101,8 +101,9 @@ class DashboardController extends Controller
 
             $locations = Service::locationService($request->latitude,$request->longitude,$get_distance,$get_unit);
             $service_in_location = ProviderServiceAddressMapping::whereIn('provider_address_id',$locations)->get()->pluck('service_id');
-            $service = Service::with('providerServiceAddress', 'city', 'country')->whereIn('id',$service_in_location)->orwhere('visit_type','online')->get();
-            $service = ServiceResource::collection($service);
+            $service_query = Service::with('providerServiceAddress', 'city', 'country')->whereIn('id',$service_in_location)->orwhere('visit_type','online');
+            $servicePaginated = $service_query->orderBy('id','desc')->paginate($per_page);
+            $service = ServiceResource::collection($servicePaginated);
             
             $service = $service->map(function ($item) use ($request) {
                 $itemArray = $item->toArray($request);
@@ -166,7 +167,7 @@ class DashboardController extends Controller
 
             $locations = Service::locationService($request->latitude,$request->longitude,$get_distance,$get_unit);
             $service_in_location = ProviderServiceAddressMapping::whereIn('provider_address_id',$locations)->get()->pluck('service_id');
-            $featured_service = Service::with('providerServiceAddress', 'city', 'country')->whereIn('id',$service_in_location)->where('is_featured',1) ->get();
+            $featured_service = Service::with('providerServiceAddress', 'city', 'country')->whereIn('id',$service_in_location)->where('is_featured',1);
             $featuredServicePaginated = $featured_service->orderBy('id','desc')->paginate($per_page);
             $featured_service = ServiceResource::collection($featuredServicePaginated);
             
@@ -586,7 +587,7 @@ class DashboardController extends Controller
 
             "facebook_url"=> $social_media->facebook_url,
             "linkedin_url"=> $social_media->linkedin_url,
-            "instagram_url"=> $social_media->instagram_url,
+            "telegram_url"=> $social_media->telegram_url ?? null,
             "youtube_url"=> $social_media->youtube_url,
             "twitter_url"=> $social_media->twitter_url,
 

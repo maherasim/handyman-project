@@ -526,8 +526,8 @@
                                          transition: all 0.3s ease;
                                           text-decoration: none; cursor: pointer;
                                      ">
-                                                 <img src="https://static.vecteezy.com/system/resources/previews/016/716/481/original/facebook-icon-free-png.png"
-                                                     alt="{{ __('landingpage.pd_alt_facebook') }}" style="width: 12px; height: 12px;">
+                                                 <img src="{{ asset('assets/fb.png') }}"
+                                                     alt="{{ __('landingpage.pd_alt_facebook') }}" style="width: 24px; height: 24px; object-fit: contain;">
                                             </span>
                                             <span role="button" tabindex="0" class="social-link share-link" data-platform="instagram" data-job-id="{{ $jobRequest->id }}" data-quote="{{ $jobRequest->title }} • {{ getPriceFormat($jobRequest->price) }} • {{ ucfirst($jobRequest->price_type ?? 'fixed') }} • {{ data_get($jobRequest,'city.name','City') }}, {{ data_get($jobRequest,'country.name','Country') }} — {{ route('job.details', $jobRequest->id) }}" data-image-url="{{ !empty($jobRequest->image) ? asset('storage/' . ltrim($jobRequest->image, '/')) : asset('images/post-job/ac_refresh_and_revive.png') }}" onclick="return window.__shareClickHandler(event, this);"
                                                  style="
@@ -542,7 +542,7 @@
                                           text-decoration: none; cursor: pointer;
                                      ">
                                                  <img src="https://upload.wikimedia.org/wikipedia/commons/9/95/Instagram_logo_2022.svg"
-                                                     alt="{{ __('landingpage.pd_alt_instagram') }}" style="width: 12px; height: 12px;">
+                                                     alt="{{ __('landingpage.pd_alt_instagram') }}" style="width: 24px; height: 24px; object-fit: contain;">
                                             </span>
                                             <span role="button" tabindex="0" class="social-link share-link" data-platform="twitter" data-share-url="{{ route('job.details', $jobRequest->id) }}?v={{ optional($jobRequest->updated_at)->timestamp ?? time() }}" data-text="{{ $jobRequest->title }} • {{ getPriceFormat($jobRequest->price) }} • {{ ucfirst($jobRequest->price_type ?? 'fixed') }} • {{ data_get($jobRequest,'city.name','City') }}, {{ data_get($jobRequest,'country.name','Country') }}" onclick="return window.__shareClickHandler(event, this);"
                                                  style="
@@ -556,8 +556,8 @@
                                          transition: all 0.3s ease;
                                           text-decoration: none; cursor: pointer;
                                      ">
-                                                 <img src="https://cdn.pixabay.com/photo/2015/03/10/17/30/twitter-667462_640.png"
-                                                     alt="{{ __('landingpage.pd_alt_twitter') }}" style="width: 12px; height: 12px;">
+                                                 <img src="{{ asset('assets/twiter.png') }}"
+                                                     alt="{{ __('landingpage.pd_alt_twitter') }}" style="width: 24px; height: 24px; object-fit: contain;">
                                             </span>
                                             <span role="button" tabindex="0" class="social-link share-link" data-platform="linkedin" data-share-url="{{ route('job.details', $jobRequest->id) }}?v={{ optional($jobRequest->updated_at)->timestamp ?? time() }}" onclick="return window.__shareClickHandler(event, this);"
                                                  style="
@@ -571,8 +571,8 @@
                                          align-items: center;
                                          justify-content: center;
                                      ">
-                                                 <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRokEYt0yyh6uNDKL8uksVLlhZ35laKNQgZ9g&s"
-                                                     alt="{{ __('landingpage.pd_alt_linkedin') }}" style="width: 12px; height: 12px;">
+                                                 <img src="{{ asset('assets/linkedIn.jpg') }}"
+                                                     alt="{{ __('landingpage.pd_alt_linkedin') }}" style="width: 24px; height: 24px; object-fit: contain;">
                                             </span>
                                          </div>
                                      </div>
@@ -657,25 +657,10 @@
                 } else if (platform === 'linkedin') {
                     var liUrl = encodeURIComponent(shareUrl || window.location.href);
                     openPopup('https://www.linkedin.com/sharing/share-offsite/?url=' + liUrl);
-                } else if (platform === 'instagram') {
-                    // Instagram does not support link share with prefilled text via web.
-                    // On mobile, try the Web Share API as a graceful fallback.
-                    var quote = el.getAttribute('data-quote') || '';
-                    var imageUrl = el.getAttribute('data-image-url') || '';
-                    var shareText = quote;
-
-                    if (navigator.share) {
-                        try {
-                            navigator.share({ text: shareText, url: shareUrl || window.location.href })
-                                .catch(function() { /* ignore */ });
-                        } catch (_) {
-                            // fallback
-                            openPopup('https://www.instagram.com/');
-                        }
-                    } else {
-                        // fallback open
-                        openPopup('https://www.instagram.com/');
-                    }
+                } else if (platform === 'telegram') {
+                    var url = encodeURIComponent(shareUrl || window.location.href);
+                    var text = encodeURIComponent(el.getAttribute('data-quote') || '');
+                    openPopup('https://t.me/share/url?url=' + url + (text ? '&text=' + text : ''));
                 }
 
                 return false;

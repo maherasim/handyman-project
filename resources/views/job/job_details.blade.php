@@ -517,20 +517,20 @@
                     <!-- Social Sharing -->
                     <div class="d-flex align-items-center justify-content-center gap-3 mb-4 social-icons">
                         <span role="button" tabindex="0" class="social-link share-link" data-platform="facebook" data-share-url="{{ route('job.details', $jobrequest->id) }}?v={{ optional($jobrequest->updated_at)->timestamp ?? time() }}" data-quote="{{ $jobrequest->title }} • {{ getPriceFormat($jobrequest->price) }} • {{ ucfirst($jobrequest->price_type ?? 'fixed') }} • {{ data_get($jobrequest,'city.name','City') }}, {{ data_get($jobrequest,'country.name','Country') }}" onclick="return window.__shareClickHandler(event, this);">
-                            <img src="https://static.vecteezy.com/system/resources/previews/016/716/447/non_2x/facebook-icon-free-png.png" 
-                                 style="width: 30px; border-radius: 8px;" alt="Facebook">
+                            <img src="{{ asset('assets/fb.png') }}" 
+                                 style="width: 28px; height: 28px; object-fit: contain; border-radius: 8px;" alt="Facebook">
                         </span>
-                        <span role="button" tabindex="0" class="social-link share-link" data-platform="instagram" data-image-url="{{ !empty($attachments) && count($attachments) > 0 ? $attachments[0] : asset('images/post-job/ac_refresh_and_revive.png') }}" data-quote="{{ $jobrequest->title }} • {{ getPriceFormat($jobrequest->price) }} • {{ ucfirst($jobrequest->price_type ?? 'fixed') }} • {{ data_get($jobrequest,'city.name', __('messages.city')) }}, {{ data_get($jobrequest,'country.name', __('messages.country')) }} — {{ route('job.details', $jobrequest->id) }}" onclick="return window.__shareClickHandler(event, this);">
-                            <img src="https://upload.wikimedia.org/wikipedia/commons/9/95/Instagram_logo_2022.svg" 
-                                 style="width: 30px; border-radius: 8px;" alt="{{ __('landingpage.pd_alt_instagram') }}">
+                        <span role="button" tabindex="0" class="social-link share-link" data-platform="telegram" data-share-url="{{ route('job.details', $jobrequest->id) }}" data-quote="{{ $jobrequest->title }} • {{ getPriceFormat($jobrequest->price) }} • {{ ucfirst($jobrequest->price_type ?? 'fixed') }} • {{ data_get($jobrequest,'city.name', __('messages.city')) }}, {{ data_get($jobrequest,'country.name', __('messages.country')) }}" onclick="return window.__shareClickHandler(event, this);">
+                            <img src="{{ asset('assets/telegram.png') }}"
+                                 style="width: 28px; height: 28px; object-fit: contain; border-radius: 8px;" alt="{{ __('landingpage.pd_alt_telegram') }}">
                         </span>
                         <span role="button" tabindex="0" class="social-link share-link" data-platform="twitter" data-share-url="{{ route('job.details', $jobrequest->id) }}?v={{ optional($jobrequest->updated_at)->timestamp ?? time() }}" data-text="{{ $jobrequest->title }} • {{ getPriceFormat($jobrequest->price) }} • {{ ucfirst($jobrequest->price_type ?? 'fixed') }} • {{ data_get($jobrequest,'city.name', __('messages.city')) }}, {{ data_get($jobrequest,'country.name', __('messages.country')) }}" onclick="return window.__shareClickHandler(event, this);">
                             <img src="https://cdn.pixabay.com/photo/2015/03/10/17/30/twitter-667462_640.png" 
-                                 style="width: 30px; border-radius: 8px;" alt="{{ __('landingpage.pd_alt_twitter') }}">
+                                 style="width: 28px; height: 28px; object-fit: contain; border-radius: 8px;" alt="{{ __('landingpage.pd_alt_twitter') }}">
                         </span>
                         <span role="button" tabindex="0" class="social-link share-link" data-platform="linkedin" data-share-url="{{ route('job.details', $jobrequest->id) }}?v={{ optional($jobrequest->updated_at)->timestamp ?? time() }}" onclick="return window.__shareClickHandler(event, this);">
-                            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRokEYt0yyh6uNDKL8uksVLlhZ35laKNQgZ9g&s" 
-                                 style="width: 30px; border-radius: 8px;" alt="{{ __('landingpage.pd_alt_linkedin') }}">
+                            <img src="{{ asset('assets/linkedIn.jpg') }}" 
+                                 style="width: 28px; height: 28px; object-fit: contain; border-radius: 8px;" alt="{{ __('landingpage.pd_alt_linkedin') }}">
                         </span>
                     </div>
 
@@ -557,18 +557,10 @@
                                 } else if (platform === 'linkedin') {
                                     var liUrl = encodeURIComponent(shareUrl || window.location.href);
                                     openPopup('https://www.linkedin.com/sharing/share-offsite/?url=' + liUrl);
-                                } else if (platform === 'instagram') {
-                                    var quoteText = el.getAttribute('data-quote') || '';
-                                    if (navigator.share) {
-                                        try {
-                                            navigator.share({ text: quoteText, url: shareUrl || window.location.href })
-                                                .catch(function() {});
-                                        } catch (_) {
-                                            openPopup('https://www.instagram.com/');
-                                        }
-                                    } else {
-                                        openPopup('https://www.instagram.com/');
-                                    }
+                                } else if (platform === 'telegram') {
+                                    var url = encodeURIComponent(shareUrl || window.location.href);
+                                    var text = encodeURIComponent(el.getAttribute('data-quote') || '');
+                                    openPopup('https://t.me/share/url?url=' + url + (text ? '&text=' + text : ''));
                                 }
 
                                 return false;

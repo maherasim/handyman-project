@@ -130,9 +130,9 @@
                                     <i class="ri-twitter-x-fill"></i>
                                 </a>
                                 @endif
-                                @if(optional($socialmedia)->instagram_url)
-                                <a href="{{ optional($socialmedia)->instagram_url }}" target="_blank" class="footer-social-btn footer-social-ig" title="Instagram">
-                                    <i class="ri-instagram-line"></i>
+                                @if(optional($socialmedia)->telegram_url)
+                                <a href="{{ optional($socialmedia)->telegram_url }}" target="_blank" class="footer-social-btn footer-social-tg" title="Telegram">
+                                    <img src="{{ asset('assets/telegram.png') }}" alt="Telegram" style="width: 20px; height: 20px; object-fit: contain; vertical-align: middle;">
                                 </a>
                                 @endif
                                 @if(optional($socialmedia)->youtube_url)
