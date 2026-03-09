@@ -499,7 +499,7 @@ public function register(UserRequest $request)
             }
         }
 
-        $user_data = User::find($user->id);
+        $user_data = User::with(['country', 'state', 'city', 'providertype', 'handymantype'])->find($user->id);
 
         $message = __('messages.updated');
 
@@ -940,7 +940,7 @@ public function register(UserRequest $request)
             $user->addMediaFromRequest('profile_image')->toMediaCollection('profile_image');
         }
 
-        $user_data = User::find($user->id);
+        $user_data = User::with(['country', 'state', 'city', 'providertype', 'handymantype'])->find($user->id);
 
         $message = __('messages.updated');
         $user_data['profile_image'] = getSingleMedia($user_data,'profile_image',null);
