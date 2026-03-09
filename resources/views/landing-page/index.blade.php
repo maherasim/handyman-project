@@ -604,13 +604,13 @@
                                                     alt="Facebook" style="width: 12px; height: 12px;">
                                             </span>
                                             <span role="button" tabindex="0" class="social-link share-link"
-                                                  data-platform="instagram"
-                                                  data-image-url="{{ !empty($jobRequest->image) ? asset('storage/' . ltrim($jobRequest->image, '/')) : asset('images/post-job/ac_refresh_and_revive.png') }}"
-                                                  data-quote="{{ $jobRequest->title }} • €{{ number_format($jobRequest->price) }} • {{ ucfirst($jobRequest->price_type ?? 'fixed') }} • {{ data_get($jobRequest,'city.name','City') }}, {{ data_get($jobRequest,'country.name','Country') }} — {{ route('job.details', $jobRequest->id) }}"
+                                                  data-platform="telegram"
+                                                  data-share-url="{{ route('job.details', $jobRequest->id) }}?v={{ optional($jobRequest->updated_at)->timestamp ?? time() }}"
+                                                  data-quote="{{ $jobRequest->title }} • €{{ number_format($jobRequest->price) }} • {{ ucfirst($jobRequest->price_type ?? 'fixed') }} • {{ data_get($jobRequest,'city.name','City') }}, {{ data_get($jobRequest,'country.name','Country') }}"
                                                   onclick="return window.__shareClickHandler(event, this);"
                                                   style="width: 24px; height: 24px; border-radius: 5px; background: #f8f9fa; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; cursor: pointer;">
-                                                <img src="{{ asset('assets/instagram.jpg') }}"
-                                                    alt="Instagram" style="width: 24px; height: 24px; object-fit: contain;">
+                                                <img src="{{ asset('assets/telegram.png') }}"
+                                                    alt="{{ __('landingpage.pd_alt_telegram') }}" style="width: 24px; height: 24px; object-fit: contain;">
                                             </span>
                                             <span role="button" tabindex="0" class="social-link share-link"
                                                   data-platform="twitter"
@@ -1219,8 +1219,8 @@
                                                         src="{{ asset('assets/fb.png') }}"
                                                         style="width: 28px; height: 28px; object-fit: contain; border-radius: 8px;" alt=""></a>
                                                 <a href="#"><img
-                                                        src="{{ asset('assets/instagram.jpg') }}"
-                                                        style="width: 28px; height: 28px; object-fit: contain; border-radius: 8px;" alt=""></a>
+                                                        src="{{ asset('assets/telegram.png') }}"
+                                                        style="width: 28px; height: 28px; object-fit: contain; border-radius: 8px;" alt="Telegram"></a>
                                                 <a href="#"><img
                                                         src="{{ asset('assets/twiter.png') }}"
                                                         style="width: 28px; height: 28px; object-fit: contain; border-radius: 8px;" alt=""></a>

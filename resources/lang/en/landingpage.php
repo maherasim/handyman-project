@@ -322,6 +322,7 @@
   'pd_alt_not_verified_icon' => 'Non-Verified Icon',
   'pd_alt_facebook' => 'Facebook',
   'pd_alt_instagram' => 'Instagram',
+  'pd_alt_telegram' => 'Telegram',
   'pd_alt_twitter' => 'Twitter',
   'pd_alt_linkedin' => 'LinkedIn',
   'share_link_copied_telegram' => 'Link copied! Paste in Telegram to share.',

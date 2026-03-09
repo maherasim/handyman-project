@@ -479,8 +479,6 @@ class ChatController extends Controller
         $emailProviders = ['gmail','yahoo','hotmail','outlook','icloud','protonmail','ymail','gmx','aol','mail.com','yandex','zoho'];
         foreach ($emailProviders as $prov) { if (strpos($hay, $prov) !== false) { $types[] = 'email'; break; } }
 
-        // Instagram handles/links
-        if (strpos($hay, 'instagram.com') !== false || preg_match('/\binsta(?:gram)?\b/i', $hay)) { $types[] = 'instagram'; }
         // Facebook handles/links
         if (strpos($hay, 'facebook.com') !== false || strpos($hay, 'fb.com') !== false || strpos($hay, 'm.me/') !== false || strpos($hay, 'messenger.com') !== false || preg_match('/\bfacebook\b/i', $hay)) { $types[] = 'facebook'; }
 

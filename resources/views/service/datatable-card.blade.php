@@ -207,13 +207,13 @@
                  style="width: 28px; height: 28px; object-fit: contain; border-radius: 8px;" alt="Share on Twitter">
          </span>
          <span role="button" tabindex="0" class="social-link share-link"
-               data-platform="instagram"
-               data-image-url="{{ isset($serviceImage) ? $serviceImage : asset('images/default.png') }}"
-               data-quote="{{ $serviceQuote }} — {{ $serviceShareUrl }}"
+               data-platform="telegram"
+               data-share-url="{{ $serviceShareUrl }}"
+               data-quote="{{ $serviceQuote }}"
                onclick="return window.__shareClickHandler(event, this);"
                style="cursor: pointer;">
-             <img src="https://upload.wikimedia.org/wikipedia/commons/9/95/Instagram_logo_2022.svg"
-                 style="width: 30px; border-radius: 8px;" alt="Share on Instagram">
+             <img src="{{ asset('assets/telegram.png') }}"
+                 style="width: 28px; height: 28px; object-fit: contain; border-radius: 8px;" alt="Share on Telegram">
          </span>
          <span role="button" tabindex="0" class="social-link share-link"
                data-platform="linkedin"

@@ -1168,13 +1168,13 @@
                                     style="width: 30px; border-radius: 8px;" alt="Share on LinkedIn">
                             </span>
                             <span role="button" tabindex="0" class="social-link share-link"
-                                  data-platform="instagram"
-                                  data-image-url="{{ $serviceImage }}"
-                                  data-quote="{{ $shareQuote }} — {{ $shareUrl }}"
+                                  data-platform="telegram"
+                                  data-share-url="{{ $shareUrl }}"
+                                  data-quote="{{ $shareQuote }}"
                                   onclick="return window.__shareClickHandler(event, this);"
                                   style="cursor: pointer;">
-                                <img src="{{ asset('assets/instagram.jpg') }}"
-                                    style="width: 28px; height: 28px; object-fit: contain; border-radius: 8px;" alt="Share on Instagram">
+                                <img src="{{ asset('assets/telegram.png') }}"
+                                    style="width: 28px; height: 28px; object-fit: contain; border-radius: 8px;" alt="Share on Telegram">
                             </span>
                         </div>
                     </div>

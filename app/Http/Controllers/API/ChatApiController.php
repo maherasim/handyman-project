@@ -356,10 +356,6 @@ class ChatApiController extends Controller
             }
         }
 
-        // Instagram
-        if (strpos($hay, 'instagram.com') !== false || preg_match('/\binsta(?:gram)?\b/i', $hay)) {
-            $types[] = 'instagram';
-        }
         // Facebook/Messenger
         if (strpos($hay, 'facebook.com') !== false || strpos($hay, 'fb.com') !== false || strpos($hay, 'm.me/') !== false || strpos($hay, 'messenger.com') !== false || preg_match('/\bfacebook\b/i', $hay)) {
             $types[] = 'facebook';

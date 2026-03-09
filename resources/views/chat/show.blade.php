@@ -292,7 +292,6 @@
                 const hasMinDigits = (text.match(/\d/g) || []).length >= 7;
                 const isWhats = lower.includes('whatsapp') || lower.includes('wa.me/') || lower.includes('api.whatsapp.com');
                 const mentionsEmailProviders = ['gmail','yahoo','hotmail','outlook','icloud','protonmail','ymail','gmx','aol','mail.com','yandex','zoho'].some(p => lower.includes(p));
-                const mentionsInstagram = lower.includes('instagram.com') || /\binsta(?:gram)?\b/i.test(text);
                 const mentionsFacebook = lower.includes('facebook.com') || lower.includes('fb.com') || lower.includes('m.me/') || lower.includes('messenger.com') || lower.includes('facebook');
                 // Basic obfuscation normalization for email
                 const norm = lower
@@ -326,7 +325,7 @@
                 }
                 const phoneSpelled = count >= 7;
 
-                const violate = text && (emailRe.test(text) || emailObfuscated || mentionsEmailProviders || (phoneRe.test(text) && hasMinDigits) || phoneSpelled || isWhats || lower.includes('telegram') || lower.includes('t.me/') || mentionsInstagram || mentionsFacebook);
+                const violate = text && (emailRe.test(text) || emailObfuscated || mentionsEmailProviders || (phoneRe.test(text) && hasMinDigits) || phoneSpelled || isWhats || lower.includes('telegram') || lower.includes('t.me/') || mentionsFacebook);
                 if (violate) {
                     const warn = document.getElementById('policyWarning');
                     if (warn) {

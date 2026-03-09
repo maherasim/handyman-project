@@ -233,22 +233,6 @@
                         <small class="help-block with-errors text-danger " id="contact_number_err"></small>
                     </div>
 
-                    {{-- Worker Commission: only visible to provider/admin, hidden from handyman --}}
-                    @if (!auth()->user()->hasRole('handyman'))
-                        <div class="form-group col-md-6">
-                            {{ html()->label(
-                                    __('messages.select_name', ['select' => __('messages.handymantype')]) . ' <span class="text-danger">*</span>',
-                                    'handymantype_id',
-                                )->class('form-control-label') }}
-                            <br />
-                            {{ html()->select(
-                                    'handymantype_id',
-                                    [optional($user_data->handymantype)->id => optional($user_data->handymantype)->name],
-                                    optional($user_data->handymantype)->id,
-                                )->class('select2js form-group handymantype')->required()->attribute('data-placeholder', __('messages.select_name', ['select' => __('messages.handymantype')]))->attribute('data-ajax--url', route('ajax-list', ['type' => 'handymantype'])) }}
-                        </div>
-                    @endif
-
                     @if (auth()->user()->hasRole('handyman'))
                         <div class="form-group col-md-6">
                             {{ html()->label(__('messages.select_name', ['select' => __('messages.provider_address')]), 'name')->class('form-control-label') }}
@@ -388,7 +372,7 @@
                                     'part_time' => 'Part-time',
                                 ],
                                 $availabilityValue,
-                            )->class('form-control')->required()->placeholder(__('Select Availability')) }}
+                            )->class('form-control')->required() }}
                         <small class="help-block with-errors text-danger"></small>
                     </div>
 

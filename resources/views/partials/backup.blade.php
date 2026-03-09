@@ -127,8 +127,8 @@
                   src="https://cdn.pixabay.com/photo/2021/06/15/12/51/facebook-6338507_1280.png"
                   style="width: 30px; border-radius: 8px;" alt=""></a>
           <a href="#"><img
-                  src="https://upload.wikimedia.org/wikipedia/commons/9/95/Instagram_logo_2022.svg"
-                  style="width: 30px; border-radius: 8px;" alt=""></a>
+                  src="{{ asset('assets/telegram.png') }}"
+                  style="width: 30px; height: 30px; object-fit: contain; border-radius: 8px;" alt="Telegram"></a>
           <a href="#"><img
                   src="https://cdn.pixabay.com/photo/2015/03/10/17/30/twitter-667462_640.png"
                   style="width: 30px; border-radius: 8px;" alt=""></a>
