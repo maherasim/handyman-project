@@ -1,6 +1,15 @@
+@php
+    $socialmedia = $socialmedia ?? new \stdClass();
+    $socialmedia->id = $socialmedia->id ?? null;
+    $socialmedia->facebook_url = $socialmedia->facebook_url ?? null;
+    $socialmedia->twitter_url = $socialmedia->twitter_url ?? null;
+    $socialmedia->linkedin_url = $socialmedia->linkedin_url ?? null;
+    $socialmedia->telegram_url = $socialmedia->telegram_url ?? null;
+    $socialmedia->youtube_url = $socialmedia->youtube_url ?? null;
+@endphp
 {{ html()->form('POST', route('socialMedia'))->attribute('enctype', 'multipart/form-data')->attribute('data-toggle', 'validator')->open() }}
 
-{{ html()->hidden('id', $socialmedia->id ?? null )->attribute('placeholder', 'id')->class('form-control') }}
+{{ html()->hidden('id', $socialmedia->id)->attribute('placeholder', 'id')->class('form-control') }}
 {{ html()->hidden('page', $page)->attribute('placeholder', 'id')->class('form-control') }}
 <div class="row">
     <div class="col-lg-6">
@@ -29,7 +38,7 @@
         <div class="form-group">
             <label for="" class="col-sm-6 form-control-label">{{ __('messages.telegram_url') }}</label>
             <div class="col-sm-12">
-                {{ html()->text('telegram_url', $socialmedia->telegram_url ?? null)->class('form-control')->placeholder(__('messages.telegram_url_placeholder'))}}
+                {{ html()->text('telegram_url', $socialmedia->telegram_url)->class('form-control')->placeholder(__('messages.telegram_url_placeholder'))}}
             </div>
         </div>
 

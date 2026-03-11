@@ -135,12 +135,29 @@ class SettingController extends Controller
                 $data = view('setting.' . $page, compact('page', 'serviceconfig'))->render();
                 break;
             case 'social-media':
-                $socialmedia   = Setting::where('type', '=', 'social-media')->first();
-                if (!empty($socialmedia['value'])) {
-                    $decodedata = json_decode($socialmedia['value']);
-                    $keys = ['facebook_url', 'linkedin_url', 'telegram_url', 'youtube_url', 'twitter_url'];
+                $socialmedia = Setting::where('type', '=', 'social-media')->first();
+                $keys = ['facebook_url', 'linkedin_url', 'telegram_url', 'youtube_url', 'twitter_url'];
+                if ($socialmedia === null) {
+                    $socialmedia = new \stdClass();
+                    $socialmedia->id = null;
                     foreach ($keys as $key) {
-                        $socialmedia[$key] = $decodedata->$key;
+                        $socialmedia->$key = null;
+                    }
+                } else {
+                    if (!empty($socialmedia['value'])) {
+                        $decodedata = json_decode($socialmedia['value']);
+                        foreach ($keys as $key) {
+                            $socialmedia[$key] = $decodedata->$key ?? null;
+                        }
+                        // Backward compatibility: if DB has instagram_url but no telegram_url, show it in Telegram field
+                        if (empty($socialmedia['telegram_url']) && !empty($decodedata->instagram_url ?? null)) {
+                            $socialmedia['telegram_url'] = $decodedata->instagram_url;
+                        }
+                    }
+                    foreach ($keys as $key) {
+                        if (!isset($socialmedia->$key)) {
+                            $socialmedia->$key = null;
+                        }
                     }
                 }
                 $data = view('setting.' . $page, compact('page', 'socialmedia'))->render();
