@@ -1,3 +1,12 @@
+{{-- Google Analytics (gtag.js) --}}
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-RQ69M877X0"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-RQ69M877X0');
+</script>
+
 <link rel="shortcut icon" class="favicon_preview" href="{{ getSingleMedia(imageSession('get'),'favicon',null) }}" />
 <link rel='stylesheet' href="{{ asset('vendor/fullcalendar/core/main.css')}}" />
 <link rel='stylesheet' href="{{ asset('vendor/fullcalendar/daygrid/main.css')}}" />

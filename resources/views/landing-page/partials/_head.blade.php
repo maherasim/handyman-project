@@ -2,6 +2,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta http-equiv="X-UA-Compatible" content="ie=edge">
 <title>{{ config('app.display_name', 'Frobster') }} Service - On-Demand Home Service Flutter App with Complete Solution</title>
+
+{{-- Google Analytics (gtag.js) --}}
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-RQ69M877X0"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-RQ69M877X0');
+</script>
+
 <link rel="shortcut icon" class="favicon_preview" href="{{ getSingleMedia(imageSession('get'),'favicon',null) }}" />
 <link rel="stylesheet" href="{{ asset('css/landing-page.min.css') }}">
 <link rel="stylesheet" href="{{ asset('css/landing-page-rtl.min.css') }}">
