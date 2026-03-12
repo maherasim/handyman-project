@@ -92,7 +92,24 @@ return [
     |
     */
 
-    'locale' => env('DEFAULT_LANGUAGE','en'),
+    'locale' => env('DEFAULT_LANGUAGE', 'de'),
+
+    /*
+    | Set to true to show the language switcher (en, de, etc.) in header.
+    | When false, locale is always the default above and the switcher is hidden.
+    */
+    'show_language_switcher' => env('SHOW_LANGUAGE_SWITCHER', false),
+
+    /*
+    | Domain-based locale: same codebase, different language per domain.
+    | frobster.com → en (English), persotel.de → de (German).
+    | Set APP_DOMAIN_EN and APP_DOMAIN_DE in .env to override.
+    | If the request host matches a key, that locale is used; otherwise config('app.locale') is used.
+    */
+    'domain_locale' => [
+        env('APP_DOMAIN_EN', 'frobster.com') => 'en',
+        env('APP_DOMAIN_DE', 'persotel.de') => 'de',
+    ],
 
     /*
     |--------------------------------------------------------------------------
@@ -105,7 +122,7 @@ return [
     |
     */
 
-    'fallback_locale' => 'en',
+    'fallback_locale' => 'de',
 
     /*
     |--------------------------------------------------------------------------

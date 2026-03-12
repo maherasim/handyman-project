@@ -17,9 +17,16 @@ class SetUserLocale
      */
     public function handle(Request $request, Closure $next)
     {
-        if (Auth::check()) {
-            $locale = Auth::user()->language_option;
-            \App::setLocale($locale);
+        $domainLocale = config('app.domain_locale', []);
+        $host = $request->getHost();
+        $localeSetByDomain = !empty($domainLocale) && isset($domainLocale[$host]);
+
+        if ($localeSetByDomain) {
+            // LanguageTranslator already set locale by domain; do not override
+        } elseif (!config('app.show_language_switcher', false)) {
+            \App::setLocale(config('app.locale'));
+        } elseif (Auth::check() && Auth::user()->language_option) {
+            \App::setLocale(Auth::user()->language_option);
         }
 
         return $next($request);

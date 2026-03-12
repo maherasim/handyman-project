@@ -31,7 +31,7 @@
              <div class="col-6 text-end">
                 <div class="d-inline-block position-relative">
                   @if ($sectionData && isset($sectionData['header_setting']) && $sectionData['header_setting'] == 1)
-                  @if($sectionData['enable_language'] == 1)
+                  @if(config('app.show_language_switcher', false) && $sectionData['enable_language'] == 1)
                      <a class="dropdown text-white d-flex align-items-center" data-bs-toggle="dropdown" href="#"
                         role="button" aria-haspopup="true" aria-expanded="true">
                         {{strtoupper(app()->getLocale())}}

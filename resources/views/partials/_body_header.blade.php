@@ -68,6 +68,7 @@
                                 <div class="card shadow-none m-0 border-0 notification_data"></div>
                             </div>
                         </li>
+                        @if(config('app.show_language_switcher', false))
                         <li class="nav-item nav-icon dropdown">
                             <a href="#" class="search-toggle dropdown-toggle language-toggle" id="languageDropdownMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <?php
@@ -82,7 +83,6 @@
                                         <ul class="dropdown-menu-1 list-group list-group-flush">
                                             <?php
                                             $language_option = sitesetupSession('get')->language_option ?? ["nl","fr","it","pt","es","en"];
-                                            // Ensure German ('de') is available in the dropdown even if not set yet
                                             if (is_array($language_option)) {
                                                 $language_option = array_values(array_unique(array_merge($language_option, ['de'])));
                                             }
@@ -108,6 +108,7 @@
                                 </div>
                             </div>
                         </li>
+                        @endif
 
                         <li class="nav-item nav-icon dropdown">
                             <a href="#" class="nav-item nav-icon dropdown-toggle search-toggle" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
