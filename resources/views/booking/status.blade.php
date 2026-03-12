@@ -8,7 +8,7 @@ $timezone = getTimeZone();
  <tbody>
                         <!-- Unit Price -->
                         <tr>
-                            <td>{{ __('Price (Unit Price)') }}</td>
+                            <td>{{ __('messages.price_unit_price') }}</td>
                             <td class="bk-value">
                                 {{ getPriceFormat($bookingdata->amount) }}
                             </td>
@@ -16,7 +16,7 @@ $timezone = getTimeZone();
 
                         <!-- Quantity -->
                         <tr>
-                            <td>{{ __('Quantity (Nbr of Packages, Hours, Days)') }}</td>
+                            <td>{{ __('messages.quantity_nbr_packages') }}</td>
                             <td class="bk-value">
                                 {{ $bookingdata->quantity }}
                             </td>
@@ -24,7 +24,7 @@ $timezone = getTimeZone();
 
                         <!-- Total Amount (Price x Quantity) -->
                         <tr>
-                            <td>{{ __('Total Amount') }}</td>
+                            <td>{{ __('messages.total_amount') }}</td>
                             <td class="bk-value">
                                 {{ getPriceFormat($bookingdata->amount * $bookingdata->quantity) }}
                             </td>
@@ -43,7 +43,7 @@ $timezone = getTimeZone();
                         <!-- Coupon -->
                         @if ($bookingdata->couponAdded)
                             <tr>
-                                <td>{{ __('Coupon') }} ({{ $bookingdata->couponAdded->code }})</td>
+                                <td>{{ __('messages.coupon') }} ({{ $bookingdata->couponAdded->code }})</td>
                                 <td class="bk-value text-success">
                                     -{{ getPriceFormat($bookingdata->final_coupon_discount_amount) }}
                                 </td>
@@ -74,7 +74,7 @@ $timezone = getTimeZone();
                         @endphp
                         @if ($addonTotal > 0)
                             <tr>
-                                <td>{{ __('Service Addons') }}</td>
+                                <td>{{ __('messages.service_addons') }}</td>
                                 <td class="bk-value">{{ getPriceFormat($addonTotal) }}</td>
                             </tr>
                         @endif
@@ -97,7 +97,7 @@ $timezone = getTimeZone();
                             $totalBeforeTax = $subTotal + $addonTotal + $extraChargeTotal;
                         @endphp
                         <tr>
-                            <td>{{ __('Total') }}</td>
+                            <td>{{ __('messages.total') }}</td>
                             <td class="bk-value">{{ getPriceFormat($totalBeforeTax) }}</td>
                         </tr>
 
@@ -112,7 +112,7 @@ $timezone = getTimeZone();
                             $taxAmount = ($totalBeforeTax * $taxRate) / 100;
                         @endphp
                         <tr>
-                            <td>{{ __('Tax') }} ({{ $taxRate }}%)</td>
+                            <td>{{ __('messages.tax') }} ({{ $taxRate }}%)</td>
                             <td class="bk-value text-danger">{{ getPriceFormat($taxAmount) }}</td>
                         </tr>
 
@@ -128,7 +128,7 @@ $timezone = getTimeZone();
                         <!-- Advance and Remaining -->
                        
                             <tr>
-                                <td>{{ __('Advance Payment') }}</td>
+                                <td>{{ __('messages.advance_payment') }}</td>
                                 <td class="bk-value">
                                     {{ getPriceFormat($bookingdata->advance_paid_amount) }}
                                 </td>
@@ -165,7 +165,7 @@ $timezone = getTimeZone();
                         <div class="timeline-info">
                             <p class="fs-4"><strong>{{__('messages.new_booking')}}</strong></p>
                             <div class="timeline-details">
-                                <p class="mt-2">New Booking Added by {{ optional($bookingdata->customer)->display_name }}</p>
+                                <p class="mt-2">{{ __('messages.new_booking_added_by', ['name' => optional($bookingdata->customer)->display_name ?? '-']) }}</p>
                             </div>
                         </div>
                     </div>
@@ -205,7 +205,7 @@ $timezone = getTimeZone();
                             <div class="timeline-info">
                                 <p class="fs-4"><strong>{{__('messages.accept_booking')}}</strong></p>
                                 <div class="timeline-details">
-                                    <p class="mt-2">Booking Accepted by {{ optional($bookingdata->provider)->display_name }}</p>
+                                    <p class="mt-2">{{ __('messages.booking_accepted_by', ['name' => optional($bookingdata->provider)->display_name ?? '-']) }}</p>
                                 </div>
                             </div>
                         </div>
@@ -250,10 +250,10 @@ $timezone = getTimeZone();
                             <div class="timeline-info">
                                 <p class="fs-4"><strong>{{__('messages.on_going')}}</strong></p>
                                 <div class="timeline-details">
-                                    <p class="mt-2 text-primary">Service is currently in progress</p>
+                                    <p class="mt-2 text-primary">{{ __('messages.service_in_progress') }}</p>
                                     @if($bookingdata->handymanAdded->count() > 0)
                                         @foreach($bookingdata->handymanAdded as $handyman)
-                                            <p class="mt-2">Being handled by {{ optional($handyman->handyman)->display_name }}</p>
+                                            <p class="mt-2">{{ __('messages.being_handled_by', ['name' => optional($handyman->handyman)->display_name ?? '-']) }}</p>
                                         @endforeach
                                     @endif
                                 </div>
@@ -350,7 +350,7 @@ $timezone = getTimeZone();
                             <div class="d-flex align-items-start gap-3">
                                 <div class="flex-shrink-0">
                                     <img src="{{ getSingleMedia($bookingdata->provider,'profile_image', null) }}" 
-                                        alt="Provider Profile" 
+                                        alt="{{ __('messages.provider_profile_alt') }}" 
                                         class="rounded-circle"
                                         style="width: 60px; height: 60px; object-fit: cover;">
                                     @if(optional($bookingdata->provider)->profile_image)
@@ -405,7 +405,7 @@ $timezone = getTimeZone();
                                         <div class="flex-shrink-0">
                                             
                                                 <img src="{{ getSingleMedia($booking->handyman,'profile_image', null) }}" 
-                                                    alt="Handyman Profile" 
+                                                    alt="{{ __('messages.handyman_profile_alt') }}" 
                                                     class="rounded-circle"
                                                     style="width: 60px; height: 60px; object-fit: cover;">
                                                     @if(optional($booking->handyman)->profile_image)

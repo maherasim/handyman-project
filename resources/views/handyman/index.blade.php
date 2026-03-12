@@ -112,9 +112,9 @@
                                 <button id="quick-action-apply" class="btn btn-primary" data-ajax="true"
                                     data--submit="{{ route('handyman.bulk-action') }}" data-datatable="reload"
                                     data-confirmation='true'
-                                    data-title="{{ __('handyman', ['form' => __('handyman')]) }}"
-                                    title="{{ __('handyman', ['form' => __('handyman')]) }}"
-                                    data-message='{{ __('Do you want to perform this action?') }}'
+                                    data-title="{{ __('messages.handyman') }}"
+                                    title="{{ __('messages.handyman') }}"
+                                    data-message='{{ __('messages.confirm_perform_action') }}'
                                     disabled>{{ __('messages.apply') }}</button>
                         </div>
 
@@ -133,7 +133,7 @@
                                 <div class="input-group input-group-search ms-2">
                                     <span class="input-group-text" id="addon-wrapping"><i
                                             class="fas fa-search"></i></span>
-                                    <input type="text" class="form-control dt-search" placeholder="Search..."
+                                    <input type="text" class="form-control dt-search" placeholder="{{ __('messages.search_placeholder') }}"
                                         aria-label="Search" aria-describedby="addon-wrapping"
                                         aria-controls="dataTableBuilder">
                                 </div>
@@ -181,7 +181,7 @@
                     {
                         data: 'updated_at',
                         name: 'updated_at',
-                        title: "{{ __('product.lbl_update_at') }}",
+                        title: "{{ __('messages.updated_at') }}",
                         orderable: true,
                         visible: false,
                     },

@@ -43,25 +43,25 @@
 
                             <div class="form-group col-md-3">
                                 {{ html()->label(__('messages.email') . ' <span class="text-danger">*</span>', 'email')->class('form-control-label') }}
-                                {{ html()->email('email', $handymandata->email)->placeholder(__('messages.email'))->class('form-control')->required()->attribute('pattern', '[^@]+@[^@]+\.[a-zA-Z]{2,}')->attribute('title', 'Please enter a valid email address') }}
+                                {{ html()->email('email', $handymandata->email)->placeholder(__('messages.email'))->class('form-control')->required()->attribute('pattern', '[^@]+@[^@]+\.[a-zA-Z]{2,}')->attribute('title', __('messages.email_valid_title')) }}
                                 <small class="help-block with-errors text-danger"></small>
                             </div>
                             <div class="form-group col-md-3">
-                                {{ html()->label(__('Company Name') . ' <span class="text-danger">*</span>')->class('form-control-label')->for('company_name') }}
-                                {{ html()->text('company_name', $handymandata->company_name)->placeholder(__('Company Name'))->class('form-control')->required() }}
+                                {{ html()->label(__('messages.company_name') . ' <span class="text-danger">*</span>')->class('form-control-label')->for('company_name') }}
+                                {{ html()->text('company_name', $handymandata->company_name)->placeholder(__('messages.company_name'))->class('form-control')->required() }}
                                 <small class="help-block with-errors text-danger"></small>
                             </div>
 
                             <div class="form-group col-md-3">
-                                {{ html()->label(__('Vat Number') . ' <span class="text-danger">*</span>')->class('form-control-label')->for('company_name') }}
-                                {{ html()->text('vat_number', $handymandata->vat_number)->placeholder(__('Vat Number'))->class('form-control')->required() }}
+                                {{ html()->label(__('messages.vat_number') . ' <span class="text-danger">*</span>')->class('form-control-label')->for('company_name') }}
+                                {{ html()->text('vat_number', $handymandata->vat_number)->placeholder(__('messages.vat_number'))->class('form-control')->required() }}
                                 <small class="help-block with-errors text-danger"></small>
                             </div>
 
 
                             <div class="form-group col-md-3">
-                                {{ html()->label(__('skills') . ' <span class="text-danger">*</span>')->class('form-control-label')->for('skills') }}
-                                {{ html()->text('skills', $handymandata->skills)->placeholder(__('skills'))->class('form-control')->required() }}
+                                {{ html()->label(__('messages.skills') . ' <span class="text-danger">*</span>')->class('form-control-label')->for('skills') }}
+                                {{ html()->text('skills', $handymandata->skills)->placeholder(__('messages.skills'))->class('form-control')->required() }}
                                 <small class="help-block with-errors text-danger"></small>
                             </div>
                             <div class="form-group col-md-3">
@@ -82,18 +82,18 @@
                                 <small class="help-block with-errors text-danger" id="languages_error"></small>
                             </div>
                             <div class="form-group col-md-3">
-                                {{ html()->label(__('Education') . ' <span class="text-danger">*</span>')->class('form-control-label')->for('education') }}
-                                {{ html()->text('education', $handymandata->education)->placeholder(__('education'))->class('form-control')->required() }}
+                                {{ html()->label(__('messages.education') . ' <span class="text-danger">*</span>')->class('form-control-label')->for('education') }}
+                                {{ html()->text('education', $handymandata->education)->placeholder(__('messages.education'))->class('form-control')->required() }}
                                 <small class="help-block with-errors text-danger"></small>
                             </div>
                             <div class="form-group col-md-3">
-                                {{ html()->label(__('Certification') . ' <span class="text-danger">*</span>')->class('form-control-label')->for('certification') }}
-                                {{ html()->text('certification', $handymandata->certification)->placeholder(__('Certification'))->class('form-control')->required() }}
+                                {{ html()->label(__('messages.certification') . ' <span class="text-danger">*</span>')->class('form-control-label')->for('certification') }}
+                                {{ html()->text('certification', $handymandata->certification)->placeholder(__('messages.certification'))->class('form-control')->required() }}
                                 <small class="help-block with-errors text-danger"></small>
                             </div>
 
                             <div class="form-group col-md-3">
-                                {{ html()->label(__('Availability') . ' <span class="text-danger">*</span>')->class('form-control-label')->for('availability') }}
+                                {{ html()->label(__('messages.availability') . ' <span class="text-danger">*</span>')->class('form-control-label')->for('availability') }}
                                 @php
                                     // Convert old values (1/0 or 'Full-time'/'Part-time') to new format for display
                                     $availabilityValue = $handymandata->availability;
@@ -115,8 +115,8 @@
                             </div>
 
                             <div class="form-group col-md-3">
-                                {{ html()->label(__('Mobility') . ' <span class="text-danger">*</span>')->class('form-control-label')->for('mobility') }}
-                                {{ html()->text('mobility', $handymandata->mobility)->placeholder(__('Mobility'))->class('form-control')->required() }}
+                                {{ html()->label(__('messages.mobility') . ' <span class="text-danger">*</span>')->class('form-control-label')->for('mobility') }}
+                                {{ html()->text('mobility', $handymandata->mobility)->placeholder(__('messages.mobility'))->class('form-control')->required() }}
                                 <small class="help-block with-errors text-danger"></small>
                             </div>
                             @if (!isset($handymandata->id) || $handymandata->id == null)
@@ -144,7 +144,7 @@
                             </div> --}}
 
                            <div class="form-group col-md-3">
-                                {{ html()->label(__('Handyman Commission (%)') . ' <span class="text-danger">*</span>', 'handyman_commission')->class('form-control-label') }}
+                                {{ html()->label(__('messages.handyman_commission_pct') . ' <span class="text-danger">*</span>', 'handyman_commission')->class('form-control-label') }}
                                 {{ html()->number('handyman_commission', $handymandata->handyman_commission ?? null)
                                     ->attributes(['min' => 1, 'max' => 85, 'step' => 'any', 'placeholder' => 'e.g. 34.5'])
                                     ->class('form-control')
@@ -229,16 +229,16 @@
                             <!-- Text Editors Row - All three together at the end -->
                             <div class="w-100"></div>
                             <div class="form-group col-md-4">
-                                {{ html()->label(__('experience'), 'experience')->class('form-control-label') }}
-                                {{ html()->textarea('experience', $handymandata->experience)->class('form-control textarea')->rows(2)->placeholder(__('experience'))->id('experience') }}
+                                {{ html()->label(__('messages.experience'), 'experience')->class('form-control-label') }}
+                                {{ html()->textarea('experience', $handymandata->experience)->class('form-control textarea')->rows(2)->placeholder(__('messages.experience'))->id('experience') }}
                             </div>
                             <div class="form-group col-md-4">
                                 {{ html()->label(__('About Me'))->class('form-control-label')->for('about_me') }}
                                 {{ html()->textarea('about_me', $handymandata->about_me)->class('form-control textarea')->rows(2)->placeholder(__('about_me'))->id('about_me') }}
                             </div>
                             <div class="form-group col-md-4">
-                                {{ html()->label(__('Address'), 'address')->class('form-control-label') }}
-                                {{ html()->textarea('address', $handymandata->address)->class('form-control textarea')->rows(2)->placeholder(__('address'))->id('address') }}
+                                {{ html()->label(__('messages.address'), 'address')->class('form-control-label') }}
+                                {{ html()->textarea('address', $handymandata->address)->class('form-control textarea')->rows(2)->placeholder(__('messages.address'))->id('address') }}
                             </div>
 
                         </div>
@@ -301,7 +301,7 @@
                     if (inputValue.match(/^[0-9+\- ]+$/)) {
                         $('#contact_number_err').text('');
                     } else {
-                        $('#contact_number_err').text('Please enter a valid mobile number');
+                        $('#contact_number_err').text("{{ __('messages.valid_mobile_number') }}");
                     }
                 });
 
@@ -428,7 +428,7 @@
                 var lang = $('#languages_select').val();
                 var err = $('#languages_error');
                 if (!lang || (Array.isArray(lang) && lang.length === 0)) {
-                    err.text('Please select at least one language.');
+                    err.text("{{ __('messages.select_at_least_one_language') }}");
                     return false;
                 }
                 err.text('');

@@ -91,7 +91,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="reasonModalLabel">Do you want to hole this service?</h5>
+                    <h5 class="modal-title" id="reasonModalLabel">{{ __('messages.booking_hold_service_confirm') }}</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -105,7 +105,7 @@
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="submit" form="reasonForm" class="btn btn-primary">Submit</button>
+                    <button type="submit" form="reasonForm" class="btn btn-primary">{{ __('messages.submit') }}</button>
                 </div>
             </div>
         </div>
@@ -124,7 +124,7 @@
                         <div id="extraChargesWrapper">
                             <!-- Dynamic rows will be added here -->
                         </div>
-                        <button type="button" class="btn btn-outline-secondary mt-3" id="addChargeRow">+ Add More</button>
+                        <button type="button" class="btn btn-outline-secondary mt-3" id="addChargeRow">{{ __('messages.add_more') }}</button>
                     </div>
                     <div class="modal-footer">
                         <button type="submit" class="btn btn-success">Submit Charges</button>
@@ -139,7 +139,7 @@
             <div class="modal-content">
                 <form id="ratingForm">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="ratingModalLabel">Rate the Service</h5>
+                        <h5 class="modal-title" id="ratingModalLabel">{{ __('messages.rate_the_service') }}</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body text-center">
@@ -164,7 +164,7 @@
                     </div>
 
                     <div class="modal-footer">
-                        <button type="submit" class="btn btn-success">Submit Rating</button>
+                        <button type="submit" class="btn btn-success">{{ __('messages.submit_rating') }}</button>
                     </div>
                 </form>
             </div>
@@ -192,8 +192,8 @@
                                 <input type="text" name="title" class="form-control" id="title" placeholder="e.g. Completed Electrical Repair" required>
                             </div>
                             <div class="mb-3">
-                                <label for="description" class="form-label">Description</label>
-                                <textarea name="description" class="form-control" id="description" rows="3" placeholder="Describe what was done..." required></textarea>
+                                <label for="description" class="form-label">{{ __('messages.description') }}</label>
+                                <textarea name="description" class="form-control" id="description" rows="3" placeholder="{{ __('messages.describe_what_done') }}" required></textarea>
                             </div>
                             <div class="mb-3">
                                 <label for="attachments" class="form-label">Attachments (up to 5 files)</label>
@@ -202,7 +202,7 @@
                         </div>
                         <div class="modal-footer border-top-0 px-4 pb-4">
                             <button type="submit" class="btn btn-success w-100">
-                                <i class="las la-paper-plane me-1"></i> Submit Proof
+                                <i class="las la-paper-plane me-1"></i> {{ __('messages.submit_proof') }}
                             </button>
                         </div>
                     </div>

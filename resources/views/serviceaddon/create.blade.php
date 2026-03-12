@@ -22,7 +22,7 @@
                         <div class="row">
                             <div class="form-group col-md-4">
                                 {{ html()->label(__('messages.name') . ' <span class="text-danger">*</span>', 'name')->class('form-control-label') }}
-                                {{ html()->text('name', $serviceaddon->name)->placeholder(__('messages.name'))->class('form-control')->required()->attribute('title', 'Please enter alphabetic characters and spaces only') }}
+                                {{ html()->text('name', $serviceaddon->name)->placeholder(__('messages.name'))->class('form-control')->required()->attribute('title', __('messages.name_alphabetic_title')) }}
                                 <small class="help-block with-errors text-danger"></small>
                             </div>
 
@@ -54,7 +54,7 @@
                             </div>
 
                             <div class="form-group col-md-4">
-                                {{ html()->label(trans('messages.status') . ' <span class="text-danger">*</span>', 'status')->class('form-control-label') }}
+                                {{ html()->label(__('messages.serviceaddon_status_label') . ' <span class="text-danger">*</span>', 'status')->class('form-control-label') }}
                                 {{ html()->select('status', ['1' => __('messages.active'), '0' => __('messages.inactive')], $serviceaddon->status)->class('form-control select2js')->required() }}
                             </div>
 
@@ -78,7 +78,7 @@
                                 <div class="image-preview-container">
                                     <img id="serviceaddon_image_preview"
                                         src="{{ getMediaFileExit($serviceaddon, 'serviceaddon_image') ? getSingleMedia($serviceaddon, 'serviceaddon_image') : '' }}"
-                                        alt="Image preview" class="attachment-image mt-1"
+                                        alt="{{ __('messages.image_preview_alt') }}" class="attachment-image mt-1"
                                         style="width: 150px; {{ getMediaFileExit($serviceaddon, 'serviceaddon_image') ? '' : 'display: none;' }}">
                                     <a class="text-danger remove-file" id="removeButton"
                                         onclick="removeImage(event, '{{ route('remove.file', ['id' => $serviceaddon->id, 'type' => 'serviceaddon_image']) }}')"
@@ -89,7 +89,7 @@
                             </div>
                         </div>
 
-                        {{ html()->submit(trans('messages.save'))->class('btn btn-md btn-primary float-end')->id('saveButton') }}
+                        {{ html()->submit(__('messages.save'))->class('btn btn-md btn-primary float-end')->id('saveButton') }}
                         {{ html()->form()->close() }}
                     </div>
                 </div>
@@ -154,8 +154,8 @@
 
                                 // Optionally show a success message
                                 Swal.fire(
-                                    'Deleted!',
-                                    'Your serviceaddon image has been removed.',
+                                    '{{ __("messages.deleted") }}',
+                                    '{{ __("messages.serviceaddon_image_removed") }}',
                                     'success'
                                 );
                             },

@@ -69,7 +69,7 @@
                             </div>
                             <div class=" col-md-3">
                                 <label
-                                    for="country_id">{{ __('messages.select_name', ['select' => __('Tax Country')]) }}</label>
+                                    for="country_id">{{ __('messages.select_name', ['select' => __('messages.tax_country')]) }}</label>
                                 {{ html()->select(
                                         'tax_country_id_display',
                                         optional($servicedata->tax_country)
@@ -141,7 +141,7 @@
                                         [
                                             'fixed' => __('messages.fixed'),
                                             'hourly' => __('messages.hourly'),
-                                            'Daily' => __('Daily'),
+                                            'Daily' => __('messages.daily'),
                                         ],
                                         old('type', $servicedata->type),
                                     )->class('form-control select2js')->required()->id('price_type') }}
@@ -170,7 +170,7 @@
 
                             <div class="form-group col-md-3">
                                 {{ html()->label(__('messages.duration') . ' (hours) <span class="text-danger">*</span>', 'duration')->class('form-control-label') }}
-                                {{ html()->text('duration', old('duration', $servicedata->duration))->placeholder('e.g. 40 or 46:30')->class('form-control duration-input')->id('duration')->required()->attribute('autocomplete', 'off') }}
+                                {{ html()->text('duration', old('duration', $servicedata->duration))->placeholder(__('messages.duration_placeholder'))->class('form-control duration-input')->id('duration')->required()->attribute('autocomplete', 'off') }}
                                 <small class="help-block with-errors text-danger"></small>
                                 <small id="duration-error" class="text-danger"></small>
                             </div>
@@ -187,22 +187,22 @@
                             </div>
 
                             <div class="form-group col-md-3">
-                                {{ html()->label(__('Remote Work Level') . ' <span class="text-danger">*</span>', 'remote_work_level')->class('form-control-label') }}
+                                {{ html()->label(__('messages.remote_work_level') . ' <span class="text-danger">*</span>', 'remote_work_level')->class('form-control-label') }}
                                 {{ html()->select(
                                         'remote_work_level',
                                         [
-                                            'onsite' => __('Onsite (100%)'),
-                                            '25_remote' => __('25% Remote'),
-                                            '50_remote' => __('50% Remote'),
-                                            '75_remote' => __('75% Remote'),
-                                            '100_remote' => __('100% Remote'),
+                                            'onsite' => __('messages.onsite_100'),
+                                            '25_remote' => __('messages.remote_25'),
+                                            '50_remote' => __('messages.remote_50'),
+                                            '75_remote' => __('messages.remote_75'),
+                                            '100_remote' => __('messages.remote_100'),
                                         ],
                                         old('remote_work_level', $servicedata->remote_work_level ?? 'onsite'),
                                     )->class('form-control select2js')->required()->id('remote_work_level') }}
                             </div>
 
                             <div class="form-group col-md-3">
-                                {{ html()->label(__('Career Level') . ' <span class="text-danger">*</span>', 'career_level')->class('form-control-label') }}
+                                {{ html()->label(__('messages.career_level') . ' <span class="text-danger">*</span>', 'career_level')->class('form-control-label') }}
                                 {{ html()->select(
                                         'career_level',
                                         [
@@ -224,12 +224,12 @@
                             </div>
 
                             <div class="form-group col-md-3">
-                                {{ html()->label(__('Travel Required'), 'travel_required')->class('form-control-label') }}
+                                {{ html()->label(__('messages.travel_required'), 'travel_required')->class('form-control-label') }}
                                 {{ html()->select(
                                         'travel_required',
                                         [
-                                            '0' => __('No'),
-                                            '1' => __('Yes'),
+                                            '0' => __('messages.no'),
+                                            '1' => __('messages.yes'),
                                         ],
                                         old('travel_required', $servicedata->travel_required ?? '0'),
                                     )->class('form-control select2js')->required()->id('travel_required') }}
@@ -373,7 +373,7 @@
                             </div>
                         </div>
 
-                        {{ html()->submit(__('Publish'))->class('btn btn-md btn-primary float-end') }}
+                        {{ html()->submit(__('messages.publish'))->class('btn btn-md btn-primary float-end') }}
                         {{ html()->form()->close() }}
                     </div>
                 </div>
@@ -428,7 +428,7 @@
             discountInput.addEventListener('input', function() {
                 var discountValue = parseFloat(discountInput.value);
                 if (isNaN(discountValue) || discountValue < 0 || discountValue > 99) {
-                    discountError.textContent = "{{ __('Discount value should be between 0 to 99') }}";
+                    discountError.textContent = "{{ __('messages.discount_value_between_0_99') }}";
                 } else {
                     discountError.textContent = "";
                 }
@@ -682,13 +682,13 @@
                         { id: 'provider_address_id', name: '{{ __("messages.select_name", ["select" => __("messages.provider_address")]) }}', isMulti: true },
                         { id: 'price_type', name: '{{ __("messages.price_type") }}' },
                         { id: 'price', name: '{{ __("messages.price") }}' },
-                        { id: 'minimum_booking', name: '{{ __("Minimum Booking") }}' },
+                        { id: 'minimum_booking', name: '{{ __("messages.minimum_booking") }}' },
                         { id: 'duration', name: '{{ __("messages.duration") }}' },
                         { id: 'status', name: '{{ __("messages.status") }}' },
                         { id: 'visit_type', name: '{{ __("messages.visit_type") }}' },
-                        { id: 'remote_work_level', name: '{{ __("Remote Work Level") }}' },
-                        { id: 'career_level', name: '{{ __("Career Level") }}' },
-                        { id: 'travel_required', name: '{{ __("Travel Required") }}' }
+{ id: 'remote_work_level', name: '{{ __("messages.remote_work_level") }}' },
+                                    { id: 'career_level', name: '{{ __("messages.career_level") }}' },
+                                    { id: 'travel_required', name: '{{ __("messages.travel_required") }}' }
                     ];
                     if ($('#provider_id').length && $('#provider_id').is(':visible')) {
                         requiredFields.push({ id: 'provider_id', name: '{{ __("messages.select_name", ["select" => __("messages.provider")]) }}' });
@@ -743,9 +743,9 @@
                         var cancelStrip = cancelVal.replace(/<[^>]+>/g, '').trim();
                         if (cancelStrip === '') {
                             if (typeof Snackbar !== 'undefined') {
-                                Snackbar.show({ text: '{{ __("Cancellation Policy & Fees") }} {{ __("messages.is_required") }}', pos: 'bottom-center', backgroundColor: '#d32f2f', actionTextColor: '#fff' });
-                            } else {
-                                alert('{{ __("Cancellation Policy & Fees") }} {{ __("messages.is_required") }}');
+Snackbar.show({ text: '{{ __("messages.cancellation_policy_fees") }} {{ __("messages.is_required") }}', pos: 'bottom-center', backgroundColor: '#d32f2f', actionTextColor: '#fff' });
+                                } else {
+                                alert('{{ __("messages.cancellation_policy_fees") }} {{ __("messages.is_required") }}');
                             }
                             var q2 = document.querySelector('#cancellation_policy_quill');
                             if (q2) q2.scrollIntoView();
@@ -768,9 +768,9 @@
                         var advNum = parseInt(adv, 10);
                         if (advNum < 20 || advNum > 99) {
                             if (typeof Snackbar !== 'undefined') {
-                                Snackbar.show({ text: '{{ __("messages.advance_payment_amount") }} must be between 20 and 99.', pos: 'bottom-center', backgroundColor: '#d32f2f', actionTextColor: '#fff' });
-                            } else {
-                                alert('{{ __("messages.advance_payment_amount") }} must be between 20 and 99.');
+Snackbar.show({ text: '{{ __("messages.advance_payment_amount") }} {{ __("messages.advance_payment_amount_between_20_99") }}', pos: 'bottom-center', backgroundColor: '#d32f2f', actionTextColor: '#fff' });
+                                } else {
+                                alert('{{ __("messages.advance_payment_amount") }} {{ __("messages.advance_payment_amount_between_20_99") }}');
                             }
                             $('#advance_payment_amount').focus();
                             e.preventDefault();
