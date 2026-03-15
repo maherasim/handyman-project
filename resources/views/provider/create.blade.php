@@ -272,37 +272,37 @@
                             <input type="hidden" name="tax_country_id" value="{{ optional($providerdata->country)->id }}">
 
                             <div class="form-group col-md-6">
-                                {{ html()->label(__('Company Name') . ' <span class="text-danger">*</span>')->class('form-control-label')->for('company_name') }}
-                                {{ html()->text('company_name', $providerdata->company_name)->placeholder(__('Company Name'))->class('form-control')->required() }}
+                                {{ html()->label(__('Company Name'))->class('form-control-label')->for('company_name') }}
+                                {{ html()->text('company_name', $providerdata->company_name)->placeholder(__('Company Name'))->class('form-control') }}
                                 <small class="help-block with-errors text-danger"></small>
                             </div>
 
                             <div class="form-group col-md-6">
-                                {{ html()->label(__('Vat Number') . ' <span class="text-danger">*</span>')->class('form-control-label')->for('vat_number') }}
-                                {{ html()->text('vat_number', $providerdata->vat_number)->placeholder(__('Vat Number'))->class('form-control')->required() }}
+                                {{ html()->label(__('Vat Number'))->class('form-control-label')->for('vat_number') }}
+                                {{ html()->text('vat_number', $providerdata->vat_number)->placeholder(__('Vat Number'))->class('form-control') }}
                                 <small class="help-block with-errors text-danger"></small>
                             </div>
 
                             <div class="form-group col-md-6">
-                                {{ html()->label(__('skills') . ' <span class="text-danger">*</span>')->class('form-control-label')->for('skills') }}
-                                {{ html()->text('skills', $providerdata->skills)->placeholder(__('skills'))->class('form-control')->required() }}
+                                {{ html()->label(__('skills'))->class('form-control-label')->for('skills') }}
+                                {{ html()->text('skills', $providerdata->skills)->placeholder(__('skills'))->class('form-control') }}
                                 <small class="help-block with-errors text-danger"></small>
                             </div>
 
                             <div class="form-group col-md-6">
-                                {{ html()->label(__('Education') . ' <span class="text-danger">*</span>')->class('form-control-label')->for('education') }}
-                                {{ html()->text('education', $providerdata->education)->placeholder(__('education'))->class('form-control')->required() }}
+                                {{ html()->label(__('Education'))->class('form-control-label')->for('education') }}
+                                {{ html()->text('education', $providerdata->education)->placeholder(__('education'))->class('form-control') }}
                                 <small class="help-block with-errors text-danger"></small>
                             </div>
 
                             <div class="form-group col-md-6">
-                                {{ html()->label(__('Certification') . ' <span class="text-danger">*</span>')->class('form-control-label')->for('certification') }}
-                                {{ html()->text('certification', $providerdata->certification)->placeholder(__('Certification'))->class('form-control')->required() }}
+                                {{ html()->label(__('Certification'))->class('form-control-label')->for('certification') }}
+                                {{ html()->text('certification', $providerdata->certification)->placeholder(__('Certification'))->class('form-control') }}
                                 <small class="help-block with-errors text-danger"></small>
                             </div>
 
                             <div class="form-group col-md-6">
-                                {{ html()->label(__('Availability') . ' <span class="text-danger">*</span>')->class('form-control-label')->for('availability') }}
+                                {{ html()->label(__('Availability'))->class('form-control-label')->for('availability') }}
                                 @php
                                     // Convert old values (1/0 or 'Full-time'/'Part-time') to new format for display
                                     $availabilityValue = $providerdata->availability;
@@ -319,7 +319,7 @@
                                             'part_time' => 'Part-time',
                                         ],
                                         $availabilityValue,
-                                    )->class('form-control')->required()->placeholder(__('Select Availability')) }}
+                                    )->class('form-control')->placeholder(__('Select Availability')) }}
                                 <small class="help-block with-errors text-danger"></small>
                             </div>
 
