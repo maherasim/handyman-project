@@ -2447,8 +2447,8 @@ class PostJobRequestController extends Controller
             'education_level' => 'required|in:not_specified,any_graduate,apprenticeship_degree,traineeship_degree,secondary_degree,undergraduate_diploma,high_school_graduate,associate_degree,college_degree,university_degree,bachelors_degree,masters_degree,doctorate_degree,professional_degree',
             'duties' => 'required|string',
             'benefits' => 'required|string',
-            'image.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:203480', // 20MB to match PHP limit
-            'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:220480', // 20MB to match PHP limit
+            'image.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:20480', // 20MB in KB
+            'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:20480', // 20MB in KB
             'total_days' => 'nullable|integer|min:0',
             'total_hours' => 'nullable|integer|min:0',
         ]);
