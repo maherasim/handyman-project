@@ -58,15 +58,6 @@
                                 {{ html()->text('designation',  $providerdata->designation)->placeholder(__('messages.designation'))->class('form-control') }}
                                 <small class="help-block with-errors text-danger"></small>
                             </div>
-                            <div class="form-group col-md-4">
-                                {{ html()->label(__('messages.select_name', ['select' => __('messages.providertype')]) . ' <span class="text-danger">*</span>', 'providertype_id')->class('form-control-label') }}
-                                <br />
-                                {{ html()->select('providertype_id', [optional($providerdata->providertype)->id => optional($providerdata->providertype)->name], optional($providerdata->providertype)->id)
-                                    ->class('select2js form-group providertype')
-                                    ->required()
-                                    ->attribute('data-placeholder', __('messages.select_name', ['select' => __('messages.providertype')]))
-                                    ->attribute('data-ajax--url', route('ajax-list', ['type' => 'providertype'])) }}
-                            </div>
                     
                             <div class="form-group col-md-4">
                                 {{ html()->label(__('messages.select_name', ['select' => __('messages.country')]), 'country_id')->class('form-control-label') }}
@@ -91,15 +82,6 @@
                                 {{ html()->select('city_id', [], old('city_id'))
                                     ->class('select2js form-group city_id')
                                     ->attribute('data-placeholder', __('messages.select_name', ['select' => __('messages.city')])) }}
-                            </div>
-                            <div class="form-group col-md-4">
-                                {{ html()->label(__('messages.select_name', ['select' => __('messages.tax')]), 'tax_id')->class('form-control-label') }}
-                                <br />
-                                {{ html()->select('tax_id[]', [], old('tax_id'))
-                                    ->class('select2js form-group tax_id')
-                                    ->id('tax_id')
-                                    ->multiple()
-                                    ->attribute('data-placeholder', __('messages.select_name', ['select' => __('messages.tax')])) }}
                             </div>
                             <div class="form-group col-md-4">
                                 {{ html()->label(__('messages.contact_number') . ' <span class="text-danger">*</span>', 'contact_number')->class('form-control-label') }}
@@ -449,9 +431,6 @@
             </div>
         </div>
     </div>
-    @php
-    $data = $providerdata->providerTaxMapping->pluck('tax_id')->implode(',');
-    @endphp
     @section('bottom_script')
     <script type="text/javascript">
     (function($) {
@@ -461,10 +440,6 @@
             var state_id = "{{ isset($providerdata->state_id) ? $providerdata->state_id : 0 }}";
             var city_id = "{{ isset($providerdata->city_id) ? $providerdata->city_id : 0 }}";
 
-            var provider_id = "{{ isset($providerdata->id) ? $providerdata->id : '' }}";
-            var provider_tax_id = "{{ isset($data) ? $data : [] }}";
-
-            getTax(provider_id, provider_tax_id)
             stateName(country_id, state_id);
             $(document).on('change', '#country_id', function() {
                 var country = $(this).val();
@@ -544,25 +519,6 @@
             });
         }
 
-        function getTax(provider_id, provider_tax_id = "") {
-            var provider_tax_route = "{{ route('ajax-list', [ 'type' => 'provider_tax','provider_id' =>'']) }}" +
-                provider_id;
-            provider_tax_route = provider_tax_route.replace('amp;', '');
-
-            $.ajax({
-                url: provider_tax_route,
-                success: function(result) {
-                    $('#tax_id').select2({
-                        width: '100%',
-                        placeholder: "{{ trans('messages.select_name',['select' => trans('messages.tax')]) }}",
-                        data: result.results
-                    });
-                    if (provider_tax_id != "") {
-                        $('#tax_id').val(provider_tax_id.split(',')).trigger('change');
-                    }
-                }
-            });
-        }
     })(jQuery);
 
     // Add/Remove Reason Section

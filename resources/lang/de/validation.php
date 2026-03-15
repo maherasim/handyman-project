@@ -135,10 +135,10 @@ return [
 
     'custom' => [
         'image.*' => [
-            'uploaded' => 'Das Bild konnte nicht hochgeladen werden. Bitte pruefen Sie Dateigroesse und Dateiformat (JPG, PNG, GIF, WEBP).',
+            'uploaded' => 'Das Bild konnte nicht hochgeladen werden. Bitte prüfen Sie Dateigröße und Dateiformat (JPG, PNG, GIF, WEBP).',
         ],
         'images.*' => [
-            'uploaded' => 'Das Bild konnte nicht hochgeladen werden. Bitte pruefen Sie Dateigroesse und Dateiformat (JPG, PNG, GIF, WEBP).',
+            'uploaded' => 'Das Bild konnte nicht hochgeladen werden. Bitte prüfen Sie Dateigröße und Dateiformat (JPG, PNG, GIF, WEBP).',
         ],
         'attribute-name' => [
             'rule-name' => 'custom-message',
