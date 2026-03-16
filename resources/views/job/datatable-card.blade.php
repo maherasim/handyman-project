@@ -571,7 +571,7 @@
                                          align-items: center;
                                          justify-content: center;
                                      ">
-                                                 <img src="{{ asset('assets/linkedIn.jpg') }}"
+                                                 <img src="{{ asset('assets/linkedIn.png') }}"
                                                      alt="{{ __('landingpage.pd_alt_linkedin') }}" style="width: 24px; height: 24px; object-fit: contain;">
                                             </span>
                                          </div>

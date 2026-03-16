@@ -220,7 +220,7 @@
                data-share-url="{{ $serviceShareUrl }}"
                onclick="return window.__shareClickHandler(event, this);"
                style="cursor: pointer;">
-             <img src="{{ asset('assets/linkedIn.jpg') }}"
+             <img src="{{ asset('assets/linkedIn.png') }}"
                  style="width: 28px; height: 28px; object-fit: contain; border-radius: 8px;" alt="Share on LinkedIn">
          </span>
      </div>

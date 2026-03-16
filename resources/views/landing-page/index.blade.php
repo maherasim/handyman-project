@@ -626,7 +626,7 @@
                                                   data-share-url="{{ route('job.details', $jobRequest->id) }}?v={{ optional($jobRequest->updated_at)->timestamp ?? time() }}"
                                                   onclick="return window.__shareClickHandler(event, this);"
                                                   style="width: 24px; height: 24px; border-radius: 5px; background: #f8f9fa; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; cursor: pointer;">
-                                                <img src="{{ asset('assets/linkedIn.jpg') }}"
+                                                <img src="{{ asset('assets/linkedIn.png') }}"
                                                     alt="LinkedIn" style="width: 24px; height: 24px; object-fit: contain;">
                                             </span>
                                         </div>
@@ -1225,7 +1225,7 @@
                                                         src="{{ asset('assets/twiter.png') }}"
                                                         style="width: 28px; height: 28px; object-fit: contain; border-radius: 8px;" alt=""></a>
                                                 <a href="#"><img
-                                                        src="{{ asset('assets/linkedIn.jpg') }}"
+                                                        src="{{ asset('assets/linkedIn.png') }}"
                                                         style="width: 28px; height: 28px; object-fit: contain; border-radius: 8px;" alt=""></a>
                                             </div>
     
