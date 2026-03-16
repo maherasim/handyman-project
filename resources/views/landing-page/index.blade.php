@@ -601,7 +601,7 @@
                                                   onclick="return window.__shareClickHandler(event, this);"
                                                   style="width: 24px; height: 24px; border-radius: 5px; background: #f8f9fa; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; cursor: pointer;">
                                                 <img src="{{ asset('assets/fb.png') }}?v=20260303"
-                                                    alt="Facebook" style="width: 12px; height: 12px;">
+                                                    alt="Facebook" style="width: 24px; height: 24px;">
                                             </span>
                                             <span role="button" tabindex="0" class="social-link share-link"
                                                   data-platform="telegram"
