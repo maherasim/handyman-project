@@ -257,7 +257,7 @@
                                             'yoruba' => 'Yoruba',
                                         ],
                                         old('languages', $providerdata->languages ?? []),
-                                    )->class('form-group select2js')->multiple()->attribute('data-placeholder', __('select_name', ['select' => __('messages.language')])) }}
+                                    )->class('form-group select2js')->multiple()->attribute('data-placeholder', __('messages.select_name', ['select' => __('messages.language')])) }}
                             </div>
 
                             <div class="form-group col-md-6">

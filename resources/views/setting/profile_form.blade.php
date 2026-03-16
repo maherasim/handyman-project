@@ -171,7 +171,7 @@
                                     'yoruba' => 'Yoruba',
                                 ],
                                 old('languages', $user_data->languages ?? []),
-                            )->class('form-group select2js')->multiple()->required()->attribute('data-placeholder', __('select_name', ['select' => __('messages.language')])) }}
+                            )->class('form-group select2js')->multiple()->required()->attribute('data-placeholder', __('messages.select_name', ['select' => __('messages.language')])) }}
                     </div>
 
 

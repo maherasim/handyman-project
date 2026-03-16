@@ -78,7 +78,7 @@
                                             'german' => 'German',
                                         ], // Static language options
                                         old('languages', $handymandata->languages ?? []), // Retain old value or user data
-                                    )->class('form-group select2js')->multiple()->attribute('data-placeholder', __('select_name', ['select' => __('messages.language')]))->attribute('required', true)->id('languages_select') }}
+                                    )->class('form-group select2js')->multiple()->attribute('data-placeholder', __('messages.select_name', ['select' => __('messages.language')]))->attribute('required', true)->id('languages_select') }}
                                 <small class="help-block with-errors text-danger" id="languages_error"></small>
                             </div>
                             <div class="form-group col-md-3">

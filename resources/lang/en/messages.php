@@ -14,6 +14,7 @@
     'address' => 'Address',
     'status' => 'Status',
     'select_name' => 'Select :select',
+    'language' => 'Language',
     'title_name' => ':title name',
     'back' => 'Back',
     'close' => 'Close',
