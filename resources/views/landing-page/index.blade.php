@@ -600,7 +600,7 @@
                                                   data-quote="{{ $jobRequest->title }} • €{{ number_format($jobRequest->price) }} • {{ ucfirst($jobRequest->price_type ?? 'fixed') }} • {{ data_get($jobRequest,'city.name','City') }}, {{ data_get($jobRequest,'country.name','Country') }}"
                                                   onclick="return window.__shareClickHandler(event, this);"
                                                   style="width: 24px; height: 24px; border-radius: 5px; background: #f8f9fa; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; cursor: pointer;">
-                                                <img src="{{ asset('assets/fb.png') }}"
+                                                <img src="{{ asset('assets/fb.png') }}?v=20260303"
                                                     alt="Facebook" style="width: 12px; height: 12px;">
                                             </span>
                                             <span role="button" tabindex="0" class="social-link share-link"
@@ -609,7 +609,7 @@
                                                   data-quote="{{ $jobRequest->title }} • €{{ number_format($jobRequest->price) }} • {{ ucfirst($jobRequest->price_type ?? 'fixed') }} • {{ data_get($jobRequest,'city.name','City') }}, {{ data_get($jobRequest,'country.name','Country') }}"
                                                   onclick="return window.__shareClickHandler(event, this);"
                                                   style="width: 24px; height: 24px; border-radius: 5px; background: #f8f9fa; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; cursor: pointer;">
-                                                <img src="{{ asset('assets/telegram.png') }}"
+                                                <img src="{{ asset('assets/telegram.png') }}?v=20260303"
                                                     alt="{{ __('landingpage.pd_alt_telegram') }}" style="width: 24px; height: 24px; object-fit: contain;">
                                             </span>
                                             <span role="button" tabindex="0" class="social-link share-link"
@@ -618,7 +618,7 @@
                                                   data-text="{{ $jobRequest->title }} • €{{ number_format($jobRequest->price) }} • {{ ucfirst($jobRequest->price_type ?? 'fixed') }} • {{ data_get($jobRequest,'city.name','City') }}, {{ data_get($jobRequest,'country.name','Country') }}"
                                                   onclick="return window.__shareClickHandler(event, this);"
                                                   style="width: 24px; height: 24px; border-radius: 5px; background: #f8f9fa; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; cursor: pointer;">
-                                                <img src="{{ asset('assets/twiter.png') }}"
+                                                <img src="{{ asset('assets/twiter.png') }}?v=20260303"
                                                     alt="Twitter" style="width: 24px; height: 24px; object-fit: contain;">
                                             </span>
                                             <span role="button" tabindex="0" class="social-link share-link"
@@ -626,7 +626,7 @@
                                                   data-share-url="{{ route('job.details', $jobRequest->id) }}?v={{ optional($jobRequest->updated_at)->timestamp ?? time() }}"
                                                   onclick="return window.__shareClickHandler(event, this);"
                                                   style="width: 24px; height: 24px; border-radius: 5px; background: #f8f9fa; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; cursor: pointer;">
-                                                <img src="{{ asset('assets/linkedIn.png') }}"
+                                                <img src="{{ asset('assets/linkedIn.png') }}?v=20260303"
                                                     alt="LinkedIn" style="width: 24px; height: 24px; object-fit: contain;">
                                             </span>
                                         </div>
@@ -919,21 +919,21 @@
                                                   data-share-url="{{ route('service.detail', $data->id) }}?v={{ optional($data->updated_at)->timestamp ?? time() }}"
                                                   data-quote="{{ Str::limit($data->name, 80) }} • {{ getPriceFormat($data->price) }} • {{ ucfirst($data->type) }} • {{ $data->city->name ?? 'City' }}, {{ $data->country->name ?? 'Country' }}"
                                                   onclick="return window.__shareClickHandler(event, this);">
-                                                <img src="{{ asset('assets/fb.png') }}" style="width: 28px; height: 28px; object-fit: contain; border-radius: 8px;" alt="Facebook">
+                                                <img src="{{ asset('assets/fb.png') }}?v=20260303" style="width: 28px; height: 28px; object-fit: contain; border-radius: 8px;" alt="Facebook">
                                             </span>
                                             <span role="button" tabindex="0" class="social-link share-link"
                                                   data-platform="telegram"
                                                   data-share-url="{{ route('service.detail', $data->id) }}?v={{ optional($data->updated_at)->timestamp ?? time() }}"
                                                   data-quote="{{ Str::limit($data->name, 80) }} • {{ getPriceFormat($data->price) }} • {{ ucfirst($data->type) }} • {{ $data->city->name ?? 'City' }}, {{ $data->country->name ?? 'Country' }}"
                                                   onclick="return window.__shareClickHandler(event, this);">
-                                                <img src="{{ asset('assets/telegram.png') }}" style="width: 28px; height: 28px; object-fit: contain; border-radius: 8px;" alt="Telegram">
+                                                <img src="{{ asset('assets/telegram.png') }}?v=20260303" style="width: 28px; height: 28px; object-fit: contain; border-radius: 8px;" alt="Telegram">
                                             </span>
                                             <span role="button" tabindex="0" class="social-link share-link"
                                                   data-platform="twitter"
                                                   data-share-url="{{ route('service.detail', $data->id) }}?v={{ optional($data->updated_at)->timestamp ?? time() }}"
                                                   data-text="{{ Str::limit($data->name, 80) }} • {{ getPriceFormat($data->price) }} • {{ ucfirst($data->type) }} • {{ $data->city->name ?? 'City' }}, {{ $data->country->name ?? 'Country' }}"
                                                   onclick="return window.__shareClickHandler(event, this);">
-                                                <img src="{{ asset('assets/twiter.png') }}" style="width: 28px; height: 28px; object-fit: contain; border-radius: 8px;" alt="Twitter">
+                                                <img src="{{ asset('assets/twiter.png') }}?v=20260303" style="width: 28px; height: 28px; object-fit: contain; border-radius: 8px;" alt="Twitter">
                                             </span>
                                             <span role="button" tabindex="0" class="social-link share-link"
                                                   data-platform="linkedin"
@@ -1216,16 +1216,16 @@
                                             </div>
                                             <div class="d-flex mt-3 " style="gap: 18px; justify-content: center;">
                                                 <a href="#"><img
-                                                        src="{{ asset('assets/fb.png') }}"
+                                                        src="{{ asset('assets/fb.png') }}?v=20260303"
                                                         style="width: 28px; height: 28px; object-fit: contain; border-radius: 8px;" alt=""></a>
                                                 <a href="#"><img
-                                                        src="{{ asset('assets/telegram.png') }}"
+                                                        src="{{ asset('assets/telegram.png') }}?v=20260303"
                                                         style="width: 28px; height: 28px; object-fit: contain; border-radius: 8px;" alt="Telegram"></a>
                                                 <a href="#"><img
-                                                        src="{{ asset('assets/twiter.png') }}"
+                                                        src="{{ asset('assets/twiter.png') }}?v=20260303"
                                                         style="width: 28px; height: 28px; object-fit: contain; border-radius: 8px;" alt=""></a>
                                                 <a href="#"><img
-                                                        src="{{ asset('assets/linkedIn.png') }}"
+                                                        src="{{ asset('assets/linkedIn.png') }}?v=20260303"
                                                         style="width: 28px; height: 28px; object-fit: contain; border-radius: 8px;" alt=""></a>
                                             </div>
     

@@ -194,7 +194,7 @@
                data-quote="{{ $serviceQuote }}"
                onclick="return window.__shareClickHandler(event, this);"
                style="cursor: pointer;">
-             <img src="{{ asset('assets/fb.png') }}"
+             <img src="{{ asset('assets/fb.png') }}?v=20260303"
                  style="width: 30px; border-radius: 8px;" alt="Share on Facebook">
          </span>
          <span role="button" tabindex="0" class="social-link share-link"
@@ -203,7 +203,7 @@
                data-text="{{ $serviceQuote }}"
                onclick="return window.__shareClickHandler(event, this);"
                style="cursor: pointer;">
-             <img src="{{ asset('assets/twiter.png') }}"
+             <img src="{{ asset('assets/twiter.png') }}?v=20260303"
                  style="width: 28px; height: 28px; object-fit: contain; border-radius: 8px;" alt="Share on Twitter">
          </span>
          <span role="button" tabindex="0" class="social-link share-link"
@@ -212,7 +212,7 @@
                data-quote="{{ $serviceQuote }}"
                onclick="return window.__shareClickHandler(event, this);"
                style="cursor: pointer;">
-             <img src="{{ asset('assets/telegram.png') }}"
+             <img src="{{ asset('assets/telegram.png') }}?v=20260303"
                  style="width: 28px; height: 28px; object-fit: contain; border-radius: 8px;" alt="Share on Telegram">
          </span>
          <span role="button" tabindex="0" class="social-link share-link"
@@ -220,7 +220,7 @@
                data-share-url="{{ $serviceShareUrl }}"
                onclick="return window.__shareClickHandler(event, this);"
                style="cursor: pointer;">
-             <img src="{{ asset('assets/linkedIn.png') }}"
+             <img src="{{ asset('assets/linkedIn.png') }}?v=20260303"
                  style="width: 28px; height: 28px; object-fit: contain; border-radius: 8px;" alt="Share on LinkedIn">
          </span>
      </div>

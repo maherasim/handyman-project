@@ -517,11 +517,11 @@
                     <!-- Social Sharing -->
                     <div class="d-flex align-items-center justify-content-center gap-3 mb-4 social-icons">
                         <span role="button" tabindex="0" class="social-link share-link" data-platform="facebook" data-share-url="{{ route('job.details', $jobrequest->id) }}?v={{ optional($jobrequest->updated_at)->timestamp ?? time() }}" data-quote="{{ $jobrequest->title }} • {{ getPriceFormat($jobrequest->price) }} • {{ ucfirst($jobrequest->price_type ?? 'fixed') }} • {{ data_get($jobrequest,'city.name','City') }}, {{ data_get($jobrequest,'country.name','Country') }}" onclick="return window.__shareClickHandler(event, this);">
-                            <img src="{{ asset('assets/fb.png') }}" 
+                            <img src="{{ asset('assets/fb.png') }}?v=20260303" 
                                  style="width: 28px; height: 28px; object-fit: contain; border-radius: 8px;" alt="Facebook">
                         </span>
                         <span role="button" tabindex="0" class="social-link share-link" data-platform="telegram" data-share-url="{{ route('job.details', $jobrequest->id) }}" data-quote="{{ $jobrequest->title }} • {{ getPriceFormat($jobrequest->price) }} • {{ ucfirst($jobrequest->price_type ?? 'fixed') }} • {{ data_get($jobrequest,'city.name', __('messages.city')) }}, {{ data_get($jobrequest,'country.name', __('messages.country')) }}" onclick="return window.__shareClickHandler(event, this);">
-                            <img src="{{ asset('assets/telegram.png') }}"
+                            <img src="{{ asset('assets/telegram.png') }}?v=20260303"
                                  style="width: 28px; height: 28px; object-fit: contain; border-radius: 8px;" alt="{{ __('landingpage.pd_alt_telegram') }}">
                         </span>
                         <span role="button" tabindex="0" class="social-link share-link" data-platform="twitter" data-share-url="{{ route('job.details', $jobrequest->id) }}?v={{ optional($jobrequest->updated_at)->timestamp ?? time() }}" data-text="{{ $jobrequest->title }} • {{ getPriceFormat($jobrequest->price) }} • {{ ucfirst($jobrequest->price_type ?? 'fixed') }} • {{ data_get($jobrequest,'city.name', __('messages.city')) }}, {{ data_get($jobrequest,'country.name', __('messages.country')) }}" onclick="return window.__shareClickHandler(event, this);">
@@ -529,7 +529,7 @@
                                  style="width: 28px; height: 28px; object-fit: contain; border-radius: 8px;" alt="{{ __('landingpage.pd_alt_twitter') }}">
                         </span>
                         <span role="button" tabindex="0" class="social-link share-link" data-platform="linkedin" data-share-url="{{ route('job.details', $jobrequest->id) }}?v={{ optional($jobrequest->updated_at)->timestamp ?? time() }}" onclick="return window.__shareClickHandler(event, this);">
-                            <img src="{{ asset('assets/linkedIn.png') }}" 
+                            <img src="{{ asset('assets/linkedIn.png') }}?v=20260303" 
                                  style="width: 28px; height: 28px; object-fit: contain; border-radius: 8px;" alt="{{ __('landingpage.pd_alt_linkedin') }}">
                         </span>
                     </div>

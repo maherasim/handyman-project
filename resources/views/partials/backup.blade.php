@@ -127,7 +127,7 @@
                   src="https://cdn.pixabay.com/photo/2021/06/15/12/51/facebook-6338507_1280.png"
                   style="width: 30px; border-radius: 8px;" alt=""></a>
           <a href="#"><img
-                  src="{{ asset('assets/telegram.png') }}"
+                  src="{{ asset('assets/telegram.png') }}?v=20260303"
                   style="width: 30px; height: 30px; object-fit: contain; border-radius: 8px;" alt="Telegram"></a>
           <a href="#"><img
                   src="https://cdn.pixabay.com/photo/2015/03/10/17/30/twitter-667462_640.png"

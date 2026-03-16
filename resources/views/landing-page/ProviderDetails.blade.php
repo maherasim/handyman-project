@@ -423,16 +423,16 @@
                                                 @endphp
                                                 <div class="d-flex align-items-center justify-content-center gap-3 mt-3">
                                                     <span role="button" tabindex="0" class="social-link share-link" data-platform="facebook" data-share-url="{{ $detailShareUrl }}" data-quote="{{ $detailQuote }}" onclick="return typeof window.__shareClickHandler === 'function' && window.__shareClickHandler(event, this);" style="cursor: pointer;">
-                                                        <img src="{{ asset('assets/fb.png') }}" style="width: 28px; height: 28px; object-fit: contain; border-radius: 8px;" alt="Facebook">
+                                                        <img src="{{ asset('assets/fb.png') }}?v=20260303" style="width: 28px; height: 28px; object-fit: contain; border-radius: 8px;" alt="Facebook">
                                                     </span>
                                                     <span role="button" tabindex="0" class="social-link share-link" data-platform="telegram" data-share-url="{{ $detailShareUrl }}" data-quote="{{ $detailQuote }}" onclick="return typeof window.__shareClickHandler === 'function' && window.__shareClickHandler(event, this);" style="cursor: pointer;">
-                                                        <img src="{{ asset('assets/telegram.png') }}" style="width: 28px; height: 28px; object-fit: contain; border-radius: 8px;" alt="{{ __('landingpage.pd_alt_telegram') }}">
+                                                        <img src="{{ asset('assets/telegram.png') }}?v=20260303" style="width: 28px; height: 28px; object-fit: contain; border-radius: 8px;" alt="{{ __('landingpage.pd_alt_telegram') }}">
                                                     </span>
                                                     <span role="button" tabindex="0" class="social-link share-link" data-platform="twitter" data-share-url="{{ $detailShareUrl }}" data-text="{{ $detailQuote }}" onclick="return typeof window.__shareClickHandler === 'function' && window.__shareClickHandler(event, this);" style="cursor: pointer;">
-                                                        <img src="{{ asset('assets/twiter.png') }}" style="width: 28px; height: 28px; object-fit: contain; border-radius: 8px;" alt="Twitter">
+                                                        <img src="{{ asset('assets/twiter.png') }}?v=20260303" style="width: 28px; height: 28px; object-fit: contain; border-radius: 8px;" alt="Twitter">
                                                     </span>
                                                     <span role="button" tabindex="0" class="social-link share-link" data-platform="linkedin" data-share-url="{{ $detailShareUrl }}" onclick="return typeof window.__shareClickHandler === 'function' && window.__shareClickHandler(event, this);" style="cursor: pointer;">
-                                                        <img src="{{ asset('assets/linkedIn.png') }}" style="width: 28px; height: 28px; object-fit: contain; border-radius: 8px;" alt="{{ __('landingpage.pd_alt_linkedin') }}">
+                                                        <img src="{{ asset('assets/linkedIn.png') }}?v=20260303" style="width: 28px; height: 28px; object-fit: contain; border-radius: 8px;" alt="{{ __('landingpage.pd_alt_linkedin') }}">
                                                     </span>
                                                 </div>
                                             </tr>
