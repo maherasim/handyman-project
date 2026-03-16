@@ -525,7 +525,7 @@
                                  style="width: 28px; height: 28px; object-fit: contain; border-radius: 8px;" alt="{{ __('landingpage.pd_alt_telegram') }}">
                         </span>
                         <span role="button" tabindex="0" class="social-link share-link" data-platform="twitter" data-share-url="{{ route('job.details', $jobrequest->id) }}?v={{ optional($jobrequest->updated_at)->timestamp ?? time() }}" data-text="{{ $jobrequest->title }} • {{ getPriceFormat($jobrequest->price) }} • {{ ucfirst($jobrequest->price_type ?? 'fixed') }} • {{ data_get($jobrequest,'city.name', __('messages.city')) }}, {{ data_get($jobrequest,'country.name', __('messages.country')) }}" onclick="return window.__shareClickHandler(event, this);">
-                            <img src="https://cdn.pixabay.com/photo/2015/03/10/17/30/twitter-667462_640.png" 
+                            <img src="{{ asset('assets/twiter.png') }}?v=20260303" 
                                  style="width: 28px; height: 28px; object-fit: contain; border-radius: 8px;" alt="{{ __('landingpage.pd_alt_twitter') }}">
                         </span>
                         <span role="button" tabindex="0" class="social-link share-link" data-platform="linkedin" data-share-url="{{ route('job.details', $jobrequest->id) }}?v={{ optional($jobrequest->updated_at)->timestamp ?? time() }}" onclick="return window.__shareClickHandler(event, this);">
