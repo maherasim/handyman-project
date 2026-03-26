@@ -379,10 +379,19 @@ class ChatController extends Controller
                         ],
                         'android' => [
                             'priority' => 'high',
+                            'notification' => [
+                                'sound' => 'default',
+                                'click_action' => 'FLUTTER_NOTIFICATION_CLICK',
+                            ],
                         ],
                         'apns' => [
                             'headers' => [
                                 'apns-priority' => '10',
+                            ],
+                            'payload' => [
+                                'aps' => [
+                                    'sound' => 'default',
+                                ],
                             ],
                         ],
                     ],

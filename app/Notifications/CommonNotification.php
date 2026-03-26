@@ -196,12 +196,14 @@ class CommonNotification extends Notification implements ShouldQueue
                 "android" => [
                     "priority" => "high",
                     "notification" => [                        
+                        "sound" => "default",
                         "click_action"=> "FLUTTER_NOTIFICATION_CLICK",
                     ],
                 ],
                 "apns" => [
                     "payload" => [
                         "aps" => [
+                            "sound" => "default",
                             "category" => "NEW_MESSAGE_CATEGORY",
                         ],
                     ],
