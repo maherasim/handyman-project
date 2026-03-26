@@ -19,7 +19,17 @@ class SetUserLocale
     {
         $domainLocale = config('app.domain_locale', []);
         $host = $request->getHost();
-        $localeSetByDomain = !empty($domainLocale) && isset($domainLocale[$host]);
+        $hostVariants = array_unique([$host, preg_replace('/^www\./i', '', $host)]);
+        if (! str_starts_with(strtolower($host), 'www.')) {
+            $hostVariants[] = 'www.'.$host;
+        }
+        $localeSetByDomain = false;
+        foreach ($hostVariants as $h) {
+            if (! empty($domainLocale) && isset($domainLocale[$h])) {
+                $localeSetByDomain = true;
+                break;
+            }
+        }
 
         if ($localeSetByDomain) {
             // LanguageTranslator already set locale by domain; do not override

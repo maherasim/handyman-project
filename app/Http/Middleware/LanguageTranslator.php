@@ -9,9 +9,23 @@ class LanguageTranslator
     {
         $domainLocale = config('app.domain_locale', []);
         $host = $request->getHost();
+        // Match persotel.de and www.persotel.de (same for other mapped domains)
+        $hostVariants = array_unique(array_filter([
+            $host,
+            preg_replace('/^www\./i', '', $host),
+            (str_starts_with(strtolower($host), 'www.') ? null : 'www.'.$host),
+        ]));
 
-        if (!empty($domainLocale) && isset($domainLocale[$host])) {
-            \App::setLocale($domainLocale[$host]);
+        $localeFromDomain = null;
+        foreach ($hostVariants as $h) {
+            if (!empty($domainLocale) && isset($domainLocale[$h])) {
+                $localeFromDomain = $domainLocale[$h];
+                break;
+            }
+        }
+
+        if ($localeFromDomain !== null) {
+            \App::setLocale($localeFromDomain);
         } elseif (!config('app.show_language_switcher', false)) {
             \App::setLocale(config('app.locale'));
         } elseif (session()->has('locale')) {
