@@ -13,13 +13,13 @@ return [
     |
     */
 
-    'email' => 'e.g. david@gmail.com',
+    'email' => 'e.g. ben@gmail.com',
     'login_password' => 'e.g. #123@456',
-    'first_name' => 'e.g. David',
-    'last_name' => 'e.g. Finley',
-    'user_name' => 'e.g. DavidFinley',
+    'first_name' => 'e.g. Ben',
+    'last_name' => 'e.g. Ghezaiel',
+    'user_name' => 'e.g. BenGhezaiel',
     'contact_number' => 'e.g. +123 932545676',
     'designation'=>'e.g. Manager',
-    'address'=>'e.g. 72 Ellis Street, Union Square, San Francisco, CA 94102, United States'
+    'address'=>'e.g. Mustermannstraße 1001, 10119 Berlin, Deutschland'
 
 ];
