@@ -703,17 +703,20 @@ $data['remaining_payout'] = round($providerRemainingPayout, $digitafter_decimal_
                 $items = $items->get();
                 break;
             case 'currency':
-                // Support legacy columns (symbol, currency_code) and GeoDB-style (currency_symbol, currency)
-                $symbolExpr = 'COALESCE(NULLIF(TRIM(currency_symbol), ""), NULLIF(TRIM(symbol), ""))';
-                $items = \DB::table('countries')->select(\DB::raw(
-                    "id id, CONCAT(name, ' ( ', IFNULL({$symbolExpr}, IFNULL(currency, IFNULL(currency_code, '?'))), ' ) ') text"
-                ));
-                $items->whereRaw("{$symbolExpr} IS NOT NULL AND {$symbolExpr} != ''");
+                // Only reference columns that exist — MySQL errors if `symbol` appears when dropped (GeoDB schema).
+                $symbolExpr = $this->countryCurrencySymbolSqlExpression();
+                $displayExpr = $this->countryCurrencyDisplayTextSqlExpression($symbolExpr);
+                $items = \DB::table('countries')->select(\DB::raw("id id, {$displayExpr} text"));
+                $this->applyCountryCurrencyListFilters($items, $symbolExpr);
                 if ($value != '') {
                     $items->where(function ($q) use ($value) {
-                        $q->where('name', 'LIKE', $value . '%')
-                            ->orWhere('currency', 'LIKE', $value . '%')
-                            ->orWhere('currency_code', 'LIKE', $value . '%');
+                        $q->where('name', 'LIKE', $value . '%');
+                        if (Schema::hasColumn('countries', 'currency')) {
+                            $q->orWhere('currency', 'LIKE', $value . '%');
+                        }
+                        if (Schema::hasColumn('countries', 'currency_code')) {
+                            $q->orWhere('currency_code', 'LIKE', $value . '%');
+                        }
                     });
                 }
                 $items = $items->get();
@@ -725,9 +728,7 @@ $data['remaining_payout'] = round($providerRemainingPayout, $digitafter_decimal_
                     $presentIds = $items->pluck('id')->map(fn ($id) => (int) $id)->all();
                     if (! in_array($selectedId, $presentIds, true)) {
                         $extra = \DB::table('countries')
-                            ->select(\DB::raw(
-                                "id id, CONCAT(name, ' ( ', IFNULL({$symbolExpr}, IFNULL(currency, IFNULL(currency_code, '?'))), ' ) ') text"
-                            ))
+                            ->select(\DB::raw("id id, {$displayExpr} text"))
                             ->where('id', $selectedId)
                             ->first();
                         if ($extra) {
@@ -737,12 +738,17 @@ $data['remaining_payout'] = round($providerRemainingPayout, $digitafter_decimal_
                 }
                 break;
             case 'country_code':
-                $items = \DB::table('countries')->select(\DB::raw('COALESCE(iso2, code) id, name text'));
+                $idExpr = $this->countryDialCodeIdSqlExpression();
+                $items = \DB::table('countries')->select(\DB::raw("{$idExpr} id, name text"));
                 if ($value != '') {
                     $items->where(function ($q) use ($value) {
-                        $q->where('name', 'LIKE', $value . '%')
-                            ->orWhere('iso2', 'LIKE', $value . '%')
-                            ->orWhere('code', 'LIKE', $value . '%');
+                        $q->where('name', 'LIKE', $value . '%');
+                        if (Schema::hasColumn('countries', 'iso2')) {
+                            $q->orWhere('iso2', 'LIKE', $value . '%');
+                        }
+                        if (Schema::hasColumn('countries', 'code')) {
+                            $q->orWhere('code', 'LIKE', $value . '%');
+                        }
                     });
                 }
                 $items = $items->get();
@@ -851,6 +857,96 @@ $data['remaining_payout'] = round($providerRemainingPayout, $digitafter_decimal_
                 break;
         }
         return response()->json(['status' => 'true', 'results' => $items]);
+    }
+
+    /**
+     * SQL fragment: resolved currency symbol text (GeoDB: currency_symbol; legacy: symbol).
+     */
+    protected function countryCurrencySymbolSqlExpression(): string
+    {
+        $parts = [];
+        if (Schema::hasColumn('countries', 'currency_symbol')) {
+            $parts[] = 'NULLIF(TRIM(currency_symbol), "")';
+        }
+        if (Schema::hasColumn('countries', 'symbol')) {
+            $parts[] = 'NULLIF(TRIM(symbol), "")';
+        }
+        if ($parts === []) {
+            return 'CAST(NULL AS CHAR)';
+        }
+        if (count($parts) === 1) {
+            return $parts[0];
+        }
+
+        return 'COALESCE('.implode(', ', $parts).')';
+    }
+
+    /**
+     * SQL fragment: IFNULL chain for ISO currency code (GeoDB: currency; legacy: currency_code).
+     */
+    protected function countryCurrencyCodeFallbackSqlExpression(): string
+    {
+        $parts = [];
+        if (Schema::hasColumn('countries', 'currency')) {
+            $parts[] = 'currency';
+        }
+        if (Schema::hasColumn('countries', 'currency_code')) {
+            $parts[] = 'currency_code';
+        }
+        if ($parts === []) {
+            return 'CAST(NULL AS CHAR)';
+        }
+        if (count($parts) === 1) {
+            return $parts[0];
+        }
+
+        return 'IFNULL('.$parts[0].', '.$parts[1].')';
+    }
+
+    protected function countryCurrencyDisplayTextSqlExpression(string $symbolExpr): string
+    {
+        $codeFallback = $this->countryCurrencyCodeFallbackSqlExpression();
+
+        return "CONCAT(name, ' ( ', IFNULL({$symbolExpr}, IFNULL({$codeFallback}, '?')), ' ) ')";
+    }
+
+    protected function applyCountryCurrencyListFilters($items, string $symbolExpr): void
+    {
+        $hasSymbolCol = Schema::hasColumn('countries', 'currency_symbol')
+            || Schema::hasColumn('countries', 'symbol');
+        if ($hasSymbolCol) {
+            $items->whereRaw("{$symbolExpr} IS NOT NULL AND {$symbolExpr} != ''");
+
+            return;
+        }
+        if (Schema::hasColumn('countries', 'currency')) {
+            $items->whereNotNull('currency')->where('currency', '!=', '');
+
+            return;
+        }
+        if (Schema::hasColumn('countries', 'currency_code')) {
+            $items->whereNotNull('currency_code')->where('currency_code', '!=', '');
+        }
+    }
+
+    /**
+     * Two-letter country id for country_code ajax (GeoDB: iso2; legacy: code).
+     */
+    protected function countryDialCodeIdSqlExpression(): string
+    {
+        $hasIso2 = Schema::hasColumn('countries', 'iso2');
+        $hasCode = Schema::hasColumn('countries', 'code');
+        if ($hasIso2 && $hasCode) {
+            return 'COALESCE(iso2, code)';
+        }
+        if ($hasIso2) {
+            return 'iso2';
+        }
+        if ($hasCode) {
+            return 'code';
+        }
+
+        return 'id';
     }
 
     public function removeFile(Request $request)
