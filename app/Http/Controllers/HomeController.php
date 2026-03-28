@@ -710,6 +710,22 @@ $data['remaining_payout'] = round($providerRemainingPayout, $digitafter_decimal_
                     $items->where('name', 'LIKE', $value . '%')->orWhere('currency_code', 'LIKE', $value . '%');
                 }
                 $items = $items->get();
+
+                // Site setup: saved default_currency must appear even if symbol is empty in DB
+                $selectedId = $request->input('selected_id');
+                if ($selectedId !== null && $selectedId !== '') {
+                    $selectedId = (int) $selectedId;
+                    $presentIds = $items->pluck('id')->map(fn ($id) => (int) $id)->all();
+                    if (! in_array($selectedId, $presentIds, true)) {
+                        $extra = \DB::table('countries')
+                            ->select(\DB::raw('id id, CONCAT(name, " ( ", IFNULL(NULLIF(TRIM(symbol), ""), IFNULL(currency_code, "?")), " ) ") text'))
+                            ->where('id', $selectedId)
+                            ->first();
+                        if ($extra) {
+                            $items->push($extra);
+                        }
+                    }
+                }
                 break;
             case 'country_code':
                 $items = \DB::table('countries')->select(\DB::raw('code id,name text'));

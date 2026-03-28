@@ -114,7 +114,7 @@ class SettingController extends Controller
                     $decodedata = json_decode($site['value']);
                     $keys = ['date_format', 'time_format', 'time_zone', 'language_option', 'default_currency', 'currency_position', 'google_map_keys', 'latitude', 'longitude', 'distance_type', 'radious', 'digitafter_decimal_point', 'android_app_links', 'playstore_url', 'provider_playstore_url', 'ios_app_links', 'appstore_url', 'provider_appstore_url', 'site_copyright'];
                     foreach ($keys as $key) {
-                        $site[$key] = $decodedata->$key;
+                        $site[$key] = isset($decodedata->$key) ? $decodedata->$key : null;
                     }
                 }
                 $data = view('setting.' . $page, compact('page', 'site'))->render();

@@ -214,7 +214,7 @@
 
     $(document).ready(function (){
         loadCurrency();
-        $('.select2js').select2();
+        $('.select2js').not('#default_currency').select2();
         $('.default_language').on('change', function (e) {
             var id= $(this).val();
             $('.language_option option:disabled').prop('selected',true);
@@ -233,21 +233,27 @@
 
 
     function loadCurrency() {
-            var currency = "{{ isset($site->default_currency) ? $site->default_currency : '' }}";
+            var currency = "{{ old('default_currency', isset($site->default_currency) ? $site->default_currency : '') }}";
             var currency_route = "{{ route('ajax-list', ['type' => 'currency']) }}";
             currency_route = currency_route.replace('amp;', '');
+            if (currency !== '') {
+                currency_route += (currency_route.indexOf('?') >= 0 ? '&' : '?') + 'selected_id=' + encodeURIComponent(currency);
+            }
 
             $.ajax({
                 url: currency_route,
                 success: function (result) {
+                    if ($('#default_currency').hasClass('select2-hidden-accessible')) {
+                        $('#default_currency').select2('destroy');
+                    }
                     $('#default_currency').select2({
                         width: '100%',
                         placeholder: "{{ trans('messages.select_name', ['select' => trans('messages.currency')]) }}",
                         data: result.results
                     });
 
-                    if (currency != null) {
-                        $("#default_currency").val(currency).trigger('change');
+                    if (currency !== '') {
+                        $("#default_currency").val(String(currency)).trigger('change');
                     }
                 }
             });
