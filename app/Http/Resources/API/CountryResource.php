@@ -16,9 +16,10 @@ class CountryResource extends JsonResource
     {
         return [
             'country_id' => $this->id,
-            'currency_name'=>$this->currency_name,
-            'currency_symbol'=>$this->symbol,
-            'currency_code'=>$this->currency_code,
+            'currency_name' => $this->currency_name,
+            // Model accessors map legacy symbol / currency_code from currency_symbol / currency when needed
+            'currency_symbol' => $this->symbol,
+            'currency_code' => $this->currency_code,
         ];
     }
 }

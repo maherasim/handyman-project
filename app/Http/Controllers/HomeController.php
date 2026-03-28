@@ -703,11 +703,18 @@ $data['remaining_payout'] = round($providerRemainingPayout, $digitafter_decimal_
                 $items = $items->get();
                 break;
             case 'currency':
-                $items = \DB::table('countries')->select(\DB::raw('id id,CONCAT(name , " ( " , symbol ," ) ") text'));
-
-                $items->whereNotNull('symbol')->where('symbol', '!=', '');
+                // Support legacy columns (symbol, currency_code) and GeoDB-style (currency_symbol, currency)
+                $symbolExpr = 'COALESCE(NULLIF(TRIM(currency_symbol), ""), NULLIF(TRIM(symbol), ""))';
+                $items = \DB::table('countries')->select(\DB::raw(
+                    "id id, CONCAT(name, ' ( ', IFNULL({$symbolExpr}, IFNULL(currency, IFNULL(currency_code, '?'))), ' ) ') text"
+                ));
+                $items->whereRaw("{$symbolExpr} IS NOT NULL AND {$symbolExpr} != ''");
                 if ($value != '') {
-                    $items->where('name', 'LIKE', $value . '%')->orWhere('currency_code', 'LIKE', $value . '%');
+                    $items->where(function ($q) use ($value) {
+                        $q->where('name', 'LIKE', $value . '%')
+                            ->orWhere('currency', 'LIKE', $value . '%')
+                            ->orWhere('currency_code', 'LIKE', $value . '%');
+                    });
                 }
                 $items = $items->get();
 
@@ -718,7 +725,9 @@ $data['remaining_payout'] = round($providerRemainingPayout, $digitafter_decimal_
                     $presentIds = $items->pluck('id')->map(fn ($id) => (int) $id)->all();
                     if (! in_array($selectedId, $presentIds, true)) {
                         $extra = \DB::table('countries')
-                            ->select(\DB::raw('id id, CONCAT(name, " ( ", IFNULL(NULLIF(TRIM(symbol), ""), IFNULL(currency_code, "?")), " ) ") text'))
+                            ->select(\DB::raw(
+                                "id id, CONCAT(name, ' ( ', IFNULL({$symbolExpr}, IFNULL(currency, IFNULL(currency_code, '?'))), ' ) ') text"
+                            ))
                             ->where('id', $selectedId)
                             ->first();
                         if ($extra) {
@@ -728,9 +737,13 @@ $data['remaining_payout'] = round($providerRemainingPayout, $digitafter_decimal_
                 }
                 break;
             case 'country_code':
-                $items = \DB::table('countries')->select(\DB::raw('code id,name text'));
+                $items = \DB::table('countries')->select(\DB::raw('COALESCE(iso2, code) id, name text'));
                 if ($value != '') {
-                    $items->where('name', 'LIKE', $value . '%')->orWhere('code', 'LIKE', $value . '%');
+                    $items->where(function ($q) use ($value) {
+                        $q->where('name', 'LIKE', $value . '%')
+                            ->orWhere('iso2', 'LIKE', $value . '%')
+                            ->orWhere('code', 'LIKE', $value . '%');
+                    });
                 }
                 $items = $items->get();
                 break;
