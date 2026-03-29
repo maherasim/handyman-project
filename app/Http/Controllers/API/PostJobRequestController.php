@@ -315,12 +315,18 @@ class PostJobRequestController extends Controller
     
     public function getPostRequestList(Request $request)
     {
-        // Apply role-aware scope: users see only their own posts; admins/providers see all
-        $query = PostJobRequest::withCount('postBidList')->myPostJob()->whereIn('status', [
+        $allowedStatuses = [
             'requested', 'accepted', 'assigned', 'completed', 'confirm_done',
             'remaining_paid', 'done', 'in_progress', 'in_process', 'hold',
-            'advance_paid', 'cancelled', 'pending'
-        ]);
+            'advance_paid', 'cancelled', 'pending',
+        ];
+
+        // Apply role-aware scope: users see only their own posts; admins/providers see all
+        $query = PostJobRequest::withCount('postBidList')->myPostJob()->where(function ($q) use ($allowedStatuses) {
+            $q->whereIn('status', $allowedStatuses)
+                ->orWhereNull('status')
+                ->orWhere('status', '');
+        });
         
     
         // Default per page from config; ensure integer fallback
@@ -366,9 +372,8 @@ class PostJobRequestController extends Controller
         // ✅ Base query
         $query = PostJobRequest::query();
     
-        // 🔐 Restrict based on role
-        if ($user->hasRole('user')) {
-            // Users can only view their own posts
+        // 🔐 Restrict based on role / user_type (role row may be missing on some accounts)
+        if ($user->hasRole('user') || $user->user_type === 'user') {
             $query->where('customer_id', $user->id);
         }
         // Admins and Providers can view any post — no extra filter

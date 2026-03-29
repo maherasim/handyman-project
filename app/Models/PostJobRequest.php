@@ -33,16 +33,29 @@ class PostJobRequest extends Model
     public function scopeMyPostJob($query)
     {
         $user = auth()->user();
-    
-        if ($user->hasRole('admin') || $user->hasRole('provider')) {
+
+        if (! $user) {
+            return $query->whereRaw('1 = 0');
+        }
+
+        $isAdmin = $user->hasRole('admin')
+            || $user->hasRole('demo_admin')
+            || in_array($user->user_type, ['admin', 'demo_admin'], true);
+
+        if ($isAdmin) {
             return $query;
         }
-    
-        if ($user->hasRole('user')) {
+
+        if ($user->hasRole('provider') || $user->user_type === 'provider') {
+            return $query;
+        }
+
+        // Customers: Spatie role can be missing on legacy/imported accounts; user_type is authoritative
+        if ($user->hasRole('user') || $user->user_type === 'user') {
             return $query->where('customer_id', $user->id);
         }
-    
-        return $query->whereRaw('1 = 0'); // default deny if role is unknown
+
+        return $query->whereRaw('1 = 0');
     }
     
     public function getTotalBidsAttribute()

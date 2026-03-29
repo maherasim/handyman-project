@@ -705,8 +705,14 @@ $data['remaining_payout'] = round($providerRemainingPayout, $digitafter_decimal_
             case 'currency':
                 // Only reference columns that exist — MySQL errors if `symbol` appears when dropped (GeoDB schema).
                 $symbolExpr = $this->countryCurrencySymbolSqlExpression();
-                $displayExpr = $this->countryCurrencyDisplayTextSqlExpression($symbolExpr);
-                $items = \DB::table('countries')->select(\DB::raw("id id, {$displayExpr} text"));
+                $locale = $request->input('locale') ?: app()->getLocale();
+                $select = ['id', 'name'];
+                foreach (['iso2', 'translations', 'currency_symbol', 'symbol', 'currency', 'currency_code'] as $col) {
+                    if (Schema::hasColumn('countries', $col)) {
+                        $select[] = $col;
+                    }
+                }
+                $items = \DB::table('countries')->select($select);
                 $this->applyCountryCurrencyListFilters($items, $symbolExpr);
                 if ($value != '') {
                     $items->where(function ($q) use ($value) {
@@ -719,7 +725,12 @@ $data['remaining_payout'] = round($providerRemainingPayout, $digitafter_decimal_
                         }
                     });
                 }
-                $items = $items->get();
+                $items = $items->get()->map(function ($row) use ($locale) {
+                    return (object) [
+                        'id' => $row->id,
+                        'text' => country_currency_select_text($row, $locale),
+                    ];
+                });
 
                 // Site setup: saved default_currency must appear even if symbol is empty in DB
                 $selectedId = $request->input('selected_id');
@@ -727,12 +738,12 @@ $data['remaining_payout'] = round($providerRemainingPayout, $digitafter_decimal_
                     $selectedId = (int) $selectedId;
                     $presentIds = $items->pluck('id')->map(fn ($id) => (int) $id)->all();
                     if (! in_array($selectedId, $presentIds, true)) {
-                        $extra = \DB::table('countries')
-                            ->select(\DB::raw("id id, {$displayExpr} text"))
-                            ->where('id', $selectedId)
-                            ->first();
+                        $extra = \DB::table('countries')->select($select)->where('id', $selectedId)->first();
                         if ($extra) {
-                            $items->push($extra);
+                            $items->push((object) [
+                                'id' => $extra->id,
+                                'text' => country_currency_select_text($extra, $locale),
+                            ]);
                         }
                     }
                 }
@@ -879,35 +890,6 @@ $data['remaining_payout'] = round($providerRemainingPayout, $digitafter_decimal_
         }
 
         return 'COALESCE('.implode(', ', $parts).')';
-    }
-
-    /**
-     * SQL fragment: IFNULL chain for ISO currency code (GeoDB: currency; legacy: currency_code).
-     */
-    protected function countryCurrencyCodeFallbackSqlExpression(): string
-    {
-        $parts = [];
-        if (Schema::hasColumn('countries', 'currency')) {
-            $parts[] = 'currency';
-        }
-        if (Schema::hasColumn('countries', 'currency_code')) {
-            $parts[] = 'currency_code';
-        }
-        if ($parts === []) {
-            return 'CAST(NULL AS CHAR)';
-        }
-        if (count($parts) === 1) {
-            return $parts[0];
-        }
-
-        return 'IFNULL('.$parts[0].', '.$parts[1].')';
-    }
-
-    protected function countryCurrencyDisplayTextSqlExpression(string $symbolExpr): string
-    {
-        $codeFallback = $this->countryCurrencyCodeFallbackSqlExpression();
-
-        return "CONCAT(name, ' ( ', IFNULL({$symbolExpr}, IFNULL({$codeFallback}, '?')), ' ) ')";
     }
 
     protected function applyCountryCurrencyListFilters($items, string $symbolExpr): void

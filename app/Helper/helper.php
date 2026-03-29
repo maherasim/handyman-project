@@ -559,6 +559,66 @@ function currency_data(){
     return  $data;
 }
 
+/**
+ * Country name as shown in a given locale (e.g. German: Deutschland, Frankreich, Vereinigte Staaten).
+ * Uses `translations` JSON (`de`) when present, else Symfony Intl from ISO2.
+ */
+function country_display_name_for_locale(object|array $country, ?string $locale = null): string
+{
+    $locale = $locale ?? app()->getLocale();
+    $name = is_array($country) ? ($country['name'] ?? '') : ($country->name ?? '');
+    if ($locale !== 'de') {
+        return $name;
+    }
+    $row = is_array($country) ? (object) $country : $country;
+    if (! empty($row->translations)) {
+        $tr = is_string($row->translations) ? json_decode($row->translations, true) : $row->translations;
+        if (is_array($tr) && ! empty($tr['de'])) {
+            return $tr['de'];
+        }
+    }
+    $iso2 = $row->iso2 ?? $row->code ?? null;
+    if ($iso2) {
+        $c = strtoupper(trim((string) $iso2));
+        if (class_exists(\Symfony\Component\Intl\Countries::class)) {
+            try {
+                if (\Symfony\Component\Intl\Countries::exists($c)) {
+                    return \Symfony\Component\Intl\Countries::getName($c, 'de');
+                }
+            } catch (\Throwable $e) {
+            }
+        }
+        // No symfony/intl: use PHP intl (region name in German), e.g. en-DE → Deutschland
+        if (extension_loaded('intl')) {
+            $localized = @locale_get_display_region('en-'.$c, 'de');
+            if (is_string($localized) && $localized !== '') {
+                return $localized;
+            }
+        }
+    }
+
+    return $name;
+}
+
+/**
+ * One line for currency Select2: localized country name + symbol/code in parentheses.
+ */
+function country_currency_select_text(object $row, ?string $locale = null): string
+{
+    $sym = '';
+    if (isset($row->currency_symbol) && trim((string) $row->currency_symbol) !== '') {
+        $sym = trim((string) $row->currency_symbol);
+    } elseif (isset($row->symbol) && trim((string) $row->symbol) !== '') {
+        $sym = trim((string) $row->symbol);
+    }
+    if ($sym === '') {
+        $sym = (string) ($row->currency ?? $row->currency_code ?? '?');
+    }
+    $name = country_display_name_for_locale($row, $locale);
+
+    return $name.' ( '.$sym.' )';
+}
+
 function payment_status(){
 
     return [

@@ -236,8 +236,10 @@
             var currency = "{{ old('default_currency', isset($site->default_currency) ? $site->default_currency : '') }}";
             var currency_route = "{{ route('ajax-list', ['type' => 'currency']) }}";
             currency_route = currency_route.replace('amp;', '');
+            var _sep = currency_route.indexOf('?') >= 0 ? '&' : '?';
+            currency_route += _sep + 'locale={{ app()->getLocale() }}';
             if (currency !== '') {
-                currency_route += (currency_route.indexOf('?') >= 0 ? '&' : '?') + 'selected_id=' + encodeURIComponent(currency);
+                currency_route += '&selected_id=' + encodeURIComponent(currency);
             }
 
             $.ajax({
