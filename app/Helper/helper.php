@@ -64,6 +64,13 @@ function checkMenuRoleAndPermission($menu){
         }
     }
 
+    // Customer web panel: _body_sidebar already hides provider/handyman-only links by user_type.
+    // If role/permission rows are missing (partial DB clone), Spatie denies everything and the sidebar is empty.
+    $authUser = auth()->user();
+    if ($authUser && $authUser->user_type === 'user' && $menu->data('role') == null && $menu->data('permission') != null) {
+        return true;
+    }
+
     return false;
 }
 

@@ -157,7 +157,8 @@ class HomeController extends Controller
         ->sum('commission_amount') ?? 0;
 
     if ($user->hasRole('provider')) {
-        $user = User::with('commission_earning')->where('id', $user->id)->where('user_type', 'provider')->first();
+        // Do not filter by user_type here: Spatie role can be "provider" while DB user_type is out of sync; that made first() null.
+        $user = User::with('commission_earning')->find($user->id) ?? $user;
 
         $commissions = $user->commission_earning()
             ->where('commission_status', 'unpaid')
