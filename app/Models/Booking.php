@@ -113,25 +113,42 @@ class Booking extends Model
 
     public function scopeMyBooking($query){
         $user = auth()->user();
-        if($user->hasRole('admin') || $user->hasRole('demo_admin')) {
+        if (! $user) {
+            return $query->whereRaw('1 = 0');
+        }
+
+        $ut = $user->user_type ?? '';
+
+        if ($user->hasRole('admin') || $user->hasRole('demo_admin') || in_array($ut, ['admin', 'demo_admin'], true)) {
             return $query;
         }
 
-        if($user->hasRole('provider')) {
-            return $query->where('bookings.provider_id', $user->id);
-        }
-
-        if($user->hasRole('user')) {
+        // Prefer user_type over Spatie so customer bookings show when roles are wrong/missing (same as PostJobRequest::scopeMyPostJob)
+        if ($ut === 'user') {
             return $query->where('customer_id', $user->id);
         }
-
-        if($user->hasRole('handyman')) {
-            return $query->whereHas('handymanAdded',function ($q) use($user){
-                $q->where('handyman_id',$user->id);
+        if ($ut === 'provider') {
+            return $query->where('bookings.provider_id', $user->id);
+        }
+        if ($ut === 'handyman') {
+            return $query->whereHas('handymanAdded', function ($q) use ($user) {
+                $q->where('handyman_id', $user->id);
             });
         }
 
-        return $query;
+        if ($user->hasRole('user')) {
+            return $query->where('customer_id', $user->id);
+        }
+        if ($user->hasRole('provider')) {
+            return $query->where('bookings.provider_id', $user->id);
+        }
+        if ($user->hasRole('handyman')) {
+            return $query->whereHas('handymanAdded', function ($q) use ($user) {
+                $q->where('handyman_id', $user->id);
+            });
+        }
+
+        return $query->whereRaw('1 = 0');
     }
 
     public function categoryService(){
