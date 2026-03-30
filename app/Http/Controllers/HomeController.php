@@ -44,10 +44,6 @@ class HomeController extends Controller
  public function index(Request $request)
 {
     $user = auth()->user();
-    // Sidebar (_body_sidebar) branches on user_type; Spatie roles can disagree on some DBs — align dashboard + KPI blocks with user_type first
-    $userType = $user->user_type ?? '';
-    $isProviderProfile = $userType === 'provider' || ($userType === '' && $user->hasRole('provider'));
-    $isHandymanProfile = $userType === 'handyman' || ($userType === '' && $user->hasRole('handyman'));
 
     // Handle AJAX request for FullCalendar
     if ($request->ajax()) {
@@ -132,7 +128,7 @@ class HomeController extends Controller
     $setting = Setting::getValueByKey('site-setup','site-setup');
     $digitafter_decimal_point = $setting ? $setting->digitafter_decimal_point : "2";
 
-    if ($isProviderProfile) {
+    if ($user->hasRole('provider')) {
         // Total revenue: status = paid or remaining_paid (any payment method: stripe, wallet, bank, paypal)
         $revenuedata = ProviderPayout::selectRaw('sum(amount) as total , DATE_FORMAT(updated_at , "%m") as month')
             ->where('provider_id', $user->id)
@@ -160,9 +156,8 @@ class HomeController extends Controller
         ->whereIn('commission_status', ['unpaid','paid'])
         ->sum('commission_amount') ?? 0;
 
-    if ($isProviderProfile) {
-        // Do not filter by user_type here: Spatie role can be "provider" while DB user_type is out of sync; that made first() null.
-        $user = User::with('commission_earning')->find($user->id) ?? $user;
+    if ($user->hasRole('provider')) {
+        $user = User::with('commission_earning')->where('id', $user->id)->where('user_type', 'provider')->first();
 
         $commissions = $user->commission_earning()
             ->where('commission_status', 'unpaid')
@@ -207,7 +202,7 @@ $data['remaining_payout'] = round($providerRemainingPayout, $digitafter_decimal_
             ->whereIn('status', ['paid', 'remaining_paid', 'remaining paid'])
             ->sum('amount') ?? 0;
 
-    } elseif ($isHandymanProfile) {
+    } elseif ($user->hasRole('handyman')) {
         $data['remaining_payout'] = CommissionEarning::where('employee_id', $user->id)->where('commission_status', 'unpaid')->sum('commission_amount') ?? 0;
         if (Schema::hasColumn('handyman_payouts', 'status')) {
             $data['total_earning'] = HandymanPayout::where('handyman_id', $user->id)
@@ -224,31 +219,15 @@ $data['remaining_payout'] = round($providerRemainingPayout, $digitafter_decimal_
     $sitesetup = Setting::where('type','site-setup')->where('key', 'site-setup')->first();
     $data['datetime'] = $sitesetup ? json_decode($sitesetup->value) : null;
 
-    $authUser = auth()->user();
-    $ut = $authUser->user_type ?? '';
-
-    if ($authUser->hasAnyRole(['admin', 'demo_admin']) || in_array($ut, ['admin', 'demo_admin'], true)) {
+    if (auth()->user()->hasAnyRole(['admin', 'demo_admin'])) {
         return $this->adminDashboard($data);
-    }
-
-    if ($ut === 'provider') {
+    } elseif (auth()->user()->hasRole('provider')) {
         return $this->providerDashboard($data);
-    }
-    if ($ut === 'handyman') {
+    } elseif (auth()->user()->hasRole('handyman')) {
         return $this->handymanDashboard($data);
-    }
-    if ($ut === 'user') {
+    } else {
         return $this->userDashboard($data);
     }
-
-    if ($authUser->hasRole('provider')) {
-        return $this->providerDashboard($data);
-    }
-    if ($authUser->hasRole('handyman')) {
-        return $this->handymanDashboard($data);
-    }
-
-    return $this->userDashboard($data);
 }
 
 
@@ -724,34 +703,13 @@ $data['remaining_payout'] = round($providerRemainingPayout, $digitafter_decimal_
                 $items = $items->get();
                 break;
             case 'currency':
-                // Only reference columns that exist — MySQL errors if `symbol` appears when dropped (GeoDB schema).
-                $symbolExpr = $this->countryCurrencySymbolSqlExpression();
-                $locale = $request->input('locale') ?: app()->getLocale();
-                $select = ['id', 'name'];
-                foreach (['iso2', 'translations', 'currency_symbol', 'symbol', 'currency', 'currency_code'] as $col) {
-                    if (Schema::hasColumn('countries', $col)) {
-                        $select[] = $col;
-                    }
-                }
-                $items = \DB::table('countries')->select($select);
-                $this->applyCountryCurrencyListFilters($items, $symbolExpr);
+                $items = \DB::table('countries')->select(\DB::raw('id id,CONCAT(name , " ( " , symbol ," ) ") text'));
+
+                $items->whereNotNull('symbol')->where('symbol', '!=', '');
                 if ($value != '') {
-                    $items->where(function ($q) use ($value) {
-                        $q->where('name', 'LIKE', $value . '%');
-                        if (Schema::hasColumn('countries', 'currency')) {
-                            $q->orWhere('currency', 'LIKE', $value . '%');
-                        }
-                        if (Schema::hasColumn('countries', 'currency_code')) {
-                            $q->orWhere('currency_code', 'LIKE', $value . '%');
-                        }
-                    });
+                    $items->where('name', 'LIKE', $value . '%')->orWhere('currency_code', 'LIKE', $value . '%');
                 }
-                $items = $items->get()->map(function ($row) use ($locale) {
-                    return (object) [
-                        'id' => $row->id,
-                        'text' => country_currency_select_text($row, $locale),
-                    ];
-                });
+                $items = $items->get();
 
                 // Site setup: saved default_currency must appear even if symbol is empty in DB
                 $selectedId = $request->input('selected_id');
@@ -759,29 +717,20 @@ $data['remaining_payout'] = round($providerRemainingPayout, $digitafter_decimal_
                     $selectedId = (int) $selectedId;
                     $presentIds = $items->pluck('id')->map(fn ($id) => (int) $id)->all();
                     if (! in_array($selectedId, $presentIds, true)) {
-                        $extra = \DB::table('countries')->select($select)->where('id', $selectedId)->first();
+                        $extra = \DB::table('countries')
+                            ->select(\DB::raw('id id, CONCAT(name, " ( ", IFNULL(NULLIF(TRIM(symbol), ""), IFNULL(currency_code, "?")), " ) ") text'))
+                            ->where('id', $selectedId)
+                            ->first();
                         if ($extra) {
-                            $items->push((object) [
-                                'id' => $extra->id,
-                                'text' => country_currency_select_text($extra, $locale),
-                            ]);
+                            $items->push($extra);
                         }
                     }
                 }
                 break;
             case 'country_code':
-                $idExpr = $this->countryDialCodeIdSqlExpression();
-                $items = \DB::table('countries')->select(\DB::raw("{$idExpr} id, name text"));
+                $items = \DB::table('countries')->select(\DB::raw('code id,name text'));
                 if ($value != '') {
-                    $items->where(function ($q) use ($value) {
-                        $q->where('name', 'LIKE', $value . '%');
-                        if (Schema::hasColumn('countries', 'iso2')) {
-                            $q->orWhere('iso2', 'LIKE', $value . '%');
-                        }
-                        if (Schema::hasColumn('countries', 'code')) {
-                            $q->orWhere('code', 'LIKE', $value . '%');
-                        }
-                    });
+                    $items->where('name', 'LIKE', $value . '%')->orWhere('code', 'LIKE', $value . '%');
                 }
                 $items = $items->get();
                 break;
@@ -889,67 +838,6 @@ $data['remaining_payout'] = round($providerRemainingPayout, $digitafter_decimal_
                 break;
         }
         return response()->json(['status' => 'true', 'results' => $items]);
-    }
-
-    /**
-     * SQL fragment: resolved currency symbol text (GeoDB: currency_symbol; legacy: symbol).
-     */
-    protected function countryCurrencySymbolSqlExpression(): string
-    {
-        $parts = [];
-        if (Schema::hasColumn('countries', 'currency_symbol')) {
-            $parts[] = 'NULLIF(TRIM(currency_symbol), "")';
-        }
-        if (Schema::hasColumn('countries', 'symbol')) {
-            $parts[] = 'NULLIF(TRIM(symbol), "")';
-        }
-        if ($parts === []) {
-            return 'CAST(NULL AS CHAR)';
-        }
-        if (count($parts) === 1) {
-            return $parts[0];
-        }
-
-        return 'COALESCE('.implode(', ', $parts).')';
-    }
-
-    protected function applyCountryCurrencyListFilters($items, string $symbolExpr): void
-    {
-        $hasSymbolCol = Schema::hasColumn('countries', 'currency_symbol')
-            || Schema::hasColumn('countries', 'symbol');
-        if ($hasSymbolCol) {
-            $items->whereRaw("{$symbolExpr} IS NOT NULL AND {$symbolExpr} != ''");
-
-            return;
-        }
-        if (Schema::hasColumn('countries', 'currency')) {
-            $items->whereNotNull('currency')->where('currency', '!=', '');
-
-            return;
-        }
-        if (Schema::hasColumn('countries', 'currency_code')) {
-            $items->whereNotNull('currency_code')->where('currency_code', '!=', '');
-        }
-    }
-
-    /**
-     * Two-letter country id for country_code ajax (GeoDB: iso2; legacy: code).
-     */
-    protected function countryDialCodeIdSqlExpression(): string
-    {
-        $hasIso2 = Schema::hasColumn('countries', 'iso2');
-        $hasCode = Schema::hasColumn('countries', 'code');
-        if ($hasIso2 && $hasCode) {
-            return 'COALESCE(iso2, code)';
-        }
-        if ($hasIso2) {
-            return 'iso2';
-        }
-        if ($hasCode) {
-            return 'code';
-        }
-
-        return 'id';
     }
 
     public function removeFile(Request $request)
