@@ -266,13 +266,18 @@ class DashboardController extends Controller
         ->where('provider_id', $provider->id)
         ->pluck('id');
         $handymanIds[] = $provider->id;
-        $user = User::with('commission_earning')->where('id', $provider->id)->where('user_type', 'provider')->first();
-        $commissions = $user->commission_earning()
-        ->whereHas('getbooking', function ($query) {
-            $query->where('status', 'completed');
-        })
-        ->where('commission_status', 'unpaid')
-        ->pluck('booking_id'); // Get all booking IDs
+        $providerUser = User::with('commission_earning')
+            ->where('id', $provider->id)
+            ->where('user_type', 'provider')
+            ->first();
+        $commissions = $providerUser
+            ? $providerUser->commission_earning()
+                ->whereHas('getbooking', function ($query) {
+                    $query->where('status', 'completed');
+                })
+                ->where('commission_status', 'unpaid')
+                ->pluck('booking_id')
+            : collect(); // Get all booking IDs
 
         $ProviderEarning = 0;
 
@@ -286,7 +291,7 @@ class DashboardController extends Controller
         $remaining_payout  = $ProviderEarning;
         //$remaining_payout  = CommissionEarning::where('employee_id',$provider->id)->where('commission_status', 'unpaid')->sum('commission_amount') ?? 0;
         $revenuedata = ProviderPayout::selectRaw('sum(amount) as total , DATE_FORMAT(updated_at , "%m") as month')
-                ->where('provider_id', $user->id)
+                ->where('provider_id', $provider->id)
                 ->whereYear('updated_at', date('Y'))
                 ->whereIn('status', ['paid', 'remaining_paid', 'remaining paid'])
                 ->groupBy('month');

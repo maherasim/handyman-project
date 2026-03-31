@@ -157,11 +157,16 @@ class HomeController extends Controller
         ->sum('commission_amount') ?? 0;
 
     if ($user->hasRole('provider')) {
-        $user = User::with('commission_earning')->where('id', $user->id)->where('user_type', 'provider')->first();
+        $provider = User::with('commission_earning')
+            ->where('id', $user->id)
+            ->where('user_type', 'provider')
+            ->first();
 
-        $commissions = $user->commission_earning()
-            ->where('commission_status', 'unpaid')
-            ->pluck('booking_id');
+        $commissions = $provider
+            ? $provider->commission_earning()
+                ->where('commission_status', 'unpaid')
+                ->pluck('booking_id')
+            : collect();
  //dd(  $commissions);
         $ProviderEarning = $commissions->isNotEmpty()
             ? CommissionEarning::whereIn('booking_id', $commissions)
