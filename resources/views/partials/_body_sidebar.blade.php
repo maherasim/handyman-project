@@ -2,6 +2,15 @@
     $url = '';
 
     $MyNavBar = \Menu::make('MenuList', function ($menu) use ($url) {
+        $settings = App\Models\Setting::whereIn('type', ['service-configurations', 'OTHER_SETTING'])
+            ->whereIn('key', ['service-configurations', 'OTHER_SETTING'])
+            ->get()
+            ->keyBy('type');
+        $servicesetting = $settings->has('service-configurations')
+            ? json_decode($settings['service-configurations']->value)
+            : null;
+        $othersetting = $settings->has('OTHER_SETTING') ? json_decode($settings['OTHER_SETTING']->value) : null;
+
         $menu->add('<span>' . __('messages.main') . '</span>', ['class' => 'category-main']);
 
         $menu
@@ -97,6 +106,7 @@
             ->nickname('booking')
             ->data('permission', 'booking list');
 
+        if (auth()->user()->user_type !== 'handyman') {
         $menu
             ->add(__('messages.sidebar_form_title', ['form' => trans('messages.service')]), [
                 'class' => 'category-main',
@@ -179,16 +189,6 @@
             )
             ->data('permission', 'service list')
             ->link->attr(['class' => '']);
-
-        $settings = App\Models\Setting::whereIn('type', ['service-configurations', 'OTHER_SETTING'])
-            ->whereIn('key', ['service-configurations', 'OTHER_SETTING'])
-            ->get()
-            ->keyBy('type');
-
-        $servicesetting = $settings->has('service-configurations')
-            ? json_decode($settings['service-configurations']->value)
-            : null;
-        $othersetting = $settings->has('OTHER_SETTING') ? json_decode($settings['OTHER_SETTING']->value) : null;
 
         if (optional($servicesetting)->service_packages == 1) {
             $menu->services
@@ -274,6 +274,8 @@
                 )
                 ->data('permission', 'userservice list')
                 ->link->attr(['class' => '']);
+        }
+
         }
 
         $menu
@@ -483,6 +485,7 @@
                 ->link->attr(['class' => '']);
         }
 
+        if (auth()->user()->user_type !== 'handyman') {
         $menu
             ->add(
                 '<span>' .
@@ -546,6 +549,8 @@
             )
             ->nickname('user')
             ->data('permission', 'user list');
+
+        }
 
         $menu
             ->add(__('messages.sidebar_form_title', ['form' => __('messages.sidebar_service_transactions')]), [
