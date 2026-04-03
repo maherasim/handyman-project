@@ -31,7 +31,7 @@
                                 <div class="d-flex align-items-center gap-2">
                                     <div style="width: 20px; height: 20px; background-color: #198754; border-radius: 3px; box-shadow: 0 1px 3px rgba(0,0,0,0.2);"></div>
                                     <span class="font-weight-semibold" style="color: #495057;">
-                                     Available Slots 
+                                     {{ __('messages.provider_calendar_legend_available') }}
                                     </span>
                                 </div>
                                 {{-- <div class="text-muted small">
@@ -59,6 +59,49 @@
         const calendarEl = document.getElementById('calendar');
         if (!calendarEl) return;
 
+        @php
+            $appLocale = app()->getLocale();
+            $fcLocaleMap = ['de' => 'de', 'en' => 'en', 'fr' => 'fr', 'it' => 'it', 'pt' => 'pt'];
+            $fcLocale = $fcLocaleMap[$appLocale] ?? 'en';
+            $intlMap = ['de' => 'de-DE', 'en' => 'en-US', 'fr' => 'fr-FR', 'it' => 'it-IT', 'pt' => 'pt-BR'];
+            $intlLocale = $intlMap[$appLocale] ?? 'en-US';
+        @endphp
+        const fcLocale = @json($fcLocale);
+        const intlLocale = @json($intlLocale);
+        const calendarI18n = {
+            modal_has_slots: @json(__('messages.provider_calendar_modal_has_slots')),
+            modal_slots_heading: @json(__('messages.provider_calendar_modal_slots_heading')),
+            no_slots: @json(__('messages.provider_calendar_no_slots')),
+            close: @json(__('messages.close')),
+            slot_word_one: @json(__('messages.provider_calendar_slot_word_one')),
+            slot_word_other: @json(__('messages.provider_calendar_slot_word_other')),
+        };
+
+        function formatHasSlotsSentence(count) {
+            const parts = String(calendarI18n.modal_has_slots).split('|');
+            const tpl = Number(count) === 1 ? parts[0] : (parts[1] || parts[0]);
+            return tpl.replace(/:count/gi, String(count));
+        }
+
+        function formatSlotTime(timeStr) {
+            const [hours, minutes] = timeStr.split(':');
+            const d = new Date('2000-01-01T' + hours + ':' + minutes + ':00');
+            const use24h = intlLocale.startsWith('de') || intlLocale === 'fr-FR' || intlLocale === 'it-IT';
+            return d.toLocaleTimeString(intlLocale, use24h
+                ? { hour: '2-digit', minute: '2-digit', hour12: false }
+                : { hour: 'numeric', minute: '2-digit', hour12: true });
+        }
+
+        function formatModalDate(dateStr) {
+            const dateObj = new Date(dateStr + 'T00:00:00');
+            return dateObj.toLocaleDateString(intlLocale, {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+            });
+        }
+
         // Dates that have slots (from backend)
         const datesWithSlots = {!! json_encode($datesWithSlots ?? [], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) !!};
         const calendarSlots = {!! json_encode($calendarSlots ?? [], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) !!};
@@ -78,8 +121,10 @@
             // Ensure date is in YYYY-MM-DD format
             const normalizedDate = String(date).split('T')[0];
             const slotsForDate = finalCalendarSlots[normalizedDate] || [];
+            const sc = slotsForDate.length;
+            const slotLabel = sc === 1 ? calendarI18n.slot_word_one : calendarI18n.slot_word_other;
             events.push({
-                title: slotsForDate.length + ' slot(s)',
+                title: sc + ' ' + slotLabel,
                 start: normalizedDate,
                 allDay: true,
                 backgroundColor: '#198754',
@@ -98,9 +143,13 @@
         console.log('Calendar Slots Structure:', finalCalendarSlots);
         console.log('Dates with Slots:', datesArray);
 
+        const mondayFirst = ['de', 'fr', 'it'].includes(fcLocale);
+
         const calendar = new FullCalendar.Calendar(calendarEl, {
             plugins: ['dayGrid', 'interaction'],
             initialView: 'dayGridMonth',
+            locale: fcLocale,
+            firstDay: mondayFirst ? 1 : 0,
             height: 'auto',
             contentHeight: 600,
             headerToolbar: {
@@ -151,25 +200,14 @@
                 
                 if (slots.length > 0) {
                     // Show the same professional modal
-                    const dateObj = new Date(dateStr + 'T00:00:00');
-                    const formattedDate = dateObj.toLocaleDateString('en-US', { 
-                        weekday: 'long', 
-                        year: 'numeric', 
-                        month: 'long', 
-                        day: 'numeric' 
-                    });
+                    const formattedDate = formatModalDate(String(dateStr).split('T')[0]);
                     
                     let slotsHtml = '<div style="text-align: left; margin-top: 15px;">';
-                    slotsHtml += '<strong style="color: #198754; display: block; margin-bottom: 10px;">Available Time Slots:</strong>';
+                    slotsHtml += '<strong style="color: #198754; display: block; margin-bottom: 10px;">' + calendarI18n.modal_slots_heading + '</strong>';
                     slotsHtml += '<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 8px;">';
                     slots.forEach(slot => {
-                        const [hours, minutes] = slot.split(':');
-                        const time12h = new Date(`2000-01-01T${hours}:${minutes}:00`).toLocaleTimeString('en-US', {
-                            hour: 'numeric',
-                            minute: '2-digit',
-                            hour12: true
-                        });
-                        slotsHtml += `<span style="display: inline-block; background: #198754; color: white; padding: 6px 12px; border-radius: 5px; font-size: 13px; font-weight: 500;">${time12h}</span>`;
+                        const timeStr = formatSlotTime(slot);
+                        slotsHtml += `<span style="display: inline-block; background: #198754; color: white; padding: 6px 12px; border-radius: 5px; font-size: 13px; font-weight: 500;">${timeStr}</span>`;
                     });
                     slotsHtml += '</div>';
                     slotsHtml += '</div>';
@@ -177,14 +215,14 @@
                     Swal.fire({
                         title: '<strong style="color: #198754;">' + formattedDate + '</strong>',
                         html: '<div style="text-align: center;">' +
-                              '<p style="color: #6c757d; margin-bottom: 15px;">This date has <strong style="color: #198754;">' + slots.length + '</strong> available time slot' + (slots.length !== 1 ? 's' : '') + '.</p>' +
+                              '<p style="color: #6c757d; margin-bottom: 15px;">' + formatHasSlotsSentence(slots.length) + '</p>' +
                               slotsHtml +
                               '</div>',
                         icon: 'info',
                         iconColor: '#198754',
                         showConfirmButton: false,
                         showCancelButton: true,
-                        cancelButtonText: 'Close',
+                        cancelButtonText: calendarI18n.close,
                         cancelButtonColor: '#6c757d',
                         width: '500px',
                         padding: '2rem',
@@ -214,47 +252,36 @@
                 console.log('All calendar slots keys:', Object.keys(finalCalendarSlots));
                 
                 // Format date nicely
-                const dateObj = new Date(dateStr + 'T00:00:00');
-                const formattedDate = dateObj.toLocaleDateString('en-US', { 
-                    weekday: 'long', 
-                    year: 'numeric', 
-                    month: 'long', 
-                    day: 'numeric' 
-                });
+                const formattedDate = formatModalDate(String(dateStr).split('T')[0]);
                 
                 // Format time slots nicely
                 let slotsHtml = '';
                 if (slots.length > 0) {
                     slotsHtml = '<div style="text-align: left; margin-top: 15px;">';
-                    slotsHtml += '<strong style="color: #198754; display: block; margin-bottom: 10px;">Available Time Slots:</strong>';
+                    slotsHtml += '<strong style="color: #198754; display: block; margin-bottom: 10px;">' + calendarI18n.modal_slots_heading + '</strong>';
                     slotsHtml += '<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 8px;">';
                     slots.forEach(slot => {
-                        const [hours, minutes] = slot.split(':');
-                        const time12h = new Date(`2000-01-01T${hours}:${minutes}:00`).toLocaleTimeString('en-US', {
-                            hour: 'numeric',
-                            minute: '2-digit',
-                            hour12: true
-                        });
-                        slotsHtml += `<span style="display: inline-block; background: #198754; color: white; padding: 6px 12px; border-radius: 5px; font-size: 13px; font-weight: 500;">${time12h}</span>`;
+                        const timeStr = formatSlotTime(slot);
+                        slotsHtml += `<span style="display: inline-block; background: #198754; color: white; padding: 6px 12px; border-radius: 5px; font-size: 13px; font-weight: 500;">${timeStr}</span>`;
                     });
                     slotsHtml += '</div>';
                     slotsHtml += '</div>';
                 } else {
-                    slotsHtml = '<p style="color: #6c757d; margin-top: 10px;">No time slots available for this date.</p>';
+                    slotsHtml = '<p style="color: #6c757d; margin-top: 10px;">' + calendarI18n.no_slots + '</p>';
                 }
                 
                 // Show professional SweetAlert2 modal
                 Swal.fire({
                     title: '<strong style="color: #198754;">' + formattedDate + '</strong>',
                     html: '<div style="text-align: center;">' +
-                          '<p style="color: #6c757d; margin-bottom: 15px;">This date has <strong style="color: #198754;">' + slots.length + '</strong> available time slot' + (slots.length !== 1 ? 's' : '') + '.</p>' +
+                          '<p style="color: #6c757d; margin-bottom: 15px;">' + formatHasSlotsSentence(slots.length) + '</p>' +
                           slotsHtml +
                           '</div>',
                     icon: 'info',
                     iconColor: '#198754',
                     showConfirmButton: false,
                     showCancelButton: true,
-                    cancelButtonText: 'Close',
+                    cancelButtonText: calendarI18n.close,
                     cancelButtonColor: '#6c757d',
                     width: '500px',
                     padding: '2rem',

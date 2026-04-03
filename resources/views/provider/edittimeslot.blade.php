@@ -42,6 +42,14 @@
         const calendarEl = document.getElementById('calendar');
         if (!calendarEl) return;
 
+        @php
+            $fcLocaleMap = ['de' => 'de', 'en' => 'en', 'fr' => 'fr', 'it' => 'it', 'pt' => 'pt'];
+            $fcLocale = $fcLocaleMap[app()->getLocale()] ?? 'en';
+        @endphp
+        const fcLocale = @json($fcLocale);
+        const mondayFirst = ['de', 'fr', 'it'].includes(fcLocale);
+        const slotEventTitle = @json(__('messages.provider_calendar_event_available'));
+
         // Previously saved slots from backend (date-based)
         const previouslySavedSlots = {!! json_encode($calendarSlots ?? []) !!};
         
@@ -69,7 +77,7 @@
                 const endDateTime = `${date}T${String(parseInt(hour) + 1).padStart(2, '0')}:${minute}:00`;
                 
                 events.push({
-                    title: 'Available',
+                    title: slotEventTitle,
                     start: startDateTime,
                     end: endDateTime,
                     backgroundColor: '#198754',
@@ -90,6 +98,8 @@
             plugins: ['timeGrid', 'dayGrid', 'interaction'],
             initialView: selectedDate ? 'timeGridDay' : 'dayGridMonth', // Show day view if date is selected
             initialDate: selectedDate || undefined, // Navigate to selected date if provided
+            locale: fcLocale,
+            firstDay: mondayFirst ? 1 : 0,
             height: 'auto',
             contentHeight: 650,
             headerToolbar: {
@@ -199,7 +209,7 @@
                     
                     // Add event to calendar
                     calendar.addEvent({
-                        title: 'Available',
+                        title: slotEventTitle,
                         start: start.toISOString(),
                         end: end.toISOString(),
                         backgroundColor: '#198754',
