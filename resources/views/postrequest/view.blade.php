@@ -78,7 +78,7 @@
                         <div class="d-flex justify-content-end">
                             <div class="input-group w-25">
                                 <span class="input-group-text"><i class="fas fa-search"></i></span>
-                                <input type="text" class="form-control dt-search" placeholder="Search bids...">
+                                <input type="text" class="form-control dt-search" placeholder="{{ __('messages.pjr_search_bids') }}">
                             </div>
                         </div>
                     </div>
@@ -128,6 +128,37 @@
                 'saved' => __('messages.pjr_saved'),
                 'payment_split_set' => __('messages.pjr_payment_split_set'),
                 'unable_to_save' => __('messages.pjr_unable_to_save'),
+                'why_choose_me_empty' => __('messages.pjr_why_choose_me_empty'),
+                'confirm_remaining_payment' => __('messages.pjr_js_confirm_remaining_payment'),
+                'confirm_advance_payment' => __('messages.pjr_js_confirm_advance_payment'),
+                'pay_line_remaining' => __('messages.pjr_js_pay_line_remaining'),
+                'pay_line_advance' => __('messages.pjr_js_pay_line_advance'),
+                'proceed_remaining_question' => __('messages.pjr_js_proceed_remaining_question'),
+                'proceed_advance_question' => __('messages.pjr_js_proceed_advance_question'),
+                'yes_pay_remaining_short' => __('messages.pjr_js_yes_pay_remaining_short'),
+                'yes_pay_advance_short' => __('messages.pjr_js_yes_pay_advance_short'),
+                'remaining_paid_ok' => __('messages.pjr_js_remaining_paid_ok'),
+                'advance_paid_ok' => __('messages.pjr_js_advance_paid_ok'),
+                'unable_process' => __('messages.pjr_js_unable_process'),
+                'cancel' => __('messages.pjr_cancel'),
+                'are_you_sure' => __('messages.pjr_js_are_you_sure'),
+                'accept_bid_text' => __('messages.pjr_js_accept_bid_text'),
+                'yes_accept' => __('messages.pjr_js_yes_accept'),
+                'accepted' => __('messages.pjr_js_accepted'),
+                'something_wrong_exclaim' => __('messages.pjr_js_something_wrong_exclaim'),
+                'js_success' => __('messages.pjr_js_success'),
+                'js_error' => __('messages.pjr_js_error'),
+                'js_confirm' => __('messages.pjr_js_confirm'),
+                'update_status_template' => __('messages.pjr_js_update_status'),
+                'yes_update' => __('messages.pjr_js_yes_update'),
+                'js_updated' => __('messages.pjr_js_updated'),
+                'status_updated' => __('messages.pjr_js_status_updated'),
+                'put_on_hold' => __('messages.pjr_js_put_on_hold'),
+                'hold_reason_label' => __('messages.pjr_js_hold_reason_label'),
+                'hold_reason_placeholder' => __('messages.pjr_js_hold_reason_placeholder'),
+                'hold_reason_required' => __('messages.pjr_js_hold_reason_required'),
+                'hold_reason_too_long' => __('messages.pjr_js_hold_reason_too_long'),
+                'on_hold' => __('messages.pjr_js_on_hold'),
             ];
         @endphp
         var pjrJsLang = @json($pjrJsLang);
@@ -200,8 +231,7 @@
                         const advance = document.getElementById('advanceInput').value;
                         const remaining = document.getElementById('remainingInput').value;
                         if (!advance || advance < 0 || advance > 100) {
-                            Swal.showValidationMessage(
-                                "Please enter a valid advance percentage (0-100)");
+                            Swal.showValidationMessage(pjrJsLang.advance_validation);
                             return false;
                         }
                         return {
@@ -287,8 +317,8 @@
         <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content shadow-lg">
                 <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title" id="whyChooseMeLabel">Why Choose Me</h5>
-                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                    <h5 class="modal-title" id="whyChooseMeLabel">{{ __('messages.pjr_why_choose_me_modal_title') }}</h5>
+                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="{{ __('messages.close') }}">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
@@ -313,7 +343,7 @@
         const unescaped = textarea.value;
 
         // Insert HTML directly (keeps <p>, <br>, <strong>, etc.)
-        $('#whyChooseMeContent').html(unescaped || '<p>No content provided.</p>');
+        $('#whyChooseMeContent').html(unescaped || ('<p>' + pjrJsLang.why_choose_me_empty + '</p>'));
         // Prevent overflow: remove inline widths from injected content
         $('#whyChooseMeContent').find('*').css({ 'maxWidth': '100%', 'minWidth': '0' });
         $('#whyChooseMeModal').modal('show');
@@ -344,18 +374,25 @@
                 const isRemaining = btn.classList.contains('payRemainingBtn');
                 if (!postId) return;
 
+                const amountStr = providedAmount || '';
+                const payTitle = isRemaining ? pjrJsLang.confirm_remaining_payment : pjrJsLang.confirm_advance_payment;
+                let payText;
+                if (amountStr) {
+                    payText = isRemaining
+                        ? pjrJsLang.pay_line_remaining.replace(':amount', amountStr)
+                        : pjrJsLang.pay_line_advance.replace(':amount', amountStr);
+                } else {
+                    payText = isRemaining ? pjrJsLang.proceed_remaining_question : pjrJsLang.proceed_advance_question;
+                }
                 Swal.fire({
-                    title: isRemaining ? "Confirm Remaining Payment" : "Confirm Advance Payment",
-                    text: providedAmount ?
-                        `${isRemaining ? 'Pay remaining amount' : 'Pay advance amount'}: ${providedAmount}. Proceed?` :
-                        (isRemaining ? "Proceed to pay remaining amount?" :
-                            "Are you sure you want to proceed with the advance payment?"),
+                    title: payTitle,
+                    text: payText,
                     icon: "warning",
                     showCancelButton: true,
                     confirmButtonColor: "#28a745",
                     cancelButtonColor: "#d33",
-                    confirmButtonText: isRemaining ? "Yes, pay remaining" : "Yes, pay advance",
-                    cancelButtonText: "Cancel"
+                    confirmButtonText: isRemaining ? pjrJsLang.yes_pay_remaining_short : pjrJsLang.yes_pay_advance_short,
+                    cancelButtonText: pjrJsLang.cancel
                 }).then((result) => {
                     if (!result.isConfirmed) return;
 
@@ -378,16 +415,16 @@
                         })
                         .then(function(response) {
                             if (response && response.status) {
-                                Swal.fire("Success", response.message || (isRemaining ?
-                                    "Remaining paid successfully." :
-                                    "Advance paid successfully."), "success");
+                                Swal.fire(pjrJsLang.js_success, response.message || (isRemaining ?
+                                    pjrJsLang.remaining_paid_ok :
+                                    pjrJsLang.advance_paid_ok), "success");
                                 if (window.jQuery && window.jQuery.fn && window.jQuery.fn
                                     .DataTable && window.jQuery('#datatable').length) {
                                     window.jQuery('#datatable').DataTable().ajax.reload();
                                 }
                             } else {
-                                Swal.fire("Error", (response && response.message) ? response
-                                    .message : "Unable to process.", "error");
+                                Swal.fire(pjrJsLang.js_error, (response && response.message) ? response
+                                    .message : pjrJsLang.unable_process, "error");
                             }
                         })
                         .catch(function() {
@@ -406,13 +443,14 @@
             $(document).on('click', '.acceptBid', function() {
                 let bidId = $(this).data('id');
                 Swal.fire({
-                    title: "Are you sure?",
-                    text: "Do you want to accept this bid?",
+                    title: pjrJsLang.are_you_sure,
+                    text: pjrJsLang.accept_bid_text,
                     icon: "warning",
                     showCancelButton: true,
                     confirmButtonColor: "#28a745",
                     cancelButtonColor: "#d33",
-                    confirmButtonText: "Yes, accept it!"
+                    confirmButtonText: pjrJsLang.yes_accept,
+                    cancelButtonText: pjrJsLang.cancel
                 }).then((result) => {
                     if (result.isConfirmed) {
                         $.ajax({
@@ -423,14 +461,14 @@
                             },
                             success: function(response) {
                                 if (response.status) {
-                                    Swal.fire("Accepted!", response.message, "success");
+                                    Swal.fire(pjrJsLang.accepted, response.message, "success");
                                     $('#datatable').DataTable().ajax.reload();
                                 } else {
                                     Swal.fire(pjrJsLang.error, response.message, "error");
                                 }
                             },
                             error: function() {
-                                Swal.fire("Error!", "Something went wrong!", "error");
+                                Swal.fire(pjrJsLang.js_error, pjrJsLang.something_wrong_exclaim, "error");
                             }
                         });
                     }
@@ -441,13 +479,15 @@
             $(document).on('click', '.updateStatusBtn', function() {
                 const bidId = $(this).data('id');
                 const nextStatus = $(this).data('status');
+                const statusLabel = String(nextStatus).replace(/_/g, ' ');
 
                 Swal.fire({
-                    title: 'Confirm',
-                    text: 'Do you want to update status to ' + nextStatus.replace('_', ' ') + '?',
+                    title: pjrJsLang.js_confirm,
+                    text: pjrJsLang.update_status_template.replace(':status', statusLabel),
                     icon: 'question',
                     showCancelButton: true,
-                    confirmButtonText: 'Yes, update',
+                    confirmButtonText: pjrJsLang.yes_update,
+                    cancelButtonText: pjrJsLang.cancel
                 }).then((result) => {
                     if (!result.isConfirmed) return;
 
@@ -461,16 +501,16 @@
                         },
                         success: function(response) {
                             if (response && response.status) {
-                                Swal.fire('Updated', response.message ||
-                                    'Status updated', 'success');
+                                Swal.fire(pjrJsLang.js_updated, response.message ||
+                                    pjrJsLang.status_updated, 'success');
                                 $('#datatable').DataTable().ajax.reload();
                             } else {
-                                Swal.fire('Error', (response && response.message) ?
+                                Swal.fire(pjrJsLang.js_error, (response && response.message) ?
                                     response.message : pjrJsLang.unable_to_update, 'error');
                             }
                         },
                         error: function(xhr) {
-                            Swal.fire('Error', (xhr && xhr.responseJSON && xhr
+                            Swal.fire(pjrJsLang.js_error, (xhr && xhr.responseJSON && xhr
                                     .responseJSON.message) ? xhr.responseJSON
                                 .message : pjrJsLang.something_went_wrong, 'error');
                         }
@@ -482,22 +522,23 @@
             $(document).on('click', '.holdBidBtn', function() {
                 const bidId = $(this).data('id');
                 Swal.fire({
-                    title: 'Put on Hold',
+                    title: pjrJsLang.put_on_hold,
                     input: 'textarea',
-                    inputLabel: 'Provide hold reason',
-                    inputPlaceholder: 'Type your reason here... (max 500 chars)',
+                    inputLabel: pjrJsLang.hold_reason_label,
+                    inputPlaceholder: pjrJsLang.hold_reason_placeholder,
                     inputAttributes: {
-                        'aria-label': 'Hold reason'
+                        'aria-label': pjrJsLang.hold_reason_label
                     },
                     showCancelButton: true,
-                    confirmButtonText: 'Submit',
+                    confirmButtonText: pjrJsLang.submit,
+                    cancelButtonText: pjrJsLang.cancel,
                     preConfirm: (value) => {
                         if (!value || value.trim().length === 0) {
-                            Swal.showValidationMessage('Hold reason is required');
+                            Swal.showValidationMessage(pjrJsLang.hold_reason_required);
                             return false;
                         }
                         if (value.length > 500) {
-                            Swal.showValidationMessage('Reason too long (max 500 chars)');
+                            Swal.showValidationMessage(pjrJsLang.hold_reason_too_long);
                             return false;
                         }
                         return value;
@@ -516,16 +557,16 @@
                         },
                         success: function(response) {
                             if (response && response.status) {
-                                Swal.fire('On Hold', response.message ||
-                                    'Status updated to hold', 'success');
+                                Swal.fire(pjrJsLang.on_hold, response.message ||
+                                    pjrJsLang.status_updated, 'success');
                                 $('#datatable').DataTable().ajax.reload();
                             } else {
-                                Swal.fire('Error', (response && response.message) ?
+                                Swal.fire(pjrJsLang.js_error, (response && response.message) ?
                                     response.message : pjrJsLang.unable_to_update, 'error');
                             }
                         },
                         error: function(xhr) {
-                            Swal.fire('Error', (xhr && xhr.responseJSON && xhr
+                            Swal.fire(pjrJsLang.js_error, (xhr && xhr.responseJSON && xhr
                                     .responseJSON.message) ? xhr.responseJSON
                                 .message : pjrJsLang.something_went_wrong, 'error');
                         }
@@ -538,27 +579,27 @@
                 const postId = $(this).data('post-id');
 
                 Swal.fire({
-                    title: "Set Payment Split",
+                    title: pjrJsLang.set_payment_split,
                     html: `
                         <div class="mb-3 text-start">
-                            <label class="form-label fw-bold">Advance Percentage</label>
-                            <input type="number" id="advanceInput" class="form-control" placeholder="Enter advance %" min="0" max="100" />
+                            <label class="form-label fw-bold">${pjrJsLang.advance_percentage}</label>
+                            <input type="number" id="advanceInput" class="form-control" placeholder="${pjrJsLang.enter_advance_placeholder}" min="0" max="100" />
                         </div>
                         <div class="text-start">
-                            <label class="form-label fw-bold">Remaining Percentage</label>
+                            <label class="form-label fw-bold">${pjrJsLang.remaining_percentage}</label>
                             <input type="number" id="remainingInput" class="form-control" readonly />
                         </div>
                     `,
                     focusConfirm: false,
                     showCancelButton: true,
-                    confirmButtonText: "Submit",
+                    confirmButtonText: pjrJsLang.submit,
+                    cancelButtonText: pjrJsLang.cancel,
                     preConfirm: () => {
                         const advance = document.getElementById('advanceInput').value;
                         const remaining = document.getElementById('remainingInput').value;
 
                         if (!advance || advance < 0 || advance > 100) {
-                            Swal.showValidationMessage(
-                                "Please enter a valid advance percentage (0-100)");
+                            Swal.showValidationMessage(pjrJsLang.advance_validation);
                             return false;
                         }
                         return {

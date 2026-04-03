@@ -213,5 +213,15 @@ return [
     'first_booking_cta' => 'En profiter',
     'completed_jobs' => 'Missions réalisées',
     'local_pros' => 'Pros locaux',
-    'most_popular' => 'Le plus populaire'
+    'most_popular' => 'Le plus populaire',
+
+    // Booking list – filters & slot details
+    'bl_slot_details' => 'Créneaux :',
+    'bl_start_date_time' => 'Début :',
+    'bl_end_date_time' => 'Fin :',
+    'bl_total_days' => 'Jours :',
+    'bl_total_hours' => 'Heures :',
+    'bl_select_date_range' => 'Choisir une période',
+    'bl_booking_search_placeholder' => 'Rechercher…',
+    'bl_select_status' => 'Choisir un statut',
 ];

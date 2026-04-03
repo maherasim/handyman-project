@@ -10,6 +10,7 @@ const languageFiles = {
   ar: 'https://cdn.datatables.net/plug-ins/1.10.21/i18n/Arabic.json',
   nl: 'https://cdn.datatables.net/plug-ins/1.10.21/i18n/Dutch.json',
   en: 'https://cdn.datatables.net/plug-ins/1.10.21/i18n/English.json',
+  de: 'https://cdn.datatables.net/plug-ins/1.10.21/i18n/German.json',
   fr: 'https://cdn.datatables.net/plug-ins/1.10.21/i18n/French.json',
   it: 'https://cdn.datatables.net/plug-ins/1.10.21/i18n/Italian.json',
   pt: 'https://cdn.datatables.net/plug-ins/1.10.21/i18n/Portuguese.json',

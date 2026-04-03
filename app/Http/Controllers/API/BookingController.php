@@ -31,6 +31,7 @@ use App\Http\Resources\API\PostJobRequestResource;
 use App\Models\BookingServiceAddonMapping;
 use App\Traits\NotificationTrait;
 use App\Traits\EarningTrait;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\BookingStatusUpdateMail;
@@ -500,7 +501,21 @@ class BookingController extends Controller
 
     public function bookingStatus(Request $request)
     {
-        $booking_status = BookingStatus::orderBy('sequence')->get();
+        $allowed = ['en', 'de', 'fr', 'it', 'pt', 'es', 'ar', 'nl'];
+        $lang = $request->query('lang');
+        if (is_string($lang) && in_array($lang, $allowed, true)) {
+            App::setLocale($lang);
+        }
+
+        $booking_status = BookingStatus::orderBy('sequence')->get()->map(function ($row) {
+            $key = 'messages.booking_status_option_' . $row->value;
+            if (\Illuminate\Support\Facades\Lang::has($key)) {
+                $row->label = __($key);
+            }
+
+            return $row;
+        });
+
         return comman_custom_response($booking_status);
     }
 

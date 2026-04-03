@@ -93,7 +93,10 @@ export const useSection = defineStore('section', {
       },
 
         async get_booking_status({per_page}){
-          const searchData = { per_page: per_page }
+          const lang = (typeof sessionStorage !== 'undefined' && sessionStorage.getItem('local'))
+            ? sessionStorage.getItem('local')
+            : 'en';
+          const searchData = { per_page: per_page, lang: lang }
           const response = await axios.get(BOOKINGSTATUS_API(searchData))
           this.booking_status = response.data
       },

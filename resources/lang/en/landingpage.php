@@ -445,4 +445,7 @@
   'bl_end_date_time' => 'End Date & Time:',
   'bl_total_days' => 'Total Days:',
   'bl_total_hours' => 'Total Hours:',
+  'bl_select_date_range' => 'Select Date Range',
+  'bl_booking_search_placeholder' => 'Search…',
+  'bl_select_status' => 'Select Status',
 );

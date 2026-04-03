@@ -152,6 +152,14 @@
             white-space: nowrap;
         }
 
+        .provider-experience-prose {
+            line-height: 1.65;
+            color: #333;
+            font-size: 15px;
+            word-break: break-word;
+            overflow-wrap: anywhere;
+        }
+
         .skill-badge-modern:hover {
             background: linear-gradient(135deg, rgba(255, 0, 0, 0.15) 0%, rgba(95, 96, 185, 0.15) 100%);
             border-color: rgba(255, 0, 0, 0.3);
@@ -601,29 +609,27 @@
                                 <h5 class="mb-0" style="opacity: 1 !important; visibility: visible !important; color: #ffffff !important; font-size: 13px; font-weight: 700;">{{ __('landingpage.pd_experience') }}</h5>
                             </div>
                             <div class="info-card-body-modern">
-                                <div class="skills-badge-container">
-                                    @php
-                                        $experienceData = $providerData['data']['experience'];
-                                        
-                                        // Try to decode JSON first
-                                        if (is_string($experienceData)) {
-                                            $decoded = json_decode($experienceData, true);
-                                            if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
-                                                $experiences = $decoded;
-                                            } else {
-                                                // Not JSON, try comma-separated string
-                                                $experiences = array_map('trim', explode(',', $experienceData));
-                                            }
-                                        } elseif (is_array($experienceData)) {
-                                            $experiences = $experienceData;
+                                @php
+                                    $experienceData = $providerData['data']['experience'];
+                                    $experienceText = '';
+
+                                    if (is_string($experienceData)) {
+                                        $decoded = json_decode($experienceData, true);
+                                        if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                                            $experienceText = implode("\n\n", array_filter(array_map('trim', $decoded)));
                                         } else {
-                                            $experiences = [trim($experienceData)];
+                                            // Free-text paragraph: do not split on commas (that broke prose into pills)
+                                            $experienceText = trim($experienceData);
                                         }
-                                    @endphp
-                                    @foreach($experiences as $exp)
-                                        <span class="skill-badge-modern">{{ ucwords(trim($exp)) }}</span>
-                                    @endforeach
-                                </div>
+                                    } elseif (is_array($experienceData)) {
+                                        $experienceText = implode("\n\n", array_filter(array_map('trim', $experienceData)));
+                                    } else {
+                                        $experienceText = trim((string) $experienceData);
+                                    }
+                                @endphp
+                                @if($experienceText !== '')
+                                    <p class="provider-experience-prose mb-0">{!! nl2br(e($experienceText)) !!}</p>
+                                @endif
                             </div>
                         </div>
                         @endif

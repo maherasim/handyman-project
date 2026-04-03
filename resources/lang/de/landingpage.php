@@ -445,4 +445,7 @@
   'bl_end_date_time' => 'Enddatum & -zeit:',
   'bl_total_days' => 'Gesamttage:',
   'bl_total_Wallet' => 'Gesamtstunden:',
+  'bl_select_date_range' => 'Datumsbereich wählen',
+  'bl_booking_search_placeholder' => 'Suchen…',
+  'bl_select_status' => 'Status wählen',
 );
