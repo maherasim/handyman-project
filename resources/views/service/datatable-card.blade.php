@@ -11,7 +11,7 @@
 
       {{-- Favorite (heart) icon top-right --}}
       <div class="position-absolute top-0 end-0 m-2" style="z-index: 5;" onclick="event.stopPropagation();">
-      @if(auth()->check() && auth()->user()->hasRole('user'))
+      @if(auth()->check() && \App\Support\UgcListing::isCustomer(auth()->user()))
 
          @if($favouriteService->isEmpty())
             <form method="POST" id="favoriteForm" class="d-inline">
@@ -115,6 +115,16 @@
        @endif
    </div>
 </div>
+
+@if(auth()->check() && \App\Support\UgcListing::isCustomer(auth()->user()) && optional($data->providers)->id)
+<div class="d-flex flex-wrap justify-content-end align-items-center gap-1 mt-2 px-1 pb-1">
+   <button type="button" class="btn btn-sm btn-outline-secondary ugc-report-btn"
+      data-service-id="{{ $data->id }}"
+      data-provider-id="{{ $data->providers->id }}">{{ __('messages.ugc_report') }}</button>
+   <button type="button" class="btn btn-sm btn-outline-danger ugc-block-btn"
+      data-provider-id="{{ $data->providers->id }}">{{ __('messages.ugc_block_provider') }}</button>
+</div>
+@endif
 
      
       

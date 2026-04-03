@@ -52,6 +52,8 @@ use App\Http\Controllers\HelpDeskController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\StripeWebhookController;
 use App\Http\Controllers\FrontendController;
+use App\Http\Controllers\UgcSafetyController;
+use App\Http\Controllers\Admin\ContentReportController;
 
 
 use App\Http\Controllers\Installer\WelcomeController;
@@ -128,6 +130,16 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
         Route::get('/messages/flagged', [ChatController::class, 'flaggedIndex'])->name('chat.flagged.index');
         Route::post('/messages/flagged/{id}/warn', [ChatController::class, 'sendWarningEmail'])->name('chat.flagged.warn');
         Route::get('/home', [HomeController::class, 'index'])->name('home');
+
+        Route::post('ugc/report', [UgcSafetyController::class, 'reportContent'])->name('ugc.report');
+        Route::post('ugc/block', [UgcSafetyController::class, 'blockUser'])->name('ugc.block');
+        Route::post('ugc/unblock', [UgcSafetyController::class, 'unblockUser'])->name('ugc.unblock');
+
+        Route::middleware(['role:admin|demo_admin'])->group(function () {
+            Route::get('content-reports', [ContentReportController::class, 'index'])->name('admin.content-reports.index');
+            Route::post('content-reports/{contentReport}', [ContentReportController::class, 'update'])->name('admin.content-reports.update');
+        });
+
     Route::group(['namespace' => '', 'middleware' => ['permission:permission list']], function () {
         Route::resource('permission', PermissionController::class);
         Route::get('permission/add/{type}', [PermissionController::class, 'addPermission'])->name('permission.add');

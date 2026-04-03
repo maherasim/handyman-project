@@ -25,6 +25,7 @@ use App\Models\Category;
 use App\Models\ServiceAddon;
 use App\Http\Resources\API\ServiceAddonResource;
 use App\Models\Tax;
+use App\Support\UgcListing;
 
 class ServiceController extends Controller
 {
@@ -145,6 +146,8 @@ class ServiceController extends Controller
 
         }
 
+        UgcListing::scopePublicServices($service, auth()->id());
+
         $service = $service->paginate($per_page);
 
         $items = ServiceResource::collection($service);
@@ -202,6 +205,21 @@ class ServiceController extends Controller
             return comman_message_response($message,406);
         }
 
+        if (! auth()->user()?->hasRole('admin')) {
+            $hidden = (bool) ($service->is_hidden_from_public ?? false);
+            $isOwner = auth()->check() && (int) auth()->id() === (int) $service->provider_id;
+            if ($hidden && ! $isOwner) {
+                return comman_message_response(__('messages.record_not_found'), 406);
+            }
+            if (auth()->check() && UgcListing::isCustomer(auth()->user())) {
+                $blocked = \App\Models\UserBlock::where('blocker_id', auth()->id())
+                    ->where('blocked_id', $service->provider_id)
+                    ->exists();
+                if ($blocked) {
+                    return comman_message_response(__('messages.ugc_blocked_provider'), 403);
+                }
+            }
+        }
 
         // Increment total views for this service when details are fetched
         try {

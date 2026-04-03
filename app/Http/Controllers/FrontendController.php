@@ -32,6 +32,7 @@ use App\Models\SubCategory;
 use App\Models\Tax;
 use App\Models\User;
 use App\Models\UserFavouriteService;
+use App\Support\UgcListing;
 use Auth;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
@@ -457,6 +458,7 @@ class FrontendController extends Controller
     public function categoryDetailServiceDatatable(Datatables $datatable, Request $request)
     {
         $query = Service::where('service_type', 'service')->where('status', 1);
+        UgcListing::scopePublicServices($query);
 
         // Apply filters (existing logic)
         if ($request->provider_id) {
@@ -1189,6 +1191,7 @@ class FrontendController extends Controller
     public function serviceDatatable(Datatables $datatable, Request $request)
     {
         $query = Service::where('service_type', 'service')->where('status', 1)->with('media');
+        UgcListing::scopePublicServices($query);
 
         // Apply filters (existing logic)
         if ($request->type == 'provider-service') {
@@ -1498,6 +1501,7 @@ class FrontendController extends Controller
         $favouriteServiceIds = UserFavouriteService::where('user_id', $user->id)->pluck('service_id')->toArray();
 
         $query = Service::whereIn('id', $favouriteServiceIds);
+        UgcListing::scopePublicServices($query);
 
         $filter = $request->filter;
         if (isset($filter['search'])) {

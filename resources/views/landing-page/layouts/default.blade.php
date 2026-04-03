@@ -52,7 +52,7 @@
     @include('landing-page.partials._currencyscripts')
     @yield('after_script')
 
-
+    @include('partials.ugc-service-cards-script')
 
     <script>
         function pageLoad() {
