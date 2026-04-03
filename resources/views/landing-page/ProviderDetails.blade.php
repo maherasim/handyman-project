@@ -642,9 +642,26 @@
                                 <h5 class="mb-0" style="opacity: 1 !important; visibility: visible !important; color: #ffffff !important; font-size: 13px; font-weight: 700;">{{ __('landingpage.sd_mobility') }}</h5>
                             </div>
                             <div class="info-card-body-modern">
-                                <div class="info-value-modern">
-                                    <span class="badge-modern bg-info-modern">{{ ucfirst(trim($providerData['data']['mobility'])) }}</span>
-                                </div>
+                                @php
+                                    $mobilityData = $providerData['data']['mobility'];
+                                    $mobilityText = '';
+
+                                    if (is_string($mobilityData)) {
+                                        $decoded = json_decode($mobilityData, true);
+                                        if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                                            $mobilityText = implode("\n\n", array_filter(array_map('trim', $decoded)));
+                                        } else {
+                                            $mobilityText = trim($mobilityData);
+                                        }
+                                    } elseif (is_array($mobilityData)) {
+                                        $mobilityText = implode("\n\n", array_filter(array_map('trim', $mobilityData)));
+                                    } else {
+                                        $mobilityText = trim((string) $mobilityData);
+                                    }
+                                @endphp
+                                @if($mobilityText !== '')
+                                    <p class="provider-experience-prose mb-0">{!! nl2br(e($mobilityText)) !!}</p>
+                                @endif
                             </div>
                         </div>
                         @endif
