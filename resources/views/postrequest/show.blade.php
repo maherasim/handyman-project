@@ -146,10 +146,10 @@
             @if ($bid->status === 'accepted')
                 <button class="btn btn-primary startWorkBtn" data-post-id="{{ $bid->id }}"
                     data-advance="{{ $bid->advance_percent ?? 0 }}" data-remaining="{{ $bid->remaining_percent ?? 0 }}">
-                    <i class="fas fa-sliders-h"></i> Split Payment
+                    <i class="fas fa-sliders-h"></i> {{ __('messages.pjr_split_payment') }}
                 </button>
                 <button class="btn btn-success updateStatusBtn" data-id="{{ $bid->id }}" data-status="cancelled">
-                    Cancel
+                    {{ __('messages.pjr_cancel') }}
                 </button>
             @elseif($bid->status === 'advance_paid')
                 <button class="btn btn-primary updateStatusBtn" data-id="{{ $bid->id }}" data-status="in_process">
@@ -157,10 +157,10 @@
                 </button>
             @elseif($bid->status === 'in_progress')
                 <button class="btn btn-warning holdBidBtn" data-id="{{ $bid->id }}">
-                    Hold
+                    {{ __('messages.pjr_hold') }}
                 </button>
                 <button class="btn btn-success updateStatusBtn" data-id="{{ $bid->id }}" data-status="done">
-                    Done
+                    {{ __('messages.pjr_done') }}
                 </button>
             @elseif($bid->status === 'hold')
                 <button class="btn btn-primary updateStatusBtn" data-id="{{ $bid->id }}" data-status="in_progress">
@@ -168,10 +168,10 @@
                 </button>
             @elseif($bid->status === 'confirm_done')
                 <button class="btn btn-primary updateStatusBtn" data-id="{{ $bid->id }}" data-status="completed">
-                    Completed
+                    {{ __('messages.pjr_completed') }}
                 </button>
                 <button class="btn btn-outline-secondary extraChargesBtn" data-id="{{ $bid->id }}">
-                    <i class="fas fa-plus"></i> Extra Charges
+                    <i class="fas fa-plus"></i> {{ __('messages.pjr_extra_charges') }}
                 </button>
             @elseif($bid->status === 'remaining_paid')
                 <a href="{{ route('postrequest.invoice', $bid->id) }}" class="btn btn-outline-success ms-2">
@@ -193,7 +193,7 @@
             @endphp
             <a href="{{ route('chat.view.user', $chatUserId) }}" class="btn btn-outline-secondary rounded-pill px-4 py-2 shadow-sm me-2 d-inline-flex align-items-center gap-2">
                 <i class="fas fa-comments"></i>
-                <span>Chat</span>
+                <span>{{ __('messages.pjr_chat') }}</span>
             </a>
         @endif
         @php
@@ -209,7 +209,7 @@
         </button>
     @endif
     @if(auth()->user()->user_type === 'user' && (int)auth()->id() === (int)($bid->customer_id ?? 0) && ($customerHasRatedProvider ?? false) && in_array(strtolower((string)($bid->status ?? '')), ['remaining_paid', 'confirm_done', 'completed']))
-        <span class="badge bg-secondary rounded-pill px-3 py-2 mt-2 me-2">You have already rated the Employer</span>
+        <span class="badge bg-secondary rounded-pill px-3 py-2 mt-2 me-2">{{ __('messages.pjr_rated_employer') }}</span>
     @endif
 
     @php
@@ -235,14 +235,14 @@
 
             @if ($bid->status === 'requested')
                 <button class="btn btn-success updateStatusBtn" data-id="{{ $bid->id }}"
-                    data-status="accepted">Accept</button>
+                    data-status="accepted">{{ __('messages.pjr_accept') }}</button>
             @elseif($bid->status === 'in_process')
                 <button class="btn btn-info updateStatusBtn" data-id="{{ $bid->id }}" data-status="in_progress">
                     {{ __('messages.pjr_lets_start_work') }}
                 </button>
             @elseif($bid->status === 'done')
                 <button class="btn btn-info updateStatusBtn" data-id="{{ $bid->id }}" data-status="confirm_done">
-                    Confirm Work Done
+                    {{ __('messages.pjr_confirm_work_done') }}
                 </button>
             @elseif($bid->status === 'accepted')
                 <button class="btn btn-info updateStatusBtn" data-id="{{ $bid->id }}" data-status="cancelled">
@@ -250,7 +250,7 @@
                 </button>
             @elseif($bid->status === 'remaining_paid')
                 <a href="{{ route('postrequest.invoice', $bid->id) }}" class="btn btn-outline-success ms-2">
-                    <i class="fas fa-file-download"></i> Download Invoice
+                    <i class="fas fa-file-download"></i> {{ __('messages.pjr_download_invoice') }}
                 </a>
             @elseif($bid->status === 'Advance Payment Pending')
                 <button class="btn btn-success rounded-pill px-4 py-2 shadow-sm payAdvanceBtn d-inline-flex align-items-center gap-2" data-post-id="{{ $bid->id }}"
@@ -263,7 +263,7 @@
                 <button class="btn btn-primary rounded-pill px-4 py-2 shadow-sm payRemainingBtn d-inline-flex align-items-center gap-2" data-post-id="{{ $bid->id }}"
                     data-amount="{{ number_format($remaining, 2, '.', '') }}">
                     <i class="fas fa-credit-card"></i>
-                    <span>Pay Remaining {{ getPriceFormat($remaining) }}</span>
+                    <span>{{ __('messages.pjr_pay_remaining_btn') }} {{ getPriceFormat($remaining) }}</span>
                 </button>
             @elseif($bid->status === 'hold')
                 <div class="alert alert-warning d-flex align-items-start shadow-sm border rounded p-3 mt-2">
@@ -292,7 +292,7 @@
                         <div class="card border-primary shadow-sm h-100 hover-shadow">
                             <div class="card-body text-center">
                                 <i class="fas fa-heading fa-2x text-primary mb-2"></i>
-                                <h6 class="fw-bold mb-1">Title</h6>
+                                <h6 class="fw-bold mb-1">{{ __('messages.pjr_title') }}</h6>
                                 <p class="mb-0">{{ $bid->postrequest->title ?? $bid->title }}</p>
                             </div>
                         </div>
@@ -335,7 +335,7 @@
                         <div class="card border-info shadow-sm h-100 hover-shadow">
                             <div class="card-body text-center">
                                 <i class="far fa-calendar-check fa-2x text-info mb-2"></i>
-                                <h6 class="fw-bold mb-1">Start Date</h6>
+                                <h6 class="fw-bold mb-1">{{ __('messages.pjr_start_date') }}</h6>
                                 <p class="mb-0">{{ optional($bid->postrequest->start_date ? \Carbon\Carbon::parse($bid->postrequest->start_date) : null)?->format('Y-m-d') ?? '-' }}</p>
                             </div>
                         </div>
@@ -345,7 +345,7 @@
                         <div class="card border-danger shadow-sm h-100 hover-shadow">
                             <div class="card-body text-center">
                                 <i class="far fa-calendar-times fa-2x text-danger mb-2"></i>
-                                <h6 class="fw-bold mb-1">End Date</h6>
+                                <h6 class="fw-bold mb-1">{{ __('messages.pjr_end_date') }}</h6>
                                 <p class="mb-0">{{ optional($bid->postrequest->end_date ? \Carbon\Carbon::parse($bid->postrequest->end_date) : null)?->format('Y-m-d') ?? '-' }}</p>
                             </div>
                         </div>
@@ -372,7 +372,7 @@
                         <div class="card border-secondary shadow-sm h-100 hover-shadow">
                             <div class="card-body text-center">
                                 <i class="fas fa-wallet fa-2x text-secondary mb-2"></i>
-                                <h6 class="fw-bold mb-1">Total Budget</h6>
+                                <h6 class="fw-bold mb-1">{{ __('messages.pjr_total_budget') }}</h6>
                                 <p class="mb-0">
                                     {{ isset($bid->postrequest->total_budget) ? getPriceFormat($bid->postrequest->total_budget) : '-' }}
                                 </p>
@@ -396,7 +396,7 @@
                         <div class="card border-primary shadow-sm h-100 hover-shadow">
                             <div class="card-body text-center">
                                 <i class="fas fa-user fa-2x text-primary mb-2"></i>
-                                <h6 class="fw-bold mb-1">Employer</h6>
+                                <h6 class="fw-bold mb-1">{{ __('messages.pjr_employer') }}</h6>
                                 <p class="mb-0">{{ $bid->provider->display_name ?? '-' }}</p>
                             </div>
                         </div>
@@ -406,7 +406,7 @@
                         <div class="card border-success shadow-sm h-100 hover-shadow">
                             <div class="card-body text-center">
                                 <i class="fas fa-user-tie fa-2x text-success mb-2"></i>
-                                <h6 class="fw-bold mb-1">Customer</h6>
+                                <h6 class="fw-bold mb-1">{{ __('messages.customer') }}</h6>
                                 <p class="mb-0">{{ $bid->customer->display_name ?? '-' }}</p>
                             </div>
                         </div>
@@ -416,23 +416,24 @@
                         <div class="card border-info shadow-sm h-100 hover-shadow">
                             <div class="card-body text-center">
                                 <i class="fas fa-flag fa-2x text-info mb-2"></i>
-                                <h6 class="fw-bold mb-1">Status</h6>
+                                <h6 class="fw-bold mb-1">{{ __('messages.status') }}</h6>
                                 @php
                                     $statusKey = strtolower((string)($bid->status ?? ''));
                                     $statusMap = [
-                                        'requested' => ['Requested', 'bg-secondary text-white'],
-                                        'pending' => ['Pending', 'bg-warning text-dark'],
-                                        'accepted' => ['Accepted', 'bg-info text-white'],
-                                        'advance_paid' => ['Advance Paid', 'bg-primary text-white'],
-                                        'in_progress' => ['IN Progress', 'bg-primary text-white'],
-                                        'in_process' => ['IN Process', 'bg-primary text-white'],
-                                        'done' => ['Done', 'bg-success text-white'],
-                                        'confirm_done' => ['Confirm Done', 'bg-success text-white'],
-                                        'completed' => ['Completed', 'bg-success text-white'],
-                                        'remaining_paid' => ['Remaining Paid', 'bg-primary text-white'],
-                                        'hold' => ['On Hold', 'bg-warning text-dark'],
-                                        'cancelled' => ['Cancelled', 'bg-danger text-white'],
-                                        'rejected' => ['Rejected', 'bg-danger text-white'],
+                                        'requested' => [__('messages.pjr_st_requested'), 'bg-secondary text-white'],
+                                        'pending' => [__('messages.pjr_st_pending'), 'bg-warning text-dark'],
+                                        'accepted' => [__('messages.pjr_st_accepted'), 'bg-info text-white'],
+                                        'advance_paid' => [__('messages.pjr_st_advance_paid'), 'bg-primary text-white'],
+                                        'advance payment pending' => [__('messages.pjr_st_advance_payment_pending'), 'bg-warning text-dark'],
+                                        'in_progress' => [__('messages.pjr_st_in_progress'), 'bg-primary text-white'],
+                                        'in_process' => [__('messages.pjr_st_in_process'), 'bg-primary text-white'],
+                                        'done' => [__('messages.pjr_st_done'), 'bg-success text-white'],
+                                        'confirm_done' => [__('messages.pjr_st_confirm_done'), 'bg-success text-white'],
+                                        'completed' => [__('messages.pjr_st_completed'), 'bg-success text-white'],
+                                        'remaining_paid' => [__('messages.pjr_st_remaining_paid'), 'bg-primary text-white'],
+                                        'hold' => [__('messages.pjr_st_hold'), 'bg-warning text-dark'],
+                                        'cancelled' => [__('messages.pjr_st_cancelled'), 'bg-danger text-white'],
+                                        'rejected' => [__('messages.pjr_st_rejected'), 'bg-danger text-white'],
                                     ];
                                     [$label, $cls] = $statusMap[$statusKey] ?? [ucwords(str_replace('_',' ', (string)($bid->status ?? '-'))), 'bg-secondary text-white'];
                                 @endphp
@@ -447,7 +448,7 @@
             <div class="col-lg-4">
                 <div class="card shadow-sm border-0">
                     <div class="card-header bg-primary text-white fw-bold">
-                        Price Breakdown
+                        {{ __('messages.pjr_price_breakdown') }}
                     </div>
                     <div class="card-body">
 
@@ -455,51 +456,51 @@
                         <table class="table table-sm table-hover price-table">
                             <tbody>
                                 <tr>
-                                    <td>Rate (Unit Price)</td>
+                                    <td>{{ __('messages.pjr_rate_unit_price') }}</td>
                                     <td class="text-end">{{ getPriceFormat($unitPrice) }}</td>
                                 </tr>
                                 <tr>
-                                    <td>Quantity (Packages / Hours / Days)</td>
+                                    <td>{{ __('messages.pjr_quantity_packages_hours_days') }}</td>
                                     <td class="text-end">{{ $quantity }}</td>
                                 </tr>
                                 <tr>
-                                    <td>Total Amount</td>
+                                    <td>{{ __('messages.pjr_total_amount') }}</td>
                                     <td class="text-end">{{ getPriceFormat($totalAmount) }}</td>
                                 </tr>
                                 <tr>
                                     <td>
                                         @if($hasExtraLines)
-                                            Extra Charges ({{ $extraChargesCount }} items)
+                                            {{ __('messages.pjr_extra_charges_n_items', ['count' => $extraChargesCount]) }}
                                         @else
-                                            Extra Charges ({{ $extraChargeQty }} × {{ getPriceFormat($extraChargeUnit) }})
+                                            {{ __('messages.pjr_extra_charges_n_times', ['qty' => $extraChargeQty, 'unit' => getPriceFormat($extraChargeUnit)]) }}
                                         @endif
                                     </td>
                                     <td class="text-end">{{ getPriceFormat($extraChargesTotal) }}</td>
                                 </tr>
                                 <tr class="fw-bold">
-                                    <td>Subtotal</td>
+                                    <td>{{ __('messages.sub_total') }}</td>
                                     <td class="text-end">{{ getPriceFormat($subTotal) }}</td>
                                 </tr>
 
                                 <tr class="fw-bold">
-                                    <td>Net Amount </td>
+                                    <td>{{ __('messages.pjr_net_amount') }}</td>
                                     <td class="text-end">{{ getPriceFormat($netAmount) }}</td>
                                 </tr>
                                 <tr>
-                                    <td>Tax ({{ number_format($taxRate, 0) }}%) {{ $taxTitle }}</td>
+                                    <td>{{ __('messages.pjr_tax_line', ['rate' => number_format($taxRate, 0), 'title' => $taxTitle]) }}</td>
                                     <td class="text-end">{{ getPriceFormat($taxAmount) }}</td>
                                 </tr>
 
                                 <tr class="fw-bold">
-                                    <td>Grand Total</td>
+                                    <td>{{ __('messages.grand_total') }}</td>
                                     <td class="text-end">{{ getPriceFormat($subTotal) }}</td>
                                 </tr>
                                 <tr>
-                                    <td>Advance Payment ({{ $advPct }}%)</td>
+                                    <td>{{ __('messages.pjr_advance_payment_line', ['pct' => $advPct]) }}</td>
                                     <td class="text-end">{{ getPriceFormat($advAmount) }}</td>
                                 </tr>
                                 <tr class="fw-bold">
-                                    <td>Remaining Amount</td>
+                                    <td>{{ __('messages.pjr_remaining_amount') }}</td>
 
                                     <td class="text-end">{{ getPriceFormat($remaining) }}</td>
                                 </tr>
@@ -528,23 +529,23 @@
                                     <div class="d-flex align-items-center justify-content-between">
                                         <div class="d-flex align-items-center gap-2">
                                             <i class="las la-receipt"></i>
-                                            <span class="fw-semibold">Extra Charges</span>
+                                            <span class="fw-semibold">{{ __('messages.pjr_extra_charges') }}</span>
                                             <span class="badge bg-light text-dark border">
-                                                {{ $extraChargesCount }} {{ \Illuminate\Support\Str::plural('item', $extraChargesCount) }}
+                                                {{ $extraChargesCount }} {{ $extraChargesCount === 1 ? __('messages.pjr_item_singular') : __('messages.pjr_items_plural') }}
                                             </span>
                                         </div>
                                         <div class="text-end">
-                                            <span class="small text-white-50 me-2">Total</span>
+                                            <span class="small text-white-50 me-2">{{ __('messages.pjr_ec_total_badge') }}</span>
                                             <span class="badge rounded-pill bg-light text-dark border">{{ getPriceFormat($extraChargesTotal) }}</span>
                                         </div>
                                     </div>
                                 </th>
                             </tr>
                             <tr>
-                                <th>Title</th>
-                                <th class="text-end">Quantity</th>
-                                <th class="text-end">Unit Price</th>
-                                <th class="text-end">Total</th>
+                                <th>{{ __('messages.pjr_ec_column_title') }}</th>
+                                <th class="text-end">{{ __('messages.pjr_ec_column_qty') }}</th>
+                                <th class="text-end">{{ __('messages.pjr_ec_column_unit') }}</th>
+                                <th class="text-end">{{ __('messages.pjr_ec_column_total') }}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -572,8 +573,8 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="postBidRatingModalLabel">Rate {{ $bid->provider->display_name ?? 'Employer' }}</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <h5 class="modal-title" id="postBidRatingModalLabel">{{ __('messages.pjr_modal_rate_title', ['name' => $bid->provider->display_name ?? __('messages.pjr_fallback_employer')]) }}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ __('messages.close') }}"></button>
       </div>
       <div class="modal-body">
         <form id="postBidRatingForm">
@@ -586,11 +587,11 @@
                 <span class="postbid-star" data-value="5">★</span>
             </div>
             <div class="mb-3">
-                <label class="form-label">Comments (optional)</label>
-                <textarea id="postBidReviewText" class="form-control" rows="3" placeholder="Share your experience"></textarea>
+                <label class="form-label">{{ __('messages.pjr_comments_optional') }}</label>
+                <textarea id="postBidReviewText" class="form-control" rows="3" placeholder="{{ __('messages.pjr_placeholder_share_experience') }}"></textarea>
             </div>
             <div class="text-end">
-                <button type="submit" class="btn btn-primary">Submit</button>
+                <button type="submit" class="btn btn-primary">{{ __('messages.submit') }}</button>
             </div>
         </form>
       </div>
@@ -609,8 +610,8 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="postBidRateCustomerModalLabel">Rate {{ $bid->customer->display_name ?? $bid->customer->username ?? 'Customer' }}</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <h5 class="modal-title" id="postBidRateCustomerModalLabel">{{ __('messages.pjr_modal_rate_title', ['name' => $bid->customer->display_name ?? $bid->customer->username ?? __('messages.pjr_fallback_customer')]) }}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ __('messages.close') }}"></button>
       </div>
       <div class="modal-body">
         <form id="postBidRateCustomerForm">
@@ -623,11 +624,11 @@
                 <span class="provider-rate-star" data-value="5">★</span>
             </div>
             <div class="mb-3">
-                <label class="form-label">Comments (optional)</label>
-                <textarea id="postBidRateCustomerReview" class="form-control" rows="3" placeholder="Share your experience"></textarea>
+                <label class="form-label">{{ __('messages.pjr_comments_optional') }}</label>
+                <textarea id="postBidRateCustomerReview" class="form-control" rows="3" placeholder="{{ __('messages.pjr_placeholder_share_experience') }}"></textarea>
             </div>
             <div class="text-end">
-                <button type="submit" class="btn btn-primary">Submit</button>
+                <button type="submit" class="btn btn-primary">{{ __('messages.submit') }}</button>
             </div>
         </form>
       </div>
@@ -646,17 +647,17 @@
             <div class="col-lg-8">
                 <div class="card shadow-sm border-0">
                     <div class="card-header bg-primary text-white fw-bold">
-                        Customer's review of Employer
+                        {{ __('messages.pjr_review_section_customer_to_employer') }}
                     </div>
                     <div class="card-body p-0">
                         <div class="table-responsive">
                             <table class="table table-hover mb-0">
                                 <thead>
                                     <tr>
-                                        <th>Customer (rater)</th>
-                                        <th class="text-center">Rating</th>
-                                        <th>Review</th>
-                                        <th class="text-end">Date</th>
+                                        <th>{{ __('messages.pjr_th_customer_rater') }}</th>
+                                        <th class="text-center">{{ __('messages.pjr_th_rating') }}</th>
+                                        <th>{{ __('messages.pjr_th_review') }}</th>
+                                        <th class="text-end">{{ __('messages.pjr_th_date') }}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -688,17 +689,17 @@
             <div class="col-lg-8">
                 <div class="card shadow-sm border-0">
                     <div class="card-header bg-primary text-white fw-bold">
-                        Employer's review of Customer
+                        {{ __('messages.pjr_review_section_employer_to_customer') }}
                     </div>
                     <div class="card-body p-0">
                         <div class="table-responsive">
                             <table class="table table-hover mb-0">
                                 <thead>
                                     <tr>
-                                        <th>Employer (rater)</th>
-                                        <th class="text-center">Rating</th>
-                                        <th>Review</th>
-                                        <th class="text-end">Date</th>
+                                        <th>{{ __('messages.pjr_th_employer_rater') }}</th>
+                                        <th class="text-center">{{ __('messages.pjr_th_rating') }}</th>
+                                        <th>{{ __('messages.pjr_th_review') }}</th>
+                                        <th class="text-end">{{ __('messages.pjr_th_date') }}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -849,6 +850,72 @@
                 'unable_to_save' => __('messages.pjr_unable_to_save'),
                 'something_went_wrong' => __('messages.pjr_something_went_wrong_short'),
                 'advance_20_99' => __('messages.pjr_advance_20_99'),
+                'confirm' => __('messages.pjr_js_confirm'),
+                'update_status' => __('messages.pjr_js_update_status'),
+                'yes_update' => __('messages.pjr_js_yes_update'),
+                'updated_title' => __('messages.pjr_js_updated'),
+                'status_updated' => __('messages.pjr_js_status_updated'),
+                'are_you_sure' => __('messages.pjr_js_are_you_sure'),
+                'accept_bid_text' => __('messages.pjr_js_accept_bid_text'),
+                'yes_accept' => __('messages.pjr_js_yes_accept'),
+                'accepted' => __('messages.pjr_js_accepted'),
+                'pay_remaining_title' => __('messages.pjr_js_pay_remaining_title'),
+                'pay_advance_title' => __('messages.pjr_js_pay_advance_title'),
+                'amount_label' => __('messages.pjr_js_amount_label'),
+                'choose_payment' => __('messages.pjr_js_choose_payment'),
+                'wallet' => __('messages.pjr_js_wallet'),
+                'success' => __('messages.pjr_js_success'),
+                'js_error' => __('messages.pjr_js_error'),
+                'something_wrong_exclaim' => __('messages.pjr_js_something_wrong_exclaim'),
+                'stripe_init_failed' => __('messages.pjr_js_stripe_init_failed'),
+                'bank_transfer' => __('messages.pjr_js_bank_transfer'),
+                'proceed' => __('messages.pjr_js_proceed'),
+                'recorded' => __('messages.pjr_js_recorded'),
+                'transfer_recorded' => __('messages.pjr_js_transfer_recorded'),
+                'unable_record_transfer' => __('messages.pjr_js_unable_record_transfer'),
+                'fetch_bank_failed' => __('messages.pjr_js_fetch_bank_failed'),
+                'paypal_init_failed' => __('messages.pjr_js_paypal_init_failed'),
+                'put_on_hold' => __('messages.pjr_js_put_on_hold'),
+                'hold_reason_label' => __('messages.pjr_js_hold_reason_label'),
+                'hold_reason_placeholder' => __('messages.pjr_js_hold_reason_placeholder'),
+                'hold_reason_required' => __('messages.pjr_js_hold_reason_required'),
+                'hold_reason_too_long' => __('messages.pjr_js_hold_reason_too_long'),
+                'on_hold' => __('messages.pjr_js_on_hold'),
+                'submit' => __('messages.submit'),
+                'add_extra_charges' => __('messages.pjr_js_add_extra_charges'),
+                'stripe' => __('messages.pjr_js_stripe'),
+                'paypal' => __('messages.pjr_js_paypal'),
+                'bank_transfer_btn' => __('messages.pjr_js_bank_transfer_btn'),
+                'ec_title' => __('messages.pjr_ec_column_title'),
+                'ec_amount' => __('messages.amount'),
+                'ec_qty' => __('messages.pjr_ec_wizard_qty_short'),
+                'ec_placeholder_material' => __('messages.pjr_ec_wizard_placeholder_material'),
+                'ec_placeholder_extra_work' => __('messages.pjr_ec_wizard_placeholder_extra_work'),
+                'ec_add_more' => __('messages.pjr_ec_wizard_add_more'),
+                'ec_footer_note' => __('messages.pjr_ec_wizard_footer_note'),
+                'ec_remove_title' => __('messages.pjr_ec_wizard_remove_title'),
+                'save' => __('messages.pjr_js_save'),
+                'saved_title' => __('messages.pjr_js_saved'),
+                'extra_charges_saved_msg' => __('messages.pjr_js_extra_charges_saved_msg'),
+                'ec_val_row_title' => __('messages.pjr_ec_val_row_title'),
+                'ec_val_row_amount' => __('messages.pjr_ec_val_row_amount'),
+                'ec_val_qty_min' => __('messages.pjr_ec_val_qty_min'),
+                'ec_val_one_row' => __('messages.pjr_ec_val_one_row'),
+                'select_star_rating' => __('messages.pjr_js_select_star_rating'),
+                'thank_you_rating' => __('messages.pjr_js_thank_you_rating'),
+                'rating_submitted' => __('messages.pjr_js_rating_submitted'),
+                'rating_failed' => __('messages.pjr_js_rating_failed'),
+                'session_expired_rating' => __('messages.pjr_js_session_expired_rating'),
+                'sign_in_again_rating' => __('messages.pjr_js_sign_in_again_rating'),
+                'bank_info_heading' => __('messages.pjr_bank_info_heading'),
+                'bank_for_transfers' => __('messages.pjr_bank_for_transfers'),
+                'bank_recipient' => __('messages.pjr_bank_recipient'),
+                'bank_iban' => __('messages.pjr_bank_iban'),
+                'bank_bic' => __('messages.pjr_bank_bic'),
+                'bank_name_address' => __('messages.pjr_bank_name_address'),
+                'bank_bic_sender' => __('messages.pjr_bank_bic_sender'),
+                'bank_instructions' => __('messages.pjr_bank_instructions'),
+                'bank_send_proof' => __('messages.pjr_bank_send_proof'),
             ];
         @endphp
         var pjrJsLang = @json($pjrJsLang);
@@ -867,13 +934,13 @@
                 btn.addEventListener('click', function() {
                     let bidId = this.dataset.id;
                     Swal.fire({
-                        title: "Are you sure?",
-                        text: "Do you want to accept this bid?",
+                        title: pjrJsLang.are_you_sure,
+                        text: pjrJsLang.accept_bid_text,
                         icon: "warning",
                         showCancelButton: true,
                         confirmButtonColor: "#28a745",
                         cancelButtonColor: "#d33",
-                        confirmButtonText: "Yes, accept it!"
+                        confirmButtonText: pjrJsLang.yes_accept
                     }).then(result => {
                         if (!result.isConfirmed) return;
                         fetch(`/bids/accept/${bidId}`, {
@@ -884,11 +951,11 @@
                                 }
                             }).then(res => res.json())
                             .then(response => {
-                                Swal.fire(response.status ? "Accepted!" : "Error!",
+                                Swal.fire(response.status ? pjrJsLang.accepted : pjrJsLang.js_error,
                                         response.message, response.status ? "success" :
                                         "error")
                                     .then(() => location.reload());
-                            }).catch(() => Swal.fire("Error!", "Something went wrong!",
+                            }).catch(() => Swal.fire(pjrJsLang.js_error, pjrJsLang.something_wrong_exclaim,
                                 "error"));
                     });
                 });
@@ -899,12 +966,11 @@
                     const bidId = this.dataset.id;
                     const nextStatus = this.dataset.status;
                     Swal.fire({
-                        title: 'Confirm',
-                        text: 'Do you want to update status to ' + nextStatus.replace('_',
-                            ' ') + '?',
+                        title: pjrJsLang.confirm,
+                        text: (pjrJsLang.update_status || '').replace(':status', nextStatus.replace(/_/g, ' ')),
                         icon: 'question',
                         showCancelButton: true,
-                        confirmButtonText: 'Yes, update',
+                        confirmButtonText: pjrJsLang.yes_update,
                     }).then(result => {
                         if (!result.isConfirmed) return;
                         fetch(`{{ route('postjob.updateStatus', ':id') }}`.replace(':id',
@@ -920,8 +986,8 @@
                             })
                             .then(res => res.json())
                             .then(response => {
-                                Swal.fire(response.status ? 'Updated' : 'Error',
-                                        response.message || 'Status updated', response
+                                Swal.fire(response.status ? pjrJsLang.updated_title : pjrJsLang.js_error,
+                                        response.message || pjrJsLang.status_updated, response
                                         .status ? 'success' : 'error')
                                     .then(() => location.reload());
                             }).catch(() => Swal.fire(pjrJsLang.error, pjrJsLang.something_went_wrong,
@@ -940,16 +1006,16 @@
                     const isRemaining = btn.classList.contains('payRemainingBtn');
 
                     Swal.fire({
-                        title: isRemaining ? 'Pay Remaining' : 'Pay Advance',
+                        title: isRemaining ? pjrJsLang.pay_remaining_title : pjrJsLang.pay_advance_title,
                         html: `
                             <div class="text-start">
-                                <p class="mb-2">Amount: <strong>${formatCurrencyJS(formattedAmount)}</strong></p>
-                                <label class="form-label fw-bold">Choose Payment Method</label>
+                                <p class="mb-2">${pjrJsLang.amount_label} <strong>${formatCurrencyJS(formattedAmount)}</strong></p>
+                                <label class="form-label fw-bold">${pjrJsLang.choose_payment}</label>
                                 <div class="d-grid gap-2">
-                                    <button class="btn btn-outline-primary" id="walletPayBtn"><i class="fas fa-wallet me-1"></i> Wallet</button>
-                                    <button class="btn btn-outline-dark" id="stripePayBtn"><i class="fab fa-cc-stripe me-1"></i> Stripe</button>
-                                    <button class="btn btn-outline-primary" id="paypalPayBtn"><i class="fab fa-paypal me-1"></i> PayPal</button>
-                                     <button class="btn btn-outline-secondary" id="bankPayBtn"><i class="la la-university me-1"></i> Bank Transfer</button>
+                                    <button class="btn btn-outline-primary" id="walletPayBtn"><i class="fas fa-wallet me-1"></i> ${pjrJsLang.wallet}</button>
+                                    <button class="btn btn-outline-dark" id="stripePayBtn"><i class="fab fa-cc-stripe me-1"></i> ${pjrJsLang.stripe}</button>
+                                    <button class="btn btn-outline-primary" id="paypalPayBtn"><i class="fab fa-paypal me-1"></i> ${pjrJsLang.paypal}</button>
+                                     <button class="btn btn-outline-secondary" id="bankPayBtn"><i class="la la-university me-1"></i> ${pjrJsLang.bank_transfer_btn}</button>
                                 </div>
                             </div>
                         `,
@@ -979,13 +1045,13 @@
                                             })
                                         }).then(res => res.json())
                                     .then(response => {
-                                        Swal.fire(response.status ? 'Success' :
-                                                'Error', response.message,
+                                        Swal.fire(response.status ? pjrJsLang.success :
+                                                pjrJsLang.js_error, response.message,
                                                 response.status ? 'success' :
                                                 'error')
                                             .then(() => location.reload());
-                                    }).catch(() => Swal.fire('Error',
-                                        'Something went wrong!', 'error'));
+                                    }).catch(() => Swal.fire(pjrJsLang.js_error,
+                                        pjrJsLang.something_wrong_exclaim, 'error'));
                             });
                         }
 
@@ -1012,11 +1078,11 @@
                                         } else {
                                             Swal.fire(pjrJsLang.error, session
                                                 .message ||
-                                                'Unable to initiate Stripe payment',
+                                                pjrJsLang.stripe_init_failed,
                                                 'error');
                                         }
-                                    }).catch(() => Swal.fire('Error',
-                                        'Something went wrong!', 'error'));
+                                    }).catch(() => Swal.fire(pjrJsLang.js_error,
+                                        pjrJsLang.something_wrong_exclaim, 'error'));
                             });
                         }
                         if (bankBtn) {
@@ -1034,24 +1100,24 @@
                                         const bank = d.bank || {};
                                         const infoHtml = `
                  <div class="text-start">
-  <h6 class="mb-2">Bank Information</h6>
-  <div class="mb-2"><strong>Amount:</strong> ${formatCurrencyJS(formattedAmount)}</div>
-  <div class="mb-2"><strong>For local and international transfers</strong></div>
-  <div><strong>Recipient:</strong> Ben Ghezaiel</div>
-  <div><strong>IBAN:</strong> DE02 1001 0178 1361 6331 79</div>
-  <div><strong>BIC:</strong> REVODEB2</div>
-  <div class="mt-2"><strong>Bank Name and Address:</strong></div>
+  <h6 class="mb-2">${pjrJsLang.bank_info_heading}</h6>
+  <div class="mb-2"><strong>${pjrJsLang.amount_label}</strong> ${formatCurrencyJS(formattedAmount)}</div>
+  <div class="mb-2"><strong>${pjrJsLang.bank_for_transfers}</strong></div>
+  <div><strong>${pjrJsLang.bank_recipient}</strong> Ben Ghezaiel</div>
+  <div><strong>${pjrJsLang.bank_iban}</strong> DE02 1001 0178 1361 6331 79</div>
+  <div><strong>${pjrJsLang.bank_bic}</strong> REVODEB2</div>
+  <div class="mt-2"><strong>${pjrJsLang.bank_name_address}</strong></div>
   <div class="ms-3">Revolut Bank UAB,<br>
     Zweigniederlassung Deutschland<br>
     FORA Linden Palais, Unter den<br>
     Linden 40<br>
     10117, Berlin, Germany</div>
-  <div class="mt-2"><strong>BIC of Sender Bank:</strong> CHASDEFX</div>
+  <div class="mt-2"><strong>${pjrJsLang.bank_bic_sender}</strong> CHASDEFX</div>
   
-  <h6 class="mt-3">Instructions</h6>
+  <h6 class="mt-3">${pjrJsLang.bank_instructions}</h6>
  
   <div class="small mt-1">
-    Send Proof of Payment (screenshot or PDF Document) to: 
+    ${pjrJsLang.bank_send_proof}
     <a href="mailto:billing@frobster.com">billing@frobster.com</a>
   </div>
 </div>
@@ -1059,10 +1125,10 @@
               `;
                                         // 2) Show popup with details and confirm
                                         Swal.fire({
-                                            title: 'Bank Transfer',
+                                            title: pjrJsLang.bank_transfer,
                                             html: infoHtml,
                                             showCancelButton: true,
-                                            confirmButtonText: 'Proceed',
+                                            confirmButtonText: pjrJsLang.proceed,
                                         }).then(result => {
                                             if (!result.isConfirmed)
                                                 return;
@@ -1088,14 +1154,14 @@
                                                     Swal.fire(
                                                             response
                                                             .status ?
-                                                            'Recorded' :
-                                                            'Error',
+                                                            pjrJsLang.recorded :
+                                                            pjrJsLang.js_error,
                                                             response
                                                             .message ||
                                                             (response
                                                                 .status ?
-                                                                'Transfer recorded' :
-                                                                'Unable to record transfer'
+                                                                pjrJsLang.transfer_recorded :
+                                                                pjrJsLang.unable_record_transfer
                                                             ),
                                                             response
                                                             .status ?
@@ -1106,12 +1172,12 @@
                                                             .reload()
                                                         );
                                                 }).catch(() => Swal
-                                                    .fire('Error',
-                                                        'Something went wrong!',
+                                                    .fire(pjrJsLang.js_error,
+                                                        pjrJsLang.something_wrong_exclaim,
                                                         'error'));
                                         });
-                                    }).catch(() => Swal.fire('Error',
-                                        'Unable to fetch bank details', 'error'
+                                    }).catch(() => Swal.fire(pjrJsLang.js_error,
+                                        pjrJsLang.fetch_bank_failed, 'error'
                                     ));
                             });
                         }
@@ -1136,12 +1202,12 @@
                                             window.location.href = data
                                                 .url; // PayPal approval page
                                         } else {
-                                            Swal.fire('Error', data.error ||
-                                                'Unable to initiate PayPal payment',
+                                            Swal.fire(pjrJsLang.js_error, data.error ||
+                                                pjrJsLang.paypal_init_failed,
                                                 'error');
                                         }
-                                    }).catch(() => Swal.fire('Error',
-                                        'Something went wrong!', 'error'));
+                                    }).catch(() => Swal.fire(pjrJsLang.js_error,
+                                        pjrJsLang.something_wrong_exclaim, 'error'));
                             });
                         }
                     }, 50);
@@ -1152,20 +1218,20 @@
                 btn.addEventListener('click', function() {
                     const bidId = this.dataset.id;
                     Swal.fire({
-                        title: 'Put on Hold',
+                        title: pjrJsLang.put_on_hold,
                         input: 'textarea',
-                        inputLabel: 'Provide hold reason',
-                        inputPlaceholder: 'Type your reason here... (max 500 chars)',
+                        inputLabel: pjrJsLang.hold_reason_label,
+                        inputPlaceholder: pjrJsLang.hold_reason_placeholder,
                         inputAttributes: {
-                            'aria-label': 'Hold reason'
+                            'aria-label': pjrJsLang.hold_reason_label
                         },
                         showCancelButton: true,
-                        confirmButtonText: 'Submit',
+                        confirmButtonText: pjrJsLang.submit,
                         preConfirm: value => {
                             if (!value || value.trim().length === 0) Swal
-                                .showValidationMessage('Hold reason is required');
+                                .showValidationMessage(pjrJsLang.hold_reason_required);
                             else if (value.length > 500) Swal.showValidationMessage(
-                                'Reason too long (max 500 chars)');
+                                pjrJsLang.hold_reason_too_long);
                             else return value;
                         }
                     }).then(result => {
@@ -1183,8 +1249,8 @@
                                 })
                             })
                             .then(res => res.json())
-                            .then(response => Swal.fire(response.status ? 'On Hold' :
-                                    'Error', response.message, response.status ? 'success' :
+                            .then(response => Swal.fire(response.status ? pjrJsLang.on_hold :
+                                    pjrJsLang.js_error, response.message, response.status ? 'success' :
                                     'error')
                                 .then(() => location.reload()))
                             .catch(() => Swal.fire(pjrJsLang.error, pjrJsLang.something_went_wrong,
@@ -1196,31 +1262,31 @@
             $(document).on('click', '.extraChargesBtn', function() {
                 const bidId = $(this).data('id');
                 Swal.fire({
-                    title: 'Add Extra Charges',
+                    title: pjrJsLang.add_extra_charges,
                     width: 700,
                     html: `
             <div class="text-start">
                 <div id="ec_rows">
                     <div class="row g-2 ec_row align-items-end mb-2">
                         <div class="col-6">
-                            <label class="form-label fw-bold">Title</label>
-                            <input type="text" class="form-control ec_title" placeholder="e.g., Material" />
+                            <label class="form-label fw-bold">${pjrJsLang.ec_title}</label>
+                            <input type="text" class="form-control ec_title" placeholder="${pjrJsLang.ec_placeholder_material}" />
                         </div>
                         <div class="col-3">
-                            <label class="form-label fw-bold">Amount</label>
+                            <label class="form-label fw-bold">${pjrJsLang.ec_amount}</label>
                             <input type="number" class="form-control ec_amount" step="0.01" min="0.01" placeholder="20" />
                         </div>
                         <div class="col-2">
-                            <label class="form-label fw-bold">Qty</label>
+                            <label class="form-label fw-bold">${pjrJsLang.ec_qty}</label>
                             <input type="number" class="form-control ec_qty" step="1" min="1" value="1" />
                         </div>
                         <div class="col-1 text-end">
-                            <button type="button" class="btn btn-outline-danger btn-sm ec_remove" title="Remove"><i class="la la-times"></i></button>
+                            <button type="button" class="btn btn-outline-danger btn-sm ec_remove" title="${pjrJsLang.ec_remove_title}"><i class="la la-times"></i></button>
                         </div>
                     </div>
                 </div>
-                <button type="button" id="ec_add_row" class="btn btn-outline-primary btn-sm"><i class="la la-plus"></i> Add More</button>
-                <div class="mt-3 small text-muted">Extra charges will be included in the final invoice.</div>
+                <button type="button" id="ec_add_row" class="btn btn-outline-primary btn-sm"><i class="la la-plus"></i> ${pjrJsLang.ec_add_more}</button>
+                <div class="mt-3 small text-muted">${pjrJsLang.ec_footer_note}</div>
             </div>
         `,
                     didOpen: () => {
@@ -1231,7 +1297,7 @@
                             row.className = 'row g-2 ec_row align-items-end mb-2';
                             row.innerHTML = `
                                 <div class="col-6">
-                                    <input type="text" class="form-control ec_title" placeholder="e.g., Extra work" />
+                                    <input type="text" class="form-control ec_title" placeholder="${pjrJsLang.ec_placeholder_extra_work}" />
                                 </div>
                                 <div class="col-3">
                                     <input type="number" class="form-control ec_amount" step="0.01" min="0.01" placeholder="10" />
@@ -1240,7 +1306,7 @@
                                     <input type="number" class="form-control ec_qty" step="1" min="1" value="1" />
                                 </div>
                                 <div class="col-1 text-end">
-                                    <button type="button" class="btn btn-outline-danger btn-sm ec_remove" title="Remove"><i class="la la-times"></i></button>
+                                    <button type="button" class="btn btn-outline-danger btn-sm ec_remove" title="${pjrJsLang.ec_remove_title}"><i class="la la-times"></i></button>
                                 </div>`;
                             container.appendChild(row);
                         });
@@ -1253,7 +1319,7 @@
                     },
                     focusConfirm: false,
                     showCancelButton: true,
-                    confirmButtonText: 'Save',
+                    confirmButtonText: pjrJsLang.save,
                     preConfirm: () => {
                         const rows = Array.from(document.querySelectorAll('#ec_rows .ec_row'));
                         const items = [];
@@ -1262,21 +1328,21 @@
                             const amount = parseFloat(r.querySelector('.ec_amount').value);
                             const qty = parseInt(r.querySelector('.ec_qty').value || '1', 10);
                             if (!title) {
-                                Swal.showValidationMessage('Each row must have a title');
+                                Swal.showValidationMessage(pjrJsLang.ec_val_row_title);
                                 return false;
                             }
                             if (!amount || amount <= 0) {
-                                Swal.showValidationMessage('Each row must have amount > 0');
+                                Swal.showValidationMessage(pjrJsLang.ec_val_row_amount);
                                 return false;
                             }
                             if (!qty || qty < 1) {
-                                Swal.showValidationMessage('Quantity must be at least 1');
+                                Swal.showValidationMessage(pjrJsLang.ec_val_qty_min);
                                 return false;
                             }
                             items.push({ title, amount, quantity: qty });
                         }
                         if (items.length === 0) {
-                            Swal.showValidationMessage('Add at least one row');
+                            Swal.showValidationMessage(pjrJsLang.ec_val_one_row);
                             return false;
                         }
                         return { items };
@@ -1294,10 +1360,10 @@
                         },
                         success: function(response) {
                             if (response && response.status) {
-                                Swal.fire('Saved', response.message || 'Extra charges saved', 'success')
+                                Swal.fire(pjrJsLang.saved_title, response.message || pjrJsLang.extra_charges_saved_msg, 'success')
                                     .then(() => { window.location.reload(); });
                             } else {
-                                Swal.fire('Error', (response && response.message) ? response.message : pjrJsLang.unable_to_save, 'error');
+                                Swal.fire(pjrJsLang.error, (response && response.message) ? response.message : pjrJsLang.unable_to_save, 'error');
                             }
                         },
                         error: function(xhr) {
@@ -1341,7 +1407,7 @@
         $('#postBidRatingForm').on('submit', function(e){
             e.preventDefault();
             if(postBidSelectedRating === 0){
-                return Swal.fire('Error','Please select a star rating.','warning');
+                return Swal.fire(pjrJsLang.js_error, pjrJsLang.select_star_rating, 'warning');
             }
             const payload = {
                 post_job_bid_id: $('#postBidIdForRating').val(),
@@ -1357,14 +1423,14 @@
                 xhrFields: { withCredentials: true },
                 headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' },
                 success: function(){
-                    Swal.fire('Thank you!','Your rating has been submitted.','success');
+                    Swal.fire(pjrJsLang.thank_you_rating, pjrJsLang.rating_submitted, 'success');
                     $('#postBidRatingModal').modal('hide');
                     window.location.reload();
                 },
                 error: function(xhr){
-                    var msg = 'Failed to submit rating.';
-                    if (xhr.status === 419) msg = 'Session expired. Please refresh the page and try again.';
-                    else if (xhr.status === 401) msg = 'Please sign in again, then try again.';
+                    var msg = pjrJsLang.rating_failed;
+                    if (xhr.status === 419) msg = pjrJsLang.session_expired_rating;
+                    else if (xhr.status === 401) msg = pjrJsLang.sign_in_again_rating;
                     else if (xhr.status === 422 && xhr.responseJSON && xhr.responseJSON.message) msg = xhr.responseJSON.message;
                     else if (xhr.status === 422 && xhr.responseJSON && xhr.responseJSON.errors) msg = Object.values(xhr.responseJSON.errors).flat().join(' ');
                     Swal.fire(pjrJsLang.error, msg, 'error');
@@ -1402,7 +1468,7 @@
         $('#postBidRateCustomerForm').on('submit', function(e){
             e.preventDefault();
             if(providerRateCustomerStars === 0){
-                return Swal.fire('Error','Please select a star rating.','warning');
+                return Swal.fire(pjrJsLang.js_error, pjrJsLang.select_star_rating, 'warning');
             }
             const payload = {
                 post_job_bid_id: $('#postBidIdForRateCustomer').val(),
@@ -1418,14 +1484,14 @@
                 xhrFields: { withCredentials: true },
                 headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' },
                 success: function(){
-                    Swal.fire('Thank you!','Your rating has been submitted.','success');
+                    Swal.fire(pjrJsLang.thank_you_rating, pjrJsLang.rating_submitted, 'success');
                     $('#postBidRateCustomerModal').modal('hide');
                     window.location.reload();
                 },
                 error: function(xhr){
-                    var msg = 'Failed to submit rating.';
-                    if (xhr.status === 419) msg = 'Session expired. Please refresh the page and try again.';
-                    else if (xhr.status === 401) msg = 'Please sign in again, then try again.';
+                    var msg = pjrJsLang.rating_failed;
+                    if (xhr.status === 419) msg = pjrJsLang.session_expired_rating;
+                    else if (xhr.status === 401) msg = pjrJsLang.sign_in_again_rating;
                     else if (xhr.status === 422 && xhr.responseJSON && xhr.responseJSON.message) msg = xhr.responseJSON.message;
                     else if (xhr.status === 422 && xhr.responseJSON && xhr.responseJSON.errors) msg = Object.values(xhr.responseJSON.errors).flat().join(' ');
                     Swal.fire(pjrJsLang.error, msg, 'error');
@@ -1506,12 +1572,12 @@
                         preConfirm: () => {
                             const raw = document.getElementById('advanceInput').value;
                             if (raw === '' || raw === null) {
-                                Swal.showValidationMessage("Advance must be between 20% and 99%.");
+                                Swal.showValidationMessage(pjrJsLang.advance_20_99);
                                 return false;
                             }
                             const advance = parseInt(raw, 10);
                             if (isNaN(advance) || advance < 20 || advance > 99) {
-                                Swal.showValidationMessage("Advance must be between 20% and 99%.");
+                                Swal.showValidationMessage(pjrJsLang.advance_20_99);
                                 return false;
                             }
                             return { advance, remaining: 100 - advance };

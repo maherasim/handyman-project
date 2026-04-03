@@ -791,6 +791,7 @@
     'customer_job_request' => 'Solicitação de trabalho do cliente',
     'reviews' => 'Avaliações',
     'all_reviews' => 'Todas as avaliações',
+    'no_reviews_yet' => 'Ainda não há avaliações.',
     'wallet_balance' => 'Saldo da carteira',
     'manage_slot' => 'Gerenciar slot',
     'is_email_verified' => 'E-mail verificado',
