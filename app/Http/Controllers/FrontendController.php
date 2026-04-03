@@ -35,6 +35,7 @@ use App\Models\UserFavouriteService;
 use App\Support\UgcListing;
 use Auth;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\DataTables;
 
 class FrontendController extends Controller
@@ -612,9 +613,25 @@ class FrontendController extends Controller
         $provider_id = $request->id;
         $userController = app(UserController::class);
         $apiRequest = new Request(['id' => $provider_id]);
-        $providerData = $userController->userDetail($apiRequest);
-        $providerData = json_decode($providerData->content(), true);
-        $why_choose_me = json_decode($providerData['data']['why_choose_me'], true);
+        $providerResponse = $userController->userDetail($apiRequest);
+        $providerData = json_decode($providerResponse->content(), true);
+
+        if (! is_array($providerData) || empty($providerData['data'])) {
+            abort(404, __('messages.user_not_found'));
+        }
+
+        if (($providerData['data']['user_type'] ?? '') !== 'provider') {
+            abort(404, __('messages.user_not_found'));
+        }
+
+        $whyRaw = $providerData['data']['why_choose_me'] ?? null;
+        $why_choose_me = null;
+        if ($whyRaw !== null && $whyRaw !== '') {
+            $decoded = json_decode($whyRaw, true);
+            if (json_last_error() === JSON_ERROR_NONE) {
+                $why_choose_me = $decoded;
+            }
+        }
 
         $sitesetup = Setting::where('type', 'site-setup')->where('key', 'site-setup')->first();
         $datetime = json_decode($sitesetup->value);
@@ -623,17 +640,14 @@ class FrontendController extends Controller
             ->where('status', 'completed')
             ->count();
 
-        $servicerating = Service::where('provider_id', $providerData['data']['id'])
-            ->with('serviceRating')
-            ->get();
-
-        $allRatings = $servicerating->flatMap(function ($service) {
-            return $service->serviceRating->filter(function ($rating) {
-                return in_array($rating->rating, [4, 5]);
-            });
-        });
-
-        $satisfy_customers = $allRatings->pluck('customer_id')->unique()->count();
+        $provider_id_for_stats = (int) $providerData['data']['id'];
+        // COUNT(DISTINCT) in SQL — avoid loading all services + all ratings into memory
+        $satisfy_customers = (int) DB::table('booking_ratings')
+            ->join('services', 'booking_ratings.service_id', '=', 'services.id')
+            ->where('services.provider_id', $provider_id_for_stats)
+            ->whereIn('booking_ratings.rating', [4, 5])
+            ->selectRaw('COUNT(DISTINCT booking_ratings.customer_id) as cnt')
+            ->value('cnt');
 
         if (!empty(auth()->user()) && auth()->user()->hasRole('user')) {
             $auth_user_id = auth()->user()->id;
@@ -660,17 +674,20 @@ class FrontendController extends Controller
             }
         }
 
-        // Combined provider reviews: booking_ratings (via services) + post_job_bid_customer_ratings (customer rates provider)
+        // Combined provider reviews — load only a small slice per source, then merge (was: ->get() on all rows)
         $provider_id_int = (int) $provider_id;
+        $reviewSlice = 25;
         $bookingReviews = BookingRating::with('customer')
             ->whereHas('service', function ($q) use ($provider_id_int) {
                 $q->where('provider_id', $provider_id_int);
             })
             ->orderBy('created_at', 'desc')
+            ->limit($reviewSlice)
             ->get();
         $postJobReviews = PostJobBidCustomerRating::with('customer')
             ->where('provider_id', $provider_id_int)
             ->orderBy('created_at', 'desc')
+            ->limit($reviewSlice)
             ->get();
         $providerReviews = $bookingReviews->concat($postJobReviews)->sortByDesc('created_at')->take(10)->values();
 
@@ -693,12 +710,29 @@ class FrontendController extends Controller
         $handyman_id = $request->id;
         $userController = app(UserController::class);
         $apiRequest = new Request(['id' => $handyman_id]);
-        $handymanData = $userController->userDetail($apiRequest);
-        $handymanData = json_decode($handymanData->content(), true);
-        $why_choose_me = json_decode($handymanData['data']['why_choose_me'], true);
+        $handymanResponse = $userController->userDetail($apiRequest);
+        $handymanData = json_decode($handymanResponse->content(), true);
 
-        $handyman_rating = HandymanRating::where('handyman_id', $handymanData['data']['id'])->orderBy('created_at', 'desc')->get();
-        $total_handyman_rating = $handyman_rating->count();
+        if (! is_array($handymanData) || empty($handymanData['data'])) {
+            abort(404, __('messages.user_not_found'));
+        }
+
+        if (($handymanData['data']['user_type'] ?? '') !== 'handyman') {
+            abort(404, __('messages.user_not_found'));
+        }
+
+        $whyRaw = $handymanData['data']['why_choose_me'] ?? null;
+        $why_choose_me = null;
+        if ($whyRaw !== null && $whyRaw !== '') {
+            $decoded = json_decode($whyRaw, true);
+            if (json_last_error() === JSON_ERROR_NONE) {
+                $why_choose_me = $decoded;
+            }
+        }
+
+        $handymanId = $handymanData['data']['id'];
+        $total_handyman_rating = HandymanRating::where('handyman_id', $handymanId)->count();
+        $handyman_rating = HandymanRating::where('handyman_id', $handymanId)->orderBy('created_at', 'desc')->limit(100)->get();
 
         $sitesetup = Setting::where('type', 'site-setup')->where('key', 'site-setup')->first();
         $datetime = json_decode($sitesetup->value);
@@ -707,9 +741,11 @@ class FrontendController extends Controller
             $query->where('status', 'completed');
         })->where('handyman_id', $handymanData['data']['id'])->count();
 
-        $satisfy_customers = $handyman_rating->filter(function ($rating) {
-            return in_array($rating->rating, [4, 5]);
-        })->pluck('customer_id')->unique()->count();
+        $satisfy_customers = (int) DB::table('handyman_ratings')
+            ->where('handyman_id', $handymanId)
+            ->whereIn('rating', [4, 5])
+            ->selectRaw('COUNT(DISTINCT customer_id) as cnt')
+            ->value('cnt');
 
         return view('landing-page.HandymanDetails', compact('handymanData', 'why_choose_me', 'handyman_rating', 'total_handyman_rating', 'datetime', 'completed_services', 'satisfy_customers'));
     }
@@ -778,10 +814,12 @@ class FrontendController extends Controller
         $subtotal = $discount != 0 ? ($price - ($price * $discount / 100)) : $price;
 
 
-        // $total_ratings = BookingRating::where('service_id', $serviceData['service_detail']['id'])->get();
         $serviceIdForRatings = (int)($serviceData['service_detail']['id'] ?? 0);
-        $total_ratings = $serviceIdForRatings > 0 ? BookingRating::where('service_id', $serviceIdForRatings)->get() : collect();
-        return view('landing-page.ServiceDetail', compact('serviceData', 'favouriteService', 'date_time', 'completed_services', 'knownLanguageArray', 'subtotal', 'total_ratings', 'favouriteServiceData', 'userId', 'providerPlanIcon'));
+        // Count only — loading every review row for count() exhausted memory on busy services
+        $total_ratings_count = $serviceIdForRatings > 0
+            ? BookingRating::where('service_id', $serviceIdForRatings)->count()
+            : 0;
+        return view('landing-page.ServiceDetail', compact('serviceData', 'favouriteService', 'date_time', 'completed_services', 'knownLanguageArray', 'subtotal', 'total_ratings_count', 'favouriteServiceData', 'userId', 'providerPlanIcon'));
     }
 
 
@@ -1170,17 +1208,17 @@ class FrontendController extends Controller
             $query->orderBy('price', 'desc');
         }
 
-        // Fetch the filtered results
-        $jobrequest = $query->get();
+        // Cap result size to avoid hydrating tens of thousands of PostJobRequest models in memory
+        $jobrequest = $query->orderByDesc('id')->limit(500)->get();
 
-        // Fetch categories, subcategories, customers, countries, and cities for dropdowns
-        $categories = Category::all();
-        $subcategories = SubCategory::all();
-        $customers = User::where('user_type', 'user')->get();
-        $countries = Country::get();
-        $cities = City::take(10)->get();
+        // Select only columns needed for filters (reduces memory vs full model hydration)
+        $categories = Category::query()->select('id', 'name')->orderBy('name')->get();
+        $subcategories = SubCategory::query()->select('id', 'name', 'category_id')->orderBy('name')->get();
+        $customers = User::query()->where('user_type', 'user')->select('id', 'display_name')->orderBy('display_name')->limit(5000)->get();
+        $countries = Country::query()->select('id', 'name')->orderBy('name')->get();
+        $cities = City::query()->select('id', 'name')->orderBy('name')->take(10)->get();
         $favouriteService = auth()->check()
-            ? PostJobRequest::where('provider_id', auth()->id())->get()
+            ? PostJobRequest::where('provider_id', auth()->id())->orderByDesc('id')->limit(200)->get()
             : collect(); // Empty collection if not logged in
 
 

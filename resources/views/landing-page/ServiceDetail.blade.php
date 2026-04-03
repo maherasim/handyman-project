@@ -909,14 +909,14 @@
                             </div>
                         </div>
                     @endif
-                    @if ($total_ratings->isNotEmpty())
+                    @if ($total_ratings_count > 0)
                         <div class="section-padding px-0 pb-0">
                             <div class="row align-items-center mb-5">
                                 <div class="col-sm-9">
-                                    <h5 class="mb-0">{{ count($total_ratings) }} {{ __('landingpage.reviews_for') }}
+                                    <h5 class="mb-0">{{ $total_ratings_count }} {{ __('landingpage.reviews_for') }}
                                         {{ $serviceData['service_detail']['name'] }}</h5>
                                 </div>
-                                @if (count($total_ratings) !== 0)
+                                @if ($total_ratings_count !== 0)
                                     <div class="col-sm-3 mt-sm-0 mt-3 text-sm-end">
                                         <a
                                             href="{{ route('rating.all', ['service_id' => $serviceData['service_detail']['id']]) }}">{{ __('messages.view_all') }}</a>
