@@ -1334,7 +1334,7 @@
                         </h5>
                         <div class="text-end">
                             <span class="badge bg-light text-dark fs-6">
-                                {{ __('Total Extra Charges') }}: <strong>{{ getPriceFormat($extraChargeTotal) }}</strong>
+                                {{ __('messages.booking_total_extra_charges') }}: <strong>{{ getPriceFormat($extraChargeTotal) }}</strong>
                             </span>
                         </div>
                     </div>
@@ -1406,8 +1406,8 @@
     <div class="col-md-12 mt-4">
         <div class="card">
             <div class="card-body">
-                <h4 class="mb-3">{{ __('Review by customer') }}</h4>
-                <p class="text-muted small mb-3">{{ __('Customer\'s review of the Employer') }}</p>
+                <h4 class="mb-3">{{ __('messages.booking_review_by_customer') }}</h4>
+                <p class="text-muted small mb-3">{{ __('messages.booking_review_customer_hint') }}</p>
                 @if (!empty($review_by_customer_for_booking))
                 <div class="table-responsive">
                     <table class="table table-bordered align-middle">
@@ -1430,7 +1430,7 @@
                 </div>
                 @else
                 <div class="p-3 bg-light rounded border text-muted">
-                    <p class="m-0">{{ __('No review by customer yet.') }} {{ __('The customer has not left a review for the provider.') }}</p>
+                    <p class="m-0">{{ __('messages.booking_no_review_customer') }} {{ __('messages.booking_no_review_customer_detail') }}</p>
                 </div>
                 @endif
             </div>
@@ -1441,8 +1441,8 @@
     <div class="col-md-12 mt-4">
         <div class="card">
             <div class="card-body">
-                <h4 class="mb-3">{{ __('Review by Employer') }}</h4>
-                <p class="text-muted small mb-3">{{ __('Employer\'s review of the customer') }}</p>
+                <h4 class="mb-3">{{ __('messages.booking_review_by_employer') }}</h4>
+                <p class="text-muted small mb-3">{{ __('messages.booking_review_employer_hint') }}</p>
                 @if (!empty($customer_rating))
                 <div class="table-responsive">
                     <table class="table table-bordered align-middle">
@@ -1464,7 +1464,7 @@
                 </div>
                 @else
                 <div class="p-3 bg-light rounded border text-muted">
-                    <p class="m-0">{{ __('No review by provider yet.') }} {{ __('The provider has not rated the customer for this booking.') }}</p>
+                    <p class="m-0">{{ __('messages.booking_no_review_employer') }} {{ __('messages.booking_no_review_employer_detail') }}</p>
                 </div>
                 @endif
             </div>
@@ -1499,7 +1499,7 @@
                                                     </a>
                                                 @endforeach
                                             @else
-                                                <span class="text-muted">No attachments</span>
+                                                <span class="text-muted">{{ __('messages.booking_no_attachments') }}</span>
                                             @endif
                                         </td>
                                     </tr>

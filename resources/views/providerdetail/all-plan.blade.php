@@ -1,5 +1,83 @@
 @php
     $plans = \App\Models\Plans::where('status', 'active')->get();
+    $planLang = [
+        'upgradeTo' => __('messages.provider_sub_btn_upgrade_to'),
+        'switchTo' => __('messages.provider_sub_btn_switch_to'),
+        'noOtherPlans' => __('messages.provider_sub_no_other_plans'),
+        'freeModalTitle' => __('messages.provider_sub_free_modal_title'),
+        'freeModalLine' => __('messages.provider_sub_free_modal_line'),
+        'freeModalNoPayment' => __('messages.provider_sub_free_modal_no_payment'),
+        'btnYesUpgrade' => __('messages.provider_sub_btn_yes_upgrade'),
+        'cancel' => __('messages.cancel'),
+        'processing' => __('messages.provider_sub_processing'),
+        'upgradingPlan' => __('messages.provider_sub_upgrading_plan'),
+        'successTitle' => __('messages.provider_sub_success'),
+        'successUpgraded' => __('messages.provider_sub_success_upgraded'),
+        'errorTitle' => __('messages.provider_sub_error'),
+        'errorUpgrade' => __('messages.provider_sub_error_upgrade'),
+        'unknownError' => __('messages.provider_sub_unknown_error'),
+        'errorTryAgain' => __('messages.provider_sub_error_try_again'),
+        'walletSwalTitle' => __('messages.provider_sub_wallet_swal_title'),
+        'walletSwalLine' => __('messages.provider_sub_wallet_swal_line'),
+        'walletSwalNote' => __('messages.provider_sub_wallet_swal_note'),
+        'payWithWallet' => __('messages.provider_sub_pay_with_wallet'),
+        'processingPayment' => __('messages.provider_sub_processing_payment'),
+        'walletPleaseWait' => __('messages.provider_sub_wallet_please_wait'),
+        'paymentSuccessTitle' => __('messages.provider_sub_payment_success'),
+        'subscriptionUpgraded' => __('messages.provider_sub_subscription_upgraded'),
+        'great' => __('messages.provider_sub_great'),
+        'paymentFailed' => __('messages.provider_sub_payment_failed'),
+        'paymentNotProcessed' => __('messages.provider_sub_payment_not_processed'),
+        'paymentErrorGeneric' => __('messages.provider_sub_payment_error_generic'),
+        'stripeSwalTitle' => __('messages.provider_sub_stripe_swal_title'),
+        'stripeSwalLine' => __('messages.provider_sub_stripe_swal_line'),
+        'stripeRedirectNote' => __('messages.provider_sub_stripe_redirect_note'),
+        'continueStripe' => __('messages.provider_sub_continue_stripe'),
+        'redirecting' => __('messages.provider_sub_redirecting'),
+        'redirectStripe' => __('messages.provider_sub_redirect_stripe'),
+        'stripeSessionError' => __('messages.provider_sub_stripe_session_error'),
+        'stripeProcessError' => __('messages.provider_sub_stripe_process_error'),
+        'paypalSwalTitle' => __('messages.provider_sub_paypal_swal_title'),
+        'paypalSwalLine' => __('messages.provider_sub_paypal_swal_line'),
+        'paypalRedirectNote' => __('messages.provider_sub_paypal_redirect_note'),
+        'continuePaypal' => __('messages.provider_sub_continue_paypal'),
+        'redirectPaypal' => __('messages.provider_sub_redirect_paypal'),
+        'paypalSessionError' => __('messages.provider_sub_paypal_session_error'),
+        'paypalProcessError' => __('messages.provider_sub_paypal_process_error'),
+        'bankSwalTitle' => __('messages.provider_sub_bank_swal_title'),
+        'bankSwalIntro' => __('messages.provider_sub_bank_swal_intro'),
+        'bankSubscriptionDetails' => __('messages.provider_sub_bank_subscription_details'),
+        'bankLabelPlan' => __('messages.provider_sub_bank_label_plan'),
+        'bankLabelAmount' => __('messages.provider_sub_bank_label_amount'),
+        'bankForTransfers' => __('messages.provider_sub_bank_for_transfers'),
+        'bankRecipient' => __('messages.pjr_bank_recipient'),
+        'bankIban' => __('messages.pjr_bank_iban'),
+        'bankBic' => __('messages.pjr_bank_bic'),
+        'bankNameAddress' => __('messages.pjr_bank_name_address'),
+        'bankBicSender' => __('messages.pjr_bank_bic_sender'),
+        'bankInstructionsHeading' => __('messages.provider_sub_bank_instructions_heading'),
+        'bankStep1' => __('messages.provider_sub_bank_step1'),
+        'bankStep2' => __('messages.provider_sub_bank_step2'),
+        'bankStep3' => __('messages.provider_sub_bank_step3'),
+        'bankStep4' => __('messages.provider_sub_bank_step4'),
+        'bankNote' => __('messages.provider_sub_bank_note'),
+        'bankConfirmBtn' => __('messages.provider_sub_bank_confirm_btn'),
+        'bankInitiatedTitle' => __('messages.provider_sub_bank_initiated_title'),
+        'bankInitiatedBody' => __('messages.provider_sub_bank_initiated_body'),
+        'bankNextSteps' => __('messages.provider_sub_bank_next_steps'),
+        'bankNext1' => __('messages.provider_sub_bank_next_1'),
+        'bankNext2' => __('messages.provider_sub_bank_next_2'),
+        'bankNext3' => __('messages.provider_sub_bank_next_3'),
+        'bankEmailFollowup' => __('messages.provider_sub_bank_email_followup'),
+        'gotIt' => __('messages.provider_sub_got_it'),
+        'bankRecordFailed' => __('messages.provider_sub_bank_record_failed'),
+        'bankRecordError' => __('messages.provider_sub_bank_record_error'),
+        'ok' => __('messages.provider_sub_ok'),
+        'planWord' => __('messages.plan'),
+        'bankInfoHeading' => __('messages.pjr_bank_info_heading'),
+        'noteLabel' => __('messages.provider_sub_note_label'),
+        'bankNote' => __('messages.provider_sub_bank_note'),
+    ];
 @endphp
 
 <div class="subscription-management-container">
@@ -10,7 +88,7 @@
                 <h4 class="mb-1 text-primary">
                     <i class="fas fa-crown me-2"></i>{{ __('messages.plan') }}
                 </h4>
-                <p class="text-muted mb-0">Manage your subscription plans and upgrades</p>
+                <p class="text-muted mb-0">{{ __('messages.provider_sub_header_subtitle') }}</p>
             </div>
             <div class="subscription-search">
                 <div class="input-group input-group-search">
@@ -18,7 +96,7 @@
                         <i class="fas fa-search text-muted"></i>
                     </span>
                     <input type="text" class="form-control dt-search border-start-0" 
-                           placeholder="Search plans..." aria-label="Search">
+                           placeholder="{{ __('messages.provider_sub_search_ph') }}" aria-label="{{ __('messages.provider_sub_search_aria') }}">
                 </div>
             </div>
         </div>
@@ -35,13 +113,13 @@
                                 <i class="fas fa-star text-warning"></i>
                             </div>
                             <div>
-                                <h6 class="mb-1 text-dark">Current Plan</h6>
-                                <p class="mb-0 text-muted">Your active subscription details</p>
+                                <h6 class="mb-1 text-dark">{{ __('messages.provider_sub_current_plan') }}</h6>
+                                <p class="mb-0 text-muted">{{ __('messages.provider_sub_current_plan_desc') }}</p>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-4 text-end">
-                        <span class="badge bg-success fs-6">Active</span>
+                        <span class="badge bg-success fs-6">{{ __('messages.provider_sub_badge_active') }}</span>
                     </div>
                 </div>
             </div>
@@ -73,7 +151,7 @@
                             <i class="fas fa-info-circle me-1"></i>{{ __('messages.status') }}
                         </th>
                         <th scope="col" class="border-0 text-center">
-                            <i class="fas fa-rocket me-1"></i>Actions
+                            <i class="fas fa-rocket me-1"></i>{{ __('messages.provider_sub_col_actions') }}
                         </th>
                     </tr>
                 </thead>
@@ -93,11 +171,11 @@
                         <i class="fas fa-rocket fa-lg"></i>
                     </div>
                     <div>
-                        <h5 class="modal-title mb-0" id="upgradeModalLabel">Upgrade Your Plan</h5>
-                        <small class="opacity-75">Choose your preferred payment method</small>
+                        <h5 class="modal-title mb-0" id="upgradeModalLabel">{{ __('messages.provider_sub_modal_upgrade_title') }}</h5>
+                        <small class="opacity-75">{{ __('messages.provider_sub_modal_upgrade_subtitle') }}</small>
                     </div>
                 </div>
-                <button type="button" class="btn-close btn-close-white" data-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close btn-close-white" data-dismiss="modal" aria-label="{{ __('messages.close') }}"></button>
             </div>
             <div class="modal-body p-4">
                 <!-- Plan Summary Card -->
@@ -109,18 +187,18 @@
                                     <div class="d-flex align-items-center">
                                         <div class="plan-image-container me-3">
                                             <img id="plan_image" src="{{ asset('images/icon/freepng.png') }}" 
-                                                 alt="Plan Image" class="plan-image">
+                                                 alt="{{ __('messages.provider_sub_plan_image_alt') }}" class="plan-image">
                                         </div>
                                         <div>
-                                            <h6 class="mb-1 text-dark" id="plan_name">Premium Plan</h6>
-                                            <p class="mb-0 text-muted">Unlock all premium features</p>
+                                            <h6 class="mb-1 text-dark" id="plan_name">{{ __('messages.provider_sub_plan_placeholder_name') }}</h6>
+                                            <p class="mb-0 text-muted">{{ __('messages.provider_sub_plan_placeholder_tagline') }}</p>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="col-md-4 text-end">
                                     <div class="plan-price">
                                         <span class="price-amount text-primary fs-3 fw-bold" id="plan_amount">€0.00</span>
-                                        <small class="text-muted d-block">per month</small>
+                                        <small class="text-muted d-block">{{ __('messages.provider_sub_per_month') }}</small>
                                     </div>
                                 </div>
                             </div>
@@ -131,22 +209,22 @@
                 <!-- Benefits Section -->
                 <div class="plan-benefits mb-4">
                     <h6 class="text-dark mb-3">
-                        <i class="fas fa-check-circle text-success me-2"></i>What you'll get:
+                        <i class="fas fa-check-circle text-success me-2"></i>{{ __('messages.provider_sub_benefits_title') }}
                     </h6>
                     <div class="row">
                         <div class="col-md-6">
                             <ul class="list-unstyled">
                                 <li class="mb-2">
                                     <i class="fas fa-check text-success me-2"></i>
-                                    Unlimited service listings
+                                    {{ __('messages.provider_sub_benefit_1') }}
                                 </li>
                                 <li class="mb-2">
                                     <i class="fas fa-check text-success me-2"></i>
-                                    Priority customer support
+                                    {{ __('messages.provider_sub_benefit_2') }}
                                 </li>
                                 <li class="mb-2">
                                     <i class="fas fa-check text-success me-2"></i>
-                                    Advanced analytics
+                                    {{ __('messages.provider_sub_benefit_3') }}
                                 </li>
                             </ul>
                         </div>
@@ -154,15 +232,15 @@
                             <ul class="list-unstyled">
                                 <li class="mb-2">
                                     <i class="fas fa-check text-success me-2"></i>
-                                    Featured in search results
+                                    {{ __('messages.provider_sub_benefit_4') }}
                                 </li>
                                 <li class="mb-2">
                                     <i class="fas fa-check text-success me-2"></i>
-                                    Custom branding options
+                                    {{ __('messages.provider_sub_benefit_5') }}
                                 </li>
                                 <li class="mb-2">
                                     <i class="fas fa-check text-success me-2"></i>
-                                    API access
+                                    {{ __('messages.provider_sub_benefit_6') }}
                                 </li>
                             </ul>
                         </div>
@@ -175,8 +253,8 @@
                         <div class="d-flex align-items-center">
                             <i class="fas fa-info-circle me-3 text-info"></i>
                             <div>
-                                <strong>Ready to upgrade?</strong><br>
-                                <small>Click "Proceed to Payment" to choose your payment method and complete the upgrade.</small>
+                                <strong>{{ __('messages.provider_sub_confirm_ready') }}</strong><br>
+                                <small>{{ __('messages.provider_sub_confirm_click') }}</small>
                             </div>
                         </div>
                     </div>
@@ -189,10 +267,10 @@
                     <input type="hidden" id="plan_amount_value" name="plan_amount_value">
                     <div class="d-flex justify-content-end gap-2">
                         <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">
-                            <i class="fas fa-times me-1"></i>Cancel
+                            <i class="fas fa-times me-1"></i>{{ __('messages.cancel') }}
                         </button>
                         <button type="submit" class="btn btn-primary btn-lg">
-                            <i class="fas fa-credit-card me-2"></i>Proceed to Payment
+                            <i class="fas fa-credit-card me-2"></i>{{ __('messages.provider_sub_btn_proceed_payment') }}
                         </button>
                     </div>
                 </form>
@@ -211,21 +289,21 @@
                         <i class="fas fa-credit-card fa-lg"></i>
                     </div>
                     <div>
-                        <h5 class="modal-title mb-0" id="paymentMethodModalLabel">Choose Payment Method</h5>
-                        <small class="opacity-75">Select how you'd like to pay</small>
+                        <h5 class="modal-title mb-0" id="paymentMethodModalLabel">{{ __('messages.provider_sub_pay_choose_title') }}</h5>
+                        <small class="opacity-75">{{ __('messages.provider_sub_pay_choose_subtitle') }}</small>
                     </div>
                 </div>
-                <button type="button" class="btn-close btn-close-white" data-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close btn-close-white" data-dismiss="modal" aria-label="{{ __('messages.close') }}"></button>
             </div>
             <div class="modal-body p-4">
                 <!-- Payment Summary -->
                 <div class="payment-summary mb-4">
                     <div class="card border-0 bg-light">
                         <div class="card-body text-center">
-                            <h6 class="text-muted mb-2">Payment Summary</h6>
+                            <h6 class="text-muted mb-2">{{ __('messages.provider_sub_payment_summary') }}</h6>
                             <div class="payment-amount">
                                 <span class="amount text-primary fs-2 fw-bold" id="payment_amount">€0.00</span>
-                                <small class="text-muted d-block">One-time payment</small>
+                                <small class="text-muted d-block">{{ __('messages.provider_sub_one_time_payment') }}</small>
                             </div>
                         </div>
                     </div>
@@ -234,7 +312,7 @@
                 <!-- Payment Methods Grid -->
                 <div class="payment-methods-grid">
                     <h6 class="text-dark mb-3">
-                        <i class="fas fa-wallet me-2"></i>Available Payment Methods:
+                        <i class="fas fa-wallet me-2"></i>{{ __('messages.provider_sub_pay_methods_heading') }}
                     </h6>
                     <div class="row g-3">
                         <div class="col-md-6">
@@ -244,10 +322,10 @@
                                         <div class="payment-icon-large mb-3">
                                             <i class="fas fa-wallet text-primary fa-2x"></i>
                                         </div>
-                                        <h6 class="card-title text-dark mb-2">Wallet Payment</h6>
-                                        <p class="card-text text-muted small mb-3">Pay using your wallet balance</p>
+                                        <h6 class="card-title text-dark mb-2">{{ __('messages.provider_sub_wallet_title') }}</h6>
+                                        <p class="card-text text-muted small mb-3">{{ __('messages.provider_sub_wallet_desc') }}</p>
                                         <div class="payment-badge">
-                                            <span class="badge bg-success">Instant</span>
+                                            <span class="badge bg-success">{{ __('messages.provider_sub_badge_instant') }}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -260,10 +338,10 @@
                                         <div class="payment-icon-large mb-3">
                                             <i class="fab fa-cc-stripe text-primary fa-2x"></i>
                                         </div>
-                                        <h6 class="card-title text-dark mb-2">Credit/Debit Card</h6>
-                                        <p class="card-text text-muted small mb-3">Pay with Stripe secure payment</p>
+                                        <h6 class="card-title text-dark mb-2">{{ __('messages.provider_sub_card_title') }}</h6>
+                                        <p class="card-text text-muted small mb-3">{{ __('messages.provider_sub_card_desc') }}</p>
                                         <div class="payment-badge">
-                                            <span class="badge bg-primary">Secure</span>
+                                            <span class="badge bg-primary">{{ __('messages.provider_sub_badge_secure') }}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -277,9 +355,9 @@
                                             <i class="fab fa-paypal text-primary fa-2x"></i>
                                         </div>
                                         <h6 class="card-title text-dark mb-2">PayPal</h6>
-                                        <p class="card-text text-muted small mb-3">Pay with your PayPal account</p>
+                                        <p class="card-text text-muted small mb-3">{{ __('messages.provider_sub_paypal_desc') }}</p>
                                         <div class="payment-badge">
-                                            <span class="badge bg-info">Popular</span>
+                                            <span class="badge bg-info">{{ __('messages.provider_sub_badge_popular') }}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -294,10 +372,10 @@
                                              class="fas fa-university text-primary fa-2x"></i>
                       
                                             </div>
-                                        <h6 class="card-title text-dark mb-2">Bank Transfer</h6>
-                                        <p class="card-text text-muted small mb-3">Traditional bank transfer</p>
+                                        <h6 class="card-title text-dark mb-2">{{ __('messages.provider_sub_bank_title') }}</h6>
+                                        <p class="card-text text-muted small mb-3">{{ __('messages.provider_sub_bank_desc') }}</p>
                                         <div class="payment-badge">
-                                            <span class="badge bg-warning">Manual</span>
+                                            <span class="badge bg-warning">{{ __('messages.provider_sub_badge_manual') }}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -312,8 +390,8 @@
                         <div class="d-flex align-items-center">
                             <i class="fas fa-shield-alt text-success me-3"></i>
                             <div>
-                                <strong>Secure Payment</strong><br>
-                                <small class="text-muted">All payments are processed securely with industry-standard encryption.</small>
+                                <strong>{{ __('messages.provider_sub_secure_pay_title') }}</strong><br>
+                                <small class="text-muted">{{ __('messages.provider_sub_secure_pay_text') }}</small>
                             </div>
                         </div>
                     </div>
@@ -546,6 +624,7 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script type="text/javascript">
+    var planLang = @json($planLang);
     $(document).ready(function() {
         var table;
         var loadurl =
@@ -666,13 +745,13 @@
                                     // Determine if it's an upgrade or downgrade based on amount
                                     let currentAmount = parseFloat($('#plan_amount').text()) || 0;
                                     let planAmount = parseFloat(plan.amount) || 0;
-                                    let buttonText = planAmount > currentAmount ? 'Upgrade to' : 'Switch to';
+                                    let buttonText = planAmount > currentAmount ? planLang.upgradeTo : planLang.switchTo;
                                     
                                     buttons +=
                                         `<button class="btn btn-warning upgrade-btn" data-plan="${plan.title}" data-id="${row.id}" data-amount="${plan.amount}">${buttonText} ${plan.title}</button> `;
                                 });
                             } else {
-                                buttons = '<span>No other plans available</span>';
+                                buttons = '<span>' + planLang.noOtherPlans + '</span>';
                             }
                             return buttons;
                         }
@@ -713,7 +792,7 @@
             
             // Update plan image based on plan type
             var planImageSrc = '';
-            var planImageAlt = planType + ' Plan';
+            var planImageAlt = planType + ' ' + planLang.planWord;
             
             if (planType.toLowerCase().includes('silver')) {
                 planImageSrc = '{{ asset("images/icon/silverpng.png") }}';
@@ -733,28 +812,28 @@
             if (planType.toLowerCase().includes('free') || planAmount == 0 || planAmount == '0') {
                 // Show confirmation for free plan
                 Swal.fire({
-                    title: '🎉 Free Plan Upgrade',
+                    title: '🎉 ' + planLang.freeModalTitle,
                     html: `
                         <div class="text-center">
                             <div class="mb-3">
                                 <img src="${planImageSrc}" alt="${planImageAlt}" style="width: 80px; height: 80px; object-fit: contain; border-radius: 12px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
                             </div>
-                            <p class="mb-3">You're upgrading to the <strong>${planType}</strong> plan!</p>
-                            <p class="text-muted">This is a free plan, so no payment is required.</p>
+                            <p class="mb-3">${planLang.freeModalLine.replace(/:plan/g, planType)}</p>
+                            <p class="text-muted">${planLang.freeModalNoPayment}</p>
                         </div>
                     `,
                     icon: 'success',
                     showCancelButton: true,
-                    confirmButtonText: 'Yes, Upgrade Now',
-                    cancelButtonText: 'Cancel',
+                    confirmButtonText: planLang.btnYesUpgrade,
+                    cancelButtonText: planLang.cancel,
                     confirmButtonColor: '#28a745',
                     cancelButtonColor: '#6c757d'
                 }).then((result) => {
                     if (result.isConfirmed) {
                         // Show loading
                         Swal.fire({
-                            title: 'Processing...',
-                            text: 'Upgrading your plan',
+                            title: planLang.processing,
+                            text: planLang.upgradingPlan,
                             allowOutsideClick: false,
                             showConfirmButton: false,
                             didOpen: () => {
@@ -774,30 +853,30 @@
                             success: function(response) {
                                 if (response.status) {
                                     Swal.fire({
-                                        title: '✅ Success!',
-                                        text: `You have been successfully upgraded to ${planType}!`,
+                                        title: '✅ ' + planLang.successTitle,
+                                        text: planLang.successUpgraded.replace(':plan', planType),
                                         icon: 'success',
-                                        confirmButtonText: 'Great!',
+                                        confirmButtonText: planLang.great,
                                         confirmButtonColor: '#28a745'
                                     }).then(() => {
                                         location.reload();
                                     });
                                 } else {
                                     Swal.fire({
-                                        title: '❌ Error',
-                                        text: `Failed to upgrade to ${planType}: ${response.message || 'Unknown error'}`,
+                                        title: '❌ ' + planLang.errorTitle,
+                                        text: planLang.errorUpgrade.replace(':plan', planType).replace(':message', response.message || planLang.unknownError),
                                         icon: 'error',
-                                        confirmButtonText: 'OK'
+                                        confirmButtonText: planLang.ok
                                     });
                                 }
                             },
                             error: function(error) {
                                 console.error('Free plan upgrade error:', error);
                                 Swal.fire({
-                                    title: '❌ Error',
-                                    text: `Failed to upgrade to ${planType}. Please try again.`,
+                                    title: '❌ ' + planLang.errorTitle,
+                                    text: planLang.errorTryAgain.replace(':plan', planType),
                                     icon: 'error',
-                                    confirmButtonText: 'OK'
+                                    confirmButtonText: planLang.ok
                                 });
                             }
                         });
@@ -826,28 +905,28 @@
 
             // Show confirmation
             Swal.fire({
-                title: '💳 Wallet Payment',
+                title: '💳 ' + planLang.walletSwalTitle,
                 html: `
                     <div class="text-center">
                         <div class="mb-3">
                             <i class="fas fa-wallet text-primary fa-3x"></i>
                         </div>
-                        <p class="mb-3">Pay <strong>${planAmountDisplay}</strong> using your wallet balance</p>
-                        <p class="text-muted">This payment will be processed instantly.</p>
+                        <p class="mb-3">${planLang.walletSwalLine.replace(':amount', planAmountDisplay)}</p>
+                        <p class="text-muted">${planLang.walletSwalNote}</p>
                     </div>
                 `,
                 icon: 'question',
                 showCancelButton: true,
-                confirmButtonText: 'Pay with Wallet',
-                cancelButtonText: 'Cancel',
+                confirmButtonText: planLang.payWithWallet,
+                cancelButtonText: planLang.cancel,
                 confirmButtonColor: '#28a745',
                 cancelButtonColor: '#6c757d'
             }).then((result) => {
                 if (result.isConfirmed) {
                     // Show loading
                     Swal.fire({
-                        title: 'Processing Payment...',
-                        text: 'Please wait while we process your wallet payment',
+                        title: planLang.processingPayment,
+                        text: planLang.walletPleaseWait,
                         allowOutsideClick: false,
                         showConfirmButton: false,
                         didOpen: () => {
@@ -867,29 +946,29 @@
                         success: function(response) {
                             if (response.status) {
                                 Swal.fire({
-                                    title: '✅ Payment Successful!',
-                                    text: 'Your subscription has been upgraded successfully!',
+                                    title: '✅ ' + planLang.paymentSuccessTitle,
+                                    text: planLang.subscriptionUpgraded,
                                     icon: 'success',
-                                    confirmButtonText: 'Great!',
+                                    confirmButtonText: planLang.great,
                                     confirmButtonColor: '#28a745'
                                 }).then(() => {
                                     location.reload();
                                 });
                             } else {
                                 Swal.fire({
-                                    title: '❌ Payment Failed',
-                                    text: response.message || 'Payment could not be processed',
+                                    title: '❌ ' + planLang.paymentFailed,
+                                    text: response.message || planLang.paymentNotProcessed,
                                     icon: 'error',
-                                    confirmButtonText: 'OK'
+                                    confirmButtonText: planLang.ok
                                 });
                             }
                         },
                         error: function(error) {
                             Swal.fire({
-                                title: '❌ Error',
-                                text: 'Payment failed. Please try again.',
+                                title: '❌ ' + planLang.errorTitle,
+                                text: planLang.paymentErrorGeneric,
                                 icon: 'error',
-                                confirmButtonText: 'OK'
+                                confirmButtonText: planLang.ok
                             });
                         }
                     });
@@ -906,28 +985,28 @@
 
             // Show confirmation
             Swal.fire({
-                title: '💳 Credit/Debit Card Payment',
+                title: '💳 ' + planLang.stripeSwalTitle,
                 html: `
                     <div class="text-center">
                         <div class="mb-3">
                             <i class="fab fa-cc-stripe text-primary fa-3x"></i>
                         </div>
-                        <p class="mb-3">Pay <strong>${planAmountDisplay}</strong> using your credit/debit card</p>
-                        <p class="text-muted">You will be redirected to Stripe's secure payment page.</p>
+                        <p class="mb-3">${planLang.stripeSwalLine.replace(':amount', planAmountDisplay)}</p>
+                        <p class="text-muted">${planLang.stripeRedirectNote}</p>
                     </div>
                 `,
                 icon: 'question',
                 showCancelButton: true,
-                confirmButtonText: 'Continue to Stripe',
-                cancelButtonText: 'Cancel',
+                confirmButtonText: planLang.continueStripe,
+                cancelButtonText: planLang.cancel,
                 confirmButtonColor: '#635bff',
                 cancelButtonColor: '#6c757d'
             }).then((result) => {
                 if (result.isConfirmed) {
                     // Show loading
                     Swal.fire({
-                        title: 'Redirecting...',
-                        text: 'Taking you to Stripe payment page',
+                        title: planLang.redirecting,
+                        text: planLang.redirectStripe,
                         allowOutsideClick: false,
                         showConfirmButton: false,
                         didOpen: () => {
@@ -949,19 +1028,19 @@
                                 window.location.href = response.url;
                             } else {
                                 Swal.fire({
-                                    title: '❌ Error',
-                                    text: response.message || 'Could not create Stripe payment session',
+                                    title: '❌ ' + planLang.errorTitle,
+                                    text: response.message || planLang.stripeSessionError,
                                     icon: 'error',
-                                    confirmButtonText: 'OK'
+                                    confirmButtonText: planLang.ok
                                 });
                             }
                         },
                         error: function(error) {
                             Swal.fire({
-                                title: '❌ Error',
-                                text: 'Could not process Stripe payment. Please try again.',
+                                title: '❌ ' + planLang.errorTitle,
+                                text: planLang.stripeProcessError,
                                 icon: 'error',
-                                confirmButtonText: 'OK'
+                                confirmButtonText: planLang.ok
                             });
                         }
                     });
@@ -978,28 +1057,28 @@
 
             // Show confirmation
             Swal.fire({
-                title: '💳 PayPal Payment',
+                title: '💳 ' + planLang.paypalSwalTitle,
                 html: `
                     <div class="text-center">
                         <div class="mb-3">
                             <i class="fab fa-paypal text-primary fa-3x"></i>
                         </div>
-                        <p class="mb-3">Pay <strong>${planAmountDisplay}</strong> using your PayPal account</p>
-                        <p class="text-muted">You will be redirected to PayPal's secure payment page.</p>
+                        <p class="mb-3">${planLang.paypalSwalLine.replace(':amount', planAmountDisplay)}</p>
+                        <p class="text-muted">${planLang.paypalRedirectNote}</p>
                     </div>
                 `,
                 icon: 'question',
                 showCancelButton: true,
-                confirmButtonText: 'Continue to PayPal',
-                cancelButtonText: 'Cancel',
+                confirmButtonText: planLang.continuePaypal,
+                cancelButtonText: planLang.cancel,
                 confirmButtonColor: '#0070ba',
                 cancelButtonColor: '#6c757d'
             }).then((result) => {
                 if (result.isConfirmed) {
                     // Show loading
                     Swal.fire({
-                        title: 'Redirecting...',
-                        text: 'Taking you to PayPal payment page',
+                        title: planLang.redirecting,
+                        text: planLang.redirectPaypal,
                         allowOutsideClick: false,
                         showConfirmButton: false,
                         didOpen: () => {
@@ -1021,19 +1100,19 @@
                                 window.location.href = response.url;
                             } else {
                                 Swal.fire({
-                                    title: '❌ Error',
-                                    text: response.message || 'Could not create PayPal payment session',
+                                    title: '❌ ' + planLang.errorTitle,
+                                    text: response.message || planLang.paypalSessionError,
                                     icon: 'error',
-                                    confirmButtonText: 'OK'
+                                    confirmButtonText: planLang.ok
                                 });
                             }
                         },
                         error: function(error) {
                             Swal.fire({
-                                title: '❌ Error',
-                                text: 'Could not process PayPal payment. Please try again.',
+                                title: '❌ ' + planLang.errorTitle,
+                                text: planLang.paypalProcessError,
                                 icon: 'error',
-                                confirmButtonText: 'OK'
+                                confirmButtonText: planLang.ok
                             });
                         }
                     });
@@ -1052,36 +1131,36 @@
                 <div class="bank-transfer-modal">
                     <div class="bank-header mb-4">
                         <div class="bank-icon">🏦</div>
-                        <h4 class="mb-2">Bank Transfer Payment</h4>
-                        <p class="text-muted">Complete your subscription upgrade via bank transfer</p>
+                        <h4 class="mb-2">${planLang.bankSwalTitle}</h4>
+                        <p class="text-muted">${planLang.bankSwalIntro}</p>
                     </div>
                     
                     <div class="subscription-info mb-4">
-                        <h6 class="text-primary mb-2">📋 Subscription Details</h6>
+                        <h6 class="text-primary mb-2">📋 ${planLang.bankSubscriptionDetails}</h6>
                         <div class="row">
-                            <div class="col-6"><strong>Plan:</strong> ${planType}</div>
-                            <div class="col-6"><strong>Amount:</strong> ${planAmountDisplay}</div>
+                            <div class="col-6">${planLang.bankLabelPlan} <strong>${planType}</strong></div>
+                            <div class="col-6">${planLang.bankLabelAmount} <strong>${planAmountDisplay}</strong></div>
                         </div>
                     </div>
 
                     <div class="bank-details mb-4">
-                        <h6 class="text-success mb-3">🏦 Bank Information</h6>
-                        <div class="mb-2"><strong>For local and international transfers</strong></div>
+                        <h6 class="text-success mb-3">🏦 ${planLang.bankInfoHeading}</h6>
+                        <div class="mb-2"><strong>${planLang.bankForTransfers}</strong></div>
                         <div class="bank-info-card">
                             <div class="bank-row">
-                                <span class="bank-label">Recipient:</span>
+                                <span class="bank-label">${planLang.bankRecipient}</span>
                                 <span class="bank-value">Ben Ghezaiel</span>
                             </div>
                             <div class="bank-row">
-                                <span class="bank-label">IBAN:</span>
+                                <span class="bank-label">${planLang.bankIban}</span>
                                 <span class="bank-value">DE02 1001 0178 1361 6331 79</span>
                             </div>
                             <div class="bank-row">
-                                <span class="bank-label">BIC:</span>
+                                <span class="bank-label">${planLang.bankBic}</span>
                                 <span class="bank-value">REVODEB2</span>
                             </div>
                             <div class="bank-row">
-                                <span class="bank-label">Bank Name and Address:</span>
+                                <span class="bank-label">${planLang.bankNameAddress}</span>
                                 <span class="bank-value">Revolut Bank UAB,<br>
                                     Zweigniederlassung Deutschland<br>
                                     FORA Linden Palais, Unter den<br>
@@ -1089,30 +1168,30 @@
                                     10117, Berlin, Germany</span>
                             </div>
                             <div class="bank-row">
-                                <span class="bank-label">BIC of Sender Bank:</span>
+                                <span class="bank-label">${planLang.bankBicSender}</span>
                                 <span class="bank-value">CHASDEFX</span>
                             </div>
                         </div>
                     </div>
                     
                     <div class="instructions mb-4">
-                        <h6 class="text-warning mb-3">📝 Important Instructions</h6>
+                        <h6 class="text-warning mb-3">📝 ${planLang.bankInstructionsHeading}</h6>
                         <div class="instruction-steps">
                             <div class="step">
                                 <span class="step-number">1</span>
-                                <span class="step-text">Transfer the exact amount (${planAmountDisplay}) to the bank account above</span>
+                                <span class="step-text">${planLang.bankStep1.replace(':amount', planAmountDisplay)}</span>
                             </div>
                             <div class="step">
                                 <span class="step-number">2</span>
-                                <span class="step-text">Include your name and "Subscription ${planType}" in the transfer reference</span>
+                                <span class="step-text">${planLang.bankStep2.replace(':plan', planType)}</span>
                             </div>
                             <div class="step">
                                 <span class="step-number">3</span>
-                                <span class="step-text">Send proof of payment (screenshot or PDF) to: <a href="mailto:billing@frobster.com" class="email-link">billing@frobster.com</a></span>
+                                <span class="step-text">${planLang.bankStep3} <a href="mailto:billing@frobster.com" class="email-link">billing@frobster.com</a></span>
                             </div>
                             <div class="step">
                                 <span class="step-number">4</span>
-                                <span class="step-text">Your subscription will be activated within 24 hours after payment verification</span>
+                                <span class="step-text">${planLang.bankStep4}</span>
                             </div>
                         </div>
                     </div>
@@ -1120,8 +1199,7 @@
                     <div class="note-box">
                         <small class="text-muted">
                             <i class="fas fa-info-circle"></i>
-                            <strong>Note:</strong> Bank transfers may take varying business days to process. 
-                            Your subscription will be activated once payment is verified.
+                            <strong>${planLang.noteLabel}</strong> ${planLang.bankNote}
                         </small>
                     </div>
                 </div>
@@ -1231,8 +1309,8 @@
                 title: '',
                 html: bankInfoHtml,
                 showCancelButton: true,
-                confirmButtonText: 'I Understand, Proceed',
-                cancelButtonText: 'Cancel',
+                confirmButtonText: planLang.bankConfirmBtn,
+                cancelButtonText: planLang.cancel,
                 confirmButtonColor: '#28a745',
                 cancelButtonColor: '#6c757d',
                 width: '600px',
@@ -1254,31 +1332,31 @@
                     success: function(response) {
                         if (response.status) {
                             Swal.fire({
-                                title: '✅ Bank Transfer Initiated',
+                                title: '✅ ' + planLang.bankInitiatedTitle,
                                 html: `
                                     <div class="text-center">
-                                        <p>Your subscription upgrade has been recorded.</p>
-                                        <p><strong>Next Steps:</strong></p>
+                                        <p>${planLang.bankInitiatedBody}</p>
+                                        <p><strong>${planLang.bankNextSteps}</strong></p>
                                         <ol class="text-left">
-                                            <li>Complete the bank transfer using the provided details</li>
-                                            <li>Send proof of payment to <a href="mailto:billing@frobster.com">billing@frobster.com</a></li>
-                                            <li>Your subscription will be activated within 24 hours</li>
+                                            <li>${planLang.bankNext1}</li>
+                                            <li>${planLang.bankNext2} <a href="mailto:billing@frobster.com">billing@frobster.com</a></li>
+                                            <li>${planLang.bankNext3}</li>
                                         </ol>
-                                        <p class="text-muted mt-3">You will receive a confirmation email shortly.</p>
+                                        <p class="text-muted mt-3">${planLang.bankEmailFollowup}</p>
                                     </div>
                                 `,
                                 icon: 'success',
-                                confirmButtonText: 'Got It!',
+                                confirmButtonText: planLang.gotIt,
                                 confirmButtonColor: '#28a745'
                             }).then(() => {
                                 location.reload();
                             });
                         } else {
-                            alert('Failed to record bank transfer: ' + response.message);
+                            alert(planLang.bankRecordFailed + ' ' + (response.message || ''));
                         }
                     },
                     error: function(error) {
-                        alert('Failed to record bank transfer. Please try again.');
+                        alert(planLang.bankRecordError);
                     }
                 });
             });

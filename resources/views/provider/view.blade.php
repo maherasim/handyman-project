@@ -102,7 +102,12 @@
                 width: 380,
                 type: 'pie',
             },
-            labels: ['Completed', 'On Going','Pending', 'In Progress'],
+            labels: [
+                @json(__('messages.booking_pie_completed')),
+                @json(__('messages.booking_pie_on_going')),
+                @json(__('messages.booking_pie_pending')),
+                @json(__('messages.booking_pie_in_progress')),
+            ],
             responsive: [{
                 breakpoint: 480,
                 options: {
