@@ -261,25 +261,26 @@ class FrontendController extends Controller
 
 
 
-            $categories    = Category::where('status', 1)->orderBy('name')->get(['id','name'])->take(10);
+            // LIMIT in SQL — never ->get()->take(n); that hydrates every row then discards (OOM on large tables)
+            $categories    = Category::where('status', 1)->orderBy('name')->take(10)->get(['id','name']);
             if(!empty($filters['category_id'])){
                 $selected = Category::find($filters['category_id']);
                 if($selected && !$categories->contains('id', $selected->id)) $categories->push($selected);
             }
 
-            $subcategories = SubCategory::where('status', 1)->orderBy('name')->get(['id','name','category_id'])->take(10);
+            $subcategories = SubCategory::where('status', 1)->orderBy('name')->take(10)->get(['id','name','category_id']);
             if(!empty($filters['subcategory_id'])){
                 $selected = SubCategory::find($filters['subcategory_id']);
                 if($selected && !$subcategories->contains('id', $selected->id)) $subcategories->push($selected);
             }
 
-            $providers     = User::where('user_type','provider')->where('status',1)->orderBy('display_name')->get(['id','display_name'])->take(10);
+            $providers     = User::where('user_type','provider')->where('status',1)->orderBy('display_name')->take(10)->get(['id','display_name']);
             if(!empty($filters['provider_id'])){
                 $selected = User::find($filters['provider_id']);
                 if($selected && !$providers->contains('id', $selected->id)) $providers->push($selected);
             }
 
-            $countries     = Country::orderBy('name')->get(['id','name'])->take(10);
+            $countries     = Country::orderBy('name')->take(10)->get(['id','name']);
             if(!empty($filters['country_id'])){
                 $selected = Country::find($filters['country_id']);
                 if($selected && !$countries->contains('id', $selected->id)) $countries->push($selected);
@@ -289,7 +290,8 @@ class FrontendController extends Controller
             $cities        = City::query()
                 ->leftJoin('states', 'states.id', '=', 'cities.state_id')
                 ->orderBy('cities.name')
-                ->get(['cities.id', 'cities.name', 'cities.state_id', 'states.country_id'])->take(10);
+                ->take(10)
+                ->get(['cities.id', 'cities.name', 'cities.state_id', 'states.country_id']);
             if(!empty($filters['city_id'])){
                 $selected = City::find($filters['city_id']);
                 if($selected && !$cities->contains('id', $selected->id)) $cities->push($selected);
