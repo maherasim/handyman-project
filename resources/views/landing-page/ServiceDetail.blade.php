@@ -617,7 +617,7 @@
                                     <div class="about-provider-box">
                                         <div class="mb-4 pb-4 border-bottom d-flex align-items-sm-center aling-items-start flex-sm-row flex-column gap-5">
                                             <div class="flex-shrink-0 provider-image-container">
-                                                <img src="{{ $serviceData['provider']['profile_image'] }}" alt="provider-user"
+                                                <img src="{{ $serviceData['provider']['profile_image'] }}" alt="{{ __('landingpage.pd_alt_provider') }}"
                                                     class="img-fluid w-100">
                                             </div>
                                             <div>
@@ -625,14 +625,14 @@
                                                     <h5 class="text-capitalize mb-1">{{ $serviceData['provider']['display_name'] }}</h5>
                                                 </a>
                                                 <div class="d-flex align-items-center gap-2">
-                                                    <img src="{{ asset($providerPlanIcon) }}" alt="plan" style="width: 26px; height: 26px;">
+                                                    <img src="{{ asset($providerPlanIcon) }}" alt="{{ __('landingpage.pd_alt_provider') }}" style="width: 26px; height: 26px;">
                                                     @php
                                                         $aboutVerified = function_exists('verify_provider_document') ? verify_provider_document($serviceData['provider']['id']) : false;
                                                     @endphp
                                                     @if ($aboutVerified)
-                                                        <img src="{{ asset('images/icon/verifiedpng.png') }}" alt="verified" style="width: 26px; height: 26px;">
+                                                        <img src="{{ asset('images/icon/verifiedpng.png') }}" alt="{{ __('landingpage.pd_alt_verified_icon') }}" style="width: 26px; height: 26px;">
                                                     @else
-                                                        <img src="{{ asset('images/icon/notverifiedpng.png') }}" alt="not verified" style="width: 26px; height: 26px;">
+                                                        <img src="{{ asset('images/icon/notverifiedpng.png') }}" alt="{{ __('landingpage.pd_alt_not_verified_icon') }}" style="width: 26px; height: 26px;">
                                                     @endif
                                                 </div>
 
@@ -691,7 +691,7 @@
                                     @else
                                         <div class="no-content text-muted text-center py-4">
                                             <i class="fas fa-file-contract me-2"></i>
-                                            No cancellation policy available.
+                                            {{ __('landingpage.sd_no_cancellation_policy') }}
                         </div>
                     @endif
                                 </div>
@@ -1268,7 +1268,7 @@
 
                         {{-- <img src="{{ asset('images/frame_img.jpg') }}" alt="" class="d-flex m-auto" style="width: 164px;height:140px"> --}}
                         <div class="position-relative d-flex m-auto" style="width: 164px; height: 140px;">
-                            <img src="{{ asset('images/frame_img.jpg') }}" alt="Frame"
+                            <img src="{{ asset('images/frame_img.jpg') }}" alt="{{ __('landingpage.sd_frame_decor_alt') }}"
                                 style="width: 100%; height: 100%; position: absolute; z-index: 2;">
                             <img src="{{ asset($serviceData['provider']['profile_image']) }}" alt="{{ __('landingpage.sd_provider_details') }}"
                                 style="width: 80%; height: 80%; object-fit: cover; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 2;">
@@ -1284,7 +1284,7 @@
                                 @elseif(isset($serviceData['provider']['country']['name']))
                                     {{ $serviceData['provider']['country']['name'] }}
                                 @else
-                                    City - Country
+                                    {{ __('landingpage.sd_city_country') }}
                                 @endif
                             </p>
                         </div>
@@ -1295,10 +1295,10 @@
                                 $isAllVerified = $providerId && function_exists('verify_provider_document') ? verify_provider_document($providerId) : false;
                             @endphp
                             @if ($isAllVerified)
-                                <img src="{{ asset('images/icon/verifiedpng.png') }}" alt="icon"
+                                <img src="{{ asset('images/icon/verifiedpng.png') }}" alt="{{ __('landingpage.pd_alt_verified_icon') }}"
                                     style="width: 26px; height: 26px; margin-right: 10px;">
                             @else
-                                <img src="{{ asset('images/icon/notverifiedpng.png') }}" alt="icon"
+                                <img src="{{ asset('images/icon/notverifiedpng.png') }}" alt="{{ __('landingpage.pd_alt_not_verified_icon') }}"
                                     style="width: 26px; height: 26px; margin-right: 10px;">
                             @endif
 
@@ -1317,7 +1317,7 @@
 
 
 
-                            <img src="{{ asset($providerPlanIcon) }}" alt="icon"
+                            <img src="{{ asset($providerPlanIcon) }}" alt="{{ __('landingpage.pd_alt_provider') }}"
                                 style="width: 26px; height: 26px;">
 
 
@@ -1359,7 +1359,7 @@
                                 <div class="info-card-body">
                                     <div class="info-row">
                                         <span class="info-label">
-                                            <i class="ri-calendar-line me-1"></i> Member Since:
+                                            <i class="ri-calendar-line me-1"></i> {{ __('landingpage.jdd_member_since') }}
                                         </span>
                                         <span class="info-value">{{ \Carbon\Carbon::parse($serviceData['provider']['created_at'])->format('d M Y') }}</span>
                                     </div>
@@ -1410,7 +1410,7 @@
                                     @if(!empty($completed_services))
                                     <div class="info-row">
                                         <span class="info-label">
-                                            <i class="ri-checkbox-circle-line me-1"></i> Jobs Completed:
+                                            <i class="ri-checkbox-circle-line me-1"></i> {{ __('landingpage.sd_jobs_completed') }}
                                         </span>
                                         <span class="info-value badge bg-success">{{ $completed_services }}</span>
                                     </div>

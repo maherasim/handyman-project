@@ -307,7 +307,8 @@
   'sd_education_skills' => 'Education & Skills',
   'sd_diploma_certifications' => 'Diploma & Certifications',
   'sd_certifications_skills' => 'Certifications & Skills',
-  'sd_jobs_completed' => 'Jobs Completed',
+  'sd_jobs_completed' => 'Jobs Completed:',
+  'sd_frame_decor_alt' => 'Decorative frame',
 
   'pd_provider_fallback' => 'Provider',
   'pd_service_provider_on' => 'Service provider on',

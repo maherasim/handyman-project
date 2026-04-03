@@ -212,5 +212,16 @@ return [
     'first_booking_cta' => 'Obter oferta',
     'completed_jobs' => 'Trabalhos realizados',
     'local_pros' => 'Profissionais locais',
-    'most_popular' => 'Mais popular'
+    'most_popular' => 'Mais popular',
+
+    'jdd_member_since' => 'Membro desde:',
+    'sd_jobs_completed' => 'Trabalhos concluídos:',
+    'sd_frame_decor_alt' => 'Moldura decorativa',
+    'sd_city_country' => 'Cidade – País',
+    'sd_provider_details' => 'Detalhes do prestador',
+    'sd_basic_information' => 'Informações básicas',
+    'sd_no_cancellation_policy' => 'Nenhuma política de cancelamento disponível.',
+    'pd_alt_verified_icon' => 'Ícone verificado',
+    'pd_alt_not_verified_icon' => 'Ícone não verificado',
+    'pd_alt_provider' => 'Prestador',
 ];

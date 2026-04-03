@@ -307,7 +307,8 @@
   'sd_education_skills' => 'Kenntnisse',
   'sd_diploma_certifications' => 'Abschlusszeugnis',
   'sd_certifications_skills' => 'Zertifizierung',
-  'sd_jobs_completed' => 'Aufträge angeschlossen',
+  'sd_jobs_completed' => 'Abgeschlossene Aufträge:',
+  'sd_frame_decor_alt' => 'Dekorativer Rahmen',
 
   'pd_provider_fallback' => 'Anbieter',
   'pd_service_provider_on' => 'Anbieter bei',
