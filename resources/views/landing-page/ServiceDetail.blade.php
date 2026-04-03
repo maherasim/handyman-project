@@ -279,10 +279,22 @@
             color: #495057;
         }
 
+        .info-row {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-start;
+            gap: 8px 12px;
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
+        }
+
         .info-label {
             font-weight: 600;
             color: #495057;
             min-width: 140px;
+            max-width: 100%;
+            flex: 0 1 auto;
             display: flex;
             align-items: center;
             font-size: 14px;
@@ -295,7 +307,41 @@
 
         .info-value {
             color: #212529;
-            flex: 1;
+            flex: 1 1 200px;
+            min-width: 0;
+            max-width: 100%;
+            font-size: 14px;
+            word-break: break-word;
+            overflow-wrap: anywhere;
+            line-height: 1.55;
+        }
+
+        /* Long provider fields (mobility, availability) — not single-line pills */
+        .info-value-long {
+            display: block;
+            width: 100%;
+            flex: 1 1 100%;
+        }
+
+        .info-value .badge.bg-info,
+        .info-value .badge.bg-primary {
+            white-space: normal;
+            word-break: break-word;
+            overflow-wrap: anywhere;
+            max-width: 100%;
+            text-align: left;
+            line-height: 1.5;
+            font-weight: 500;
+        }
+
+        .provider-field-prose {
+            display: block;
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
+            word-break: break-word;
+            overflow-wrap: anywhere;
+            line-height: 1.55;
             font-size: 14px;
         }
 
@@ -1381,24 +1427,60 @@
                                 </div>
                                 <div class="info-card-body">
                                     @if(!empty($serviceData['provider']['availability']))
+                                    @php
+                                        $availData = $serviceData['provider']['availability'];
+                                        $availabilityText = '';
+                                        if (is_string($availData)) {
+                                            $decA = json_decode($availData, true);
+                                            if (json_last_error() === JSON_ERROR_NONE && is_array($decA)) {
+                                                $availabilityText = implode("\n\n", array_filter(array_map('trim', $decA)));
+                                            } else {
+                                                $availabilityText = trim($availData);
+                                            }
+                                        } elseif (is_array($availData)) {
+                                            $availabilityText = implode("\n\n", array_filter(array_map('trim', $availData)));
+                                        } else {
+                                            $availabilityText = trim((string) $availData);
+                                        }
+                                    @endphp
+                                    @if($availabilityText !== '')
                                     <div class="info-row">
                                         <span class="info-label">
-                                            <i class="ri-calendar-check-line me-1"></i> Availability:
+                                            <i class="ri-calendar-check-line me-1"></i> {{ __('landingpage.sd_availability') }}:
                                         </span>
-                                        <span class="info-value">
-                                            <span class="badge bg-primary">{{ ucfirst(trim($serviceData['provider']['availability'])) }}</span>
+                                        <span class="info-value info-value-long">
+                                            <span class="provider-field-prose border rounded p-2 bg-primary bg-opacity-10 text-dark">{!! nl2br(e($availabilityText)) !!}</span>
                                         </span>
                                     </div>
                                     @endif
+                                    @endif
                                     @if(!empty($serviceData['provider']['mobility']))
+                                    @php
+                                        $mobilityData = $serviceData['provider']['mobility'];
+                                        $mobilityText = '';
+                                        if (is_string($mobilityData)) {
+                                            $decM = json_decode($mobilityData, true);
+                                            if (json_last_error() === JSON_ERROR_NONE && is_array($decM)) {
+                                                $mobilityText = implode("\n\n", array_filter(array_map('trim', $decM)));
+                                            } else {
+                                                $mobilityText = trim($mobilityData);
+                                            }
+                                        } elseif (is_array($mobilityData)) {
+                                            $mobilityText = implode("\n\n", array_filter(array_map('trim', $mobilityData)));
+                                        } else {
+                                            $mobilityText = trim((string) $mobilityData);
+                                        }
+                                    @endphp
+                                    @if($mobilityText !== '')
                                     <div class="info-row">
                                         <span class="info-label">
                                             <i class="ri-car-line me-1"></i> {{ __('landingpage.sd_mobility') }}:
                                         </span>
-                                        <span class="info-value">
-                                            <span class="badge bg-info">{{ ucfirst(trim($serviceData['provider']['mobility'])) }}</span>
+                                        <span class="info-value info-value-long">
+                                            <span class="provider-field-prose border rounded p-2 bg-info bg-opacity-10 text-dark">{!! nl2br(e($mobilityText)) !!}</span>
                                         </span>
                                     </div>
+                                    @endif
                                     @endif
                                 </div>
                             </div>
