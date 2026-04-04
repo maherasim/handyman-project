@@ -64,7 +64,8 @@ class UgcSafetyController extends Controller
             $service->update(['is_hidden_from_public' => true]);
         }
 
-        $this->notifyAdminNewReport($service, $user);
+        $this->notifyAdminNewReport($service, $user, $request->input('reason'), $request->input('details'));
+        $this->notifyProviderServiceReported($service, $request->input('reason'), $request->input('details'));
 
         return response()->json([
             'message' => __('messages.ugc_report_received'),
@@ -126,7 +127,8 @@ class UgcSafetyController extends Controller
             $job->update(['is_hidden_from_public' => true]);
         }
 
-        $this->notifyAdminNewPostJobReport($job, $user);
+        $this->notifyAdminNewPostJobReport($job, $user, $request->input('reason'), $request->input('details'));
+        $this->notifyJobOwnerPostJobReported($job, $request->input('reason'), $request->input('details'));
 
         return response()->json([
             'message' => __('messages.ugc_report_received'),
@@ -187,7 +189,7 @@ class UgcSafetyController extends Controller
         return response()->json(['message' => __('messages.ugc_user_unblocked')]);
     }
 
-    protected function notifyAdminNewReport(Service $service, User $reporter): void
+    protected function notifyAdminNewReport(Service $service, User $reporter, string $reason, ?string $details): void
     {
         try {
             $email = null;
@@ -203,11 +205,19 @@ class UgcSafetyController extends Controller
                 return;
             }
 
+            $reasonLabel = $this->ugcReportReasonLabel($reason);
+            $detailsTrimmed = $details ? trim($details) : '';
+            $detailsLine = $detailsTrimmed !== ''
+                ? "\n".__('messages.ugc_admin_email_post_job_details_line', ['details' => $detailsTrimmed])
+                : '';
+
             Mail::raw(
                 __('messages.ugc_admin_email_body', [
                     'service' => $service->name,
                     'service_id' => $service->id,
                     'reporter' => $reporter->email,
+                    'reason' => $reasonLabel,
+                    'details_line' => $detailsLine,
                     'time' => now()->toDateTimeString(),
                 ]),
                 function ($message) use ($email) {
@@ -219,7 +229,38 @@ class UgcSafetyController extends Controller
         }
     }
 
-    protected function notifyAdminNewPostJobReport(PostJobRequest $job, User $reporter): void
+    protected function notifyProviderServiceReported(Service $service, string $reason, ?string $details): void
+    {
+        try {
+            $service->loadMissing('providers');
+            $provider = $service->providers;
+            if (! $provider || empty($provider->email)) {
+                return;
+            }
+
+            $reasonLabel = $this->ugcReportReasonLabel($reason);
+            $detailsTrimmed = $details ? trim($details) : '';
+            $detailsBlock = $detailsTrimmed !== ''
+                ? __('messages.ugc_job_owner_email_details_block', ['details' => $detailsTrimmed])."\n\n"
+                : '';
+
+            Mail::raw(
+                __('messages.ugc_provider_email_body_service_reported', [
+                    'service_name' => $service->name,
+                    'reason' => $reasonLabel,
+                    'details_block' => $detailsBlock,
+                    'time' => now()->toDateTimeString(),
+                ]),
+                function ($message) use ($provider) {
+                    $message->to($provider->email)->subject(__('messages.ugc_provider_email_subject_service_reported'));
+                }
+            );
+        } catch (\Throwable $e) {
+            report($e);
+        }
+    }
+
+    protected function notifyAdminNewPostJobReport(PostJobRequest $job, User $reporter, string $reason, ?string $details): void
     {
         try {
             $email = null;
@@ -235,11 +276,19 @@ class UgcSafetyController extends Controller
                 return;
             }
 
+            $reasonLabel = $this->ugcReportReasonLabel($reason);
+            $detailsTrimmed = $details ? trim($details) : '';
+            $detailsLine = $detailsTrimmed !== ''
+                ? "\n".__('messages.ugc_admin_email_post_job_details_line', ['details' => $detailsTrimmed])
+                : '';
+
             Mail::raw(
                 __('messages.ugc_admin_email_body_post_job', [
                     'title' => $job->title,
                     'post_job_id' => $job->id,
                     'reporter' => $reporter->email,
+                    'reason' => $reasonLabel,
+                    'details_line' => $detailsLine,
                     'time' => now()->toDateTimeString(),
                 ]),
                 function ($message) use ($email) {
@@ -249,5 +298,44 @@ class UgcSafetyController extends Controller
         } catch (\Throwable $e) {
             report($e);
         }
+    }
+
+    protected function notifyJobOwnerPostJobReported(PostJobRequest $job, string $reason, ?string $details): void
+    {
+        try {
+            $job->loadMissing('customer');
+            $customer = $job->customer;
+            if (! $customer || empty($customer->email)) {
+                return;
+            }
+
+            $reasonLabel = $this->ugcReportReasonLabel($reason);
+            $detailsTrimmed = $details ? trim($details) : '';
+            $detailsBlock = $detailsTrimmed !== ''
+                ? __('messages.ugc_job_owner_email_details_block', ['details' => $detailsTrimmed])."\n\n"
+                : '';
+
+            Mail::raw(
+                __('messages.ugc_job_owner_email_body_post_job', [
+                    'title' => $job->title,
+                    'reason' => $reasonLabel,
+                    'details_block' => $detailsBlock,
+                    'time' => now()->toDateTimeString(),
+                ]),
+                function ($message) use ($customer) {
+                    $message->to($customer->email)->subject(__('messages.ugc_job_owner_email_subject_post_job'));
+                }
+            );
+        } catch (\Throwable $e) {
+            report($e);
+        }
+    }
+
+    protected function ugcReportReasonLabel(string $reason): string
+    {
+        $key = 'messages.ugc_report_reason_'.$reason;
+        $label = __($key);
+
+        return $label !== $key ? $label : $reason;
     }
 }
