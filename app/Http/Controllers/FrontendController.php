@@ -76,9 +76,10 @@ class FrontendController extends Controller
         // $completedBookingCount = Booking::whereIn('service_id', $servicerequest)
         // ->where('status', 'completed') // Only count completed bookings
         // ->count();
-        $servicerequest = Service::whereIn('id', $servicerequest)
-            ->with(['serviceRating']) // Assuming a serviceRating relationship exists
-            ->get()
+        $serviceQuery = Service::whereIn('id', $servicerequest)
+            ->with(['serviceRating']); // Assuming a serviceRating relationship exists
+        \App\Support\UgcListing::scopePublicServices($serviceQuery);
+        $servicerequest = $serviceQuery->get()
             ->map(function ($service) {
                 $ratings = BookingRating::where('service_id', $service->id)->pluck('rating')->toArray();
                 $totalReviews = count($ratings);
@@ -95,12 +96,13 @@ class FrontendController extends Controller
 
         // Featured Services: when section is enabled, fetch services marked as featured (is_featured = 1)
         $featuredSectionEnabled = isset($sectionData['section_4']['section_4']) && (int) $sectionData['section_4']['section_4'] === 1;
-        $featuredrequest = $featuredSectionEnabled
-            ? Service::where('is_featured', 1)
+        if ($featuredSectionEnabled) {
+            $featuredQuery = Service::where('is_featured', 1)
                 ->with(['serviceRating'])
                 ->orderByDesc('id')
-                ->limit(16)
-                ->get()
+                ->limit(16);
+            \App\Support\UgcListing::scopePublicServices($featuredQuery);
+            $featuredrequest = $featuredQuery->get()
                 ->map(function ($service) {
                     $ratings = BookingRating::where('service_id', $service->id)->pluck('rating')->toArray();
                     $totalReviews = count($ratings);
@@ -109,8 +111,10 @@ class FrontendController extends Controller
                     $service->avg_rating = round($avgRating, 1);
                     $service->booking_count = Booking::where('service_id', $service->id)->count();
                     return $service;
-                })
-            : collect();
+                });
+        } else {
+            $featuredrequest = collect();
+        }
 
         // Service Configuration
         $settings = Setting::where('type', 'service-configurations')->where('key', 'service-configurations')->first();
@@ -298,6 +302,7 @@ class FrontendController extends Controller
             }
 
             $query = Service::where('service_type','service')->where('status',1);
+            \App\Support\UgcListing::scopePublicServices($query);
             if (!empty($filters['q'])) {
                 $query->where('name', 'like', "%{$filters['q']}%");
             }
@@ -330,6 +335,8 @@ class FrontendController extends Controller
             } else {
                 $query->orderBy('created_at', 'desc');
             }
+
+            UgcListing::scopePublicServices($query);
 
             $services = $query->with(['providers','city','country'])->paginate(12)->withQueryString();
 
@@ -985,6 +992,15 @@ class FrontendController extends Controller
             abort(404);
         }
 
+        $viewer = auth()->user();
+        if (! $viewer || ! $viewer->hasAnyRole(['admin', 'demo_admin'])) {
+            $hidden = (bool) ($jobrequest->is_hidden_from_public ?? false);
+            $isOwner = $viewer && (int) $viewer->id === (int) $jobrequest->customer_id;
+            if ($hidden && ! $isOwner) {
+                abort(404);
+            }
+        }
+
         // Increment view count
         try {
             $jobrequest->increment('total_views');
@@ -1179,8 +1195,8 @@ class FrontendController extends Controller
     public function jobDatatable(Request $request)
     {
         // Initialize the query builder
-        $query = PostJobRequest::with(['country', 'city']);
-
+        $query = PostJobRequest::with(['country', 'city', 'customer']);
+        UgcListing::scopePublicPostJobs($query, auth()->id());
 
         // Apply filters based on request input
         if ($request->filled('category_id')) {

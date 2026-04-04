@@ -45,7 +45,7 @@
 
 @section('after_head')
  
-<style>
+    <style>
     .mt-2 {
     margin-top: 2.5rem !important;
 }
@@ -483,6 +483,10 @@
     .service-cta-card .cta-btn:hover { color: #4a4b9e; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.2); }
     .service-cta-card .cta-btn:active { transform: translateY(0); }
 
+    /* SweetAlert above header/cards; service detail has high stacking contexts */
+    .swal2-container { z-index: 200000 !important; }
+    .swal2-container .swal2-popup { z-index: 200001 !important; }
+
 </style>
 @endsection
 
@@ -545,10 +549,47 @@
                                 </li>
                             @endif
                         </ul>
-                        <div>
-                            <span class="text-capitalize">{{ __('landingpage.created_by') }}: </span>
-                            <a class="d-inline-block text-capitalize m-0"
-                                href="{{ route('provider.detail', $serviceData['provider']['id']) }}">{{ $serviceData['provider']['display_name'] }}</a>
+                        <div class="d-flex align-items-center gap-3">
+                            <div>
+                                <span class="text-capitalize">{{ __('landingpage.created_by') }}: </span>
+                                <a class="d-inline-block text-capitalize m-0"
+                                    href="{{ route('provider.detail', $serviceData['provider']['id']) }}">{{ $serviceData['provider']['display_name'] }}</a>
+                            </div>
+                            @if(auth()->check() && \App\Support\UgcListing::isCustomer(auth()->user()) && !empty($serviceData['provider']['id']))
+                            <div class="dropdown" style="position: relative; z-index: 9999;">
+                               <button type="button" class="btn btn-link text-muted text-decoration-none p-1 border-0 bg-transparent" onclick="document.getElementById('ugc-dropdown-menu-detail').style.display = document.getElementById('ugc-dropdown-menu-detail').style.display === 'block' ? 'none' : 'block';" aria-expanded="false" style="padding: 4px 8px;">
+                                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                     <circle cx="5" cy="12" r="2" fill="currentColor"/>
+                                     <circle cx="12" cy="12" r="2" fill="currentColor"/>
+                                     <circle cx="19" cy="12" r="2" fill="currentColor"/>
+                                  </svg>
+                               </button>
+                               <ul id="ugc-dropdown-menu-detail" class="dropdown-menu-end shadow border-0" style="display: none; position: absolute; right: 0; min-width: 150px; font-size: 14px; background: white; border-radius: 8px; list-style: none; padding: 0.5rem 0; margin: 0; top: 100%;">
+                                  <li>
+                                     <a class="dropdown-item text-secondary py-2 px-3 d-block" href="javascript:void(0)" 
+                                        onclick="document.getElementById('ugc-dropdown-menu-detail').style.display = 'none'; if(window.triggerUgcReport) window.triggerUgcReport({{ $serviceData['service_detail']['id'] }}, this);">
+                                        <i class="fas fa-flag fa-fw me-2"></i>{{ __('messages.ugc_report') }}
+                                     </a>
+                                  </li>
+                                  <li>
+                                     <a class="dropdown-item text-danger py-2 px-3 d-block" href="javascript:void(0)" 
+                                        onclick="document.getElementById('ugc-dropdown-menu-detail').style.display = 'none'; if(window.triggerUgcBlock) window.triggerUgcBlock({{ $serviceData['provider']['id'] }}, this, 'employer');">
+                                        <i class="fas fa-ban fa-fw me-2"></i>{{ __('messages.ugc_block_employer') }}
+                                     </a>
+                                  </li>
+                               </ul>
+                            </div>
+                            <!-- Global click listener to close it -->
+                            <script>
+                                document.addEventListener('click', function(e) {
+                                    var menu = document.getElementById('ugc-dropdown-menu-detail');
+                                    var trigger = menu.previousElementSibling;
+                                    if (menu && menu.style.display === 'block' && !menu.contains(e.target) && !trigger.contains(e.target)) {
+                                        menu.style.display = 'none';
+                                    }
+                                });
+                            </script>
+                            @endif
                         </div>
                     </div>
                     @if (!empty($serviceData['service_detail']['attchments']))
@@ -1907,4 +1948,8 @@
             });
         });
     </script>
+@endsection
+
+@section('after_script')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.1/dist/sweetalert2.all.min.js"></script>
 @endsection

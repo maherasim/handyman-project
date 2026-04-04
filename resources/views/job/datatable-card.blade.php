@@ -7,6 +7,7 @@
      <link rel="stylesheet" type="text/css"
          href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css" />
      <style>
+         .job-card .dropdown-toggle-no-caret::after { display: none !important; }
          <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css"><link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
 
          <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>body {
@@ -302,8 +303,11 @@
                      </div>
                  @else
                      @foreach ($jobrequest as $jobRequest)
+                         @php
+                             $posterId = $jobRequest->customer_id;
+                             $canJobUgc = auth()->check() && $posterId && \App\Support\UgcListing::canReportPostJob(auth()->user(), $jobRequest);
+                         @endphp
                          <div class="col-lg-3 col-md-6 col-12 mb-3">
-                             <a href="{{ route('job.details', $jobRequest->id) }}" class="card-link text-decoration-none">
                                  <div class="job-card h-100"
                                      style="
                              background: #FFFFFF;
@@ -311,9 +315,9 @@
                              border-radius: 16px;
                              box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
                              transition: all 0.3s ease;
-                             overflow: hidden;
                              position: relative;
                          ">
+                                     <a href="{{ route('job.details', $jobRequest->id) }}" class="text-decoration-none text-reset d-block">
                                      <!-- Card Image Container -->
                                      <div class="image-container"
                                          style="position: relative; height: 120px; overflow: hidden;">
@@ -433,40 +437,73 @@
 
                                          <!-- Customer Info -->
                                          <div class="customer-info" style="margin-bottom: 8px;">
-                                             <div class="d-flex align-items-center" style="gap: 6px;">
-                                                 <div class="customer-avatar"
-                                                     style="
-                                             width: 28px;
-                                             height: 28px;
-                                             border-radius: 50%;
-                                             overflow: hidden;
-                                             border: 2px solid #f0f0f0;
-                                         ">
-                                                     <img src="{{ getSingleMedia($jobRequest->customer, 'profile_image', null) ?? 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQnnM0ib-pYCZg4DbbB_T5_mfxpqrDHYXFLy208bjvHjIM5q1FF4lzLvNFp2qZ5Eo11orA&usqp=CAU' }}"
-                                                         alt="Customer"
-                                                         style="width: 100%; height: 100%; object-fit: cover;">
-                                                 </div>
-                                                 <div class="customer-details">
-                                                     <div
+                                             <div class="d-flex align-items-center justify-content-between">
+                                                 <div class="d-flex align-items-center" style="gap: 6px;">
+                                                     <div class="customer-avatar"
                                                          style="
-                                                 font-size: 12px;
-                                                 font-weight: 600;
-                                                 color: #1a1a1a;
-                                                 margin-bottom: 1px;
+                                                 width: 28px;
+                                                 height: 28px;
+                                                 border-radius: 50%;
+                                                 overflow: hidden;
+                                                 border: 2px solid #f0f0f0;
                                              ">
-                                                         {{ $jobRequest->customer->display_name ?? ($jobRequest->customer->username ?? __('landingpage.jd_unknown')) }}
+                                                         <img src="{{ getSingleMedia($jobRequest->customer, 'profile_image', null) ?? 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQnnM0ib-pYCZg4DbbB_T5_mfxpqrDHYXFLy208bjvHjIM5q1FF4lzLvNFp2qZ5Eo11orA&usqp=CAU' }}"
+                                                             alt="Customer"
+                                                             style="width: 100%; height: 100%; object-fit: cover;">
                                                      </div>
-                                                     <div
-                                                         style="
-                                                 font-size: 10px;
-                                                 color: #8e8e93;
-                                                 font-weight: 400;
-                                             ">
-                                                         {{ data_get($jobRequest, 'customer.city.name', 'Unknown') }} -
-                                                         {{ data_get($jobRequest, 'customer.country.name', 'Unknown') }}
+                                                     <div class="customer-details">
+                                                         <div
+                                                             style="
+                                                     font-size: 12px;
+                                                     font-weight: 600;
+                                                     color: #1a1a1a;
+                                                     margin-bottom: 1px;
+                                                 ">
+                                                             {{ $jobRequest->customer->display_name ?? ($jobRequest->customer->username ?? __('landingpage.jd_unknown')) }}
+                                                         </div>
+                                                         <div
+                                                             style="
+                                                     font-size: 10px;
+                                                     color: #8e8e93;
+                                                     font-weight: 400;
+                                                 ">
+                                                             {{ data_get($jobRequest, 'customer.city.name', 'Unknown') }} -
+                                                             {{ data_get($jobRequest, 'customer.country.name', 'Unknown') }}
 
+                                                         </div>
                                                      </div>
                                                  </div>
+                                                 
+                                                 @if($canJobUgc)
+                                                 <div class="position-relative" style="z-index: 20;">
+                                                     <button type="button" class="btn btn-link text-muted text-decoration-none border-0 p-1 bg-transparent" aria-label="{{ __('messages.ugc_report_user') }}" onclick="
+                                                         event.preventDefault();
+                                                         event.stopPropagation();
+                                                         var menu = this.nextElementSibling;
+                                                         var isVisible = menu.style.display === 'block';
+                                                         document.querySelectorAll('.ugc-dropdown-menu-job').forEach(function(el) { el.style.display = 'none'; });
+                                                         menu.style.display = isVisible ? 'none' : 'block';
+                                                     " onmousedown="event.stopPropagation();">
+                                                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                                            <circle cx="5" cy="12" r="2" fill="currentColor"/>
+                                                            <circle cx="12" cy="12" r="2" fill="currentColor"/>
+                                                            <circle cx="19" cy="12" r="2" fill="currentColor"/>
+                                                         </svg>
+                                                     </button>
+                                                     <ul class="dropdown-menu shadow border-0 ugc-dropdown-menu-job" style="display: none; position: absolute; right: 0; top: 100%; min-width: 150px; font-size: 14px; margin-top: 5px; background: white; border-radius: 8px; list-style: none; padding: 0.5rem 0; text-align: left;">
+                                                         <li>
+                                                             <a class="dropdown-item py-2 text-secondary px-3 d-block" href="javascript:void(0)" onclick="event.preventDefault(); event.stopPropagation(); this.closest('.ugc-dropdown-menu-job').style.display='none'; if(window.triggerUgcReportPostJob) window.triggerUgcReportPostJob({{ $jobRequest->id }}, this);">
+                                                                 <i class="fas fa-flag fa-fw me-2"></i>{{ __('messages.ugc_report_user') }}
+                                                             </a>
+                                                         </li>
+                                                         <li>
+                                                             <a class="dropdown-item py-2 text-danger px-3 d-block" href="javascript:void(0)" onclick="event.preventDefault(); event.stopPropagation(); this.closest('.ugc-dropdown-menu-job').style.display='none'; if(window.triggerUgcBlock) window.triggerUgcBlock({{ $posterId }}, this, 'customer');">
+                                                                 <i class="fas fa-ban fa-fw me-2"></i>{{ __('messages.ugc_block_customer') }}
+                                                             </a>
+                                                         </li>
+                                                     </ul>
+                                                 </div>
+                                                 @endif
                                              </div>
                                          </div>
 
@@ -504,14 +541,15 @@
                                                  </span>
                                              </div>
                                          </div>
-
-                                         <!-- Social Icons -->
+                                     </div>
+                                     </a>
+                                        <!-- Social Icons -->
                                         <div class="social-icons"
                                              style="
                                      display: flex;
                                      align-items: center;
                                      gap: 6px;
-                                     padding-top: 8px;
+                                     padding: 8px 12px 12px;
                                      border-top: 1px solid #f0f0f0;
                                  ">
                                             <span role="button" tabindex="0" class="social-link share-link" data-platform="facebook" data-job-id="{{ $jobRequest->id }}" data-share-url="{{ route('job.details', $jobRequest->id) }}?v={{ optional($jobRequest->updated_at)->timestamp ?? time() }}" data-quote="{{ $jobRequest->title }} • {{ getPriceFormat($jobRequest->price) }} • {{ ucfirst($jobRequest->price_type ?? 'fixed') }} • {{ data_get($jobRequest,'city.name','City') }}, {{ data_get($jobRequest,'country.name','Country') }}" onclick="return window.__shareClickHandler(event, this);"
@@ -569,15 +607,12 @@
                                           text-decoration: none; cursor: pointer;
                                          display: flex;
                                          align-items: center;
-                                         justify-content: center;
                                      ">
                                                  <img src="{{ asset('assets/linkedIn.png') }}?v=20260303"
                                                      alt="{{ __('landingpage.pd_alt_linkedin') }}" style="width: 24px; height: 24px; object-fit: contain;">
-                                            </span>
+                                             </span>
                                          </div>
-                                     </div>
                                  </div>
-                             </a>
                          </div>
                      @endforeach
                  @endif
@@ -585,9 +620,9 @@
          </div>
 
 
-         <!-- Include Bootstrap JS and jQuery -->
+         <!-- Bootstrap 4 dropdowns require Popper.js v1 (not @popperjs/core v2 — otherwise "n is not a constructor" in dropdown.js). -->
          <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-         <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+         <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
          <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
         <script>

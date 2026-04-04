@@ -132,6 +132,7 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
         Route::get('/home', [HomeController::class, 'index'])->name('home');
 
         Route::post('ugc/report', [UgcSafetyController::class, 'reportContent'])->name('ugc.report');
+        Route::post('ugc/report-post-job', [UgcSafetyController::class, 'reportPostJob'])->name('ugc.report.post_job');
         Route::post('ugc/block', [UgcSafetyController::class, 'blockUser'])->name('ugc.block');
         Route::post('ugc/unblock', [UgcSafetyController::class, 'unblockUser'])->name('ugc.unblock');
 

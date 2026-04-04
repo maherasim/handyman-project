@@ -22,9 +22,9 @@
                             <thead>
                                 <tr>
                                     <th>{{ __('messages.srno') }}</th>
-                                    <th>{{ __('messages.ugc_col_service') }}</th>
+                                    <th>{{ __('messages.ugc_col_listing') }}</th>
                                     <th>{{ __('messages.ugc_col_reporter') }}</th>
-                                    <th>{{ __('messages.ugc_col_provider') }}</th>
+                                    <th>{{ __('messages.ugc_col_reported_party') }}</th>
                                     <th>{{ __('messages.ugc_col_reason') }}</th>
                                     <th>{{ __('messages.ugc_col_details') }}</th>
                                     <th>{{ __('messages.status') }}</th>
@@ -38,7 +38,12 @@
                                         <td>{{ $report->id }}</td>
                                         <td>
                                             @if($report->reportable && $report->reportable_type === \App\Models\Service::class)
+                                                <span class="badge bg-light text-dark border mb-1">{{ __('messages.service') }}</span>
                                                 <strong>{{ \Illuminate\Support\Str::limit($report->reportable->name ?? '—', 40) }}</strong>
+                                                <div class="small text-muted">#{{ $report->reportable_id }}</div>
+                                            @elseif($report->reportable && $report->reportable_type === \App\Models\PostJobRequest::class)
+                                                <span class="badge bg-light text-dark border mb-1">{{ __('messages.post_job_request') }}</span>
+                                                <strong>{{ \Illuminate\Support\Str::limit($report->reportable->title ?? '—', 40) }}</strong>
                                                 <div class="small text-muted">#{{ $report->reportable_id }}</div>
                                             @else
                                                 #{{ $report->reportable_id }}
@@ -61,31 +66,41 @@
                                         <td>{{ $report->reason }}</td>
                                         <td class="small">{{ $report->details ? \Illuminate\Support\Str::limit($report->details, 120) : '—' }}</td>
                                         <td>
-                                            <span class="badge bg-secondary">{{ $report->status }}</span>
+                                            @php
+                                                $ugcStatusLabels = [
+                                                    'pending' => __('messages.ugc_report_status_pending'),
+                                                    'dismissed' => __('messages.ugc_report_status_dismissed'),
+                                                    'action_taken' => __('messages.ugc_report_status_action_taken'),
+                                                    'reviewed' => __('messages.ugc_report_status_reviewed'),
+                                                ];
+                                                $statusLabel = $ugcStatusLabels[$report->status] ?? ucfirst(str_replace('_', ' ', (string) $report->status));
+                                            @endphp
+                                            <span class="badge bg-secondary">{{ $statusLabel }}</span>
                                         </td>
                                         <td>{{ $report->created_at?->format('Y-m-d H:i') }}</td>
                                         <td>
                                             @if($report->status === 'pending')
-                                                <div class="d-flex flex-column gap-2" style="min-width: 220px;">
-                                                    <form method="POST" action="{{ route('admin.content-reports.update', $report) }}" class="d-inline">
-                                                        @csrf
-                                                        <input type="hidden" name="action" value="dismiss">
-                                                        <input type="text" name="admin_note" class="form-control form-control-sm mb-1" placeholder="{{ __('messages.ugc_admin_note_placeholder') }}">
-                                                        <button type="submit" class="btn btn-sm btn-outline-secondary">{{ __('messages.ugc_action_dismiss') }}</button>
-                                                    </form>
-                                                    <form method="POST" action="{{ route('admin.content-reports.update', $report) }}" class="d-inline">
-                                                        @csrf
-                                                        <input type="hidden" name="action" value="hide_service">
-                                                        <input type="text" name="admin_note" class="form-control form-control-sm mb-1" placeholder="{{ __('messages.ugc_admin_note_placeholder') }}">
-                                                        <button type="submit" class="btn btn-sm btn-warning">{{ __('messages.ugc_action_hide_service') }}</button>
-                                                    </form>
-                                                    <form method="POST" action="{{ route('admin.content-reports.update', $report) }}" class="d-inline">
-                                                        @csrf
-                                                        <input type="hidden" name="action" value="restore_service">
-                                                        <input type="text" name="admin_note" class="form-control form-control-sm mb-1" placeholder="{{ __('messages.ugc_admin_note_placeholder') }}">
-                                                        <button type="submit" class="btn btn-sm btn-success">{{ __('messages.ugc_action_restore_service') }}</button>
-                                                    </form>
-                                                </div>
+                                                <form method="POST" action="{{ route('admin.content-reports.update', $report) }}" class="d-flex flex-column gap-2" style="min-width: 200px;">
+                                                    @csrf
+                                                    <select name="action" class="form-select form-select-sm border-0 shadow-sm" required style="border-radius: 8px; font-weight: 500;">
+                                                        <option value="" disabled selected>{{ __('messages.action') }}...</option>
+                                                        <option value="dismiss" class="text-secondary">{{ __('messages.ugc_action_dismiss') }}</option>
+                                                        @if($report->reportable_type === \App\Models\Service::class)
+                                                            <option value="hide_service" class="text-warning fw-bold">{{ __('messages.ugc_action_hide_service') }}</option>
+                                                            <option value="restore_service" class="text-success">{{ __('messages.ugc_action_restore_service') }}</option>
+                                                        @elseif($report->reportable_type === \App\Models\PostJobRequest::class)
+                                                            <option value="hide_post_job" class="text-warning fw-bold">{{ __('messages.ugc_action_hide_post_job') }}</option>
+                                                            <option value="restore_post_job" class="text-success">{{ __('messages.ugc_action_restore_post_job') }}</option>
+                                                        @endif
+                                                    </select>
+                                                    
+                                                    <div class="input-group input-group-sm shadow-sm" style="border-radius: 8px; overflow: hidden;">
+                                                        <input type="text" name="admin_note" class="form-control border-0" placeholder="{{ __('messages.ugc_admin_note_placeholder') }}" style="background: #f8f9fa;">
+                                                        <button type="submit" class="btn btn-primary border-0" style="background: #667eea; transition: all 0.2s;">
+                                                            <i class="fas fa-check"></i>
+                                                        </button>
+                                                    </div>
+                                                </form>
                                             @else
                                                 <span class="text-muted small">{{ __('messages.ugc_no_further_action') }}</span>
                                             @endif
