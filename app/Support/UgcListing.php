@@ -139,7 +139,10 @@ class UgcListing
         });
 
         $uid = $viewerUserId ?? ($user?->id);
-        if ($uid && self::isCustomer($user)) {
+        // Resolve viewer for role checks when the route has no auth middleware but caller passes auth()->id(),
+        // or when optional Sanctum middleware set the user after scope was written (user is always from Auth when set).
+        $viewer = $user ?? ($uid ? User::find($uid) : null);
+        if ($uid && self::isCustomer($viewer)) {
             $blockedIds = UserBlock::where('blocker_id', $uid)->pluck('blocked_id');
             if ($blockedIds->isNotEmpty()) {
                 $query->whereNotIn('services.provider_id', $blockedIds->all());
