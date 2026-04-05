@@ -7,7 +7,6 @@ use Illuminate\Http\Request;
 use App\Models\PostJobRequest;
 use App\Models\PostJobBid;
 use App\Http\Resources\API\PostJobBiderResource;
-use App\Support\UgcListing;
 
 class PostJobBidController extends Controller
 {
@@ -56,12 +55,12 @@ class PostJobBidController extends Controller
             $query->where('customer_id', auth()->id());
         }
 
-        // Providers (and non-admins): hide moderated jobs (is_hidden_from_public), admin-action reports, blocked customers — same as web job-datatable
+        // Non-admins: only jobs visible to the public (is_hidden_from_public = 0; NULL treated as 0)
         $user = auth()->user();
         $isAdmin = $user->hasAnyRole(['admin', 'demo_admin'])
             || in_array($user->user_type ?? '', ['admin', 'demo_admin'], true);
         if (! $isAdmin) {
-            UgcListing::scopePublicPostJobs($query, auth()->id());
+            $query->whereRaw('COALESCE(post_job_requests.is_hidden_from_public, 0) = 0');
         }
     
         if ($request->filled('category_id')) {

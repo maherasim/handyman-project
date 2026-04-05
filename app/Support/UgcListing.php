@@ -78,14 +78,18 @@ class UgcListing
     }
 
     /**
-     * Public job listing (job-datatable): hide moderated posts and blocked customers (for providers/customers browsing).
+     * Public job listing: hide moderated posts and blocked customers.
+     *
+     * @param  bool  $includeOwnHiddenPostJobs  If true (default), the viewer can still see their own post even when
+     *                                         hidden/moderated (job owner UX). If false, used for provider marketplace
+     *                                         feeds where hidden jobs must never appear, even when viewer_id === customer_id.
      */
-    public static function scopePublicPostJobs(Builder $query, ?int $viewerUserId = null): Builder
+    public static function scopePublicPostJobs(Builder $query, ?int $viewerUserId = null, bool $includeOwnHiddenPostJobs = true): Builder
     {
         $user = Auth::user();
         $reportableType = PostJobRequest::class;
 
-        $query->where(function ($q) use ($user, $reportableType) {
+        $query->where(function ($q) use ($user, $reportableType, $includeOwnHiddenPostJobs) {
             $q->where(function ($inner) use ($reportableType) {
                 $inner->whereRaw('COALESCE(post_job_requests.is_hidden_from_public, 0) = 0')
                     ->whereNotExists(function ($sub) use ($reportableType) {
@@ -96,7 +100,7 @@ class UgcListing
                             ->where('content_reports.status', 'action_taken');
                     });
             });
-            if ($user) {
+            if ($user && $includeOwnHiddenPostJobs) {
                 $q->orWhere('post_job_requests.customer_id', $user->id);
             }
         });

@@ -329,7 +329,9 @@ class PostJobRequestController extends Controller
                 ->orWhere('status', '');
         });
 
-        UgcListing::scopePublicPostJobs($query, auth()->id());
+        $viewer = auth()->user();
+        $isProvider = ($viewer->user_type === 'provider') || $viewer->hasRole('provider');
+        UgcListing::scopePublicPostJobs($query, auth()->id(), ! $isProvider);
 
         // Default per page from config; ensure integer fallback
         $per_page = (int) (config('constant.PER_PAGE_LIMIT') ?? 10);
