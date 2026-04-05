@@ -6,11 +6,11 @@
 
      <link rel="stylesheet" type="text/css"
          href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css" />
+     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css">
      <style>
          .job-card .dropdown-toggle-no-caret::after { display: none !important; }
-         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css"><link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
-
-         <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>body {
+         @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+         body {
              font-family: "Montserrat", sans-serif;
          }
 
@@ -188,9 +188,6 @@
              font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
          }
      </style>
-     </head>
-
-     <body>
          <div class="container mt-5">
         <div class="card shadow-sm border-0 rounded-3 mb-4">
             <div class="card-header bg-white border-bottom p-3">
@@ -434,7 +431,10 @@
                                                  </span>
                                              </div>
                                          </div>
-
+                                     </div>
+                                     </a>
+                                     {{-- UGC ⋮ menu must NOT be inside <a href> (invalid HTML: interactive in interactive — breaks clicks) --}}
+                                     <div class="card-content" style="padding: 0 12px 12px;">
                                          <!-- Customer Info -->
                                          <div class="customer-info" style="margin-bottom: 8px;">
                                              <div class="d-flex align-items-center justify-content-between">
@@ -475,12 +475,14 @@
                                                  </div>
                                                  
                                                  @if($canJobUgc)
-                                                 <div class="position-relative" style="z-index: 20;">
+                                                 <div class="position-relative ugc-job-actions" style="z-index: 50;">
                                                      <button type="button" class="btn btn-link text-muted text-decoration-none border-0 p-1 bg-transparent" aria-label="{{ __('messages.ugc_report_user') }}" onclick="
                                                          event.preventDefault();
                                                          event.stopPropagation();
-                                                         var menu = this.nextElementSibling;
-                                                         var isVisible = menu.style.display === 'block';
+                                                         var wrap = this.closest('.ugc-job-actions');
+                                                         var menu = wrap ? wrap.querySelector('.ugc-dropdown-menu-job') : null;
+                                                         if (!menu) { return; }
+                                                         var isVisible = (menu.style.display === 'block') || (window.getComputedStyle(menu).display === 'block');
                                                          document.querySelectorAll('.ugc-dropdown-menu-job').forEach(function(el) { el.style.display = 'none'; });
                                                          menu.style.display = isVisible ? 'none' : 'block';
                                                      " onmousedown="event.stopPropagation();">
@@ -490,7 +492,7 @@
                                                             <circle cx="19" cy="12" r="2" fill="currentColor"/>
                                                          </svg>
                                                      </button>
-                                                     <ul class="dropdown-menu shadow border-0 ugc-dropdown-menu-job" style="display: none; position: absolute; right: 0; top: 100%; min-width: 150px; font-size: 14px; margin-top: 5px; background: white; border-radius: 8px; list-style: none; padding: 0.5rem 0; text-align: left;">
+                                                     <ul class="dropdown-menu shadow border-0 ugc-dropdown-menu-job" style="display: none; position: absolute; right: 0; top: 100%; z-index: 1000; min-width: 150px; font-size: 14px; margin-top: 5px; background: white; border-radius: 8px; list-style: none; padding: 0.5rem 0; text-align: left;">
                                                          <li>
                                                              <a class="dropdown-item py-2 text-secondary px-3 d-block" href="javascript:void(0)" onclick="event.preventDefault(); event.stopPropagation(); this.closest('.ugc-dropdown-menu-job').style.display='none'; if(window.triggerUgcReportPostJob) window.triggerUgcReportPostJob({{ $jobRequest->id }}, this);">
                                                                  <i class="fas fa-flag fa-fw me-2"></i>{{ __('messages.ugc_report_user') }}
@@ -542,7 +544,6 @@
                                              </div>
                                          </div>
                                      </div>
-                                     </a>
                                         <!-- Social Icons -->
                                         <div class="social-icons"
                                              style="
@@ -701,10 +702,4 @@
                 return false;
             };
         </script>
-     </body>
-
-     </html>
-
-
-     </html>
  @endsection
