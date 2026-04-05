@@ -192,6 +192,55 @@ class UgcListing
         return true;
     }
 
+    /**
+     * Dashboard slider: drop slides that point at a service whose provider is blocked by the current customer.
+     */
+    public static function scopePublicSlidersForViewer(Builder $query): Builder
+    {
+        $user = Auth::user();
+        if (! $user || ! self::isCustomer($user)) {
+            return $query;
+        }
+
+        $blockedIds = UserBlock::where('blocker_id', $user->id)->pluck('blocked_id');
+        if ($blockedIds->isEmpty()) {
+            return $query;
+        }
+
+        return $query->where(function ($q) use ($blockedIds) {
+            $q->where('sliders.type', '!=', 'service')
+                ->orWhere(function ($q2) use ($blockedIds) {
+                    $q2->where('sliders.type', 'service')
+                        ->whereExists(function ($sub) use ($blockedIds) {
+                            $sub->select(DB::raw(1))
+                                ->from('services')
+                                ->whereColumn('services.id', 'sliders.type_id')
+                                ->whereNotIn('services.provider_id', $blockedIds->all());
+                        });
+                });
+        });
+    }
+
+    /**
+     * Dashboard provider strip: hide providers the current customer has blocked.
+     */
+    public static function scopePublicProvidersForViewer(Builder $query): Builder
+    {
+        $user = Auth::user();
+        if (! $user || ! self::isCustomer($user)) {
+            return $query;
+        }
+
+        $blockedIds = UserBlock::where('blocker_id', $user->id)->pluck('blocked_id');
+        if ($blockedIds->isEmpty()) {
+            return $query;
+        }
+
+        $table = $query->getModel()->getTable();
+
+        return $query->whereNotIn($table.'.id', $blockedIds->all());
+    }
+
     public static function pendingReportsCountForService(int $serviceId): int
     {
         return ContentReport::query()

@@ -57,7 +57,9 @@ class DashboardController extends Controller
         $upcomming_booking = null;
         $is_email_verified = 0;
 
-        $slider = SliderResource::collection(Slider::where('status',1)->paginate($per_page));
+        $sliderQuery = Slider::where('status', 1);
+        UgcListing::scopePublicSlidersForViewer($sliderQuery);
+        $slider = SliderResource::collection($sliderQuery->paginate($per_page));
 
         $category_section = FrontendSetting::getValueByKey('section_2');
         $category= CategoryResource::collection( Category::whereIN( 'id' ,$category_section->category_id )->orderBy('name','asc')->paginate(8));
@@ -134,6 +136,7 @@ class DashboardController extends Controller
         if ($request->has('city_id') && !empty($request->city_id)) {
             $provider = $provider->where('city_id', $request->city_id);
         }
+        UgcListing::scopePublicProvidersForViewer($provider);
         $provider = UserResource::collection($provider->paginate($per_page));
 
         $featured_service_section = FrontendSetting::getValueByKey('section_4');
