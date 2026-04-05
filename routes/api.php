@@ -8,6 +8,7 @@ use App\Http\Controllers\API;
 use App\Http\Controllers\PayPalController;
 use App\Http\Controllers\API\ChatApiController;
 use App\Http\Controllers\UgcSafetyController;
+use App\Http\Middleware\OptionalSanctumAuth;
 
 
 /*
@@ -32,7 +33,7 @@ require __DIR__.'/admin-api.php';
 Route::post('/api/paypal/create-payment', [PayPalController::class, 'createPayment'])->name('paypal.payment');
 Route::get('category-list',[API\CategoryController::class,'getCategoryList']);
 Route::get('subcategory-list',[API\SubCategoryController::class,'getSubCategoryList']);
-Route::middleware(['sanctum.optional'])->get('service-list',[API\ServiceController::class,'getServiceList']);
+Route::middleware([OptionalSanctumAuth::class])->get('service-list',[API\ServiceController::class,'getServiceList']);
 Route::get('type-list',[API\CommanController::class,'getTypeList']);
 Route::get('blog-list',[API\BlogController::class,'getBlogList']);
 Route::post('blog-detail',[API\BlogController::class,'getBlogDetail']);
@@ -62,7 +63,7 @@ Route::post('user-email-verify',[API\User\UserController::class,'verify']);
 
 
 
-Route::middleware(['sanctum.optional'])->get('dashboard-detail',[ API\DashboardController::class, 'dashboardDetail' ]);
+Route::middleware([OptionalSanctumAuth::class])->get('dashboard-detail',[ API\DashboardController::class, 'dashboardDetail' ]);
 Route::get('service-rating-list',[API\ServiceController::class,'getServiceRating']);
 Route::get('user-detail',[API\User\UserController::class, 'userDetail']);
 Route::post('service-detail', [ API\ServiceController::class, 'getServiceDetail' ] );
