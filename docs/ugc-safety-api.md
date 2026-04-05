@@ -4,6 +4,129 @@ This document describes endpoints for **reporting listings** and **blocking user
 
 **Controller:** `App\Http\Controllers\UgcSafetyController`
 
+### Provider (job listing) — two APIs (payload reference)
+
+Use these when the logged-in user is a **provider** (same flows as web `/job-datatable`).
+
+**Common request headers (mobile / API)**
+
+| Header | Value |
+|--------|--------|
+| `Authorization` | `Bearer <sanctum_personal_access_token>` |
+| `Content-Type` | `application/json` |
+| `Accept` | `application/json` |
+
+**Base path:** `/api` — e.g. production `https://frobster.com/api/...`
+
+---
+
+#### 1. Report a job request
+
+| | |
+|--|--|
+| **Method** | `POST` |
+| **Path** | `/api/ugc/report-post-job` |
+| **Full URL example** | `https://frobster.com/api/ugc/report-post-job` |
+
+**JSON body (required fields)**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `post_job_id` | integer | Yes | ID of the row in `post_job_requests` (the job listing you are reporting). |
+| `reason` | string | Yes | One of: `spam`, `harassment`, `inappropriate`, `fraud`, `other`. |
+| `details` | string | No | Extra text; max **2000** characters. |
+
+**Example payload**
+
+```json
+{
+  "post_job_id": 1001,
+  "reason": "spam",
+  "details": "Optional explanation for moderators."
+}
+```
+
+**Success (`200`)** — example shape:
+
+```json
+{
+  "message": "Thank you. Your report was received.",
+  "policy": "Our team reviews reports as soon as possible..."
+}
+```
+
+**Typical errors:** `403` (not allowed to report), `404` (job missing), `422` (validation, cannot report your own job, or duplicate pending report).
+
+---
+
+#### 2. Block the customer (job poster)
+
+| | |
+|--|--|
+| **Method** | `POST` |
+| **Path** | `/api/ugc/block` |
+| **Full URL example** | `https://frobster.com/api/ugc/block` |
+
+**JSON body**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `blocked_user_id` | integer | Yes | The **customer’s user id** (`customer_id` on the post job). **Not** the `post_job_id`. |
+
+**Example payload**
+
+```json
+{
+  "blocked_user_id": 128
+}
+```
+
+**Success (`200`)** — example:
+
+```json
+{
+  "message": "You will no longer see this person's listings where your account supports blocking."
+}
+```
+
+**Typical errors:** `403` (not allowed), `422` (cannot block yourself, invalid target user type).
+
+**Idempotent:** if this user was already blocked, the request still succeeds (`firstOrCreate`).
+
+---
+
+**Web (session + CSRF):** same paths **without** the `api` prefix — `POST /ugc/report-post-job` and `POST /ugc/block`, with `X-CSRF-TOKEN` / `_token` as for other web POSTs.
+
+---
+
+### Report reason dropdown (Android / iOS / Flutter)
+
+Build your **Spinner** / **DropdownButton** from this list so `reason` matches validation on `POST .../ugc/report` and `POST .../ugc/report-post-job`.
+
+| | |
+|--|--|
+| **Method** | `GET` |
+| **Path** | `/api/ugc/report-reasons` |
+| **Auth** | Not required |
+| **Headers** | `Accept: application/json` (optional: `Accept-Language` / app locale for translated `label`) |
+
+**Response (`200`)**
+
+```json
+{
+  "reasons": [
+    { "value": "spam", "label": "Spam or misleading" },
+    { "value": "harassment", "label": "Harassment or abuse" },
+    { "value": "inappropriate", "label": "Inappropriate content" },
+    { "value": "fraud", "label": "Scam or fraud" },
+    { "value": "other", "label": "Other" }
+  ]
+}
+```
+
+- Show **`label`** in the UI; send **`value`** as the JSON field `reason` when submitting the report.
+- Labels come from `resources/lang/*/messages.php` (`ugc_report_reason_*`).
+
 ---
 
 ## Base URLs
@@ -270,6 +393,7 @@ After **admin** actions in **Content Reports** (`content_reports`, admin UI), li
 | `api.ugc.report_post_job` | POST | `api/ugc/report-post-job` |
 | `api.ugc.block` | POST | `api/ugc/block` |
 | `api.ugc.unblock` | POST | `api/ugc/unblock` |
+| `api.ugc.report_reasons` | GET | `api/ugc/report-reasons` |
 | `ugc.report` | POST | `ugc/report` |
 | `ugc.report.post_job` | POST | `ugc/report-post-job` |
 | `ugc.block` | POST | `ugc/block` |

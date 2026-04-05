@@ -49,6 +49,9 @@ Route::get('coupon-list',[ API\CouponController::class, 'getCouponList' ]);
 Route::post('configurations', [ API\DashboardController::class, "configurations"]);
 Route::get('firebase-detail', [ API\DashboardController::class, "firebaseDetails"]);
 
+// UGC: labels for report reason dropdown (same enum as POST ugc/report, ugc/report-post-job)
+Route::get('ugc/report-reasons', [UgcSafetyController::class, 'reportReasons'])->name('api.ugc.report_reasons');
+
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });

@@ -338,4 +338,21 @@ class UgcSafetyController extends Controller
 
         return $label !== $key ? $label : $reason;
     }
+
+    /**
+     * List valid report reasons for mobile/web dropdowns (values match report/report-post-job validation).
+     */
+    public function reportReasons()
+    {
+        $keys = ['spam', 'harassment', 'inappropriate', 'fraud', 'other'];
+        $reasons = [];
+        foreach ($keys as $key) {
+            $reasons[] = [
+                'value' => $key,
+                'label' => __('messages.ugc_report_reason_'.$key),
+            ];
+        }
+
+        return response()->json(['reasons' => $reasons]);
+    }
 }

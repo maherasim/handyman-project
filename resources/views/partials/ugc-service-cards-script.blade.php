@@ -41,11 +41,11 @@
                     '<div class="text-start mt-4">' +
                     '<label class="form-label fw-bold text-muted small text-uppercase" style="letter-spacing: 0.5px;">' + @json(__('messages.ugc_report_reason')) + '</label>' +
                     '<select id="ugc-reason" class="form-select mb-4" style="border-radius: 10px; font-size: 1rem; font-weight: 500; border: 1px solid #ced4da; box-shadow: none; padding: 12px 36px 12px 16px; cursor: pointer; color: #495057; transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;">' +
-                    '<option value="spam">Spam or misleading</option>' +
-                    '<option value="harassment">Harassment or bullying</option>' +
-                    '<option value="inappropriate">Inappropriate content</option>' +
-                    '<option value="fraud">Scam or fraud</option>' +
-                    '<option value="other">Other issue</option>' +
+                    '<option value="spam">' + @json(__('messages.ugc_report_reason_spam')) + '</option>' +
+                    '<option value="harassment">' + @json(__('messages.ugc_report_reason_harassment')) + '</option>' +
+                    '<option value="inappropriate">' + @json(__('messages.ugc_report_reason_inappropriate')) + '</option>' +
+                    '<option value="fraud">' + @json(__('messages.ugc_report_reason_fraud')) + '</option>' +
+                    '<option value="other">' + @json(__('messages.ugc_report_reason_other')) + '</option>' +
                     '</select>' +
                     '<label class="form-label fw-bold text-muted small text-uppercase" style="letter-spacing: 0.5px;">' + @json(__('messages.ugc_report_details')) + '</label>' +
                     '<textarea id="ugc-details" class="form-control" style="border-radius: 10px; resize: none; font-size: 0.95rem; border: 1px solid #ced4da; box-shadow: none; padding: 12px 16px; color: #495057; transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;" rows="4" placeholder="Please provide additional details about this issue..." maxlength="2000"></textarea>' +
@@ -159,11 +159,11 @@
                     '<div class="text-start mt-4">' +
                     '<label class="form-label fw-bold text-muted small text-uppercase" style="letter-spacing: 0.5px;">' + @json(__('messages.ugc_report_reason')) + '</label>' +
                     '<select id="ugc-reason-job" class="form-select mb-4" style="border-radius: 10px; font-size: 1rem; font-weight: 500; border: 1px solid #ced4da; box-shadow: none; padding: 12px 36px 12px 16px; cursor: pointer; color: #495057; transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;">' +
-                    '<option value="spam">Spam or misleading</option>' +
-                    '<option value="harassment">Harassment or bullying</option>' +
-                    '<option value="inappropriate">Inappropriate content</option>' +
-                    '<option value="fraud">Scam or fraud</option>' +
-                    '<option value="other">Other issue</option>' +
+                    '<option value="spam">' + @json(__('messages.ugc_report_reason_spam')) + '</option>' +
+                    '<option value="harassment">' + @json(__('messages.ugc_report_reason_harassment')) + '</option>' +
+                    '<option value="inappropriate">' + @json(__('messages.ugc_report_reason_inappropriate')) + '</option>' +
+                    '<option value="fraud">' + @json(__('messages.ugc_report_reason_fraud')) + '</option>' +
+                    '<option value="other">' + @json(__('messages.ugc_report_reason_other')) + '</option>' +
                     '</select>' +
                     '<label class="form-label fw-bold text-muted small text-uppercase" style="letter-spacing: 0.5px;">' + @json(__('messages.ugc_report_details')) + '</label>' +
                     '<textarea id="ugc-details-job" class="form-control" style="border-radius: 10px; resize: none; font-size: 0.95rem; border: 1px solid #ced4da; box-shadow: none; padding: 12px 16px; color: #495057; transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;" rows="4" placeholder="Please provide additional details about this issue..." maxlength="2000"></textarea>' +
