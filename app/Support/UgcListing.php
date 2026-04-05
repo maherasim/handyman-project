@@ -149,6 +149,46 @@ class UgcListing
         return $query;
     }
 
+    /**
+     * Whether the viewer may load a single post job (matches scopePublicPostJobs for non-owners).
+     * Owners always see their own listing; admins see all.
+     */
+    public static function canViewPostJobRequest(?User $user, PostJobRequest $job): bool
+    {
+        if (! $user || ! $job) {
+            return false;
+        }
+
+        if ($user->hasAnyRole(['admin', 'demo_admin'])
+            || in_array($user->user_type, ['admin', 'demo_admin'], true)) {
+            return true;
+        }
+
+        if ((int) $user->id === (int) $job->customer_id) {
+            return true;
+        }
+
+        if ((bool) ($job->is_hidden_from_public ?? false)) {
+            return false;
+        }
+
+        $hasActionTaken = ContentReport::query()
+            ->where('reportable_type', PostJobRequest::class)
+            ->where('reportable_id', $job->id)
+            ->where('status', 'action_taken')
+            ->exists();
+        if ($hasActionTaken) {
+            return false;
+        }
+
+        $blockedIds = UserBlock::where('blocker_id', $user->id)->pluck('blocked_id');
+        if ($blockedIds->isNotEmpty() && $blockedIds->contains($job->customer_id)) {
+            return false;
+        }
+
+        return true;
+    }
+
     public static function pendingReportsCountForService(int $serviceId): int
     {
         return ContentReport::query()

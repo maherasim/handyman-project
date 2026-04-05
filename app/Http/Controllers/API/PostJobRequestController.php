@@ -18,6 +18,7 @@ use App\Models\PaymentPostJOb;
 use App\Http\Resources\API\PostJobRequestResource;
 use App\Http\Resources\API\PostJobBiderResource;
 use App\Http\Resources\API\PostJobRequestDetailResource;
+use App\Support\UgcListing;
 
 class PostJobRequestController extends Controller
 {
@@ -327,8 +328,9 @@ class PostJobRequestController extends Controller
                 ->orWhereNull('status')
                 ->orWhere('status', '');
         });
-        
-    
+
+        UgcListing::scopePublicPostJobs($query, auth()->id());
+
         // Default per page from config; ensure integer fallback
         $per_page = (int) (config('constant.PER_PAGE_LIMIT') ?? 10);
 
@@ -386,7 +388,12 @@ class PostJobRequestController extends Controller
             $message = __('messages.record_not_found');
             return comman_message_response($message, 400);
         }
-    
+
+        if (! UgcListing::canViewPostJobRequest($user, $post_request)) {
+            $message = __('messages.record_not_found');
+            return comman_message_response($message, 400);
+        }
+
         // ✅ Increment view count
         try {
             $post_request->increment('total_views');

@@ -7,6 +7,7 @@ use App\Http\Resources\CountryResource;
 use App\Http\Controllers\API;
 use App\Http\Controllers\PayPalController;
 use App\Http\Controllers\API\ChatApiController;
+use App\Http\Controllers\UgcSafetyController;
 
 
 /*
@@ -108,6 +109,13 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('chat/flagged/ping', [ChatApiController::class, 'flaggedPing']);
     Route::get('chat/flagged/list', [ChatApiController::class, 'flaggedList']);
     Route::post('chat/detect-text', [ChatApiController::class, 'detectText']);
+
+    // UGC safety (same behavior as web POST /ugc/*; use Bearer token / Sanctum)
+    Route::post('ugc/report', [UgcSafetyController::class, 'reportContent'])->name('api.ugc.report');
+    Route::post('ugc/report-post-job', [UgcSafetyController::class, 'reportPostJob'])->name('api.ugc.report_post_job');
+    Route::post('ugc/block', [UgcSafetyController::class, 'blockUser'])->name('api.ugc.block');
+    Route::post('ugc/unblock', [UgcSafetyController::class, 'unblockUser'])->name('api.ugc.unblock');
+
     Route::post('service-save', [ App\Http\Controllers\ServiceController::class, 'store' ] );
     //Route::post('service-save', [ App\Http\Controllers\ServiceController::class, 'store' ] );
     Route::post('service-delete/{id}', [ App\Http\Controllers\ServiceController::class, 'destroy' ] );
