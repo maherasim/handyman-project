@@ -273,17 +273,65 @@
             'daily' => __('messages.pjr_daily'),
             default => __('messages.pjr_fixed'),
         };
+        $canJobUgcDetail = auth()->check()
+            && $jobrequest->customer_id
+            && $jobrequest->customer
+            && \App\Support\UgcListing::canReportPostJob(auth()->user(), $jobrequest);
+        $jobPosterId = (int) $jobrequest->customer_id;
     @endphp
 
+        @if ($canJobUgcDetail)
+        <div id="job-detail-ugc-marker" class="d-none" aria-hidden="true"></div>
+        @endif
         <div class="container">
             <div class="row">
                 <div class="col-md-8 mt-3">
                     <h2 class="heading_text">{{ $jobrequest->title }}</h2>
-                    <div class="d-flex justify-content-between">
+                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-2">
                         <p class="mb-0 text-dark"><b>
                             {{ optional($jobrequest->city)->name ?? __('messages.na') }} -
                             {{ optional($jobrequest->country)->name ?? __('messages.na') }}
                         </b></p>
+                        <div class="d-flex align-items-center gap-3 flex-wrap">
+                            <div>
+                                <span class="text-capitalize text-muted small">{{ __('landingpage.created_by') }}: </span>
+                                <span class="text-capitalize fw-semibold">{{ optional($jobrequest->customer)->display_name ?? (optional($jobrequest->customer)->username ?? __('messages.na')) }}</span>
+                            </div>
+                            @if ($canJobUgcDetail)
+                                <div class="dropdown position-relative" style="z-index: 9999;">
+                                    <button type="button" class="btn btn-link text-muted text-decoration-none p-1 border-0 bg-transparent" onclick="var m=document.getElementById('ugc-dropdown-job-detail'); if(m){ m.style.display = m.style.display === 'block' ? 'none' : 'block'; }" aria-expanded="false" style="padding: 4px 8px;" aria-label="{{ __('messages.ugc_report_user') }}">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                            <circle cx="5" cy="12" r="2" fill="currentColor"/>
+                                            <circle cx="12" cy="12" r="2" fill="currentColor"/>
+                                            <circle cx="19" cy="12" r="2" fill="currentColor"/>
+                                        </svg>
+                                    </button>
+                                    <ul id="ugc-dropdown-job-detail" class="dropdown-menu-end shadow border-0" style="display: none; position: absolute; right: 0; min-width: 150px; font-size: 14px; background: white; border-radius: 8px; list-style: none; padding: 0.5rem 0; margin: 0; top: 100%; z-index: 10000;">
+                                        <li>
+                                            <a class="dropdown-item text-secondary py-2 px-3 d-block" href="javascript:void(0)"
+                                               onclick="document.getElementById('ugc-dropdown-job-detail').style.display='none'; if(window.triggerUgcReportPostJob) window.triggerUgcReportPostJob({{ $jobrequest->id }}, this);">
+                                                <i class="fas fa-flag fa-fw me-2"></i>{{ __('messages.ugc_report_user') }}
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item text-danger py-2 px-3 d-block" href="javascript:void(0)"
+                                               onclick="document.getElementById('ugc-dropdown-job-detail').style.display='none'; if(window.triggerUgcBlock) window.triggerUgcBlock({{ $jobPosterId }}, this, 'customer');">
+                                                <i class="fas fa-ban fa-fw me-2"></i>{{ __('messages.ugc_block_customer') }}
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <script>
+                                    document.addEventListener('click', function (e) {
+                                        var menu = document.getElementById('ugc-dropdown-job-detail');
+                                        if (!menu || menu.style.display !== 'block') return;
+                                        var btn = menu.previousElementSibling;
+                                        if (menu.contains(e.target) || (btn && btn.contains(e.target))) return;
+                                        menu.style.display = 'none';
+                                    });
+                                </script>
+                            @endif
+                        </div>
                     </div>
                     @if (!empty($attachments) && count($attachments) > 0)
                         <div class="mt-3">

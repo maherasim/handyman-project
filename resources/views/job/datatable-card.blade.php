@@ -302,7 +302,9 @@
                      @foreach ($jobrequest as $jobRequest)
                          @php
                              $posterId = $jobRequest->customer_id;
-                             $canJobUgc = auth()->check() && $posterId && \App\Support\UgcListing::canReportPostJob(auth()->user(), $jobRequest);
+                             $canJobUgc = auth()->check()
+                                 && $posterId
+                                 && \App\Support\UgcListing::canReportPostJob(auth()->user(), $jobRequest);
                          @endphp
                          <div class="col-lg-3 col-md-6 col-12 mb-3">
                                  <div class="job-card h-100"

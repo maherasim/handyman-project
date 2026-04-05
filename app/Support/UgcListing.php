@@ -47,7 +47,7 @@ class UgcListing
     }
 
     /**
-     * Report/block actions on a posted job (customer or provider, not the poster, not admin).
+     * Report / job-card UGC actions: logged-in provider (user_type), not the poster, not admin.
      */
     public static function canReportPostJob(?User $user, PostJobRequest $job): bool
     {
@@ -64,7 +64,7 @@ class UgcListing
             return false;
         }
 
-        return self::isCustomer($user) || self::isProviderUser($user) || self::isHandymanUser($user);
+        return ($user->user_type ?? '') === 'provider';
     }
 
     /** Load UGC scripts (report/block) on pages that need them. */

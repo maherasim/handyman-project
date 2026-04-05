@@ -160,6 +160,10 @@ class UgcSafetyController extends Controller
             return response()->json(['message' => __('messages.ugc_block_user_target_only')], 422);
         }
 
+        if (($blocked->user_type ?? '') === 'user' && ($user->user_type ?? '') !== 'provider') {
+            return response()->json(['message' => __('messages.ugc_login_for_report')], 403);
+        }
+
         UserBlock::firstOrCreate(
             ['blocker_id' => $user->id, 'blocked_id' => $blockedId],
             []

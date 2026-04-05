@@ -136,7 +136,7 @@
                     success: function (res) {
                         Swal.fire({ icon: 'success', text: res.message || 'OK' }).then(function () {
                             reloadServiceCardTables();
-                            if (document.getElementById('jobFilterForm')) {
+                            if (document.getElementById('jobFilterForm') || document.getElementById('job-detail-ugc-marker')) {
                                 window.location.reload();
                             }
                         });
@@ -204,7 +204,7 @@
                     success: function (res) {
                         Swal.fire({ icon: 'success', title: res.message || 'OK', text: res.policy || '' });
                         reloadServiceCardTables();
-                        if (document.getElementById('jobFilterForm')) {
+                        if (document.getElementById('jobFilterForm') || document.getElementById('job-detail-ugc-marker')) {
                             window.location.reload();
                         }
                     },
