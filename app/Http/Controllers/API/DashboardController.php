@@ -45,7 +45,8 @@ use App\Http\Resources\API\{
     BlogResource,
     CountryResource
 };
-  
+use App\Support\UgcListing;
+
 class DashboardController extends Controller
 {
 
@@ -75,6 +76,7 @@ class DashboardController extends Controller
                 $a->where('status', 1)->where('is_subscribe',1);
             });
         }
+        UgcListing::scopePublicServices($service, auth()->id());
         $servicePaginated = $service->orderBy('id','desc')->paginate($per_page);
         $service = ServiceResource::collection($servicePaginated);
         
@@ -102,6 +104,7 @@ class DashboardController extends Controller
             $locations = Service::locationService($request->latitude,$request->longitude,$get_distance,$get_unit);
             $service_in_location = ProviderServiceAddressMapping::whereIn('provider_address_id',$locations)->get()->pluck('service_id');
             $service_query = Service::with('providerServiceAddress', 'city', 'country')->whereIn('id',$service_in_location)->orwhere('visit_type','online');
+            UgcListing::scopePublicServices($service_query, auth()->id());
             $servicePaginated = $service_query->orderBy('id','desc')->paginate($per_page);
             $service = ServiceResource::collection($servicePaginated);
             
@@ -143,6 +146,7 @@ class DashboardController extends Controller
                 $a->where('status', 1)->where('is_subscribe',1);
             });
         }
+        UgcListing::scopePublicServices($featured_service, auth()->id());
         $featured_service = ServiceResource::collection($featured_service->orderBy('id','desc')->paginate($per_page));
         
         $featured_service = $featured_service->map(function ($item) use ($request) {
@@ -168,6 +172,7 @@ class DashboardController extends Controller
             $locations = Service::locationService($request->latitude,$request->longitude,$get_distance,$get_unit);
             $service_in_location = ProviderServiceAddressMapping::whereIn('provider_address_id',$locations)->get()->pluck('service_id');
             $featured_service = Service::with('providerServiceAddress', 'city', 'country')->whereIn('id',$service_in_location)->where('is_featured',1);
+            UgcListing::scopePublicServices($featured_service, auth()->id());
             $featuredServicePaginated = $featured_service->orderBy('id','desc')->paginate($per_page);
             $featured_service = ServiceResource::collection($featuredServicePaginated);
             
