@@ -135,7 +135,7 @@ return [
 
     'custom' => [
         'image.*' => [
-            'uploaded' => 'Das Foto konnte nicht hochgeladen werden. Bitte prüfen Sie Dateigröße und Dateiformat (JPG, PNG, GIF, WEBP).',
+            'uploaded' => 'Das Foto konnte leider nicht hochgeladen werden. Bitte prüfen Sie die Dateigröße sowie das Dateiformat (JPG, PNG, GIF, WEBP).',
         ],
         'images.*' => [
             'uploaded' => 'Das Foto konnte nicht hochgeladen werden. Bitte prüfen Sie Dateigröße und Dateiformat (JPG, PNG, GIF, WEBP).',
