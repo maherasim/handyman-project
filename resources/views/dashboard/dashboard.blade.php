@@ -116,6 +116,32 @@
                         </a>
                     </div>
 
+                    @if(auth()->user()->hasAnyRole(['admin', 'demo_admin']))
+                    <div class="col-lg-3 col-md-6">
+                        <a href="{{ route('admin.profile-reports.index') }}">
+                            <div class="card total-revenue rounded-3 border-0 shadow-sm h-100" style="background: #3333ff !important; color: #fff !important;">
+                                <div class="card-body p-3">
+                                    <div class="row">
+                                        <div class="col">
+                                            <div class="d-flex flex-wrap justify-content-start align-items-center">
+                                                <h4 class="mb-2 booking-text fw-bold fs-2">View</h4>
+                                            </div>
+                                            <p class="mb-0 booking-text">User Reporting</p>
+                                        </div>
+                                        <div class="col-auto d-flex flex-column">
+                                            <div class="iq-card-icon iq-card-icon-revenue icon-shape text-white rounded-circle shadow" style="background-color: rgba(255, 255, 255, 0.2) !important;">
+                                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M3 13h8V3H3v10Zm10 8h8V3h-8v18ZM3 21h8v-6H3v6Z" fill="white"/>
+                                                </svg>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    @endif
+
                     <div class="col-lg-3 col-md-6">
                         <a  href="{{ route('earning') }}">
                             <div class="card total-revenue" style="background: #3333ff !important; color: #fff !important;">

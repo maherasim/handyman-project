@@ -1294,5 +1294,9 @@
     'ugc_block_confirm_text_customer' => 'Vous ne verrez plus les offres publiées par ce client dans les listes lorsque votre compte le permet.',
     'ugc_block_confirm_yes' => 'Oui, bloquer',
     'ugc_terms_link_label' => 'Conditions et règles',
+    'profile_report_role_employer' => 'Employeur',
+    'profile_report_role_customer' => 'Client',
+    'profile_report_role_worker' => 'Travailleur',
+    'profile_report_role_unknown' => 'Utilisateur',
 
 ];

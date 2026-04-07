@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\ContentReport;
 use App\Models\PostJobRequest;
+use App\Models\ProfileReport;
 use App\Models\Service;
 use App\Models\User;
 use App\Models\UserBlock;
@@ -14,6 +15,133 @@ use Illuminate\Support\Facades\Validator;
 
 class UgcSafetyController extends Controller
 {
+    protected function reportReasonOptions(): array
+    {
+        return [
+            ['value' => 'off_platform_requests', 'label' => 'Off-platform requests'],
+            ['value' => 'misleading_profile_or_skills', 'label' => 'Misleading profile or skills'],
+            ['value' => 'no_show_or_unreliability', 'label' => 'No-show or unreliability'],
+            ['value' => 'poor_work_quality', 'label' => 'Poor work quality'],
+            ['value' => 'unprofessional_behavior', 'label' => 'Unprofessional behavior'],
+            ['value' => 'fraud_or_misleading_information', 'label' => 'Fraud or misleading information'],
+            ['value' => 'overcharging_or_hidden_fees', 'label' => 'Overcharging or hidden fees'],
+            ['value' => 'incomplete_or_abandoned_work', 'label' => 'Incomplete or abandoned work'],
+            ['value' => 'harassment_or_bullying', 'label' => 'Harassment or bullying'],
+            ['value' => 'spam_or_scams', 'label' => 'Spam or scams'],
+            ['value' => 'hate_speech', 'label' => 'Hate speech'],
+            ['value' => 'violence_or_threats', 'label' => 'Violence or threats'],
+            ['value' => 'payment_issues', 'label' => 'Payment issues'],
+            ['value' => 'overcharging_or_extra_fees', 'label' => 'Overcharging or extra fees'],
+            ['value' => 'violation_of_platform_rules', 'label' => 'Violation of platform rules'],
+            ['value' => 'plagiarism_or_copied_work', 'label' => 'Plagiarism or copied work'],
+            ['value' => 'nudity_or_sexual_content', 'label' => 'Nudity or sexual content'],
+        ];
+    }
+
+    protected function reportReasonValues(): array
+    {
+        return array_map(static fn ($r) => $r['value'], $this->reportReasonOptions());
+    }
+
+    public function reportProfile(Request $request)
+    {
+        $user = auth()->user();
+        if (! $user || ! in_array((string) $user->user_type, ['user', 'provider', 'handyman'], true)) {
+            return response()->json(['message' => __('messages.ugc_login_for_report')], 403);
+        }
+
+        $v = Validator::make($request->all(), [
+            'reported_user_id' => 'required|integer|exists:users,id',
+            'reason' => 'required|string|in:'.implode(',', $this->reportReasonValues()),
+            'details' => 'nullable|string|max:2000',
+        ]);
+        if ($v->fails()) {
+            return response()->json(['message' => $v->errors()->first()], 422);
+        }
+
+        $reportedUser = User::find($request->integer('reported_user_id'));
+        if (! $reportedUser || ! in_array((string) $reportedUser->user_type, ['user', 'provider', 'handyman'], true)) {
+            return response()->json(['message' => __('messages.user_not_found')], 404);
+        }
+
+        if ((int) $reportedUser->id === (int) $user->id) {
+            return response()->json(['message' => __('messages.ugc_cannot_report_own')], 422);
+        }
+
+        $existing = ProfileReport::query()
+            ->where('reporter_id', $user->id)
+            ->where('reported_user_id', $reportedUser->id)
+            ->where('status', 'pending')
+            ->first();
+        if ($existing) {
+            return response()->json(['message' => __('messages.ugc_already_reported')], 422);
+        }
+
+        ProfileReport::create([
+            'reporter_id' => $user->id,
+            'reported_user_id' => $reportedUser->id,
+            'reason' => $request->input('reason'),
+            'details' => $request->input('details'),
+            'status' => 'pending',
+        ]);
+
+        return response()->json([
+            'message' => __('messages.ugc_report_received'),
+            'policy' => __('messages.ugc_policy_24h'),
+        ]);
+    }
+
+    public function reportProvider(Request $request)
+    {
+        $user = auth()->user();
+        if (! $user || ! UgcListing::isCustomer($user)) {
+            return response()->json(['message' => __('messages.ugc_login_as_customer')], 403);
+        }
+
+        $v = Validator::make($request->all(), [
+            'provider_id' => 'required|integer|exists:users,id',
+            'reason' => 'required|string|in:'.implode(',', $this->reportReasonValues()),
+            'details' => 'nullable|string|max:2000',
+        ]);
+        if ($v->fails()) {
+            return response()->json(['message' => $v->errors()->first()], 422);
+        }
+
+        $provider = User::find($request->integer('provider_id'));
+        if (! $provider || ($provider->user_type ?? '') !== 'provider') {
+            return response()->json(['message' => __('messages.user_not_found')], 404);
+        }
+
+        if ((int) $provider->id === (int) $user->id) {
+            return response()->json(['message' => __('messages.ugc_cannot_report_own')], 422);
+        }
+
+        $existing = ContentReport::query()
+            ->where('reporter_id', $user->id)
+            ->where('reportable_type', User::class)
+            ->where('reportable_id', $provider->id)
+            ->where('status', 'pending')
+            ->first();
+        if ($existing) {
+            return response()->json(['message' => __('messages.ugc_already_reported')], 422);
+        }
+
+        ContentReport::create([
+            'reporter_id' => $user->id,
+            'reportable_type' => User::class,
+            'reportable_id' => $provider->id,
+            'subject_user_id' => $provider->id,
+            'reason' => $request->input('reason'),
+            'details' => $request->input('details'),
+            'status' => 'pending',
+        ]);
+
+        return response()->json([
+            'message' => __('messages.ugc_report_received'),
+            'policy' => __('messages.ugc_policy_24h'),
+        ]);
+    }
+
     public function reportContent(Request $request)
     {
         $user = auth()->user();
@@ -23,7 +151,7 @@ class UgcSafetyController extends Controller
 
         $v = Validator::make($request->all(), [
             'service_id' => 'required|integer|exists:services,id',
-            'reason' => 'required|string|in:spam,harassment,inappropriate,fraud,other',
+            'reason' => 'required|string|in:'.implode(',', $this->reportReasonValues()),
             'details' => 'nullable|string|max:2000',
         ]);
         if ($v->fails()) {
@@ -82,7 +210,7 @@ class UgcSafetyController extends Controller
 
         $v = Validator::make($request->all(), [
             'post_job_id' => 'required|integer|exists:post_job_requests,id',
-            'reason' => 'required|string|in:spam,harassment,inappropriate,fraud,other',
+            'reason' => 'required|string|in:'.implode(',', $this->reportReasonValues()),
             'details' => 'nullable|string|max:2000',
         ]);
         if ($v->fails()) {
@@ -337,10 +465,13 @@ class UgcSafetyController extends Controller
 
     protected function ugcReportReasonLabel(string $reason): string
     {
-        $key = 'messages.ugc_report_reason_'.$reason;
-        $label = __($key);
+        foreach ($this->reportReasonOptions() as $row) {
+            if (($row['value'] ?? '') === $reason) {
+                return (string) $row['label'];
+            }
+        }
 
-        return $label !== $key ? $label : $reason;
+        return ucwords(str_replace('_', ' ', $reason));
     }
 
     /**
@@ -348,15 +479,6 @@ class UgcSafetyController extends Controller
      */
     public function reportReasons()
     {
-        $keys = ['spam', 'harassment', 'inappropriate', 'fraud', 'other'];
-        $reasons = [];
-        foreach ($keys as $key) {
-            $reasons[] = [
-                'value' => $key,
-                'label' => __('messages.ugc_report_reason_'.$key),
-            ];
-        }
-
-        return response()->json(['reasons' => $reasons]);
+        return response()->json(['reasons' => $this->reportReasonOptions()]);
     }
 }

@@ -236,7 +236,7 @@ return [
     'sd_easy_booking' => 'Réservation facile',
     'sd_book_now' => 'Réserver maintenant',
     'sd_sign_in_and_book' => 'Se connecter et réserver',
-    'sd_provider_details' => 'Infos prestataire',
+    'sd_provider_details' => 'Détails de l\'employeur',
     'sd_city_country' => 'Ville – Pays',
     'sd_basic_information' => 'Informations de base',
     'sd_availability_mobility' => 'Disponibilité et mobilité',

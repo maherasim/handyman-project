@@ -36,7 +36,7 @@
                         <small class="help-block with-errors text-danger"></small>
                     </div>
                     <div class="form-group col-md-6">
-                        {{ html()->label(__('messages.select_name', ['select' => __('Language')]) . ' <span class="text-danger">*</span>', 'languages')->class('form-control-label')->for('languages') }}
+                        {{ html()->label(__('messages.select_name', ['select' => __('Language')]) . ' <span class="text-danger">*</span>', 'languages')->class('form-control-label text-danger')->for('languages') }}
                         <br />
                         {{ html()->select(
                                 'languages[]',
@@ -235,7 +235,7 @@
 
                     @if (auth()->user()->hasRole('handyman'))
                         <div class="form-group col-md-6">
-                            {{ html()->label(__('messages.select_name', ['select' => __('messages.provider_address')]), 'name')->class('form-control-label') }}
+                            {{ html()->label(__('messages.select_name', ['select' => __('messages.provider_address')]) . ' <span class="text-danger">*</span>', 'name')->class('form-control-label text-danger') }}
                             <br />
                             {{ html()->select(
                                     'service_address_id',
@@ -244,7 +244,7 @@
                                 )->class('select2js form-group service_address_id')->id('service_address_id')->attribute(
                                     'data-ajax--url',
                                     route('ajax-list', ['type' => 'provider_address', 'provider_id' => $user_data->provider_id]),
-                                )->attribute('data-placeholder', __('messages.select_name', ['select' => __('messages.provider_address')])) }}
+                                )->attribute('data-placeholder', __('messages.select_name', ['select' => __('messages.provider_address')]))->required() }}
                         </div>
                     @endif
 
@@ -397,17 +397,17 @@
                     @endif
                     <div class="form-group col-md-12">
                         {{ html()->label(__('Experience'), 'experience')->class('form-control-label') }}
-                        {{ html()->textarea('experience', $user_data->experience)->class('form-control textarea')->rows(2)->placeholder(__('experience'))->id('experience') }}
+                        {{ html()->textarea('experience', strip_tags((string) $user_data->experience))->class('form-control textarea')->rows(2)->placeholder(__('experience'))->id('experience') }}
                     </div>
                     <div class="form-group col-md-12">
                         {{ html()->label(__('About Me'))->class('form-control-label')->for('about_me') }}
-                        {{ html()->textarea('about_me', $user_data->about_me)->class('form-control textarea')->rows(2)->placeholder(__('about_me'))->id('about_me') }}
+                        {{ html()->textarea('about_me', strip_tags((string) $user_data->about_me))->class('form-control textarea')->rows(2)->placeholder(__('about_me'))->id('about_me') }}
                     </div>
 
 
                     <div class="form-group col-md-12">
-                        {{ html()->label(__('messages.address'), 'Address')->class('form-control-label') }}
-                        {{ html()->textarea('address', $user_data->address)->class('form-control textarea')->rows(2)->placeholder(__('messages.address'))->id('address') }}
+                        {{ html()->label(__('messages.address') . ' <span class="text-danger">*</span>', 'Address')->class('form-control-label text-danger') }}
+                        {{ html()->textarea('address', strip_tags((string) $user_data->address))->class('form-control textarea')->rows(2)->placeholder(__('messages.address'))->id('address')->required() }}
                     </div>
 
                     @if ($user_data->user_type == 'provider')
@@ -700,6 +700,6 @@
                 form.addEventListener('submit', function(){ textarea.value = quill.root.innerHTML; });
             }
         }
-        ['experience','about_me','address','about_description'].forEach(mountQuill);
+        ['about_description'].forEach(mountQuill);
     });
 </script>

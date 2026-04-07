@@ -278,8 +278,8 @@
                             </div>
 
                             <div class="form-group col-md-6">
-                                {{ html()->label(__('Vat Number'))->class('form-control-label')->for('vat_number') }}
-                                {{ html()->text('vat_number', $providerdata->vat_number)->placeholder(__('Vat Number'))->class('form-control') }}
+                                {{ html()->label(__('Vat Number') . ' <span class="text-danger">*</span>')->class('form-control-label text-danger')->for('vat_number') }}
+                                {{ html()->text('vat_number', $providerdata->vat_number)->placeholder(__('Vat Number'))->class('form-control')->required() }}
                                 <small class="help-block with-errors text-danger"></small>
                             </div>
 
@@ -324,8 +324,8 @@
                             </div>
 
                             <div class="form-group col-md-6">
-                                {{ html()->label(__('Mobility') . ' <span class="text-danger">*</span>')->class('form-control-label')->for('mobility') }}
-                                {{ html()->text('mobility', $providerdata->mobility)->placeholder(__('Mobility'))->class('form-control')->required() }}
+                                {{ html()->label(__('Mobility'))->class('form-control-label')->for('mobility') }}
+                                {{ html()->text('mobility', $providerdata->mobility)->placeholder(__('Mobility'))->class('form-control') }}
                                 <small class="help-block with-errors text-danger"></small>
                             </div>
 

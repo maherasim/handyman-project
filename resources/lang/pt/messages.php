@@ -941,6 +941,10 @@
     'view_breakdown' => 'Ver detalhes',
     'payment_breakdown' => 'Detalhamento de pagamento',
     'role_earned' => 'Função conquistada',
+    'profile_report_role_employer' => 'Empregador',
+    'profile_report_role_customer' => 'Cliente',
+    'profile_report_role_worker' => 'Trabalhador',
+    'profile_report_role_unknown' => 'Usuario',
 
 
 

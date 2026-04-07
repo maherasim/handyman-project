@@ -35,9 +35,25 @@ class UserRequest extends FormRequest
         ];
 
         if (request()->user_type === 'handyman') {
+            $rules['first_name'] = 'required|string|max:255';
+            $rules['last_name'] = 'required|string|max:255';
+            $rules['contact_number'] = 'required';
+            $rules['status'] = 'required|in:0,1';
+            $rules['vat_number'] = 'required|string|max:255';
             $rules['handyman_commission'] = 'required|numeric|min:1|max:85';
             $rules['languages'] = 'required|array|min:1';
             $rules['languages.*'] = 'string';
+            $rules['service_address_id'] = 'required|exists:provider_address_mappings,id';
+            $rules['country_id'] = 'required|exists:countries,id';
+            $rules['state_id'] = 'required|exists:states,id';
+            $rules['city_id'] = 'required|exists:cities,id';
+            if (empty($id)) {
+                $rules['password'] = 'required|string|min:8';
+            }
+        }
+
+        if (request()->user_type === 'provider') {
+            $rules['vat_number'] = 'required|string|max:255';
         }
 
         // Profile form (setting/profile_form) – VAT Number required only for provider & handyman; optional for customers
@@ -48,6 +64,7 @@ class UserRequest extends FormRequest
             $rules['company_name'] = 'nullable|string|max:255';
             $userType = auth()->user()->user_type ?? request()->user_type ?? null;
             $rules['vat_number'] = in_array($userType, ['provider', 'handyman'], true) ? 'required|string|max:255' : 'nullable|string|max:255';
+            $rules['service_address_id'] = $userType === 'handyman' ? 'required|exists:provider_address_mappings,id' : 'nullable|exists:provider_address_mappings,id';
             $rules['skills'] = 'nullable|string|max:500';
             $rules['education'] = 'nullable|string|max:100';
             $rules['career_level'] = 'required|string|max:100';

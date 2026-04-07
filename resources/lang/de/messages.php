@@ -1617,6 +1617,10 @@
     'ugc_block_confirm_text' => 'Die Dienste dieses Anbieters werden nicht in der Liste angezeigt. Sie können die Einstellung später ändern, sofern Ihr Konto dies erlaubt.',
     'ugc_block_confirm_yes' => 'Ja, sperren',
     'ugc_terms_link_label' => 'Nutzungsbedingungen & Richtlinien',
+    'profile_report_role_employer' => 'Arbeitgeber',
+    'profile_report_role_customer' => 'Kunde',
+    'profile_report_role_worker' => 'Arbeiter',
+    'profile_report_role_unknown' => 'Benutzer',
 
 
 );

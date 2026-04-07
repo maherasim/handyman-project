@@ -37,6 +37,15 @@
   </div>
 
 
+  @if(auth()->check() && \App\Support\UgcListing::isCustomer(auth()->user()))
+  <div class="text-end mt-1">
+      <button type="button" class="btn btn-link text-danger text-decoration-none p-0 border-0 bg-transparent"
+          onclick="if(window.triggerUgcReportProvider) window.triggerUgcReportProvider({{ (int) $data->id }}, this);">
+          <i class="fas fa-flag me-1"></i>{{ __('messages.ugc_report') }}
+      </button>
+  </div>
+  @endif
+
   <div>
       @php 
           $rating = round($providerRating ?? 0, 1);

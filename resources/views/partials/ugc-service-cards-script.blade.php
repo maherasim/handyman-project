@@ -27,9 +27,35 @@
         window.__ugcServiceCardsBound = true;
 
         var ugcReportUrl = @json(route('ugc.report'));
+        var ugcReportProfileUrl = @json(route('ugc.report.profile'));
+        var ugcReportProviderUrl = @json(route('ugc.report.provider'));
         var ugcReportPostJobUrl = @json(route('ugc.report.post_job'));
         var ugcBlockUrl = @json(route('ugc.block'));
         var ugcToken = @json(csrf_token());
+        var ugcReasonOptions = [
+            { value: 'off_platform_requests', label: 'Off-platform requests' },
+            { value: 'misleading_profile_or_skills', label: 'Misleading profile or skills' },
+            { value: 'no_show_or_unreliability', label: 'No-show or unreliability' },
+            { value: 'poor_work_quality', label: 'Poor work quality' },
+            { value: 'unprofessional_behavior', label: 'Unprofessional behavior' },
+            { value: 'fraud_or_misleading_information', label: 'Fraud or misleading information' },
+            { value: 'overcharging_or_hidden_fees', label: 'Overcharging or hidden fees' },
+            { value: 'incomplete_or_abandoned_work', label: 'Incomplete or abandoned work' },
+            { value: 'harassment_or_bullying', label: 'Harassment or bullying' },
+            { value: 'spam_or_scams', label: 'Spam or scams' },
+            { value: 'hate_speech', label: 'Hate speech' },
+            { value: 'violence_or_threats', label: 'Violence or threats' },
+            { value: 'payment_issues', label: 'Payment issues' },
+            { value: 'overcharging_or_extra_fees', label: 'Overcharging or extra fees' },
+            { value: 'violation_of_platform_rules', label: 'Violation of platform rules' },
+            { value: 'plagiarism_or_copied_work', label: 'Plagiarism or copied work' },
+            { value: 'nudity_or_sexual_content', label: 'Nudity or sexual content' }
+        ];
+        function buildReasonOptionsHtml() {
+            return ugcReasonOptions.map(function (opt) {
+                return '<option value="' + opt.value + '">' + opt.label + '</option>';
+            }).join('');
+        }
 
         window.triggerUgcReport = function (serviceId, btnElement) {
             if (typeof Swal === 'undefined' || !Swal.fire) {
@@ -41,11 +67,7 @@
                     '<div class="text-start mt-4">' +
                     '<label class="form-label fw-bold text-muted small text-uppercase" style="letter-spacing: 0.5px;">' + @json(__('messages.ugc_report_reason')) + '</label>' +
                     '<select id="ugc-reason" class="form-select mb-4" style="border-radius: 10px; font-size: 1rem; font-weight: 500; border: 1px solid #ced4da; box-shadow: none; padding: 12px 36px 12px 16px; cursor: pointer; color: #495057; transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;">' +
-                    '<option value="spam">' + @json(__('messages.ugc_report_reason_spam')) + '</option>' +
-                    '<option value="harassment">' + @json(__('messages.ugc_report_reason_harassment')) + '</option>' +
-                    '<option value="inappropriate">' + @json(__('messages.ugc_report_reason_inappropriate')) + '</option>' +
-                    '<option value="fraud">' + @json(__('messages.ugc_report_reason_fraud')) + '</option>' +
-                    '<option value="other">' + @json(__('messages.ugc_report_reason_other')) + '</option>' +
+                    buildReasonOptionsHtml() +
                     '</select>' +
                     '<label class="form-label fw-bold text-muted small text-uppercase" style="letter-spacing: 0.5px;">' + @json(__('messages.ugc_report_details')) + '</label>' +
                     '<textarea id="ugc-details" class="form-control" style="border-radius: 10px; resize: none; font-size: 0.95rem; border: 1px solid #ced4da; box-shadow: none; padding: 12px 16px; color: #495057; transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;" rows="4" placeholder="Please provide additional details about this issue..." maxlength="2000"></textarea>' +
@@ -89,6 +111,65 @@
                         if (document.getElementById('jobFilterForm')) {
                             window.location.reload();
                         }
+                    },
+                    error: function (xhr) {
+                        var msg = (xhr.responseJSON && xhr.responseJSON.message) ? xhr.responseJSON.message : 'Error';
+                        Swal.fire({ icon: 'error', title: 'Error', text: msg });
+                    }
+                });
+            });
+        };
+
+        window.triggerUgcReportProvider = function (providerId, btnElement) {
+            if (typeof Swal === 'undefined' || !Swal.fire) {
+                return;
+            }
+            Swal.fire({
+                title: '<div class="d-flex align-items-center gap-2"><div class="bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;"><i class="fas fa-flag"></i></div> <span style="font-size: 1.25rem;">' + @json(__('messages.ugc_report')) + '</span></div>',
+                html:
+                    '<div class="text-start mt-4">' +
+                    '<label class="form-label fw-bold text-muted small text-uppercase" style="letter-spacing: 0.5px;">' + @json(__('messages.ugc_report_reason')) + '</label>' +
+                    '<select id="ugc-reason-provider" class="form-select mb-4" style="border-radius: 10px; font-size: 1rem; font-weight: 500; border: 1px solid #ced4da; box-shadow: none; padding: 12px 36px 12px 16px; cursor: pointer; color: #495057; transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;">' +
+                    buildReasonOptionsHtml() +
+                    '</select>' +
+                    '<label class="form-label fw-bold text-muted small text-uppercase" style="letter-spacing: 0.5px;">' + @json(__('messages.ugc_report_details')) + '</label>' +
+                    '<textarea id="ugc-details-provider" class="form-control" style="border-radius: 10px; resize: none; font-size: 0.95rem; border: 1px solid #ced4da; box-shadow: none; padding: 12px 16px; color: #495057; transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;" rows="4" placeholder="Please provide additional details about this issue..." maxlength="2000"></textarea>' +
+                    '</div>',
+                focusConfirm: false,
+                showCancelButton: true,
+                confirmButtonText: @json(__('messages.ugc_report_submit')),
+                cancelButtonText: @json(__('messages.cancel')),
+                customClass: {
+                    confirmButton: 'btn btn-primary px-4 py-2 fw-bold me-2',
+                    cancelButton: 'btn btn-light px-4 py-2 fw-bold text-dark border',
+                    popup: 'rounded-4 shadow-lg border-0 py-3 px-2',
+                    title: 'fs-4 fw-bold text-start w-100 m-0 p-0',
+                    htmlContainer: 'm-0 p-0',
+                    actions: 'mt-4 w-100 justify-content-end'
+                },
+                buttonsStyling: false,
+                preConfirm: function () {
+                    return {
+                        reason: document.getElementById('ugc-reason-provider').value,
+                        details: document.getElementById('ugc-details-provider').value
+                    };
+                }
+            }).then(function (result) {
+                if (!result.isConfirmed || !result.value) {
+                    return;
+                }
+                $.ajax({
+                    url: ugcReportProfileUrl,
+                    type: 'POST',
+                    headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' },
+                    data: {
+                        _token: ugcToken,
+                        reported_user_id: providerId,
+                        reason: result.value.reason,
+                        details: result.value.details
+                    },
+                    success: function (res) {
+                        Swal.fire({ icon: 'success', title: res.message || 'OK', text: res.policy || '' });
                     },
                     error: function (xhr) {
                         var msg = (xhr.responseJSON && xhr.responseJSON.message) ? xhr.responseJSON.message : 'Error';
@@ -159,11 +240,7 @@
                     '<div class="text-start mt-4">' +
                     '<label class="form-label fw-bold text-muted small text-uppercase" style="letter-spacing: 0.5px;">' + @json(__('messages.ugc_report_reason')) + '</label>' +
                     '<select id="ugc-reason-job" class="form-select mb-4" style="border-radius: 10px; font-size: 1rem; font-weight: 500; border: 1px solid #ced4da; box-shadow: none; padding: 12px 36px 12px 16px; cursor: pointer; color: #495057; transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;">' +
-                    '<option value="spam">' + @json(__('messages.ugc_report_reason_spam')) + '</option>' +
-                    '<option value="harassment">' + @json(__('messages.ugc_report_reason_harassment')) + '</option>' +
-                    '<option value="inappropriate">' + @json(__('messages.ugc_report_reason_inappropriate')) + '</option>' +
-                    '<option value="fraud">' + @json(__('messages.ugc_report_reason_fraud')) + '</option>' +
-                    '<option value="other">' + @json(__('messages.ugc_report_reason_other')) + '</option>' +
+                    buildReasonOptionsHtml() +
                     '</select>' +
                     '<label class="form-label fw-bold text-muted small text-uppercase" style="letter-spacing: 0.5px;">' + @json(__('messages.ugc_report_details')) + '</label>' +
                     '<textarea id="ugc-details-job" class="form-control" style="border-radius: 10px; resize: none; font-size: 0.95rem; border: 1px solid #ced4da; box-shadow: none; padding: 12px 16px; color: #495057; transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;" rows="4" placeholder="Please provide additional details about this issue..." maxlength="2000"></textarea>' +

@@ -218,7 +218,7 @@ return [
     'sd_jobs_completed' => 'Lavori completati:',
     'sd_frame_decor_alt' => 'Cornice decorativa',
     'sd_city_country' => 'Città – Paese',
-    'sd_provider_details' => 'Dettagli fornitore',
+    'sd_provider_details' => 'Dettagli datore di lavoro',
     'sd_basic_information' => 'Informazioni di base',
     'sd_no_cancellation_policy' => 'Nessuna politica di cancellazione disponibile.',
     'pd_alt_verified_icon' => 'Icona verificata',

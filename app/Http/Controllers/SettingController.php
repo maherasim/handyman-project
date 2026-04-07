@@ -348,6 +348,13 @@ class SettingController extends Controller
             // If it's already 'full_time' or 'part_time', keep it as is
         }
 
+        // Save plain text for profile free-text fields (avoid storing <p>...</p> wrappers).
+        foreach (['experience', 'about_me', 'address'] as $field) {
+            if (array_key_exists($field, $data) && $data[$field] !== null) {
+                $data[$field] = trim(strip_tags((string) $data[$field]));
+            }
+        }
+
         $why_choose_me = [
 
             'title' => $request->title,

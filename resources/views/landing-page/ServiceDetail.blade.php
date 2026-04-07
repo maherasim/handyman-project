@@ -623,7 +623,7 @@
                                 </div>
                                 <div class="col-4">
                                     <button class="tab-btn" data-tab="about-provider">
-                                        {{ __('landingpage.sd_tab_about_provider') }}
+                                        About Employer
                                     </button>
                                 </div>
                                 <div class="col-4">
@@ -687,7 +687,7 @@
                                                         <span class="text-body">{{ $provDesignation }}</span>
                                                     @endif
                                                     @if(!empty($provCity) || !empty($provCountry))
-                                                        <span class="text-body">• {{ $provCity }}{{ !empty($provCity) && !empty($provCountry) ? ', ' : '' }}{{ $provCountry }}</span>
+                                                        <span class="text-body">• {{ $provCity }}{{ !empty($provCity) && !empty($provCountry) ? '- ' : '' }}{{ $provCountry }}</span>
                                                     @endif
                                                 </div>
 
@@ -1317,17 +1317,21 @@
 
                         {{-- Provider Location --}}
                         <div class="text-center mt-2">
-                            <p class="mb-1" style="color: red; font-size: 14px; font-weight: 500;">
-                                @if(isset($serviceData['provider']['city']['name']) && isset($serviceData['provider']['country']['name']))
-                                    {{ $serviceData['provider']['city']['name'] }} - {{ $serviceData['provider']['country']['name'] }}
-                                @elseif(isset($serviceData['provider']['city']['name']))
+                            @if(isset($serviceData['provider']['city']['name']))
+                                <p class="mb-1" style="color: red; font-size: 14px; font-weight: 500;">
                                     {{ $serviceData['provider']['city']['name'] }}
-                                @elseif(isset($serviceData['provider']['country']['name']))
+                                </p>
+                            @endif
+                            @if(isset($serviceData['provider']['country']['name']))
+                                <p class="mb-1" style="color: red; font-size: 14px; font-weight: 500;">
                                     {{ $serviceData['provider']['country']['name'] }}
-                                @else
+                                </p>
+                            @endif
+                            @if(!isset($serviceData['provider']['city']['name']) && !isset($serviceData['provider']['country']['name']))
+                                <p class="mb-1" style="color: red; font-size: 14px; font-weight: 500;">
                                     {{ __('landingpage.sd_city_country') }}
-                                @endif
-                            </p>
+                                </p>
+                            @endif
                         </div>
 
                         <div class="d-flex align-items-center  mt-2 justify-content-evenly">
@@ -1363,6 +1367,15 @@
 
 
                         </div>
+
+                        @if(auth()->check() && \App\Support\UgcListing::isCustomer(auth()->user()) && !empty($providerId))
+                            <div class="text-center mt-3">
+                                <button type="button" class="btn btn-outline-danger btn-sm"
+                                    onclick="if(window.triggerUgcReportProvider) window.triggerUgcReportProvider({{ (int) $providerId }}, this);">
+                                    <i class="fas fa-flag me-1"></i>{{ __('messages.ugc_report') }}
+                                </button>
+                            </div>
+                        @endif
 
                         <!-- Provider Information Cards -->
                         <div class="provider-info-section mt-4">
@@ -1483,6 +1496,11 @@
                                         } else {
                                             $availabilityText = trim((string) $availData);
                                         }
+                                        $availabilityText = str_ireplace(
+                                            ['full_time', 'part_time'],
+                                            ['Full Time', 'Part Time'],
+                                            $availabilityText
+                                        );
                                     @endphp
                                     @if($availabilityText !== '')
                                     <div class="info-row">

@@ -218,7 +218,7 @@ return [
     'sd_jobs_completed' => 'Trabalhos concluídos:',
     'sd_frame_decor_alt' => 'Moldura decorativa',
     'sd_city_country' => 'Cidade – País',
-    'sd_provider_details' => 'Detalhes do prestador',
+    'sd_provider_details' => 'Detalhes do empregador',
     'sd_basic_information' => 'Informações básicas',
     'sd_no_cancellation_policy' => 'Nenhuma política de cancelamento disponível.',
     'pd_alt_verified_icon' => 'Ícone verificado',

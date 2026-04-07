@@ -478,7 +478,7 @@
                                                  
                                                  @if($canJobUgc)
                                                  <div class="position-relative ugc-job-actions" style="z-index: 50;">
-                                                     <button type="button" class="btn btn-link text-muted text-decoration-none border-0 p-1 bg-transparent" aria-label="{{ __('messages.ugc_report_user') }}" onclick="
+                                                    <button type="button" class="btn btn-link text-muted text-decoration-none border-0 p-1 bg-transparent" aria-label="Report job" onclick="
                                                          event.preventDefault();
                                                          event.stopPropagation();
                                                          var wrap = this.closest('.ugc-job-actions');
@@ -496,8 +496,8 @@
                                                      </button>
                                                      <ul class="dropdown-menu shadow border-0 ugc-dropdown-menu-job" style="display: none; position: absolute; right: 0; top: 100%; z-index: 1000; min-width: 150px; font-size: 14px; margin-top: 5px; background: white; border-radius: 8px; list-style: none; padding: 0.5rem 0; text-align: left;">
                                                          <li>
-                                                             <a class="dropdown-item py-2 text-secondary px-3 d-block" href="javascript:void(0)" onclick="event.preventDefault(); event.stopPropagation(); this.closest('.ugc-dropdown-menu-job').style.display='none'; if(window.triggerUgcReportPostJob) window.triggerUgcReportPostJob({{ $jobRequest->id }}, this);">
-                                                                 <i class="fas fa-flag fa-fw me-2"></i>{{ __('messages.ugc_report_user') }}
+                                                            <a class="dropdown-item py-2 text-secondary px-3 d-block" href="javascript:void(0)" onclick="event.preventDefault(); event.stopPropagation(); this.closest('.ugc-dropdown-menu-job').style.display='none'; if(window.triggerUgcReportPostJob) window.triggerUgcReportPostJob({{ $jobRequest->id }}, this);">
+                                                                <i class="fas fa-flag fa-fw me-2"></i>Report job
                                                              </a>
                                                          </li>
                                                          <li>

@@ -942,6 +942,10 @@
     'view_breakdown' => 'Visualizza il dettaglio',
     'payment_breakdown' => 'Dettaglio del pagamento',
     'role_earned' => 'Ruolo guadagnato',
+    'profile_report_role_employer' => 'Datore di lavoro',
+    'profile_report_role_customer' => 'Cliente',
+    'profile_report_role_worker' => 'Lavoratore',
+    'profile_report_role_unknown' => 'Utente',
 
 
 

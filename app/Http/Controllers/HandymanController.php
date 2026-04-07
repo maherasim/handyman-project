@@ -208,7 +208,7 @@ class HandymanController extends Controller
             $user_id = $auth_user->id;
             $data['provider_id'] = $user_id;
         }
-        if ($request->id == null && default_earning_type() === 'subscription') {
+        if ($request->id == null && default_earning_type() === 'subscription' && !empty($data['provider_id'])) {
             $exceed =  get_provider_plan_limit($data['provider_id'], 'handyman');
             if (!empty($exceed)) {
                 if ($exceed == 1) {

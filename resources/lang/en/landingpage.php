@@ -297,7 +297,7 @@
   'sd_easy_booking' => 'Easy booking',
   'sd_book_now' => 'Book now',
   'sd_sign_in_and_book' => 'Sign in and book',
-  'sd_provider_details' => 'Provider Details',
+  'sd_provider_details' => 'Employer Details',
   'sd_city_country' => 'City – Country',
   'sd_basic_information' => 'Basic Information',
   'sd_availability_mobility' => 'Availability & Mobility',

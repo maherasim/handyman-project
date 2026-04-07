@@ -277,6 +277,11 @@
             && $jobrequest->customer_id
             && $jobrequest->customer
             && \App\Support\UgcListing::canReportPostJob(auth()->user(), $jobrequest);
+        $canProviderReportCustomerProfile = auth()->check()
+            && $jobrequest->customer_id
+            && $jobrequest->customer
+            && (\App\Support\UgcListing::isProviderUser(auth()->user()))
+            && ((int) auth()->id() !== (int) $jobrequest->customer_id);
         $jobPosterId = (int) $jobrequest->customer_id;
     @endphp
 
@@ -310,7 +315,7 @@
                                         <li>
                                             <a class="dropdown-item text-secondary py-2 px-3 d-block" href="javascript:void(0)"
                                                onclick="document.getElementById('ugc-dropdown-job-detail').style.display='none'; if(window.triggerUgcReportPostJob) window.triggerUgcReportPostJob({{ $jobrequest->id }}, this);">
-                                                <i class="fas fa-flag fa-fw me-2"></i>{{ __('messages.ugc_report_user') }}
+                                                <i class="fas fa-flag fa-fw me-2"></i>Report job
                                             </a>
                                         </li>
                                         <li>
@@ -768,6 +773,14 @@
                                          alt="{{ __('landingpage.jdd_customer_photo') }}" 
                                          style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; margin: 0 auto;">
                                 </div>
+                                @if($canProviderReportCustomerProfile)
+                                    <div class="text-center mb-3">
+                                        <button type="button" class="btn btn-outline-danger btn-sm"
+                                            onclick="if(window.triggerUgcReportProvider) window.triggerUgcReportProvider({{ $jobPosterId }}, this);">
+                                            <i class="fas fa-flag me-1"></i>{{ __('messages.ugc_report_user') }}
+                                        </button>
+                                    </div>
+                                @endif
                                 <div class="customer-details-list">
                                     <div class="detail-item mb-2">
                                         <span class="detail-label"><b>{{ __('landingpage.jdd_full_name') }}</b></span>

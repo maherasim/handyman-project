@@ -47,8 +47,8 @@
                                 <small class="help-block with-errors text-danger"></small>
                             </div>
                             <div class="form-group col-md-3">
-                                {{ html()->label(__('messages.company_name') . ' <span class="text-danger">*</span>')->class('form-control-label')->for('company_name') }}
-                                {{ html()->text('company_name', $handymandata->company_name)->placeholder(__('messages.company_name'))->class('form-control')->required() }}
+                                {{ html()->label(__('messages.company_name'))->class('form-control-label')->for('company_name') }}
+                                {{ html()->text('company_name', $handymandata->company_name)->placeholder(__('messages.company_name'))->class('form-control') }}
                                 <small class="help-block with-errors text-danger"></small>
                             </div>
 
@@ -60,12 +60,12 @@
 
 
                             <div class="form-group col-md-3">
-                                {{ html()->label(__('messages.skills') . ' <span class="text-danger">*</span>')->class('form-control-label')->for('skills') }}
-                                {{ html()->text('skills', $handymandata->skills)->placeholder(__('messages.skills'))->class('form-control')->required() }}
+                                {{ html()->label(__('messages.skills'))->class('form-control-label')->for('skills') }}
+                                {{ html()->text('skills', $handymandata->skills)->placeholder(__('messages.skills'))->class('form-control') }}
                                 <small class="help-block with-errors text-danger"></small>
                             </div>
                             <div class="form-group col-md-3">
-                                {{ html()->label(__('messages.select_name', ['select' => __('Language')]) . ' <span class="text-danger">*</span>', 'languages')->class('form-control-label') }}
+                                {{ html()->label(__('messages.select_name', ['select' => __('Language')]) . ' <span class="text-danger">*</span>', 'languages')->class('form-control-label text-danger') }}
                                 <br />
                                 {{ html()->select(
                                         'languages[]', // Use [] to allow multiple selections
@@ -82,18 +82,18 @@
                                 <small class="help-block with-errors text-danger" id="languages_error"></small>
                             </div>
                             <div class="form-group col-md-3">
-                                {{ html()->label(__('messages.education') . ' <span class="text-danger">*</span>')->class('form-control-label')->for('education') }}
-                                {{ html()->text('education', $handymandata->education)->placeholder(__('messages.education'))->class('form-control')->required() }}
+                                {{ html()->label(__('messages.education'))->class('form-control-label')->for('education') }}
+                                {{ html()->text('education', $handymandata->education)->placeholder(__('messages.education'))->class('form-control') }}
                                 <small class="help-block with-errors text-danger"></small>
                             </div>
                             <div class="form-group col-md-3">
-                                {{ html()->label(__('messages.certification') . ' <span class="text-danger">*</span>')->class('form-control-label')->for('certification') }}
-                                {{ html()->text('certification', $handymandata->certification)->placeholder(__('messages.certification'))->class('form-control')->required() }}
+                                {{ html()->label(__('messages.certification'))->class('form-control-label')->for('certification') }}
+                                {{ html()->text('certification', $handymandata->certification)->placeholder(__('messages.certification'))->class('form-control') }}
                                 <small class="help-block with-errors text-danger"></small>
                             </div>
 
                             <div class="form-group col-md-3">
-                                {{ html()->label(__('messages.availability') . ' <span class="text-danger">*</span>')->class('form-control-label')->for('availability') }}
+                                {{ html()->label(__('messages.availability'))->class('form-control-label')->for('availability') }}
                                 @php
                                     // Convert old values (1/0 or 'Full-time'/'Part-time') to new format for display
                                     $availabilityValue = $handymandata->availability;
@@ -110,13 +110,13 @@
                                             'part_time' => 'Part-time',
                                         ],
                                         $availabilityValue,
-                                    )->class('form-control')->required()->placeholder(__('Select Availability')) }}
+                                    )->class('form-control')->placeholder(__('Select Availability')) }}
                                 <small class="help-block with-errors text-danger"></small>
                             </div>
 
                             <div class="form-group col-md-3">
-                                {{ html()->label(__('messages.mobility') . ' <span class="text-danger">*</span>')->class('form-control-label')->for('mobility') }}
-                                {{ html()->text('mobility', $handymandata->mobility)->placeholder(__('messages.mobility'))->class('form-control')->required() }}
+                                {{ html()->label(__('messages.mobility'))->class('form-control-label')->for('mobility') }}
+                                {{ html()->text('mobility', $handymandata->mobility)->placeholder(__('messages.mobility'))->class('form-control') }}
                                 <small class="help-block with-errors text-danger"></small>
                             </div>
                             @if (!isset($handymandata->id) || $handymandata->id == null)
@@ -128,13 +128,13 @@
                             @endif
                             @if (auth()->user()->hasAnyRole(['admin', 'demo_admin']))
                                 <div class="form-group col-md-3">
-                                    {{ html()->label(__('messages.select_name', ['select' => __('messages.providers')]) . ' <span class="text-danger">*</span>', 'provider_id')->class('form-control-label') }}
+                                    {{ html()->label(__('messages.select_name', ['select' => __('messages.providers')]), 'provider_id')->class('form-control-label') }}
                                     <br />
                                     {{ html()->select(
                                             'provider_id',
                                             [optional($handymandata->providers)->id => optional($handymandata->providers)->display_name],
                                             optional($handymandata->providers)->id,
-                                        )->class('select2js form-group providers')->required()->attribute('data-placeholder', __('messages.select_name', ['select' => __('messages.providers')]))->attribute('data-ajax--url', route('ajax-list', ['type' => 'provider'])) }}
+                                        )->class('select2js form-group providers')->attribute('data-placeholder', __('messages.select_name', ['select' => __('messages.providers')]))->attribute('data-ajax--url', route('ajax-list', ['type' => 'provider'])) }}
                                 </div>
                             @endif
                             {{-- <div class="form-group col-md-3">

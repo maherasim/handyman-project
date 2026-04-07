@@ -1651,5 +1651,9 @@
     'ugc_block_confirm_text_customer' => 'You will not see their posted jobs in lists where your account supports blocking.',
     'ugc_block_confirm_yes' => 'Yes, block',
     'ugc_terms_link_label' => 'Terms & guidelines',
+    'profile_report_role_employer' => 'Employer',
+    'profile_report_role_customer' => 'Customer',
+    'profile_report_role_worker' => 'Worker',
+    'profile_report_role_unknown' => 'User',
 
 );

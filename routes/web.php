@@ -54,6 +54,7 @@ use App\Http\Controllers\StripeWebhookController;
 use App\Http\Controllers\FrontendController;
 use App\Http\Controllers\UgcSafetyController;
 use App\Http\Controllers\Admin\ContentReportController;
+use App\Http\Controllers\Admin\ProfileReportController;
 
 
 use App\Http\Controllers\Installer\WelcomeController;
@@ -132,6 +133,8 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
         Route::get('/home', [HomeController::class, 'index'])->name('home');
 
         Route::post('ugc/report', [UgcSafetyController::class, 'reportContent'])->name('ugc.report');
+        Route::post('ugc/report-profile', [UgcSafetyController::class, 'reportProfile'])->name('ugc.report.profile');
+        Route::post('ugc/report-provider', [UgcSafetyController::class, 'reportProvider'])->name('ugc.report.provider');
         Route::post('ugc/report-post-job', [UgcSafetyController::class, 'reportPostJob'])->name('ugc.report.post_job');
         Route::post('ugc/block', [UgcSafetyController::class, 'blockUser'])->name('ugc.block');
         Route::post('ugc/unblock', [UgcSafetyController::class, 'unblockUser'])->name('ugc.unblock');
@@ -139,6 +142,8 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
         Route::middleware(['role:admin|demo_admin'])->group(function () {
             Route::get('content-reports', [ContentReportController::class, 'index'])->name('admin.content-reports.index');
             Route::post('content-reports/{contentReport}', [ContentReportController::class, 'update'])->name('admin.content-reports.update');
+            Route::get('profile-reports', [ProfileReportController::class, 'index'])->name('admin.profile-reports.index');
+            Route::post('profile-reports/{profileReport}', [ProfileReportController::class, 'update'])->name('admin.profile-reports.update');
         });
 
     Route::group(['namespace' => '', 'middleware' => ['permission:permission list']], function () {
