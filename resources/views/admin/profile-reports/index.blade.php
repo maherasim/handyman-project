@@ -24,6 +24,7 @@
                                     <th>ID</th>
                                     <th>Reporter</th>
                                     <th>Reported Profile</th>
+                                    <th>User Status</th>
                                     <th>Reason</th>
                                     <th>Details</th>
                                     <th>Status</th>
@@ -61,6 +62,19 @@
                                                 —
                                             @endif
                                         </td>
+                                        <td>
+                                            @if($report->reportedUser)
+                                                @php
+                                                    $reportedUserStatus = (int) $report->reportedUser->status;
+                                                    $statusLabel = $reportedUserStatus === 1 ? __('messages.active') : __('messages.inactive');
+                                                @endphp
+                                                <span class="badge {{ $reportedUserStatus === 1 ? 'bg-success-subtle text-success' : 'bg-danger-subtle text-danger' }}">
+                                                    {{ $statusLabel }}
+                                                </span>
+                                            @else
+                                                —
+                                            @endif
+                                        </td>
                                         <td>{{ $report->reason }}</td>
                                         <td class="small">{{ $report->details ? \Illuminate\Support\Str::limit($report->details, 140) : '—' }}</td>
                                         <td>
@@ -68,30 +82,31 @@
                                         </td>
                                         <td>{{ $report->created_at?->format('Y-m-d H:i') }}</td>
                                         <td>
-                                            @if($report->status === 'pending')
-                                                <form method="POST" action="{{ route('admin.profile-reports.update', $report) }}" class="d-flex flex-column gap-2" style="min-width: 210px;">
-                                                    @csrf
-                                                    <select name="action" class="form-select form-select-sm" required>
-                                                        <option value="" disabled selected>Select action...</option>
-                                                        <option value="dismiss">Dismiss</option>
-                                                        <option value="deactivate_user">Deactivate user</option>
-                                                        <option value="activate_user">Activate user</option>
-                                                    </select>
-                                                    <div class="input-group input-group-sm">
-                                                        <input type="text" name="admin_note" class="form-control" placeholder="Admin note (optional)">
-                                                        <button type="submit" class="btn btn-primary">
-                                                            <i class="fas fa-check"></i>
-                                                        </button>
-                                                    </div>
-                                                </form>
-                                            @else
-                                                <span class="text-muted small">No further action</span>
-                                            @endif
+                                            <form method="POST" action="{{ route('admin.profile-reports.update', $report) }}" class="d-flex flex-column gap-2" style="min-width: 210px;">
+                                                @csrf
+                                                @php
+                                                    $reportedUserStatus = (int) ($report->reportedUser->status ?? 0);
+                                                @endphp
+                                                <select name="action" class="form-select form-select-sm" required>
+                                                    <option value="" disabled selected>Select action...</option>
+                                                    <option value="dismiss">Dismiss</option>
+                                                    @if($report->reportedUser)
+                                                        <option value="deactivate_user" @selected($reportedUserStatus === 1)>Deactivate user</option>
+                                                        <option value="activate_user" @selected($reportedUserStatus === 0)>Activate user</option>
+                                                    @endif
+                                                </select>
+                                                <div class="input-group input-group-sm">
+                                                    <input type="text" name="admin_note" class="form-control" placeholder="Admin note (optional)">
+                                                    <button type="submit" class="btn btn-primary">
+                                                        <i class="fas fa-check"></i>
+                                                    </button>
+                                                </div>
+                                            </form>
                                         </td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="8" class="text-center text-muted py-4">No profile reports found.</td>
+                                        <td colspan="9" class="text-center text-muted py-4">No profile reports found.</td>
                                     </tr>
                                 @endforelse
                             </tbody>

@@ -108,31 +108,30 @@
                                         </td>
                                         <td>{{ $report->created_at?->format('Y-m-d H:i') }}</td>
                                         <td>
-                                            @if($report->status === 'pending')
-                                                <form method="POST" action="{{ route('admin.content-reports.update', $report) }}" class="d-flex flex-column gap-2" style="min-width: 200px;">
-                                                    @csrf
-                                                    <select name="action" class="form-select form-select-sm border-0 shadow-sm" required style="border-radius: 8px; font-weight: 500;">
-                                                        <option value="" disabled selected>{{ __('messages.action') }}...</option>
-                                                        <option value="dismiss" class="text-secondary">{{ __('messages.ugc_action_dismiss') }}</option>
-                                                        @if($report->reportable_type === \App\Models\Service::class)
-                                                            <option value="hide_service" class="text-warning fw-bold">{{ __('messages.ugc_action_hide_service') }}</option>
-                                                            <option value="restore_service" class="text-success">{{ __('messages.ugc_action_restore_service') }}</option>
-                                                        @elseif($report->reportable_type === \App\Models\PostJobRequest::class)
-                                                            <option value="hide_post_job" class="text-warning fw-bold">{{ __('messages.ugc_action_hide_post_job') }}</option>
-                                                            <option value="restore_post_job" class="text-success">{{ __('messages.ugc_action_restore_post_job') }}</option>
-                                                        @endif
-                                                    </select>
-                                                    
-                                                    <div class="input-group input-group-sm shadow-sm" style="border-radius: 8px; overflow: hidden;">
-                                                        <input type="text" name="admin_note" class="form-control border-0" placeholder="{{ __('messages.ugc_admin_note_placeholder') }}" style="background: #f8f9fa;">
-                                                        <button type="submit" class="btn btn-primary border-0" style="background: #667eea; transition: all 0.2s;">
-                                                            <i class="fas fa-check"></i>
-                                                        </button>
-                                                    </div>
-                                                </form>
-                                            @else
-                                                <span class="text-muted small">{{ __('messages.ugc_no_further_action') }}</span>
-                                            @endif
+                                            <form method="POST" action="{{ route('admin.content-reports.update', $report) }}" class="d-flex flex-column gap-2" style="min-width: 200px;">
+                                                @csrf
+                                                @php
+                                                    $isHiddenFromPublic = (bool) ($report->reportable->is_hidden_from_public ?? false);
+                                                @endphp
+                                                <select name="action" class="form-select form-select-sm border-0 shadow-sm" required style="border-radius: 8px; font-weight: 500;">
+                                                    <option value="" disabled selected>{{ __('messages.action') }}...</option>
+                                                    <option value="dismiss" class="text-secondary">{{ __('messages.ugc_action_dismiss') }}</option>
+                                                    @if($report->reportable_type === \App\Models\Service::class)
+                                                        <option value="hide_service" class="text-warning fw-bold" @selected(!$isHiddenFromPublic)>{{ __('messages.ugc_action_hide_service') }}</option>
+                                                        <option value="restore_service" class="text-success" @selected($isHiddenFromPublic)>{{ __('messages.ugc_action_restore_service') }}</option>
+                                                    @elseif($report->reportable_type === \App\Models\PostJobRequest::class)
+                                                        <option value="hide_post_job" class="text-warning fw-bold" @selected(!$isHiddenFromPublic)>{{ __('messages.ugc_action_hide_post_job') }}</option>
+                                                        <option value="restore_post_job" class="text-success" @selected($isHiddenFromPublic)>{{ __('messages.ugc_action_restore_post_job') }}</option>
+                                                    @endif
+                                                </select>
+                                                
+                                                <div class="input-group input-group-sm shadow-sm" style="border-radius: 8px; overflow: hidden;">
+                                                    <input type="text" name="admin_note" class="form-control border-0" placeholder="{{ __('messages.ugc_admin_note_placeholder') }}" style="background: #f8f9fa;">
+                                                    <button type="submit" class="btn btn-primary border-0" style="background: #667eea; transition: all 0.2s;">
+                                                        <i class="fas fa-check"></i>
+                                                    </button>
+                                                </div>
+                                            </form>
                                         </td>
                                     </tr>
                                 @empty
