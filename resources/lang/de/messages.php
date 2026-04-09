@@ -1266,7 +1266,7 @@
     'mobility' => 'Mobilität (Komma getrennt',
     'handyman_commission_pct' => 'Mitarbeiter-Provision (%)',
     'handyman_commission_placeholder' => 'z. B. 80, 70, 60',
-    'handyman_commission_hint' => 'Wert zwischen 1 und 85. Dezimalstellen erlaubt (z. B. 34,5).',
+    'handyman_commission_hint' => 'Wert zwischen 1 und 99. Dezimalstellen erlaubt (z. B. 34,5).',
     'experience' => 'Erfahrung',
     'about_me' => 'Über mich',
     'language_english' => 'Englisch',
@@ -1277,7 +1277,7 @@
     'language_german' => 'Deutsch',
     'contact_number_max_15' => 'Die Kontaktnummer darf maximal 15 Zeichen haben',
     'valid_mobile_number' => 'Bitte eine gültige Mobilnummer eingeben',
-    'commission_between_1_85' => 'Provision muss zwischen 1 und 85 liegen.',
+    'commission_between_1_85' => 'Provision muss zwischen 1 und 99 liegen.',
     'select_at_least_one_language' => 'Bitte mindestens eine Sprache auswählen.',
     'email_valid_title' => 'Bitte eine gültige E-Mail-Adresse eingeben',
 

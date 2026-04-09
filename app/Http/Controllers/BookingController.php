@@ -1569,7 +1569,7 @@ public function saveStripePayment(Request $request, $id)
             if (!$handyman || $handyman->handyman_commission === null) {
                 continue;
             }
-            $commission_percent = max(1, min(85, $handyman->handyman_commission));
+            $commission_percent = max(1, min(99, $handyman->handyman_commission));
             $handyman_share = ($pool * $commission_percent) / 100;
             $total_handyman_share += $handyman_share;
             $handyman_payouts[] = [
@@ -1789,7 +1789,7 @@ public function saveStripePayment(Request $request, $id)
             foreach ($handymen as $handyman_id) {
                 $handyman = User::find($handyman_id);
                 if (!$handyman || $handyman->handyman_commission === null) continue;
-                $commission_percent = max(1, min(85, $handyman->handyman_commission));
+                $commission_percent = max(1, min(99, $handyman->handyman_commission));
                 $handyman_share = ($pool * $commission_percent) / 100;
                 $total_handyman_share += $handyman_share;
                 $handyman_payouts[] = ['handyman_id' => $handyman_id, 'amount' => $handyman_share];

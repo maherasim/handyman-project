@@ -146,11 +146,11 @@
                            <div class="form-group col-md-3">
                                 {{ html()->label(__('messages.handyman_commission_pct') . ' <span class="text-danger">*</span>', 'handyman_commission')->class('form-control-label') }}
                                 {{ html()->number('handyman_commission', $handymandata->handyman_commission ?? null)
-                                    ->attributes(['min' => 1, 'max' => 85, 'step' => 'any', 'placeholder' => 'e.g. 34.5'])
+                                    ->attributes(['min' => 1, 'max' => 99, 'step' => 'any', 'placeholder' => 'e.g. 34.5'])
                                     ->class('form-control')
                                     ->id('handyman_commission')
                                     ->required() }}
-                                <small class="text-muted">Enter 1 to 85. Decimals allowed (e.g., 34.5).</small>
+                                <small class="text-muted">Enter 1 to 99. Decimals allowed (e.g., 34.5).</small>
                                 <small class="help-block text-danger" id="commission_error"></small>
                             </div>
 
@@ -417,8 +417,8 @@
         return;
     }
 
-    if (value < 1 || value > 85) {
-        errorField.text('Commission must be between 1 and 85.');
+    if (value < 1 || value > 99) {
+        errorField.text('Commission must be between 1 and 99.');
     } else {
         errorField.text('');
     }

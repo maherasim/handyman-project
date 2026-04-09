@@ -31,7 +31,7 @@ class UserRequest extends FormRequest
                 'email'             => 'required|email|max:255|unique:users,email,'.$id,
                 'contact_number'    => 'nullable', //unique:users,contact_number,'.$id,
                 'profile_image'     => 'mimetypes:image/jpeg,image/png,image/jpg,image/gif',
-                'handyman_commission' => 'nullable|numeric|min:1|max:85',
+                'handyman_commission' => 'nullable|numeric|min:1|max:99',
         ];
 
         if (request()->user_type === 'handyman') {
@@ -40,7 +40,7 @@ class UserRequest extends FormRequest
             $rules['contact_number'] = 'required';
             $rules['status'] = 'required|in:0,1';
             $rules['vat_number'] = 'required|string|max:255';
-            $rules['handyman_commission'] = 'required|numeric|min:1|max:85';
+            $rules['handyman_commission'] = 'required|numeric|min:1|max:99';
             $rules['languages'] = 'required|array|min:1';
             $rules['languages.*'] = 'string';
             $rules['service_address_id'] = 'required|exists:provider_address_mappings,id';

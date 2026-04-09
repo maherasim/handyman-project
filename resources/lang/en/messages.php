@@ -1267,7 +1267,7 @@
     'mobility' => 'Mobility',
     'handyman_commission_pct' => 'Handyman Commission (%)',
     'handyman_commission_placeholder' => 'e.g. 34.5',
-    'handyman_commission_hint' => 'Enter 1 to 85. Decimals allowed (e.g., 34.5).',
+    'handyman_commission_hint' => 'Enter 1 to 99. Decimals allowed (e.g., 34.5).',
     'experience' => 'Experience',
     'about_me' => 'About Me',
     'language_english' => 'English',
@@ -1278,7 +1278,7 @@
     'language_german' => 'German',
     'contact_number_max_15' => 'Contact number should not exceed 15 characters',
     'valid_mobile_number' => 'Please enter a valid mobile number',
-    'commission_between_1_85' => 'Commission must be between 1 and 85.',
+    'commission_between_1_85' => 'Commission must be between 1 and 99.',
     'select_at_least_one_language' => 'Please select at least one language.',
     'email_valid_title' => 'Please enter a valid email address',
 
