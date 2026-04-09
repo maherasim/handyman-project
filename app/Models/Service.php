@@ -50,6 +50,14 @@ class Service extends Model implements  HasMedia
     public function serviceRating(){
         return $this->hasMany(BookingRating::class, 'service_id','id')->orderBy('created_at','desc');
     }
+
+    /** Booking ratings shown on public service detail / listings (excludes admin-hidden). */
+    public function serviceRatingPublic()
+    {
+        return $this->hasMany(BookingRating::class, 'service_id', 'id')
+            ->publicVisible()
+            ->orderBy('created_at', 'desc');
+    }
     public function serviceBooking(){
         return $this->hasMany(Booking::class, 'service_id','id');
     }

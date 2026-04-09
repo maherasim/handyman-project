@@ -83,9 +83,9 @@ class ServiceResource extends JsonResource
             'subcategory_name'  => optional($this->subcategory)->name,
             'attchments' => getAttachments($this->getMedia('service_attachment')),
             'attchments_array' => getAttachmentArray($this->getMedia('service_attachment'), null),
-            'total_review'  => count($this->serviceRating),
-            'total_rating'  => count($this->serviceRating) > 0 
-                ? (float) number_format(max($this->serviceRating->avg('rating'), 0), 2) 
+            'total_review'  => count($this->serviceRatingPublic),
+            'total_rating'  => count($this->serviceRatingPublic) > 0
+                ? (float) number_format(max($this->serviceRatingPublic->avg('rating'), 0), 2)
                 : 0,
             'is_favourite'  => $this->getUserFavouriteService->where('user_id', $user_id)->first() ? 1 : 0,
             'service_address_mapping' => $this->providerServiceAddress->map(function($mapping) {

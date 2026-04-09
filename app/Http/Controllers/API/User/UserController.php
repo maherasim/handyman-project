@@ -336,7 +336,7 @@ public function register(UserRequest $request)
         {
             $service = Service::where('provider_id',$id)->where('status',1)->orderBy('id','desc')->paginate(10);
             $service = ServiceResource::collection($service);
-            $handyman_rating = HandymanRating::where('handyman_id',$id)->orderBy('id','desc')->paginate(10);
+            $handyman_rating = HandymanRating::where('handyman_id', $id)->publicVisible()->orderBy('id', 'desc')->paginate(10);
             $handyman_rating = HandymanRatingResource::collection($handyman_rating);
             $handyman_staff = User::where('user_type','handyman')->where('provider_id',$id)->where('is_available',1)->get();
             $handyman = UserResource::collection($handyman_staff);
@@ -359,7 +359,7 @@ public function register(UserRequest $request)
         }
         
         if($user->user_type == 'handyman'){
-            $handyman_rating = HandymanRating::where('handyman_id',$id)->orderBy('id','desc')->paginate(10);
+            $handyman_rating = HandymanRating::where('handyman_id', $id)->publicVisible()->orderBy('id', 'desc')->paginate(10);
             $handyman_rating = HandymanRatingResource::collection($handyman_rating);
         }
 
@@ -716,7 +716,7 @@ public function register(UserRequest $request)
     }
     public function handymanReviewsList(Request $request){
         $id = $request->handyman_id;
-        $handyman_rating_data = HandymanRating::where('handyman_id',$id);
+        $handyman_rating_data = HandymanRating::where('handyman_id', $id)->publicVisible();
 
         $per_page = config('constant.PER_PAGE_LIMIT');
 
@@ -760,10 +760,12 @@ public function register(UserRequest $request)
         $bookingRatings = $bookingIds->isEmpty()
             ? collect()
             : BookingRating::whereIn('booking_id', $bookingIds)
+                ->publicVisible()
                 ->with(['customer', 'booking', 'service'])
                 ->orderBy('created_at', 'desc')
                 ->get();
         $postJobBidRatings = PostJobBidCustomerRating::where('provider_id', $providerId)
+            ->publicVisible()
             ->with(['customer'])
             ->orderBy('created_at', 'desc')
             ->get();

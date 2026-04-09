@@ -177,10 +177,10 @@ class HandymanController extends Controller
         $auth_user = authSession();
 
         $handymandata = User::find($id);
-        $pageTitle = __('messages.update_form_title', ['form' => __('messages.handyman')]);
+        $pageTitle = __('messages.update_form_title', ['form' => __('messages.worker')]);
 
         if ($handymandata == null) {
-            $pageTitle = __('messages.add_button_form', ['form' => __('messages.handyman')]);
+            $pageTitle = __('messages.add_button_form', ['form' => __('messages.worker')]);
             $handymandata = new User;
         }else{
             if ($handymandata->provider_id !== auth()->user()->id && !auth()->user()->hasRole(['admin', 'demo_admin'])) {

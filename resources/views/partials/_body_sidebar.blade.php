@@ -758,6 +758,14 @@ $menu->add('<span>Profile Reports</span><span class="custom-tooltip"><span class
 ->nickname('profile_reports')
 ->data('permission', 'helpdesk list');
 
+$menu->add('<span>Review Reports</span><span class="custom-tooltip"><span class="tooltip-text">Review reported ratings</span></span>', ['route' => 'admin.review-reports.index'])
+->prepend(' <svg class="mr-2" width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M12 17.75l-5.878 3.09 1.122-6.545L2.488 9.66l6.572-.955L12 2.75l2.94 5.955 6.572.955-4.756 4.635 1.122 6.545L12 17.75Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+</svg>
+')
+->nickname('review_reports')
+->data('permission', 'helpdesk list');
+
 
 }
 

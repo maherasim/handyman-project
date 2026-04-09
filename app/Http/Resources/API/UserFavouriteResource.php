@@ -33,8 +33,8 @@ class UserFavouriteResource extends JsonResource {
             ? $this->service->getUserFavouriteService->where( 'user_id', $user_id )->first() ? 1 : 0
             : 0,
 
-            'total_rating' => $this->service && $this->service->serviceRating && $this->service->serviceRating->count() > 0
-            ? ( float ) number_format( max( $this->service->serviceRating->avg( 'rating' ), 0 ), 2 )
+            'total_rating' => $this->service && $this->service->serviceRatingPublic && $this->service->serviceRatingPublic->count() > 0
+            ? ( float ) number_format( max( $this->service->serviceRatingPublic->avg( 'rating' ), 0 ), 2 )
             : 0,
 
             'total_views' => optional( $this->service )->total_views ?? 0,

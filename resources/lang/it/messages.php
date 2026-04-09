@@ -116,6 +116,7 @@
     'username' => 'Nome utente',
     'providers' => 'Fornitori',
     'handyman' => 'Falegname',
+    'worker' => 'Lavoratore',
     'coupon' => 'Coupon',
     'code' => 'Codice',
     'discount_type' => 'Tipo di sconto',

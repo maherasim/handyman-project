@@ -282,8 +282,8 @@ public function providerSubscription()
         $bookingIds = Booking::where('provider_id', $providerId)->pluck('id');
         $bookingRatingValues = $bookingIds->isEmpty()
             ? collect()
-            : BookingRating::whereIn('booking_id', $bookingIds)->whereNotNull('rating')->pluck('rating');
-        $postJobRatingValues = PostJobBidCustomerRating::where('provider_id', $providerId)->whereNotNull('rating')->pluck('rating');
+            : BookingRating::whereIn('booking_id', $bookingIds)->publicVisible()->whereNotNull('rating')->pluck('rating');
+        $postJobRatingValues = PostJobBidCustomerRating::where('provider_id', $providerId)->publicVisible()->whereNotNull('rating')->pluck('rating');
         $allRatings = $bookingRatingValues->merge($postJobRatingValues);
         $totalReviews = $allRatings->count();
         $rating = $totalReviews > 0 ? (float) number_format($allRatings->avg(), 2) : 0.0;

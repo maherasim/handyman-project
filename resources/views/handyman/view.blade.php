@@ -5,7 +5,7 @@
             <div class="container-fluid">
                 @include('partials._provider')
                 <div style="text-align: right; margin: 20px;">
-                    <a href="{{ route('handyman.create') }}" class="btn btn-primary">Add Handyman</a>
+                    <a href="{{ route('handyman.create') }}" class="btn btn-primary">{{ __('messages.add_form_title', ['form' => __('messages.worker')]) }}</a>
                 </div>
                 <div class="card">
                     <div class="card-body p-30">

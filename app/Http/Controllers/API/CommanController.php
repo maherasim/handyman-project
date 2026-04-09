@@ -103,7 +103,7 @@ class CommanController extends Controller
                 'providers.city',
                 'providers.country',
                 'category',
-                'serviceRating',
+                'serviceRatingPublic',
                 'city',
                 'country'
             ])->orderBy('created_at','desc');
@@ -202,7 +202,7 @@ class CommanController extends Controller
         if ($request->has('is_rating') && $request->is_rating != '') {
             $isRatings = array_map('floatval', explode(',', $request->is_rating));
 
-            $service->whereHas('serviceRating', function ($q) use ($isRatings) {
+            $service->whereHas('serviceRatingPublic', function ($q) use ($isRatings) {
                 $conditions = implode(' OR ', array_fill(0, count($isRatings), '(AVG(rating) >= ? AND AVG(rating) <= ?)'));
 
                 $q->select('service_id', \DB::raw('AVG(rating) as average_rating'))

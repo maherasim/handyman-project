@@ -31,7 +31,7 @@ class ServiceController extends Controller
 {
     public function getServiceList(Request $request){
 
-        $service = Service::where('service_type','service')->with(['providers','category','serviceRating'])->orderBy('created_at','desc');
+        $service = Service::where('service_type','service')->with(['providers','category','serviceRatingPublic'])->orderBy('created_at','desc');
         $category = Category::onlyTrashed()->get();
         $category = $category->pluck('id');
         $service = $service->whereNotIn('category_id',$category);
@@ -67,10 +67,11 @@ class ServiceController extends Controller
         if($request->has('is_rating') && $request->is_rating != '') {
             $isRating = (int) $request->is_rating;
 
-            $service->whereHas('serviceRating', function($q) use ($isRating) {
+            $service->whereHas('serviceRatingPublic', function ($q) use ($isRating) {
                 $q->select('service_id', \DB::raw('round(AVG(rating), 1) as total_rating'))
                   ->groupBy('service_id')
                   ->havingRaw('total_rating >= ? AND total_rating < ?', [$isRating, $isRating + 1]);
+
                 return $q;
             });
         }
@@ -191,13 +192,13 @@ class ServiceController extends Controller
 
         if(auth()->user() !== null){
             if(auth()->user()->hasRole('admin')){
-                $service = Service::where('service_type','service')->withTrashed()->with('providers.city','providers.country','providers.providerSubscription','category','serviceRating','serviceAddon','serviceBooking')->findorfail($id);
+                $service = Service::where('service_type','service')->withTrashed()->with('providers.city','providers.country','providers.providerSubscription','category','serviceRatingPublic','serviceAddon','serviceBooking')->findorfail($id);
             }
             else{
-                $service = Service::where('service_type','service')->with('providers.city','providers.country','providers.providerSubscription','category','serviceRating','serviceAddon','serviceBooking')->findorfail($id);
+                $service = Service::where('service_type','service')->with('providers.city','providers.country','providers.providerSubscription','category','serviceRatingPublic','serviceAddon','serviceBooking')->findorfail($id);
             }
         }else{
-            $service = Service::where('service_type','service')->where('status',1)->with('providers.city','providers.country','providers.providerSubscription','category','serviceRating','serviceAddon','serviceBooking')->find($id);
+            $service = Service::where('service_type','service')->where('status',1)->with('providers.city','providers.country','providers.providerSubscription','category','serviceRatingPublic','serviceAddon','serviceBooking')->find($id);
         }
 
         if(empty($service)){
@@ -240,14 +241,14 @@ class ServiceController extends Controller
                 $a->where('status', 1);
             });
         }
-        $related = $related->get();
+        $related = $related->with('serviceRatingPublic')->get();
         $related_service = ServiceResource::collection($related);
 
-        $rating_data = BookingRatingResource::collection($service_detail->serviceRating->take(5));
+        $rating_data = BookingRatingResource::collection($service->serviceRatingPublic->take(5));
 
         $customer_reviews = [];
         if($request->customer_id != null){
-            $customer_review = BookingRating::where('customer_id',$request->customer_id)->where('service_id',$id)->get();
+            $customer_review = BookingRating::where('customer_id',$request->customer_id)->where('service_id',$id)->publicVisible()->get();
             if (!empty($customer_review))
             {
                 $customer_reviews = BookingRatingResource::collection($customer_review);
@@ -297,7 +298,7 @@ if ($matchedTax) {
 
     public function getServiceRating(Request $request){
 
-        $rating_data = BookingRating::where('service_id',$request->service_id);
+        $rating_data = BookingRating::where('service_id',$request->service_id)->publicVisible();
 
         $per_page = config('constant.PER_PAGE_LIMIT');
         if( $request->has('per_page') && !empty($request->per_page)){
@@ -356,7 +357,7 @@ if ($matchedTax) {
     {
         $user = auth()->user();
 
-        $favourite = UserFavouriteService::with('service.serviceBooking')->where('user_id',$user->id);
+        $favourite = UserFavouriteService::with(['service.serviceBooking', 'service.serviceRatingPublic'])->where('user_id', $user->id);
 
         $per_page = config('constant.PER_PAGE_LIMIT');
 
@@ -390,7 +391,7 @@ if ($matchedTax) {
         return comman_custom_response($response);
     }
     public function getTopRatedService(){
-        $rating_data = BookingRating::whereNotNull('review')->orderBy('rating','desc')->limit(5)->get();
+        $rating_data = BookingRating::publicVisible()->whereNotNull('review')->orderBy('rating', 'desc')->limit(5)->get();
         $items = BookingRatingResource::collection($rating_data);
 
         $response = [
@@ -401,7 +402,7 @@ if ($matchedTax) {
     }
     public function serviceReviewsList(Request $request){
         $id = $request->service_id;
-        $rating_data = BookingRating::where('service_id',$id);
+        $rating_data = BookingRating::where('service_id', $id)->publicVisible();
 
         $per_page = config('constant.PER_PAGE_LIMIT');
 

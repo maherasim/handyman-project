@@ -211,9 +211,96 @@
         </div>
 
 </div>
+    @include('partials.ugc-service-cards-script')
     @section('bottom_script')
     <!-- <script src="{{ asset('js/bootstrap.bundle.js') }}"></script> -->
     <script>
+        if (typeof window.triggerUgcReportReview !== 'function') {
+            window.triggerUgcReportReview = function (reviewId, btnElement, reviewType) {
+                if (typeof Swal === 'undefined' || !Swal.fire) {
+                    return;
+                }
+                reviewType = reviewType || 'booking_rating';
+
+                var reasonOptions = [
+                    { value: 'off_platform_requests', label: 'Off-platform requests' },
+                    { value: 'misleading_profile_or_skills', label: 'Misleading profile or skills' },
+                    { value: 'no_show_or_unreliability', label: 'No-show or unreliability' },
+                    { value: 'poor_work_quality', label: 'Poor work quality' },
+                    { value: 'unprofessional_behavior', label: 'Unprofessional behavior' },
+                    { value: 'fraud_or_misleading_information', label: 'Fraud or misleading information' },
+                    { value: 'overcharging_or_hidden_fees', label: 'Overcharging or hidden fees' },
+                    { value: 'incomplete_or_abandoned_work', label: 'Incomplete or abandoned work' },
+                    { value: 'harassment_or_bullying', label: 'Harassment or bullying' },
+                    { value: 'spam_or_scams', label: 'Spam or scams' },
+                    { value: 'hate_speech', label: 'Hate speech' },
+                    { value: 'violence_or_threats', label: 'Violence or threats' },
+                    { value: 'payment_issues', label: 'Payment issues' },
+                    { value: 'overcharging_or_extra_fees', label: 'Overcharging or extra fees' },
+                    { value: 'violation_of_platform_rules', label: 'Violation of platform rules' },
+                    { value: 'plagiarism_or_copied_work', label: 'Plagiarism or copied work' },
+                    { value: 'nudity_or_sexual_content', label: 'Nudity or sexual content' }
+                ];
+                var optionsHtml = reasonOptions.map(function (opt) {
+                    return '<option value="' + opt.value + '">' + opt.label + '</option>';
+                }).join('');
+
+                Swal.fire({
+                    title: @json(__('messages.ugc_report_title')),
+                    html:
+                        '<div class="text-start mt-2">' +
+                        '<label class="form-label fw-bold small text-uppercase">' + @json(__('messages.ugc_report_reason')) + '</label>' +
+                        '<select id="ugc-reason-review-fallback" class="form-select mb-3">' + optionsHtml + '</select>' +
+                        '<label class="form-label fw-bold small text-uppercase">' + @json(__('messages.ugc_report_details')) + '</label>' +
+                        '<textarea id="ugc-details-review-fallback" class="form-control" rows="4" maxlength="2000" placeholder="Please provide additional details about this issue..."></textarea>' +
+                        '</div>',
+                    showCancelButton: true,
+                    confirmButtonText: @json(__('messages.ugc_report_submit')),
+                    cancelButtonText: @json(__('messages.cancel')),
+                    preConfirm: function () {
+                        return {
+                            reason: document.getElementById('ugc-reason-review-fallback').value,
+                            details: document.getElementById('ugc-details-review-fallback').value
+                        };
+                    }
+                }).then(function (result) {
+                    if (!result.isConfirmed || !result.value) {
+                        return;
+                    }
+
+                    fetch(@json(route('ugc.report.review')), {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': @json(csrf_token())
+                        },
+                        body: JSON.stringify({
+                            review_type: reviewType,
+                            review_id: reviewId,
+                            reason: result.value.reason,
+                            details: result.value.details
+                        })
+                    })
+                        .then(function (response) {
+                            return response.json().then(function (data) {
+                                return { ok: response.ok, data: data };
+                            });
+                        })
+                        .then(function (payload) {
+                            if (!payload.ok) {
+                                throw new Error((payload.data && payload.data.message) ? payload.data.message : 'Error');
+                            }
+                            Swal.fire({ icon: 'success', title: payload.data.message || 'OK', text: payload.data.policy || '' });
+                        })
+                        .catch(function (error) {
+                            Swal.fire({ icon: 'error', title: 'Error', text: error.message || 'Error' });
+                        });
+                });
+            };
+        }
+
         $(document).ready(function(event) {
             var $this = $('.payment-link').find('a.active');
             loadurl = "{{route('booking_layout_page',$bookingdata->id)}}?tabpage={{$tabpage}}";

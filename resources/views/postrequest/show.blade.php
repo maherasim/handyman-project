@@ -658,6 +658,9 @@
                                         <th class="text-center">{{ __('messages.pjr_th_rating') }}</th>
                                         <th>{{ __('messages.pjr_th_review') }}</th>
                                         <th class="text-end">{{ __('messages.pjr_th_date') }}</th>
+                                        @auth
+                                            <th class="text-end">{{ __('messages.action') }}</th>
+                                        @endauth
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -671,6 +674,16 @@
                                             </td>
                                             <td>{{ $r->review ?: '-' }}</td>
                                             <td class="text-end">{{ optional($r->created_at)->format('Y-m-d') ?? '-' }}</td>
+                                            @auth
+                                                <td class="text-end">
+                                                    @if((int) auth()->id() !== (int) ($r->customer_id ?? 0))
+                                                        <button type="button" class="btn btn-outline-danger btn-sm"
+                                                            onclick="if(window.triggerUgcReportReview) window.triggerUgcReportReview({{ (int) $r->id }}, this, 'post_job_bid_rating');">
+                                                            <i class="fas fa-flag me-1"></i>{{ __('messages.ugc_report') }}
+                                                        </button>
+                                                    @endif
+                                                </td>
+                                            @endauth
                                         </tr>
                                     @endforeach
                                 </tbody>
@@ -700,6 +713,9 @@
                                         <th class="text-center">{{ __('messages.pjr_th_rating') }}</th>
                                         <th>{{ __('messages.pjr_th_review') }}</th>
                                         <th class="text-end">{{ __('messages.pjr_th_date') }}</th>
+                                        @auth
+                                            <th class="text-end">{{ __('messages.action') }}</th>
+                                        @endauth
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -713,6 +729,16 @@
                                             </td>
                                             <td>{{ $r->review ?: '-' }}</td>
                                             <td class="text-end">{{ optional($r->created_at)->format('Y-m-d') ?? '-' }}</td>
+                                            @auth
+                                                <td class="text-end">
+                                                    @if((int) auth()->id() !== (int) ($r->provider_id ?? 0))
+                                                        <button type="button" class="btn btn-outline-danger btn-sm"
+                                                            onclick="if(window.triggerUgcReportReview) window.triggerUgcReportReview({{ (int) $r->id }}, this, 'post_job_bid_customer_rating');">
+                                                            <i class="fas fa-flag me-1"></i>{{ __('messages.ugc_report') }}
+                                                        </button>
+                                                    @endif
+                                                </td>
+                                            @endauth
                                         </tr>
                                     @endforeach
                                 </tbody>
@@ -1617,4 +1643,7 @@
             });
         });
     </script>
+    @auth
+        @include('partials.ugc-service-cards-script')
+    @endauth
 </x-master-layout>

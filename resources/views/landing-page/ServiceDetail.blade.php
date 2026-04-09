@@ -1041,6 +1041,14 @@
                                                 <p class="commnet-content m-0">
                                                     {{ $ratingData['review'] }}
                                                 </p>
+                                                @if(auth()->check() && !empty($ratingData['id']) && (int) auth()->id() !== (int) ($ratingData['customer_id'] ?? 0))
+                                                    <div class="mt-2">
+                                                        <button type="button" class="btn btn-outline-danger btn-sm"
+                                                            onclick="if(window.triggerUgcReportReview) window.triggerUgcReportReview({{ (int) $ratingData['id'] }}, this, 'booking_rating');">
+                                                            <i class="fas fa-flag me-1"></i>{{ __('messages.ugc_report') }}
+                                                        </button>
+                                                    </div>
+                                                @endif
                                             </div>
                                         </div>
                                     </li>

@@ -3,8 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\ContentReport;
+use App\Models\BookingRating;
 use App\Models\PostJobRequest;
 use App\Models\ProfileReport;
+use App\Models\CustomerRating;
+use App\Models\PostJobBid;
+use App\Models\PostJobBidCustomerRating;
+use App\Models\PostJobBidRating;
+use App\Models\ReviewReport;
 use App\Models\Service;
 use App\Models\User;
 use App\Models\UserBlock;
@@ -194,6 +200,87 @@ class UgcSafetyController extends Controller
 
         $this->notifyAdminNewReport($service, $user, $request->input('reason'), $request->input('details'));
         $this->notifyProviderServiceReported($service, $request->input('reason'), $request->input('details'));
+
+        return response()->json([
+            'message' => __('messages.ugc_report_received'),
+            'policy' => __('messages.ugc_policy_24h'),
+        ]);
+    }
+
+    public function reportReview(Request $request)
+    {
+        $user = auth()->user();
+        if (! $user) {
+            return response()->json(['message' => __('messages.ugc_login_for_report')], 403);
+        }
+
+        $v = Validator::make($request->all(), [
+            'review_type' => 'nullable|string|in:booking_rating,customer_rating,post_job_bid_rating,post_job_bid_customer_rating',
+            'review_id' => 'required|integer|min:1',
+            'reason' => 'required|string|in:'.implode(',', $this->reportReasonValues()),
+            'details' => 'nullable|string|max:2000',
+        ]);
+        if ($v->fails()) {
+            return response()->json(['message' => $v->errors()->first()], 422);
+        }
+
+        $reviewType = (string) $request->input('review_type', 'booking_rating');
+        $reviewId = $request->integer('review_id');
+
+        switch ($reviewType) {
+            case 'customer_rating':
+                $review = CustomerRating::find($reviewId);
+                $reviewOwnerId = $review ? (int) $review->provider_id : 0;
+                break;
+            case 'post_job_bid_rating':
+                $review = PostJobBidRating::find($reviewId);
+                $reviewOwnerId = $review ? (int) $review->customer_id : 0;
+                break;
+            case 'post_job_bid_customer_rating':
+                $review = PostJobBidCustomerRating::find($reviewId);
+                $reviewOwnerId = $review ? (int) $review->provider_id : 0;
+                break;
+            default:
+                $review = BookingRating::find($reviewId);
+                $reviewOwnerId = $review ? (int) $review->customer_id : 0;
+                $reviewType = 'booking_rating';
+                break;
+        }
+
+        if (! $review) {
+            return response()->json(['message' => 'Review not found.'], 404);
+        }
+
+        if (in_array($reviewType, ['post_job_bid_rating', 'post_job_bid_customer_rating'], true)) {
+            $bid = PostJobBid::find((int) $review->post_job_bid_id);
+            if (! $bid || ! in_array((int) $user->id, [(int) $bid->customer_id, (int) $bid->provider_id], true)) {
+                return response()->json(['message' => __('messages.ugc_login_for_report')], 403);
+            }
+        }
+
+        if ($reviewOwnerId === (int) $user->id) {
+            return response()->json(['message' => __('messages.ugc_cannot_report_own')], 422);
+        }
+
+        $existing = ReviewReport::query()
+            ->where('reporter_id', $user->id)
+            ->where('review_type', $reviewType)
+            ->where('review_id', $review->id)
+            ->where('status', 'pending')
+            ->first();
+        if ($existing) {
+            return response()->json(['message' => __('messages.ugc_already_reported')], 422);
+        }
+
+        ReviewReport::create([
+            'reporter_id' => $user->id,
+            'review_type' => $reviewType,
+            'review_id' => $review->id,
+            'review_owner_id' => $reviewOwnerId,
+            'reason' => $request->input('reason'),
+            'details' => $request->input('details'),
+            'status' => 'pending',
+        ]);
 
         return response()->json([
             'message' => __('messages.ugc_report_received'),

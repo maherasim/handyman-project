@@ -9,9 +9,15 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class HandymanRating extends Model
 {
     use HasFactory,SoftDeletes;
+
+    public const STATUS_VISIBLE = 0;
+
+    public const STATUS_HIDDEN = 1;
+
     protected $table = 'handyman_ratings';
+
     protected $fillable = [
-        'booking_id', 'handyman_id', 'service_id', 'customer_id', 'rating', 'review'
+        'booking_id', 'handyman_id', 'service_id', 'customer_id', 'rating', 'review', 'status',
     ];
 
     protected $casts = [
@@ -20,7 +26,16 @@ class HandymanRating extends Model
         'service_id'    => 'integer',
         'customer_id'   => 'integer',
         'rating'        => 'double',
+        'status'        => 'integer',
     ];
+
+    /** Visible on public handyman pages and listings (0; null = legacy visible). */
+    public function scopePublicVisible($query)
+    {
+        return $query->where(function ($q) {
+            $q->where('status', self::STATUS_VISIBLE)->orWhereNull('status');
+        });
+    }
 
     public function handyman()
     {

@@ -45,6 +45,13 @@
                                                 <span class="badge bg-light text-dark border mb-1">{{ __('messages.post_job_request') }}</span>
                                                 <strong>{{ \Illuminate\Support\Str::limit($report->reportable->title ?? '—', 40) }}</strong>
                                                 <div class="small text-muted">#{{ $report->reportable_id }}</div>
+                                            @elseif($report->reportable_type === \App\Models\BookingRating::class)
+                                                @php
+                                                    $reviewItem = \App\Models\BookingRating::withTrashed()->find($report->reportable_id);
+                                                @endphp
+                                                <span class="badge bg-light text-dark border mb-1">Review</span>
+                                                <strong>{{ \Illuminate\Support\Str::limit((string) optional($reviewItem)->review, 40) ?: '—' }}</strong>
+                                                <div class="small text-muted">#{{ $report->reportable_id }}</div>
                                             @else
                                                 #{{ $report->reportable_id }}
                                             @endif
@@ -112,6 +119,12 @@
                                                 @csrf
                                                 @php
                                                     $isHiddenFromPublic = (bool) ($report->reportable->is_hidden_from_public ?? false);
+                                                    $reviewItem = null;
+                                                    $isReviewHidden = false;
+                                                    if ($report->reportable_type === \App\Models\BookingRating::class) {
+                                                        $reviewItem = \App\Models\BookingRating::withTrashed()->find($report->reportable_id);
+                                                        $isReviewHidden = (bool) ((int) (optional($reviewItem)->status ?? 0) === 1 || optional($reviewItem)->trashed());
+                                                    }
                                                 @endphp
                                                 <select name="action" class="form-select form-select-sm border-0 shadow-sm" required style="border-radius: 8px; font-weight: 500;">
                                                     <option value="" disabled selected>{{ __('messages.action') }}...</option>
@@ -122,6 +135,9 @@
                                                     @elseif($report->reportable_type === \App\Models\PostJobRequest::class)
                                                         <option value="hide_post_job" class="text-warning fw-bold" @selected(!$isHiddenFromPublic)>{{ __('messages.ugc_action_hide_post_job') }}</option>
                                                         <option value="restore_post_job" class="text-success" @selected($isHiddenFromPublic)>{{ __('messages.ugc_action_restore_post_job') }}</option>
+                                                    @elseif($report->reportable_type === \App\Models\BookingRating::class)
+                                                        <option value="hide_review" class="text-warning fw-bold" @selected(!$isReviewHidden)>Hide review</option>
+                                                        <option value="restore_review" class="text-success" @selected($isReviewHidden)>Restore review</option>
                                                     @endif
                                                 </select>
                                                 

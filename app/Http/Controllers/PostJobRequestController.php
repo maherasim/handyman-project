@@ -148,10 +148,8 @@ class PostJobRequestController extends Controller
             'postrequest.country:id,name',
             'postrequest.postBidList:id,post_request_id',
             'extraCharges',
-            'ratings.provider',
-            'ratings.customer',
-            'customerRatings.customer',
-            'customerRatings.provider',
+            'ratings' => fn ($q) => $q->publicVisible()->with(['provider', 'customer']),
+            'customerRatings' => fn ($q) => $q->publicVisible()->with(['customer', 'provider']),
         ])->where('post_request_id', $postRequestId);
 
         // Try to get bid matching the post's current status
@@ -199,10 +197,8 @@ class PostJobRequestController extends Controller
             'postrequest.country:id,name',
             'postrequest.postBidList:id,post_request_id',
             'extraCharges',
-            'ratings.provider',
-            'ratings.customer',
-            'customerRatings.customer',
-            'customerRatings.provider',
+            'ratings' => fn ($q) => $q->publicVisible()->with(['provider', 'customer']),
+            'customerRatings' => fn ($q) => $q->publicVisible()->with(['customer', 'provider']),
         ])->findOrFail($bidId);
 
         $providerHasRatedCustomer = PostJobBidCustomerRating::where('post_job_bid_id', $bid->id)

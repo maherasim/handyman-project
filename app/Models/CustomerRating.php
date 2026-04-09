@@ -12,8 +12,12 @@ class CustomerRating extends Model
     
     protected $table = 'customer_ratings';
     
+    public const STATUS_VISIBLE = 0;
+
+    public const STATUS_HIDDEN = 1;
+
     protected $fillable = [
-        'booking_id', 'customer_id', 'provider_id', 'rating', 'review'
+        'booking_id', 'customer_id', 'provider_id', 'rating', 'review', 'status',
     ];
 
     protected $casts = [
@@ -21,7 +25,18 @@ class CustomerRating extends Model
         'customer_id'   => 'integer',
         'provider_id'   => 'integer',
         'rating'        => 'double',
+        'status'        => 'integer',
     ];
+
+    /**
+     * Visible publicly (status 0; null treated as visible for legacy rows).
+     */
+    public function scopePublicVisible($query)
+    {
+        return $query->where(function ($q) {
+            $q->where('status', self::STATUS_VISIBLE)->orWhereNull('status');
+        });
+    }
 
     public function customer()
     {

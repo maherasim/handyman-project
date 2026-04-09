@@ -116,8 +116,8 @@
             @forelse($services as $data)
                 <div class="col-lg-3 col-md-6">
                     @php
-                        $totalReviews = \App\Models\BookingRating::where('service_id', $data->id)->count();
-                        $totalRating = $data->serviceRating ? (float)number_format(max($data->serviceRating->avg('rating'), 0), 2) : 0;
+                        $totalReviews = \App\Models\BookingRating::where('service_id', $data->id)->publicVisible()->count();
+                        $totalRating = $data->serviceRatingPublic ? (float) number_format(max($data->serviceRatingPublic->avg('rating'), 0), 2) : 0;
                         $completedBookingCount = \App\Models\Booking::where('service_id', $data->id)->count();
                         $plan_icon = asset('images/freepng.png');
                         $provider = $data->providers;

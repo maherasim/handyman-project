@@ -362,6 +362,40 @@ public function store(UserRequest $request)
             'amount' => 0
         ];
         Wallet::create($wallet);
+
+        // Keep parity with /register provider flow:
+        // create a default free provider subscription on provider creation.
+        if (!ProviderSubscription::where('user_id', $user->id)->exists()) {
+            $startDate = now();
+            $planType = 'weekly';
+
+            $endDate = match ($planType) {
+                'monthly' => $startDate->copy()->addMonth(),
+                'yearly' => $startDate->copy()->addYear(),
+                default => $startDate->copy()->addWeek(),
+            };
+
+            ProviderSubscription::create([
+                'plan_id'         => 1,
+                'user_id'         => $user->id,
+                'title'           => 'Free plan',
+                'identifier'      => 'free',
+                'type'            => $planType,
+                'start_at'        => $startDate,
+                'end_at'          => $endDate,
+                'amount'          => 0,
+                'status'          => 'active',
+                'payment_id'      => '1',
+                'plan_limitation' => json_encode([
+                    'featured_service' => ['is_checked' => null, 'limit' => null],
+                    'handyman'         => ['is_checked' => null, 'limit' => null],
+                    'service'          => ['is_checked' => null, 'limit' => null],
+                ]),
+                'duration'        => null,
+                'description'     => 'Free plan',
+                'plan_type'       => 'Free plan',
+            ]);
+        }
     } else {
         $user = User::findOrFail($id);
         $user->fill($data)->update();
@@ -379,7 +413,7 @@ public function store(UserRequest $request)
         } catch (\Throwable $th) {
             // Handle exception or ignore
         }
-    }
+    } 
 
     $user->assignRole($data['user_type']);
     storeMediaFile($user, $request->profile_image, 'profile_image');

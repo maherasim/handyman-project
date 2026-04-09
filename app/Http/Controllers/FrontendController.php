@@ -77,11 +77,11 @@ class FrontendController extends Controller
         // ->where('status', 'completed') // Only count completed bookings
         // ->count();
         $serviceQuery = Service::whereIn('id', $servicerequest)
-            ->with(['serviceRating']); // Assuming a serviceRating relationship exists
+            ->with(['serviceRatingPublic']);
         \App\Support\UgcListing::scopePublicServices($serviceQuery);
         $servicerequest = $serviceQuery->get()
             ->map(function ($service) {
-                $ratings = BookingRating::where('service_id', $service->id)->pluck('rating')->toArray();
+                $ratings = BookingRating::where('service_id', $service->id)->publicVisible()->pluck('rating')->toArray();
                 $totalReviews = count($ratings);
                 $avgRating = $totalReviews > 0 ? array_sum($ratings) / $totalReviews : 0;
 
@@ -98,13 +98,13 @@ class FrontendController extends Controller
         $featuredSectionEnabled = isset($sectionData['section_4']['section_4']) && (int) $sectionData['section_4']['section_4'] === 1;
         if ($featuredSectionEnabled) {
             $featuredQuery = Service::where('is_featured', 1)
-                ->with(['serviceRating'])
+                ->with(['serviceRatingPublic'])
                 ->orderByDesc('id')
                 ->limit(16);
             \App\Support\UgcListing::scopePublicServices($featuredQuery);
             $featuredrequest = $featuredQuery->get()
                 ->map(function ($service) {
-                    $ratings = BookingRating::where('service_id', $service->id)->pluck('rating')->toArray();
+                    $ratings = BookingRating::where('service_id', $service->id)->publicVisible()->pluck('rating')->toArray();
                     $totalReviews = count($ratings);
                     $avgRating = $totalReviews > 0 ? array_sum($ratings) / $totalReviews : 0;
                     $service->total_reviews = $totalReviews;
@@ -122,7 +122,7 @@ class FrontendController extends Controller
         $postjobservice = $serviceconfig ? $serviceconfig->post_services : null;
 
         // Calculate average rating
-        $ratings = BookingRating::pluck('rating')->toArray();
+        $ratings = BookingRating::publicVisible()->pluck('rating')->toArray();
         $averageRating = count($ratings) > 0 ? array_sum($ratings) / count($ratings) : 0;
         $totalRating = number_format($averageRating, 2);
 
@@ -159,6 +159,7 @@ class FrontendController extends Controller
 
         // Landing: testimonials (reviews with text) for "What customers say"
         $landingTestimonials = BookingRating::with(['customer', 'service'])
+            ->publicVisible()
             ->whereNotNull('review')
             ->where('review', '!=', '')
             ->where('rating', '>=', 4)
@@ -338,7 +339,7 @@ class FrontendController extends Controller
 
             UgcListing::scopePublicServices($query);
 
-            $services = $query->with(['providers','city','country'])->paginate(12)->withQueryString();
+            $services = $query->with(['providers', 'city', 'country', 'serviceRatingPublic'])->paginate(12)->withQueryString();
 
             return view('landing-page.service-simple', compact(
                 'services', 'categories', 'subcategories', 'providers', 'countries', 'cities', 'filters'
@@ -467,7 +468,7 @@ class FrontendController extends Controller
 
     public function categoryDetailServiceDatatable(Datatables $datatable, Request $request)
     {
-        $query = Service::where('service_type', 'service')->where('status', 1);
+        $query = Service::where('service_type', 'service')->where('status', 1)->with('serviceRatingPublic');
         UgcListing::scopePublicServices($query);
 
         // Apply filters (existing logic)
@@ -533,7 +534,7 @@ class FrontendController extends Controller
                 }
             }
             if ($filter['selectedSortOption'] == "top_rated") {
-                $topRatedServiceIds = BookingRating::select(
+                $topRatedServiceIds = BookingRating::publicVisible()->select(
                     'service_id',
                     \DB::raw('COALESCE(AVG(rating), 0) as avg_rating'),
                     \DB::raw('COUNT(rating) as total_reviews')
@@ -564,8 +565,8 @@ class FrontendController extends Controller
 
         $datatable = $datatable->eloquent($query)
             ->editColumn('name', function ($data) {
-                $totalReviews = $data->id ? BookingRating::where('service_id', $data->id)->count() : 0;
-                $totalRating = $data->serviceRating ? (float)number_format(max($data->serviceRating->avg('rating'), 0), 2) : 0;
+                $totalReviews = $data->id ? BookingRating::where('service_id', $data->id)->publicVisible()->count() : 0;
+                $totalRating = $data->serviceRatingPublic ? (float) number_format(max($data->serviceRatingPublic->avg('rating'), 0), 2) : 0;
                 if (!empty(auth()->user())) {
                     $favouriteService = $data->getUserFavouriteService()->where('user_id', auth()->user()->id)->get();
                 } else {
@@ -690,11 +691,13 @@ class FrontendController extends Controller
             ->whereHas('service', function ($q) use ($provider_id_int) {
                 $q->where('provider_id', $provider_id_int);
             })
+            ->publicVisible()
             ->orderBy('created_at', 'desc')
             ->limit($reviewSlice)
             ->get();
         $postJobReviews = PostJobBidCustomerRating::with('customer')
             ->where('provider_id', $provider_id_int)
+            ->publicVisible()
             ->orderBy('created_at', 'desc')
             ->limit($reviewSlice)
             ->get();
@@ -740,8 +743,8 @@ class FrontendController extends Controller
         }
 
         $handymanId = $handymanData['data']['id'];
-        $total_handyman_rating = HandymanRating::where('handyman_id', $handymanId)->count();
-        $handyman_rating = HandymanRating::where('handyman_id', $handymanId)->orderBy('created_at', 'desc')->limit(100)->get();
+        $total_handyman_rating = HandymanRating::where('handyman_id', $handymanId)->publicVisible()->count();
+        $handyman_rating = HandymanRating::where('handyman_id', $handymanId)->publicVisible()->orderBy('created_at', 'desc')->limit(100)->get();
 
         $sitesetup = Setting::where('type', 'site-setup')->where('key', 'site-setup')->first();
         $datetime = json_decode($sitesetup->value);
@@ -752,6 +755,9 @@ class FrontendController extends Controller
 
         $satisfy_customers = (int) DB::table('handyman_ratings')
             ->where('handyman_id', $handymanId)
+            ->where(function ($q) {
+                $q->where('status', 0)->orWhereNull('status');
+            })
             ->whereIn('rating', [4, 5])
             ->selectRaw('COUNT(DISTINCT customer_id) as cnt')
             ->value('cnt');
@@ -826,7 +832,7 @@ class FrontendController extends Controller
         $serviceIdForRatings = (int)($serviceData['service_detail']['id'] ?? 0);
         // Count only — loading every review row for count() exhausted memory on busy services
         $total_ratings_count = $serviceIdForRatings > 0
-            ? BookingRating::where('service_id', $serviceIdForRatings)->count()
+            ? BookingRating::where('service_id', $serviceIdForRatings)->publicVisible()->count()
             : 0;
         return view('landing-page.ServiceDetail', compact('serviceData', 'favouriteService', 'date_time', 'completed_services', 'knownLanguageArray', 'subtotal', 'total_ratings_count', 'favouriteServiceData', 'userId', 'providerPlanIcon'));
     }
@@ -890,7 +896,7 @@ class FrontendController extends Controller
 
         $service_id = $request->id;
         $service = Service::where('id', $service_id)
-            ->with(['providers.city','providers.country','category','serviceRating','serviceAddon','city','country'])
+            ->with(['providers.city','providers.country','category','serviceRatingPublic','serviceAddon','city','country'])
             ->first();
 
         $service->service_image = getSingleMedia($service, 'service_attachment', null);
@@ -902,8 +908,8 @@ class FrontendController extends Controller
         $service->service_city = optional($service->city)->name;
         $service->service_country = optional($service->country)->name;
         $service->provider_image = getSingleMedia($service->providers, 'profile_image', null);
-        $total_reviews = optional($service->serviceRating)->count();
-        $total_rating = optional($service->serviceRating)->sum('rating');
+        $total_reviews = optional($service->serviceRatingPublic)->count();
+        $total_rating = optional($service->serviceRatingPublic)->sum('rating');
         $service->total_reviews = $total_reviews;
         $service->total_rating = $total_reviews > 0 ? number_format($total_rating / $total_reviews, 2) : 0;
         // Total bookings of this service
@@ -1113,10 +1119,10 @@ class FrontendController extends Controller
     {
 
         if ($request->handyman_id) {
-            $query = HandymanRating::query()->orderBy('created_at', 'desc');
+            $query = HandymanRating::query()->publicVisible()->orderBy('created_at', 'desc');
 
         } else {
-            $query = BookingRating::query()->orderBy('created_at', 'desc');
+            $query = BookingRating::query()->publicVisible()->orderBy('created_at', 'desc');
         }
 
         $review_count = 0;
@@ -1127,13 +1133,13 @@ class FrontendController extends Controller
 
             $bookingCount = BookingRating::whereHas('service', function ($q) use ($id) {
                 $q->where('provider_id', $id);
-            })->count();
+            })->publicVisible()->count();
             $postJobCount = PostJobBidCustomerRating::where('provider_id', $id)->count();
             $review_count = $bookingCount + $postJobCount;
 
             $query = $query->whereHas('service', function ($q) use ($id) {
                 $q->where('provider_id', $id);
-            });
+            })->publicVisible();
         } else if ($request->handyman_id) {
             $id = $request->handyman_id;
             $type = 'handyman-rating';
@@ -1144,7 +1150,7 @@ class FrontendController extends Controller
         } else if ($request->service_id) {
             $id = $request->service_id;
             $type = "service-rating";
-            $query = $query->where('service_id', $id);
+            $query = $query->where('service_id', $id)->publicVisible();
             $review_count = count($query->get());
         }
 
@@ -1246,7 +1252,7 @@ class FrontendController extends Controller
 
     public function serviceDatatable(Datatables $datatable, Request $request)
     {
-        $query = Service::where('service_type', 'service')->where('status', 1)->with('media');
+        $query = Service::where('service_type', 'service')->where('status', 1)->with(['media', 'serviceRatingPublic']);
         UgcListing::scopePublicServices($query);
 
         // Apply filters (existing logic)
@@ -1322,7 +1328,7 @@ class FrontendController extends Controller
                 }
             }
             if ($filter['selectedSortOption'] == "top_rated") {
-                $topRatedServiceIds = BookingRating::select(
+                $topRatedServiceIds = BookingRating::publicVisible()->select(
                     'service_id',
                     \DB::raw('COALESCE(AVG(rating), 0) as avg_rating'),
                     \DB::raw('COUNT(rating) as total_reviews')
@@ -1349,8 +1355,8 @@ class FrontendController extends Controller
         // Add a column to count completed bookings
         $datatable = $datatable->eloquent($query)
             ->editColumn('name', function ($data) {
-                $totalReviews = $data->id ? BookingRating::where('service_id', $data->id)->count() : 0;
-                $totalRating = $data->serviceRating ? (float)number_format(max($data->serviceRating->avg('rating'), 0), 2) : 0;
+                $totalReviews = $data->id ? BookingRating::where('service_id', $data->id)->publicVisible()->count() : 0;
+                $totalRating = $data->serviceRatingPublic ? (float) number_format(max($data->serviceRatingPublic->avg('rating'), 0), 2) : 0;
                 if (!empty(auth()->user())) {
                     $favouriteService = $data->getUserFavouriteService()->where('user_id', auth()->user()->id)->get();
                 } else {
@@ -1461,7 +1467,7 @@ class FrontendController extends Controller
 
     public function bookingDatatable(Datatables $datatable, Request $request)
     {
-        $query = Booking::query();
+        $query = Booking::query()->with('service.serviceRatingPublic');
         $query = $query->where('customer_id', auth()->user()->id);
         $filter = $request->filter;
         if (isset($filter['search'])) {
@@ -1496,7 +1502,7 @@ class FrontendController extends Controller
             ->editColumn('name', function ($data) {
                 $service = optional($data->service);
                 $serviceimage = getSingleMedia($service, 'service_attachment', null);
-                $total_rating = (float)number_format(max(optional($data->service)->serviceRating->avg('rating'), 0), 2);
+                $total_rating = (float) number_format(max(optional($data->service)->serviceRatingPublic->avg('rating'), 0), 2);
                 $advancepaid = 0;
 
                 if ($data->status == 'cancelled') {
@@ -1556,7 +1562,7 @@ class FrontendController extends Controller
 
         $favouriteServiceIds = UserFavouriteService::where('user_id', $user->id)->pluck('service_id')->toArray();
 
-        $query = Service::whereIn('id', $favouriteServiceIds);
+        $query = Service::whereIn('id', $favouriteServiceIds)->with('serviceRatingPublic');
         UgcListing::scopePublicServices($query);
 
         $filter = $request->filter;
@@ -1590,7 +1596,7 @@ class FrontendController extends Controller
                     ->orderByRaw(\DB::raw("FIELD(id, " . implode(',', $bestSellingServiceIds) . ")"));
             }
             if ($filter['selectedSortOption'] == "top_rated") {
-                $topRatedServiceIds = BookingRating::select('service_id', \DB::raw('COALESCE(AVG(rating), 0) as avg_rating'))
+                $topRatedServiceIds = BookingRating::publicVisible()->select('service_id', \DB::raw('COALESCE(AVG(rating), 0) as avg_rating'))
                     ->groupBy('service_id')
                     ->orderByDesc('avg_rating')
                     ->pluck('service_id')
@@ -1607,9 +1613,9 @@ class FrontendController extends Controller
 
         $datatable = $datatable->eloquent($query)
             ->editColumn('name', function ($data) {
-                $totalReviews = BookingRating::where('service_id', $data->id)->count();
-                $totalRating = count($data->serviceRating) > 0
-                    ? (float)number_format(max($data->serviceRating->avg('rating'), 0), 2)
+                $totalReviews = BookingRating::where('service_id', $data->id)->publicVisible()->count();
+                $totalRating = count($data->serviceRatingPublic) > 0
+                    ? (float) number_format(max($data->serviceRatingPublic->avg('rating'), 0), 2)
                     : 0;
 
                 if (!empty(auth()->user())) {
@@ -1642,7 +1648,7 @@ class FrontendController extends Controller
 
         $id = $request->id;
         if ($request->type == 'handyman-rating') {
-            $query = HandymanRating::query()->orderBy('created_at', 'desc');
+            $query = HandymanRating::query()->publicVisible()->orderBy('created_at', 'desc');
             $query = $query->where('handyman_id', $id);
             $filter = $request->filter;
             if (isset($filter['search'])) {
@@ -1664,10 +1670,12 @@ class FrontendController extends Controller
                 ->whereHas('service', function ($q) use ($id) {
                     $q->where('provider_id', $id);
                 })
+                ->publicVisible()
                 ->orderBy('created_at', 'desc')
                 ->get();
             $postJobRatings = PostJobBidCustomerRating::with('customer')
                 ->where('provider_id', $id)
+                ->publicVisible()
                 ->orderBy('created_at', 'desc')
                 ->get();
             $merged = $bookingRatings->concat($postJobRatings)->sortByDesc('created_at')->values();
@@ -1690,7 +1698,7 @@ class FrontendController extends Controller
         }
 
         // service-rating or default (booking only)
-        $query = BookingRating::query()->orderBy('created_at', 'desc');
+        $query = BookingRating::query()->publicVisible()->orderBy('created_at', 'desc');
         if ($request->type == 'service-rating') {
             $query = $query->where('service_id', $id);
         }

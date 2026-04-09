@@ -9,8 +9,12 @@ class BookingRating extends Model
 {
     use HasFactory,SoftDeletes;
     protected $table = 'booking_ratings';
+    public const STATUS_VISIBLE = 0;
+
+    public const STATUS_HIDDEN = 1;
+
     protected $fillable = [
-        'booking_id', 'customer_id', 'service_id' , 'rating', 'review'
+        'booking_id', 'customer_id', 'service_id', 'rating', 'review', 'status',
     ];
 
     protected $casts = [
@@ -18,7 +22,18 @@ class BookingRating extends Model
         'service_id'    => 'integer',
         'customer_id'   => 'integer',
         'rating'        => 'double',
+        'status'        => 'integer',
     ];
+
+    /**
+     * Visible on public service pages and listings (status 0; null treated as visible for legacy rows).
+     */
+    public function scopePublicVisible($query)
+    {
+        return $query->where(function ($q) {
+            $q->where('status', self::STATUS_VISIBLE)->orWhereNull('status');
+        });
+    }
 
     public function customer()
     {
@@ -56,19 +71,4 @@ class BookingRating extends Model
     public function service(){
         return $this->belongsTo(Service::class, 'service_id', 'id');
     }
-
-    protected static function boot(){
-        parent::boot();
-        static::deleted(function ($row) {
-            if($row->forceDeleting === true)
-            {
-                $row->forceDelete();
-            }
-        });
-        static::restoring(function($row) {
-            $row->withTrashed()->restore();
-        });
-    }
-
-  
 }

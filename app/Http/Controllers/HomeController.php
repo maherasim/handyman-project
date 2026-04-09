@@ -572,7 +572,7 @@ $data['remaining_payout'] = round($providerRemainingPayout, $digitafter_decimal_
                     $minRating = $request->top_rated['min'] ?? 0;
                     $maxRating = $request->top_rated['max'] ?? 5;
 
-                    $topRatedServiceIds = BookingRating::select('service_id', \DB::raw('COALESCE(AVG(rating), 0) as avg_rating'))
+                    $topRatedServiceIds = BookingRating::publicVisible()->select('service_id', \DB::raw('COALESCE(AVG(rating), 0) as avg_rating'))
                         ->groupBy('service_id')
                         ->havingRaw('avg_rating >= ?', [$minRating])
                         ->havingRaw('avg_rating <= ?', [$maxRating])

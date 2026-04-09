@@ -277,10 +277,12 @@ class BookingController extends Controller
 
         // Get customer rating info from customer_ratings (booking) and post_job_bid_ratings (provider rates customer)
         $customerRatingInfo = CustomerRating::where('customer_id', $customer_id)
+            ->publicVisible()
             ->with(['provider', 'customer'])
             ->orderBy('created_at', 'desc')
             ->get();
         $postJobBidRatings = PostJobBidRating::where('customer_id', $customer_id)
+            ->publicVisible()
             ->with(['provider', 'customer'])
             ->orderBy('created_at', 'desc')
             ->get();
@@ -336,10 +338,12 @@ class BookingController extends Controller
         $bookingRatingsForProvider = $providerBookingIds->isEmpty()
             ? collect()
             : BookingRating::whereIn('booking_id', $providerBookingIds)
+                ->publicVisible()
                 ->with(['customer', 'service'])
                 ->orderBy('created_at', 'desc')
                 ->get();
         $postJobBidRatingsForProvider = PostJobBidCustomerRating::where('provider_id', $provider_id)
+            ->publicVisible()
             ->with(['customer'])
             ->orderBy('created_at', 'desc')
             ->get();
@@ -1054,12 +1058,14 @@ class BookingController extends Controller
 
         // Get customer ratings from customer_ratings (booking) — customer_id = customer being rated
         $customerRatings = CustomerRating::where('customer_id', $customer_id)
+            ->publicVisible()
             ->with(['provider', 'booking'])
             ->orderBy('created_at', 'desc')
             ->get();
 
-        // Get customer ratings from post_job_bid_ratings — provider rates customer (customer_id = customer being rated)
+        // Get customer ratings from post_job_bid_ratings — customer rates provider on post job; row still keyed by customer_id
         $postJobBidRatings = PostJobBidRating::where('customer_id', $customer_id)
+            ->publicVisible()
             ->with(['provider'])
             ->orderBy('created_at', 'desc')
             ->get();
@@ -1073,6 +1079,7 @@ class BookingController extends Controller
                 'provider_name' => optional($rating->provider)->display_name,
                 'created_at' => $rating->created_at ? $rating->created_at->format('Y-m-d') : null,
                 'sort_at' => $rating->created_at,
+                'status' => (int) ($rating->status ?? CustomerRating::STATUS_VISIBLE),
             ];
         })->concat($postJobBidRatings->map(function ($rating) {
             return [
@@ -1082,6 +1089,7 @@ class BookingController extends Controller
                 'provider_name' => optional($rating->provider)->display_name,
                 'created_at' => $rating->created_at ? $rating->created_at->format('Y-m-d') : null,
                 'sort_at' => $rating->created_at,
+                'status' => (int) ($rating->status ?? PostJobBidRating::STATUS_VISIBLE),
             ];
         }))->sortByDesc('sort_at')->values();
         
@@ -1097,6 +1105,7 @@ class BookingController extends Controller
                 'review' => $item['review'],
                 'provider_name' => $item['provider_name'],
                 'created_at' => $item['created_at'],
+                'status' => $item['status'],
             ];
         })->values();
         
@@ -1113,7 +1122,11 @@ class BookingController extends Controller
 
     public function getHandymanRatingList(Request $request){
 
-        $handymanratings = HandymanRating::orderBy('id','desc');
+        $handymanratings = HandymanRating::query();
+        if (! auth()->user()?->hasAnyRole(['admin', 'demo_admin'])) {
+            $handymanratings->publicVisible();
+        }
+        $handymanratings = $handymanratings->orderBy('id', 'desc');
 
         $per_page = config('constant.PER_PAGE_LIMIT');
         if($request->has('per_page') && !empty($request->per_page)){
@@ -1198,14 +1211,23 @@ class BookingController extends Controller
             $customer_id = (int) $user->id;
         }
 
-        $customerRatingInfo = CustomerRating::where('customer_id', $customer_id)
+        $showHidden = $user->hasAnyRole(['admin', 'demo_admin']) || $request->boolean('show_hidden');
+
+        $customerRatingQuery = CustomerRating::where('customer_id', $customer_id)
             ->with(['provider', 'customer'])
-            ->orderBy('created_at', 'desc')
-            ->get();
-        $postJobBidRatings = PostJobBidRating::where('customer_id', $customer_id)
+            ->orderBy('created_at', 'desc');
+        if (!$showHidden) {
+            $customerRatingQuery->publicVisible();
+        }
+        $customerRatingInfo = $customerRatingQuery->get();
+
+        $postJobBidQuery = PostJobBidRating::where('customer_id', $customer_id)
             ->with(['provider', 'customer'])
-            ->orderBy('created_at', 'desc')
-            ->get();
+            ->orderBy('created_at', 'desc');
+        if (!$showHidden) {
+            $postJobBidQuery->publicVisible();
+        }
+        $postJobBidRatings = $postJobBidQuery->get();
 
         $customer = User::find($customer_id);
         $mapItem = function ($r) use ($customer) {
@@ -1222,6 +1244,7 @@ class BookingController extends Controller
                 'provider_profile_image' => optional($r->provider)->login_type != null ? optional($r->provider)->social_image : getSingleMedia($r->provider, 'profile_image', null),
                 'rating' => $r->rating,
                 'review' => $r->review,
+                'status' => (int) ($r->status ?? CustomerRating::STATUS_VISIBLE),
                 'created_at' => $r->created_at ? date('Y-m-d', strtotime($r->created_at)) : null,
                 '_sort_at' => $r->created_at,
             ];
@@ -1292,7 +1315,11 @@ class BookingController extends Controller
                 }
             }
         }elseif ($type === 'handyman_rating') {
-                $ratings = HandymanRating::orderBy('id','desc');
+                $ratings = HandymanRating::query();
+                if (! auth()->user()?->hasAnyRole(['admin', 'demo_admin'])) {
+                    $ratings->publicVisible();
+                }
+                $ratings = $ratings->orderBy('id', 'desc');
         }else {
                 return response()->json(['message' => 'Invalid type parameter'], 400);
         }
@@ -1540,7 +1567,10 @@ class BookingController extends Controller
     public function getBookingRatingsList(Request $request)
     {
         $user = auth()->user();
-        
+        if ($user === null) {
+            return response()->json(['message' => 'Unauthenticated'], 401);
+        }
+
         // For handyman, get ratings for bookings where they were assigned
         if ($user->hasRole('handyman')) {
             $query = BookingRating::query()
@@ -1561,11 +1591,7 @@ class BookingController extends Controller
                 ->with(['customer.country', 'customer.city', 'service']);
         }
 
-        // Apply filters
-        $filter = $request->filter;
-        if (isset($filter) && isset($filter['column_status'])) {
-            $query->where('status', $filter['column_status']);
-        }
+        $this->applyReviewStatusListFilter($query, $request, BookingRating::class);
 
         // Search functionality
         if ($request->has('search') && !empty($request->search)) {
@@ -1621,6 +1647,7 @@ class BookingController extends Controller
                 ],
                 'rating' => (float)$rating->rating,
                 'review' => $rating->review ?? '-',
+                'status' => (int) ($rating->status ?? BookingRating::STATUS_VISIBLE),
                 'created_at' => $rating->created_at ? $rating->created_at->format('Y-m-d H:i:s') : null,
                 'updated_at' => $rating->updated_at ? $rating->updated_at->format('Y-m-d H:i:s') : null,
             ];
@@ -1653,7 +1680,10 @@ class BookingController extends Controller
     public function getHandymanRatingsList(Request $request)
     {
         $user = auth()->user();
-        
+        if ($user === null) {
+            return response()->json(['message' => 'Unauthenticated'], 401);
+        }
+
         // Use myRating scope which filters by handyman_id for handyman role
         $query = HandymanRating::query()->myRating()
             ->with([
@@ -1665,11 +1695,7 @@ class BookingController extends Controller
                 'booking'
             ]);
 
-        // Apply filters
-        $filter = $request->filter;
-        if (isset($filter) && isset($filter['column_status'])) {
-            $query->where('status', $filter['column_status']);
-        }
+        $this->applyReviewStatusListFilter($query, $request, HandymanRating::class);
 
         // Search functionality
         if ($request->has('search') && !empty($request->search)) {
@@ -1737,6 +1763,7 @@ class BookingController extends Controller
                 ],
                 'rating' => (float)$rating->rating,
                 'review' => $rating->review ?? '-',
+                'status' => (int) ($rating->status ?? HandymanRating::STATUS_VISIBLE),
                 'created_at' => $rating->created_at ? $rating->created_at->format('Y-m-d H:i:s') : null,
                 'updated_at' => $rating->updated_at ? $rating->updated_at->format('Y-m-d H:i:s') : null,
             ];
@@ -1757,6 +1784,44 @@ class BookingController extends Controller
         ];
 
         return comman_custom_response($response);
+    }
+
+    /**
+     * Default: only public reviews (status 0 / null). Admins or show_hidden=1 see all.
+     * filter[column_status]: 0 = visible (+null); 1 = hidden only (blocked unless admin/show_hidden).
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     */
+    private function applyReviewStatusListFilter($query, Request $request, string $modelClass): void
+    {
+        $user = auth()->user();
+        $showHidden = $user && ($user->hasAnyRole(['admin', 'demo_admin']) || $request->boolean('show_hidden'));
+
+        $filter = $request->input('filter', []);
+        if (! is_array($filter)) {
+            $filter = [];
+        }
+
+        $visible = $modelClass::STATUS_VISIBLE;
+        $hasStatusFilter = array_key_exists('column_status', $filter)
+            && $filter['column_status'] !== ''
+            && $filter['column_status'] !== null;
+
+        if ($hasStatusFilter) {
+            $col = (int) $filter['column_status'];
+            if ($col === $visible) {
+                $query->where(function ($q) use ($visible) {
+                    $q->where('status', $visible)->orWhereNull('status');
+                });
+            } else {
+                $query->where('status', $col);
+                if (! $showHidden) {
+                    $query->whereRaw('0 = 1');
+                }
+            }
+        } elseif (! $showHidden) {
+            $query->publicVisible();
+        }
     }
 
     /**

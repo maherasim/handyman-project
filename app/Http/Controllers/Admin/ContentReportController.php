@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\BookingRating;
 use App\Models\ContentReport;
 use App\Models\PostJobRequest;
 use App\Models\Service;
@@ -23,7 +24,7 @@ class ContentReportController extends Controller
     public function update(Request $request, ContentReport $contentReport)
     {
         $request->validate([
-            'action' => 'required|in:dismiss,hide_service,restore_service,hide_post_job,restore_post_job',
+            'action' => 'required|in:dismiss,hide_service,restore_service,hide_post_job,restore_post_job,hide_review,restore_review',
             'admin_note' => 'nullable|string|max:2000',
         ]);
 
@@ -38,6 +39,9 @@ class ContentReportController extends Controller
             : null;
         $postJob = $contentReport->reportable_type === PostJobRequest::class
             ? PostJobRequest::find($contentReport->reportable_id)
+            : null;
+        $review = $contentReport->reportable_type === BookingRating::class
+            ? BookingRating::withTrashed()->find($contentReport->reportable_id)
             : null;
 
         switch ($request->input('action')) {
@@ -85,6 +89,34 @@ class ContentReportController extends Controller
             case 'restore_post_job':
                 if ($postJob) {
                     $postJob->update(['is_hidden_from_public' => false]);
+                }
+                $contentReport->update([
+                    'status' => 'reviewed',
+                    'admin_note' => $note,
+                    'reviewed_by' => $admin->id,
+                    'reviewed_at' => now(),
+                ]);
+                break;
+            case 'hide_review':
+                if ($review) {
+                    if ($review->trashed()) {
+                        $review->restore();
+                    }
+                    $review->update(['status' => BookingRating::STATUS_HIDDEN]);
+                }
+                $contentReport->update([
+                    'status' => 'action_taken',
+                    'admin_note' => $note,
+                    'reviewed_by' => $admin->id,
+                    'reviewed_at' => now(),
+                ]);
+                break;
+            case 'restore_review':
+                if ($review) {
+                    if ($review->trashed()) {
+                        $review->restore();
+                    }
+                    $review->update(['status' => BookingRating::STATUS_VISIBLE]);
                 }
                 $contentReport->update([
                     'status' => 'reviewed',

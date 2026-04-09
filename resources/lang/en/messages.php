@@ -119,6 +119,7 @@
     'username' => 'Username',
     'providers' => 'Employers',
     'handyman' => 'Worker',
+    'worker' => 'Worker',
     'coupon' => 'Coupon',
     'code' => 'Code',
     'discount_type' => 'Discount Type',

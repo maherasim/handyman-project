@@ -119,6 +119,7 @@
     'username' => 'Benutzername',
     'providers' => 'Anbieter',
     'handyman' => 'Mitarbeiter',
+    'worker' => 'Arbeiter',
     'coupon' => 'Gutschein',
     'code' => 'Code',
     'discount_type' => 'Rabattart',

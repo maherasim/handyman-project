@@ -1416,6 +1416,7 @@
                                 <th>{{ __('messages.name') }}</th>
                                 <th>{{ __('messages.rating') }}</th>
                                 <th>{{ __('messages.review') }}</th>
+                                <th>{{ __('messages.action') }}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -1424,6 +1425,16 @@
                                     {{ $review_by_customer_for_booking->customer->last_name ?? '' }}</td>
                                 <td>{{ $review_by_customer_for_booking->rating }}</td>
                                 <td>{{ $review_by_customer_for_booking->review }}</td>
+                                <td>
+                                    @if(auth()->check() && (int) auth()->id() !== (int) ($review_by_customer_for_booking->customer_id ?? 0))
+                                        <button type="button" class="btn btn-outline-danger btn-sm"
+                                            onclick="if(window.triggerUgcReportReview) window.triggerUgcReportReview({{ (int) $review_by_customer_for_booking->id }}, this, 'booking_rating');">
+                                            <i class="fas fa-flag me-1"></i>{{ __('messages.ugc_report') }}
+                                        </button>
+                                    @else
+                                        —
+                                    @endif
+                                </td>
                             </tr>
                         </tbody>
                     </table>
@@ -1451,6 +1462,7 @@
                                 <th>{{ __('messages.name') }}</th>
                                 <th>{{ __('messages.rating') }}</th>
                                 <th>{{ __('messages.review') }}</th>
+                                <th>{{ __('messages.action') }}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -1458,6 +1470,16 @@
                                 <td>{{ optional($customer_rating->provider)->display_name ?? optional($customer_rating->provider)->first_name ?? '-' }}</td>
                                 <td>{{ $customer_rating->rating }}</td>
                                 <td>{{ $customer_rating->review ?? '-' }}</td>
+                                <td>
+                                    @if(auth()->check() && (int) auth()->id() !== (int) ($customer_rating->provider_id ?? 0))
+                                        <button type="button" class="btn btn-outline-danger btn-sm"
+                                            onclick="if(window.triggerUgcReportReview) window.triggerUgcReportReview({{ (int) $customer_rating->id }}, this, 'customer_rating');">
+                                            <i class="fas fa-flag me-1"></i>{{ __('messages.ugc_report') }}
+                                        </button>
+                                    @else
+                                        —
+                                    @endif
+                                </td>
                             </tr>
                         </tbody>
                     </table>
