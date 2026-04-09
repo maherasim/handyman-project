@@ -28,7 +28,7 @@
             </div>
           </div>
             <p>
-                {{ props.payment_type === 'paid' ? $t('messages.total_amount') : $t('messages.advance_pay') }}:
+                {{ paymentLabel }}:
                 {{ formatCurrencyVue(paymentDisplayAmount) }}
             </p>
 
@@ -124,6 +124,13 @@ import { confirmcancleSwal, confirmcancleWallet } from '../data/utilities'
 import Wallet from '../components/Wallet.vue'
 
 const props = defineProps(['booking_id', 'customer_id', 'discount', 'total_amount', 'advance_payment_amount', 'wallet_amount', 'payment_type', 'total_advance_paid_amount', 'total_booking_amount', 'advance_percentage'])
+
+const paymentLabel = computed(() => {
+  if (props.payment_type === 'paid') return `${$t('messages.total_amount')}`
+  const pct = Number(props.advance_percentage)
+  if (Number.isFinite(pct) && pct > 0) return `${$t('messages.advance_pay')} (${pct}%)`
+  return `${$t('messages.advance_pay')}`
+})
 
 const remainingAmount = computed(() => {
   return props.advance_payment_amount != null ? props.advance_payment_amount : props.total_booking_amount

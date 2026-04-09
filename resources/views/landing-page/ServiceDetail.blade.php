@@ -1516,7 +1516,7 @@
                                             <i class="ri-calendar-check-line me-1"></i> {{ __('landingpage.sd_availability') }}:
                                         </span>
                                         <span class="info-value info-value-long">
-                                            <span class="provider-field-prose border rounded p-2 bg-primary bg-opacity-10 text-dark">{!! nl2br(e($availabilityText)) !!}</span>
+                                            <span class="provider-field-prose border rounded p-2 bg-transparent text-dark">{!! nl2br(e($availabilityText)) !!}</span>
                                         </span>
                                     </div>
                                     @endif

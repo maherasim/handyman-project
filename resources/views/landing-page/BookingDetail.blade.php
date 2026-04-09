@@ -621,6 +621,7 @@
                             :discount="{{ $bookingData['booking_detail']['final_discount_amount'] }}"
                             :total_amount="{{ $bookingData['booking_detail']['total_amount'] }}"
                             :advance_payment_amount="{{ $advancepaymentamount }}"
+                            :advance_percentage="{{ (float) ($bookingData['service']['advance_payment_amount'] ?? 0) }}"
                             :wallet_amount="{{$wallet_amount}}"></payment>
                     </div>
                     <a onclick="togglePayment()" id="pay_advance" class="btn btn-primary text-capitalize w-100" style="display: block;">{{__('landingpage.pay_advance')}}</a>
