@@ -18,6 +18,13 @@ class ProfileReportController extends Controller
         return view('admin.profile-reports.index', compact('reports'));
     }
 
+    public function show(ProfileReport $profileReport)
+    {
+        $profileReport->load(['reporter', 'reportedUser', 'reviewer']);
+
+        return view('admin.profile-reports.show', compact('profileReport'));
+    }
+
     public function update(Request $request, ProfileReport $profileReport)
     {
         $request->validate([

@@ -5,7 +5,7 @@
             <div class="card">
                 <div class="card-header d-flex flex-wrap justify-content-between align-items-center gap-2">
                     <div>
-                        <h4 class="card-title mb-0">Profile Reports</h4>
+                        <h4 class="card-title mb-0">{{ __('messages.profile_report_list_title') }}</h4>
                         <p class="text-muted mb-0 small">Review reports raised against user profiles (user, provider, handyman).</p>
                     </div>
                 </div>
@@ -75,13 +75,19 @@
                                                 —
                                             @endif
                                         </td>
-                                        <td>{{ $report->reason }}</td>
+                                        <td>
+                                            <span class="fw-medium" title="{{ $report->reason }}">{{ \App\Models\ProfileReport::reasonLabel($report->reason) }}</span>
+                                            <div class="small text-muted font-monospace">{{ $report->reason }}</div>
+                                        </td>
                                         <td class="small">{{ $report->details ? \Illuminate\Support\Str::limit($report->details, 140) : '—' }}</td>
                                         <td>
-                                            <span class="badge bg-secondary text-uppercase">{{ str_replace('_', ' ', (string) $report->status) }}</span>
+                                            <span class="badge bg-secondary">{{ \App\Models\ProfileReport::statusLabel($report->status) }}</span>
                                         </td>
                                         <td>{{ $report->created_at?->format('Y-m-d H:i') }}</td>
                                         <td>
+                                            <a href="{{ route('admin.profile-reports.show', $report) }}" class="btn btn-sm btn-outline-primary mb-2 w-100" target="_blank" rel="noopener">
+                                                <i class="fas fa-eye me-1"></i> {{ __('messages.profile_report_view') }}
+                                            </a>
                                             <form method="POST" action="{{ route('admin.profile-reports.update', $report) }}" class="d-flex flex-column gap-2" style="min-width: 210px;">
                                                 @csrf
                                                 @php
