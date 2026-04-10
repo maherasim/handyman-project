@@ -148,6 +148,7 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
             Route::get('profile-reports/{profileReport}', [ProfileReportController::class, 'show'])->name('admin.profile-reports.show');
             Route::post('profile-reports/{profileReport}', [ProfileReportController::class, 'update'])->name('admin.profile-reports.update');
             Route::get('review-reports', [ReviewReportController::class, 'index'])->name('admin.review-reports.index');
+            Route::get('review-reports/{reviewReport}', [ReviewReportController::class, 'show'])->name('admin.review-reports.show');
             Route::post('review-reports/{reviewReport}', [ReviewReportController::class, 'update'])->name('admin.review-reports.update');
         });
 

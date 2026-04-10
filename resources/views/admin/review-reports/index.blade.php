@@ -5,8 +5,8 @@
             <div class="card">
                 <div class="card-header d-flex flex-wrap justify-content-between align-items-center gap-2">
                     <div>
-                        <h4 class="card-title mb-0">Review Reports</h4>
-                        <p class="text-muted mb-0 small">Review reports raised by logged-in users.</p>
+                        <h4 class="card-title mb-0">{{ __('messages.review_report_list_title') }}</h4>
+                        <p class="text-muted mb-0 small">{{ __('messages.review_report_index_subtitle') }}</p>
                     </div>
                 </div>
                 <div class="card-body">
@@ -21,36 +21,24 @@
                         <table class="table table-striped align-middle">
                             <thead>
                                 <tr>
-                                    <th>ID</th>
-                                    <th>Reporter</th>
-                                    <th>Review Owner</th>
-                                    <th>Review</th>
-                                    <th>Reason</th>
-                                    <th>Details</th>
-                                    <th>Status</th>
-                                    <th>Date</th>
-                                    <th>Actions</th>
+                                    <th>{{ __('messages.review_report_col_id') }}</th>
+                                    <th>{{ __('messages.review_report_col_reporter') }}</th>
+                                    <th>{{ __('messages.review_report_col_review_owner') }}</th>
+                                    <th>{{ __('messages.review_report_col_review') }}</th>
+                                    <th>{{ __('messages.review_report_col_reason') }}</th>
+                                    <th>{{ __('messages.review_report_col_details') }}</th>
+                                    <th>{{ __('messages.review_report_col_status') }}</th>
+                                    <th>{{ __('messages.review_report_col_date') }}</th>
+                                    <th>{{ __('messages.profile_report_col_view') }}</th>
+                                    <th>{{ __('messages.review_report_col_actions') }}</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @forelse($reports as $report)
                                     @php
-                                        $reviewItem = match ($report->review_type) {
-                                            'customer_rating' => \App\Models\CustomerRating::withTrashed()->find($report->review_id),
-                                            'post_job_bid_rating' => \App\Models\PostJobBidRating::query()->find($report->review_id),
-                                            'post_job_bid_customer_rating' => \App\Models\PostJobBidCustomerRating::query()->find($report->review_id),
-                                            default => \App\Models\BookingRating::withTrashed()->find($report->review_id),
-                                        };
+                                        $reviewItem = $report->resolveReviewItem();
                                         $reviewText = (string) optional($reviewItem)->review;
-                                        $isHiddenByStatus = $reviewItem && (int) ($reviewItem->status ?? 0) === 1;
-                                        $isLegacyTrashed = $reviewItem && method_exists($reviewItem, 'trashed') && $reviewItem->trashed();
-                                        $isHidden = $isHiddenByStatus || $isLegacyTrashed;
-                                        $reviewTypeLabel = match ($report->review_type) {
-                                            'customer_rating' => 'Provider review (booking)',
-                                            'post_job_bid_rating' => 'Customer review (post job)',
-                                            'post_job_bid_customer_rating' => 'Employer review (post job)',
-                                            default => 'Customer review (booking)',
-                                        };
+                                        $isHidden = $report->isReviewHidden();
                                     @endphp
                                     <tr>
                                         <td>{{ $report->id }}</td>
@@ -71,33 +59,39 @@
                                             @endif
                                         </td>
                                         <td class="small">
-                                            <span class="badge bg-light text-dark border mb-1">{{ $reviewTypeLabel }}</span>
-                                            <div class="text-muted small mb-1">Ref: <code class="small">{{ $report->review_type }}#{{ $report->review_id }}</code></div>
-                                            <br>
-                                            {{ \Illuminate\Support\Str::limit($reviewText, 90) ?: '—' }}
+                                            <span class="badge bg-light text-dark border mb-1">{{ \App\Models\ReviewReport::reviewTypeLabel($report->review_type) }}</span>
+                                            <div class="text-muted small mb-1">{{ __('messages.review_report_field_review_ref') }}: <code class="small">{{ $report->review_type }}#{{ $report->review_id }}</code></div>
+                                            <div>{{ \Illuminate\Support\Str::limit($reviewText, 90) ?: '—' }}</div>
                                             <div class="mt-1">
                                                 <span class="badge {{ $isHidden ? 'bg-danger-subtle text-danger' : 'bg-success-subtle text-success' }}">
-                                                    {{ $isHidden ? 'Hidden' : 'Visible' }}
+                                                    {{ $isHidden ? __('messages.review_report_visibility_hidden') : __('messages.review_report_visibility_visible') }}
                                                 </span>
                                             </div>
                                         </td>
-                                        <td>{{ ucwords(str_replace('_', ' ', (string) $report->reason)) }}</td>
+                                        <td>
+                                            <span class="fw-medium">{{ \App\Models\ReviewReport::reasonLabel($report->reason) }}</span>
+                                        </td>
                                         <td class="small">{{ $report->details ? \Illuminate\Support\Str::limit($report->details, 140) : '—' }}</td>
                                         <td>
-                                            <span class="badge bg-secondary text-uppercase">{{ str_replace('_', ' ', (string) $report->status) }}</span>
+                                            <span class="badge bg-secondary">{{ \App\Models\ReviewReport::statusLabel($report->status) }}</span>
                                         </td>
                                         <td>{{ $report->created_at?->format('Y-m-d H:i') }}</td>
+                                        <td class="text-nowrap">
+                                            <a href="{{ route('admin.review-reports.show', $report) }}" class="btn btn-sm btn-outline-primary" target="_blank" rel="noopener">
+                                                <i class="fas fa-eye me-1"></i> {{ __('messages.profile_report_view') }}
+                                            </a>
+                                        </td>
                                         <td>
                                             <form method="POST" action="{{ route('admin.review-reports.update', $report) }}" class="d-flex flex-column gap-2" style="min-width: 210px;">
                                                 @csrf
                                                 <select name="action" class="form-select form-select-sm" required>
-                                                    <option value="" disabled selected>Select action...</option>
-                                                    <option value="dismiss">Dismiss</option>
-                                                    <option value="hide_review" @selected(!$isHidden)>Hide review</option>
-                                                    <option value="restore_review" @selected($isHidden)>Restore review</option>
+                                                    <option value="" disabled selected>{{ __('messages.review_report_action_select') }}</option>
+                                                    <option value="dismiss">{{ __('messages.review_report_action_dismiss') }}</option>
+                                                    <option value="hide_review" @selected(!$isHidden)>{{ __('messages.review_report_action_hide_review') }}</option>
+                                                    <option value="restore_review" @selected($isHidden)>{{ __('messages.review_report_action_restore_review') }}</option>
                                                 </select>
                                                 <div class="input-group input-group-sm">
-                                                    <input type="text" name="admin_note" class="form-control" placeholder="Admin note (optional)">
+                                                    <input type="text" name="admin_note" class="form-control" placeholder="{{ __('messages.review_report_admin_note_short_placeholder') }}">
                                                     <button type="submit" class="btn btn-primary">
                                                         <i class="fas fa-check"></i>
                                                     </button>
@@ -107,7 +101,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="9" class="text-center text-muted py-4">No review reports found.</td>
+                                        <td colspan="10" class="text-center text-muted py-4">{{ __('messages.review_report_empty') }}</td>
                                     </tr>
                                 @endforelse
                             </tbody>

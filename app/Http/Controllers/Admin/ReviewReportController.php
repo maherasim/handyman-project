@@ -22,6 +22,13 @@ class ReviewReportController extends Controller
         return view('admin.review-reports.index', compact('reports'));
     }
 
+    public function show(ReviewReport $reviewReport)
+    {
+        $reviewReport->load(['reporter', 'reviewOwner', 'reviewer']);
+
+        return view('admin.review-reports.show', compact('reviewReport'));
+    }
+
     public function update(Request $request, ReviewReport $reviewReport)
     {
         $request->validate([
