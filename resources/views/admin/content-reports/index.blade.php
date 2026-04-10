@@ -1,4 +1,14 @@
 <x-master-layout>
+<style>
+    .report-list-table-wrap { font-size: 0.8125rem; }
+    .report-list-table-wrap .table { margin-bottom: 0; }
+    .report-list-table-wrap .cell-tight { width: 1%; white-space: nowrap; vertical-align: middle; }
+    .report-list-table-wrap .cell-clip { max-width: 10rem; overflow: hidden; }
+    .report-list-table-wrap .cell-listing { max-width: 11rem; overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-height: 1.3; word-break: break-word; }
+    .report-list-table-wrap .cell-details { max-width: 8rem; overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-height: 1.35; word-break: break-word; }
+    .report-list-table-wrap .cell-actions { width: 1%; min-width: 8.5rem; max-width: 10.5rem; vertical-align: top; }
+    .report-list-table-wrap .cell-view { width: 1%; min-width: 6.5rem; white-space: nowrap; vertical-align: middle; text-align: center; }
+</style>
 <div class="container-fluid">
     <div class="row">
         <div class="col-12">
@@ -17,60 +27,61 @@
                         </div>
                     @endif
 
-                    <div class="table-responsive">
-                        <table class="table table-striped align-middle">
-                            <thead>
+                    <div class="table-responsive report-list-table-wrap border rounded">
+                        <table class="table table-sm table-striped align-middle mb-0">
+                            <thead class="table-light">
                                 <tr>
-                                    <th>{{ __('messages.srno') }}</th>
-                                    <th>{{ __('messages.ugc_col_listing') }}</th>
-                                    <th>{{ __('messages.ugc_col_reporter') }}</th>
-                                    <th>{{ __('messages.ugc_col_reported_party') }}</th>
-                                    <th>{{ __('messages.ugc_col_reason') }}</th>
-                                    <th>{{ __('messages.ugc_col_details') }}</th>
-                                    <th>{{ __('messages.status') }}</th>
-                                    <th>{{ __('messages.ugc_col_date') }}</th>
-                                    <th>{{ __('messages.ugc_col_actions') }}</th>
+                                    <th class="cell-tight">{{ __('messages.srno') }}</th>
+                                    <th class="cell-listing">{{ __('messages.ugc_col_listing') }}</th>
+                                    <th class="cell-clip">{{ __('messages.ugc_col_reporter') }}</th>
+                                    <th class="cell-clip">{{ __('messages.ugc_col_reported_party') }}</th>
+                                    <th class="cell-clip">{{ __('messages.ugc_col_reason') }}</th>
+                                    <th class="cell-details">{{ __('messages.ugc_col_details') }}</th>
+                                    <th class="cell-tight">{{ __('messages.status') }}</th>
+                                    <th class="cell-tight">{{ __('messages.ugc_col_date') }}</th>
+                                    <th class="cell-view">{{ __('messages.profile_report_col_view') }}</th>
+                                    <th class="cell-actions">{{ __('messages.ugc_col_actions') }}</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @forelse($reports as $report)
                                     <tr>
-                                        <td>{{ $report->id }}</td>
-                                        <td>
+                                        <td class="cell-tight">{{ $report->id }}</td>
+                                        <td class="cell-listing small">
                                             @if($report->reportable && $report->reportable_type === \App\Models\Service::class)
-                                                <span class="badge bg-light text-dark border mb-1">{{ __('messages.service') }}</span>
-                                                <strong>{{ \Illuminate\Support\Str::limit($report->reportable->name ?? '—', 40) }}</strong>
-                                                <div class="small text-muted">#{{ $report->reportable_id }}</div>
+                                                <span class="badge bg-light text-dark border mb-1" style="font-size: 0.65rem;">{{ __('messages.service') }}</span>
+                                                <strong class="d-block text-truncate" title="{{ $report->reportable->name ?? '—' }}">{{ \Illuminate\Support\Str::limit($report->reportable->name ?? '—', 32) }}</strong>
+                                                <div class="text-muted">#{{ $report->reportable_id }}</div>
                                             @elseif($report->reportable && $report->reportable_type === \App\Models\PostJobRequest::class)
-                                                <span class="badge bg-light text-dark border mb-1">{{ __('messages.post_job_request') }}</span>
-                                                <strong>{{ \Illuminate\Support\Str::limit($report->reportable->title ?? '—', 40) }}</strong>
-                                                <div class="small text-muted">#{{ $report->reportable_id }}</div>
+                                                <span class="badge bg-light text-dark border mb-1" style="font-size: 0.65rem;">{{ __('messages.post_job_request') }}</span>
+                                                <strong class="d-block text-truncate" title="{{ $report->reportable->title ?? '—' }}">{{ \Illuminate\Support\Str::limit($report->reportable->title ?? '—', 32) }}</strong>
+                                                <div class="text-muted">#{{ $report->reportable_id }}</div>
                                             @elseif($report->reportable_type === \App\Models\BookingRating::class)
                                                 @php
                                                     $reviewItem = \App\Models\BookingRating::withTrashed()->find($report->reportable_id);
                                                 @endphp
-                                                <span class="badge bg-light text-dark border mb-1">Review</span>
-                                                <strong>{{ \Illuminate\Support\Str::limit((string) optional($reviewItem)->review, 40) ?: '—' }}</strong>
-                                                <div class="small text-muted">#{{ $report->reportable_id }}</div>
+                                                <span class="badge bg-light text-dark border mb-1" style="font-size: 0.65rem;">Review</span>
+                                                <strong class="d-block">{{ \Illuminate\Support\Str::limit((string) optional($reviewItem)->review, 32) ?: '—' }}</strong>
+                                                <div class="text-muted">#{{ $report->reportable_id }}</div>
                                             @else
                                                 #{{ $report->reportable_id }}
                                             @endif
                                         </td>
-                                        <td>
+                                        <td class="cell-clip small text-truncate" title="{{ $report->reporter ? ($report->reporter->email ?? ($report->reporter->first_name.' '.$report->reporter->last_name)) : '' }}">
                                             @if($report->reporter)
-                                                {{ $report->reporter->email ?? ($report->reporter->first_name.' '.$report->reporter->last_name) }}
+                                                {{ \Illuminate\Support\Str::limit($report->reporter->email ?? ($report->reporter->first_name.' '.$report->reporter->last_name), 26) }}
                                             @else
                                                 —
                                             @endif
                                         </td>
-                                        <td>
+                                        <td class="cell-clip small text-truncate" title="{{ $report->subjectUser ? ($report->subjectUser->display_name ?? $report->subjectUser->email) : '' }}">
                                             @if($report->subjectUser)
-                                                {{ $report->subjectUser->display_name ?? $report->subjectUser->email }}
+                                                {{ \Illuminate\Support\Str::limit($report->subjectUser->display_name ?? $report->subjectUser->email, 24) }}
                                             @else
                                                 —
                                             @endif
                                         </td>
-                                        <td>
+                                        <td class="cell-clip small">
                                             @php
                                                 $reasonLabels = [
                                                     'spam' => 'Spam or misleading',
@@ -98,10 +109,10 @@
                                                 ];
                                                 $reasonText = $reasonLabels[$report->reason] ?? ucwords(str_replace('_', ' ', (string) $report->reason));
                                             @endphp
-                                            {{ $reasonText }}
+                                            <span title="{{ $reasonText }}">{{ \Illuminate\Support\Str::limit($reasonText, 38) }}</span>
                                         </td>
-                                        <td class="small">{{ $report->details ? \Illuminate\Support\Str::limit($report->details, 120) : '—' }}</td>
-                                        <td>
+                                        <td class="cell-details small" title="{{ $report->details }}">{{ $report->details ? \Illuminate\Support\Str::limit($report->details, 70) : '—' }}</td>
+                                        <td class="cell-tight">
                                             @php
                                                 $ugcStatusLabels = [
                                                     'pending' => __('messages.ugc_report_status_pending'),
@@ -111,11 +122,16 @@
                                                 ];
                                                 $statusLabel = $ugcStatusLabels[$report->status] ?? ucfirst(str_replace('_', ' ', (string) $report->status));
                                             @endphp
-                                            <span class="badge bg-secondary">{{ $statusLabel }}</span>
+                                            <span class="badge bg-secondary" style="font-size: 0.7rem;">{{ $statusLabel }}</span>
                                         </td>
-                                        <td>{{ $report->created_at?->format('Y-m-d H:i') }}</td>
-                                        <td>
-                                            <form method="POST" action="{{ route('admin.content-reports.update', $report) }}" class="d-flex flex-column gap-2" style="min-width: 200px;">
+                                        <td class="cell-tight small text-muted">{{ $report->created_at?->format('Y-m-d') }}<br>{{ $report->created_at?->format('H:i') }}</td>
+                                        <td class="cell-view">
+                                            <a href="{{ route('admin.content-reports.show', $report) }}" class="btn btn-sm btn-outline-primary px-2 py-1 text-nowrap" target="_blank" rel="noopener" title="{{ __('messages.profile_report_view') }}">
+                                                <i class="fas fa-eye me-1"></i>{{ __('messages.profile_report_view') }}
+                                            </a>
+                                        </td>
+                                        <td class="cell-actions">
+                                            <form method="POST" action="{{ route('admin.content-reports.update', $report) }}" class="d-flex flex-column gap-1">
                                                 @csrf
                                                 @php
                                                     $isHiddenFromPublic = (bool) ($report->reportable->is_hidden_from_public ?? false);
@@ -126,7 +142,7 @@
                                                         $isReviewHidden = (bool) ((int) (optional($reviewItem)->status ?? 0) === 1 || optional($reviewItem)->trashed());
                                                     }
                                                 @endphp
-                                                <select name="action" class="form-select form-select-sm border-0 shadow-sm" required style="border-radius: 8px; font-weight: 500;">
+                                                <select name="action" class="form-select form-select-sm" required>
                                                     <option value="" disabled selected>{{ __('messages.action') }}...</option>
                                                     <option value="dismiss" class="text-secondary">{{ __('messages.ugc_action_dismiss') }}</option>
                                                     @if($report->reportable_type === \App\Models\Service::class)
@@ -141,9 +157,9 @@
                                                     @endif
                                                 </select>
                                                 
-                                                <div class="input-group input-group-sm shadow-sm" style="border-radius: 8px; overflow: hidden;">
-                                                    <input type="text" name="admin_note" class="form-control border-0" placeholder="{{ __('messages.ugc_admin_note_placeholder') }}" style="background: #f8f9fa;">
-                                                    <button type="submit" class="btn btn-primary border-0" style="background: #667eea; transition: all 0.2s;">
+                                                <div class="input-group input-group-sm">
+                                                    <input type="text" name="admin_note" class="form-control" placeholder="{{ __('messages.ugc_admin_note_placeholder') }}">
+                                                    <button type="submit" class="btn btn-primary">
                                                         <i class="fas fa-check"></i>
                                                     </button>
                                                 </div>
@@ -152,7 +168,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="9" class="text-center text-muted py-4">{{ __('messages.ugc_admin_empty') }}</td>
+                                        <td colspan="10" class="text-center text-muted py-4">{{ __('messages.ugc_admin_empty') }}</td>
                                     </tr>
                                 @endforelse
                             </tbody>

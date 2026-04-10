@@ -555,7 +555,7 @@
                                 <a class="d-inline-block text-capitalize m-0"
                                     href="{{ route('provider.detail', $serviceData['provider']['id']) }}">{{ $serviceData['provider']['display_name'] }}</a>
                             </div>
-                            @if(auth()->check() && \App\Support\UgcListing::isCustomer(auth()->user()) && !empty($serviceData['provider']['id']))
+                            @if(auth()->check() && \App\Support\UgcListing::canUseFrontendReportMenu(auth()->user()) && !empty($serviceData['provider']['id']) && (int) auth()->id() !== (int) $serviceData['provider']['id'])
                             <div class="dropdown" style="position: relative; z-index: 9999;">
                                <button type="button" class="btn btn-link text-muted text-decoration-none p-1 border-0 bg-transparent" onclick="document.getElementById('ugc-dropdown-menu-detail').style.display = document.getElementById('ugc-dropdown-menu-detail').style.display === 'block' ? 'none' : 'block';" aria-expanded="false" style="padding: 4px 8px;">
                                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -1376,7 +1376,7 @@
 
                         </div>
 
-                        @if(auth()->check() && \App\Support\UgcListing::isCustomer(auth()->user()) && !empty($providerId))
+                        @if(auth()->check() && \App\Support\UgcListing::canUseFrontendReportMenu(auth()->user()) && !empty($providerId) && (int) auth()->id() !== (int) $providerId)
                             <div class="text-center mt-3">
                                 <button type="button" class="btn btn-outline-danger btn-sm"
                                     onclick="if(window.triggerUgcReportProvider) window.triggerUgcReportProvider({{ (int) $providerId }}, this);">

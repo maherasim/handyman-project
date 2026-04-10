@@ -1063,4 +1063,11 @@
         'booking_rating' => 'Cliente avalia prestador (reserva)',
     ],
 
+    'content_report_detail_title' => 'Denúncia de conteúdo n.º :id',
+    'content_report_back_list' => 'Voltar à lista',
+    'content_report_field_submitted' => 'Enviado em',
+    'content_report_section_listing' => 'Conteúdo denunciado',
+    'content_report_open_public' => 'Abrir no site',
+    'content_report_reviewed_at' => 'Revisto:',
+
 ];

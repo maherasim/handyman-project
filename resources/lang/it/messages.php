@@ -1064,4 +1064,11 @@
         'booking_rating' => 'Cliente valuta fornitore (prenotazione)',
     ],
 
+    'content_report_detail_title' => 'Segnalazione contenuto n. :id',
+    'content_report_back_list' => 'Torna all’elenco',
+    'content_report_field_submitted' => 'Inviato il',
+    'content_report_section_listing' => 'Contenuto segnalato',
+    'content_report_open_public' => 'Apri sul sito',
+    'content_report_reviewed_at' => 'Esaminato:',
+
 );

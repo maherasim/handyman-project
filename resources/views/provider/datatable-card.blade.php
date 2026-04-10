@@ -37,7 +37,7 @@
   </div>
 
 
-  @if(auth()->check() && \App\Support\UgcListing::isCustomer(auth()->user()))
+  @if(auth()->check() && \App\Support\UgcListing::canUseFrontendReportMenu(auth()->user()) && (int) auth()->id() !== (int) $data->id)
   <div class="text-end mt-1">
       <button type="button" class="btn btn-link text-danger text-decoration-none p-0 border-0 bg-transparent"
           onclick="if(window.triggerUgcReportProvider) window.triggerUgcReportProvider({{ (int) $data->id }}, this);">

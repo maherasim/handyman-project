@@ -143,6 +143,7 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
 
         Route::middleware(['role:admin|demo_admin'])->group(function () {
             Route::get('content-reports', [ContentReportController::class, 'index'])->name('admin.content-reports.index');
+            Route::get('content-reports/{contentReport}', [ContentReportController::class, 'show'])->name('admin.content-reports.show');
             Route::post('content-reports/{contentReport}', [ContentReportController::class, 'update'])->name('admin.content-reports.update');
             Route::get('profile-reports', [ProfileReportController::class, 'index'])->name('admin.profile-reports.index');
             Route::get('profile-reports/{profileReport}', [ProfileReportController::class, 'show'])->name('admin.profile-reports.show');

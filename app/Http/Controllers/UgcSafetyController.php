@@ -100,8 +100,8 @@ class UgcSafetyController extends Controller
     public function reportProvider(Request $request)
     {
         $user = auth()->user();
-        if (! $user || ! UgcListing::isCustomer($user)) {
-            return response()->json(['message' => __('messages.ugc_login_as_customer')], 403);
+        if (! $user || ! UgcListing::canLoadUgcScripts($user)) {
+            return response()->json(['message' => __('messages.ugc_login_for_report')], 403);
         }
 
         $v = Validator::make($request->all(), [
@@ -151,8 +151,8 @@ class UgcSafetyController extends Controller
     public function reportContent(Request $request)
     {
         $user = auth()->user();
-        if (! $user || ! UgcListing::isCustomer($user)) {
-            return response()->json(['message' => __('messages.ugc_login_as_customer')], 403);
+        if (! $user || ! UgcListing::canLoadUgcScripts($user)) {
+            return response()->json(['message' => __('messages.ugc_login_for_report')], 403);
         }
 
         $v = Validator::make($request->all(), [
@@ -373,10 +373,6 @@ class UgcSafetyController extends Controller
         $blocked = User::find($blockedId);
         if (! $blocked || ! in_array($blocked->user_type, ['provider', 'user', 'handyman'], true)) {
             return response()->json(['message' => __('messages.ugc_block_user_target_only')], 422);
-        }
-
-        if (($blocked->user_type ?? '') === 'user' && ($user->user_type ?? '') !== 'provider') {
-            return response()->json(['message' => __('messages.ugc_login_for_report')], 403);
         }
 
         UserBlock::firstOrCreate(

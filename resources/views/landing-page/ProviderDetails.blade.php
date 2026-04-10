@@ -333,6 +333,14 @@
                                             {{ __('messages.review') }})</span>
                                     @endif
                                 </div>
+                                @if (auth()->check() && \App\Support\UgcListing::canUseFrontendReportMenu(auth()->user()) && (int) auth()->id() !== (int) ($providerData['data']['id'] ?? 0))
+                                    <div class="mt-3">
+                                        <button type="button" class="btn btn-outline-light btn-sm border border-white text-white"
+                                            onclick="if(window.triggerUgcReportProvider) window.triggerUgcReportProvider({{ (int) ($providerData['data']['id'] ?? 0) }}, this);">
+                                            <i class="fas fa-flag me-1"></i>{{ __('messages.ugc_report') }}
+                                        </button>
+                                    </div>
+                                @endif
                                 @if (isset($why_choose_me))
                                     @if (isset($why_choose_me['about_description']) || isset($why_choose_me['reason']))
                                         <div class="mt-2">

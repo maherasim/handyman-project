@@ -47,7 +47,7 @@ class UgcListing
     }
 
     /**
-     * Report / job-card UGC actions: logged-in provider (user_type), not the poster, not admin.
+     * Report / job-card UGC actions: logged-in customer, provider, or handyman; not the poster; not admin.
      */
     public static function canReportPostJob(?User $user, PostJobRequest $job): bool
     {
@@ -64,7 +64,7 @@ class UgcListing
             return false;
         }
 
-        return ($user->user_type ?? '') === 'provider';
+        return self::isCustomer($user) || self::isProviderUser($user) || self::isHandymanUser($user);
     }
 
     /** Load UGC scripts (report/block) on pages that need them. */
@@ -75,6 +75,14 @@ class UgcListing
         }
 
         return self::isCustomer($user) || self::isProviderUser($user) || self::isHandymanUser($user);
+    }
+
+    /**
+     * Public-site report menus (⋮ / flags): same cohort as UGC scripts — customer, provider, handyman.
+     */
+    public static function canUseFrontendReportMenu(?User $user): bool
+    {
+        return self::canLoadUgcScripts($user);
     }
 
     /**

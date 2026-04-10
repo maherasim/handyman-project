@@ -21,6 +21,13 @@ class ContentReportController extends Controller
         return view('admin.content-reports.index', compact('reports'));
     }
 
+    public function show(ContentReport $contentReport)
+    {
+        $contentReport->load(['reporter', 'subjectUser', 'reviewer', 'reportable']);
+
+        return view('admin.content-reports.show', compact('contentReport'));
+    }
+
     public function update(Request $request, ContentReport $contentReport)
     {
         $request->validate([

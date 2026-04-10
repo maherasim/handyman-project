@@ -116,7 +116,7 @@
    </div>
 </div>
 
-@if(auth()->check() && \App\Support\UgcListing::isCustomer(auth()->user()) && optional($data->providers)->id)
+@if(auth()->check() && \App\Support\UgcListing::canUseFrontendReportMenu(auth()->user()) && optional($data->providers)->id && (int) auth()->id() !== (int) optional($data->providers)->id)
 <div class="dropdown mt-2 text-end px-2 pb-2">
    <button type="button" class="btn btn-link text-muted text-decoration-none p-1 border-0 bg-transparent dropdown-toggle-no-caret" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false" aria-label="{{ __('messages.ugc_report') }}" style="padding: 4px 8px;">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
