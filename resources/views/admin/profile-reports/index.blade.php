@@ -33,21 +33,21 @@
         min-width: 10rem;
         max-width: 16rem;
     }
-    .profile-reports-page .actions-cell {
-        min-width: 20rem;
+    .profile-reports-page .view-cell {
+        width: 1%;
+        min-width: 6.5rem;
+        white-space: nowrap;
+        text-align: center;
+        vertical-align: middle;
     }
-    .profile-reports-page .actions-cell .actions-wrap {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        gap: 0.5rem;
+    .profile-reports-page .actions-cell {
+        min-width: 16rem;
     }
     .profile-reports-page .actions-cell form {
         display: flex;
         flex-wrap: wrap;
         align-items: center;
         gap: 0.5rem;
-        flex: 1 1 auto;
     }
     .profile-reports-page .actions-cell .form-select-sm {
         min-width: 11rem;
@@ -96,6 +96,7 @@
                             <th class="details-cell">{{ __('messages.profile_report_col_details') }}</th>
                             <th>{{ __('messages.profile_report_col_status') }}</th>
                             <th>{{ __('messages.profile_report_col_date') }}</th>
+                            <th class="view-cell">{{ __('messages.profile_report_col_view') }}</th>
                             <th class="actions-cell">{{ __('messages.profile_report_col_actions') }}</th>
                         </tr>
                     </thead>
@@ -158,11 +159,12 @@
                                 <td class="small text-muted text-nowrap">
                                     {{ $report->created_at?->format('Y-m-d') }}<br>{{ $report->created_at?->format('H:i') }}
                                 </td>
+                                <td class="view-cell">
+                                    <a href="{{ route('admin.profile-reports.show', $report) }}" class="btn btn-sm btn-outline-primary text-nowrap" target="_blank" rel="noopener" title="{{ __('messages.profile_report_view') }}">
+                                        <i class="fas fa-eye me-1"></i>{{ __('messages.profile_report_view') }}
+                                    </a>
+                                </td>
                                 <td class="actions-cell">
-                                    <div class="actions-wrap">
-                                        <a href="{{ route('admin.profile-reports.show', $report) }}" class="btn btn-sm btn-outline-primary text-nowrap" target="_blank" rel="noopener" title="{{ __('messages.profile_report_view') }}">
-                                            <i class="fas fa-eye me-1"></i>{{ __('messages.profile_report_view') }}
-                                        </a>
                                         <form method="POST" action="{{ route('admin.profile-reports.update', $report) }}">
                                             @csrf
                                             <select name="action" class="form-select form-select-sm" required>
@@ -178,12 +180,11 @@
                                                 <i class="fas fa-check me-1"></i>{{ __('messages.apply') }}
                                             </button>
                                         </form>
-                                    </div>
                                 </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="9" class="text-center text-muted py-5">{{ __('messages.profile_report_empty') }}</td>
+                                <td colspan="10" class="text-center text-muted py-5">{{ __('messages.profile_report_empty') }}</td>
                             </tr>
                         @endforelse
                     </tbody>
