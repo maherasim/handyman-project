@@ -334,6 +334,10 @@
                 animation: fadeInRight 0.6s ease-out;
             }
 
+            .job-card .dropdown-toggle-no-caret::after {
+                display: none !important;
+            }
+
             @keyframes fadeInUp {
                 from {
                     opacity: 0;
@@ -405,8 +409,13 @@
                 <!-- Display Job Requests Cards with Professional Design -->
                 <div class="row">
                     @foreach ($jobRequests as $jobRequest)
+                        @php
+                            $homePosterId = $jobRequest->customer_id;
+                            $canHomeJobUgc = auth()->check()
+                                && $homePosterId
+                                && \App\Support\UgcListing::canReportPostJob(auth()->user(), $jobRequest);
+                        @endphp
                         <div class="col-lg-3 col-md-6 col-12 mb-3">
-                            <a href="{{ route('job.details', $jobRequest->id) }}" class="card-link text-decoration-none">
                                 <div class="job-card h-100" style="
                                     background: #FFFFFF;
                                     border: 1px solid #E8E9EC;
@@ -416,6 +425,7 @@
                                     overflow: hidden;
                                     position: relative;
                                 ">
+                                    <a href="{{ route('job.details', $jobRequest->id) }}" class="text-decoration-none text-reset d-block">
                                     <!-- Card Image Container -->
                                     <div class="image-container" style="position: relative; height: 120px; overflow: hidden;">
                                         @if(!empty($jobRequest->image))
@@ -523,10 +533,13 @@
                                                 </span>
                                         </div>
                                         </div>
-                                        
+                                    </div>
+                                    </a>
+                                    <div class="card-content" style="padding: 0 12px 12px;">
                                         <!-- Customer Info -->
                                         <div class="customer-info" style="margin-bottom: 8px;">
-                                            <div class="d-flex align-items-center" style="gap: 6px;">
+                                            <div class="d-flex align-items-center justify-content-between">
+                                                <div class="d-flex align-items-center" style="gap: 6px;">
                                                 <div class="customer-avatar" style="
                                                     width: 28px;
                                                     height: 28px;
@@ -555,6 +568,39 @@
                                                          - {{ optional($jobRequest->customer->country)->name ?? 'Unknown' }}
                                                     </div>
                                                 </div>
+                                                </div>
+                                                @if($canHomeJobUgc)
+                                                <div class="position-relative ugc-job-actions flex-shrink-0" style="z-index: 50;">
+                                                    <button type="button" class="btn btn-link text-muted text-decoration-none border-0 p-1 bg-transparent" aria-label="{{ __('messages.ugc_report') }}" onclick="
+                                                         event.preventDefault();
+                                                         event.stopPropagation();
+                                                         var wrap = this.closest('.ugc-job-actions');
+                                                         var menu = wrap ? wrap.querySelector('.ugc-dropdown-menu-job') : null;
+                                                         if (!menu) { return; }
+                                                         var isVisible = (menu.style.display === 'block') || (window.getComputedStyle(menu).display === 'block');
+                                                         document.querySelectorAll('.ugc-dropdown-menu-job').forEach(function(el) { el.style.display = 'none'; });
+                                                         menu.style.display = isVisible ? 'none' : 'block';
+                                                     " onmousedown="event.stopPropagation();">
+                                                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                                            <circle cx="5" cy="12" r="2" fill="currentColor"/>
+                                                            <circle cx="12" cy="12" r="2" fill="currentColor"/>
+                                                            <circle cx="19" cy="12" r="2" fill="currentColor"/>
+                                                         </svg>
+                                                     </button>
+                                                     <ul class="dropdown-menu shadow border-0 ugc-dropdown-menu-job" style="display: none; position: absolute; right: 0; top: 100%; z-index: 1000; min-width: 150px; font-size: 14px; margin-top: 5px; background: white; border-radius: 8px; list-style: none; padding: 0.5rem 0; text-align: left;">
+                                                         <li>
+                                                            <a class="dropdown-item py-2 text-secondary px-3 d-block" href="javascript:void(0)" onclick="event.preventDefault(); event.stopPropagation(); this.closest('.ugc-dropdown-menu-job').style.display='none'; if(window.triggerUgcReportPostJob) window.triggerUgcReportPostJob({{ $jobRequest->id }}, this);">
+                                                                <i class="fas fa-flag fa-fw me-2"></i>{{ __('messages.ugc_report') }}
+                                                             </a>
+                                                         </li>
+                                                         <li>
+                                                             <a class="dropdown-item py-2 text-danger px-3 d-block" href="javascript:void(0)" onclick="event.preventDefault(); event.stopPropagation(); this.closest('.ugc-dropdown-menu-job').style.display='none'; if(window.triggerUgcBlock) window.triggerUgcBlock({{ $homePosterId }}, this, 'customer');">
+                                                                 <i class="fas fa-ban fa-fw me-2"></i>{{ __('messages.ugc_block_customer') }}
+                                                             </a>
+                                                         </li>
+                                                     </ul>
+                                                </div>
+                                                @endif
                                             </div>
                                         </div>
                                         
@@ -632,7 +678,6 @@
                                         </div>
                                     </div>
                                 </div>
-                            </a>
                         </div>
                     @endforeach
                 </div>
@@ -876,6 +921,7 @@
                                                 @endif
                                             </div>
                                         </div>
+                                        @include('partials.landing-service-ugc-dropdown', ['service' => $data])
                                         
                                         <div class="stats-section">
                                             <div class="row g-2 text-center">
@@ -1181,6 +1227,7 @@
                                                     <img src="{{ asset('images/icon/notverifiedpng.png') }}" alt="not verified" style="width: 26px; height: 26px;">
                                                 @endif
                                             </div>
+                                            @include('partials.landing-service-ugc-dropdown', ['service' => $data])
                                             <div class="stats-section">
                                                 <div class="row g-2 text-center">
                                                     <div class="col-4">
