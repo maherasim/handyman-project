@@ -25,10 +25,6 @@
         min-width: 9rem;
         max-width: 14rem;
     }
-    .review-reports-page .review-cell {
-        min-width: 12rem;
-        max-width: 18rem;
-    }
     .review-reports-page .details-cell {
         min-width: 10rem;
         max-width: 16rem;
@@ -91,7 +87,6 @@
                             <th>{{ __('messages.review_report_col_id') }}</th>
                             <th class="text-cell">{{ __('messages.review_report_col_reporter') }}</th>
                             <th class="text-cell">{{ __('messages.review_report_col_review_owner') }}</th>
-                            <th class="review-cell">{{ __('messages.review_report_col_review') }}</th>
                             <th class="text-cell">{{ __('messages.review_report_col_reason') }}</th>
                             <th class="details-cell">{{ __('messages.review_report_col_details') }}</th>
                             <th>{{ __('messages.review_report_col_status') }}</th>
@@ -103,8 +98,6 @@
                     <tbody>
                         @forelse($reports as $report)
                             @php
-                                $reviewItem = $report->resolveReviewItem();
-                                $reviewText = (string) optional($reviewItem)->review;
                                 $isHidden = $report->isReviewHidden();
                             @endphp
                             <tr>
@@ -124,18 +117,6 @@
                                     @else
                                         —
                                     @endif
-                                </td>
-                                <td class="review-cell small" title="{{ $reviewText }}">
-                                    <div class="d-flex align-items-start gap-2">
-                                        <span class="badge bg-primary text-white align-self-start">{{ \Illuminate\Support\Str::limit(\App\Models\ReviewReport::reviewTypeLabel($report->review_type), 24) }}</span>
-                                        <div class="min-w-0">
-                                            <div class="text-muted mb-1"><code class="small">{{ $report->review_type }}#{{ $report->review_id }}</code></div>
-                                            <div class="text-truncate">{{ \Illuminate\Support\Str::limit($reviewText, 56) ?: '—' }}</div>
-                                            <span class="badge mt-1 {{ $isHidden ? 'bg-danger' : 'bg-success' }}">
-                                                {{ $isHidden ? __('messages.review_report_visibility_hidden') : __('messages.review_report_visibility_visible') }}
-                                            </span>
-                                        </div>
-                                    </div>
                                 </td>
                                 <td class="text-cell small" title="{{ \App\Models\ReviewReport::reasonLabel($report->reason) }}">
                                     {{ \Illuminate\Support\Str::limit(\App\Models\ReviewReport::reasonLabel($report->reason), 42) }}
@@ -172,7 +153,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="10" class="text-center text-muted py-5">{{ __('messages.review_report_empty') }}</td>
+                                <td colspan="9" class="text-center text-muted py-5">{{ __('messages.review_report_empty') }}</td>
                             </tr>
                         @endforelse
                     </tbody>
