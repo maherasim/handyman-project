@@ -438,7 +438,7 @@ class BookingController extends Controller
             ? 'Rating already submitted'
             : 'Rate Customer';
 
-        // Provider's review of the customer for THIS booking (from customer_ratings)
+        // Provider's rating of the customer for THIS booking (`customer_ratings` table)
         $provider_review = CustomerRating::where('booking_id', $id)
             ->with('provider')
             ->first();
@@ -447,14 +447,17 @@ class BookingController extends Controller
             $provider_review_payload = [
                 'id' => $provider_review->id,
                 'booking_id' => $provider_review->booking_id,
+                'customer_id' => $provider_review->customer_id,
+                'provider_id' => $provider_review->provider_id,
                 'rating' => (float) $provider_review->rating,
                 'review' => $provider_review->review,
-                'provider_id' => $provider_review->provider_id,
+                'status' => $provider_review->status,
                 'provider_name' => optional($provider_review->provider)->display_name,
                 'provider_profile_image' => optional($provider_review->provider)->login_type != null
                     ? optional($provider_review->provider)->social_image
                     : getSingleMedia($provider_review->provider, 'profile_image', null),
                 'created_at' => $provider_review->created_at ? $provider_review->created_at->format('Y-m-d') : null,
+                'updated_at' => $provider_review->updated_at ? $provider_review->updated_at->format('Y-m-d') : null,
             ];
         }
 
@@ -469,6 +472,8 @@ class BookingController extends Controller
             'coupon_data'       => $booking_detail->couponAdded,
             'customer_review'   => $customer_review,
             'review_by_customer_for_booking' => $review_by_customer_payload,
+            // Same row as `customer_ratings` for this booking (provider → customer). Prefer this key for clients.
+            'customer_rating'   => $provider_review_payload,
             'provider_review'   => $provider_review_payload,
             'service_proof'     => $serviceProof,
             'post_request_detail' => $post_job_object,
