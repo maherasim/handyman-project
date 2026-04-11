@@ -117,6 +117,11 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     // UGC safety (same behavior as web POST /ugc/*; use Bearer token / Sanctum)
     Route::post('ugc/report', [UgcSafetyController::class, 'reportContent'])->name('api.ugc.report');
     Route::post('ugc/report-post-job', [UgcSafetyController::class, 'reportPostJob'])->name('api.ugc.report_post_job');
+    // Report a user account (same as web: service-detail employer + job-details customer both use profile reports)
+    Route::post('ugc/report-profile', [UgcSafetyController::class, 'reportProfile'])->name('api.ugc.report_profile');
+    // Optional: report a provider user as ContentReport (target must be user_type=provider; web UI uses report-profile instead)
+    Route::post('ugc/report-provider', [UgcSafetyController::class, 'reportProvider'])->name('api.ugc.report_provider');
+    Route::post('ugc/report-review', [UgcSafetyController::class, 'reportReview'])->name('api.ugc.report_review');
     Route::post('ugc/block', [UgcSafetyController::class, 'blockUser'])->name('api.ugc.block');
     Route::post('ugc/unblock', [UgcSafetyController::class, 'unblockUser'])->name('api.ugc.unblock');
 
