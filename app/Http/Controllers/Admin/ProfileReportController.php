@@ -43,8 +43,18 @@ class ProfileReportController extends Controller
 
         if ($action === 'deactivate_user' && $reportedUser) {
             $reportedUser->update(['status' => 0]);
+            // Revoke all Sanctum tokens so mobile/API sessions end; web is cleared on next request via EnsureAccountIsActive.
+            if (method_exists($reportedUser, 'tokens')) {
+                $reportedUser->tokens()->delete();
+            }
         } elseif ($action === 'activate_user' && $reportedUser) {
             $reportedUser->update(['status' => 1]);
+            // Reactivated users must sign in again: no reuse of old app tokens or "remember me" sessions.
+            if (method_exists($reportedUser, 'tokens')) {
+                $reportedUser->tokens()->delete();
+            }
+            $reportedUser->remember_token = null;
+            $reportedUser->save();
         }
 
         $profileReport->update([

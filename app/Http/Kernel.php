@@ -75,5 +75,6 @@ class Kernel extends HttpKernel
         'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
         'CheckInstallation' => \App\Http\Middleware\CheckInstallation::class,
         'sanctum.optional' => \App\Http\Middleware\OptionalSanctumAuth::class,
+        'active' => \App\Http\Middleware\EnsureAccountIsActive::class,
     ];
 }

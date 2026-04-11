@@ -62,7 +62,7 @@ Route::middleware([CheckInstallation::class])->group(function () {
 
 
 
-Route::group(['middleware' => ['auth:sanctum']], function () {
+Route::group(['middleware' => ['auth:sanctum', 'active']], function () {
     Route::get('/helpdesk-list', [FrontendController::class, 'helpdeskList'])->name('helpdesk.list');
     Route::get('/helpdesk-datatable', [FrontendController::class, 'helpdeskDatatable'])->name('helpdesk.data');
     Route::get('/helpdesk-detail/{id}', [FrontendController::class, 'helpdeskDetail'])->name('helpdesk.detail');
@@ -86,7 +86,7 @@ Route::get('/job-datatable', [FrontendController::class, 'jobDatatable'])->name(
 Route::get('/job-details/{id}', [FrontendController::class, 'showdetails'])->name('job.details');
 
 // Social share/upload endpoints (restricted to authenticated users)
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth', 'active'])->group(function () {
     Route::post('/social/facebook/post-job/{id}', [SocialShareController::class, 'postJobToFacebook'])
         ->name('social.facebook.post_job');
 });

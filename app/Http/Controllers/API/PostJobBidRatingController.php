@@ -24,8 +24,12 @@ class PostJobBidRatingController extends Controller
 
         $bid = PostJobBid::findOrFail((int) $request->post_job_bid_id);
         $userId = (int) Auth::id();
-        // Only the customer of this bid may rate the provider
-        abort_unless($userId && $userId === (int) ($bid->customer_id ?? 0), 403);
+        // Only the customer of this bid may rate the provider (providers use postbid/rating-by-provider/save)
+        abort_unless(
+            $userId && $userId === (int) ($bid->customer_id ?? 0),
+            403,
+            'Only the job customer can rate the provider on this bid.'
+        );
 
         // Customer rates provider → post_job_bid_ratings
         $rating = PostJobBidRating::updateOrCreate(
@@ -93,7 +97,11 @@ class PostJobBidRatingController extends Controller
 
         $bid = PostJobBid::findOrFail((int) $request->post_job_bid_id);
         $userId = (int) Auth::id();
-        abort_unless($userId && $userId === (int) ($bid->provider_id ?? 0), 403);
+        abort_unless(
+            $userId && $userId === (int) ($bid->provider_id ?? 0),
+            403,
+            'Only the assigned provider can rate the customer on this bid.'
+        );
 
         $rating = PostJobBidCustomerRating::updateOrCreate(
             [

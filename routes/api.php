@@ -52,7 +52,7 @@ Route::get('firebase-detail', [ API\DashboardController::class, "firebaseDetails
 // UGC: labels for report reason dropdown (same enum as POST ugc/report, ugc/report-post-job)
 Route::get('ugc/report-reasons', [UgcSafetyController::class, 'reportReasons'])->name('api.ugc.report_reasons');
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+Route::middleware(['auth:sanctum', 'active'])->get('/user', function (Request $request) {
     return $request->user();
 });
 
@@ -88,7 +88,7 @@ Route::post('booking-paypal/create/{id?}', [API\BookingPayPalController::class, 
 Route::get('booking-paypal/success/{booking_id}', [App\Http\Controllers\API\BookingPayPalController::class, 'successApi'])->name('api.booking-paypal.success');
 Route::get('booking-paypal/cancel', [App\Http\Controllers\API\BookingPayPalController::class, 'cancelApi'])->name('api.booking-paypal.cancel');
 
-Route::group(['middleware' => ['auth:sanctum']], function () {
+Route::group(['middleware' => ['auth:sanctum', 'active']], function () {
     // ===== Chat API (Mobile/Web) =====
     // Open or create conversation by bid id
     Route::post('chat/open-by-bid', [ChatApiController::class, 'openByBid']);

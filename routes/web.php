@@ -119,7 +119,7 @@ Route::group(['prefix' => 'auth'], function () {
 Route::get('lang/{locale}', [HomeController::class, 'lang'])->name('switch-language');
 Route::get('/verify/{id}', [VerificationController::class, 'verify'])->name('verify');
 
-Route::group(['middleware' => ['auth', 'verified']], function () {
+Route::group(['middleware' => ['auth', 'verified', 'active']], function () {
         // Completely standalone chat system - NO booking/bid dependencies
         Route::get('/messages/user/{userId}', [ChatController::class, 'viewWithUser'])->name('chat.view.user');
         Route::get('/chat/{conversationId}/messages', [ChatController::class, 'messages'])->name('chat.messages');

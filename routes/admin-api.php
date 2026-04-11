@@ -15,11 +15,11 @@ use App\Http\Controllers\API;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+Route::middleware(['auth:sanctum', 'active'])->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::group(['middleware' => ['auth:sanctum']], function () {
+Route::group(['middleware' => ['auth:sanctum', 'active']], function () {
     Route::get('admin-dashboard',[ API\DashboardController::class, 'adminDashboard' ]);
     Route::post('category-save', [ App\Http\Controllers\CategoryController::class, 'store' ] );
     Route::post('category-delete/{id}', [ App\Http\Controllers\CategoryController::class, 'destroy' ] );
