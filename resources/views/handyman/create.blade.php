@@ -65,7 +65,7 @@
                                 <small class="help-block with-errors text-danger"></small>
                             </div>
                             <div class="form-group col-md-3">
-                                {{ html()->label(__('messages.select_name', ['select' => __('Language')]) . ' <span class="text-danger">*</span>', 'languages')->class('form-control-label text-danger') }}
+                                {{ html()->label(__('messages.select_name', ['select' => __('messages.language')]) . ' <span class="text-danger">*</span>', 'languages')->class('form-control-label text-danger') }}
                                 <br />
                                 {{ html()->select(
                                         'languages[]', // Use [] to allow multiple selections

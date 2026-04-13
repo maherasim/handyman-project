@@ -13,7 +13,7 @@
     'password_does_not_match' => 'Passwörter stimmen nicht überein',
     'address' => 'Adresse',
     'status' => 'Status',
-    'select_name' => ':auswählen',
+    'select_name' => ':select auswählen',
     'language' => 'Sprache',
     'title_name' => ':Title',
     'back' => 'Zurück',
