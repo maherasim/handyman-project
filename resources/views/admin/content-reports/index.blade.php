@@ -23,8 +23,15 @@
         --bs-table-border-color: #dee2e6;
     }
     .content-reports-page .listing-cell {
-        min-width: 12rem;
-        max-width: 18rem;
+        min-width: 10rem;
+        max-width: 14rem;
+    }
+    .content-reports-page .listing-cell .listing-title-preview {
+        display: block;
+        max-width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
     }
     .content-reports-page .text-cell {
         min-width: 9rem;
@@ -151,7 +158,8 @@
                                         <div class="d-flex align-items-start gap-2">
                                             <span class="badge bg-primary text-white align-self-start">{{ __('messages.service') }}</span>
                                             <div class="min-w-0">
-                                                <div class="fw-semibold text-truncate" title="{{ $report->reportable->name ?? '—' }}">{{ \Illuminate\Support\Str::limit($report->reportable->name ?? '—', 48) }}</div>
+                                                @php $svcTitle = (string) ($report->reportable->name ?? '—'); @endphp
+                                                <div class="fw-semibold listing-title-preview" title="{{ $svcTitle }}">{{ \Illuminate\Support\Str::words($svcTitle, 2, '…') }}</div>
                                                 <small class="text-muted">#{{ $report->reportable_id }}</small>
                                             </div>
                                         </div>
@@ -159,7 +167,8 @@
                                         <div class="d-flex align-items-start gap-2">
                                             <span class="badge bg-primary text-white align-self-start">{{ __('messages.post_job_request') }}</span>
                                             <div class="min-w-0">
-                                                <div class="fw-semibold text-truncate" title="{{ $report->reportable->title ?? '—' }}">{{ \Illuminate\Support\Str::limit($report->reportable->title ?? '—', 48) }}</div>
+                                                @php $jobTitle = (string) ($report->reportable->title ?? '—'); @endphp
+                                                <div class="fw-semibold listing-title-preview" title="{{ $jobTitle }}">{{ \Illuminate\Support\Str::words($jobTitle, 2, '…') }}</div>
                                                 <small class="text-muted">#{{ $report->reportable_id }}</small>
                                             </div>
                                         </div>
@@ -170,7 +179,8 @@
                                         <div class="d-flex align-items-start gap-2">
                                             <span class="badge bg-secondary align-self-start">Review</span>
                                             <div class="min-w-0">
-                                                <div class="text-truncate small" title="{{ (string) optional($reviewItemRow)->review }}">{{ \Illuminate\Support\Str::limit((string) optional($reviewItemRow)->review, 48) ?: '—' }}</div>
+                                                @php $revText = trim((string) optional($reviewItemRow)->review) ?: '—'; @endphp
+                                                <div class="small listing-title-preview" title="{{ $revText }}">{{ \Illuminate\Support\Str::words($revText, 2, '…') }}</div>
                                                 <small class="text-muted">#{{ $report->reportable_id }}</small>
                                             </div>
                                         </div>
@@ -178,7 +188,8 @@
                                         <div class="d-flex align-items-start gap-2">
                                             <span class="badge bg-info text-dark align-self-start">{{ __('messages.provider') }}</span>
                                             <div class="min-w-0">
-                                                <div class="fw-semibold text-truncate" title="{{ $report->reportable->display_name ?? $report->reportable->email ?? '' }}">{{ \Illuminate\Support\Str::limit($report->reportable->display_name ?? $report->reportable->email ?? '—', 40) }}</div>
+                                                @php $partyLabel = (string) ($report->reportable->display_name ?? $report->reportable->email ?? '—'); @endphp
+                                                <div class="fw-semibold listing-title-preview" title="{{ $partyLabel }}">{{ \Illuminate\Support\Str::words($partyLabel, 2, '…') }}</div>
                                                 <small class="text-muted">#{{ $report->reportable_id }}</small>
                                             </div>
                                         </div>
