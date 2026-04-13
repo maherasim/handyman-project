@@ -68,16 +68,9 @@
                                 {{ html()->label(__('messages.select_name', ['select' => __('messages.language')]) . ' <span class="text-danger">*</span>', 'languages')->class('form-control-label text-danger') }}
                                 <br />
                                 {{ html()->select(
-                                        'languages[]', // Use [] to allow multiple selections
-                                        [
-                                            'english' => 'English',
-                                            'french' => 'French',
-                                            'chinese' => 'Chinese',
-                                            'urdu' => 'Urdu',
-                                            'spanish' => 'Spanish',
-                                            'german' => 'German',
-                                        ], // Static language options
-                                        old('languages', $handymandata->languages ?? []), // Retain old value or user data
+                                        'languages[]',
+                                        config('spoken_language_options'),
+                                        old('languages', $handymandata->languages ?? []),
                                     )->class('form-group select2js')->multiple()->attribute('data-placeholder', __('messages.select_name', ['select' => __('messages.language')]))->attribute('required', true)->id('languages_select') }}
                                 <small class="help-block with-errors text-danger" id="languages_error"></small>
                             </div>
