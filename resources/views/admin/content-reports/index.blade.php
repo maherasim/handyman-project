@@ -22,6 +22,7 @@
     .content-reports-page .table {
         --bs-table-border-color: #dee2e6;
     }
+    {{-- Listing / advertisement column (hidden)
     .content-reports-page .listing-cell {
         min-width: 10rem;
         max-width: 14rem;
@@ -33,6 +34,7 @@
         text-overflow: ellipsis;
         white-space: nowrap;
     }
+    --}}
     .content-reports-page .text-cell {
         min-width: 9rem;
         max-width: 14rem;
@@ -97,7 +99,7 @@
                     <thead>
                         <tr>
                             <th>{{ __('messages.srno') }}</th>
-                            <th class="listing-cell">{{ __('messages.ugc_col_listing') }}</th>
+                            {{-- <th class="listing-cell">{{ __('messages.ugc_col_listing') }}</th> --}}
                             <th class="text-cell">{{ __('messages.ugc_col_reporter') }}</th>
                             <th class="text-cell">{{ __('messages.ugc_col_reported_party') }}</th>
                             <th class="text-cell">{{ __('messages.ugc_col_reason') }}</th>
@@ -153,6 +155,7 @@
                             @endphp
                             <tr>
                                 <td class="text-muted">{{ $report->id }}</td>
+                                {{--
                                 <td class="listing-cell">
                                     @if($report->reportable && $report->reportable_type === \App\Models\Service::class)
                                         <div class="d-flex align-items-start gap-2">
@@ -197,6 +200,7 @@
                                         <span class="text-muted">{{ class_basename($report->reportable_type) }} #{{ $report->reportable_id }}</span>
                                     @endif
                                 </td>
+                                --}}
                                 <td class="text-cell small">
                                     @if($report->reporter)
                                         <div class="fw-semibold text-truncate" title="{{ $report->reporter->display_name ?? $report->reporter->email }}">{{ \Illuminate\Support\Str::limit($report->reporter->display_name ?? $report->reporter->email, 28) }}</div>
@@ -256,7 +260,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="10" class="text-center text-muted py-5">{{ __('messages.ugc_admin_empty') }}</td>
+                                <td colspan="9" class="text-center text-muted py-5">{{ __('messages.ugc_admin_empty') }}</td>
                             </tr>
                         @endforelse
                     </tbody>
