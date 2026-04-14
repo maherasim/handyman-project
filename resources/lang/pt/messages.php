@@ -898,6 +898,8 @@
     'top_handyman' => 'Melhor trabalhador manual',
     'remaining_payout' => 'Pagamento restante',
     'my_earning' => 'Meus ganhos',
+    'revenue_from_bookings' => 'Receita de reservas',
+    'revenue_from_post_job_requests' => 'Receita de pedidos de trabalho (post job)',
     'user_commission' => 'Comissão do usuário',
     'select_provider_type' => 'Selecionar o tipo de comissão do fornecedor',
     'select_handyman_type' => 'Selecionar o tipo de comissão do trabalhador manual',

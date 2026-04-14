@@ -1113,6 +1113,8 @@
     'top_handyman' => 'Top-Mitarbeiter',
     'remaining_payout' => 'Ausstehende Auszahlung',
     'my_earning' => 'Meine Einnahmen',
+    'revenue_from_bookings' => 'Einnahmen aus Buchungen',
+    'revenue_from_post_job_requests' => 'Einnahmen aus Aufträgen (Post Job)',
     'user_commission' => 'Kunden-Provision',
     'select_provider_type' => 'Anbieter-Provisionsart auswählen',
     'select_handyman_type' => 'Mitarbeiter-Provisionsart auswählen',

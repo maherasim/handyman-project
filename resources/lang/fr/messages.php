@@ -974,6 +974,8 @@
     'top_handyman' => 'Meilleur homme à tout faire',
     'remaining_payout' => 'Paiement restant',
     'my_earning' => 'Mes gains',
+    'revenue_from_bookings' => 'Revenus des réservations',
+    'revenue_from_post_job_requests' => 'Revenus des offres d’emploi (post job)',
     'user_commission' => 'Commission de l\'utilisateur',
     'select_provider_type' => 'Sélectionner le type de commission du fournisseur',
     'select_handyman_type' => 'Sélectionner le type de commission de l\'homme à tout faire',
