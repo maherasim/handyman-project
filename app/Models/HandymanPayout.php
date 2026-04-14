@@ -21,6 +21,16 @@ class HandymanPayout extends Model
     public function handymans(){
         return $this->belongsTo(User::class, 'handyman_id','id');
     }
+
+    public function payment()
+    {
+        return $this->belongsTo(Payment::class, 'payment_id', 'id')->withTrashed();
+    }
+
+    public function booking()
+    {
+        return $this->belongsTo(Booking::class, 'booking_id', 'id')->withTrashed();
+    }
     public function scopeMyPayout($query)
     {
         if(auth()->user()->hasRole('admin')) {
