@@ -75,6 +75,10 @@ $logoPath = public_path('assets/frobster logo.png');
 
     $advancePaid = (float) ($bookingdata->advance_paid_amount ?? 0);
     $remainingAmount = $grandTotal - $advancePaid;
+
+    $invoiceDateIssued = $bookingdata->created_at
+        ? \Carbon\Carbon::parse($bookingdata->created_at)->locale(app()->getLocale())->translatedFormat('d F Y')
+        : '';
 @endphp
 <body>
 <div class="container">
