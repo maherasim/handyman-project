@@ -16,6 +16,7 @@ use App\Models\PostJobBid;
 use App\Models\ProviderPayout;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Facade\Ignition\DumpRecorder\Dump;
 use Yajra\DataTables\DataTables;
 use App\Models\Booking;
@@ -41,7 +42,23 @@ class PaymentController extends Controller
         $pageTitle = __('messages.payments');
         $assets = ['datatable'];
 
-        return view('payment.index', compact('pageTitle', 'assets', 'filter'));
+        $user = auth()->user();
+        $isHandymanAccount = $user->user_type === 'handyman' || $user->hasRole('handyman');
+        $handymanPaymentTotal = null;
+        if ($isHandymanAccount) {
+            if (Schema::hasColumn('handyman_payouts', 'status')) {
+                $handymanPaymentTotal = HandymanPayout::where('handyman_id', $user->id)
+                    ->where('status', 'paid')
+                    ->sum('amount') ?? 0;
+            } else {
+                $handymanPaymentTotal = CommissionEarning::where('user_type', 'handyman')
+                    ->where('employee_id', $user->id)
+                    ->where('commission_status', 'paid')
+                    ->sum('commission_amount') ?? 0;
+            }
+        }
+
+        return view('payment.index', compact('pageTitle', 'assets', 'filter', 'handymanPaymentTotal'));
     }
 
     public function cashIndex($id)

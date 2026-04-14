@@ -68,6 +68,21 @@
             </div>
         </div>
     </div>
+    @if ($handymanPaymentTotal !== null)
+        <div class="container-fluid mb-3">
+            <div class="row">
+                <div class="col-lg-3 col-md-6">
+                    <div class="card total-revenue rounded-3 border-0 shadow-sm h-100"
+                        style="background: #3333ff !important; color: #fff !important;">
+                        <div class="card-body p-3">
+                            <h4 class="mb-2 booking-text fw-bold fs-2">{{ getPriceFormat($handymanPaymentTotal) }}</h4>
+                            <p class="mb-0 booking-text">{{ __('messages.handyman_dashboard_revenue_card') }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
     <div class="card">
         <div class="card-body">
             <div class="row justify-content-between gy-3">
