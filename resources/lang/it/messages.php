@@ -1008,6 +1008,11 @@
     'profile_report_apply' => 'Applica',
     'profile_report_admin_note_placeholder' => 'Nota interna (facoltativo)',
     'profile_report_reasons' => [
+        'spam' => 'Spam o fuorviante',
+        'harassment' => 'Molestie o abusi',
+        'inappropriate' => 'Contenuto inappropriato',
+        'fraud' => 'Truffa o frode',
+        'other' => 'Altro',
         'off_platform_requests' => 'Richieste fuori piattaforma',
         'misleading_profile_or_skills' => 'Profilo o competenze fuorvianti',
         'no_show_or_unreliability' => 'Mancata presentazione o inaffidabilità',

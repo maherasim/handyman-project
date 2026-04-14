@@ -2,31 +2,7 @@
 @php
     $r = $contentReport;
     $st = (string) $r->status;
-    $reasonLabels = [
-        'spam' => 'Spam or misleading',
-        'harassment' => 'Harassment or abuse',
-        'inappropriate' => 'Inappropriate content',
-        'fraud' => 'Scam or fraud',
-        'other' => 'Other',
-        'off_platform_requests' => 'Off-platform requests',
-        'misleading_profile_or_skills' => 'Misleading profile or skills',
-        'no_show_or_unreliability' => 'No-show or unreliability',
-        'poor_work_quality' => 'Poor work quality',
-        'unprofessional_behavior' => 'Unprofessional behavior',
-        'fraud_or_misleading_information' => 'Fraud or misleading information',
-        'overcharging_or_hidden_fees' => 'Overcharging or hidden fees',
-        'incomplete_or_abandoned_work' => 'Incomplete or abandoned work',
-        'harassment_or_bullying' => 'Harassment or bullying',
-        'spam_or_scams' => 'Spam or scams',
-        'hate_speech' => 'Hate speech',
-        'violence_or_threats' => 'Violence or threats',
-        'payment_issues' => 'Payment issues',
-        'overcharging_or_extra_fees' => 'Overcharging or extra fees',
-        'violation_of_platform_rules' => 'Violation of platform rules',
-        'plagiarism_or_copied_work' => 'Plagiarism or copied work',
-        'nudity_or_sexual_content' => 'Nudity or sexual content',
-    ];
-    $reasonText = $reasonLabels[$r->reason] ?? ucwords(str_replace('_', ' ', (string) $r->reason));
+    $reasonText = \App\Models\ContentReport::reasonLabel($r->reason);
     $ugcStatusLabels = [
         'pending' => __('messages.ugc_report_status_pending'),
         'dismissed' => __('messages.ugc_report_status_dismissed'),

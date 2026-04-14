@@ -1007,6 +1007,11 @@
     'profile_report_apply' => 'Aplicar',
     'profile_report_admin_note_placeholder' => 'Nota interna (opcional)',
     'profile_report_reasons' => [
+        'spam' => 'Spam ou conteúdo enganoso',
+        'harassment' => 'Assédio ou abuso',
+        'inappropriate' => 'Conteúdo inadequado',
+        'fraud' => 'Fraude ou golpe',
+        'other' => 'Outro',
         'off_platform_requests' => 'Pedidos fora da plataforma',
         'misleading_profile_or_skills' => 'Perfil ou competências enganosas',
         'no_show_or_unreliability' => 'Não comparecimento ou falta de fiabilidade',

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Str;
 
 class ProfileReport extends Model
@@ -44,8 +45,11 @@ class ProfileReport extends Model
         if ($reason === null || $reason === '') {
             return '—';
         }
-        $labels = __('messages.profile_report_reasons');
-        if (is_array($labels) && isset($labels[$reason])) {
+        $labels = Lang::get('messages.profile_report_reasons', [], app()->getLocale());
+        if (! is_array($labels)) {
+            $labels = [];
+        }
+        if (isset($labels[$reason])) {
             return $labels[$reason];
         }
 

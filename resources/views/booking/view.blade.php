@@ -222,27 +222,16 @@
                 }
                 reviewType = reviewType || 'booking_rating';
 
-                var reasonOptions = [
-                    { value: 'off_platform_requests', label: 'Off-platform requests' },
-                    { value: 'misleading_profile_or_skills', label: 'Misleading profile or skills' },
-                    { value: 'no_show_or_unreliability', label: 'No-show or unreliability' },
-                    { value: 'poor_work_quality', label: 'Poor work quality' },
-                    { value: 'unprofessional_behavior', label: 'Unprofessional behavior' },
-                    { value: 'fraud_or_misleading_information', label: 'Fraud or misleading information' },
-                    { value: 'overcharging_or_hidden_fees', label: 'Overcharging or hidden fees' },
-                    { value: 'incomplete_or_abandoned_work', label: 'Incomplete or abandoned work' },
-                    { value: 'harassment_or_bullying', label: 'Harassment or bullying' },
-                    { value: 'spam_or_scams', label: 'Spam or scams' },
-                    { value: 'hate_speech', label: 'Hate speech' },
-                    { value: 'violence_or_threats', label: 'Violence or threats' },
-                    { value: 'payment_issues', label: 'Payment issues' },
-                    { value: 'overcharging_or_extra_fees', label: 'Overcharging or extra fees' },
-                    { value: 'violation_of_platform_rules', label: 'Violation of platform rules' },
-                    { value: 'plagiarism_or_copied_work', label: 'Plagiarism or copied work' },
-                    { value: 'nudity_or_sexual_content', label: 'Nudity or sexual content' }
-                ];
+                var reasonOptions = @json($ugcReasonOptionsForJs);
+                function escapeHtmlUgc(str) {
+                    return String(str)
+                        .replace(/&/g, '&amp;')
+                        .replace(/</g, '&lt;')
+                        .replace(/>/g, '&gt;')
+                        .replace(/"/g, '&quot;');
+                }
                 var optionsHtml = reasonOptions.map(function (opt) {
-                    return '<option value="' + opt.value + '">' + opt.label + '</option>';
+                    return '<option value="' + escapeHtmlUgc(opt.value) + '">' + escapeHtmlUgc(opt.label) + '</option>';
                 }).join('');
 
                 Swal.fire({
@@ -252,7 +241,7 @@
                         '<label class="form-label fw-bold small text-uppercase">' + @json(__('messages.ugc_report_reason')) + '</label>' +
                         '<select id="ugc-reason-review-fallback" class="form-select mb-3">' + optionsHtml + '</select>' +
                         '<label class="form-label fw-bold small text-uppercase">' + @json(__('messages.ugc_report_details')) + '</label>' +
-                        '<textarea id="ugc-details-review-fallback" class="form-control" rows="4" maxlength="2000" placeholder="Please provide additional details about this issue..."></textarea>' +
+                        '<textarea id="ugc-details-review-fallback" class="form-control" rows="4" maxlength="2000" placeholder="' + @json(__('messages.ugc_report_details_placeholder')) + '"></textarea>' +
                         '</div>',
                     showCancelButton: true,
                     confirmButtonText: @json(__('messages.ugc_report_submit')),

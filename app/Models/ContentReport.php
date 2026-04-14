@@ -44,4 +44,10 @@ class ContentReport extends Model
     {
         return $this->belongsTo(User::class, 'reviewed_by');
     }
+
+    /** Same reason codes as profile UGC reports — shared translated labels. */
+    public static function reasonLabel(?string $reason): string
+    {
+        return ProfileReport::reasonLabel($reason);
+    }
 }
