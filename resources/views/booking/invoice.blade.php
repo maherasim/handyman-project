@@ -83,10 +83,10 @@ $logoPath = public_path('assets/frobster logo.png');
             <table class="no-border">
                 <tr>
                     <td style="width: 60%; border: 0;">
-                        <div class="title">{{ __('Invoice') }}</div>
-                        <div class="text-muted">{{ __('Invoice No:') }} #{{ $bookingdata->id }}</div>
-                        <div class="text-muted">{{ __('Currency:') }} {{ $bookingdata->currency ?? 'USD' }}</div>
-                        <div class="text-muted">{{ __('Date Issued:') }} {{ optional($bookingdata->created_at)->format('d M Y') }}</div>
+                        <div class="title">{{ __('messages.invoice') }}</div>
+                        <div class="text-muted">{{ __('messages.invoice_pdf_invoice_no') }} #{{ $bookingdata->id }}</div>
+                        <div class="text-muted">{{ __('messages.invoice_pdf_currency') }} {{ $bookingdata->currency ?? 'USD' }}</div>
+                        <div class="text-muted">{{ __('messages.invoice_pdf_date_issued') }} {{ optional($bookingdata->created_at)->format('d M Y') }}</div>
                     </td>
                     <td class="text-right" style="width: 40%; border: 0;">
                         @if (file_exists($logoPath))
@@ -105,24 +105,24 @@ $logoPath = public_path('assets/frobster logo.png');
             <table class="no-border">
                 <tr>
                     <td style="width: 50%; border: 0;">
-                        <div class="fw-bold mb-6">{{ __('Bill From') }}</div>
+                        <div class="fw-bold mb-6">{{ __('messages.invoice_pdf_bill_from') }}</div>
                         <div class="mb-6">{{ optional($bookingdata->provider)->display_name ?? '-' }}</div>
-                        <div class="text-muted">{{ __('Company Name:') }} {{ optional($bookingdata->provider)->company_name ?? '-' }}</div>
+                        <div class="text-muted">{{ __('messages.company_name') }}: {{ optional($bookingdata->provider)->company_name ?? '-' }}</div>
 
-                        <div class="text-muted">{{ __('Address:') }}{{ optional($bookingdata->provider)->address ?? '-' }}</div>
-                        <div class="text-muted">{{ __('VAT Number:') }} {{ optional($bookingdata->provider)->vat_number ?? '-' }}</div>
+                        <div class="text-muted">{{ __('messages.address') }}: {{ optional($bookingdata->provider)->address ?? '-' }}</div>
+                        <div class="text-muted">{{ __('messages.invoice_pdf_vat_number') }} {{ optional($bookingdata->provider)->vat_number ?? '-' }}</div>
                     </td>
                     <td style="width: 50%; border: 0;">
-                        <div class="fw-bold mb-6">{{ __('Bill To') }}</div>
+                        <div class="fw-bold mb-6">{{ __('messages.invoice_pdf_bill_to') }}</div>
                         <div class="mb-6">{{ optional($bookingdata->customer)->display_name ?? '-' }}</div>
-                        <div class="text-muted">{{ __('Company Name:') }} {{ optional($bookingdata->customer)->company_name ?? '-' }}</div>
-                        <div class="text-muted">{{ __('Address:') }}{{ optional($bookingdata->customer)->address ?? '-' }}</div>
-                        <div class="text-muted">{{ __('VAT Number:') }}{{ optional($bookingdata->customer)->vat_number ?? '-' }}</div>
+                        <div class="text-muted">{{ __('messages.company_name') }}: {{ optional($bookingdata->customer)->company_name ?? '-' }}</div>
+                        <div class="text-muted">{{ __('messages.address') }}: {{ optional($bookingdata->customer)->address ?? '-' }}</div>
+                        <div class="text-muted">{{ __('messages.invoice_pdf_vat_number') }} {{ optional($bookingdata->customer)->vat_number ?? '-' }}</div>
                     </td>
                 </tr>
                 <tr>
                     <td colspan="2" style="border: 0;">
-                        <div class="fw-bold mb-6">{{ __('Service') }}</div>
+                        <div class="fw-bold mb-6">{{ __('messages.service') }}</div>
                         <div class="text-muted">{{ optional($bookingdata->service)->name ?? '-' }}</div>
                     </td>
                 </tr>
@@ -133,10 +133,10 @@ $logoPath = public_path('assets/frobster logo.png');
             <table>
                 <thead>
                     <tr>
-                        <th style="width: 60%">{{ __('Description') }}</th>
-                        <th style="width: 10%" class="text-right">{{ __('Qty') }}</th>
-                        <th style="width: 15%" class="text-right">{{ __('Unit Price') }}</th>
-                        <th style="width: 15%" class="text-right">{{ __('Amount') }}</th>
+                        <th style="width: 60%">{{ __('messages.description') }}</th>
+                        <th style="width: 10%" class="text-right">{{ __('messages.Qty') }}</th>
+                        <th style="width: 15%" class="text-right">{{ __('messages.invoice_pdf_unit_price') }}</th>
+                        <th style="width: 15%" class="text-right">{{ __('messages.amount') }}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -152,52 +152,52 @@ $logoPath = public_path('assets/frobster logo.png');
             <table class="totals" cellspacing="0" cellpadding="0" style="margin-top: 16px;">
                 <tbody>
                     <tr>
-                        <td>{{ __('Sub Total') }}</td>
+                        <td>{{ __('messages.Sub_Total') }}</td>
                         <td class="text-right">{{ getPriceFormat($baseTotal) }}</td>
                     </tr>
                     @if ($discountAmount > 0)
                     <tr>
-                        <td>{{ __('Discount') }} ({{ $bookingdata->discount }}%)</td>
+                        <td>{{ __('messages.discount') }} ({{ $bookingdata->discount }}%)</td>
                         <td class="text-right">-{{ getPriceFormat($discountAmount) }}</td>
                     </tr>
                     @endif
                     @if ($couponAmount > 0)
                     <tr>
-                        <td>{{ __('Coupon') }} {{ optional($bookingdata->couponAdded)->code ? '(' . optional($bookingdata->couponAdded)->code . ')' : '' }}</td>
+                        <td>{{ __('messages.coupon') }} {{ optional($bookingdata->couponAdded)->code ? '(' . optional($bookingdata->couponAdded)->code . ')' : '' }}</td>
                         <td class="text-right">-{{ getPriceFormat($couponAmount) }}</td>
                     </tr>
                     @endif
                     @if ($addonTotal > 0)
                     <tr>
-                        <td>{{ __('Service Addons') }}</td>
+                        <td>{{ __('messages.service_addons') }}</td>
                         <td class="text-right">{{ getPriceFormat($addonTotal) }}</td>
                     </tr>
                     @endif
                     @if ($extraChargeTotal > 0)
                     <tr>
-                        <td>{{ __('Extra Charges') }}</td>
+                        <td>{{ __('messages.extra_charge') }}</td>
                         <td class="text-right">{{ getPriceFormat($extraChargeTotal) }}</td>
                     </tr>
                     @endif
                     <tr>
-                        <td>{{ __('Total') }}</td>
+                        <td>{{ __('messages.total') }}</td>
                         <td class="text-right">{{ getPriceFormat($totalBeforeTax) }}</td>
                     </tr>
                     <tr>
-                        <td>{{ __('Tax') }} ({{ $taxRate }}%)</td>
+                        <td>{{ __('messages.tax') }} ({{ $taxRate }}%)</td>
                         <td class="text-right">{{ getPriceFormat($taxAmount) }}</td>
                     </tr>
                     <tr>
-                        <td>{{ __('Grand Total') }}</td>
+                        <td>{{ __('messages.grand_total') }}</td>
                         <td class="text-right">{{ getPriceFormat($grandTotal) }}</td>
                     </tr>
                     @if ($showAdvance)
                     <tr>
-                        <td>{{ __('Advance Payment') }}</td>
+                        <td>{{ __('messages.advance_payment') }}</td>
                         <td class="text-right">{{ getPriceFormat($advancePaid) }}</td>
                     </tr>
                     <tr>
-                        <td>{{ __('Remaining Amount') }}</td>
+                        <td>{{ __('messages.remaining_amount') }}</td>
                         <td class="text-right">{{ getPriceFormat($remainingAmount) }}</td>
                     </tr>
                     @endif

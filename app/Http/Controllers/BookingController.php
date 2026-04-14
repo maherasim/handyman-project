@@ -35,6 +35,7 @@ use App\Traits\EarningTrait;
 use App\Traits\NotificationTrait;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\App;
 use Maatwebsite\Excel\Facades\Excel;
 use PDF;
 use Yajra\DataTables\DataTables;
@@ -1305,18 +1306,30 @@ public function bookingAssigned(Request $request)
 
     public function createPDF($id)
     {
-        $data = AppSetting::take(1)->first();
-        $bookingdata = Booking::with('handymanAdded', 'payment', 'bookingExtraCharge', 'bookingPackage', 'bookingAddonService')->myBooking()->find($id);
-        $payment = Payment::where('booking_id', $id)->orderBy('id', 'desc')->first() ?? null;
-        $serviceconfig = Setting::getValueByKey('service-configurations', 'service-configurations');
-        $advancePaymentPercentage = isset($serviceconfig->advance_paynment_percantage) ? $serviceconfig->advance_paynment_percantage : 0;
-        $global_advance_payment = isset($serviceconfig->global_advance_payment) ? $serviceconfig->global_advance_payment : 0;
-        $bookingdata->service->is_enable_advance_payment = $bookingdata->service->type == 'fixed' ? ($bookingdata->service->is_enable_advance_payment == 1 ? $bookingdata->service->is_enable_advance_payment : $global_advance_payment) : 0;
-        $bookingdata->service->advance_payment_amount = $bookingdata->service->type == 'fixed' ? ($bookingdata->service->advance_payment_amount > 0 ? $bookingdata->service->advance_payment_amount : $advancePaymentPercentage) : 0;
-        $pdf = Pdf::loadView('booking.invoice', ['bookingdata' => $bookingdata, 'data' => $data, 'payment' => $payment]);
-           return $pdf->stream('invoice_' . $bookingdata->id . '.pdf');
+        $previousLocale = app()->getLocale();
+        $locale = $previousLocale;
+        if (auth()->check() && ! empty(auth()->user()->language_option)) {
+            $locale = auth()->user()->language_option;
+        } elseif (session()->has('locale')) {
+            $locale = session('locale');
+        }
+        App::setLocale($locale);
 
-        return $pdf->download('invoice_' . $bookingdata->id . '.pdf');
+        try {
+            $data = AppSetting::take(1)->first();
+            $bookingdata = Booking::with('handymanAdded', 'payment', 'bookingExtraCharge', 'bookingPackage', 'bookingAddonService')->myBooking()->find($id);
+            $payment = Payment::where('booking_id', $id)->orderBy('id', 'desc')->first() ?? null;
+            $serviceconfig = Setting::getValueByKey('service-configurations', 'service-configurations');
+            $advancePaymentPercentage = isset($serviceconfig->advance_paynment_percantage) ? $serviceconfig->advance_paynment_percantage : 0;
+            $global_advance_payment = isset($serviceconfig->global_advance_payment) ? $serviceconfig->global_advance_payment : 0;
+            $bookingdata->service->is_enable_advance_payment = $bookingdata->service->type == 'fixed' ? ($bookingdata->service->is_enable_advance_payment == 1 ? $bookingdata->service->is_enable_advance_payment : $global_advance_payment) : 0;
+            $bookingdata->service->advance_payment_amount = $bookingdata->service->type == 'fixed' ? ($bookingdata->service->advance_payment_amount > 0 ? $bookingdata->service->advance_payment_amount : $advancePaymentPercentage) : 0;
+            $pdf = Pdf::loadView('booking.invoice', ['bookingdata' => $bookingdata, 'data' => $data, 'payment' => $payment]);
+
+            return $pdf->stream('invoice_'.$bookingdata->id.'.pdf');
+        } finally {
+            App::setLocale($previousLocale);
+        }
     }
 
     public function updateStatus(Request $request)
