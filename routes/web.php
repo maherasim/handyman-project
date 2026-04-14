@@ -448,6 +448,8 @@ Route::group(['middleware' => ['auth', 'verified', 'active']], function () {
     });
     Route::middleware(['auth', 'role:admin|demo_admin'])->group(function () {
         Route::get('earning', [EarningController::class, 'index'])->name('earning');
+        Route::get('earning/bookings', [EarningController::class, 'bookingEarning'])->name('earning.bookings');
+        Route::get('earning/post-job-requests', [EarningController::class, 'postJobEarning'])->name('earning.post_jobs');
         Route::get('earning-data', [EarningController::class, 'setEarningData'])->name('earningData');
         Route::post('earning/{id}', [EarningController::class, 'destroy'])->name('earning.destroy');
 

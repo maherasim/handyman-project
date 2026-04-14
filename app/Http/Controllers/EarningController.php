@@ -18,16 +18,42 @@ class EarningController extends Controller
 {
     public function index()
     {
-        $pageTitle =  __('messages.earnings');
-        return view('earning.index', compact('pageTitle'));
+        $earningScope = 'all';
+        $pageTitle = __('messages.earnings');
+        return view('earning.index', compact('pageTitle', 'earningScope'));
     }
+
+    public function bookingEarning()
+    {
+        $earningScope = 'booking';
+        $pageTitle = __('messages.earnings') . ' — ' . __('messages.booking');
+        return view('earning.index', compact('pageTitle', 'earningScope'));
+    }
+
+    public function postJobEarning()
+    {
+        $earningScope = 'post_job';
+        $pageTitle = __('messages.earnings') . ' — ' . __('messages.post_job_request');
+        return view('earning.index', compact('pageTitle', 'earningScope'));
+    }
+
     public function setEarningData(Request $request)
     {
+        $scope = $request->input('scope', 'all');
+        if (!in_array($scope, ['all', 'booking', 'post_job'], true)) {
+            $scope = 'all';
+        }
+
         $query = User::select('users.*')
             ->with('commission_earning')
-            ->whereHas('commission_earning', function ($q) {
+            ->whereHas('commission_earning', function ($q) use ($scope) {
                 $q->whereIn('commission_status', ['paid', 'unpaid'])
                     ->where('user_type', 'provider');
+                if ($scope === 'booking') {
+                    $q->whereNotNull('booking_id')->whereNull('post_job_bid_request_id');
+                } elseif ($scope === 'post_job') {
+                    $q->whereNull('booking_id')->whereNotNull('post_job_bid_request_id');
+                }
             })->orderBy('updated_at', 'desc');
 
         $providers = $query->get();
@@ -44,22 +70,34 @@ class EarningController extends Controller
                     return view('earning.user', compact('row', 'user_id', 'user_name', 'email', 'user_image'));
                 })
 
-                ->orderColumn('provider_name', function ($query, $order) {
+                ->orderColumn('provider_name', function ($query, $order) use ($scope) {
                     $query->join('commission_earnings', 'commission_earnings.employee_id', '=', 'users.id')
                         ->whereIn('commission_earnings.commission_status', ['unpaid', 'paid'])
-                        ->groupBy('users.id')
+                        ->where('commission_earnings.user_type', 'provider');
+                    if ($scope === 'booking') {
+                        $query->whereNotNull('commission_earnings.booking_id')
+                            ->whereNull('commission_earnings.post_job_bid_request_id');
+                    } elseif ($scope === 'post_job') {
+                        $query->whereNull('commission_earnings.booking_id')
+                            ->whereNotNull('commission_earnings.post_job_bid_request_id');
+                    }
+                    $query->groupBy('users.id')
                         ->orderBy('users.display_name', $order);
                 })
 
-                ->addColumn('action', function ($row) {
+                ->addColumn('action', function ($row) use ($scope) {
                     $btn = '-';
                     $provider_id = $row->id;
 
-                    // Unpaid provider commissions (covers both booking and post-job)
-                    $providerUnpaid = CommissionEarning::where('employee_id', $provider_id)
+                    $providerUnpaidQuery = CommissionEarning::where('employee_id', $provider_id)
                         ->where('user_type', 'provider')
-                        ->where('commission_status', 'unpaid')
-                        ->get();
+                        ->where('commission_status', 'unpaid');
+                    if ($scope === 'booking') {
+                        $providerUnpaidQuery->whereNotNull('booking_id')->whereNull('post_job_bid_request_id');
+                    } elseif ($scope === 'post_job') {
+                        $providerUnpaidQuery->whereNull('booking_id')->whereNotNull('post_job_bid_request_id');
+                    }
+                    $providerUnpaid = $providerUnpaidQuery->get();
 
                     $bookingIds = $providerUnpaid->pluck('booking_id')->filter()->unique()->values();
                     $postJobIds = $providerUnpaid->pluck('post_job_bid_request_id')->filter()->unique()->values();
@@ -68,6 +106,7 @@ class EarningController extends Controller
 
                     $handymanUnpaidForBookings = $bookingIds->isNotEmpty()
                         ? CommissionEarning::whereIn('booking_id', $bookingIds)
+                            ->whereNull('post_job_bid_request_id')
                             ->where('user_type', 'handyman')
                             ->where('commission_status', 'unpaid')
                             ->sum('commission_amount')
@@ -75,6 +114,7 @@ class EarningController extends Controller
 
                     $handymanUnpaidForPostJobs = $postJobIds->isNotEmpty()
                         ? CommissionEarning::whereIn('post_job_bid_request_id', $postJobIds)
+                            ->whereNull('booking_id')
                             ->where('user_type', 'handyman')
                             ->where('commission_status', 'unpaid')
                             ->sum('commission_amount')
@@ -89,14 +129,14 @@ class EarningController extends Controller
                     return $btn;
                 })
 
-                ->editColumn('total_bookings', function ($row) {
-                    // Count unique booking-based and post-job-based earnings groups
+                ->editColumn('total_bookings', function ($row) use ($scope) {
                     $baseQuery = $row->commission_earning()
                         ->whereIn('commission_status', ['unpaid', 'paid'])
                         ->where('user_type', 'provider');
 
                     $bookingCount = (clone $baseQuery)
                         ->whereNotNull('booking_id')
+                        ->whereNull('post_job_bid_request_id')
                         ->distinct('booking_id')
                         ->count('booking_id');
 
@@ -106,8 +146,18 @@ class EarningController extends Controller
                         ->distinct('post_job_bid_request_id')
                         ->count('post_job_bid_request_id');
 
+                    if ($scope === 'booking') {
+                        return $bookingCount > 0
+                            ? "<b><a href='" . route('booking.index', ['provider_id' => $row->id]) . "' class='text-primary text-nowrap px-1' data-bs-toggle='tooltip' title='View Provider Bookings'>{$bookingCount}</a></b>"
+                            : "<b><span class='text-primary text-nowrap px-1'>0</span></b>";
+                    }
+                    if ($scope === 'post_job') {
+                        return $postJobCount > 0
+                            ? "<b><span class='text-primary text-nowrap px-1' title='Post Job Requests'>{$postJobCount}</span></b>"
+                            : "<b><span class='text-primary text-nowrap px-1'>0</span></b>";
+                    }
+
                     if ($bookingCount === 0 && $postJobCount > 0) {
-                        // Only Post Job Requests exist; show count without booking link
                         return "<b><span class='text-primary text-nowrap px-1' title='Post Job Requests'>{$postJobCount}</span></b>";
                     }
 
@@ -119,23 +169,37 @@ class EarningController extends Controller
                         : "<b><span class='text-primary text-nowrap px-1' data-bs-toggle='tooltip' title='View Provider Bookings'>0</span>";
                 })
 
-                ->editColumn('total_earning', function ($row) {
-                    $providerPaid = CommissionEarning::where('employee_id', $row->id)
+                ->editColumn('total_earning', function ($row) use ($scope) {
+                    $providerPaidQuery = CommissionEarning::where('employee_id', $row->id)
                         ->where('user_type', 'provider')
-                        ->where('commission_status', 'paid')
-                        ->get();
+                        ->where('commission_status', 'paid');
+                    if ($scope === 'booking') {
+                        $providerPaidQuery->whereNotNull('booking_id')->whereNull('post_job_bid_request_id');
+                    } elseif ($scope === 'post_job') {
+                        $providerPaidQuery->whereNull('booking_id')->whereNotNull('post_job_bid_request_id');
+                    }
+                    $providerPaid = $providerPaidQuery->get();
 
                     $bookingIds = $providerPaid->pluck('booking_id')->filter()->unique()->values();
                     $postJobIds = $providerPaid->pluck('post_job_bid_request_id')->filter()->unique()->values();
 
+                    if ($bookingIds->isEmpty() && $postJobIds->isEmpty()) {
+                        return getPriceFormat(0);
+                    }
+
                     $totalEarning = CommissionEarning::where('commission_status', 'paid')
                         ->whereIn('user_type', ['provider', 'admin', 'handyman'])
                         ->where(function ($query) use ($bookingIds, $postJobIds) {
-                            if ($bookingIds->isNotEmpty()) {
-                                $query->whereIn('booking_id', $bookingIds);
-                            }
-                            if ($postJobIds->isNotEmpty()) {
-                                $query->orWhereIn('post_job_bid_request_id', $postJobIds);
+                            if ($bookingIds->isNotEmpty() && $postJobIds->isNotEmpty()) {
+                                $query->where(function ($q) use ($bookingIds) {
+                                    $q->whereIn('booking_id', $bookingIds)->whereNull('post_job_bid_request_id');
+                                })->orWhere(function ($q) use ($postJobIds) {
+                                    $q->whereIn('post_job_bid_request_id', $postJobIds)->whereNull('booking_id');
+                                });
+                            } elseif ($bookingIds->isNotEmpty()) {
+                                $query->whereIn('booking_id', $bookingIds)->whereNull('post_job_bid_request_id');
+                            } elseif ($postJobIds->isNotEmpty()) {
+                                $query->whereIn('post_job_bid_request_id', $postJobIds)->whereNull('booking_id');
                             }
                         })
                         ->sum('commission_amount');
@@ -143,26 +207,35 @@ class EarningController extends Controller
                     return getPriceFormat($totalEarning);
                 })
 
-                ->editColumn('admin_earning', function ($row) {
-                    // Booking and post-job IDs linked to this provider
-                    $providerCommissions = CommissionEarning::where('employee_id', $row->id)
-                        ->where('user_type', 'provider')
-                        ->get();
+                ->editColumn('admin_earning', function ($row) use ($scope) {
+                    $providerCommissionsQuery = CommissionEarning::where('employee_id', $row->id)
+                        ->where('user_type', 'provider');
+                    if ($scope === 'booking') {
+                        $providerCommissionsQuery->whereNotNull('booking_id')->whereNull('post_job_bid_request_id');
+                    } elseif ($scope === 'post_job') {
+                        $providerCommissionsQuery->whereNull('booking_id')->whereNotNull('post_job_bid_request_id');
+                    }
+                    $providerCommissions = $providerCommissionsQuery->get();
 
                     $bookingIds = $providerCommissions->pluck('booking_id')->filter()->unique()->values();
                     $postJobIds = $providerCommissions->pluck('post_job_bid_request_id')->filter()->unique()->values();
 
+                    if ($scope !== 'all' && $bookingIds->isEmpty() && $postJobIds->isEmpty()) {
+                        return getPriceFormat(0);
+                    }
+
                     $totalAdminEarning = CommissionEarning::where('user_type', 'admin')
                         ->whereIn('commission_status', ['paid', 'unpaid'])
-                        ->where(function ($query) use ($bookingIds, $postJobIds) {
+                        ->where(function ($query) use ($bookingIds, $postJobIds, $scope) {
                             if ($bookingIds->isNotEmpty()) {
                                 $query->whereIn('booking_id', $bookingIds);
                             }
                             if ($postJobIds->isNotEmpty()) {
                                 $query->orWhereIn('post_job_bid_request_id', $postJobIds);
                             }
-                            // keep legacy entries without booking for backward compatibility
-                            $query->orWhereNull('booking_id');
+                            if ($scope === 'all') {
+                                $query->orWhereNull('booking_id');
+                            }
                         })
                         ->sum('commission_amount');
                     return getPriceFormat($totalAdminEarning);
@@ -172,10 +245,15 @@ class EarningController extends Controller
                     return getPriceFormat($row->total_pay ?? 0);
                 })
 
-                ->editColumn('handyman_total_earning', function ($row) {
-                    $providerCommissions = CommissionEarning::where('employee_id', $row->id)
-                        ->where('user_type', 'provider')
-                        ->get();
+                ->editColumn('handyman_total_earning', function ($row) use ($scope) {
+                    $providerCommissionsQuery = CommissionEarning::where('employee_id', $row->id)
+                        ->where('user_type', 'provider');
+                    if ($scope === 'booking') {
+                        $providerCommissionsQuery->whereNotNull('booking_id')->whereNull('post_job_bid_request_id');
+                    } elseif ($scope === 'post_job') {
+                        $providerCommissionsQuery->whereNull('booking_id')->whereNotNull('post_job_bid_request_id');
+                    }
+                    $providerCommissions = $providerCommissionsQuery->get();
 
                     $bookingIds = $providerCommissions->pluck('booking_id')->filter()->unique()->values();
                     $postJobIds = $providerCommissions->pluck('post_job_bid_request_id')->filter()->unique()->values();
@@ -183,12 +261,14 @@ class EarningController extends Controller
                     $handymanEarning = 0;
                     if ($bookingIds->isNotEmpty()) {
                         $handymanEarning += CommissionEarning::whereIn('booking_id', $bookingIds)
+                            ->whereNull('post_job_bid_request_id')
                             ->where('user_type', 'handyman')
                             ->whereIn('commission_status', ['paid', 'unpaid'])
                             ->sum('commission_amount');
                     }
                     if ($postJobIds->isNotEmpty()) {
                         $handymanEarning += CommissionEarning::whereIn('post_job_bid_request_id', $postJobIds)
+                            ->whereNull('booking_id')
                             ->where('user_type', 'handyman')
                             ->whereIn('commission_status', ['paid', 'unpaid'])
                             ->sum('commission_amount');

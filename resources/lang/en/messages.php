@@ -1114,6 +1114,8 @@
     'top_handyman' => 'Top Worker',
     'remaining_payout' => 'Remaining Payout',
     'my_earning' => 'My Earning',
+    'revenue_from_bookings' => 'Revenue from bookings',
+    'revenue_from_post_job_requests' => 'Revenue from post job requests',
     'user_commission' => 'Customer Commission',
     'select_provider_type' => 'Select Employer Commission Type',
     'select_handyman_type' => 'Select Worker Commission Type',

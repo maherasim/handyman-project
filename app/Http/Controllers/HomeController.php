@@ -115,7 +115,25 @@ class HomeController extends Controller
     $data['CommissionEarning'] = CommissionEarning::whereIn('commission_status', ['paid', 'unpaid'])->sum('commission_amount');
     //dd($data['CommissionEarning']);
     $data['cancellationcharge'] = Booking::where('status', 'cancelled')->sum('cancellation_charge_amount');
-    
+
+    // Split `commission_earnings` like the DB schema: booking rows = `booking_id` + `post_job_bid_request_id` null;
+    // post-job rows = `post_job_bid_request_id` + `booking_id` null. Orphan (both null) is folded into bookings.
+    $bookingCommission = CommissionEarning::whereIn('commission_status', ['paid', 'unpaid'])
+        ->whereNotNull('booking_id')
+        ->whereNull('post_job_bid_request_id')
+        ->sum('commission_amount');
+    $postJobCommission = CommissionEarning::whereIn('commission_status', ['paid', 'unpaid'])
+        ->whereNull('booking_id')
+        ->whereNotNull('post_job_bid_request_id')
+        ->sum('commission_amount');
+    $orphanCommission = CommissionEarning::whereIn('commission_status', ['paid', 'unpaid'])
+        ->whereNull('booking_id')
+        ->whereNull('post_job_bid_request_id')
+        ->sum('commission_amount');
+
+    $data['revenue_from_bookings'] = $bookingCommission + $data['cancellationcharge'] + $orphanCommission;
+    $data['revenue_from_post_job'] = $postJobCommission;
+
     $data['total_revenue'] = $data['CommissionEarning'] + $data['cancellationcharge'];
 
     // Total subscription transactions amount (only paid transactions)

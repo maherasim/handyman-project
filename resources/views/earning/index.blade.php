@@ -59,10 +59,14 @@
                 <div class="row">
                     <div class="col-lg-12">
                         <div class="card card-block card-stretch">
-                            <div class="d-flex card-body">
-                                <h5 class="card-title me-1">{{ __('messages.earning') }}</h5>
-                                <span class=""> ({{ __('messages.tax_not_included') }})</span>
-
+                            <div class="d-flex card-body flex-wrap align-items-baseline gap-2">
+                                <h5 class="card-title me-1 mb-0">{{ __('messages.earning') }}</h5>
+                                @if(($earningScope ?? 'all') === 'booking')
+                                    <span class="text-muted small">({{ __('messages.booking') }})</span>
+                                @elseif(($earningScope ?? 'all') === 'post_job')
+                                    <span class="text-muted small">({{ __('messages.post_job_request') }})</span>
+                                @endif
+                                <span class="">({{ __('messages.tax_not_included') }})</span>
                             </div>
                         </div>
                         <div class="card">
@@ -113,6 +117,7 @@
                         d.filter = {
                             column_status: $('#column_status').val()
                         };
+                        d.scope = @json($earningScope ?? 'all');
                     },
                 },
                 columns: [{
@@ -123,7 +128,13 @@
                     {
                         data: 'total_bookings',
                         name: 'total_bookings',
-                        title: "{{ __('messages.booking') }} / {{ __('messages.post_job_request') }}",
+                        title: @if(($earningScope ?? 'all') === 'booking')
+                            "{{ __('messages.booking') }}"
+                        @elseif(($earningScope ?? 'all') === 'post_job')
+                            "{{ __('messages.post_job_request') }}"
+                        @else
+                            "{{ __('messages.booking') }} / {{ __('messages.post_job_request') }}"
+                        @endif,
                         orderable: false,
                     },
                     {
