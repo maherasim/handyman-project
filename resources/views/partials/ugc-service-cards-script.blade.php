@@ -1,7 +1,9 @@
 {{-- Report / Block for service list cards: MUST live in layout, not in DataTables cell HTML (scripts there never run). --}}
 {{-- Load SweetAlert2 here so it always exists before handlers run (some pages omit it from @section('after_script')). --}}
+@php
+    $ugcReasonOptionsForJs = ugc_reason_options_for_js();
+@endphp
 @auth
-@include('partials.ugc-reason-options-data')
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.1/dist/sweetalert2.all.min.js"></script>
 <script>
 (function () {

@@ -211,6 +211,9 @@
         </div>
 
 </div>
+    @php
+        $ugcReasonOptionsForJs = ugc_reason_options_for_js();
+    @endphp
     @include('partials.ugc-service-cards-script')
     @section('bottom_script')
     <!-- <script src="{{ asset('js/bootstrap.bundle.js') }}"></script> -->
