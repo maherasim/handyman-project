@@ -116,19 +116,23 @@ class HomeController extends Controller
     //dd($data['CommissionEarning']);
     $data['cancellationcharge'] = Booking::where('status', 'cancelled')->sum('cancellation_charge_amount');
 
-    // Split `commission_earnings` like the DB schema: booking rows = `booking_id` + `post_job_bid_request_id` null;
-    // post-job rows = `post_job_bid_request_id` + `booking_id` null. Orphan (both null) is folded into bookings.
+    // Booking revenue: any commission row tied to a booking (`booking_id` set). Do not require
+    // `post_job_bid_request_id` to be NULL — some DBs store 0 or '' instead of NULL, which would
+    // wrongly exclude those rows from this card while they still count in total commission.
     $bookingCommission = CommissionEarning::whereIn('commission_status', ['paid', 'unpaid'])
         ->whereNotNull('booking_id')
-        ->whereNull('post_job_bid_request_id')
         ->sum('commission_amount');
+    // Post-job only: no booking, real post-job id (exclude 0 / empty treated as "no post job" in MySQL).
     $postJobCommission = CommissionEarning::whereIn('commission_status', ['paid', 'unpaid'])
         ->whereNull('booking_id')
         ->whereNotNull('post_job_bid_request_id')
+        ->where('post_job_bid_request_id', '>', 0)
         ->sum('commission_amount');
     $orphanCommission = CommissionEarning::whereIn('commission_status', ['paid', 'unpaid'])
         ->whereNull('booking_id')
-        ->whereNull('post_job_bid_request_id')
+        ->where(function ($q) {
+            $q->whereNull('post_job_bid_request_id')->orWhere('post_job_bid_request_id', 0);
+        })
         ->sum('commission_amount');
 
     $data['revenue_from_bookings'] = $bookingCommission + $data['cancellationcharge'] + $orphanCommission;
