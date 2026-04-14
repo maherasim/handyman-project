@@ -85,7 +85,7 @@
 var table = $('.handydata-table').DataTable({
     processing: true,
     serverSide: true,
-    ajax: "{{ route('handymanEarningData') }}",
+    ajax: "{{ route('handymanEarningData', [], false) }}",
     columns: [
         {data: 'handyman_name', name: 'handyman_name'},
         {data: 'total_bookings', name: 'total_bookings', orderable: false},

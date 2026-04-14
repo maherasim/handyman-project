@@ -58,7 +58,10 @@ class EarningController extends Controller
 
         $providers = $query->get();
 
-        if ($request->ajax()) {
+        // DataTables server-side sends `draw`; do not rely on X-Requested-With alone (some proxies/CDNs strip it).
+        $isDataTablesRequest = $request->ajax() || $request->has('draw');
+
+        if ($isDataTablesRequest) {
             return Datatables::of($query)
                 ->addIndexColumn()
 
@@ -392,7 +395,7 @@ class EarningController extends Controller
             $query->where('provider_id', auth()->user()->id);
         }
 
-        if ($request->ajax()) {
+        if ($request->ajax() || $request->has('draw')) {
             return Datatables::of($query)
                 ->addIndexColumn()
 
