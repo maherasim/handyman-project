@@ -574,7 +574,7 @@
                                   <li>
                                      <a class="dropdown-item text-danger py-2 px-3 d-block" href="javascript:void(0)" 
                                         onclick="document.getElementById('ugc-dropdown-menu-detail').style.display = 'none'; if(window.triggerUgcBlock) window.triggerUgcBlock({{ $serviceData['provider']['id'] }}, this, 'employer');">
-                                        <i class="fas fa-ban fa-fw me-2"></i>{{ __('messages.ugc_block_employer') }}
+                                        <i class="fas fa-ban fa-fw me-2"></i>{{ trans_message_fallback('messages.ugc_block_employer', ['de' => 'Anbieter sperren', 'en' => 'Block employer', 'fr' => 'Bloquer l’employeur']) }}
                                      </a>
                                   </li>
                                </ul>

@@ -2421,3 +2421,18 @@ function stripe_unit_amount_from_decimal($amountDecimal, $currencyCode){
     // Avoid float precision: multiply then round to int
     return (int) round(((float) $amountDecimal) * 100);
 }
+
+/**
+ * Resolve a messages.* translation; if the key is missing (Laravel returns the key), use per-locale fallbacks.
+ * Defends against stale deploy/OPcache where new keys exist in repo but not on the running server.
+ */
+function trans_message_fallback(string $key, array $localeStrings): string
+{
+    $t = __($key);
+    if ($t !== $key) {
+        return $t;
+    }
+    $loc = app()->getLocale();
+
+    return $localeStrings[$loc] ?? $localeStrings['en'] ?? $key;
+}
