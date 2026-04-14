@@ -909,6 +909,7 @@
     'handyman_due_earning' => 'Rendimento devido ao trabalhador manual',
     'handyman_total_earning' => 'Rendimento total do trabalhador manual',
     'handyman_paid_earning' => 'Valor pago ao trabalhador manual',
+    'handyman_dashboard_revenue_card' => 'Ganhos pagos',
     'created_by' => 'Criado por',
     'original_price' => 'Preço original',
     'tax_not_included' => 'Imposto não incluído',

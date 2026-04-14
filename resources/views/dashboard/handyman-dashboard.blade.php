@@ -128,7 +128,7 @@
                                                 <p class="mb-0 ml-3 text-danger fw-bold"></p>
                                             </div>
                                             <p class="mb-0 booking-text">
-                                                {{ __('messages.total_name', ['name' => __('messages.revenue')]) }}</p>
+                                                {{ __('messages.handyman_dashboard_revenue_card') }}</p>
                                         </div>
                                         <div class="col-auto d-flex flex-column">
                                             <div

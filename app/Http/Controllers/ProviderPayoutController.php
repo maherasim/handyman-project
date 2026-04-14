@@ -437,7 +437,12 @@ class ProviderPayoutController extends Controller
         if ($id != auth()->user()->id && !auth()->user()->hasRole(['admin', 'demo_admin'])) {
             return redirect(route('home'))->withErrors(trans('messages.demo_permission_denied'));
         }
-        $providerdata = User::where('user_type','provider')->where('id',$id)->first();
+        $providerdata = User::where('user_type', 'provider')->where('id', $id)->first();
+        if (! $providerdata) {
+            return redirect()
+                ->route(auth()->user()->hasAnyRole(['admin', 'demo_admin']) ? 'earning' : 'home')
+                ->withErrors(__('messages.no_providers_found'));
+        }
         //
         $pageTitle = __('messages.list_form_title',['form' => __('messages.providerpayout_list')] );
         $auth_user = authSession();

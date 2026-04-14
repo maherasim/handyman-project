@@ -1125,6 +1125,7 @@
     'handyman_due_earning' => 'Worker Pay Due',
     'handyman_total_earning' => 'Worker Total Earning',
     'handyman_paid_earning' => 'Worker Paid Amount',
+    'handyman_dashboard_revenue_card' => 'Paid earnings',
     'created_by' => 'Created By',
     'original_price' => 'Original Price',
     'tax_not_included' => 'Tax not included',

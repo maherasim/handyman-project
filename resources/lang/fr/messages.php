@@ -985,6 +985,7 @@
     'handyman_due_earning' => 'Paiement dû à l\'homme à tout faire',
     'handyman_total_earning' => 'Gains totaux de l\'homme à tout faire',
     'handyman_paid_earning' => 'Montant payé à l\'homme à tout faire',
+    'handyman_dashboard_revenue_card' => 'Gains versés',
     'created_by' => 'Créé par',
     'original_price' => 'Prix d\'origine',
     'tax_not_included' => 'Taxe non incluse',

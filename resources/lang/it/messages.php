@@ -909,6 +909,7 @@
     'handyman_due_earning' => 'Guadagno dovuto all\'uomo a tutto fare',
     'handyman_total_earning' => 'Guadagno totale dell\'uomo a tutto fare',
     'handyman_paid_earning' => 'Importo pagato all\'uomo a tutto fare',
+    'handyman_dashboard_revenue_card' => 'Guadagni pagati',
     'created_by' => 'Creato da',
     'original_price' => 'Prezzo originale',
     'tax_not_included' => 'Tassa non inclusa',

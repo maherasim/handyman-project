@@ -1124,6 +1124,7 @@
     'handyman_due_earning' => 'Mitarbeiter ausstehende Zahlung',
     'handyman_total_earning' => 'Mitarbeiter Gesamteinnahmen',
     'handyman_paid_earning' => 'An Mitarbeiter gezahlter Betrag',
+    'handyman_dashboard_revenue_card' => 'Ausgezahlte Einnahmen',
     'created_by' => 'Erstellt von',
     'original_price' => 'Ursprünglicher Honorar',
     'tax_not_included' => 'MwSt. nicht enthalten',
