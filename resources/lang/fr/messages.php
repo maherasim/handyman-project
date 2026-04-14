@@ -669,6 +669,7 @@
     'invoice_pdf_bill_to' => 'Destinataire',
     'invoice_pdf_vat_number' => 'N° TVA :',
     'invoice_pdf_unit_price' => 'Prix unitaire',
+    'invoice_pdf_footer_copyright' => '© :year Tous droits réservés par :site',
     'all_user' => 'Tous les utilisateurs',
     'user_type' => 'Type d\'utilisateur',
     'enable_advanced_payment' => 'Paiement avancé pour les services',

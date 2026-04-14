@@ -208,7 +208,7 @@ $logoPath = public_path('assets/frobster logo.png');
                 </tbody>
             </table>
 
-            <div class="footer">{{ $app->site_copyright ?? '' }}</div>
+            <div class="footer">{{ __('messages.invoice_pdf_footer_copyright', ['year' => date('Y'), 'site' => preg_replace('/^www\./i', '', request()->getHost())]) }}</div>
         </div>
     </div>
 </div>

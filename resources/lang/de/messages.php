@@ -794,6 +794,7 @@
     'invoice_pdf_bill_to' => 'Rechnung an',
     'invoice_pdf_vat_number' => 'USt-IdNr.:',
     'invoice_pdf_unit_price' => 'Einzelpreis',
+    'invoice_pdf_footer_copyright' => '© :year Alle Rechte vorbehalten von :site',
     'all_user' => 'Alle Kunden',
     'user_type' => 'Kundentyp',
     'enable_advanced_payment' => 'Anzahlung',

@@ -591,6 +591,7 @@
     'invoice_pdf_bill_to' => 'A',
     'invoice_pdf_vat_number' => 'Partita IVA:',
     'invoice_pdf_unit_price' => 'Prezzo unitario',
+    'invoice_pdf_footer_copyright' => '© :year Tutti i diritti riservati da :site',
     'total' => 'Totale',
     'service_addons' => 'Servizi aggiuntivi',
     'all_user' => 'Tutti gli utenti',

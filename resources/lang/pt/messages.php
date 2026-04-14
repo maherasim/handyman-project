@@ -591,6 +591,7 @@
     'invoice_pdf_bill_to' => 'Cliente',
     'invoice_pdf_vat_number' => 'NIF / IVA:',
     'invoice_pdf_unit_price' => 'Preço unitário',
+    'invoice_pdf_footer_copyright' => '© :year Todos os direitos reservados por :site',
     'total' => 'Total',
     'service_addons' => 'Extras do serviço',
     'all_user' => 'Todos os usuários',

@@ -796,6 +796,7 @@
     'invoice_pdf_bill_to' => 'Bill To',
     'invoice_pdf_vat_number' => 'VAT Number:',
     'invoice_pdf_unit_price' => 'Unit Price',
+    'invoice_pdf_footer_copyright' => '© :year All Rights Reserved by :site',
     'all_user' => 'All Customers',
     'user_type' => 'Customer Type',
     'enable_advanced_payment' => 'Advanced Payment for Services',
