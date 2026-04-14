@@ -120,29 +120,30 @@
                         <div class="footer-social-wrap">
                             <span class="footer-social-label">{{__('landingpage.follow_us')}}</span>
                             <div class="footer-social-icons">
+                                {{-- Same PNG icons + sizes as service list (datatable-card / service cards) --}}
                                 @if(optional($socialmedia)->facebook_url)
-                                <a href="{{ optional($socialmedia)->facebook_url }}" target="_blank" class="footer-social-btn footer-social-fb" title="Facebook">
-                                    <i class="ri-facebook-fill"></i>
+                                <a href="{{ optional($socialmedia)->facebook_url }}" target="_blank" rel="noopener noreferrer" class="footer-social-btn footer-social-fb" title="Facebook" aria-label="Facebook">
+                                    <img src="{{ asset('assets/fb.png') }}?v=20260303" alt="" width="30" height="30" class="footer-social-img footer-social-img-fb">
                                 </a>
                                 @endif
                                 @if(optional($socialmedia)->twitter_url)
-                                <a href="{{ optional($socialmedia)->twitter_url }}" target="_blank" class="footer-social-btn footer-social-tw" title="Twitter / X">
-                                    <i class="ri-twitter-x-fill"></i>
+                                <a href="{{ optional($socialmedia)->twitter_url }}" target="_blank" rel="noopener noreferrer" class="footer-social-btn footer-social-tw" title="Twitter / X" aria-label="Twitter">
+                                    <img src="{{ asset('assets/twiter.png') }}?v=20260303" alt="" width="28" height="28" class="footer-social-img footer-social-img-tw">
                                 </a>
                                 @endif
                                 @if(optional($socialmedia)->telegram_url)
-                                <a href="{{ optional($socialmedia)->telegram_url }}" target="_blank" class="footer-social-btn footer-social-tg" title="Telegram">
-                                    <img src="{{ asset('assets/telegram.png') }}?v=20260303" alt="Telegram" style="width: 20px; height: 20px; object-fit: contain; vertical-align: middle;">
-                                </a>
-                                @endif
-                                @if(optional($socialmedia)->youtube_url)
-                                <a href="{{ optional($socialmedia)->youtube_url }}" target="_blank" class="footer-social-btn footer-social-yt" title="YouTube">
-                                    <i class="ri-youtube-fill"></i>
+                                <a href="{{ optional($socialmedia)->telegram_url }}" target="_blank" rel="noopener noreferrer" class="footer-social-btn footer-social-tg" title="Telegram" aria-label="Telegram">
+                                    <img src="{{ asset('assets/telegram.png') }}?v=20260303" alt="" width="28" height="28" class="footer-social-img footer-social-img-tg">
                                 </a>
                                 @endif
                                 @if(optional($socialmedia)->linkedin_url)
-                                <a href="{{ optional($socialmedia)->linkedin_url }}" target="_blank" class="footer-social-btn footer-social-li" title="LinkedIn">
-                                    <i class="ri-linkedin-fill"></i>
+                                <a href="{{ optional($socialmedia)->linkedin_url }}" target="_blank" rel="noopener noreferrer" class="footer-social-btn footer-social-li" title="LinkedIn" aria-label="LinkedIn">
+                                    <img src="{{ asset('assets/linkedIn.png') }}?v=20260303" alt="" width="28" height="28" class="footer-social-img footer-social-img-li">
+                                </a>
+                                @endif
+                                @if(optional($socialmedia)->youtube_url)
+                                <a href="{{ optional($socialmedia)->youtube_url }}" target="_blank" rel="noopener noreferrer" class="footer-social-btn footer-social-yt" title="YouTube" aria-label="YouTube">
+                                    <i class="ri-youtube-fill"></i>
                                 </a>
                                 @endif
                             </div>
@@ -682,11 +683,25 @@
 
 .footer-social-fb::before  { background: #1877f2; }
 .footer-social-tw::before  { background: #000; }
+.footer-social-tg::before  { background: #0088cc; }
 .footer-social-ig::before  { background: linear-gradient(135deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); }
 .footer-social-yt::before  { background: #ff0000; }
 .footer-social-li::before  { background: #0077b5; }
 
 .footer-social-btn i { position: relative; z-index: 1; }
+/* PNG icons — same assets/sizes as service list cards (datatable-card) */
+.footer-social-img {
+    position: relative;
+    z-index: 1;
+    display: block;
+    object-fit: contain;
+    border-radius: 8px;
+    flex-shrink: 0;
+}
+.footer-social-img-fb { width: 30px !important; height: auto !important; max-height: 30px; }
+.footer-social-img-tw,
+.footer-social-img-tg,
+.footer-social-img-li { width: 28px !important; height: 28px !important; }
 
 /* ------ LINKS COLUMN ------ */
 .footer-links-col,
