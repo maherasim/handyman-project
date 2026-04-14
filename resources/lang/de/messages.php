@@ -1216,6 +1216,7 @@
     'service_proof' => 'Servicenachweis',
     'advance_pay' => 'Anzahlung',
     'service_proof_submitted_successfully' => 'Ihr nachweis wurde erfolgreich eingereicht.',
+    'upload_images' => 'Bilder hochladen',
     'upload_multiple_images' => 'Sie können mehrere Bilder hochladen.',
     'years_of_experience' => 'Jahre Berufserfahrung',
     'years_of_experience_less_than_1' => 'Weniger als 1 Jahr',

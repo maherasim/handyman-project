@@ -1024,11 +1024,16 @@
     'color_settings' => 'Paramètres de couleur',
     'export_data' => 'Exporter les données',
     'select_file_type' => 'Sélectionner le type de fichier',
-    'select_file_type' => 'Sélectionner le type de fichier',
     'select_column' => 'Sélectionner les colonnes',
     'view_breakdown' => 'Voir le détail',
     'payment_breakdown' => 'Détail du paiement',
     'role_earned' => 'Rôle gagné',
+    'submit_service_proof' => 'Envoyer la preuve de service',
+    'service_proof' => 'Preuve de service',
+    'advance_pay' => 'Paiement anticipé',
+    'service_proof_submitted_successfully' => 'Votre preuve de service a été envoyée avec succès.',
+    'upload_images' => 'Téléverser des images',
+    'upload_multiple_images' => 'Vous pouvez téléverser plusieurs images.',
 
     // Post Job Request – liste, modal d’offre, vue, création (aligné en/de)
     'pjr_add_post_request' => 'Ajouter une demande',

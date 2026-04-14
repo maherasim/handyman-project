@@ -1217,6 +1217,7 @@
     'service_proof' => 'Service Proof',
     'advance_pay' => 'Advance Pay',
     'service_proof_submitted_successfully' => 'Your service proof has been submitted successfully.',
+    'upload_images' => 'Upload images',
     'upload_multiple_images' => 'You can upload multiple images.',
     'years_of_experience' => 'Years of Experience',
     'years_of_experience_less_than_1' => 'Less than 1 Year',
