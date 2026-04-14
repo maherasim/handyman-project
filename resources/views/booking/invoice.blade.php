@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <title>{{ env('APP_NAME') }}</title>
     <meta charset="utf-8">
@@ -86,7 +86,7 @@ $logoPath = public_path('assets/frobster logo.png');
                         <div class="title">{{ __('messages.invoice') }}</div>
                         <div class="text-muted">{{ __('messages.invoice_pdf_invoice_no') }} #{{ $bookingdata->id }}</div>
                         <div class="text-muted">{{ __('messages.invoice_pdf_currency') }} {{ $bookingdata->currency ?? 'USD' }}</div>
-                        <div class="text-muted">{{ __('messages.invoice_pdf_date_issued') }} {{ optional($bookingdata->created_at)->format('d M Y') }}</div>
+                        <div class="text-muted">{{ __('messages.invoice_pdf_date_issued') }} {{ $invoiceDateIssued }}</div>
                     </td>
                     <td class="text-right" style="width: 40%; border: 0;">
                         @if (file_exists($logoPath))

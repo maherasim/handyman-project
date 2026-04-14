@@ -102,14 +102,17 @@ return [
 
     /*
     | Domain-based locale: same codebase, different language per domain.
-    | frobster.com → en (English), persotel.de → de (German).
-    | Set APP_DOMAIN_EN and APP_DOMAIN_DE in .env to override.
+    | frobster.com → en (English), persotel.de → de (German). Optional: APP_DOMAIN_FR → fr.
+    | Set APP_DOMAIN_EN, APP_DOMAIN_DE, APP_DOMAIN_FR in .env to override.
     | If the request host matches a key, that locale is used; otherwise config('app.locale') is used.
     */
-    'domain_locale' => [
-        env('APP_DOMAIN_EN', 'frobster.com') => 'en',
-        env('APP_DOMAIN_DE', 'persotel.de') => 'de',
-    ],
+    'domain_locale' => array_merge(
+        [
+            env('APP_DOMAIN_EN', 'frobster.com') => 'en',
+            env('APP_DOMAIN_DE', 'persotel.de') => 'de',
+        ],
+        env('APP_DOMAIN_FR') ? [env('APP_DOMAIN_FR') => 'fr'] : []
+    ),
 
     /*
     |--------------------------------------------------------------------------

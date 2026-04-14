@@ -1304,20 +1304,45 @@ public function bookingAssigned(Request $request)
         return response()->json($data);
     }
 
+    /**
+     * Same rules as LanguageTranslator (web): domain → session (if switcher) → app.locale.
+     * Does not use user language_option so persotel.de stays de even when profile says en.
+     */
+    protected function resolveInvoicePdfLocale(): string
+    {
+        $domainLocale = config('app.domain_locale', []);
+        $host = request()->getHost();
+        $hostVariants = array_unique(array_filter([
+            $host,
+            preg_replace('/^www\./i', '', $host),
+            str_starts_with(strtolower($host), 'www.') ? null : 'www.'.$host,
+        ]));
+        foreach ($hostVariants as $h) {
+            if ($h !== '' && isset($domainLocale[$h])) {
+                return $domainLocale[$h];
+            }
+        }
+        if (config('app.show_language_switcher', false) && session()->has('locale')) {
+            return session('locale');
+        }
+
+        return config('app.locale', 'en');
+    }
+
     public function createPDF($id)
     {
         $previousLocale = app()->getLocale();
-        $locale = $previousLocale;
-        if (auth()->check() && ! empty(auth()->user()->language_option)) {
-            $locale = auth()->user()->language_option;
-        } elseif (session()->has('locale')) {
-            $locale = session('locale');
-        }
+        $previousCarbonLocale = Carbon::getLocale();
+        $locale = $this->resolveInvoicePdfLocale();
         App::setLocale($locale);
+        Carbon::setLocale($locale);
 
         try {
             $data = AppSetting::take(1)->first();
             $bookingdata = Booking::with('handymanAdded', 'payment', 'bookingExtraCharge', 'bookingPackage', 'bookingAddonService')->myBooking()->find($id);
+            if (empty($bookingdata)) {
+                abort(404);
+            }
             $payment = Payment::where('booking_id', $id)->orderBy('id', 'desc')->first() ?? null;
             $serviceconfig = Setting::getValueByKey('service-configurations', 'service-configurations');
             $advancePaymentPercentage = isset($serviceconfig->advance_paynment_percantage) ? $serviceconfig->advance_paynment_percantage : 0;
@@ -1329,6 +1354,7 @@ public function bookingAssigned(Request $request)
             return $pdf->stream('invoice_'.$bookingdata->id.'.pdf');
         } finally {
             App::setLocale($previousLocale);
+            Carbon::setLocale($previousCarbonLocale);
         }
     }
 
