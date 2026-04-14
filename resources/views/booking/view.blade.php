@@ -116,7 +116,7 @@
             <div class="modal-content">
                 <form id="extraChargesForm">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="extraChargesModalLabel">Add Extra Charges</h5>
+                        <h5 class="modal-title" id="extraChargesModalLabel">{{ __('messages.modal_add_extra_charges_title') }}</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
@@ -127,7 +127,7 @@
                         <button type="button" class="btn btn-outline-secondary mt-3" id="addChargeRow">{{ __('messages.add_more') }}</button>
                     </div>
                     <div class="modal-footer">
-                        <button type="submit" class="btn btn-success">Submit Charges</button>
+                        <button type="submit" class="btn btn-success">{{ __('messages.modal_submit_charges') }}</button>
                     </div>
                 </form>
             </div>
@@ -159,7 +159,7 @@
 
                         <!-- Review Text -->
                         <div class="mb-3">
-                            <textarea class="form-control" id="reviewText" placeholder="Write your review..." rows="3"></textarea>
+                            <textarea class="form-control" id="reviewText" placeholder="{{ __('messages.write_your_review') }}" rows="3"></textarea>
                         </div>
                     </div>
 
@@ -196,7 +196,7 @@
                                 <textarea name="description" class="form-control" id="description" rows="3" placeholder="{{ __('messages.describe_what_done') }}" required></textarea>
                             </div>
                             <div class="mb-3">
-                                <label for="attachments" class="form-label">Attachments (up to 5 files)</label>
+                                <label for="attachments" class="form-label">{{ __('messages.attachments_up_to_five') }}</label>
                                 <input type="file" name="attachments[]" id="attachments" class="form-control" multiple accept="image/*,application/pdf">
                             </div>
                         </div>

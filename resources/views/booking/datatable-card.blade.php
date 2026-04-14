@@ -139,7 +139,7 @@
                             <li class="mb-2">
                      <span class="d-flex gap-3">
                         <span class="d-inline-block w-25 fw-bold">{{__('messages.method')}}:</span>
-                        <span class="d-inline-block w-75 text-capitalize">{{ $payment->payment_type ?? '-' }}</span>
+                        <span class="d-inline-block w-75">{{ isset($payment) ? payment_detail_type_label($payment->payment_type) : '-' }}</span>
                      </span>
                             </li>
                             <li>

@@ -9,13 +9,15 @@
             @swiper="setMainSwiper"
         >
             <SwiperSlide v-for="(data, index) in props.attachments" :key="index">
-                <div>
+                <div
+                    class="main-slide-frame rounded-3"
+                    :class="props.mainFit === 'contain' ? 'main-slide-frame--contain' : 'main-slide-frame--cover'"
+                >
                     <img
                         :src="data"
                         alt=""
                         loading="lazy"
-                        :class="['img-fluid', props.mainFit === 'contain' ? 'object-contain' : 'object-cover', 'rounded-3', 'main-service-image']"
-                        :style="props.mainFit === 'contain' ? 'background:#f8f9fa;max-height:600px;width:100%;' : 'width:100%;height:auto;'"
+                        class="main-slide-img"
                     />
                 </div>
             </SwiperSlide>
@@ -35,13 +37,12 @@
             @swiper="setThumbSwiper"
         >
             <SwiperSlide v-for="(data, index) in props.attachments" :key="index">
-                <div class="thumb-wrapper p-1 rounded-3">
+                <div class="thumb-wrapper p-1 rounded-3" @click="updateMainSwiper(index)">
                     <img
                         :src="data"
                         alt=""
                         loading="lazy"
-                        class="img-fluid object-cover rounded-3"
-                        @click="updateMainSwiper(index)"
+                        class="thumb-slide-img"
                     />
                 </div>
             </SwiperSlide>
@@ -83,14 +84,61 @@ const updateMainSwiper = (index) => {
 </script>
 
 <style scoped>
-.tab-slider .swiper-content img,
-.tab-slider .swiper-thumb img {
-    cursor: pointer;
+/* Main gallery: fixed aspect box so object-fit works and layout height is stable */
+.main-slide-frame {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    background: #f1f3f5;
 }
 
-.tab-slider .thumb-wrapper {
+.main-slide-frame--cover {
+    aspect-ratio: 16 / 9;
+    max-height: min(70vh, 560px);
+}
+
+.main-slide-frame--cover .main-slide-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+}
+
+.main-slide-frame--contain {
+    position: relative;
+    height: clamp(260px, 45vw, 600px);
+    max-height: min(70vh, 600px);
+}
+
+.main-slide-frame--contain .main-slide-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: contain;
+}
+
+/* Thumbnails: uniform tiles (object-fit needs explicit box) */
+.thumb-wrapper {
     border: 1px solid #ddd;
     transition: border-color 0.3s;
+    cursor: pointer;
+    height: 76px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f8f9fa;
+}
+
+.thumb-slide-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
 }
 
 .tab-slider .thumb-wrapper:hover {
@@ -105,15 +153,4 @@ const updateMainSwiper = (index) => {
     max-width: 100%;
 }
 
-.main-service-image {
-    width: 100%;
-    height: auto;
-    max-width: 100%;
-    display: block;
-}
-
-/* Utility for contain fit */
-.object-contain {
-    object-fit: contain;
-}
 </style>

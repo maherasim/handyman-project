@@ -33,7 +33,7 @@ $timezone = getTimeZone();
                         <!-- Discount -->
                         @if ($bookingdata->discount > 0)
                             <tr>
-                                <td>{{ __('Discount') }} ({{ $bookingdata->discount }}% off)</td>
+                                <td>{{ __('messages.discount_percent_off', ['pct' => $bookingdata->discount]) }}</td>
                                 <td class="bk-value text-success">
                                     -{{ getPriceFormat($bookingdata->final_discount_amount) }}
                                 </td>
@@ -64,7 +64,7 @@ $timezone = getTimeZone();
                             }
                         @endphp
                         <tr class="grand-sub-total">
-                            <td>{{ __('Sub Total (After Discount)') }}</td>
+                            <td>{{ __('messages.sub_total_after_discount') }}</td>
                             <td class="bk-value">{{ getPriceFormat($subTotal) }}</td>
                         </tr>
 
@@ -87,7 +87,7 @@ $timezone = getTimeZone();
                         @endphp
                         @if ($extraChargeTotal > 0)
                             <tr>
-                                <td>{{ __('Extra Charges') }}</td>
+                                <td>{{ __('messages.extra_charges') }}</td>
                                 <td class="bk-value">{{ getPriceFormat($extraChargeTotal) }}</td>
                             </tr>
                         @endif
@@ -121,7 +121,7 @@ $timezone = getTimeZone();
                             $grandTotal = $totalBeforeTax + $taxAmount;
                         @endphp
                         <tr>
-                            <td>{{ __('Grand Total') }}</td>
+                            <td>{{ __('messages.grand_total') }}</td>
                             <td class="bk-value">{{ getPriceFormat($grandTotal) }}</td>
                         </tr>
 
@@ -134,7 +134,7 @@ $timezone = getTimeZone();
                                 </td>
                             </tr>
                             <tr class="grand-total">
-                                <td>{{ __('Remaining Amount') }}</td>
+                                <td>{{ __('messages.remaining_amount') }}</td>
                                 <td class="bk-value">
                                     {{ getPriceFormat($grandTotal - $bookingdata->advance_paid_amount) }}
                                 </td>
@@ -184,9 +184,9 @@ $timezone = getTimeZone();
                     <div class="timeline-content">
                         <div class="point"></div>
                         <div class="timeline-info">
-                            <p class="fs-4"><strong>Cancelled</strong></p>
+                            <p class="fs-4"><strong>{{ __('messages.booking_timeline_cancelled_title') }}</strong></p>
                             <div class="timeline-details">
-                                <p class="mt-2 text-danger">Booking has been cancelled</p>
+                                <p class="mt-2 text-danger">{{ __('messages.booking_timeline_cancelled_message') }}</p>
                             </div>
                         </div>
                     </div>
@@ -227,7 +227,7 @@ $timezone = getTimeZone();
                                 <p class="fs-4"><strong>{{__('messages.assigned_booking')}}</strong></p>
                                 <div class="timeline-details">
                                     @foreach($bookingdata->handymanAdded as $handyman)
-                                        <p class="mt-2">Service Assigned to {{ optional($handyman->handyman)->display_name }}</p>
+                                        <p class="mt-2">{{ __('messages.booking_service_assigned_to', ['name' => optional($handyman->handyman)->display_name ?? '—']) }}</p>
                                     @endforeach
                                 </div>
                             </div>
@@ -284,9 +284,9 @@ $timezone = getTimeZone();
                                 <p class="fs-4"><strong>{{__('messages.completed')}}</strong></p>
                                 <div class="timeline-details">
                                     @if($bookingdata->status == 'completed')
-                                        <p class="mt-2">Service Completed - Final Amount: {{ getPriceFormat($bookingdata->total_amount) }}</p>
+                                        <p class="mt-2">{{ __('messages.booking_detail_service_completed_final') }} {{ getPriceFormat($bookingdata->total_amount) }}</p>
                                     @else
-                                        <p class="mt-2 text-muted">Pending completion</p>
+                                        <p class="mt-2 text-muted">{{ __('messages.booking_detail_pending_completion') }}</p>
                                     @endif
                                 </div>
                             </div>
@@ -312,7 +312,7 @@ $timezone = getTimeZone();
                     </li>
                     <li class="d-flex justify-content-between mb-2 p-2">
                         <span class="text-muted">{{__('messages.booking_status')}}:</span>
-                        <strong><span class="text-primary">{{ isset($bookingdata->status) ? ucwords(str_replace('_', ' ', $bookingdata->status)) : __('messages.pending') }}</span></strong>
+                        <strong><span class="text-primary">{{ isset($bookingdata->status) ? booking_detail_status_label($bookingdata->status) : __('messages.pending') }}</span></strong>
                     </li>                   
                     <li class="d-flex justify-content-between mb-2 p-2">
                         <span class="text-muted">{{ __('messages.payment_status') }}:</span>
@@ -326,7 +326,7 @@ $timezone = getTimeZone();
                             @endphp
                             <strong>
                                 <span class="{{ $statusClass }}">
-                                    {{ str_replace('_', ' ', ucfirst($payment->payment_status)) }}
+                                    {{ payment_detail_status_label($payment->payment_status) }}
                                 </span>
                             </strong>
                         @else

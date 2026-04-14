@@ -2436,3 +2436,61 @@ function trans_message_fallback(string $key, array $localeStrings): string
 
     return $localeStrings[$loc] ?? $localeStrings['en'] ?? $key;
 }
+
+/**
+ * Human-readable booking status for detail UI (maps DB value to messages.booking_status_option_*).
+ */
+function booking_detail_status_label(?string $status): string
+{
+    if ($status === null || $status === '') {
+        return '—';
+    }
+    $slug = str_replace(['-', ' '], '_', strtolower(trim($status)));
+    $key = 'messages.booking_status_option_' . $slug;
+    $trans = __($key);
+    if ($trans !== $key) {
+        return $trans;
+    }
+
+    return \Illuminate\Support\Str::title(str_replace('_', ' ', (string) $status));
+}
+
+/**
+ * Human-readable payment status on booking detail (maps DB payment_status to messages.payment_status_display_*).
+ */
+function payment_detail_status_label(?string $status): string
+{
+    if ($status === null || $status === '') {
+        return __('messages.pending');
+    }
+    $raw = trim((string) $status);
+    $norm = strtolower(str_replace([' ', '-'], '_', $raw));
+    if (str_contains($norm, 'refund')) {
+        $norm = 'advanced_refund';
+    }
+    $key = 'messages.payment_status_display_' . $norm;
+    $trans = __($key);
+    if ($trans !== $key) {
+        return $trans;
+    }
+
+    return \Illuminate\Support\Str::title(str_replace('_', ' ', $raw));
+}
+
+/**
+ * Payment method / gateway label (stripe, bank_transfer, …).
+ */
+function payment_detail_type_label(?string $type): string
+{
+    if ($type === null || $type === '') {
+        return '—';
+    }
+    $norm = strtolower(str_replace([' ', '-'], '_', trim((string) $type)));
+    $key = 'messages.payment_type_' . $norm;
+    $trans = __($key);
+    if ($trans !== $key) {
+        return $trans;
+    }
+
+    return ucfirst((string) $type);
+}

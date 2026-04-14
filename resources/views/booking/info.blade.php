@@ -8,7 +8,7 @@
     <tbody>
         <!-- Unit Price --> 
         <tr>
-            <td>{{ __('Price (Unit Price)') }}</td>
+            <td>{{ __('messages.price_unit_price') }}</td>
             <td class="bk-value">
                 {{ getPriceFormat($bookingdata->amount) }}
             </td>
@@ -16,7 +16,7 @@
 
         <!-- Quantity -->
         <tr>
-            <td>{{ __('Quantity (Nbr of Packages, Hours, Days)') }}</td>
+            <td>{{ __('messages.quantity_nbr_packages') }}</td>
             <td class="bk-value">
                 {{ $bookingdata->quantity }}
             </td>
@@ -24,7 +24,7 @@
 
         <!-- Total Amount (Price x Quantity) -->
         <tr>
-            <td>{{ __('Total Amount') }}</td>
+            <td>{{ __('messages.total_amount') }}</td>
             <td class="bk-value">
                 {{ getPriceFormat($bookingdata->amount * $bookingdata->quantity) }}
             </td>
@@ -33,7 +33,7 @@
         <!-- Discount -->
         @if ($bookingdata->discount > 0)
             <tr>
-                <td>{{ __('Discount') }} ({{ $bookingdata->discount }}% off)</td>
+                <td>{{ __('messages.discount_percent_off', ['pct' => $bookingdata->discount]) }}</td>
                 <td class="bk-value text-success">
                     -{{ getPriceFormat($bookingdata->final_discount_amount) }}
                 </td>
@@ -43,7 +43,7 @@
         <!-- Coupon -->
         @if ($bookingdata->couponAdded)
             <tr>
-                <td>{{ __('Coupon') }} ({{ $bookingdata->couponAdded->code }})</td>
+                <td>{{ __('messages.coupon') }} ({{ $bookingdata->couponAdded->code }})</td>
                 <td class="bk-value text-success">
                     -{{ getPriceFormat($bookingdata->final_coupon_discount_amount) }}
                 </td>
@@ -61,13 +61,13 @@
             }
         @endphp
         <tr class="grand-sub-total">
-            <td>{{ __('Sub Total') }}</td>
+            <td>{{ __('messages.sub_total') }}</td>
             <td class="bk-value">{{ getPriceFormat($subTotal) }}</td>
         </tr>
 
         <!-- Extra Charges -->
         <tr>
-            <td>{{ __('Extra Charges') }}</td>
+            <td>{{ __('messages.extra_charges') }}</td>
             <td class="bk-value">
                 {{ getPriceFormat($bookingdata->extra_charges) }}
             </td>
@@ -78,7 +78,7 @@
             $totalWithExtras = $subTotal + $bookingdata->extra_charges;
         @endphp
         <tr>
-            <td>{{ __('Total') }}</td>
+            <td>{{ __('messages.total') }}</td>
             <td class="bk-value">{{ getPriceFormat($totalWithExtras) }}</td>
         </tr>
 
@@ -100,7 +100,7 @@
             $taxAmount = ($totalWithExtras * $taxRate) / 100;
         @endphp
         <tr>
-            <td>{{ __('Tax') }} ({{ $taxRate }}%)</td>
+            <td>{{ __('messages.tax') }} ({{ $taxRate }}%)</td>
             <td class="bk-value text-danger">{{ getPriceFormat($taxAmount) }}</td>
         </tr>
 
@@ -109,13 +109,13 @@
             $grandTotal = $totalWithExtras + $taxAmount;
         @endphp
         <tr>
-            <td>{{ __('Grand Total') }}</td>
+            <td>{{ __('messages.grand_total') }}</td>
             <td class="bk-value">{{ getPriceFormat($grandTotal) }}</td>
         </tr>
 
         <!-- Advance Payment -->
         <tr>
-            <td>{{ __('Advance Payment') }}</td>
+            <td>{{ __('messages.advance_payment') }}</td>
             <td class="bk-value">
                 {{ getPriceFormat($bookingdata->advance_paid_amount) }}
             </td>
@@ -123,7 +123,7 @@
 
         <!-- Remaining Amount (Grand Total - Advance Payment) -->
         <tr class="grand-total">
-            <td>{{ __('Remaining Amount') }}</td>
+            <td>{{ __('messages.remaining_amount') }}</td>
             <td class="bk-value">
                 {{ getPriceFormat($grandTotal - $bookingdata->advance_paid_amount) }}
             </td>
@@ -226,7 +226,7 @@
                                             <button class="float-end btn btn-primary update-booking"
                                                 data-id="{{ $bookingdata->id }}"
                                                 data-handyman-id="{{ $bookingdata->provider_id }}" data-status="accept"
-                                                data-confirm-message="You want to accept this booking?">
+                                                data-confirm-message="{{ __('messages.booking_confirm_accept_booking') }}">
                                                 <i class="las la-play-circle"></i>
                                                 {{ __('messages.accept_booking') }}
                                             </button>
@@ -239,7 +239,7 @@
                                             <button class="float-end btn btn-primary update-booking" id="cancel-booking"
                                                 data-id="{{ $bookingdata->id }}"
                                                 data-handyman-id="{{ $bookingdata->provider_id }}" data-status="cancelled"
-                                                data-confirm-message="You want to cancelled this booking?">
+                                                data-confirm-message="{{ __('messages.booking_confirm_cancel_booking') }}">
                                                 <i class="las la-ban"></i>
                                                 {{ __('messages.cancel') }}
                                             </button>
@@ -259,9 +259,9 @@
                                                     data-id="{{ $bookingdata->id }}"
                                                     data-handyman-id="{{ $bookingdata->provider_id }}"
                                                     data-status="on_going"
-                                                    data-confirm-message="You want to start this booking?">
+                                                    data-confirm-message="{{ __('messages.booking_confirm_start_booking') }}">
                                                     <i class="las la-play-circle"></i>
-                                                    {{ __('Start Work') }}
+                                                    {{ __('messages.start_work') }}
                                                 </button>
                                             </div>
 
@@ -270,7 +270,7 @@
                                                     data-id="{{ $bookingdata->id }}"
                                                     data-handyman-id="{{ $bookingdata->provider_id }}"
                                                     data-status="rejected"
-                                                    data-confirm-message="You want to reject this booking?">
+                                                    data-confirm-message="{{ __('messages.booking_confirm_reject_booking') }}">
                                                 <i class="las la-times-circle"></i>
                                                 {{ __('messages.decline') }}
                                             </button>
@@ -283,7 +283,7 @@
                                                     data-id="{{ $bookingdata->id }}"
                                                     data-handyman-id="{{ $bookingdata->provider_id }}"
                                                     data-status="cancelled"
-                                                    data-confirm-message="You want to cancelled this booking?">
+                                                    data-confirm-message="{{ __('messages.booking_confirm_cancel_booking') }}">
                                                     <i class="las la-ban"></i>
                                                     {{ __('messages.cancel') }}
                                                 </button>
@@ -312,9 +312,7 @@
                                                 </div>
                                             @else
                                                 <div class="w3-third d-flex align-items-end">
-                                                    <p><span class="text-info font-size-14" style="font-weight: 700">Waiting
-                                                            for
-                                                            client advance pay</span>
+                                                    <p><span class="text-info font-size-14" style="font-weight: 700">{{ __('messages.booking_detail_waiting_client_advance') }}</span>
                                                     </p>
                                                 </div>
                                             @endif
@@ -371,8 +369,7 @@
                                 @if ($bookingdata->status === 'on_going')
                                     @hasanyrole(['provider', 'handyman'])
                                         <div class="w3-third d-flex align-items-end">
-                                            <p><span class="text-info font-size-14" style="font-weight: 700">Waiting for
-                                                    response by customer</span>
+                                            <p><span class="text-info font-size-14" style="font-weight: 700">{{ __('messages.booking_detail_waiting_response_customer') }}</span>
                                             </p>
                                         </div>
                                     @endhasanyrole
@@ -383,9 +380,9 @@
                                                 data-id="{{ $bookingdata->id }}"
                                                 data-handyman-id="{{ $bookingdata->provider_id }}"
                                                 data-status="in_progress"
-                                                data-confirm-message="You want to start this booking?">
+                                                data-confirm-message="{{ __('messages.booking_confirm_start_booking') }}">
                                                 <i class="las la-play-circle"></i>
-                                                {{ __('Lets Start Working') }}
+                                                {{ __('messages.lets_start_working') }}
                                             </button>
                                         </div>
                                     @endhasanyrole
@@ -397,7 +394,7 @@
                                             <button class="float-end btn btn-warning hold-booking"
                                                 data-id="{{ $bookingdata->id }}"
                                                 data-handyman-id="{{ $bookingdata->provider_id }}" data-status="hold"
-                                                data-confirm-message="You want to start this booking?">
+                                                data-confirm-message="{{ __('messages.booking_confirm_start_booking') }}">
                                                 <i class="las la-pause-circle"></i>
                                                 {{ __('messages.hold') }}
                                             </button>
@@ -409,7 +406,7 @@
                                                 data-id="{{ $bookingdata->id }}"
                                                 data-handyman-id="{{ $bookingdata->provider_id }}"
                                                 data-status="done_by_provider"
-                                                data-confirm-message="You want to end this booking?">
+                                                data-confirm-message="{{ __('messages.booking_confirm_end_booking') }}">
                                                 <i class="las la-check-circle"></i>
                                                 {{ __('messages.done') }}
                                             </button>
@@ -420,8 +417,7 @@
                                 @if ($bookingdata->status === 'pending_approval')
                                     @hasanyrole(['user'])
                                         <div class="w3-third d-flex align-items-end">
-                                            <p><span class="text-info font-size-14" style="font-weight: 700">Waiting for
-                                                    Employer to mark booking as completed</span>
+                                            <p><span class="text-info font-size-14" style="font-weight: 700">{{ __('messages.booking_detail_waiting_employer_mark_completed_banner') }}</span>
                                             </p>
                                         </div>
                                     @endhasanyrole
@@ -432,7 +428,7 @@
                                                 data-id="{{ $bookingdata->id }}"
                                                 data-handyman-id="{{ $bookingdata->provider_id }}"
                                                 data-status="completed"
-                                                data-confirm-message="Are you sure you want to complete this booking?">
+                                                data-confirm-message="{{ __('messages.booking_confirm_complete_booking') }}">
                                                 <i class="las la--check-circle"></i>
                                                 {{ __('messages.completed') }}
                                             </button>
@@ -441,7 +437,7 @@
                                         <button class="float-end btn" id="complete-booking" style="background-color: #ffb366; border-color: #ffb366; color: #000;"
                                             data-id="{{ $bookingdata->id }}"
                                             data-handyman-id="{{ $bookingdata->provider_id }}" data-status="cancelled"
-                                            data-confirm-message="Are you sure you want to cancel this booking?">
+                                            data-confirm-message="{{ __('messages.booking_confirm_cancel_booking_sure') }}">
                                             <i class="las la-file-invoice-dollar"></i>
                                             {{ __('messages.add_extra_charges') }}
                                         </button>
@@ -456,9 +452,9 @@
                                                 data-handyman-id="{{ $bookingdata->provider_id }}"
                                                 data-status="pending_approval"
                                                 data-advance="{{ $bookingdata->is_advance_paid ? 1 : 0 }}"
-                                                data-confirm-message="You want to Confirm this booking?">
+                                                data-confirm-message="{{ __('messages.booking_confirm_confirm_booking') }}">
                                                 <i class="las la-check-circle"></i>
-                                                {{ __('Confirm Job Done') }}
+                                                {{ __('messages.confirm_job_done') }}
                                             </button>
 
                                         </div>
@@ -484,8 +480,7 @@
                                 @if ($bookingdata->status === 'hold')
                                     @hasanyrole(['user', 'handyman'])
                                         <div class="w3-third d-flex align-items-end">
-                                            <p><span class="text-danger font-size-14" style="font-weight: 700">Hold Reason
-                                                    :</span> {{ $bookingdata->reason }}
+                                            <p><span class="text-danger font-size-14" style="font-weight: 700">{{ __('messages.booking_detail_hold_reason') }}</span> {{ $bookingdata->reason }}
                                             </p>
                                         </div>
                                     @endhasanyrole
@@ -496,7 +491,7 @@
                                                 data-id="{{ $bookingdata->id }}"
                                                 data-handyman-id="{{ $bookingdata->provider_id }}"
                                                 data-status="in_progress"
-                                                data-confirm-message="Are you sure you want to resume this booking?">
+                                                data-confirm-message="{{ __('messages.booking_confirm_resume_booking') }}">
                                                 <i class="las la-play"></i>
                                                 {{ __('messages.resume') }}
                                             </button>
@@ -511,7 +506,7 @@
                                                 data-id="{{ $bookingdata->id }}"
                                                 data-handyman-id="{{ $bookingdata->provider_id }}"
                                                 data-status="completed"
-                                                data-confirm-message="Are you sure you want to complete this booking?">
+                                                data-confirm-message="{{ __('messages.booking_confirm_complete_booking') }}">
                                                 <i class="las la--check-circle"></i>
                                                 {{ __('messages.completed') }}
                                             </button>
@@ -520,7 +515,7 @@
                                         <button class="float-end btn" id="complete-booking" style="background-color: #ffb366; border-color: #ffb366; color: #000;"
                                             data-id="{{ $bookingdata->id }}"
                                             data-handyman-id="{{ $bookingdata->provider_id }}" data-status="cancelled"
-                                            data-confirm-message="Are you sure you want to cancel this booking?">
+                                            data-confirm-message="{{ __('messages.booking_confirm_cancel_booking_sure') }}">
                                             <i class="las la-file-invoice-dollar"></i>
                                             {{ __('messages.add_extra_charges') }}
                                         </button>
@@ -528,8 +523,7 @@
 
                                     @hasanyrole('user')
                                         <div class="w3-third d-flex align-items-end">
-                                            <p><span class="text-info font-size-14" style="font-weight: 700">Waiting for
-                                                    response </span>
+                                            <p><span class="text-info font-size-14" style="font-weight: 700">{{ __('messages.booking_detail_waiting_response') }}</span>
                                             </p>
                                         </div>
                                     @endhasanyrole
@@ -579,7 +573,7 @@
                                                     target="_blank" data-id="{{ $bookingdata->id }}"
                                                     style="background: linear-gradient(135deg, #fd7e14, #ffc107); border: none; box-shadow: 0 4px 12px rgba(253, 126, 20, 0.3);">
                                                     <i class="las la-credit-card"></i>
-                                                    <span>{{ __('Pay Remaining') }}</span>
+                                                    <span>{{ __('messages.pay_remaining') }}</span>
                                                     <span class="badge bg-light text-dark px-2 py-1 rounded-pill">
                                                         {{ getPriceFormat($remainingAmount) }}
                                                     </span>
@@ -648,36 +642,36 @@
                                         @if($isCustomer)
                                             {{-- Customer sees: Chat with Provider and Chat with Handyman --}}
                                             <a href="{{ route('chat.view.user', $bookingdata->provider_id) }}" class="btn btn-outline-primary">
-                                                <i class="fas fa-comments"></i> {{ __('Chat with Provider') }}
+                                                <i class="fas fa-comments"></i> {{ __('messages.chat_with_provider') }}
                                             </a>
                                             @if($bookingdata->handymanAdded && $bookingdata->handymanAdded->count())
                                                 @php $firstHandyman = optional($bookingdata->handymanAdded->first())->handyman_id; @endphp
                                                 @if($firstHandyman)
                                                     <a href="{{ route('chat.view.user', $firstHandyman) }}" class="btn btn-outline-secondary">
-                                                        <i class="fas fa-user-cog"></i> {{ __('Chat with Worker') }}
+                                                        <i class="fas fa-user-cog"></i> {{ __('messages.chat_with_worker') }}
                                                     </a>
                                                 @endif
                                             @endif
                                         @elseif($isProvider)
                                             {{-- Provider sees: Chat with Customer and Chat with Handyman --}}
                                             <a href="{{ route('chat.view.user', $bookingdata->customer_id) }}" class="btn btn-outline-primary">
-                                                <i class="fas fa-comments"></i> {{ __('Chat with Customer') }}
+                                                <i class="fas fa-comments"></i> {{ __('messages.chat_with_customer') }}
                                             </a>
                                             @if($bookingdata->handymanAdded && $bookingdata->handymanAdded->count())
                                                 @php $firstHandyman = optional($bookingdata->handymanAdded->first())->handyman_id; @endphp
                                                 @if($firstHandyman)
                                                     <a href="{{ route('chat.view.user', $firstHandyman) }}" class="btn btn-outline-secondary">
-                                                        <i class="fas fa-user-cog"></i> {{ __('Chat with Worker') }}
+                                                        <i class="fas fa-user-cog"></i> {{ __('messages.chat_with_worker') }}
                                                     </a>
                                                 @endif
                                             @endif
                                         @elseif($isHandyman)
                                             {{-- Handyman sees: Chat with Provider and Chat with Customer --}}
                                             <a href="{{ route('chat.view.user', $bookingdata->provider_id) }}" class="btn btn-outline-primary">
-                                                <i class="fas fa-comments"></i> {{ __('Chat with Employer') }}
+                                                <i class="fas fa-comments"></i> {{ __('messages.chat_with_employer') }}
                                             </a>
                                             <a href="{{ route('chat.view.user', $bookingdata->customer_id) }}" class="btn btn-outline-secondary">
-                                                <i class="fas fa-user"></i> {{ __('Chat with Customer') }}
+                                                <i class="fas fa-user"></i> {{ __('messages.chat_with_customer') }}
                                             </a>
                                         @endif
                                     @endif
@@ -695,61 +689,61 @@
                             switch ($status) {
                                 case 'pending':
                                     $nextActor = 'provider';
-                                    $nextText = 'Waiting for Employer to accept the booking';
+                                    $nextText = __('messages.booking_detail_marquee_employer_accept');
                                     break;
                                 case 'accept':
                                     // Check if payment status is pending_by_admin
                                     if (isset($payment) && strtolower($payment->payment_status) === 'pending_by_admin') {
                                         $nextActor = null;
-                                        $nextText = 'Waiting for payment approval by admin';
+                                        $nextText = __('messages.booking_detail_marquee_payment_admin');
                                     } elseif ($is_enable_advance_payment == 1 && (!isset($payment) || $payment->payment_status != 'advanced_paid')) {
                                         $nextActor = 'user';
-                                        $nextText = 'Waiting for customer to pay advance payment';
+                                        $nextText = __('messages.booking_detail_marquee_customer_advance');
                                     } else {
                                         $nextActor = 'provider';
-                                        $nextText = 'Waiting for Employer to assign Worker';
+                                        $nextText = __('messages.booking_detail_marquee_assign_worker');
                                     }
                                     break;
                                 case 'on_going':
                                     $nextActor = 'user';
-                                    $nextText = 'Waiting for customer to confirm "Let\'s Start Work"';
+                                    $nextText = __('messages.booking_detail_marquee_customer_start_work');
                                     break;
                                 case 'in_progress':
                                     $nextActor = 'handyman';
-                                    $nextText = 'Work in progress — waiting for Worker to complete or put on hold';
+                                    $nextText = __('messages.booking_detail_marquee_in_progress');
                                     break;
                                 case 'hold':
                                     $nextActor = 'handyman';
-                                    $nextText = 'Work is on hold — waiting for Worker to resume';
+                                    $nextText = __('messages.booking_detail_marquee_hold_resume');
                                     break;
                                 case 'pending_approval':
                                     $nextActor = 'user';
-                                    $nextText = 'Waiting for customer to confirm work is done';
+                                    $nextText = __('messages.booking_detail_marquee_customer_confirm_done');
                                     break;
                                 case 'done_by_provider':
                                     $nextActor = 'user';
-                                    $nextText = 'Waiting for customer to confirm work is done';
+                                    $nextText = __('messages.booking_detail_marquee_customer_confirm_done');
                                     break;
                                 case 'confirm':
                                     $nextActor = 'handyman';
-                                    $nextText = 'Waiting for Employer to mark booking as completed';
+                                    $nextText = __('messages.booking_detail_marquee_employer_mark_completed');
                                     break;
                                 case 'completed':
                                     // Check if payment status is pending_by_admin
                                     if (isset($payment) && strtolower($payment->payment_status) === 'pending_by_admin') {
                                         $nextActor = null;
-                                        $nextText = 'Waiting for payment approval by admin';
+                                        $nextText = __('messages.booking_detail_marquee_payment_admin');
                                     } elseif (isset($payment) && $payment->payment_status != 'paid') {
                                         $nextActor = 'user';
-                                        $nextText = 'Waiting for customer to pay remaining amount';
+                                        $nextText = __('messages.booking_detail_marquee_customer_remaining');
                                     } else {
                                         $nextActor = null;
-                                        $nextText = 'Booking completed successfully! You can download the invoice.';
+                                        $nextText = __('messages.booking_detail_marquee_completed_success');
                                     }
                                     break;
                                 case 'cancelled':
                                     $nextActor = null;
-                                    $nextText = 'This booking has been cancelled.';
+                                    $nextText = __('messages.booking_detail_marquee_cancelled');
                                     break;
                                 default:
                                     $nextActor = null;
@@ -787,7 +781,7 @@
                                     <div class="card-body">
                                         <p class="opacity-75 fz-12">{{ __('messages.booking_status') }}</p>
                                         <p class="mb-0 text-primary" id="booking_status__span">
-                                            {{ str_replace('_', ' ', ucfirst($bookingdata->status)) }}</p>
+                                            {{ booking_detail_status_label($bookingdata->status) }}</p>
                                     </div>
                                 </div>
                             </div>
@@ -819,7 +813,7 @@
                                     <div class="card-body">
                                         <p class="opacity-75 fz-12">{{ __('messages.payment_method') }}</p>
                                         <p class="mb-0 text-primary">
-                                            {{ isset($payment) ? ucfirst($payment->payment_type) : '-' }}</p>
+                                            {{ isset($payment) ? payment_detail_type_label($payment->payment_type) : '-' }}</p>
                                     </div>
                                 </div>
                             </div>
@@ -876,7 +870,7 @@
 
             @if ($paymentStatus)
                 <p class="mb-0 {{ $statusClass }}">
-                    {{ str_replace('_', ' ', ucfirst($paymentStatus)) }}
+                    {{ payment_detail_status_label($paymentStatus) }}
                 </p>
             @else
                 <p class="mb-0 text-white fw-bold">
@@ -912,14 +906,14 @@
                         <div class="col-md-4 mb-3">
                                 <div class="card h-65 soft-shadow hover-lift">
                                     <div class="card-body">
-                                        <p class="opacity-75 fz-12">{{ __('Working Location') }}</p>
+                                        <p class="opacity-75 fz-12">{{ __('messages.working_location') }}</p>
                                         <p class="mb-0 text-primary" id="booking_status__span" style="word-wrap: break-word; overflow-wrap: break-word;">
                                             @if(!empty($bookingdata->address))
                                                 {{ $bookingdata->address }}
                                             @elseif(isset($bookingdata->city->name) || isset($bookingdata->country->name))
                                                 {{ str_replace('_', ' ', ucfirst($bookingdata->city->name ?? '')) }}@if(isset($bookingdata->city->name) && isset($bookingdata->country->name)), @endif{{ str_replace('_', ' ', ucfirst($bookingdata->country->name ?? '')) }}
                                             @else
-                                                {{ __('N/A') }}
+                                                {{ __('messages.na') }}
                                             @endif
                                         </p>
                                     </div>
@@ -972,7 +966,7 @@
                                         @else
                                             <div class="no-slots-simple text-muted">
                                                 <i class="ri-calendar-line me-2"></i>
-                                                <span>No slots scheduled</span>
+                                                <span>{{ __('messages.no_slots_scheduled') }}</span>
                                             </div>
                                         @endif
                                     </div>
@@ -1033,7 +1027,7 @@
                             <div class="customer-rating-section mt-3 pt-3 border-top" id="customer-rating-section-{{ $bookingdata->customer_id }}" data-customer-id="{{ $bookingdata->customer_id }}">
                                 <div class="text-center">
                                     <div class="spinner-border spinner-border-sm" role="status">
-                                        <span class="sr-only">Loading...</span>
+                                        <span class="sr-only">{{ __('messages.loading_ellipsis') }}</span>
                                     </div>
                                 </div>
                             </div>
@@ -1163,7 +1157,7 @@
                                 <tbody>
                                     <!-- Unit Price -->
                                     <tr>
-                                        <td>{{ __('Price (Unit Price)') }}</td>
+                                        <td>{{ __('messages.price_unit_price') }}</td>
                                         <td class="bk-value">
                                             {{ getPriceFormat($bookingdata->amount) }}
                                         </td>
@@ -1171,7 +1165,7 @@
 
                                     <!-- Quantity -->
                                     <tr>
-                                        <td>{{ __('Quantity (Nbr of Packages, Hours, Days)') }}</td>
+                                        <td>{{ __('messages.quantity_nbr_packages') }}</td>
                                         <td class="bk-value">
                                             {{ $bookingdata->quantity }}
                                         </td>
@@ -1179,7 +1173,7 @@
 
                                     <!-- Total Amount (Price x Quantity) -->
                                     <tr>
-                                        <td>{{ __('Total Amount') }}</td>
+                                        <td>{{ __('messages.total_amount') }}</td>
                                         <td class="bk-value">
                                             {{ getPriceFormat($bookingdata->amount * $bookingdata->quantity) }}
                                         </td>
@@ -1188,7 +1182,7 @@
                                     <!-- Discount -->
                                     @if ($bookingdata->discount > 0)
                                         <tr>
-                                            <td>{{ __('Discount') }} ({{ $bookingdata->discount }}% off)</td>
+                                            <td>{{ __('messages.discount_percent_off', ['pct' => $bookingdata->discount]) }}</td>
                                             <td class="bk-value text-success">
                                                 -{{ getPriceFormat($bookingdata->final_discount_amount) }}
                                             </td>
@@ -1198,7 +1192,7 @@
                                     <!-- Coupon -->
                                     @if ($bookingdata->couponAdded)
                                         <tr>
-                                            <td>{{ __('Coupon') }} ({{ $bookingdata->couponAdded->code }})</td>
+                                            <td>{{ __('messages.coupon') }} ({{ $bookingdata->couponAdded->code }})</td>
                                             <td class="bk-value text-success">
                                                 -{{ getPriceFormat($bookingdata->final_coupon_discount_amount) }}
                                             </td>
@@ -1219,7 +1213,7 @@
                                         }
                                     @endphp
                                     <tr class="grand-sub-total">
-                                        <td>{{ __('Sub Total (After Discount)') }}</td>
+                                        <td>{{ __('messages.sub_total_after_discount') }}</td>
                                         <td class="bk-value">{{ getPriceFormat($subTotal) }}</td>
                                     </tr>
 
@@ -1229,7 +1223,7 @@
                                     @endphp
                                     @if ($addonTotal > 0)
                                         <tr>
-                                            <td>{{ __('Service Addons') }}</td>
+                                            <td>{{ __('messages.service_addons') }}</td>
                                             <td class="bk-value">{{ getPriceFormat($addonTotal) }}</td>
                                         </tr>
                                     @endif
@@ -1242,7 +1236,7 @@
                                     @endphp
                                     @if ($extraChargeTotal > 0)
                                         <tr>
-                                            <td>{{ __('Extra Charges') }}</td>
+                                            <td>{{ __('messages.extra_charges') }}</td>
                                             <td class="bk-value">{{ getPriceFormat($extraChargeTotal) }}</td>
                                         </tr>
                                     @endif
@@ -1252,7 +1246,7 @@
                                         $totalBeforeTax = $subTotal + $addonTotal + $extraChargeTotal;
                                     @endphp
                                     <tr>
-                                        <td>{{ __('Total') }}</td>
+                                        <td>{{ __('messages.total') }}</td>
                                         <td class="bk-value">{{ getPriceFormat($totalBeforeTax) }}</td>
                                     </tr>
 
@@ -1267,7 +1261,7 @@
                                         $taxAmount = ($totalBeforeTax * $taxRate) / 100;
                                     @endphp
                                     <tr>
-                                        <td>{{ __('Tax') }} ({{ $taxRate }}%)</td>
+                                        <td>{{ __('messages.tax') }} ({{ $taxRate }}%)</td>
                                         <td class="bk-value text-danger">{{ getPriceFormat($taxAmount) }}</td>
                                     </tr>
 
@@ -1276,7 +1270,7 @@
                                         $grandTotal = $totalBeforeTax + $taxAmount;
                                     @endphp
                                     <tr>
-                                        <td>{{ __('Grand Total') }}</td>
+                                        <td>{{ __('messages.grand_total') }}</td>
                                         <td class="bk-value">{{ getPriceFormat($grandTotal) }}</td>
                                     </tr>
 
@@ -1293,13 +1287,13 @@
                                     @endphp
 
                                     <tr>
-                                        <td>{{ __('Advance Payment') }}</td>
+                                        <td>{{ __('messages.advance_payment') }}</td>
                                         <td class="bk-value">
                                             {{ getPriceFormat($advancePaidAmount) }}
                                         </td>
                                     </tr>
                                     <tr class="grand-total">
-                                        <td>{{ __('Remaining Amount') }}</td>
+                                        <td>{{ __('messages.remaining_amount') }}</td>
                                         <td class="bk-value">
                                             {{ getPriceFormat($remainingAmount) }}
                                         </td>
@@ -1846,12 +1840,12 @@
                 <div class="charge-row border p-3 mb-3 rounded bg-light">
                     <div class="row g-3 align-items-end">
                         <div class="col-md-5">
-                            <label class="form-label">Extra Charge Detail</label>
-                            <input type="text" class="form-control charge-detail" placeholder="e.g. Travel cost">
+                            <label class="form-label">{{ __('messages.extra_charge_detail') }}</label>
+                            <input type="text" class="form-control charge-detail" placeholder="{{ __('messages.extra_charge_placeholder_detail') }}">
                         </div>
                         <div class="col-md-3">
                             <label class="form-label">Amount</label>
-                            <input type="number" class="form-control charge-amount" placeholder="e.g. 100">
+                            <input type="number" class="form-control charge-amount" placeholder="{{ __('messages.extra_charge_placeholder_amount') }}">
                         </div>
                         <div class="col-md-3">
                             <label class="form-label">Quantity</label>
@@ -2356,7 +2350,7 @@
             <div class="modal-body" id="customer-rating-info-content">
                 <div class="text-center">
                     <div class="spinner-border" role="status">
-                        <span class="sr-only">Loading...</span>
+                        <span class="sr-only">{{ __('messages.loading_ellipsis') }}</span>
                     </div>
                 </div>
             </div>
@@ -2398,7 +2392,7 @@
                     
                     <div class="mb-3">
                         <label class="form-label">{{ __('messages.review') }}</label>
-                        <textarea class="form-control" id="customer_review_text" rows="4" placeholder="Write your review..."></textarea>
+                        <textarea class="form-control" id="customer_review_text" rows="4" placeholder="{{ __('messages.write_your_review') }}"></textarea>
                     </div>
                 </form>
             </div>
