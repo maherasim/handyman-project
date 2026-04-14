@@ -422,7 +422,7 @@
                                         </div>
                                     @endhasanyrole
 
-                                    @hasanyrole(['provider'])
+                                    @if(auth()->check() && auth()->user()->user_type === 'provider')
                                         <div class="w3-third">
                                             <button class="float-end btn btn-success update-booking"
                                                 data-id="{{ $bookingdata->id }}"
@@ -441,7 +441,7 @@
                                             <i class="las la-file-invoice-dollar"></i>
                                             {{ __('messages.add_extra_charges') }}
                                         </button>
-                                    @endhasanyrole
+                                    @endif
                                 @endif
 
                                 @if ($bookingdata->status === 'done_by_provider')
@@ -500,7 +500,7 @@
                                 @endif
 
                                 @if ($bookingdata->status === 'confirm')
-                                    @hasanyrole(['provider'])
+                                    @if(auth()->check() && auth()->user()->user_type === 'provider')
                                         <div class="w3-third">
                                             <button class="float-end btn btn-success update-booking"
                                                 data-id="{{ $bookingdata->id }}"
@@ -519,7 +519,7 @@
                                             <i class="las la-file-invoice-dollar"></i>
                                             {{ __('messages.add_extra_charges') }}
                                         </button>
-                                    @endhasanyrole
+                                    @endif
 
                                     @hasanyrole('user')
                                         <div class="w3-third d-flex align-items-end">

@@ -20,14 +20,23 @@ class BookingStatus extends Model
 
     public static function bookingStatus($status)
     {
+        if (function_exists('booking_detail_status_label')) {
+            $label = booking_detail_status_label($status);
+            if (($status === null || $status === '') && $label === '—') {
+                return '';
+            }
+
+            return $label;
+        }
+
         $label = static::query()->where('value', $status)->value('label');
         if (!empty($label)) {
             return $label;
         }
-        // Fallback to a humanized version of the raw status value
         if (is_string($status) && $status !== '') {
             return ucwords(str_replace('_', ' ', $status));
         }
+
         return '';
     }
 }

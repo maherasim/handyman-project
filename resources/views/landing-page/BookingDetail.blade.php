@@ -10,7 +10,7 @@
                     <div class="row align-items-center">
                         <div class="col-md-8">
                             <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
-                                    <p class="m-0 text-success text-capitalize">{{ $bookingData['booking_detail']['status_label'] }}</p>
+                                    <p class="m-0 text-success text-capitalize">{{ booking_detail_status_label($bookingData['booking_detail']['status'] ?? null) }}</p>
                                     @if($bookingData['booking_detail']['status'] === 'cancelled' && !empty($bookingData['booking_detail']['reason']))
                                         <p class="m-0 text-muted small mt-1 text-wrap text-break">
                                             <strong>{{__('landingpage.cancel_reason')}}:</strong> {{ $bookingData['booking_detail']['reason'] }}
