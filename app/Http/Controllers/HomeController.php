@@ -150,7 +150,9 @@ class HomeController extends Controller
     $setting = Setting::getValueByKey('site-setup','site-setup');
     $digitafter_decimal_point = $setting ? $setting->digitafter_decimal_point : "2";
 
-    if ($user->hasRole('provider')) {
+    $isHandymanAccount = $user->user_type === 'handyman' || $user->hasRole('handyman');
+
+    if (! $isHandymanAccount && $user->hasRole('provider')) {
         // Total revenue: status = paid or remaining_paid (any payment method: stripe, wallet, bank, paypal)
         $revenuedata = ProviderPayout::selectRaw('sum(amount) as total , DATE_FORMAT(updated_at , "%m") as month')
             ->where('provider_id', $user->id)
@@ -178,7 +180,19 @@ class HomeController extends Controller
         ->whereIn('commission_status', ['unpaid','paid'])
         ->sum('commission_amount') ?? 0;
 
-    if ($user->hasRole('provider')) {
+    if ($isHandymanAccount) {
+        $data['remaining_payout'] = CommissionEarning::where('employee_id', $user->id)->where('commission_status', 'unpaid')->sum('commission_amount') ?? 0;
+        if (Schema::hasColumn('handyman_payouts', 'status')) {
+            $data['total_earning'] = HandymanPayout::where('handyman_id', $user->id)
+                ->where('status', 'paid')
+                ->sum('amount') ?? 0;
+        } else {
+            $data['total_earning'] = CommissionEarning::where('user_type', 'handyman')
+                ->where('employee_id', $user->id)
+                ->where('commission_status', 'paid')
+                ->sum('commission_amount') ?? 0;
+        }
+    } elseif ($user->hasRole('provider')) {
         $provider = User::with('commission_earning')
             ->where('id', $user->id)
             ->where('user_type', 'provider')
@@ -228,19 +242,6 @@ $data['remaining_payout'] = round($providerRemainingPayout, $digitafter_decimal_
         $data['total_earning'] = ProviderPayout::where('provider_id', $user->id)
             ->whereIn('status', ['paid', 'remaining_paid', 'remaining paid'])
             ->sum('amount') ?? 0;
-
-    } elseif ($user->hasRole('handyman')) {
-        $data['remaining_payout'] = CommissionEarning::where('employee_id', $user->id)->where('commission_status', 'unpaid')->sum('commission_amount') ?? 0;
-        if (Schema::hasColumn('handyman_payouts', 'status')) {
-            $data['total_earning'] = HandymanPayout::where('handyman_id', $user->id)
-                ->where('status', 'paid')
-                ->sum('amount') ?? 0;
-        } else {
-            $data['total_earning'] = CommissionEarning::where('user_type', 'handyman')
-                ->where('employee_id', $user->id)
-                ->where('commission_status', 'paid')
-                ->sum('commission_amount') ?? 0;
-        }
     }
 
     $sitesetup = Setting::where('type','site-setup')->where('key', 'site-setup')->first();
@@ -248,13 +249,21 @@ $data['remaining_payout'] = round($providerRemainingPayout, $digitafter_decimal_
 
     if (auth()->user()->hasAnyRole(['admin', 'demo_admin'])) {
         return $this->adminDashboard($data);
-    } elseif (auth()->user()->hasRole('provider')) {
-        return $this->providerDashboard($data);
-    } elseif (auth()->user()->hasRole('handyman')) {
-        return $this->handymanDashboard($data);
-    } else {
-        return $this->userDashboard($data);
     }
+
+    // Workers (`user_type` / role handyman) must use the handyman dashboard before provider.
+    // Many accounts have both handyman + provider roles; previously `provider` won and showed
+    // employer-style cards (Gesamt Service, Monatliche Einnahmen) which is wrong for a worker.
+    $u = auth()->user();
+    if ($u->user_type === 'handyman' || $u->hasRole('handyman')) {
+        return $this->handymanDashboard($data);
+    }
+
+    if ($u->hasRole('provider')) {
+        return $this->providerDashboard($data);
+    }
+
+    return $this->userDashboard($data);
 }
 
 
