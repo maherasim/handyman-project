@@ -655,9 +655,11 @@ Route::group(['middleware' => ['permission:helpdesk list']], function () {
     Route::post('helpdesk-activity/{id}', [HelpDeskController::class, 'activity'])->name('helpdesk.activity');
 });
 
-Route::get('bidsshow',[PostJobRequestController::class,'bidshowindex'])->name('bidsshow');
-Route::get('post-job-request/{id}/bids', [PostJobRequestController::class, 'viewPostBids'])->name('post-job-request.bids');
-Route::get('bidsindex',[PostJobRequestController::class,'bidshow'])->name('bidsshowjson');
+Route::middleware(['auth', 'verified', 'active'])->group(function () {
+    Route::get('bidsshow', [PostJobRequestController::class, 'bidshowindex'])->name('bidsshow');
+    Route::get('post-job-request/{id}/bids', [PostJobRequestController::class, 'viewPostBids'])->name('post-job-request.bids');
+    Route::get('bidsindex', [PostJobRequestController::class, 'bidshow'])->name('bidsshowjson');
+});
 Route::post('postjob-bid/{id}/extra-charges', [App\Http\Controllers\PostJobRequestController::class, 'addExtraCharges'])->name('postjob.addExtraCharges');
 Route::post('/bids/accept/{id}', [PostJobRequestController::class, 'acceptBid'])->name('bids.accept');
  

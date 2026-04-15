@@ -340,15 +340,12 @@ class PaymentController extends Controller
     
     public function paymentjobrequest_index_data(DataTables $datatable, Request $request)
     {
+        // All post-job payment types except bank_transfer (bank transfers use the cash / bank-transfer screen)
         $query = PaymentPostJOb::query()->myPayment()
-        ->where(function ($q) {
-            $q->where('payment_type', '!=', 'bank_transfer')
-              ->where('payment_type', '!=', 'wallet') // Exclude wallet
-              ->orWhere(function ($sub) {
-                  $sub->where('payment_type', 'bank_transfer')->where('status', 1);
-              });
-        });
-    
+            ->where(function ($q) {
+                $q->whereNull('payment_type')
+                    ->orWhere('payment_type', '!=', 'bank_transfer');
+            });
 
         if (!$request->order) {
             $query->orderBy('created_at', 'DESC');
