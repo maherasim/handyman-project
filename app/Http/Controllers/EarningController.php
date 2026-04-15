@@ -177,15 +177,25 @@ class EarningController extends Controller
                 })
 
                 ->editColumn('total_earning', function ($row) use ($scope) {
+                    // Post job: provider share only — sum commission_earnings for this provider + bid
+                    if ($scope === 'post_job') {
+                        $amount = CommissionEarning::query()
+                            ->where('employee_id', $row->id)
+                            ->where('user_type', 'provider')
+                            ->whereNull('booking_id')
+                            ->whereNotNull('post_job_bid_request_id')
+                            ->where('post_job_bid_request_id', '>', 0)
+                            ->whereIn('commission_status', ['paid', 'unpaid'])
+                            ->sum('commission_amount');
+
+                        return getPriceFormat($amount);
+                    }
+
                     $providerPaidQuery = CommissionEarning::where('employee_id', $row->id)
                         ->where('user_type', 'provider')
                         ->where('commission_status', 'paid');
                     if ($scope === 'booking') {
                         $providerPaidQuery->whereNotNull('booking_id');
-                    } elseif ($scope === 'post_job') {
-                        $providerPaidQuery->whereNull('booking_id')
-                            ->whereNotNull('post_job_bid_request_id')
-                            ->where('post_job_bid_request_id', '>', 0);
                     }
                     $providerPaid = $providerPaidQuery->get();
 
