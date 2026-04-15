@@ -390,6 +390,7 @@ class PayPalController extends Controller
                         HandymanPayout::create([
                             'handyman_id' => $payout['handyman_id'],
                             'booking_id' => $booking->id,
+                            'payment_id' => $result->id ?? null,
                             'amount' => $payout['amount'],
                             'status' => 'paid',
                             'paid_date' => Carbon::now(),
@@ -422,6 +423,7 @@ class PayPalController extends Controller
 
                     ProviderPayout::create([
                         'provider_id' => $booking->provider_id,
+                        'payment_id' => $result->id ?? null,
                         'amount' => $provider_final_earning,
                         'payment_method' => 'wallet',
                         'paid_date' => Carbon::now(),

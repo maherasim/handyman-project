@@ -76,9 +76,6 @@ class ProviderPayoutController extends Controller
             }
 
             })
-        ->editColumn('description', function($payout) {
-            return !empty($payout->description) ? $payout->description : '-';
-        })
 
         ->editColumn('provider_id', function ($payout) {
             return view('providerpayout.user', compact('payout'));

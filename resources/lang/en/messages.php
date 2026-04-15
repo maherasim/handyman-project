@@ -478,6 +478,10 @@
     'location' => 'Location',
     'booking_info' => 'Booking Information',
     'booking_review_by_customer' => 'Review by customer',
+    'booking_review_workers' => 'Reviews of workers',
+    'booking_review_workers_hint' => 'Your rating of each worker assigned to this booking.',
+    'rate_worker' => 'Rate worker',
+    'booking_no_workers_assigned' => 'No workers were assigned to this booking.',
     'booking_review_customer_hint' => 'Customer\'s review of the Employer',
     'booking_no_review_customer' => 'No review by customer yet.',
     'booking_no_review_customer_detail' => 'The customer has not left a review for the provider.',
@@ -1862,6 +1866,7 @@
         'post_job_bid_rating' => 'Customer rates provider (post job)',
         'post_job_bid_customer_rating' => 'Employer rates provider (post job)',
         'booking_rating' => 'Customer rates provider (booking)',
+        'handyman_rating' => 'Customer rates worker (booking)',
     ],
 
 );

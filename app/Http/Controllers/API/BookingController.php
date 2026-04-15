@@ -976,14 +976,53 @@ class BookingController extends Controller
     public function saveHandymanRating(Request $request)
     {
         $user = auth()->user();
-        $rating_data = $request->all();
-        $rating_data['customer_id'] = $user->id;
-        $result = HandymanRating::updateOrCreate(['id' => $request->id], $rating_data);
 
-        $message = __('messages.update_form',[ 'form' => __('messages.rating') ] );
-		if($result->wasRecentlyCreated){
-			$message = __('messages.save_form',[ 'form' => __('messages.rating') ] );
-		}
+        $request->validate([
+            'booking_id' => 'required|integer|exists:bookings,id',
+            'handyman_id' => 'required|integer|exists:users,id',
+            'rating' => 'required|numeric|min:1|max:5',
+            'review' => 'nullable|string|max:5000',
+            'service_id' => 'nullable|integer',
+        ]);
+
+        $booking = Booking::find($request->booking_id);
+        if (! $booking) {
+            return comman_message_response(__('messages.booking_not_found'), 404);
+        }
+
+        if ((int) $booking->customer_id !== (int) $user->id && ! $user->hasAnyRole(['admin', 'demo_admin'])) {
+            return comman_message_response(__('messages.demo_permission_denied'), 403);
+        }
+
+        $assigned = BookingHandymanMapping::where('booking_id', $booking->id)
+            ->where('handyman_id', $request->handyman_id)
+            ->exists();
+        if (! $assigned && ! $user->hasAnyRole(['admin', 'demo_admin'])) {
+            return comman_message_response(__('messages.record_not_found'), 400);
+        }
+
+        $rating_data = [
+            'booking_id' => (int) $request->booking_id,
+            'handyman_id' => (int) $request->handyman_id,
+            'service_id' => $request->filled('service_id') ? (int) $request->service_id : (int) $booking->service_id,
+            'customer_id' => (int) $user->id,
+            'rating' => (float) $request->rating,
+            'review' => $request->review,
+        ];
+
+        $result = HandymanRating::updateOrCreate(
+            [
+                'booking_id' => $rating_data['booking_id'],
+                'handyman_id' => $rating_data['handyman_id'],
+                'customer_id' => $rating_data['customer_id'],
+            ],
+            $rating_data
+        );
+
+        $message = __('messages.update_form', ['form' => __('messages.rating')]);
+        if ($result->wasRecentlyCreated) {
+            $message = __('messages.save_form', ['form' => __('messages.rating')]);
+        }
 
         return comman_message_response($message);
     }

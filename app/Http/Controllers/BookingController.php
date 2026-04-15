@@ -10,6 +10,7 @@ use App\Models\Booking;
 use App\Models\BookingHandymanMapping;
 use App\Models\HandymanPayout;
 use App\Models\BookingRating;
+use App\Models\HandymanRating;
 use App\Models\CustomerRating;
 use App\Models\BookingStatus;
 use App\Models\PaymentHistory;
@@ -1290,9 +1291,20 @@ public function bookingAssigned(Request $request)
         // Check if customer rating already exists for this booking
         $customer_rating_exists = CustomerRating::where('booking_id', $id)->exists();
 
+        $handyman_ratings_for_booking = HandymanRating::where('booking_id', $id)
+            ->with('handyman')
+            ->get()
+            ->keyBy('handyman_id');
+
+        $can_rate_workers_on_booking = auth()->check()
+            && (int) auth()->id() === (int) $bookingdata->customer_id
+            && isset($payment)
+            && $payment->payment_status === 'paid'
+            && in_array($bookingdata->status, ['completed', 'paid'], true);
+
         switch ($tabpage) {
             case 'info':
-                $data = view('booking.' . $tabpage, compact('user_data', 'tabpage', 'auth_user', 'bookingdata', 'payment','advanceservice', 'customer_review', 'review_by_customer_for_booking', 'customer_rating', 'serviceProof', 'is_enable_advance_payment', 'customer_rating_exists'))->render();
+                $data = view('booking.' . $tabpage, compact('user_data', 'tabpage', 'auth_user', 'bookingdata', 'payment', 'advanceservice', 'customer_review', 'review_by_customer_for_booking', 'customer_rating', 'serviceProof', 'is_enable_advance_payment', 'customer_rating_exists', 'handyman_ratings_for_booking', 'can_rate_workers_on_booking'))->render();
                 break;
             case 'status':
                 $data = view('booking.' . $tabpage, compact('user_data', 'tabpage', 'auth_user', 'bookingdata', 'payment'))->render();
@@ -1634,6 +1646,7 @@ public function saveStripePayment(Request $request, $id)
                 'booking_id' => $booking->id,
                 'amount' => $payout['amount'],
                 'status' => 'paid',
+                'payment_id' => $result->id ?? null,
                 'paid_date' => Carbon::now(),
                 'payment_method' => 'wallet',
                 'payment_gateway' => 'wallet',
@@ -1665,6 +1678,7 @@ public function saveStripePayment(Request $request, $id)
         ProviderPayout::create([
             'provider_id' => $booking->provider_id,
             'amount' => $provider_final_earning,
+            'payment_id' => $result->id ?? null,
             'payment_method' => 'wallet',
             'paid_date' => Carbon::now(),
             'status' => 'paid',
@@ -1843,6 +1857,7 @@ public function saveStripePayment(Request $request, $id)
                 HandymanPayout::create([
                     'handyman_id' => $payout['handyman_id'],
                     'booking_id' => $booking->id,
+                    'payment_id' => $result->id ?? null,
                     'amount' => $payout['amount'],
                     'status' => 'paid',
                     'paid_date' => Carbon::now(),
@@ -1870,7 +1885,9 @@ public function saveStripePayment(Request $request, $id)
             Wallet::firstOrCreate(['user_id' => $booking->provider_id])->increment('amount', $provider_final_earning);
             ProviderPayout::create([
                 'provider_id' => $booking->provider_id,
+                'payment_id' => $result->id ?? null,
                 'amount' => $provider_final_earning,
+                'payment_id' => $result->id ?? null,
                 'payment_method' => 'wallet',
                 'paid_date' => Carbon::now(),
                 'status' => 'paid',

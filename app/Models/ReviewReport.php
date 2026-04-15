@@ -51,10 +51,11 @@ class ReviewReport extends Model
     }
 
     /** Load the concrete review row (polymorphic by review_type). */
-    public function resolveReviewItem(): BookingRating|CustomerRating|PostJobBidRating|PostJobBidCustomerRating|null
+    public function resolveReviewItem(): BookingRating|CustomerRating|PostJobBidRating|PostJobBidCustomerRating|HandymanRating|null
     {
         return match ($this->review_type) {
             'customer_rating' => CustomerRating::withTrashed()->find($this->review_id),
+            'handyman_rating' => HandymanRating::withTrashed()->find($this->review_id),
             'post_job_bid_rating' => PostJobBidRating::query()->find($this->review_id),
             'post_job_bid_customer_rating' => PostJobBidCustomerRating::query()->find($this->review_id),
             default => BookingRating::withTrashed()->find($this->review_id),

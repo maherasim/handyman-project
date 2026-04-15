@@ -141,6 +141,7 @@ class PaymentController extends Controller
                 HandymanPayout::create([
                     'handyman_id' => $payout['handyman_id'],
                     'booking_id' => $booking->id,
+                    'payment_id' => $result->id ?? null,
                     'amount' => $payout['amount'],
                     'status' => 'paid',
                     'paid_date' => Carbon::now(),
@@ -174,6 +175,7 @@ class PaymentController extends Controller
             ProviderPayout::create([
                 'provider_id' => $booking->provider_id,
                 'amount' => $provider_final_earning,
+                'payment_id' => $result->id ?? null,
                 'payment_method' => 'wallet',
                 'paid_date' => Carbon::now(),
                 'status' => 'paid',

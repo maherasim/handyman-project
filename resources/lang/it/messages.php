@@ -1086,6 +1086,7 @@
         'post_job_bid_rating' => 'Cliente valuta fornitore (lavoro)',
         'post_job_bid_customer_rating' => 'Datore di lavoro valuta fornitore (lavoro)',
         'booking_rating' => 'Cliente valuta fornitore (prenotazione)',
+        'handyman_rating' => 'Cliente valuta operatore (prenotazione)',
     ],
 
     'content_report_detail_title' => 'Segnalazione contenuto n. :id',

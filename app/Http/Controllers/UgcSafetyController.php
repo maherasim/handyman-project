@@ -10,6 +10,7 @@ use App\Models\CustomerRating;
 use App\Models\PostJobBid;
 use App\Models\PostJobBidCustomerRating;
 use App\Models\PostJobBidRating;
+use App\Models\HandymanRating;
 use App\Models\ReviewReport;
 use App\Models\Service;
 use App\Models\User;
@@ -215,7 +216,7 @@ class UgcSafetyController extends Controller
         }
 
         $v = Validator::make($request->all(), [
-            'review_type' => 'nullable|string|in:booking_rating,customer_rating,post_job_bid_rating,post_job_bid_customer_rating',
+            'review_type' => 'nullable|string|in:booking_rating,customer_rating,post_job_bid_rating,post_job_bid_customer_rating,handyman_rating',
             'review_id' => 'required|integer|min:1',
             'reason' => 'required|string|in:'.implode(',', $this->reportReasonValues()),
             'details' => 'nullable|string|max:2000',
@@ -231,6 +232,10 @@ class UgcSafetyController extends Controller
             case 'customer_rating':
                 $review = CustomerRating::find($reviewId);
                 $reviewOwnerId = $review ? (int) $review->provider_id : 0;
+                break;
+            case 'handyman_rating':
+                $review = HandymanRating::find($reviewId);
+                $reviewOwnerId = $review ? (int) $review->customer_id : 0;
                 break;
             case 'post_job_bid_rating':
                 $review = PostJobBidRating::find($reviewId);
@@ -255,6 +260,12 @@ class UgcSafetyController extends Controller
             $bid = PostJobBid::find((int) $review->post_job_bid_id);
             if (! $bid || ! in_array((int) $user->id, [(int) $bid->customer_id, (int) $bid->provider_id], true)) {
                 return response()->json(['message' => __('messages.ugc_login_for_report')], 403);
+            }
+        }
+
+        if ($reviewType === 'handyman_rating' && $review instanceof HandymanRating) {
+            if ((int) $user->id !== (int) $review->handyman_id) {
+                return response()->json(['message' => __('messages.demo_permission_denied')], 403);
             }
         }
 

@@ -90,11 +90,6 @@ window.renderedDataTable = $('#datatable').DataTable({
                 orderable: false,
             },
             {
-                data: 'description',
-                name: 'description',
-                title: "{{ __('messages.description') }}"
-            },
-            {
                 data: 'created_at',
                 name: 'created_at',
                 title: "{{ __('messages.paid_date') }}"

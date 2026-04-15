@@ -1044,24 +1044,27 @@ $menu->add('<span>'.__('messages.sidebar_favourit_provider').'</span><span class
             ])
             ->data('permission', ['userrating list', 'handymanrating list']);
 
-        $menu
-            ->add(
-                '<span>' .
-                    trans('messages.list_form_title', ['form' => trans('messages.user_ratings')]) .
-                    '</span><span class="custom-tooltip"><span class="tooltip-text">' .
-                    __('messages.user_ratings') .
-                    '</span></span>',
-                ['route' => 'booking-rating.index'],
-            )
-            ->prepend(
-                '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        // Customer (user) ratings: employers/providers only — not handymen (permission alone can match both roles)
+        if (auth()->user()->user_type === 'provider' || auth()->user()->hasAnyRole(['admin', 'demo_admin'])) {
+            $menu
+                ->add(
+                    '<span>' .
+                        trans('messages.list_form_title', ['form' => trans('messages.user_ratings')]) .
+                        '</span><span class="custom-tooltip"><span class="tooltip-text">' .
+                        __('messages.user_ratings') .
+                        '</span></span>',
+                    ['route' => 'booking-rating.index'],
+                )
+                ->prepend(
+                    '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M11.9787 17.3546L8.6771 19.8096L9.94694 15.8731L6.60303 13.4604H10.7088L11.9787 9.52393L13.2909 13.4604H17.3967L14.0528 15.8731L15.3226 19.8096L11.9787 17.3546Z" stroke="currentColor" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
 <path d="M11.9787 9.52376V4.19043H8.38086V13.4603H10.7089L11.9787 9.52376Z" stroke="currentColor" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
 <path d="M11.9785 9.52376L13.2907 13.4603H15.6187V4.19043H11.9785V9.52376Z" stroke="currentColor" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>',
-            )
-            ->nickname('user_ratings')
-            ->data('permission', 'userrating list');
+                )
+                ->nickname('user_ratings')
+                ->data('permission', 'userrating list');
+        }
 
         $menu
             ->add(

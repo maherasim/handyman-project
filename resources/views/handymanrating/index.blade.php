@@ -170,7 +170,7 @@
                         name: 'review',
                         title: "{{ __('messages.review') }}"
                     },
-                    @if (auth()->user()->hasAnyRole(['admin']))
+                    @if (auth()->user()->hasAnyRole(['admin', 'handyman']))
                         {
                             data: 'action',
                             name: 'action',
@@ -238,5 +238,6 @@
         });
     </script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+    @include('partials.ugc-service-cards-script')
 
 </x-master-layout>

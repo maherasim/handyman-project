@@ -61,9 +61,10 @@ class FrontendController extends Controller
             $sectionData[$key] = $section ? json_decode($section->value, true) : null;
         }
 
-        // Job List
-        $postJobRequestIds = $sectionData['section_10']['post_job_requests_id'] ?? [];
-        $jobRequests = PostJobRequest::whereIn('id', $postJobRequestIds)->get();
+        // Job requests: latest public rows from post_job_requests (same rules as job marketplace; not curated IDs)
+        $jobRequestsQuery = PostJobRequest::with(['country', 'city', 'customer.city', 'customer.country']);
+        UgcListing::scopePublicPostJobs($jobRequestsQuery, auth()->id());
+        $jobRequests = $jobRequestsQuery->orderByDesc('id')->limit(12)->get();
 
         // Category List
         $categories = $sectionData['section_2']['category_id'] ?? [];

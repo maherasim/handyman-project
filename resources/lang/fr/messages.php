@@ -1511,6 +1511,7 @@
         'post_job_bid_rating' => 'Client note le prestataire (mission)',
         'post_job_bid_customer_rating' => 'Employeur note le prestataire (mission)',
         'booking_rating' => 'Client note le prestataire (réservation)',
+        'handyman_rating' => 'Client note l’intervenant (réservation)',
     ],
 
 ];

@@ -1085,6 +1085,7 @@
         'post_job_bid_rating' => 'Cliente avalia prestador (trabalho)',
         'post_job_bid_customer_rating' => 'Empregador avalia prestador (trabalho)',
         'booking_rating' => 'Cliente avalia prestador (reserva)',
+        'handyman_rating' => 'Cliente avalia trabalhador (reserva)',
     ],
 
     'content_report_detail_title' => 'Denúncia de conteúdo n.º :id',

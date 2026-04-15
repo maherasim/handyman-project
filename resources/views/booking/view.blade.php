@@ -171,6 +171,39 @@
         </div>
     </div>
 
+    {{-- Customer rates worker (handyman) — same API as mobile: save-handyman-rating --}}
+    <div class="modal fade" id="handymanRatingModal" tabindex="-1" aria-labelledby="handymanRatingModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form id="handymanRatingForm">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="handymanRatingModalLabel">{{ __('messages.rate_worker') }}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body text-center">
+                        <input type="hidden" id="handymanRatingHandymanId" value="">
+                        <div class="mb-2 text-muted small" id="handymanRatingWorkerName"></div>
+                        <div class="mb-3">
+                            <div class="star-rating" id="handymanStarRating">
+                                <span class="star handyman-star" data-value="1">&#9733;</span>
+                                <span class="star handyman-star" data-value="2">&#9733;</span>
+                                <span class="star handyman-star" data-value="3">&#9733;</span>
+                                <span class="star handyman-star" data-value="4">&#9733;</span>
+                                <span class="star handyman-star" data-value="5">&#9733;</span>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <textarea class="form-control" id="handymanReviewText" placeholder="{{ __('messages.write_your_review') }}" rows="3"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-success">{{ __('messages.submit_rating') }}</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
 
         <div class="modal fade" id="serviceProofModal" tabindex="-1" aria-labelledby="serviceProofLabel" aria-hidden="true">
             <div class="modal-dialog modal-lg modal-dialog-centered">

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\BookingRating;
 use App\Models\CustomerRating;
+use App\Models\HandymanRating;
 use App\Models\PostJobBidCustomerRating;
 use App\Models\PostJobBidRating;
 use App\Models\ReviewReport;
@@ -46,6 +47,7 @@ class ReviewReportController extends Controller
 
         $review = match ($reviewReport->review_type) {
             'customer_rating' => CustomerRating::withTrashed()->find($reviewReport->review_id),
+            'handyman_rating' => HandymanRating::withTrashed()->find($reviewReport->review_id),
             'post_job_bid_rating' => PostJobBidRating::query()->find($reviewReport->review_id),
             'post_job_bid_customer_rating' => PostJobBidCustomerRating::query()->find($reviewReport->review_id),
             default => BookingRating::withTrashed()->find($reviewReport->review_id),
@@ -53,6 +55,7 @@ class ReviewReportController extends Controller
 
         $hiddenStatus = match (true) {
             $review instanceof CustomerRating => CustomerRating::STATUS_HIDDEN,
+            $review instanceof HandymanRating => HandymanRating::STATUS_HIDDEN,
             $review instanceof PostJobBidRating => PostJobBidRating::STATUS_HIDDEN,
             $review instanceof PostJobBidCustomerRating => PostJobBidCustomerRating::STATUS_HIDDEN,
             $review instanceof BookingRating => BookingRating::STATUS_HIDDEN,
@@ -60,6 +63,7 @@ class ReviewReportController extends Controller
         };
         $visibleStatus = match (true) {
             $review instanceof CustomerRating => CustomerRating::STATUS_VISIBLE,
+            $review instanceof HandymanRating => HandymanRating::STATUS_VISIBLE,
             $review instanceof PostJobBidRating => PostJobBidRating::STATUS_VISIBLE,
             $review instanceof PostJobBidCustomerRating => PostJobBidCustomerRating::STATUS_VISIBLE,
             $review instanceof BookingRating => BookingRating::STATUS_VISIBLE,

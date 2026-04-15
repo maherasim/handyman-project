@@ -1845,6 +1845,7 @@
         'post_job_bid_rating' => 'Kunde bewertet Anbieter (Auftrag)',
         'post_job_bid_customer_rating' => 'Auftraggeber bewertet Anbieter (Auftrag)',
         'booking_rating' => 'Kunde bewertet Anbieter (Buchung)',
+        'handyman_rating' => 'Kunde bewertet Mitarbeiter (Buchung)',
     ],
 
 );

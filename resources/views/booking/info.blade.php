@@ -1442,6 +1442,73 @@
         </div>
     </div>
 
+    {{-- Customer rates each assigned worker (handyman_ratings) — uses /api/save-handyman-rating --}}
+    <div class="col-md-12 mt-4">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="mb-3">{{ __('messages.booking_review_workers') }}</h4>
+                <p class="text-muted small mb-3">{{ __('messages.booking_review_workers_hint') }}</p>
+                @if ($bookingdata->handymanAdded && $bookingdata->handymanAdded->count() > 0)
+                    <div class="table-responsive">
+                        <table class="table table-bordered align-middle">
+                            <thead>
+                                <tr>
+                                    <th>{{ __('messages.worker') }}</th>
+                                    <th>{{ __('messages.rating') }}</th>
+                                    <th>{{ __('messages.review') }}</th>
+                                    <th>{{ __('messages.action') }}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($bookingdata->handymanAdded as $hmRow)
+                                    @php
+                                        $hid = $hmRow->handyman_id;
+                                        $hmUser = $hmRow->handyman ?? null;
+                                        $hr = isset($handyman_ratings_for_booking) && $handyman_ratings_for_booking->has($hid)
+                                            ? $handyman_ratings_for_booking->get($hid)
+                                            : null;
+                                        $workerName = optional($hmUser)->display_name
+                                            ?: trim((optional($hmUser)->first_name ?? '') . ' ' . (optional($hmUser)->last_name ?? ''));
+                                        $workerName = $workerName !== '' ? $workerName : '—';
+                                    @endphp
+                                    <tr>
+                                        <td>{{ $workerName }}</td>
+                                        <td>{{ $hr ? $hr->rating : '—' }}</td>
+                                        <td>{{ $hr ? ($hr->review ?? '—') : '—' }}</td>
+                                        <td>
+                                            @if ($hr)
+                                                @if (auth()->check() && (int) auth()->id() !== (int) ($hr->handyman_id ?? 0))
+                                                    <button type="button" class="btn btn-outline-danger btn-sm"
+                                                        onclick="if(window.triggerUgcReportReview) window.triggerUgcReportReview({{ (int) $hr->id }}, this, 'handyman_rating');">
+                                                        <i class="fas fa-flag me-1"></i>{{ __('messages.ugc_report') }}
+                                                    </button>
+                                                @else
+                                                    —
+                                                @endif
+                                            @elseif (!empty($can_rate_workers_on_booking))
+                                                <button type="button" class="btn btn-primary btn-sm rate-handyman-btn"
+                                                    data-handyman-id="{{ (int) $hid }}"
+                                                    data-worker-name="{{ $workerName }}">
+                                                    <i class="las la-star"></i> {{ __('messages.rate_worker') }}
+                                                </button>
+                                            @else
+                                                —
+                                            @endif
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                @else
+                    <div class="p-3 bg-light rounded border text-muted">
+                        <p class="m-0">{{ __('messages.booking_no_workers_assigned') }}</p>
+                    </div>
+                @endif
+            </div>
+        </div>
+    </div>
+
     {{-- Review by provider (customer_ratings: provider rates customer) — always visible --}}
     <div class="col-md-12 mt-4">
         <div class="card">
@@ -1962,6 +2029,66 @@
                             Swal.fire('Error!', 'Failed to delete the review.', 'error');
                         }
                     });
+                }
+            });
+        });
+
+        // Worker (handyman) rating — /api/save-handyman-rating (same as mobile app)
+        let handymanSelectedRating = 0;
+        $(document).on('click', '.rate-handyman-btn', function () {
+            const handymanId = $(this).data('handyman-id');
+            const workerName = $(this).data('worker-name') || '';
+            $('#handymanRatingHandymanId').val(handymanId);
+            $('#handymanRatingWorkerName').text(workerName);
+            $('#handymanReviewText').val('');
+            handymanSelectedRating = 0;
+            $('.handyman-star').removeClass('selected');
+            $('#handymanRatingModal').modal('show');
+        });
+        $(document).on('click', '.handyman-star', function () {
+            handymanSelectedRating = $(this).data('value');
+            $('.handyman-star').removeClass('selected');
+            $(this).prevAll().addBack().addClass('selected');
+        });
+        $('#handymanRatingForm').on('submit', function (e) {
+            e.preventDefault();
+            const handymanId = $('#handymanRatingHandymanId').val();
+            const review = $('#handymanReviewText').val().trim();
+            if (!handymanId || handymanSelectedRating === 0) {
+                return Swal.fire('Error', 'Please select a star rating.', 'warning');
+            }
+            $.ajax({
+                url: baseUrl + '/api/save-handyman-rating',
+                type: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': csrfToken,
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                data: {
+                    _token: csrfToken,
+                    booking_id: "{{ $bookingdata->id }}",
+                    service_id: "{{ $bookingdata->service_id }}",
+                    handyman_id: handymanId,
+                    rating: handymanSelectedRating,
+                    review: review
+                },
+                success: function () {
+                    Swal.fire('Thank you!', 'Your rating has been submitted.', 'success');
+                    $('#handymanRatingModal').modal('hide');
+                    window.location.reload();
+                },
+                error: function (xhr) {
+                    console.error(xhr);
+                    var msg = 'Failed to submit rating.';
+                    if (xhr.responseJSON) {
+                        if (xhr.responseJSON.message) {
+                            msg = xhr.responseJSON.message;
+                        } else if (xhr.responseJSON.errors) {
+                            msg = Object.values(xhr.responseJSON.errors).flat().join(' ');
+                        }
+                    }
+                    Swal.fire('Error', msg, 'error');
                 }
             });
         });
