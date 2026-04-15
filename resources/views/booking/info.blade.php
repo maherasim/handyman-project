@@ -1477,7 +1477,7 @@
                                         <td>{{ $hr ? ($hr->review ?? '—') : '—' }}</td>
                                         <td>
                                             @if ($hr)
-                                                @if (auth()->check() && (int) auth()->id() !== (int) ($hr->handyman_id ?? 0))
+                                                @if (auth()->check() && (int) auth()->id() === (int) ($hr->handyman_id ?? 0))
                                                     <button type="button" class="btn btn-outline-danger btn-sm"
                                                         onclick="if(window.triggerUgcReportReview) window.triggerUgcReportReview({{ (int) $hr->id }}, this, 'handyman_rating');">
                                                         <i class="fas fa-flag me-1"></i>{{ __('messages.ugc_report') }}
