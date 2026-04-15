@@ -420,6 +420,7 @@
     'percent' => 'Percent',
     'earning' => 'Earning',
     'total_earning' => 'Total Earning',
+    'employer_paid_amount' => 'Employer paid amount',
     'admin_earning' => 'Admin Earning',
     'provider_earning' => 'Employer Earning',
     'handyman_earning' => 'Worker Earning',

@@ -143,6 +143,14 @@
                         title: "{{ __('messages.total_earning') }}",
                         orderable: false,
                     },
+                    @if(($earningScope ?? 'all') === 'post_job')
+                    {
+                        data: 'employer_paid_amount',
+                        name: 'employer_paid_amount',
+                        title: "{{ __('messages.employer_paid_amount') }}",
+                        orderable: false,
+                    },
+                    @endif
 
                     {
                         data: 'admin_earning',
