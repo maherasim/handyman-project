@@ -34,7 +34,6 @@
         var ugcReportUrl = @json(route('ugc.report'));
         var ugcReportReviewUrl = @json(route('ugc.report.review'));
         var ugcReportProfileUrl = @json(route('ugc.report.profile'));
-        var ugcReportProviderUrl = @json(route('ugc.report.provider'));
         var ugcReportPostJobUrl = @json(route('ugc.report.post_job'));
         var ugcBlockUrl = @json(route('ugc.block'));
         var ugcReasonOptions = @json($ugcReasonOptionsForJs);
@@ -213,8 +212,9 @@
                 if (!result.isConfirmed || !result.value) {
                     return;
                 }
+                // Profile report (ProfileReport), not content moderation (ContentReport)
                 $.ajax({
-                    url: ugcReportProviderUrl,
+                    url: ugcReportProfileUrl,
                     type: 'POST',
                     headers: {
                         'X-Requested-With': 'XMLHttpRequest',
@@ -223,7 +223,7 @@
                     },
                     data: {
                         _token: ugcToken,
-                        provider_id: providerId,
+                        reported_user_id: providerId,
                         reason: result.value.reason,
                         details: result.value.details
                     },
