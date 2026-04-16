@@ -14,7 +14,6 @@ use Yajra\DataTables\DataTables;
 use App\Models\CommissionEarning;
 use App\Models\Payment;
 use App\Models\PaymentPostJOb;
-use App\Models\PostJobBid;
 
 class EarningController extends Controller
 {
@@ -198,22 +197,6 @@ class EarningController extends Controller
                         return getPriceFormat(0);
                     }
 
-                    // Post job earnings screen: only commission rows tied to post_job_bid_request_id (never booking_id)
-                    if ($scope === 'post_job') {
-                        if ($postJobIds->isEmpty()) {
-                            return getPriceFormat(0);
-                        }
-
-                        $totalEarning = CommissionEarning::query()
-                            ->where('commission_status', 'paid')
-                            ->whereIn('user_type', ['provider', 'admin', 'handyman'])
-                            ->whereNull('booking_id')
-                            ->whereIn('post_job_bid_request_id', $postJobIds)
-                            ->sum('commission_amount');
-
-                        return getPriceFormat($totalEarning);
-                    }
-
                     $totalEarning = CommissionEarning::where('commission_status', 'paid')
                         ->whereIn('user_type', ['provider', 'admin', 'handyman'])
                         ->where(function ($query) use ($bookingIds, $postJobIds) {
@@ -243,17 +226,19 @@ class EarningController extends Controller
                         return '';
                     }
 
-                    // Customer payments on post-job bids for this provider only (keyed by post_job_bid_request_id)
-                    $sum = PaymentPostJOb::query()
+                    $providerCommissionsQuery = CommissionEarning::where('employee_id', $row->id)
+                        ->where('user_type', 'provider')
+                        ->whereNull('booking_id')
                         ->whereNotNull('post_job_bid_request_id')
-                        ->where('post_job_bid_request_id', '>', 0)
-                        ->whereIn(
-                            'post_job_bid_request_id',
-                            PostJobBid::query()
-                                ->where('provider_id', $row->id)
-                                ->select('id')
-                        )
-                        ->sum('total_amount');
+                        ->where('post_job_bid_request_id', '>', 0);
+
+                    $postJobIds = $providerCommissionsQuery->pluck('post_job_bid_request_id')->filter()->unique()->values();
+
+                    if ($postJobIds->isEmpty()) {
+                        return getPriceFormat(0);
+                    }
+
+                    $sum = PaymentPostJOb::whereIn('post_job_bid_request_id', $postJobIds)->sum('total_amount');
 
                     return getPriceFormat($sum);
                 })
@@ -273,40 +258,30 @@ class EarningController extends Controller
                     $bookingIds = $providerCommissions->pluck('booking_id')->filter()->unique()->values();
                     $postJobIds = $providerCommissions->pluck('post_job_bid_request_id')->filter()->unique()->values();
 
-                    if ($scope !== 'all' && $bookingIds->isEmpty() && $postJobIds->isEmpty()) {
+                    if ($bookingIds->isEmpty() && $postJobIds->isEmpty()) {
                         return getPriceFormat(0);
-                    }
-
-                    // Post job earnings: admin commission only on post_job_bid_request_id rows (not booking_id)
-                    if ($scope === 'post_job') {
-                        if ($postJobIds->isEmpty()) {
-                            return getPriceFormat(0);
-                        }
-
-                        $totalAdminEarning = CommissionEarning::query()
-                            ->where('user_type', 'admin')
-                            ->whereIn('commission_status', ['paid', 'unpaid'])
-                            ->whereNull('booking_id')
-                            ->whereIn('post_job_bid_request_id', $postJobIds)
-                            ->sum('commission_amount');
-
-                        return getPriceFormat($totalAdminEarning);
                     }
 
                     $totalAdminEarning = CommissionEarning::where('user_type', 'admin')
                         ->whereIn('commission_status', ['paid', 'unpaid'])
-                        ->where(function ($query) use ($bookingIds, $postJobIds, $scope) {
-                            if ($bookingIds->isNotEmpty()) {
+                        ->where(function ($query) use ($bookingIds, $postJobIds) {
+                            if ($bookingIds->isNotEmpty() && $postJobIds->isNotEmpty()) {
+                                $query->whereIn('booking_id', $bookingIds)
+                                    ->orWhere(function ($q) use ($postJobIds) {
+                                        $q->whereIn('post_job_bid_request_id', $postJobIds)
+                                            ->whereNull('booking_id')
+                                            ->where('post_job_bid_request_id', '>', 0);
+                                    });
+                            } elseif ($bookingIds->isNotEmpty()) {
                                 $query->whereIn('booking_id', $bookingIds);
-                            }
-                            if ($postJobIds->isNotEmpty()) {
-                                $query->orWhereIn('post_job_bid_request_id', $postJobIds);
-                            }
-                            if ($scope === 'all') {
-                                $query->orWhereNull('booking_id');
+                            } elseif ($postJobIds->isNotEmpty()) {
+                                $query->whereIn('post_job_bid_request_id', $postJobIds)
+                                    ->whereNull('booking_id')
+                                    ->where('post_job_bid_request_id', '>', 0);
                             }
                         })
                         ->sum('commission_amount');
+                        
                     return getPriceFormat($totalAdminEarning);
                 })
 
