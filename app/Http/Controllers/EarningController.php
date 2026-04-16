@@ -14,6 +14,7 @@ use Yajra\DataTables\DataTables;
 use App\Models\CommissionEarning;
 use App\Models\Payment;
 use App\Models\PaymentPostJOb;
+use App\Models\PostJobBid;
 
 class EarningController extends Controller
 {
@@ -197,6 +198,22 @@ class EarningController extends Controller
                         return getPriceFormat(0);
                     }
 
+                    // Post job earnings screen: only commission rows tied to post_job_bid_request_id (never booking_id)
+                    if ($scope === 'post_job') {
+                        if ($postJobIds->isEmpty()) {
+                            return getPriceFormat(0);
+                        }
+
+                        $totalEarning = CommissionEarning::query()
+                            ->where('commission_status', 'paid')
+                            ->whereIn('user_type', ['provider', 'admin', 'handyman'])
+                            ->whereNull('booking_id')
+                            ->whereIn('post_job_bid_request_id', $postJobIds)
+                            ->sum('commission_amount');
+
+                        return getPriceFormat($totalEarning);
+                    }
+
                     $totalEarning = CommissionEarning::where('commission_status', 'paid')
                         ->whereIn('user_type', ['provider', 'admin', 'handyman'])
                         ->where(function ($query) use ($bookingIds, $postJobIds) {
@@ -226,10 +243,16 @@ class EarningController extends Controller
                         return '';
                     }
 
+                    // Customer payments on post-job bids for this provider only (keyed by post_job_bid_request_id)
                     $sum = PaymentPostJOb::query()
-                        ->whereHas('postJobBidRequest', function ($q) use ($row) {
-                            $q->where('provider_id', $row->id);
-                        })
+                        ->whereNotNull('post_job_bid_request_id')
+                        ->where('post_job_bid_request_id', '>', 0)
+                        ->whereIn(
+                            'post_job_bid_request_id',
+                            PostJobBid::query()
+                                ->where('provider_id', $row->id)
+                                ->select('id')
+                        )
                         ->sum('total_amount');
 
                     return getPriceFormat($sum);
@@ -252,6 +275,22 @@ class EarningController extends Controller
 
                     if ($scope !== 'all' && $bookingIds->isEmpty() && $postJobIds->isEmpty()) {
                         return getPriceFormat(0);
+                    }
+
+                    // Post job earnings: admin commission only on post_job_bid_request_id rows (not booking_id)
+                    if ($scope === 'post_job') {
+                        if ($postJobIds->isEmpty()) {
+                            return getPriceFormat(0);
+                        }
+
+                        $totalAdminEarning = CommissionEarning::query()
+                            ->where('user_type', 'admin')
+                            ->whereIn('commission_status', ['paid', 'unpaid'])
+                            ->whereNull('booking_id')
+                            ->whereIn('post_job_bid_request_id', $postJobIds)
+                            ->sum('commission_amount');
+
+                        return getPriceFormat($totalAdminEarning);
                     }
 
                     $totalAdminEarning = CommissionEarning::where('user_type', 'admin')
