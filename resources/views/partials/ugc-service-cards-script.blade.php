@@ -28,6 +28,9 @@
         }
         window.__ugcServiceCardsBound = true;
 
+        var csrfMeta = document.querySelector('meta[name="csrf-token"]');
+        var ugcToken = csrfMeta ? (csrfMeta.getAttribute('content') || '') : '';
+
         var ugcReportUrl = @json(route('ugc.report'));
         var ugcReportReviewUrl = @json(route('ugc.report.review'));
         var ugcReportProfileUrl = @json(route('ugc.report.profile'));
@@ -211,12 +214,16 @@
                     return;
                 }
                 $.ajax({
-                    url: ugcReportProfileUrl,
+                    url: ugcReportProviderUrl,
                     type: 'POST',
-                    headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' },
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': ugcToken
+                    },
                     data: {
                         _token: ugcToken,
-                        reported_user_id: providerId,
+                        provider_id: providerId,
                         reason: result.value.reason,
                         details: result.value.details
                     },

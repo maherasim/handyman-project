@@ -75,7 +75,7 @@
             <div class="card card-block card-stretch">
                 <div class="card-body p-0">
                     <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 p-3">
-                        <div>
+                    <div>
                             <h5 class="font-weight-bold mb-0">{{ __('messages.ugc_admin_page_title') }}</h5>
                             <p class="text-muted small mb-0 mt-1">{{ __('messages.ugc_admin_page_subtitle') }}</p>
                         </div>
@@ -87,48 +87,48 @@
 
     <div class="card">
         <div class="card-body p-0">
-            @if(session('success'))
+                    @if(session('success'))
                 <div class="alert alert-success alert-dismissible fade show m-3" role="alert">
-                    {{ session('success') }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            @endif
+                            {{ session('success') }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    @endif
 
-            <div class="table-responsive">
+                    <div class="table-responsive">
                 <table class="table table-striped border mb-0 align-middle">
-                    <thead>
-                        <tr>
-                            <th>{{ __('messages.srno') }}</th>
+                            <thead>
+                                <tr>
+                                    <th>{{ __('messages.srno') }}</th>
                             {{-- <th class="listing-cell">{{ __('messages.ugc_col_listing') }}</th> --}}
                             <th class="text-cell">{{ __('messages.ugc_col_reporter') }}</th>
                             <th class="text-cell">{{ __('messages.ugc_col_reported_party') }}</th>
                             <th class="text-cell">{{ __('messages.ugc_col_reason') }}</th>
                             <th class="details-cell">{{ __('messages.ugc_col_details') }}</th>
-                            <th>{{ __('messages.status') }}</th>
-                            <th>{{ __('messages.ugc_col_date') }}</th>
+                                    <th>{{ __('messages.status') }}</th>
+                                    <th>{{ __('messages.ugc_col_date') }}</th>
                             <th class="view-cell">{{ __('messages.profile_report_col_view') }}</th>
                             <th class="actions-cell">{{ __('messages.ugc_col_actions') }}</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($reports as $report)
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse($reports as $report)
                             @php
                                 $reasonText = \App\Models\ContentReport::reasonLabel($report->reason);
-                                $ugcStatusLabels = [
-                                    'pending' => __('messages.ugc_report_status_pending'),
-                                    'dismissed' => __('messages.ugc_report_status_dismissed'),
-                                    'action_taken' => __('messages.ugc_report_status_action_taken'),
-                                    'reviewed' => __('messages.ugc_report_status_reviewed'),
-                                ];
-                                $statusLabel = $ugcStatusLabels[$report->status] ?? ucfirst(str_replace('_', ' ', (string) $report->status));
+                                                $ugcStatusLabels = [
+                                                    'pending' => __('messages.ugc_report_status_pending'),
+                                                    'dismissed' => __('messages.ugc_report_status_dismissed'),
+                                                    'action_taken' => __('messages.ugc_report_status_action_taken'),
+                                                    'reviewed' => __('messages.ugc_report_status_reviewed'),
+                                                ];
+                                                $statusLabel = $ugcStatusLabels[$report->status] ?? ucfirst(str_replace('_', ' ', (string) $report->status));
                                 $isHiddenFromPublic = (bool) (optional($report->reportable)->is_hidden_from_public ?? false);
-                                $reviewItem = null;
-                                $isReviewHidden = false;
-                                if ($report->reportable_type === \App\Models\BookingRating::class) {
-                                    $reviewItem = \App\Models\BookingRating::withTrashed()->find($report->reportable_id);
-                                    $isReviewHidden = (bool) ((int) (optional($reviewItem)->status ?? 0) === 1 || optional($reviewItem)->trashed());
-                                }
-                            @endphp
+                                                    $reviewItem = null;
+                                                    $isReviewHidden = false;
+                                                    if ($report->reportable_type === \App\Models\BookingRating::class) {
+                                                        $reviewItem = \App\Models\BookingRating::withTrashed()->find($report->reportable_id);
+                                                        $isReviewHidden = (bool) ((int) (optional($reviewItem)->status ?? 0) === 1 || optional($reviewItem)->trashed());
+                                                    }
+                                                @endphp
                             <tr>
                                 <td class="text-muted">{{ $report->id }}</td>
                                 {{--
@@ -216,35 +216,35 @@
                                         <select name="action" class="form-select form-select-sm" required>
                                             <option value="" disabled selected>{{ __('messages.action') }}…</option>
                                             <option value="dismiss">{{ __('messages.ugc_action_dismiss') }}</option>
-                                            @if($report->reportable_type === \App\Models\Service::class)
+                                                    @if($report->reportable_type === \App\Models\Service::class)
                                                 <option value="hide_service" @selected(!$isHiddenFromPublic)>{{ __('messages.ugc_action_hide_service') }}</option>
                                                 <option value="restore_service" @selected($isHiddenFromPublic)>{{ __('messages.ugc_action_restore_service') }}</option>
-                                            @elseif($report->reportable_type === \App\Models\PostJobRequest::class)
+                                                    @elseif($report->reportable_type === \App\Models\PostJobRequest::class)
                                                 <option value="hide_post_job" @selected(!$isHiddenFromPublic)>{{ __('messages.ugc_action_hide_post_job') }}</option>
                                                 <option value="restore_post_job" @selected($isHiddenFromPublic)>{{ __('messages.ugc_action_restore_post_job') }}</option>
-                                            @elseif($report->reportable_type === \App\Models\BookingRating::class)
+                                                    @elseif($report->reportable_type === \App\Models\BookingRating::class)
                                                 <option value="hide_review" @selected(!$isReviewHidden)>{{ __('messages.ugc_action_hide_review') }}</option>
                                                 <option value="restore_review" @selected($isReviewHidden)>{{ __('messages.ugc_action_restore_review') }}</option>
-                                            @endif
-                                        </select>
+                                                    @endif
+                                                </select>
                                         <input type="text" name="admin_note" class="form-control form-control-sm admin-note-input" placeholder="{{ __('messages.ugc_admin_note_placeholder') }}">
                                         <button type="submit" class="btn btn-sm btn-primary text-nowrap">
                                             <i class="fas fa-check me-1"></i>{{ __('messages.apply') }}
-                                        </button>
-                                        </form>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
+                                                    </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
                                 <td colspan="9" class="text-center text-muted py-5">{{ __('messages.ugc_admin_empty') }}</td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
 
             <div class="p-3 border-top">
-                {{ $reports->links() }}
+                        {{ $reports->links() }}
             </div>
         </div>
     </div>
