@@ -143,7 +143,7 @@
                         title: "{{ __('messages.total_earning') }}",
                         orderable: false,
                     },
-                    @if(($earningScope ?? 'all') === 'post_job')
+                    @if(in_array(($earningScope ?? 'all'), ['booking', 'post_job'], true))
                     {
                         data: 'employer_paid_amount',
                         name: 'employer_paid_amount',

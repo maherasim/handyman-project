@@ -1052,7 +1052,7 @@
     'send_to_provider' => 'Send To Employer',
     'approved_by_handyman' => 'Approved By Worker',
     'provider_total_earning' => 'Employer Total Earning',
-    'provider_paid_earning' => 'Employer Paid Amount',
+    'provider_paid_earning' => 'Provider payout total',
     'provider_due_earning' => 'Employer Pay Due',
     'paid_earning' => 'Paid Amount',
     'due_amount' => 'Due Amount',

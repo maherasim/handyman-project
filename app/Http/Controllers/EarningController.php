@@ -13,7 +13,6 @@ use Illuminate\Support\Arr;
 use Yajra\DataTables\DataTables;
 use App\Models\CommissionEarning;
 use App\Models\Payment;
-use App\Models\PaymentPostJOb;
 
 class EarningController extends Controller
 {
@@ -222,25 +221,25 @@ class EarningController extends Controller
                 })
 
                 ->addColumn('employer_paid_amount', function ($row) use ($scope) {
-                    if ($scope !== 'post_job') {
+                    // Provider commission rows only (not payment_post_jobs totals). Scoped by booking vs post-job bid.
+                    if (! in_array($scope, ['booking', 'post_job'], true)) {
                         return '';
                     }
 
-                    $providerCommissionsQuery = CommissionEarning::where('employee_id', $row->id)
+                    $q = CommissionEarning::query()
+                        ->where('employee_id', $row->id)
                         ->where('user_type', 'provider')
-                        ->whereNull('booking_id')
-                        ->whereNotNull('post_job_bid_request_id')
-                        ->where('post_job_bid_request_id', '>', 0);
+                        ->whereIn('commission_status', ['paid', 'unpaid']);
 
-                    $postJobIds = $providerCommissionsQuery->pluck('post_job_bid_request_id')->filter()->unique()->values();
-
-                    if ($postJobIds->isEmpty()) {
-                        return getPriceFormat(0);
+                    if ($scope === 'booking') {
+                        $q->whereNotNull('booking_id');
+                    } else {
+                        $q->whereNull('booking_id')
+                            ->whereNotNull('post_job_bid_request_id')
+                            ->where('post_job_bid_request_id', '>', 0);
                     }
 
-                    $sum = PaymentPostJOb::whereIn('post_job_bid_request_id', $postJobIds)->sum('total_amount');
-
-                    return getPriceFormat($sum);
+                    return getPriceFormat($q->sum('commission_amount'));
                 })
 
                 ->editColumn('admin_earning', function ($row) use ($scope) {
