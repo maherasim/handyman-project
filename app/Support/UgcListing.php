@@ -161,6 +161,12 @@ class UgcListing
             }
         }
 
+        // Hide listings when the employer (provider) account is deactivated (e.g. admin action from profile reports).
+        // Reactivating the user (status = 1) restores visibility everywhere this scope runs.
+        $query->whereHas('providers', function ($q) {
+            $q->where('status', 1);
+        });
+
         return $query;
     }
 
