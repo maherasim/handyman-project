@@ -601,9 +601,9 @@
                         <img src="{{ asset('images/default.png') }}" alt=""
                             class="img-fluid object-cover rounded-3 mt-4 w-100" />
                     @endif
-                    @if (!empty($serviceData['service_detail']['description']))
-                        <div class="mt-5 pt-lg-5 pt-3">
-                            <h5 class="mb-3">{{ __('landingpage.sd_minimum_booking') }}</h5>
+                    @if (!empty($serviceData['service_detail']['minimum_booking']))
+                        <div class="mt-4">
+                            <h5 class="mb-2">{{ __('landingpage.sd_minimum_booking') }}</h5>
                             <p class="m-0">
                                 {{ $serviceData['service_detail']['minimum_booking'] }}
 

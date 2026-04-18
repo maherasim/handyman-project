@@ -24,7 +24,7 @@
         </Swiper>
     </div>
 
-    <div class="tab-slider mt-3">
+    <div class="tab-slider mt-3" v-show="props.attachments.length > 1">
         <!-- Thumbnail Swiper -->
         <Swiper
             class="swiper-thumb overflow-hidden"
@@ -84,41 +84,32 @@ const updateMainSwiper = (index) => {
 </script>
 
 <style scoped>
-/* Main gallery: fixed aspect box so object-fit works and layout height is stable */
+/* Main gallery: dynamic height so images define their own space without blank areas */
 .main-slide-frame {
     position: relative;
     width: 100%;
     overflow: hidden;
-    background: #f1f3f5;
-}
-
-.main-slide-frame--cover {
-    aspect-ratio: 16 / 9;
-    max-height: min(70vh, 560px);
+    background: transparent;
+    border-radius: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .main-slide-frame--cover .main-slide-img {
-    position: absolute;
-    inset: 0;
     width: 100%;
-    height: 100%;
-    display: block;
+    height: auto;
+    max-height: 600px;
     object-fit: cover;
-}
-
-.main-slide-frame--contain {
-    position: relative;
-    height: clamp(260px, 45vw, 600px);
-    max-height: min(70vh, 600px);
+    display: block;
 }
 
 .main-slide-frame--contain .main-slide-img {
-    position: absolute;
-    inset: 0;
     width: 100%;
-    height: 100%;
-    display: block;
+    height: auto;
+    max-height: 600px;
     object-fit: contain;
+    display: block;
 }
 
 /* Thumbnails: uniform tiles (object-fit needs explicit box) */
