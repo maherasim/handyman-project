@@ -42,7 +42,7 @@ class UgcSafetyController extends Controller
             ['value' => 'violation_of_platform_rules', 'label' => 'Violation of platform rules'],
             ['value' => 'plagiarism_or_copied_work', 'label' => 'Plagiarism or copied work'],
             ['value' => 'nudity_or_sexual_content', 'label' => 'Nudity or sexual content'],
-        ];
+        ];  
     }
 
     protected function reportReasonValues(): array

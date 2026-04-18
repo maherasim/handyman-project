@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\UgcReportReasons;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Str;
@@ -77,15 +78,7 @@ class ReviewReport extends Model
     /** Same reason vocabulary as profile reports (UgcSafetyController). */
     public static function reasonLabel(?string $reason): string
     {
-        if ($reason === null || $reason === '') {
-            return '—';
-        }
-        $labels = __('messages.profile_report_reasons');
-        if (is_array($labels) && isset($labels[$reason])) {
-            return $labels[$reason];
-        }
-
-        return Str::headline(str_replace('_', ' ', $reason));
+        return UgcReportReasons::label($reason);
     }
 
     public static function statusLabel(?string $status): string

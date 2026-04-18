@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
+use App\Support\UgcReportReasons;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Str;
 
 class ProfileReport extends Model
@@ -42,18 +42,7 @@ class ProfileReport extends Model
     /** Human-readable reason (maps API values like misleading_profile_or_skills). */
     public static function reasonLabel(?string $reason): string
     {
-        if ($reason === null || $reason === '') {
-            return '—';
-        }
-        $labels = Lang::get('messages.profile_report_reasons', [], app()->getLocale());
-        if (! is_array($labels)) {
-            $labels = [];
-        }
-        if (isset($labels[$reason])) {
-            return $labels[$reason];
-        }
-
-        return Str::headline(str_replace('_', ' ', $reason));
+        return UgcReportReasons::label($reason);
     }
 
     public static function statusLabel(?string $status): string
