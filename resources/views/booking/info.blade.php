@@ -113,17 +113,31 @@
             <td class="bk-value">{{ getPriceFormat($grandTotal) }}</td>
         </tr>
 
+        @php
+            $advancePctHidden = (float) (optional($bookingdata->service)->advance_payment_amount ?? 0);
+            if ($advancePctHidden <= 0 && isset($advanceservice) && (float) $advanceservice > 0) {
+                $advancePctHidden = (float) $advanceservice;
+            }
+            $advanceEnabledHidden = optional($bookingdata->service)->is_enable_advance_payment == 1 && $advancePctHidden > 0;
+            if ($advanceEnabledHidden) {
+                $advanceAmountHidden = ($grandTotal * $advancePctHidden) / 100;
+            } else {
+                $advanceAmountHidden = (float) ($bookingdata->advance_paid_amount ?? 0);
+            }
+            $remainingHidden = $grandTotal - $advanceAmountHidden;
+        @endphp
+
         <!-- Advance Payment -->
         <tr>
             <td>
-                @if(optional($bookingdata->service)->is_enable_advance_payment == 1 && (float) (optional($bookingdata->service)->advance_payment_amount ?? 0) > 0)
-                    {{ __('messages.pjr_advance_payment_line', ['pct' => $bookingdata->service->advance_payment_amount]) }}
+                @if($advanceEnabledHidden)
+                    {{ __('messages.pjr_advance_payment_line', ['pct' => $advancePctHidden]) }}
                 @else
                     {{ __('messages.advance_payment') }}
                 @endif
             </td>
             <td class="bk-value">
-                {{ getPriceFormat($bookingdata->advance_paid_amount) }}
+                {{ getPriceFormat($advanceAmountHidden) }}
             </td>
         </tr>
 
@@ -131,7 +145,7 @@
         <tr class="grand-total">
             <td>{{ __('messages.remaining_amount') }}</td>
             <td class="bk-value">
-                {{ getPriceFormat($grandTotal - $bookingdata->advance_paid_amount) }}
+                {{ getPriceFormat($remainingHidden) }}
             </td>
         </tr>
     </tbody>
@@ -1280,17 +1294,22 @@
                                         $grandTotal = $totalBeforeTax + $taxAmount;
                                     @endphp
                                     <tr>
-                                        <td>{{ __('messages.grand_total') }}asim</td>
+                                        <td>{{ __('messages.grand_total') }}</td>
                                         <td class="bk-value">{{ getPriceFormat($grandTotal) }}</td>
                                     </tr>
 
                                     @php
-                                        $advancePaidAmount = $bookingdata->advance_paid_amount;
+                                        $advancePctValue = (float) (optional($bookingdata->service)->advance_payment_amount ?? 0);
+                                        if ($advancePctValue <= 0 && isset($advanceservice) && (float) $advanceservice > 0) {
+                                            $advancePctValue = (float) $advanceservice;
+                                        }
+                                        $advanceEnabledForRow = optional($bookingdata->service)->is_enable_advance_payment == 1 && $advancePctValue > 0;
 
-                                        // Only calculate advance if not already paid
-                                        if ($advancePaidAmount <= 0 && isset($advanceservice) && $advanceservice > 0) {
-                                            // $advanceservice is already the percentage (e.g., 50)
-                                            $advancePaidAmount = ($grandTotal * $advanceservice) / 100;
+                                        if ($advanceEnabledForRow) {
+                                            // Always use % of current grand total (paid or not) so the row matches the label and stays auditable
+                                            $advancePaidAmount = ($grandTotal * $advancePctValue) / 100;
+                                        } else {
+                                            $advancePaidAmount = (float) ($bookingdata->advance_paid_amount ?? 0);
                                         }
 
                                         $remainingAmount = $grandTotal - $advancePaidAmount;
@@ -1298,8 +1317,8 @@
 
                                     <tr>
                                         <td>
-                                            @if(optional($bookingdata->service)->is_enable_advance_payment == 1 && (float) (optional($bookingdata->service)->advance_payment_amount ?? 0) > 0)
-                                                {{ __('messages.pjr_advance_payment_line', ['pct' => $bookingdata->service->advance_payment_amount]) }}
+                                            @if($advanceEnabledForRow)
+                                                {{ __('messages.pjr_advance_payment_line', ['pct' => $advancePctValue]) }}
                                             @else
                                                 {{ __('messages.advance_payment') }}
                                             @endif
