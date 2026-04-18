@@ -128,7 +128,13 @@ $timezone = getTimeZone();
                         <!-- Advance and Remaining -->
                        
                             <tr>
-                                <td>{{ __('messages.advance_payment') }}</td>
+                                <td>
+                                    @if(optional($bookingdata->service)->is_enable_advance_payment == 1 && (float) (optional($bookingdata->service)->advance_payment_amount ?? 0) > 0)
+                                        {{ __('messages.pjr_advance_payment_line', ['pct' => $bookingdata->service->advance_payment_amount]) }}
+                                    @else
+                                        {{ __('messages.advance_payment') }}
+                                    @endif
+                                </td>
                                 <td class="bk-value">
                                     {{ getPriceFormat($bookingdata->advance_paid_amount) }}
                                 </td>

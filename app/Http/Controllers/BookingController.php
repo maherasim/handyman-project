@@ -1267,8 +1267,7 @@ public function bookingAssigned(Request $request)
         $user_id = $auth_user->id;
         $user_data = User::find($user_id);
         $bookingdata = Booking::with(['handymanAdded.handyman', 'payment', 'bookingExtraCharge', 'bookingAddonService', 'slots',  'service.city','service.country','service', 'bookingRating', 'customer', 'provider'])->myBooking()->find($id);
-       $advanceservice=  $bookingdata->service->advance_payment_amount;
- 
+
         $is_enable_advance_payment = $bookingdata->service->is_enable_advance_payment;
         $serviceProof = ServiceProof::where('booking_id',$id)->get();
         // "Review by customer" = customer's review of the provider for THIS booking — load by booking_id so both customer and provider see it
@@ -1287,6 +1286,9 @@ public function bookingAssigned(Request $request)
         $global_advance_payment = isset($serviceconfig->global_advance_payment) ? $serviceconfig->global_advance_payment : 0;
         $bookingdata->service->is_enable_advance_payment = $bookingdata->service->type == 'fixed' ? ($bookingdata->service->is_enable_advance_payment == 1 ? $bookingdata->service->is_enable_advance_payment : $global_advance_payment) : 0;
         $bookingdata->service->advance_payment_amount = $bookingdata->service->type == 'fixed' ? ($bookingdata->service->advance_payment_amount > 0 ? $bookingdata->service->advance_payment_amount : $advancePaymentPercentage) : 0;
+
+        // Effective advance % (after global/service merge) — used in booking info pricing table
+        $advanceservice = $bookingdata->service->advance_payment_amount;
 
         // Check if customer rating already exists for this booking
         $customer_rating_exists = CustomerRating::where('booking_id', $id)->exists();

@@ -115,7 +115,13 @@
 
         <!-- Advance Payment -->
         <tr>
-            <td>{{ __('messages.advance_payment') }}</td>
+            <td>
+                @if(optional($bookingdata->service)->is_enable_advance_payment == 1 && (float) (optional($bookingdata->service)->advance_payment_amount ?? 0) > 0)
+                    {{ __('messages.pjr_advance_payment_line', ['pct' => $bookingdata->service->advance_payment_amount]) }}
+                @else
+                    {{ __('messages.advance_payment') }}
+                @endif
+            </td>
             <td class="bk-value">
                 {{ getPriceFormat($bookingdata->advance_paid_amount) }}
             </td>
@@ -826,7 +832,11 @@
                                             style="background: linear-gradient(135deg, #f7c59f, #ff9a9e); color: #fff;">
                                             <div class="card-body">
                                                 <p class="mb-1 fw-bold text-uppercase" style="opacity: 0.9;">
-                                                    {{ __('landingpage.advance_payment') }}
+                                                    @if(optional($bookingdata->service)->is_enable_advance_payment == 1 && (float) (optional($bookingdata->service)->advance_payment_amount ?? 0) > 0)
+                                                        {{ __('messages.pjr_advance_payment_line', ['pct' => $bookingdata->service->advance_payment_amount]) }}
+                                                    @else
+                                                        {{ __('landingpage.advance_payment') }}
+                                                    @endif
                                                 </p>
                                                 <p class="mb-0 fs-5 fw-bold" id="service_schedule__span">
                                                     {{ getPriceFormat($bookingdata->advance_paid_amount) }}
@@ -1287,7 +1297,13 @@
                                     @endphp
 
                                     <tr>
-                                        <td>{{ __('messages.advance_payment') }}</td>
+                                        <td>
+                                            @if(optional($bookingdata->service)->is_enable_advance_payment == 1 && (float) (optional($bookingdata->service)->advance_payment_amount ?? 0) > 0)
+                                                {{ __('messages.pjr_advance_payment_line', ['pct' => $bookingdata->service->advance_payment_amount]) }}
+                                            @else
+                                                {{ __('messages.advance_payment') }}
+                                            @endif
+                                        </td>
                                         <td class="bk-value">
                                             {{ getPriceFormat($advancePaidAmount) }}
                                         </td>
