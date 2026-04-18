@@ -147,7 +147,7 @@
         </div>
     </div>
 
-    @if (!empty($firstBookingCoupon))
+    {{-- @if (!empty($firstBookingCoupon))
         <div class="container py-3">
             <a href="{{ route('user.register') }}" class="d-block text-decoration-none">
                 <div class="landing-first-booking-banner d-flex flex-wrap align-items-center justify-content-between gap-3">
@@ -156,7 +156,7 @@
                 </div>
             </a>
         </div>
-    @endif
+    @endif --}}
 
     <!-- Categories -->
     @if ($sectionData && isset($sectionData['section_2']) && $sectionData['section_2']['section_2'] == 1)
