@@ -100,7 +100,7 @@ const updateMainSwiper = (index) => {
     width: 100%;
     height: auto;
     max-height: 600px;
-    object-fit: cover;
+    object-fit: contain;
     display: block;
 }
 

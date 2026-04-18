@@ -1,0 +1,100 @@
+#!/usr/bin/env node
+/**
+ * Removes Laravel Mix / Webpack build artifacts so the next build has no stale chunks,
+ * source maps, or mix-manifest entries. Safe on Windows, macOS, and Linux.
+ *
+ * Usage:
+ *   node scripts/clean-build.js
+ *   node scripts/clean-build.js --all   # also clear compiled Blade views (run php artisan view:clear on server if preferred)
+ */
+
+'use strict';
+
+const fs = require('fs');
+const path = require('path');
+
+const root = path.resolve(__dirname, '..');
+const fullClean = process.argv.includes('--all') || process.argv.includes('--full');
+
+function rmPath(rel) {
+  const target = path.join(root, rel);
+  try {
+    if (fs.existsSync(target)) {
+      fs.rmSync(target, { recursive: true, force: true });
+      console.log('removed:', rel);
+    }
+  } catch (e) {
+    console.warn('warn (could not remove ' + rel + '):', e.message);
+  }
+}
+
+function unlinkIfExists(rel) {
+  const target = path.join(root, rel);
+  try {
+    if (fs.existsSync(target)) {
+      fs.unlinkSync(target);
+      console.log('removed:', rel);
+    }
+  } catch (e) {
+    console.warn('warn (could not remove ' + rel + '):', e.message);
+  }
+}
+
+/**
+ * public/js and public/css are Mix output dirs (.gitignore keeps only .gitkeep).
+ */
+function emptyMixOutputDirs() {
+  for (const dir of ['public/js', 'public/css']) {
+    const fullPath = path.join(root, dir);
+    if (!fs.existsSync(fullPath)) {
+      fs.mkdirSync(fullPath, { recursive: true });
+      console.log('created:', dir);
+      continue;
+    }
+    for (const name of fs.readdirSync(fullPath)) {
+      if (name === '.gitkeep') {
+        continue;
+      }
+      fs.rmSync(path.join(fullPath, name), { recursive: true, force: true });
+    }
+    console.log('emptied:', dir);
+  }
+}
+
+function clearCompiledBladeViews() {
+  const viewsDir = path.join(root, 'storage/framework/views');
+  if (!fs.existsSync(viewsDir)) {
+    return;
+  }
+  let n = 0;
+  for (const name of fs.readdirSync(viewsDir)) {
+    if (name.endsWith('.php')) {
+      fs.unlinkSync(path.join(viewsDir, name));
+      n++;
+    }
+  }
+  if (n) {
+    console.log('cleared:', n, 'compiled Blade files in storage/framework/views');
+  }
+}
+
+function main() {
+  console.log('clean-build: stripping Mix outputs and caches' + (fullClean ? ' (--all)' : '') + '…');
+
+  emptyMixOutputDirs();
+
+  unlinkIfExists('public/mix-manifest.json');
+  unlinkIfExists('build-report.json');
+  unlinkIfExists('public/hot');
+
+  rmPath('.webpack');
+  rmPath('node_modules/.cache');
+
+  if (fullClean) {
+    clearCompiledBladeViews();
+  }
+
+  console.log('clean-build: done.');
+}
+
+main();
