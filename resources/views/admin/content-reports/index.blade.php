@@ -1,6 +1,6 @@
 <x-master-layout>
 <style>
-    /* Align with post-job-request / dashboard tables */
+    /* Align with post-job-request / dashboard tables nice going */
     .content-reports-page .table thead th {
         background: #3333ff !important;
         color: #fff !important;
