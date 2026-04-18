@@ -69,5 +69,21 @@ class CustomerRating extends Model
 
         return $query;
     }
+
+    /**
+     * Backend list: admin sees all; customers (user_type user) only see ratings they received.
+     */
+    public function scopeListForBackend($query)
+    {
+        $user = auth()->user();
+        if ($user && $user->hasAnyRole(['admin', 'demo_admin'])) {
+            return $query;
+        }
+        if ($user && $user->user_type === 'user') {
+            return $query->where('customer_id', $user->id);
+        }
+
+        return $query->whereRaw('1 = 0');
+    }
 }
 

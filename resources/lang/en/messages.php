@@ -808,6 +808,13 @@
     'advance_payment_amount' => 'Advance payment amount',
     'want_register_provider' => 'Want to register as Employer or Worker?',
     'user_ratings' => 'Customer Ratings',
+    /** Frontend labels: DB roles stay user / provider */
+    'sidebar_customer_rates_employer' => 'Customer → employer ratings',
+    'sidebar_employer_rates_customer' => 'Ratings from employers',
+    'customer_received_ratings_title' => 'Ratings from employers',
+    'customer_received_ratings_subtitle' => 'Ratings you received from employers (service bookings). Stored as provider → customer in the database.',
+    'rating_col_employer' => 'Employer (provider)',
+    'rating_col_customer' => 'Customer',
     'handyman_ratings' => 'Worker Ratings',
     'ratings' => 'Ratings',
     'user_wallet_setting' => 'Customer Wallet Setting',

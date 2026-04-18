@@ -1038,20 +1038,20 @@ $menu->add('<span>'.__('messages.sidebar_favourit_provider').'</span><span class
             )
             ->link->attr(['class' => '']);
 
+        // Ratings section: category visible to all logged-in users; each child filters by permission or user_type
         $menu
             ->add(__('messages.sidebar_form_title', ['form' => trans('messages.ratings')]), [
                 'class' => 'category-main',
-            ])
-            ->data('permission', ['userrating list', 'handymanrating list']);
+            ]);
 
-        // Customer (user) ratings: employers/providers only — not handymen (permission alone can match both roles)
+        // Customer rates employer (booking_ratings): providers + admin — not handymen
         if (auth()->user()->user_type === 'provider' || auth()->user()->hasAnyRole(['admin', 'demo_admin'])) {
             $menu
                 ->add(
                     '<span>' .
-                        trans('messages.list_form_title', ['form' => trans('messages.user_ratings')]) .
+                        trans('messages.list_form_title', ['form' => trans('messages.sidebar_customer_rates_employer')]) .
                         '</span><span class="custom-tooltip"><span class="tooltip-text">' .
-                        __('messages.user_ratings') .
+                        __('messages.sidebar_customer_rates_employer') .
                         '</span></span>',
                     ['route' => 'booking-rating.index'],
                 )
@@ -1082,8 +1082,29 @@ $menu->add('<span>'.__('messages.sidebar_favourit_provider').'</span><span class
 <path d="M11.9785 9.52376L13.2907 13.4603H15.6187V4.19043H11.9785V9.52376Z" stroke="currentColor" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>',
             )
-            ->nickname('handyman_ratings')
+                ->nickname('handyman_ratings')
             ->data('permission', 'handymanrating list');
+
+        // Employer → customer (customer_ratings): no Spatie permission — only customers + admins (see CustomerRatingController)
+        if (auth()->user()->user_type === 'user' || in_array(auth()->user()->user_type, ['admin', 'demo_admin'], true)) {
+            $menu
+                ->add(
+                    '<span>' .
+                        trans('messages.list_form_title', ['form' => trans('messages.sidebar_employer_rates_customer')]) .
+                        '</span><span class="custom-tooltip"><span class="tooltip-text">' .
+                        __('messages.sidebar_employer_rates_customer') .
+                        '</span></span>',
+                    ['route' => 'customer-rating.index'],
+                )
+                ->prepend(
+                    '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M11.9787 17.3546L8.6771 19.8096L9.94694 15.8731L6.60303 13.4604H10.7088L11.9787 9.52393L13.2909 13.4604H17.3967L14.0528 15.8731L15.3226 19.8096L11.9787 17.3546Z" stroke="currentColor" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M11.9787 9.52376V4.19043H8.38086V13.4603H10.7089L11.9787 9.52376Z" stroke="currentColor" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M11.9785 9.52376L13.2907 13.4603H15.6187V4.19043H11.9785V9.52376Z" stroke="currentColor" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>',
+                )
+                ->nickname('employer_rates_customer');
+        }
 
         $menu
             ->add(__('messages.sidebar_form_title', ['form' => trans('messages.system')]), ['class' => 'category-main'])

@@ -41,6 +41,7 @@ use App\Http\Controllers\ServicePackageController;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\BookingRatingController;
 use App\Http\Controllers\HandymanRatingController;
+use App\Http\Controllers\CustomerRatingController;
 use App\Http\Controllers\UserServiceListController;
 use App\Http\Controllers\ProviderSlotController;
 use App\Http\Controllers\NotificationTemplatesController;
@@ -433,6 +434,11 @@ Route::group(['middleware' => ['auth', 'verified', 'active']], function () {
     Route::get('handyman-rating-index-data', [HandymanRatingController::class, 'index_data'])->name('handyman-rating.index_data');
     Route::post('handyman-rating-bulk-action', [HandymanRatingController::class, 'bulk_action'])->name('handyman-rating.bulk-action');
     Route::post('handyman-rating/{id}', [HandymanController::class, 'destroy'])->name('handyman-rating.destroy');
+
+    Route::resource('customer-rating', CustomerRatingController::class)->only(['index']);
+    Route::get('customer-rating-index-data', [CustomerRatingController::class, 'index_data'])->name('customer-rating.index_data');
+    Route::post('customer-rating-bulk-action', [CustomerRatingController::class, 'bulk_action'])->name('customer-rating.bulk-action');
+    Route::post('customer-rating/{id}', [CustomerRatingController::class, 'destroy'])->name('customer-rating.destroy');
 
     Route::post('/payment-layout-page', [PaymentGatewayController::class, 'paymentPage'])->name('payment_layout_page');
     Route::post('payment-settings/save', [PaymentGatewayController::class, 'paymentsettingsUpdates'])->name('paymentsettingsUpdates');
