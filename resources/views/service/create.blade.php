@@ -978,6 +978,7 @@ Snackbar.show({ text: '{{ __("messages.advance_payment_amount") }} {{ __("messag
                     // Initialize select2 on all selects (including tax_country_id_display)
                     $('#country_id, #state_id, #city_id, #tax_country_id_display').select2({
                         width: '100%',
+                        dropdownParent: $('body'),
                         placeholder: "{{ __('messages.select_name', ['select' => __('messages.country')]) }}"
                     });
 
@@ -993,9 +994,12 @@ Snackbar.show({ text: '{{ __("messages.advance_payment_amount") }} {{ __("messag
                         }
                         
                         // Initialize select2
+                        var $ddParent = $this.closest('.modal');
+                        if (!$ddParent.length) { $ddParent = $this.closest('.offcanvas'); }
+                        if (!$ddParent.length) { $ddParent = $('body'); }
                         $this.select2({
                             width: '100%',
-                            dropdownParent: $this.parent(),
+                            dropdownParent: $ddParent,
                             placeholder: $this.attr('data-placeholder') || $this.data('placeholder') || 'Select an option...'
                         });
                     });

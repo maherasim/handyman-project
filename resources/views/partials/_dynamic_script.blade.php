@@ -6,9 +6,13 @@
         // Initialize Select2 only if not already initialized
         $('.select2js').each(function() {
             if (!$(this).hasClass('select2-hidden-accessible')) {
-                $(this).select2({
+                var $el = $(this);
+                var $parent = $el.closest('.modal');
+                if (!$parent.length) { $parent = $el.closest('.offcanvas'); }
+                if (!$parent.length) { $parent = $('body'); }
+                $el.select2({
                     width: '100%',
-                    dropdownParent: $(this).parent()
+                    dropdownParent: $parent
                 });
             }
         });

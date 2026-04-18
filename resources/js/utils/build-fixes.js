@@ -3,6 +3,8 @@
  * Addresses common build-related issues with Vue/Laravel applications
  */
 
+import { resolveSelect2DropdownParent } from './select2-init.js';
+
 export class BuildFixes {
     constructor() {
         this.initialized = false;
@@ -24,7 +26,6 @@ export class BuildFixes {
         this.fixCacheIssues();
 
         this.initialized = true;
-        console.log('Build fixes initialized successfully');
     }
 
     /**
@@ -68,7 +69,7 @@ export class BuildFixes {
                         try {
                             $element.select2({
                                 width: '100%',
-                                dropdownParent: $element.parent(),
+                                dropdownParent: resolveSelect2DropdownParent($element),
                                 allowClear: true
                             });
                         } catch (error) {

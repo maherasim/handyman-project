@@ -3,6 +3,29 @@
  * Prevents multiple initializations and conflicts
  */
 
+/**
+ * Select2 needs the dropdown attached to a parent that is not overflow-clipped.
+ * Using the immediate parent() breaks often in admin layouts after production CSS/minify.
+ */
+export function resolveSelect2DropdownParent($el) {
+    const $ = window.$ || window.jQuery;
+    if (!$) {
+        return null;
+    }
+    if (!$el || !$el.length) {
+        return $(document.body);
+    }
+    const $modal = $el.closest('.modal');
+    if ($modal.length) {
+        return $modal;
+    }
+    const $off = $el.closest('.offcanvas');
+    if ($off.length) {
+        return $off;
+    }
+    return $(document.body);
+}
+
 export function initializeSelect2(element, options = {}) {
     if (!element || !window.$) {
         console.warn('Select2 element or jQuery not available');
@@ -17,9 +40,10 @@ export function initializeSelect2(element, options = {}) {
     }
 
     try {
+        const $parent = resolveSelect2DropdownParent($element);
         const defaultOptions = {
             width: '100%',
-            dropdownParent: $element.parent(),
+            ...( $parent ? { dropdownParent: $parent } : {} ),
             allowClear: true,
             placeholder: $element.attr('placeholder') || 'Select an option...',
             ...options
