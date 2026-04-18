@@ -143,7 +143,7 @@
                                 @endif
                                 @if(optional($socialmedia)->youtube_url)
                                 <a href="{{ optional($socialmedia)->youtube_url }}" target="_blank" rel="noopener noreferrer" class="footer-social-btn footer-social-yt" title="YouTube" aria-label="YouTube">
-                                    <i class="ri-youtube-fill"></i>
+                                    <img src="{{ asset('assets/youtube.png') }}?v=20260418" alt="" width="28" height="28" class="footer-social-img footer-social-img-yt" loading="lazy">
                                 </a>
                                 @endif
                             </div>
@@ -701,7 +701,8 @@
 .footer-social-img-fb { width: 30px !important; height: auto !important; max-height: 30px; }
 .footer-social-img-tw,
 .footer-social-img-tg,
-.footer-social-img-li { width: 28px !important; height: 28px !important; }
+.footer-social-img-li,
+.footer-social-img-yt { width: 28px !important; height: 28px !important; }
 
 /* ------ LINKS COLUMN ------ */
 .footer-links-col,
