@@ -32,7 +32,7 @@
         </style>
     </head>
     <div class="container-fluid">
-        <div class="row">
+        {{-- <div class="row">
             <div class="col-lg-12">
                 <div class="card card-block card-stretch">
                     <div class="card-body p-0">
@@ -45,7 +45,7 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div> --}}
     </div>
     <div class="card">
         <div class="card-body">
