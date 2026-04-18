@@ -16,6 +16,7 @@ use App\Models\Service;
 use App\Models\User;
 use App\Models\UserBlock;
 use App\Support\UgcListing;
+use App\Support\UgcReportReasons;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
@@ -24,30 +25,12 @@ class UgcSafetyController extends Controller
 {
     protected function reportReasonOptions(): array
     {
-        return [
-            ['value' => 'off_platform_requests', 'label' => 'Off-platform requests'],
-            ['value' => 'misleading_profile_or_skills', 'label' => 'Misleading profile or skills'],
-            ['value' => 'no_show_or_unreliability', 'label' => 'No-show or unreliability'],
-            ['value' => 'poor_work_quality', 'label' => 'Poor work quality'],
-            ['value' => 'unprofessional_behavior', 'label' => 'Unprofessional behavior'],
-            ['value' => 'fraud_or_misleading_information', 'label' => 'Fraud or misleading information'],
-            ['value' => 'overcharging_or_hidden_fees', 'label' => 'Overcharging or hidden fees'],
-            ['value' => 'incomplete_or_abandoned_work', 'label' => 'Incomplete or abandoned work'],
-            ['value' => 'harassment_or_bullying', 'label' => 'Harassment or bullying'],
-            ['value' => 'spam_or_scams', 'label' => 'Spam or scams'],
-            ['value' => 'hate_speech', 'label' => 'Hate speech'],
-            ['value' => 'violence_or_threats', 'label' => 'Violence or threats'],
-            ['value' => 'payment_issues', 'label' => 'Payment issues'],
-            ['value' => 'overcharging_or_extra_fees', 'label' => 'Overcharging or extra fees'],
-            ['value' => 'violation_of_platform_rules', 'label' => 'Violation of platform rules'],
-            ['value' => 'plagiarism_or_copied_work', 'label' => 'Plagiarism or copied work'],
-            ['value' => 'nudity_or_sexual_content', 'label' => 'Nudity or sexual content'],
-        ];  
+        return UgcReportReasons::options();
     }
 
     protected function reportReasonValues(): array
     {
-        return array_map(static fn ($r) => $r['value'], $this->reportReasonOptions());
+        return UgcReportReasons::valueKeys();
     }
 
     public function reportProfile(Request $request)
@@ -559,13 +542,7 @@ class UgcSafetyController extends Controller
 
     protected function ugcReportReasonLabel(string $reason): string
     {
-        foreach ($this->reportReasonOptions() as $row) {
-            if (($row['value'] ?? '') === $reason) {
-                return (string) $row['label'];
-            }
-        }
-
-        return ucwords(str_replace('_', ' ', $reason));
+        return UgcReportReasons::label($reason);
     }
 
     /**

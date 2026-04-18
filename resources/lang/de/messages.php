@@ -1788,7 +1788,7 @@
         'hate_speech' => 'Hassrede',
         'violence_or_threats' => 'Gewalt oder Drohungen',
         'payment_issues' => 'Zahlungsprobleme',
-        'overcharging_or_extra_fees' => 'Überhöhte Preise oder Zusatzgebühren',
+        'overcharging_or_extra_fees' => 'Überhöhte Preise oder zusätzliche Gebühren',
         'violation_of_platform_rules' => 'Verstoß gegen Plattformregeln',
         'plagiarism_or_copied_work' => 'Plagiate oder kopierte Inhalte',
         'nudity_or_sexual_content' => 'Nacktheit oder sexuelle Inhalte',

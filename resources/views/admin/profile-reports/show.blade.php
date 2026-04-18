@@ -113,10 +113,6 @@
                         </div>
                     </div>
                     <div class="mb-4 pb-4 border-bottom">
-                        <div class="report-field-label">{{ __('messages.profile_report_field_reason_code') }}</div>
-                        <div class="p-3 bg-light rounded-3 border font-monospace small text-break user-select-all">{{ $r->reason }}</div>
-                    </div>
-                    <div class="mb-4 pb-4 border-bottom">
                         <div class="report-field-label">{{ __('messages.profile_report_field_report_status') }}</div>
                         <div>
                             <span class="badge fs-6 px-3 py-2 {{ $st === 'pending' ? 'bg-warning text-dark' : ($st === 'dismissed' ? 'bg-secondary' : 'bg-info text-dark') }}">
