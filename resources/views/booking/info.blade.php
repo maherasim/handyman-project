@@ -109,7 +109,7 @@
             $grandTotal = $totalWithExtras + $taxAmount;
         @endphp
         <tr>
-            <td>{{ __('messages.grand_total') }}</td>
+            <td>{{ __('messages.grand_total') }} good</td>
             <td class="bk-value">{{ getPriceFormat($grandTotal) }}</td>
         </tr>
 
