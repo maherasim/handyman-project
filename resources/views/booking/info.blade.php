@@ -1,13 +1,6 @@
 @php
     $sitesetup = App\Models\Setting::where('type', 'site-setup')->where('key', 'site-setup')->first();
     $datetime = $sitesetup ? json_decode($sitesetup->value) : null;
-    // Label %: use DB column as loaded (BookingController may set service.advance_payment_amount to 0 when type !== fixed)
-    $advancePctForLabel = isset($bookingdata->service)
-        ? (float) ($bookingdata->service->getOriginal('advance_payment_amount') ?? 0)
-        : 0;
-    if ($advancePctForLabel <= 0 && isset($advanceservice) && (float) $advanceservice > 0) {
-        $advancePctForLabel = (float) $advanceservice;
-    }
 @endphp
 {{ html()->hidden('id', $bookingdata->id ?? null) }}
 <table class="table-sm title-color align-right w-100" style="display: none;">
@@ -122,7 +115,7 @@
 
         <!-- Advance Payment — % from service; amount from booking record -->
         <tr>
-            <td>{{ __('messages.pjr_advance_payment_line', ['pct' => $advancePctForLabel]) }}</td>
+            <td>{{ __('messages.pjr_advance_payment_line', ['pct' => $bookingdata->service->advance_payment_amount]) }}</td>
             <td class="bk-value">{{ getPriceFormat($bookingdata->advance_paid_amount) }}</td>
         </tr>
         <tr class="grand-total">
@@ -827,7 +820,7 @@
                                             style="background: linear-gradient(135deg, #f7c59f, #ff9a9e); color: #fff;">
                                             <div class="card-body">
                                                 <p class="mb-1 fw-bold text-uppercase" style="opacity: 0.9;">
-                                                    {{ __('messages.pjr_advance_payment_line', ['pct' => $advancePctForLabel]) }}
+                                                    {{ __('messages.pjr_advance_payment_line', ['pct' => $bookingdata->service->advance_payment_amount]) }}
                                                 </p>
                                                 <p class="mb-0 fs-5 fw-bold" id="service_schedule__span">
                                                     {{ getPriceFormat($bookingdata->advance_paid_amount) }}
@@ -1276,7 +1269,7 @@
                                     </tr>
 
                                     <tr>
-                                        <td>{{ __('messages.pjr_advance_payment_line', ['pct' => $advancePctForLabel]) }}</td>
+                                        <td>{{ __('messages.pjr_advance_payment_line', ['pct' => $bookingdata->service->advance_payment_amount]) }}</td>
                                         <td class="bk-value">{{ getPriceFormat($bookingdata->advance_paid_amount) }}</td>
                                     </tr>
                                     <tr class="grand-total">

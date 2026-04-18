@@ -1074,7 +1074,9 @@ class FrontendController extends Controller
         $serviceconfig = Setting::getValueByKey('service-configurations', 'service-configurations');
         $advancePaymentPercentage = isset($serviceconfig->advance_paynment_percantage) ? $serviceconfig->advance_paynment_percantage : 0;
         $global_advance_payment = isset($serviceconfig->global_advance_payment) ? $serviceconfig->global_advance_payment : 0;
-        $bookingData['service']['is_enable_advance_payment'] = $bookingData['service']['type'] == 'fixed' ? ($bookingData['service']['is_enable_advance_payment'] == 1 ? $bookingData['service']['is_enable_advance_payment'] : $global_advance_payment) : 0;
+        $bookingData['service']['is_enable_advance_payment'] = $bookingData['service']['is_enable_advance_payment'] == 1 ? $bookingData['service']['is_enable_advance_payment'] : $global_advance_payment;
+        $svcAdvPct = (float) ($bookingData['service']['advance_payment_amount'] ?? 0);
+        $bookingData['service']['advance_payment_amount'] = $svcAdvPct > 0 ? $svcAdvPct : (float) $advancePaymentPercentage;
         $advancepaymentamount = ($bookingData['booking_detail']['total_amount'] * $bookingData['service']['advance_payment_amount']) / 100;
         // $bookingData['cancellationcharges'] = isset($serviceconfig->cancellation_charge_amount) ?  (double)$serviceconfig->cancellation_charge_amount: 0;
         // $bookingData['cancellation_charge_amount'] = $findBooking->getCancellationCharges();

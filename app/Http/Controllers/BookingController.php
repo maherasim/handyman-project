@@ -1284,8 +1284,8 @@ public function bookingAssigned(Request $request)
         $serviceconfig = Setting::getValueByKey('service-configurations', 'service-configurations');
         $advancePaymentPercentage = isset($serviceconfig->advance_paynment_percantage) ? $serviceconfig->advance_paynment_percantage : 0;
         $global_advance_payment = isset($serviceconfig->global_advance_payment) ? $serviceconfig->global_advance_payment : 0;
-        $bookingdata->service->is_enable_advance_payment = $bookingdata->service->type == 'fixed' ? ($bookingdata->service->is_enable_advance_payment == 1 ? $bookingdata->service->is_enable_advance_payment : $global_advance_payment) : 0;
-        $bookingdata->service->advance_payment_amount = $bookingdata->service->type == 'fixed' ? ($bookingdata->service->advance_payment_amount > 0 ? $bookingdata->service->advance_payment_amount : $advancePaymentPercentage) : 0;
+        $bookingdata->service->is_enable_advance_payment = $bookingdata->service->is_enable_advance_payment == 1 ? $bookingdata->service->is_enable_advance_payment : $global_advance_payment;
+        $bookingdata->service->advance_payment_amount = $bookingdata->service->advance_payment_amount > 0 ? $bookingdata->service->advance_payment_amount : $advancePaymentPercentage;
 
         // Effective advance % (after global/service merge) — used in booking info pricing table
         $advanceservice = $bookingdata->service->advance_payment_amount;
@@ -1361,8 +1361,8 @@ public function bookingAssigned(Request $request)
             $serviceconfig = Setting::getValueByKey('service-configurations', 'service-configurations');
             $advancePaymentPercentage = isset($serviceconfig->advance_paynment_percantage) ? $serviceconfig->advance_paynment_percantage : 0;
             $global_advance_payment = isset($serviceconfig->global_advance_payment) ? $serviceconfig->global_advance_payment : 0;
-            $bookingdata->service->is_enable_advance_payment = $bookingdata->service->type == 'fixed' ? ($bookingdata->service->is_enable_advance_payment == 1 ? $bookingdata->service->is_enable_advance_payment : $global_advance_payment) : 0;
-            $bookingdata->service->advance_payment_amount = $bookingdata->service->type == 'fixed' ? ($bookingdata->service->advance_payment_amount > 0 ? $bookingdata->service->advance_payment_amount : $advancePaymentPercentage) : 0;
+            $bookingdata->service->is_enable_advance_payment = $bookingdata->service->is_enable_advance_payment == 1 ? $bookingdata->service->is_enable_advance_payment : $global_advance_payment;
+            $bookingdata->service->advance_payment_amount = $bookingdata->service->advance_payment_amount > 0 ? $bookingdata->service->advance_payment_amount : $advancePaymentPercentage;
             $pdf = Pdf::loadView('booking.invoice', ['bookingdata' => $bookingdata, 'data' => $data, 'payment' => $payment]);
 
             return $pdf->stream('invoice_'.$bookingdata->id.'.pdf');
