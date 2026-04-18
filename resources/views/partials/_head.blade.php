@@ -19,8 +19,8 @@
 <link rel="stylesheet" href="{{ asset('vendor/line-awesome/dist/line-awesome/css/line-awesome.min.css')}}">
 <link rel="stylesheet" href="{{ asset('vendor/remixicon/fonts/remixicon.css')}}">
 <link rel="stylesheet" href="{{ asset('vendor/confirmJs/jquery-confirm.css')}}">
-<!-- <link rel="stylesheet" href="{{ asset('vendor/select2/css/select2.min.css')}}"> -->
-<link rel="stylesheet" href="{{ asset('css/themes/select2.min.css')}}">
+{{-- Select2 base styles: must NOT live under public/css alone — npm clean wipes public/css and breaks all selects. Use vendor copy (or bundle). --}}
+<link rel="stylesheet" href="{{ asset('vendor/select2/css/select2.min.css')}}">
 <link rel="stylesheet" href="{{ asset('vendor/magnific-popup/magnific-popup.css') }}">
 <!-- @if(session()->get('dir') == 'rtl')
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
