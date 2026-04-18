@@ -58,7 +58,7 @@
             <div class="col-lg-12">
                 <div class="row">
                     <div class="col-lg-12">
-                        <div class="card card-block card-stretch">
+                        {{-- <div class="card card-block card-stretch">
                             <div class="d-flex card-body flex-wrap align-items-baseline gap-2">
                                 <h5 class="card-title me-1 mb-0">{{ __('messages.earning') }}</h5>
                                 @if(($earningScope ?? 'all') === 'booking')
@@ -68,7 +68,7 @@
                                 @endif
                                 <span class="">({{ __('messages.tax_not_included') }})</span>
                             </div>
-                        </div>
+                        </div> --}}
                         <div class="card">
                             <div class="card-body">
                                 <div class="row justify-content-end">
