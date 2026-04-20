@@ -1797,9 +1797,9 @@
                     </div>
                 </div>
 
-                <div class="t9-testimonial-wrap">
+                {{-- <div class="t9-testimonial-wrap">
                     <testimonial-section />
-                </div>
+                </div> --}}
             </div>
         </section>
     @endif
