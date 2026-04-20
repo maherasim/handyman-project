@@ -960,7 +960,7 @@
                                         @foreach ($serviceData['service_faq'] as $service_faq)
                                             <div class="accordion-item">
                                                 <div class="accrodion-title collapsed" role="button" tabindex="0"
-                                                    data-bs-target="#q-{{ $service_faq['id'] }}" aria-expanded="false"
+                                                    data-bs-toggle="collapse" data-bs-target="#q-{{ $service_faq['id'] }}" aria-expanded="false"
                                                     aria-controls="q-{{ $service_faq['id'] }}">
                                                     <div class="d-flex gap-2">
                                                         <h6 class="question text-primary flex-shrink-0">Q:</h6>
