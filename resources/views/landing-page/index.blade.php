@@ -1286,6 +1286,188 @@
             </div>
         @endif
 
+    @if ($sectionData && isset($sectionData['section_7']) && (int) ($sectionData['section_7']['section_7'] ?? 0) === 1)
+        @php
+            $s7 = $sectionData['section_7'];
+            $s7Url = $s7['url'] ?? '';
+            $s7YoutubeId = null;
+            if ($s7Url !== '' && preg_match('/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([a-zA-Z0-9_-]{6,})/', $s7Url, $s7m)) {
+                $s7YoutubeId = $s7m[1];
+            }
+            $s7Subtitles = $s7['subtitle'] ?? [];
+            $s7Subdescs = $s7['subdescription'] ?? [];
+            $s7HasVimage = !empty($section7Setting) && getMediaFileExit($section7Setting, 'vimage');
+            $s7HasMedia = $s7YoutubeId || $s7HasVimage;
+        @endphp
+        <div class="section-padding landing-s7-workflow">
+            <div class="container">
+                <div class="row align-items-start g-4 g-lg-5 mb-4 mb-lg-5">
+                    <div class="col-lg-6">
+                        <h2 class="landing-s7-title mb-0">{{ $s7['title'] ?? '' }}</h2>
+                    </div>
+                    <div class="col-lg-6">
+                        @if (!empty($s7['description']))
+                            <p class="landing-s7-lead mb-0">{{ $s7['description'] }}</p>
+                        @endif
+                    </div>
+                </div>
+                <div class="row align-items-start g-4 g-lg-5">
+                    @if ($s7HasMedia)
+                        <div class="col-lg-6">
+                            @if ($s7YoutubeId)
+                                <div class="landing-s7-video rounded-4 overflow-hidden shadow-sm position-relative"
+                                    data-youtube-id="{{ $s7YoutubeId }}">
+                                    <div class="landing-s7-video-poster position-relative">
+                                        <img src="https://img.youtube.com/vi/{{ $s7YoutubeId }}/maxresdefault.jpg"
+                                            alt=""
+                                            class="landing-s7-poster-img w-100 d-block"
+                                            loading="lazy"
+                                            onerror="this.onerror=null;this.src='https://img.youtube.com/vi/{{ $s7YoutubeId }}/hqdefault.jpg'">
+                                        <button type="button" class="landing-s7-play btn border-0 p-0 rounded-circle"
+                                            aria-label="{{ __('landingpage.play_video') }}">
+                                            <span class="landing-s7-play-inner d-flex align-items-center justify-content-center rounded-circle">
+                                                <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
+                                            </span>
+                                        </button>
+                                    </div>
+                                    <div class="landing-s7-video-frame ratio ratio-16x9 d-none bg-dark">
+                                        <iframe class="landing-s7-iframe border-0 w-100 h-100"
+                                            title="{{ $s7['title'] ?? 'Video' }}"
+                                            data-src="https://www.youtube.com/embed/{{ $s7YoutubeId }}?autoplay=1&rel=0"
+                                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                            allowfullscreen loading="lazy"></iframe>
+                                    </div>
+                                </div>
+                            @elseif ($s7HasVimage)
+                                <div class="landing-s7-video rounded-4 overflow-hidden shadow-sm">
+                                    <img src="{{ getSingleMedia($section7Setting, 'vimage') }}"
+                                        alt="{{ $s7['title'] ?? '' }}"
+                                        class="landing-s7-poster-img w-100 d-block">
+                                </div>
+                            @endif
+                        </div>
+                    @endif
+                    <div class="{{ $s7HasMedia ? 'col-lg-6' : 'col-12' }}">
+                        <div class="landing-s7-steps">
+                            @foreach ($s7Subtitles as $s7i => $s7Sub)
+                                @php
+                                    $s7StepTitle = is_array($s7Sub) ? ($s7Sub[0] ?? '') : $s7Sub;
+                                    $s7RawDesc = $s7Subdescs[$s7i] ?? '';
+                                    $s7StepDesc = is_array($s7RawDesc) ? ($s7RawDesc[0] ?? '') : $s7RawDesc;
+                                @endphp
+                                @if ($s7StepTitle !== '' || $s7StepDesc !== '')
+                                    <div class="landing-s7-step d-flex gap-3 gap-md-4">
+                                        <div class="landing-s7-step-num flex-shrink-0">{{ $loop->iteration }}</div>
+                                        <div class="landing-s7-step-body flex-grow-1 min-w-0">
+                                            @if ($s7StepTitle !== '')
+                                                <h5 class="landing-s7-step-title mb-2">{{ $s7StepTitle }}</h5>
+                                            @endif
+                                            @if ($s7StepDesc !== '')
+                                                <p class="landing-s7-step-desc mb-0">{{ $s7StepDesc }}</p>
+                                            @endif
+                                        </div>
+                                    </div>
+                                @endif
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <style>
+            .landing-s7-workflow { background: var(--bs-body-bg, #fff); }
+            .landing-s7-title {
+                font-size: clamp(1.5rem, 2.5vw, 2.125rem);
+                font-weight: 700;
+                color: #0f172a;
+                letter-spacing: -0.02em;
+                line-height: 1.25;
+            }
+            .landing-s7-lead {
+                font-size: 1.0625rem;
+                line-height: 1.65;
+                color: #64748b;
+                font-weight: 400;
+            }
+            .landing-s7-poster-img {
+                aspect-ratio: 16 / 9;
+                object-fit: cover;
+                vertical-align: middle;
+            }
+            .landing-s7-play {
+                position: absolute;
+                left: 50%;
+                top: 50%;
+                transform: translate(-50%, -50%);
+                z-index: 2;
+                cursor: pointer;
+                transition: transform 0.2s ease;
+            }
+            .landing-s7-play:hover { transform: translate(-50%, -50%) scale(1.06); }
+            .landing-s7-play:focus-visible { outline: 2px solid #3333ff; outline-offset: 4px; }
+            .landing-s7-play-inner {
+                width: 4.5rem;
+                height: 4.5rem;
+                background: #3333ff;
+                color: #fff;
+                box-shadow: 0 12px 40px rgba(51, 51, 255, 0.45);
+                padding-left: 4px;
+            }
+            .landing-s7-step {
+                padding: 1.25rem 0;
+                border-bottom: 1px solid #e2e8f0;
+            }
+            .landing-s7-step:last-child { border-bottom: none; padding-bottom: 0; }
+            .landing-s7-step:first-child { padding-top: 0; }
+            .landing-s7-step-num {
+                width: 2.5rem;
+                height: 2.5rem;
+                border-radius: 50%;
+                background: #f1f5f9;
+                color: #64748b;
+                font-weight: 600;
+                font-size: 0.9375rem;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                line-height: 1;
+            }
+            .landing-s7-step-title {
+                font-size: 1.0625rem;
+                font-weight: 700;
+                color: #0f172a;
+            }
+            .landing-s7-step-desc {
+                font-size: 0.96875rem;
+                line-height: 1.65;
+                color: #64748b;
+            }
+            @media (max-width: 991.98px) {
+                .landing-s7-title { margin-bottom: 0.5rem; }
+            }
+        </style>
+        @if ($s7YoutubeId)
+            <script>
+                (function () {
+                    document.querySelectorAll('.landing-s7-workflow .landing-s7-play').forEach(function (btn) {
+                        btn.addEventListener('click', function () {
+                            var root = btn.closest('.landing-s7-video');
+                            if (!root) return;
+                            var poster = root.querySelector('.landing-s7-video-poster');
+                            var frameWrap = root.querySelector('.landing-s7-video-frame');
+                            var iframe = root.querySelector('.landing-s7-iframe');
+                            if (!iframe || !frameWrap) return;
+                            var src = iframe.getAttribute('data-src');
+                            if (src) iframe.setAttribute('src', src);
+                            if (poster) poster.classList.add('d-none');
+                            frameWrap.classList.remove('d-none');
+                        });
+                    });
+                })();
+            </script>
+        @endif
+    @endif
+
     @if ($auth_user_id)
         <!-- Recently Viewed Service -->
         @if ($sectionData && isset($sectionData['section_8']) && $sectionData['section_8']['section_8'] == 1)
@@ -1300,7 +1482,7 @@
                             <div class="col-lg-2 col-md-none"></div>
                             <div class="col-lg-8 col-md-12">
                                 <div class="iq-title-box text-center center">
-                                    <h3 class="text-capitalize line-count-1">{{ $sectionData['title'] }}
+                                    <h3 class="text-capitalize line-count-1">{{ $sectionData['section_8']['title'] ?? '' }}
                                         <span class="highlighted-text">
                                             <span class="highlighted-text-swipe"></span>
                                             <span class="highlighted-image">
@@ -1580,7 +1762,7 @@
 
     
 
-    {{-- @if ($sectionData && isset($sectionData['section_9']) && $sectionData['section_9']['section_9'] == 1)
+    @if ($sectionData && isset($sectionData['section_9']) && $sectionData['section_9']['section_9'] == 1)
         <section class="t9-section" aria-labelledby="t9-title">
             <div class="container">
                 <header class="t9-header">
@@ -1793,7 +1975,7 @@
                 body .ratingSlider .swiper-button-prev { width: 44px !important; height: 44px !important; }
             }
         </style>
-    @endif --}}
+    @endif
 
     <!-- For pros / providers -->
     <div class="section-padding">

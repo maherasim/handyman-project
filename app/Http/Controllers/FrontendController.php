@@ -47,18 +47,24 @@ class FrontendController extends Controller
         $auth_user_id = null;
         $favourite = null;
 
-        if (auth()->check() && auth()->user()->hasRole('user')) {
+        if (auth()->check()) {
             $auth_user_id = auth()->user()->id;
-            $favourite = UserFavouriteService::where('user_id', $auth_user_id)->get();
+            if (auth()->user()->hasRole('user')) {
+                $favourite = UserFavouriteService::where('user_id', $auth_user_id)->get();
+            }
         }
 
         // Fetch all section data from FrontendSetting
         $sectionData = [];
-        $sectionKeys = ['section_1', 'section_2', 'section_3', 'section_4', 'section_5', 'section_6', 'section_7', 'section_9', 'section_10'];
+        $sectionKeys = ['section_1', 'section_2', 'section_3', 'section_4', 'section_5', 'section_6', 'section_7', 'section_8', 'section_9', 'section_10'];
+        $section7Setting = null;
 
         foreach ($sectionKeys as $key) {
             $section = FrontendSetting::where('key', $key)->first();
             $sectionData[$key] = $section ? json_decode($section->value, true) : null;
+            if ($key === 'section_7') {
+                $section7Setting = $section;
+            }
         }
 
         // Job requests: latest public rows from post_job_requests (same rules as job marketplace; not curated IDs)
@@ -194,7 +200,7 @@ class FrontendController extends Controller
         }
 
         return view('landing-page.index', compact(
-            'sectionData', 'favouriteService', 'postjobservice', 'auth_user_id', 'favourite', 'totalRating',
+            'sectionData', 'section7Setting', 'favouriteService', 'postjobservice', 'auth_user_id', 'favourite', 'totalRating',
             'jobRequests', 'categoryrequest', 'servicerequest', 'featuredrequest',
             'totalBookings', 'totalProviders', 'bookingsLast24h', 'recentBookings', 'areasWeCover', 'firstBookingCoupon',
             'landingTestimonials'

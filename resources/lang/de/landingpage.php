@@ -1,5 +1,6 @@
 <?php return array (
   'home' => 'Home',
+  'play_video' => 'Video abspielen',
   'categories' => 'Kategorien',
   'services' => 'Services',
   'blogs' => 'Blogs',
