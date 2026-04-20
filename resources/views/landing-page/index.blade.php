@@ -1291,7 +1291,7 @@
             $s7 = $sectionData['section_7'];
             $s7Url = $s7['url'] ?? '';
             $s7YoutubeId = null;
-            if ($s7Url !== '' && preg_match('/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([a-zA-Z0-9_-]{6,})/', $s7Url, $s7m)) {
+            if ($s7Url !== '' && preg_match('/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{6,})/i', $s7Url, $s7m)) {
                 $s7YoutubeId = $s7m[1];
             }
             $s7Subtitles = $s7['subtitle'] ?? [];
@@ -1322,9 +1322,12 @@
                                             alt=""
                                             class="landing-s7-poster-img w-100 d-block"
                                             loading="lazy"
+                                            draggable="false"
                                             onerror="this.onerror=null;this.src='https://img.youtube.com/vi/{{ $s7YoutubeId }}/hqdefault.jpg'">
+                                        {{-- onclick: inline handler so play works after Vue mounts on #landing-app (addEventListener in body would be lost) --}}
                                         <button type="button" class="landing-s7-play btn border-0 p-0 rounded-circle"
-                                            aria-label="{{ __('landingpage.play_video') }}">
+                                            aria-label="{{ __('landingpage.play_video') }}"
+                                            onclick="(function(b){var r=b.closest('.landing-s7-video');if(!r)return;var p=r.querySelector('.landing-s7-video-poster'),f=r.querySelector('.landing-s7-video-frame'),i=r.querySelector('.landing-s7-iframe');if(!i||!f)return;var u=i.getAttribute('data-src');if(u)i.setAttribute('src',u);if(p)p.classList.add('d-none');f.classList.remove('d-none');})(this)">
                                             <span class="landing-s7-play-inner d-flex align-items-center justify-content-center rounded-circle">
                                                 <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
                                             </span>
@@ -1334,8 +1337,8 @@
                                         <iframe class="landing-s7-iframe border-0 w-100 h-100"
                                             title="{{ $s7['title'] ?? 'Video' }}"
                                             data-src="https://www.youtube.com/embed/{{ $s7YoutubeId }}?autoplay=1&rel=0"
-                                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                            allowfullscreen loading="lazy"></iframe>
+                                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                            allowfullscreen></iframe>
                                     </div>
                                 </div>
                             @elseif ($s7HasVimage)
@@ -1389,18 +1392,22 @@
                 color: #64748b;
                 font-weight: 400;
             }
+            .landing-s7-video-poster { isolation: isolate; }
             .landing-s7-poster-img {
                 aspect-ratio: 16 / 9;
                 object-fit: cover;
                 vertical-align: middle;
+                pointer-events: none;
+                user-select: none;
             }
             .landing-s7-play {
                 position: absolute;
                 left: 50%;
                 top: 50%;
                 transform: translate(-50%, -50%);
-                z-index: 2;
+                z-index: 10;
                 cursor: pointer;
+                pointer-events: auto;
                 transition: transform 0.2s ease;
             }
             .landing-s7-play:hover { transform: translate(-50%, -50%) scale(1.06); }
@@ -1446,26 +1453,6 @@
                 .landing-s7-title { margin-bottom: 0.5rem; }
             }
         </style>
-        @if ($s7YoutubeId)
-            <script>
-                (function () {
-                    document.querySelectorAll('.landing-s7-workflow .landing-s7-play').forEach(function (btn) {
-                        btn.addEventListener('click', function () {
-                            var root = btn.closest('.landing-s7-video');
-                            if (!root) return;
-                            var poster = root.querySelector('.landing-s7-video-poster');
-                            var frameWrap = root.querySelector('.landing-s7-video-frame');
-                            var iframe = root.querySelector('.landing-s7-iframe');
-                            if (!iframe || !frameWrap) return;
-                            var src = iframe.getAttribute('data-src');
-                            if (src) iframe.setAttribute('src', src);
-                            if (poster) poster.classList.add('d-none');
-                            frameWrap.classList.remove('d-none');
-                        });
-                    });
-                })();
-            </script>
-        @endif
     @endif
 
     @if ($auth_user_id)
