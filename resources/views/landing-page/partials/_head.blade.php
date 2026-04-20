@@ -833,5 +833,232 @@
     /* Scroll-in animation */
     .landing-animate-in { opacity: 0; transform: translateY(24px); transition: opacity 0.6s ease, transform 0.6s ease; }
     .landing-animate-in.is-visible { opacity: 1; transform: translateY(0); }
+
+    /* =================================================================
+       Section 9 – Our clients / trusted strip + testimonials (Swiper)
+       Lives in <head> so styles apply before/after Vue hydration and
+       beat late-loaded bundles. Scoped under #landing-app .t9-section.
+    ================================================================= */
+    #landing-app .t9-section {
+        padding: 3rem 0 2.75rem;
+        background: #f8fafc;
+        border-top: 1px solid #e2e8f0;
+        overflow-x: clip;
+    }
+    #landing-app .t9-section .t9-header {
+        text-align: center;
+        margin-bottom: 1.75rem;
+    }
+    #landing-app .t9-section .t9-title {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #0f172a;
+        letter-spacing: -0.025em;
+        margin: 0 0 0.75rem;
+        line-height: 1.25;
+    }
+    #landing-app .t9-section .t9-desc {
+        font-size: 1.125rem;
+        color: #475569;
+        line-height: 1.65;
+        max-width: 36rem;
+        margin: 0 auto;
+        font-weight: 400;
+    }
+    #landing-app .t9-section .t9-trust-strip {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: center;
+        background: #fff;
+        border-radius: 12px;
+        padding: 2.25rem 2rem;
+        margin-bottom: 3rem;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 1px 3px rgba(0,0,0,.04);
+        box-sizing: border-box;
+        width: 100%;
+    }
+    #landing-app .t9-section .t9-trust-item {
+        flex: 1 1 0;
+        min-width: 10rem;
+        text-align: center;
+        padding: 0.5rem 1rem;
+        box-sizing: border-box;
+    }
+    #landing-app .t9-section .t9-trust-item-accent .t9-trust-value-tag { color: #3333ff; }
+    #landing-app .t9-section .t9-trust-value {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.35rem;
+        flex-wrap: wrap;
+        font-size: 2.25rem;
+        font-weight: 700;
+        color: #0f172a;
+        line-height: 1.2;
+        margin-bottom: 0.4rem;
+        min-height: 2.75rem;
+    }
+    #landing-app .t9-section .t9-trust-value-tag { font-size: 1.25rem; font-weight: 700; }
+    #landing-app .t9-section .t9-trust-num { font-size: inherit; font-weight: inherit; }
+    #landing-app .t9-section .t9-trust-label {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #64748b;
+        letter-spacing: 0.01em;
+    }
+    #landing-app .t9-section .t9-trust-divider {
+        width: 1px;
+        height: 2.5rem;
+        background: #e2e8f0;
+        flex-shrink: 0;
+    }
+    #landing-app .t9-section .t9-testimonial-wrap {
+        position: relative;
+        width: 100%;
+        max-width: 100%;
+        margin-top: 0;
+        box-sizing: border-box;
+    }
+    /* Swiper: stable width + equal-height slides after init */
+    #landing-app .t9-section .ratingSlider.swiper,
+    #landing-app .t9-section .ratingSlider.swiper-container {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+        padding: 0 3rem 3rem !important;
+        box-sizing: border-box !important;
+        overflow: hidden !important;
+    }
+    #landing-app .t9-section .ratingSlider .swiper-wrapper {
+        align-items: stretch !important;
+        box-sizing: border-box;
+    }
+    #landing-app .t9-section .ratingSlider .swiper-slide {
+        height: auto !important;
+        display: flex !important;
+        box-sizing: border-box;
+    }
+    #landing-app .t9-section .ratingSlider .swiper-slide > * {
+        width: 100%;
+        flex: 1 1 auto;
+    }
+    #landing-app .t9-section .ratingSlider .swiper-button-next,
+    #landing-app .t9-section .ratingSlider .swiper-button-prev {
+        background: #3333ff !important;
+        width: 48px !important;
+        height: 48px !important;
+        border-radius: 50% !important;
+        box-shadow: 0 2px 8px rgba(51,51,255,.25) !important;
+        transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+        border: none !important;
+        margin-top: 0 !important;
+        top: 50% !important;
+        transform: translateY(-50%) !important;
+    }
+    #landing-app .t9-section .ratingSlider .swiper-button-next:hover,
+    #landing-app .t9-section .ratingSlider .swiper-button-prev:hover {
+        transform: translateY(-50%) scale(1.08) !important;
+        box-shadow: 0 4px 14px rgba(51,51,255,.35) !important;
+    }
+    #landing-app .t9-section .ratingSlider .swiper-button-next::after,
+    #landing-app .t9-section .ratingSlider .swiper-button-prev::after {
+        font-size: 18px !important;
+        color: #fff !important;
+        font-weight: bold !important;
+    }
+    #landing-app .t9-section .ratingSlider .swiper-pagination {
+        bottom: 0 !important;
+        position: absolute !important;
+    }
+    #landing-app .t9-section .iq-testimonial {
+        position: relative;
+        border: 1px solid #e2e8f0 !important;
+        border-radius: 12px !important;
+        background: #fff !important;
+        box-shadow: 0 1px 3px rgba(0,0,0,.05) !important;
+        transition: box-shadow 0.25s ease, transform 0.25s ease, border-color 0.25s ease !important;
+        overflow: hidden !important;
+    }
+    #landing-app .t9-section .iq-testimonial::before {
+        content: '' !important;
+        position: absolute !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        height: 3px !important;
+        background: #3333ff !important;
+        transform: scaleX(0) !important;
+        transition: transform 0.25s ease !important;
+    }
+    #landing-app .t9-section .iq-testimonial:hover {
+        border-color: rgba(51,51,255,.2) !important;
+        box-shadow: 0 8px 24px rgba(0,0,0,.08) !important;
+        transform: translateY(-4px) !important;
+    }
+    #landing-app .t9-section .iq-testimonial:hover::before { transform: scaleX(1) !important; }
+    #landing-app .t9-section .iq-testimonial .quote {
+        background: rgba(51,51,255,.06) !important;
+    }
+    #landing-app .t9-section .iq-testimonial .about-review-title {
+        color: #0f172a !important;
+        font-weight: 600 !important;
+        font-size: 1.0625rem !important;
+    }
+    #landing-app .t9-section .iq-testimonial .testimonial-content {
+        color: #475569 !important;
+        line-height: 1.65 !important;
+        font-size: 1rem !important;
+    }
+    #landing-app .t9-section .iq-testimonial .testimonial-user {
+        color: #0f172a !important;
+        font-weight: 600 !important;
+        font-size: 1rem !important;
+    }
+    #landing-app .t9-section .iq-testimonial .testimonial-user-image img {
+        border: 2px solid #e2e8f0 !important;
+        transition: border-color 0.25s ease !important;
+    }
+    #landing-app .t9-section .iq-testimonial:hover .testimonial-user-image img {
+        border-color: rgba(51,51,255,.25) !important;
+    }
+    #landing-app .t9-section .ratingSlider .swiper-pagination-bullet {
+        background: #cbd5e1 !important;
+        width: 8px !important;
+        height: 8px !important;
+        opacity: 1 !important;
+        transition: background 0.2s ease, transform 0.2s ease !important;
+    }
+    #landing-app .t9-section .ratingSlider .swiper-pagination-bullet-active {
+        background: #3333ff !important;
+        transform: scale(1.25) !important;
+    }
+    @media (max-width: 767px) {
+        #landing-app .t9-section { padding: 2rem 0 1.75rem; }
+        #landing-app .t9-section .t9-header { margin-bottom: 2rem; }
+        #landing-app .t9-section .t9-title { font-size: 1.5rem; }
+        #landing-app .t9-section .t9-desc { font-size: 1rem; }
+        #landing-app .t9-section .t9-trust-strip {
+            flex-direction: column;
+            padding: 1.75rem 1.25rem;
+            margin-bottom: 2.5rem;
+        }
+        #landing-app .t9-section .t9-trust-divider { width: 100%; height: 1px; margin: 0.5rem 0; }
+        #landing-app .t9-section .t9-trust-item { min-width: 100%; padding: 0.75rem 0; }
+        #landing-app .t9-section .t9-trust-value { font-size: 1.875rem; min-height: 2.5rem; }
+        #landing-app .t9-section .t9-trust-value-tag { font-size: 1.125rem; }
+        #landing-app .t9-section .t9-trust-label { font-size: 0.9375rem; }
+        #landing-app .t9-section .ratingSlider.swiper,
+        #landing-app .t9-section .ratingSlider.swiper-container {
+            padding: 0 2.5rem 2.75rem !important;
+        }
+        #landing-app .t9-section .ratingSlider .swiper-button-next,
+        #landing-app .t9-section .ratingSlider .swiper-button-prev {
+            width: 44px !important;
+            height: 44px !important;
+        }
+    }
 </style>
 
