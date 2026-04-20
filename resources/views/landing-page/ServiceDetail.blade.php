@@ -959,7 +959,7 @@
                                     <div class="service-accordian accordion" id="service-accordion">
                                         @foreach ($serviceData['service_faq'] as $service_faq)
                                             <div class="accordion-item">
-                                                <div class="accrodion-title collapsed" data-bs-toggle="collapse"
+                                                <div class="accrodion-title collapsed" role="button" tabindex="0"
                                                     data-bs-target="#q-{{ $service_faq['id'] }}" aria-expanded="false"
                                                     aria-controls="q-{{ $service_faq['id'] }}">
                                                     <div class="d-flex gap-2">
@@ -1972,10 +1972,37 @@
                 }
                 return false;
             });
+
+            // FAQ accordion (plus / minus): explicit Bootstrap Collapse — data-bs-toggle on a div is unreliable after Vue/DOM updates
+            (function initServiceDetailFaqAccordion() {
+                var root = document.getElementById('service-accordion');
+                if (!root || typeof bootstrap === 'undefined' || !bootstrap.Collapse) return;
+                root.querySelectorAll('.accordion-collapse').forEach(function(colEl) {
+                    var trigger = root.querySelector('[data-bs-target="#' + colEl.id + '"]');
+                    if (!trigger) return;
+                    colEl.addEventListener('shown.bs.collapse', function() {
+                        trigger.classList.remove('collapsed');
+                        trigger.setAttribute('aria-expanded', 'true');
+                    });
+                    colEl.addEventListener('hidden.bs.collapse', function() {
+                        trigger.classList.add('collapsed');
+                        trigger.setAttribute('aria-expanded', 'false');
+                    });
+                });
+                $(root).on('click', '.accrodion-title', function(e) {
+                    e.preventDefault();
+                    var sel = this.getAttribute('data-bs-target');
+                    if (!sel) return;
+                    var col = document.querySelector(sel);
+                    if (!col) return;
+                    bootstrap.Collapse.getOrCreateInstance(col, { parent: root }).toggle();
+                });
+                $(root).on('keydown', '.accrodion-title', function(e) {
+                    if (e.key !== 'Enter' && e.key !== ' ') return;
+                    e.preventDefault();
+                    $(this).trigger('click');
+                });
+            })();
         });
     </script>
-@endsection
-
-@section('after_script')
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.1/dist/sweetalert2.all.min.js"></script>
 @endsection

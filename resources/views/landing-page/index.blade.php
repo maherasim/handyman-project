@@ -1298,6 +1298,9 @@
             $s7Subdescs = $s7['subdescription'] ?? [];
             $s7HasVimage = !empty($section7Setting) && getMediaFileExit($section7Setting, 'vimage');
             $s7HasMedia = $s7YoutubeId || $s7HasVimage;
+            $s7YoutubeWatchUrl = $s7YoutubeId
+                ? 'https://www.youtube.com/watch?v=' . $s7YoutubeId
+                : (is_string($s7Url) && preg_match('#^https?://#i', $s7Url) ? $s7Url : null);
         @endphp
         <div class="section-padding landing-s7-workflow">
             <div class="container">
@@ -1314,33 +1317,23 @@
                 <div class="row align-items-start g-4 g-lg-5">
                     @if ($s7HasMedia)
                         <div class="col-lg-6">
-                            @if ($s7YoutubeId)
-                                <div class="landing-s7-video rounded-4 overflow-hidden shadow-sm position-relative"
-                                    data-youtube-id="{{ $s7YoutubeId }}">
-                                    <div class="landing-s7-video-poster position-relative landing-s7-poster-clickable"
-                                        tabindex="0"
-                                        role="button"
-                                        aria-label="{{ __('landingpage.play_video') }}">
+                            @if ($s7YoutubeId && $s7YoutubeWatchUrl)
+                                <div class="landing-s7-video rounded-4 overflow-hidden shadow-sm position-relative">
+                                    <a href="{{ $s7YoutubeWatchUrl }}" target="_blank" rel="noopener noreferrer"
+                                        class="landing-s7-video-poster position-relative landing-s7-poster-clickable d-block text-decoration-none">
                                         <img src="https://img.youtube.com/vi/{{ $s7YoutubeId }}/maxresdefault.jpg"
-                                            alt=""
+                                            alt="{{ __('landingpage.play_video') }}"
                                             class="landing-s7-poster-img w-100 d-block"
                                             loading="lazy"
                                             draggable="false"
                                             onerror="this.onerror=null;this.src='https://img.youtube.com/vi/{{ $s7YoutubeId }}/hqdefault.jpg'">
-                                        <button type="button" class="landing-s7-play btn border-0 p-0 rounded-circle"
-                                            aria-label="{{ __('landingpage.play_video') }}">
+                                        <span class="landing-s7-play d-inline-flex border-0 p-0 rounded-circle" aria-hidden="true">
                                             <span class="landing-s7-play-inner d-flex align-items-center justify-content-center rounded-circle">
-                                                <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
+                                                <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
                                             </span>
-                                        </button>
-                                    </div>
-                                    <div class="landing-s7-video-frame ratio ratio-16x9 d-none bg-dark">
-                                        <iframe class="landing-s7-iframe border-0 w-100 h-100"
-                                            title="{{ $s7['title'] ?? 'Video' }}"
-                                            data-src="https://www.youtube.com/embed/{{ $s7YoutubeId }}?autoplay=1&rel=0"
-                                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                                            allowfullscreen></iframe>
-                                    </div>
+                                        </span>
+                                        <span class="visually-hidden">{{ __('landingpage.open_on_youtube') }}</span>
+                                    </a>
                                 </div>
                             @elseif ($s7HasVimage)
                                 <div class="landing-s7-video rounded-4 overflow-hidden shadow-sm">
@@ -1403,9 +1396,9 @@
                 aspect-ratio: 16 / 9;
                 object-fit: cover;
                 vertical-align: middle;
-                pointer-events: none;
                 user-select: none;
             }
+            .landing-s7-video-poster:hover .landing-s7-poster-img { opacity: 0.92; }
             .landing-s7-play {
                 position: absolute;
                 left: 50%;
@@ -1413,10 +1406,9 @@
                 transform: translate(-50%, -50%);
                 z-index: 50;
                 cursor: pointer;
-                pointer-events: auto;
                 transition: transform 0.2s ease;
             }
-            .landing-s7-play:hover { transform: translate(-50%, -50%) scale(1.06); }
+            .landing-s7-video-poster:hover .landing-s7-play { transform: translate(-50%, -50%) scale(1.06); }
             .landing-s7-play:focus-visible { outline: 2px solid #3333ff; outline-offset: 4px; }
             .landing-s7-play-inner {
                 width: 4.5rem;
@@ -2276,56 +2268,6 @@
     }
     window.addEventListener('scroll', onScroll, { passive: true });
     window.addEventListener('load', onScroll);
-})();
-(function() {
-    if (window.__landingS7PlayInit) return;
-    window.__landingS7PlayInit = true;
-    function playLandingS7(root) {
-        if (!root) return;
-        var poster = root.querySelector('.landing-s7-video-poster');
-        var frame = root.querySelector('.landing-s7-video-frame');
-        var iframe = root.querySelector('.landing-s7-iframe');
-        if (!frame || !iframe) return;
-        var src = iframe.getAttribute('data-src');
-        if (!src) {
-            var yid = root.getAttribute('data-youtube-id');
-            if (yid) src = 'https://www.youtube.com/embed/' + yid + '?autoplay=1&rel=0';
-        }
-        if (src) iframe.setAttribute('src', src);
-        if (poster) poster.classList.add('d-none');
-        frame.classList.remove('d-none');
-    }
-    function landingS7RootFromEventTarget(target) {
-        if (!target || typeof target.closest !== 'function') return null;
-        var el = target.nodeType === 3 ? target.parentElement : target;
-        if (!el) return null;
-        var playBtn = el.closest('.landing-s7-play');
-        if (playBtn) return playBtn.closest('.landing-s7-video');
-        var poster = el.closest('.landing-s7-video-poster');
-        if (poster) return poster.closest('.landing-s7-video');
-        return null;
-    }
-    document.addEventListener('click', function(e) {
-        var root = landingS7RootFromEventTarget(e.target);
-        if (!root) return;
-        var app = document.getElementById('landing-app');
-        if (app && !app.contains(root)) return;
-        e.preventDefault();
-        e.stopPropagation();
-        playLandingS7(root);
-    }, true);
-    document.addEventListener('keydown', function(e) {
-        if (e.key !== 'Enter' && e.key !== ' ') return;
-        var t = e.target;
-        if (!t || typeof t.closest !== 'function') return;
-        if (!t.closest('.landing-s7-video-poster')) return;
-        var root = t.closest('.landing-s7-video');
-        if (!root) return;
-        var app = document.getElementById('landing-app');
-        if (app && !app.contains(root)) return;
-        e.preventDefault();
-        playLandingS7(root);
-    }, true);
 })();
 </script>
 @endsection

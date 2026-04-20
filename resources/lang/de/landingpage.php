@@ -1,6 +1,7 @@
 <?php return array (
   'home' => 'Home',
   'play_video' => 'Video abspielen',
+  'open_on_youtube' => 'Video auf YouTube öffnen',
   'categories' => 'Kategorien',
   'services' => 'Services',
   'blogs' => 'Blogs',
