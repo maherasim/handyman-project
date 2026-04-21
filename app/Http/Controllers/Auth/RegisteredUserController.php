@@ -59,6 +59,18 @@ class RegisteredUserController extends Controller
         return redirect()->back()->withErrors(['message' => $message]);
     }
 
+    // Select placeholders (e.g. "Select Employer") must not be written to integer FK columns.
+    $nullableIntId = static function ($value): ?int {
+        if ($value === null || $value === '') {
+            return null;
+        }
+        if (is_numeric($value)) {
+            return (int) $value;
+        }
+
+        return null;
+    };
+
     $user = User::create([
         'username'         => $username,
         'first_name'       => $request->first_name,
@@ -70,9 +82,9 @@ class RegisteredUserController extends Controller
         'password'         => Hash::make($request->password),
         'designation'      => $designation,
         'usertype'         => $userType,
-        'provider_id'      => $request->provider_id,
-        'providertype_id'  => $request->providertype_id,
-        'handymantype_id'  => $request->handymantype_id,
+        'provider_id'      => $nullableIntId($request->input('provider_id')),
+        'providertype_id'  => $nullableIntId($request->input('providertype_id')),
+        'handymantype_id'  => $nullableIntId($request->input('handymantype_id')),
         'status'           => $request->status ?? 0,
     ]);
 

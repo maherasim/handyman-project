@@ -221,7 +221,7 @@ Route::group(['middleware' => ['auth:sanctum', 'active']], function () {
     Route::post('save-post-job',[ App\Http\Controllers\PostJobRequestController::class, 'store' ]);
     Route::post('post-job-delete/{id}', [ App\Http\Controllers\PostJobRequestController::class, 'destroy' ]);
 
-    Route::get('get-post-job',[ API\PostJobRequestController::class, 'p' ]);
+    Route::get('get-post-job',[ API\PostJobRequestController::class, 'getPostRequestList' ]);
     Route::post('get-post-job-detail',[ API\PostJobRequestController::class, 'getPostRequestDetail' ]);
     Route::get('post-job-request/{id}/editjob', [Api\PostJobRequestController::class, 'editpostjob'])->name('post-job-requestjob.edit');
 
