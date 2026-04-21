@@ -64,10 +64,7 @@ class DashboardController extends Controller
         $category_section = FrontendSetting::getValueByKey('section_2');
         $category= CategoryResource::collection( Category::whereIN( 'id' ,$category_section->category_id )->orderBy('name','asc')->paginate(8));
 
-        $service = Service::with('city', 'country')->where('status',1)->where('service_type','service');
-        $service = $service->whereHas('providers', function ($a) use ($request) {
-            $a->where('status', 1);
-        });
+        $service = Service::with('city', 'country')->where('status',1)->where('service_type','service')->where('is_hidden_from_public',0);
         if ($request->has('city_id') && !empty($request->city_id)) {
             $service = $service->whereHas('providers', function ($a) use ($request) {
                 $a->where('city_id', $request->city_id);
@@ -105,7 +102,11 @@ class DashboardController extends Controller
 
             $locations = Service::locationService($request->latitude,$request->longitude,$get_distance,$get_unit);
             $service_in_location = ProviderServiceAddressMapping::whereIn('provider_address_id',$locations)->get()->pluck('service_id');
-            $service_query = Service::with('providerServiceAddress', 'city', 'country')->whereIn('id',$service_in_location)->orwhere('visit_type','online');
+            $service_query = Service::with('providerServiceAddress', 'city', 'country')
+                ->where(function ($q) use ($service_in_location) {
+                    $q->whereIn('id', $service_in_location)
+                        ->orWhere('visit_type', 'online');
+                });
             UgcListing::scopePublicServices($service_query, auth()->id());
             $servicePaginated = $service_query->orderBy('id','desc')->paginate($per_page);
             $service = ServiceResource::collection($servicePaginated);
@@ -141,12 +142,9 @@ class DashboardController extends Controller
 
         $featured_service_section = FrontendSetting::getValueByKey('section_4');
         $featured_service= Service::with('city', 'country')->whereIN( 'id' ,$featured_service_section->service_id );
-        $featured_service = $featured_service->whereHas('providers', function ($a) use ($request) {
-            $a->where('status', 1);
-        });
         if(default_earning_type() === 'subscription'){
             $featured_service = $featured_service->whereHas('providers', function ($a) use ($request) {
-                $a->where('status', 1)->where('is_subscribe',1);
+                $a->where('status', 1)->whereNull('deleted_at')->where('user_type', 'provider')->where('is_subscribe',1);
             });
         }
         UgcListing::scopePublicServices($featured_service, auth()->id());

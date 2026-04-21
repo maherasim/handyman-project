@@ -26,6 +26,7 @@ use App\Http\Resources\API\TypeResource;
 use App\Http\Resources\API\BankResource;
 use App\Http\Resources\API\CouponResource;
 use App\Http\Resources\API\TaxResource;
+use App\Support\UgcListing;
 use PDF;
 
 
@@ -97,7 +98,7 @@ class CommanController extends Controller
     }
    public function getSearchList(Request $request){
         $service = Service::where('status',1)
-            ->where('service_type','service')
+            ->where('service_type','service')->where('is_hidden_from_public',0)
             ->with([
                 'providers',
                 'providers.city',
@@ -170,17 +171,15 @@ class CommanController extends Controller
         if($request->has('type')){
             $service->where('type',$request->type);
         }
-        if($request->has('provider_id') && $request->provider_id != '' ){
-            $service->whereHas('providers', function ($a) use ($request) {
-                $a->where('status', 1);
+        if (default_earning_type() === 'subscription') {
+            $service->whereHas('providers', function ($a) {
+                $a->where('status', 1)
+                    ->whereNull('deleted_at')
+                    ->where('user_type', 'provider')
+                    ->where('is_subscribe', 1);
             });
-        }else{
-            if(default_earning_type() === 'subscription'){
-                $service->whereHas('providers', function ($a) use ($request) {
-                    $a->where('status', 1)->where('is_subscribe',1);
-                });
-            }
         }
+        UgcListing::scopePublicServices($service, auth()?->id());
         if ($request->has('latitude') && !empty($request->latitude) && $request->has('longitude') && !empty($request->longitude)) {
             $get_distance = getSettingKeyValue('site-setup','radious');
             $get_unit = getSettingKeyValue('site-setup','distance_type');

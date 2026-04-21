@@ -323,7 +323,7 @@ class PostJobRequestController extends Controller
         ];
 
         // Apply role-aware scope: users see only their own posts; admins/providers see all
-        $query = PostJobRequest::withCount('postBidList')->myPostJob()->where(function ($q) use ($allowedStatuses) {
+        $query = PostJobRequest::withCount('postBidList')->myPostJob()->where('is_hidden_from_public',0)->where(function ($q) use ($allowedStatuses) {
             $q->whereIn('status', $allowedStatuses)
                 ->orWhereNull('status')
                 ->orWhere('status', '');

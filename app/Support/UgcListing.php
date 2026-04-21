@@ -121,6 +121,13 @@ class UgcListing
             }
         }
 
+        // Hide jobs whose author (customer_id) is deactivated or soft-deleted (e.g. admin profile-reports).
+        // PostJobRequest::customer uses withTrashed(); require an active users row.
+        $query->whereHas('customer', function ($q) {
+            $q->where('status', 1)
+                ->whereNull('deleted_at');
+        });
+
         return $query;
     }
 
@@ -161,10 +168,12 @@ class UgcListing
             }
         }
 
-        // Hide listings when the employer (provider) account is deactivated (e.g. admin action from profile reports).
-        // Reactivating the user (status = 1) restores visibility everywhere this scope runs.
+        // Hide listings when the employer is deactivated (admin profile-reports), soft-deleted, or not a provider.
+        // Service::providers() uses withTrashed(); without whereNull('deleted_at') soft-deleted rows could still match.
         $query->whereHas('providers', function ($q) {
-            $q->where('status', 1);
+            $q->where('status', 1)
+                ->where('user_type', 'provider')
+                ->whereNull('deleted_at');
         });
 
         return $query;
@@ -187,6 +196,15 @@ class UgcListing
 
         if ((int) $user->id === (int) $job->customer_id) {
             return true;
+        }
+
+        $customerActive = User::query()
+            ->whereKey($job->customer_id)
+            ->where('status', 1)
+            ->whereNull('deleted_at')
+            ->exists();
+        if (! $customerActive) {
+            return false;
         }
 
         if ((bool) ($job->is_hidden_from_public ?? false)) {
