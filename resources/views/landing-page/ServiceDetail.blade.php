@@ -960,7 +960,7 @@
                                         @foreach ($serviceData['service_faq'] as $service_faq)
                                             <div class="accordion-item">
                                                 <div class="accrodion-title collapsed" role="button" tabindex="0"
-                                                    data-bs-toggle="collapse" data-bs-target="#q-{{ $service_faq['id'] }}" aria-expanded="false"
+                                                    data-bs-target="#q-{{ $service_faq['id'] }}" aria-expanded="false"
                                                     aria-controls="q-{{ $service_faq['id'] }}">
                                                     <div class="d-flex gap-2">
                                                         <h6 class="question text-primary flex-shrink-0">Q:</h6>
@@ -1973,34 +1973,88 @@
                 return false;
             });
 
-            // FAQ accordion (plus / minus): explicit Bootstrap Collapse — data-bs-toggle on a div is unreliable after Vue/DOM updates
+            // FAQ: do not use data-bs-toggle on a div (unreliable). Toggle via delegated handler; Bootstrap or class fallback.
             (function initServiceDetailFaqAccordion() {
                 var root = document.getElementById('service-accordion');
-                if (!root || typeof bootstrap === 'undefined' || !bootstrap.Collapse) return;
-                root.querySelectorAll('.accordion-collapse').forEach(function(colEl) {
+                if (!root) {
+                    return;
+                }
+                function syncTriggerFromPanel(col) {
+                    var tr = root.querySelector('[data-bs-target="#' + col.id + '"]');
+                    if (!tr) {
+                        return;
+                    }
+                    if (col.classList.contains('show')) {
+                        tr.classList.remove('collapsed');
+                        tr.setAttribute('aria-expanded', 'true');
+                    } else {
+                        tr.classList.add('collapsed');
+                        tr.setAttribute('aria-expanded', 'false');
+                    }
+                }
+                root.querySelectorAll('.accordion-collapse').forEach(function (colEl) {
                     var trigger = root.querySelector('[data-bs-target="#' + colEl.id + '"]');
-                    if (!trigger) return;
-                    colEl.addEventListener('shown.bs.collapse', function() {
-                        trigger.classList.remove('collapsed');
-                        trigger.setAttribute('aria-expanded', 'true');
-                    });
-                    colEl.addEventListener('hidden.bs.collapse', function() {
-                        trigger.classList.add('collapsed');
-                        trigger.setAttribute('aria-expanded', 'false');
-                    });
+                    if (!trigger) {
+                        return;
+                    }
+                    if (window.bootstrap && window.bootstrap.Collapse) {
+                        colEl.addEventListener('shown.bs.collapse', function () {
+                            syncTriggerFromPanel(colEl);
+                        });
+                        colEl.addEventListener('hidden.bs.collapse', function () {
+                            syncTriggerFromPanel(colEl);
+                        });
+                    }
                 });
-                $(root).on('click', '.accrodion-title', function(e) {
-                    e.preventDefault();
-                    var sel = this.getAttribute('data-bs-target');
-                    if (!sel) return;
+                function toggleFaq(trigger) {
+                    var sel = trigger.getAttribute('data-bs-target');
+                    if (!sel) {
+                        return;
+                    }
                     var col = document.querySelector(sel);
-                    if (!col) return;
-                    bootstrap.Collapse.getOrCreateInstance(col, { parent: root }).toggle();
-                });
-                $(root).on('keydown', '.accrodion-title', function(e) {
-                    if (e.key !== 'Enter' && e.key !== ' ') return;
+                    if (!col || !root.contains(col)) {
+                        return;
+                    }
+                    if (window.bootstrap && window.bootstrap.Collapse) {
+                        try {
+                            window.bootstrap.Collapse.getOrCreateInstance(col, { parent: root }).toggle();
+                            return;
+                        } catch (err) {
+                            console.warn('FAQ bootstrap.Collapse', err);
+                        }
+                    }
+                    var willOpen = !col.classList.contains('show');
+                    if (willOpen) {
+                        root.querySelectorAll('.accordion-collapse.show').forEach(function (el) {
+                            if (el === col) {
+                                return;
+                            }
+                            el.classList.remove('show');
+                            syncTriggerFromPanel(el);
+                        });
+                    }
+                    col.classList.toggle('show', willOpen);
+                    syncTriggerFromPanel(col);
+                }
+                root.addEventListener('click', function (e) {
+                    var trigger = e.target.closest('.accrodion-title');
+                    if (!trigger || !root.contains(trigger)) {
+                        return;
+                    }
                     e.preventDefault();
-                    $(this).trigger('click');
+                    e.stopPropagation();
+                    toggleFaq(trigger);
+                });
+                root.addEventListener('keydown', function (e) {
+                    if (e.key !== 'Enter' && e.key !== ' ') {
+                        return;
+                    }
+                    var trigger = e.target.closest('.accrodion-title');
+                    if (!trigger || !root.contains(trigger)) {
+                        return;
+                    }
+                    e.preventDefault();
+                    toggleFaq(trigger);
                 });
             })();
         });
