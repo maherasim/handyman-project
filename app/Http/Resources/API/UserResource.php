@@ -55,6 +55,25 @@ class UserResource extends JsonResource
         }else{
             $profile_image = getSingleMedia($this, 'profile_image',null);
         }
+
+        $whyDecoded = null;
+        if (! empty($this->why_choose_me)) {
+            $whyDecoded = json_decode($this->why_choose_me, true);
+            if (! is_array($whyDecoded)) {
+                $whyDecoded = null;
+            }
+        }
+        $aboutTitle = $whyDecoded['title'] ?? $whyDecoded['why_choose_me_title'] ?? null;
+        $aboutDesc = $whyDecoded['about_description'] ?? null;
+        $aboutReasons = $whyDecoded['reason'] ?? $whyDecoded['why_choose_me_reason'] ?? null;
+        if (is_array($aboutReasons)) {
+            $aboutReasons = array_values(array_filter($aboutReasons, static function ($v) {
+                return $v !== null && $v !== '';
+            }));
+        } else {
+            $aboutReasons = null;
+        }
+
         return [
             'id'                => $this->id,
             'first_name'        => $this->first_name,
@@ -136,6 +155,10 @@ class UserResource extends JsonResource
                 ? Booking::where('provider_id', $this->id)->where('status', 'completed')->count() 
                 : 0,
             'why_choose_me' => $this->why_choose_me,
+            // Decoded (same as web profile_form / Flutter listing)
+            'title' => $aboutTitle,
+            'about_description' => $aboutDesc,
+            'reason' => $aboutReasons,
             'is_subscribe' => $this->is_subscribe,
             'is_email_verified' => $this->is_email_verified
 

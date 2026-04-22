@@ -447,18 +447,72 @@ public function register(UserRequest $request)
             $data['language_option'] = !empty($data['language_option']) ? (string)($data['language_option'][0] ?? 'en') : 'en';
         }
 
-        $why_choose_me=[
+        // "Why choose me" block: same JSON shape as web (SettingController::updateProfile) — title, about_description, reason[].
+        // `title` / `reason` are not mass-assignable columns; they live only inside why_choose_me.
+        $prev = [];
+        if (! empty($user->why_choose_me)) {
+            $decoded = json_decode($user->why_choose_me, true);
+            if (is_array($decoded)) {
+                $prev = $decoded;
+            }
+        }
 
-            'why_choose_me_title'=>$request->why_choose_me_title,
-            'why_choose_me_reason' => isset($request->why_choose_me_reason) && is_string($request->why_choose_me_reason)
-            ? array_filter(json_decode($request->why_choose_me_reason), function ($value) {
-                return $value !== null;
-            })
-            : null,
+        $parseReason = static function ($raw) {
+            if ($raw === null || $raw === '' || $raw === '[]') {
+                return null;
+            }
+            if (is_array($raw)) {
+                $out = array_filter($raw, static function ($v) {
+                    return $v !== null && $v !== '';
+                });
 
+                return array_values($out);
+            }
+            if (is_string($raw)) {
+                $dec = json_decode($raw, true);
+                if (is_array($dec)) {
+                    $out = array_filter($dec, static function ($v) {
+                        return $v !== null && $v !== '';
+                    });
+
+                    return array_values($out);
+                }
+            }
+
+            return null;
+        };
+
+        if ($request->has('title')) {
+            $prev['title'] = $request->input('title');
+        }
+        if ($request->has('about_description')) {
+            $prev['about_description'] = $request->input('about_description');
+        }
+        if ($request->has('reason')) {
+            $prev['reason'] = $parseReason($request->input('reason'));
+        }
+        if (! $request->has('reason') && $request->filled('why_choose_me_reason')) {
+            $r = $request->input('why_choose_me_reason');
+            $prev['reason'] = is_string($r) ? $parseReason($r) : $parseReason($r);
+        }
+        if (! $request->has('title') && $request->has('why_choose_me_title')) {
+            $prev['title'] = $request->input('why_choose_me_title');
+        }
+
+        $whyPayload = [
+            'title' => $prev['title'] ?? null,
+            'about_description' => $prev['about_description'] ?? null,
+            'reason' => $prev['reason'] ?? null,
         ];
+        $data['why_choose_me'] = json_encode($whyPayload);
 
-        $data['why_choose_me']=($why_choose_me);
+        unset(
+            $data['title'],
+            $data['about_description'],
+            $data['reason'],
+            $data['why_choose_me_title'],
+            $data['why_choose_me_reason'],
+        );
 
         $user->fill($data)->update();
 
@@ -499,29 +553,20 @@ public function register(UserRequest $request)
             }
         }
 
-        $user_data = User::with(['country', 'state', 'city', 'providertype', 'handymantype'])->find($user->id);
-
+        // Same shape as userDetail (UserResource) so mobile apps do not get raw Eloquent
+        // (nested country/state/city objects break Flutter UserData.fromJson which expects String fields).
+        $userFresh = User::with(['country', 'state', 'city', 'providertype', 'handymantype'])->find($user->id);
         $message = __('messages.updated');
 
-        if($user->login_type !== null && $user->login_type !== 'mobile'){
-
-            $user_data['profile_image'] =$user->social_image ? $user->social_image : getSingleMedia($user_data, 'profile_image', null);
-
-        }else{
-
-            $user_data['profile_image'] =$user->profile_image ? $user->profile_image : getSingleMedia($user_data, 'profile_image', null);
-        }
-
-        $user_data['user_role'] = $user->getRoleNames();
-
-        unset($user_data['roles']);
-        unset($user_data['media']);
+        $data = (new UserResource($userFresh))->toArray($request);
+        $data['user_role'] = $userFresh->getRoleNames()->values()->all();
 
         $response = [
-            'data' => $user_data,
-            'message' => $message
+            'data' => $data,
+            'message' => $message,
         ];
-        return comman_custom_response( $response );
+
+        return comman_custom_response($response);
     }
 
     public function logout(Request $request){
