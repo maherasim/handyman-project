@@ -35,6 +35,7 @@ Route::get('category-list',[API\CategoryController::class,'getCategoryList']);
 Route::get('subcategory-list',[API\SubCategoryController::class,'getSubCategoryList']);
 Route::middleware([OptionalSanctumAuth::class])->get('service-list',[API\ServiceController::class,'getServiceList']);
 Route::get('type-list',[API\CommanController::class,'getTypeList']);
+Route::get('spoken-languages', [API\CommanController::class, 'getSpokenLanguageOptions']);
 Route::get('blog-list',[API\BlogController::class,'getBlogList']);
 Route::post('blog-detail',[API\BlogController::class,'getBlogDetail']);
 Route::get('landing-page-list',[API\FrontendSettingController::class,'getLandingPageSetting']);

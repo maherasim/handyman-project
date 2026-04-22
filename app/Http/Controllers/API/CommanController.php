@@ -52,6 +52,27 @@ class CommanController extends Controller
 
         return response()->json( $list );
     }
+
+    /**
+     * Spoken language choices for profile (provider / handyman / user).
+     * Same source as `config('spoken_language_options')` in profile forms — `code` is what you store in `users.languages`.
+     */
+    public function getSpokenLanguageOptions()
+    {
+        $map = config('spoken_language_options', []);
+        $data = collect($map)->map(function (string $name, string $code) {
+            return [
+                'code' => $code,
+                'name' => $name,
+            ];
+        })->values()->all();
+
+        return comman_custom_response([
+            'data' => $data,
+            'options' => $map,
+        ]);
+    }
+
     public function getProviderTax(Request $request){
 
         $provider_id  = !empty($request->provider_id) ? $request->provider_id : auth()->user()->id;
