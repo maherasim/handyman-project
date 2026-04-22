@@ -226,10 +226,12 @@ class PostJobRequestController extends Controller
             'postrequest.country:id,name',
             'postrequest.postBidList:id,post_request_id',
             'extraCharges',
-            'ratings.provider',
-            'ratings.customer',
-            'customerRatings.customer',
-            'customerRatings.provider',
+            'ratings' => static function ($q) {
+                $q->publicVisible()->with(['provider', 'customer']);
+            },
+            'customerRatings' => static function ($q) {
+                $q->publicVisible()->with(['customer', 'provider']);
+            },
         ])->findOrFail($bidId);
     
         // ✅ Get country_id from related PostJobRequest
@@ -256,12 +258,15 @@ class PostJobRequestController extends Controller
             ];
         }
 
-        // provider_rating_exists: customer has already rated the provider for this bid (post_job_bid_ratings)
-        $providerRatingExists = PostJobBidRating::where('post_job_bid_id', $bid->id)->exists();
+        // provider_rating_exists: visible customer→provider rating exists (post_job_bid_ratings, status 0 / null)
+        $providerRatingExists = PostJobBidRating::where('post_job_bid_id', $bid->id)
+            ->publicVisible()
+            ->exists();
 
-        // show_rate_customer_button: provider has NOT yet rated the customer (post_job_bid_customer_ratings)
+        // show_rate_customer_button: provider has no visible rating of customer yet (post_job_bid_customer_ratings)
         $providerHasRatedCustomer = PostJobBidCustomerRating::where('post_job_bid_id', $bid->id)
             ->where('provider_id', $bid->provider_id)
+            ->publicVisible()
             ->exists();
         $canProviderRate = in_array(strtolower((string)($bid->status ?? '')), ['remaining_paid', 'completed']);
         $showRateCustomerButton = $canProviderRate && !$providerHasRatedCustomer;
