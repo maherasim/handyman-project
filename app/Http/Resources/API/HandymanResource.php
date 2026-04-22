@@ -21,7 +21,8 @@ class HandymanResource extends JsonResource
     $rating = null;
     if ($booking_id) {
         $query = HandymanRating::where('booking_id', $booking_id)
-            ->where('handyman_id', $this->handyman->id);
+            ->where('handyman_id', $this->handyman->id)
+            ->publicVisible();
         if ($customer_id) {
             $query->where('customer_id', $customer_id);
         }

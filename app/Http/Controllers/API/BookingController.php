@@ -247,6 +247,8 @@ class BookingController extends Controller
             return comman_message_response($message, 400);
         }
 
+        $request->merge(['booking_id' => $id]);
+
         // First check if booking exists at all (without relationships for debugging)
         $bookingExists = Booking::withTrashed()->where('id', $id)->exists();
         
@@ -255,12 +257,16 @@ class BookingController extends Controller
             return comman_message_response($message, 404);
         }
 
-        // Now load with all relationships
+        // Now load with all relationships (booking ratings: only status visible = 0, or null legacy)
         $booking_data = Booking::withTrashed()->with([
           'customer',
           'provider.city','provider.country','provider.providerSubscription',
           'handymanAdded.handyman.city','handymanAdded.handyman.country',
-          'service','bookingRating','bookingPostJob','bookingAddonService',
+          'service',
+          'bookingRating' => static function ($q) {
+              $q->publicVisible()->with('customer');
+          },
+          'bookingPostJob','bookingAddonService',
           'bookingPackage','payment','slots',
         ])->where('id', $id)->first();
         
@@ -397,13 +403,13 @@ class BookingController extends Controller
 
         $handyman_data = HandymanResource::collection($booking_detail->handymanAdded);
 
-        // Customer's review of the provider for THIS booking — always load by booking_id so both customer and provider see it
-        $review_by_customer_for_booking = BookingRating::where('booking_id', $id)->with('customer')->first();
+        // Customer's review of the provider for THIS booking — only when publicly visible (status 0 / null)
+        $review_by_customer_for_booking = BookingRating::where('booking_id', $id)->publicVisible()->with('customer')->first();
         $review_by_customer_payload = $review_by_customer_for_booking ? (new BookingRatingResource($review_by_customer_for_booking))->toArray($request) : null;
 
         $customer_review = null;
         if($request->customer_id != null){
-            $customer_review = BookingRating::where('customer_id',$request->customer_id)->where('service_id',$booking_detail->service_id)->where('booking_id',$id)->first();
+            $customer_review = BookingRating::where('customer_id',$request->customer_id)->where('service_id',$booking_detail->service_id)->where('booking_id',$id)->publicVisible()->first();
             if (!empty($customer_review))
             {
                 $customer_review = new BookingRatingResource($customer_review);
@@ -438,8 +444,9 @@ class BookingController extends Controller
             ? 'Rating already submitted'
             : 'Rate Customer';
 
-        // Provider's rating of the customer for THIS booking (`customer_ratings` table)
+        // Provider's rating of the customer for THIS booking (`customer_ratings` table) — visible only
         $provider_review = CustomerRating::where('booking_id', $id)
+            ->publicVisible()
             ->with('provider')
             ->first();
         $provider_review_payload = null;
