@@ -338,7 +338,8 @@ class BookingController extends Controller
         $provider_data = new UserResource($booking_detail->provider);
         $provider_data = $provider_data->toArray($request);
 
-        // Provider reviews from booking_ratings and post_job_bid_customer_ratings (same combined logic as UserResource rating)
+        // Provider reviews: booking_ratings + post_job_bid_customer_ratings.
+        // DB: status 0 = visible (BookingRating::STATUS_VISIBLE), 1 = hidden. Use scope only — no extra status wheres.
         $provider_id = (int) $booking_detail->provider_id;
         $providerBookingIds = Booking::where('provider_id', $provider_id)->pluck('id');
         $bookingRatingsForProvider = $providerBookingIds->isEmpty()
