@@ -739,34 +739,44 @@ $data['remaining_payout'] = round($providerRemainingPayout, $digitafter_decimal_
                 $items = $items->get();
                 break;
             case 'currency':
-                // Include rows usable as currency: non-empty symbol OR non-empty currency_code.
-                // Requiring only symbol leaves the Site setup dropdown empty when DB rows omit symbols.
+                // GeoDB / world-countries schema: currency_symbol + currency (+ currency_name).
+                // Legacy schema: symbol + currency_code.
+                $useGeo = Schema::hasColumn('countries', 'currency_symbol')
+                    && Schema::hasColumn('countries', 'currency');
+                $symCol = $useGeo ? 'currency_symbol' : 'symbol';
+                $codeCol = $useGeo ? 'currency' : 'currency_code';
+
                 $items = \DB::table('countries')->select(\DB::raw(
-                    'id as id, CONCAT(name, " ( ", IFNULL(NULLIF(TRIM(symbol), ""), IFNULL(NULLIF(TRIM(currency_code), ""), "?")), " ) ") as text'
+                    "id as id, CONCAT(name, ' ( ', IFNULL(NULLIF(TRIM(`{$symCol}`), ''), IFNULL(NULLIF(TRIM(`{$codeCol}`), ''), '?')), ' ) ') as text"
                 ));
-                $items->where(function ($q) {
-                    $q->where(function ($q2) {
-                        $q2->whereNotNull('symbol')->where('symbol', '!=', '');
-                    })->orWhere(function ($q2) {
-                        $q2->whereNotNull('currency_code')->where('currency_code', '!=', '');
+                $items->where(function ($q) use ($symCol, $codeCol) {
+                    $q->where(function ($q2) use ($symCol) {
+                        $q2->whereNotNull($symCol)->where($symCol, '!=', '');
+                    })->orWhere(function ($q2) use ($codeCol) {
+                        $q2->whereNotNull($codeCol)->where($codeCol, '!=', '');
                     });
                 });
                 if ($value != null && $value !== '') {
-                    $items->where(function ($q) use ($value) {
+                    $items->where(function ($q) use ($value, $codeCol, $useGeo) {
                         $q->where('name', 'LIKE', $value . '%')
-                            ->orWhere('currency_code', 'LIKE', $value . '%');
+                            ->orWhere($codeCol, 'LIKE', $value . '%');
+                        if ($useGeo && Schema::hasColumn('countries', 'currency_name')) {
+                            $q->orWhere('currency_name', 'LIKE', $value . '%');
+                        }
                     });
                 }
                 $items = $items->orderBy('name')->get();
 
-                // Site setup: saved default_currency must appear even if symbol is empty in DB
+                // Site setup: saved default_currency (country id) must appear even if labels are sparse
                 $selectedId = $request->input('selected_id');
                 if ($selectedId !== null && $selectedId !== '') {
                     $selectedId = (int) $selectedId;
                     $presentIds = $items->pluck('id')->map(fn ($id) => (int) $id)->all();
                     if (! in_array($selectedId, $presentIds, true)) {
                         $extra = \DB::table('countries')
-                            ->select(\DB::raw('id id, CONCAT(name, " ( ", IFNULL(NULLIF(TRIM(symbol), ""), IFNULL(currency_code, "?")), " ) ") text'))
+                            ->select(\DB::raw(
+                                "id as id, CONCAT(name, ' ( ', IFNULL(NULLIF(TRIM(`{$symCol}`), ''), IFNULL(NULLIF(TRIM(`{$codeCol}`), ''), '?')), ' ) ') as text"
+                            ))
                             ->where('id', $selectedId)
                             ->first();
                         if ($extra) {
