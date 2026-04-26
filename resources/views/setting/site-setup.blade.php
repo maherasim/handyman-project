@@ -244,19 +244,24 @@
 
             $.ajax({
                 url: currency_route,
+                dataType: 'json',
                 success: function (result) {
+                    var rows = (result && result.results) ? result.results : [];
                     if ($('#default_currency').hasClass('select2-hidden-accessible')) {
                         $('#default_currency').select2('destroy');
                     }
                     $('#default_currency').select2({
                         width: '100%',
                         placeholder: "{{ trans('messages.select_name', ['select' => trans('messages.currency')]) }}",
-                        data: result.results
+                        data: rows
                     });
 
                     if (currency !== '') {
                         $("#default_currency").val(String(currency)).trigger('change');
                     }
+                },
+                error: function (xhr) {
+                    console.error('Default currency list failed to load', xhr.status, xhr.responseText);
                 }
             });
         }

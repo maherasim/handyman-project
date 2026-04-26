@@ -739,13 +739,25 @@ $data['remaining_payout'] = round($providerRemainingPayout, $digitafter_decimal_
                 $items = $items->get();
                 break;
             case 'currency':
-                $items = \DB::table('countries')->select(\DB::raw('id id,CONCAT(name , " ( " , symbol ," ) ") text'));
-
-                $items->whereNotNull('symbol')->where('symbol', '!=', '');
-                if ($value != '') {
-                    $items->where('name', 'LIKE', $value . '%')->orWhere('currency_code', 'LIKE', $value . '%');
+                // Include rows usable as currency: non-empty symbol OR non-empty currency_code.
+                // Requiring only symbol leaves the Site setup dropdown empty when DB rows omit symbols.
+                $items = \DB::table('countries')->select(\DB::raw(
+                    'id as id, CONCAT(name, " ( ", IFNULL(NULLIF(TRIM(symbol), ""), IFNULL(NULLIF(TRIM(currency_code), ""), "?")), " ) ") as text'
+                ));
+                $items->where(function ($q) {
+                    $q->where(function ($q2) {
+                        $q2->whereNotNull('symbol')->where('symbol', '!=', '');
+                    })->orWhere(function ($q2) {
+                        $q2->whereNotNull('currency_code')->where('currency_code', '!=', '');
+                    });
+                });
+                if ($value != null && $value !== '') {
+                    $items->where(function ($q) use ($value) {
+                        $q->where('name', 'LIKE', $value . '%')
+                            ->orWhere('currency_code', 'LIKE', $value . '%');
+                    });
                 }
-                $items = $items->get();
+                $items = $items->orderBy('name')->get();
 
                 // Site setup: saved default_currency must appear even if symbol is empty in DB
                 $selectedId = $request->input('selected_id');

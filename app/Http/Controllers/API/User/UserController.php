@@ -59,6 +59,8 @@ public function register(UserRequest $request)
     date_default_timezone_set($admin->time_zone ?? 'UTC');
 
     $input = $request->all();
+    // Never pass file / image payloads into mass assignment (profile is Spatie media).
+    unset($input['profile_image'], $input['profile_image_base64'], $input['profile_image_url']);
     $email = $input['email'];
     $username = $input['username'];
     $password = $input['password'];
@@ -109,6 +111,7 @@ public function register(UserRequest $request)
     // Create new user
     $user = User::create($input);
     $user->assignRole($input['user_type']);
+    $this->attachProfileImageFromRequest($request, $user);
 
     // Send verification email to all users (providers and users)
     $verificationLink = route('verify', ['id' => $user->id]);
@@ -123,12 +126,16 @@ public function register(UserRequest $request)
         ]);
     }
 
+    $userFresh = User::with(['country', 'state', 'city', 'providertype', 'handymantype'])->find($user->id);
+    $userPayload = (new UserResource($userFresh))->toArray($request);
+    $userPayload['user_role'] = $userFresh->getRoleNames()->values()->all();
+
     // Optional Vue app check
     if (!empty($input['loginfrom']) && $input['loginfrom'] === 'vue-app') {
         if ($user->user_type !== 'user') {
             return comman_custom_response([
                 'message' => trans('messages.save_form', ['form' => $input['user_type']]),
-                'data' => $user
+                'data' => $userPayload,
             ]);
         }
     }
@@ -145,7 +152,7 @@ public function register(UserRequest $request)
     // Return response without login token
     return comman_custom_response([
         'message' => 'Email verification link has been sent to your email. Please verify before logging in.',
-        'data' => $user
+        'data' => $userPayload,
     ]);
 }
 
@@ -516,42 +523,7 @@ public function register(UserRequest $request)
 
         $user->fill($data)->update();
 
-        if ($request->hasFile('profile_image')) {
-            $user->clearMediaCollection('profile_image');
-            $user->addMediaFromRequest('profile_image')->toMediaCollection('profile_image');
-        } elseif ($request->filled('profile_image_base64')) {
-            $base64 = $request->input('profile_image_base64');
-            $normalized = $base64;
-            $extension = 'jpg';
-            if (preg_match('/^data:image\/(\w+);base64,/', $base64, $type)) {
-                $extension = strtolower($type[1]);
-            } else {
-                $normalized = 'data:image/jpeg;base64,' . $base64;
-            }
-            $filename = 'profile_' . $user->id . '_' . time() . '.' . $extension;
-            $user->clearMediaCollection('profile_image');
-            $user->addMediaFromBase64($normalized)->usingFileName($filename)->toMediaCollection('profile_image');
-        } elseif ($request->filled('profile_image_url')) {
-            $url = $request->input('profile_image_url');
-            if (filter_var($url, FILTER_VALIDATE_URL)) {
-                try {
-                    $user->clearMediaCollection('profile_image');
-                    $user->addMediaFromUrl($url)->toMediaCollection('profile_image');
-                } catch (\Spatie\MediaLibrary\MediaCollections\Exceptions\UnreachableUrl $e) {
-                    // Log the error but don't fail the profile update
-                    \Log::warning('Failed to download profile image from URL: ' . $url, [
-                        'user_id' => $user->id,
-                        'error' => $e->getMessage()
-                    ]);
-                } catch (\Exception $e) {
-                    // Log any other media library errors
-                    \Log::warning('Failed to process profile image URL: ' . $url, [
-                        'user_id' => $user->id,
-                        'error' => $e->getMessage()
-                    ]);
-                }
-            }
-        }
+        $this->attachProfileImageFromRequest($request, $user);
 
         // Same shape as userDetail (UserResource) so mobile apps do not get raw Eloquent
         // (nested country/state/city objects break Flutter UserData.fromJson which expects String fields).
@@ -1076,6 +1048,47 @@ public function register(UserRequest $request)
             'message' => __('messages.Language_preference_updated'),
             'locale' => $locale,
         ], 200);
+    }
+
+    /**
+     * Persist profile photo: multipart file, base64, or URL (aligned with updateProfile).
+     */
+    protected function attachProfileImageFromRequest(Request $request, User $user): void
+    {
+        if ($request->hasFile('profile_image')) {
+            $user->clearMediaCollection('profile_image');
+            $user->addMediaFromRequest('profile_image')->toMediaCollection('profile_image');
+        } elseif ($request->filled('profile_image_base64')) {
+            $base64 = $request->input('profile_image_base64');
+            $normalized = $base64;
+            $extension = 'jpg';
+            if (preg_match('/^data:image\/(\w+);base64,/', $base64, $type)) {
+                $extension = strtolower($type[1]);
+            } else {
+                $normalized = 'data:image/jpeg;base64,' . $base64;
+            }
+            $filename = 'profile_' . $user->id . '_' . time() . '.' . $extension;
+            $user->clearMediaCollection('profile_image');
+            $user->addMediaFromBase64($normalized)->usingFileName($filename)->toMediaCollection('profile_image');
+        } elseif ($request->filled('profile_image_url')) {
+            $url = $request->input('profile_image_url');
+            if (filter_var($url, FILTER_VALIDATE_URL)) {
+                try {
+                    $user->clearMediaCollection('profile_image');
+                    $user->addMediaFromUrl($url)->toMediaCollection('profile_image');
+                } catch (\Spatie\MediaLibrary\MediaCollections\Exceptions\UnreachableUrl $e) {
+                    \Log::warning('Failed to download profile image from URL: ' . $url, [
+                        'user_id' => $user->id,
+                        'error' => $e->getMessage(),
+                    ]);
+                } catch (\Exception $e) {
+                    \Log::warning('Failed to process profile image URL: ' . $url, [
+                        'user_id' => $user->id,
+                        'error' => $e->getMessage(),
+                    ]);
+                }
+            }
+        }
     }
 
 }
