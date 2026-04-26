@@ -199,18 +199,25 @@ function storeMediaFile($model,$file,$name){
         }
         if (is_array($file)){
             foreach ($file as $key => $value){
-                // Validate file before adding
-                if ($value && is_file($value) && file_exists($value)) {
+                if ($value instanceof \Illuminate\Http\UploadedFile && $value->isValid()) {
                     $model->addMedia($value)->toMediaCollection($name);
-                } elseif ($value instanceof \Illuminate\Http\UploadedFile && $value->isValid()) {
+                } elseif ($value && is_string($value) && is_file($value) && file_exists($value)) {
                     $model->addMedia($value)->toMediaCollection($name);
                 }
             }
-        }else{
-            // Validate file before adding
-            if ($file && is_file($file) && file_exists($file)) {
-                $model->addMedia($file)->toMediaCollection($name);
-            } elseif ($file instanceof \Illuminate\Http\UploadedFile && $file->isValid()) {
+        } else {
+            // UploadedFile first: is_file($object) is false for SplFileInfo in PHP 8+, so never rely on that branch for uploads.
+            if ($file instanceof \Illuminate\Http\UploadedFile) {
+                if ($file->isValid()) {
+                    $model->addMedia($file)->toMediaCollection($name);
+                } else {
+                    \Log::warning('storeMediaFile: upload not accepted', [
+                        'collection' => $name,
+                        'error' => $file->getError(),
+                        'message' => $file->getErrorMessage(),
+                    ]);
+                }
+            } elseif (is_string($file) && is_file($file) && file_exists($file)) {
                 $model->addMedia($file)->toMediaCollection($name);
             }
         }

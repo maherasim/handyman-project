@@ -276,7 +276,10 @@ class HandymanController extends Controller
 
         }
         $user->assignRole($data['user_type']);
-        storeMediaFile($user, $request->profile_image, 'profile_image');
+        if ($request->hasFile('profile_image')) {
+            $user->clearMediaCollection('profile_image');
+            $user->addMediaFromRequest('profile_image')->toMediaCollection('profile_image');
+        }
         $message = __('messages.update_form', ['form' => __('messages.handyman')]);
         if ($user->wasRecentlyCreated) {
             $message = __('messages.save_form', ['form' => __('messages.handyman')]);

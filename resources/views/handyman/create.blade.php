@@ -418,6 +418,9 @@
 });
 
             $('#handyman').on('submit', function () {
+                if (typeof tinymce !== 'undefined') {
+                    tinymce.triggerSave();
+                }
                 var lang = $('#languages_select').val();
                 var err = $('#languages_error');
                 if (!lang || (Array.isArray(lang) && lang.length === 0)) {
