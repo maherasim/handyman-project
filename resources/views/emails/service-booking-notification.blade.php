@@ -201,10 +201,11 @@
                     <span class="detail-label">Customer Name:</span>
                     <span class="detail-value">{{ $customer->display_name ?? ($customer->first_name . ' ' . $customer->last_name) ?? 'N/A' }}</span>
                 </div>
-                @if($booking->address)
+                @php $serviceLocationLabel = $booking->emailVenueLocation(); @endphp
+                @if($serviceLocationLabel !== '')
                 <div class="detail-row">
                     <span class="detail-label">Service Location:</span>
-                    <span class="detail-value" style="text-align: right; max-width: 60%; word-wrap: break-word;">{{ $booking->address }}</span>
+                    <span class="detail-value" style="text-align: right; max-width: 60%; word-wrap: break-word;">{{ $serviceLocationLabel }}</span>
                 </div>
                 @endif
             </div>

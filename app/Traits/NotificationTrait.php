@@ -629,7 +629,7 @@ trait NotificationTrait
             $notification_data['booking_date'] = $date;
             $notification_data['booking_duration'] = isset($booking->service) ? $booking->service->duration : '';
             $notification_data['booking_time'] = $time;
-            $notification_data['venue_address'] = $booking->address;
+            $notification_data['venue_address'] = $booking->emailVenueLocation();
             $notification_data['payment_status'] = isset($data['payment_status']) ? $data['payment_status'] : '';
             $notification_data['payment_type'] = isset($booking->payment) ? $booking->payment->payment_type : '';
             $notification_data['pay_amount'] = isset($booking->payment) ? getPriceFormat($booking->payment->total_amount) : '';

@@ -69,6 +69,24 @@ class Booking extends Model
         return $this->belongsTo(User::class,'customer_id', 'id')->withTrashed();
     }
 
+    /**
+     * City and country from the customer profile for emails/notifications (no street address).
+     */
+    public function emailVenueLocation(): string
+    {
+        $customer = $this->customer;
+        if (!$customer) {
+            return '';
+        }
+        $customer->loadMissing(['city', 'country']);
+        $parts = array_filter([
+            optional($customer->city)->name,
+            optional($customer->country)->name,
+        ]);
+
+        return implode(', ', $parts);
+    }
+
     public function provider(){
         return $this->belongsTo(User::class,'provider_id', 'id')->withTrashed();
     }
