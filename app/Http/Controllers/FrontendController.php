@@ -148,18 +148,51 @@ class FrontendController extends Controller
                     'created_at' => $b->created_at,
                 ];
             });
-        $areasWeCover = [
-            'New York, USA',
-            'London, UK',
-            'Paris, France',
-            'Tokyo, Japan',
-            'Dubai, UAE',
-            'Sydney, Australia',
-            'Singapore',
-            'Berlin, Germany',
-            'Rome, Italy',
-            'Barcelona, Spain',
-        ];
+        $hostNorm = strtolower(preg_replace('/^www\./i', '', (string) $request->getHost()));
+        $deDomainNorm = strtolower(preg_replace('/^www\./i', '', (string) env('APP_DOMAIN_DE', 'persotel.de')));
+        $areasWeCover = $hostNorm === $deDomainNorm
+            ? [
+                'Deutschland',
+                'Österreich',
+                'Niederlande',
+                'Dänemark',
+                'Belgien',
+                'Schweiz',
+                'Finnland',
+                'Frankreich',
+                'Schweden',
+                'Italien',
+                'Kroatien',
+                'Lettland',
+                'Litauen',
+                'Estland',
+                'Malta',
+                'Griechenland',
+                'Bulgarien',
+                'Polen',
+                'Portugal',
+                'Rumänien',
+                'Slowakei',
+                'Slowenien',
+                'Spanien',
+                'Tschechien',
+                'Ungarn',
+                'Zypern',
+                'Norwegen',
+                'Großbritannien',
+            ]
+            : [
+                'New York, USA',
+                'London, UK',
+                'Paris, France',
+                'Tokyo, Japan',
+                'Dubai, UAE',
+                'Sydney, Australia',
+                'Singapore',
+                'Berlin, Germany',
+                'Rome, Italy',
+                'Barcelona, Spain',
+            ];
         $firstBookingCoupon = Coupon::where('status', 1)->where(function ($q) {
             $q->whereNull('expire_date')->orWhere('expire_date', '>=', now()->toDateString());
         })->first();
