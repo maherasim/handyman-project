@@ -64,7 +64,9 @@ class UserRequest extends FormRequest
                 $rules['languages'] = 'required|array|min:1';
                 $rules['languages.*'] = 'string';
             }
-            $rules['service_address_id'] = 'required|exists:provider_address_mappings,id';
+            $rules['service_address_id'] = request()->is('api*')
+                ? 'nullable|exists:provider_address_mappings,id'
+                : 'required|exists:provider_address_mappings,id';
             $rules['country_id'] = 'required|exists:countries,id';
             $rules['state_id'] = 'required|exists:states,id';
             $rules['city_id'] = 'required|exists:cities,id';
@@ -85,7 +87,13 @@ class UserRequest extends FormRequest
             $rules['company_name'] = 'nullable|string|max:255';
             $userType = auth()->user()->user_type ?? request()->user_type ?? null;
             $rules['vat_number'] = in_array($userType, ['provider', 'handyman'], true) ? 'required|string|max:255' : 'nullable|string|max:255';
-            $rules['service_address_id'] = $userType === 'handyman' ? 'required|exists:provider_address_mappings,id' : 'nullable|exists:provider_address_mappings,id';
+            if ($userType === 'handyman') {
+                $rules['service_address_id'] = request()->is('api*')
+                    ? 'nullable|exists:provider_address_mappings,id'
+                    : 'required|exists:provider_address_mappings,id';
+            } else {
+                $rules['service_address_id'] = 'nullable|exists:provider_address_mappings,id';
+            }
             $rules['skills'] = 'nullable|string|max:500';
             $rules['education'] = 'nullable|string|max:100';
             $rules['career_level'] = 'required|string|max:100';
