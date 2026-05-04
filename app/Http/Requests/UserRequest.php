@@ -67,9 +67,15 @@ class UserRequest extends FormRequest
             $rules['service_address_id'] = request()->is('api*')
                 ? 'nullable|exists:provider_address_mappings,id'
                 : 'required|exists:provider_address_mappings,id';
-            $rules['country_id'] = 'required|exists:countries,id';
-            $rules['state_id'] = 'required|exists:states,id';
-            $rules['city_id'] = 'required|exists:cities,id';
+            if (request()->is('api*')) {
+                $rules['country_id'] = 'nullable|exists:countries,id';
+                $rules['state_id'] = 'nullable|exists:states,id';
+                $rules['city_id'] = 'nullable|exists:cities,id';
+            } else {
+                $rules['country_id'] = 'required|exists:countries,id';
+                $rules['state_id'] = 'required|exists:states,id';
+                $rules['city_id'] = 'required|exists:cities,id';
+            }
             if (empty($id)) {
                 $rules['password'] = 'required|string|min:8';
             }
@@ -81,12 +87,22 @@ class UserRequest extends FormRequest
 
         // Profile form (setting/profile_form) – VAT Number required only for provider & handyman; optional for customers
         if (request()->has('profile') && request()->profile === 'profile') {
-            $rules['country_id'] = 'required|exists:countries,id';
-            $rules['state_id'] = 'required|exists:states,id';
-            $rules['city_id'] = 'required|exists:cities,id';
+            if (request()->is('api*')) {
+                $rules['country_id'] = 'nullable|exists:countries,id';
+                $rules['state_id'] = 'nullable|exists:states,id';
+                $rules['city_id'] = 'nullable|exists:cities,id';
+            } else {
+                $rules['country_id'] = 'required|exists:countries,id';
+                $rules['state_id'] = 'required|exists:states,id';
+                $rules['city_id'] = 'required|exists:cities,id';
+            }
             $rules['company_name'] = 'nullable|string|max:255';
             $userType = auth()->user()->user_type ?? request()->user_type ?? null;
-            $rules['vat_number'] = in_array($userType, ['provider', 'handyman'], true) ? 'required|string|max:255' : 'nullable|string|max:255';
+            if (request()->is('api*')) {
+                $rules['vat_number'] = 'nullable|string|max:255';
+            } else {
+                $rules['vat_number'] = in_array($userType, ['provider', 'handyman'], true) ? 'required|string|max:255' : 'nullable|string|max:255';
+            }
             if ($userType === 'handyman') {
                 $rules['service_address_id'] = request()->is('api*')
                     ? 'nullable|exists:provider_address_mappings,id'
@@ -96,7 +112,9 @@ class UserRequest extends FormRequest
             }
             $rules['skills'] = 'nullable|string|max:500';
             $rules['education'] = 'nullable|string|max:100';
-            $rules['career_level'] = 'required|string|max:100';
+            $rules['career_level'] = request()->is('api*')
+                ? 'nullable|string|max:100'
+                : 'required|string|max:100';
             $rules['availability'] = 'nullable|in:full_time,part_time';
             $rules['experience'] = 'nullable|string';
             if (request()->is('api*')) {
