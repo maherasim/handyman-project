@@ -27,6 +27,7 @@ use App\Models\Setting;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Log;
 
 class UserController extends Controller
 {
@@ -115,7 +116,21 @@ public function register(UserRequest $request)
 
     // Send verification email to all users (providers and users)
     $verificationLink = route('verify', ['id' => $user->id]);
-    Mail::to($user->email)->send(new VerificationEmail($verificationLink));
+    $emailSent = true;
+    try {
+        Mail::to($user->email)->send(new VerificationEmail($verificationLink));
+    } catch (\Throwable $e) {
+        $emailSent = false;
+        Log::error('Verification email send failed', [
+            'user_id' => $user->id,
+            'email' => $user->email,
+            'message' => $e->getMessage(),
+        ]);
+    }
+
+    $verificationNotice = $emailSent
+        ? 'Email verification link has been sent to your email. Please verify before logging in.'
+        : 'Your account was created, but the verification email could not be sent. Check your spam folder, try resending from the app, or contact support.';
 
     // Create wallet for all user types (provider, handyman, and user)
     if (in_array($user->user_type, ['provider', 'handyman', 'user'])) {
@@ -136,6 +151,8 @@ public function register(UserRequest $request)
             return comman_custom_response([
                 'message' => trans('messages.save_form', ['form' => $input['user_type']]),
                 'data' => $userPayload,
+                'email_sent' => $emailSent,
+                'verification_notice' => $verificationNotice,
             ]);
         }
     }
@@ -151,8 +168,9 @@ public function register(UserRequest $request)
 
     // Return response without login token
     return comman_custom_response([
-        'message' => 'Email verification link has been sent to your email. Please verify before logging in.',
+        'message' => $verificationNotice,
         'data' => $userPayload,
+        'email_sent' => $emailSent,
     ]);
 }
 
@@ -1000,11 +1018,24 @@ public function register(UserRequest $request)
         }
         if($user->is_email_verified == 0){
             $verificationLink = route('verify',['id' => $user->id]);
-            $response_data=Mail::to($user->email)->send(new VerificationEmail($verificationLink));
-            $message = 'Email Verification link has been sent to your email. Please Check your inbox';
+            $emailSent = true;
+            try {
+                Mail::to($user->email)->send(new VerificationEmail($verificationLink));
+            } catch (\Throwable $e) {
+                $emailSent = false;
+                Log::error('Verification email resend failed', [
+                    'user_id' => $user->id,
+                    'email' => $user->email,
+                    'message' => $e->getMessage(),
+                ]);
+            }
+            $message = $emailSent
+                ? 'Email Verification link has been sent to your email. Please Check your inbox'
+                : 'We could not send the verification email. Check spam folder or try again later.';
             $response = [
                     'message' => $message,
                     'is_email_verified' => $user->is_email_verified,
+                    'email_sent' => $emailSent,
             ];
             return comman_custom_response($response);
 
