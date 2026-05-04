@@ -19,6 +19,18 @@ class UserRequest extends FormRequest
     }
 
     /**
+     * Accept legacy/alternate key "commission" for handyman registration (maps to handyman_commission).
+     */
+    protected function prepareForValidation(): void
+    {
+        if ($this->input('user_type') === 'handyman' && ! $this->filled('handyman_commission') && $this->filled('commission')) {
+            $this->merge([
+                'handyman_commission' => $this->input('commission'),
+            ]);
+        }
+    }
+
+    /**
      * Get the validation rules that apply to the request.
      *
      * @return array
