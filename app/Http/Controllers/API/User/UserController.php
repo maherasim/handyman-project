@@ -112,21 +112,30 @@ public function register(UserRequest $request)
     // Create new user
     $user = User::create($input);
     $user->assignRole($input['user_type']);
-    $this->attachProfileImageFromRequest($request, $user);
 
-    // Send verification email to all users (providers and users)
+    // Send verification first (before media upload) so SMTP runs with a minimal request and the
+    // recipient always matches the email used for duplicate-check (same path for provider & handyman).
     $verificationLink = route('verify', ['id' => $user->id]);
+    $recipientEmail = strtolower(trim((string) $email));
     $emailSent = true;
     try {
-        Mail::to($user->email)->send(new VerificationEmail($verificationLink));
+        Mail::to($recipientEmail)->send(new VerificationEmail($verificationLink));
+        Log::info('Verification email dispatched', [
+            'user_id' => $user->id,
+            'user_type' => $user->user_type,
+            'to' => $recipientEmail,
+        ]);
     } catch (\Throwable $e) {
         $emailSent = false;
         Log::error('Verification email send failed', [
             'user_id' => $user->id,
-            'email' => $user->email,
+            'user_type' => $user->user_type,
+            'email' => $recipientEmail,
             'message' => $e->getMessage(),
         ]);
     }
+
+    $this->attachProfileImageFromRequest($request, $user);
 
     $verificationNotice = $emailSent
         ? 'Email verification link has been sent to your email. Please verify before logging in.'
@@ -149,7 +158,8 @@ public function register(UserRequest $request)
     if (!empty($input['loginfrom']) && $input['loginfrom'] === 'vue-app') {
         if ($user->user_type !== 'user') {
             return comman_custom_response([
-                'message' => trans('messages.save_form', ['form' => $input['user_type']]),
+                'message' => $verificationNotice,
+                'save_message' => trans('messages.save_form', ['form' => $input['user_type']]),
                 'data' => $userPayload,
                 'email_sent' => $emailSent,
                 'verification_notice' => $verificationNotice,
