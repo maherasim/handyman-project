@@ -57,8 +57,13 @@ class UserRequest extends FormRequest
             $rules['status'] = 'required|in:0,1';
             $rules['vat_number'] = $vatNumberRule;
             $rules['handyman_commission'] = 'required|numeric|min:1|max:99';
-            $rules['languages'] = 'required|array|min:1';
-            $rules['languages.*'] = 'string';
+            if (request()->is('api*')) {
+                $rules['languages'] = 'nullable|array';
+                $rules['languages.*'] = 'string';
+            } else {
+                $rules['languages'] = 'required|array|min:1';
+                $rules['languages.*'] = 'string';
+            }
             $rules['service_address_id'] = 'required|exists:provider_address_mappings,id';
             $rules['country_id'] = 'required|exists:countries,id';
             $rules['state_id'] = 'required|exists:states,id';
@@ -86,8 +91,13 @@ class UserRequest extends FormRequest
             $rules['career_level'] = 'required|string|max:100';
             $rules['availability'] = 'nullable|in:full_time,part_time';
             $rules['experience'] = 'nullable|string';
-            $rules['languages'] = 'required|array|min:1';
-            $rules['languages.*'] = 'string';
+            if (request()->is('api*')) {
+                $rules['languages'] = 'nullable|array';
+                $rules['languages.*'] = 'string';
+            } else {
+                $rules['languages'] = 'required|array|min:1';
+                $rules['languages.*'] = 'string';
+            }
         }
 
         return $rules;
