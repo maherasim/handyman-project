@@ -34,12 +34,16 @@ class UserRequest extends FormRequest
                 'handyman_commission' => 'nullable|numeric|min:1|max:99',
         ];
 
+        $vatNumberRule = request()->is('api*')
+            ? 'nullable|string|max:255'
+            : 'required|string|max:255';
+
         if (request()->user_type === 'handyman') {
             $rules['first_name'] = 'required|string|max:255';
             $rules['last_name'] = 'required|string|max:255';
             $rules['contact_number'] = 'required';
             $rules['status'] = 'required|in:0,1';
-            $rules['vat_number'] = 'required|string|max:255';
+            $rules['vat_number'] = $vatNumberRule;
             $rules['handyman_commission'] = 'required|numeric|min:1|max:99';
             $rules['languages'] = 'required|array|min:1';
             $rules['languages.*'] = 'string';
@@ -53,7 +57,7 @@ class UserRequest extends FormRequest
         }
 
         if (request()->user_type === 'provider') {
-            $rules['vat_number'] = 'required|string|max:255';
+            $rules['vat_number'] = $vatNumberRule;
         }
 
         // Profile form (setting/profile_form) – VAT Number required only for provider & handyman; optional for customers
