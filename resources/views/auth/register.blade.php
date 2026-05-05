@@ -10,6 +10,13 @@
          color: #dc3545 !important;
          font-weight: 600;
       }
+      .password-requirements { font-size: 0.875rem; }
+      .password-requirements li { margin-bottom: 0.25rem; transition: color 0.15s ease; }
+      .password-requirements li.valid { color: #198754; }
+      .password-requirements li:not(.valid) { color: #6c757d; }
+      .password-requirements li.valid .req-icon::before { content: '✓ '; font-weight: bold; }
+      .password-requirements li:not(.valid) .req-icon::before { content: '○ '; }
+      #submit-btn:disabled { opacity: 0.65; cursor: not-allowed; }
    </style>
    <section class="login-content">
       <div class="container h-100">
@@ -63,13 +70,19 @@
                               <div class="form-group">
                                  <label for="password" class="text-secondary">{{__('auth.login_password')}} <span class="text-danger">*</span></label>
                                  <input class="form-control" type="password" id="password" name="password" required autocomplete="new-password" placeholder="{{ __('auth.enter_name',[ 'name' => __('auth.login_password') ]) }}">
+                                 <p class="mb-1 mt-2 text-secondary small">{{ __('auth.password_requirements_intro') }}</p>
+                                 <ul class="password-requirements list-unstyled mb-2" id="password-requirements-list" aria-live="polite">
+                                    <li id="req-length"><span class="req-icon" aria-hidden="true"></span>{{ __('auth.password_rule_min') }}</li>
+                                    <li id="req-letter"><span class="req-icon" aria-hidden="true"></span>{{ __('auth.password_rule_letter') }}</li>
+                                    <li id="req-number"><span class="req-icon" aria-hidden="true"></span>{{ __('auth.password_rule_number') }}</li>
+                                 </ul>
                                  <small class="help-block with-errors text-danger"></small>
                               </div>
                            </div>
                            <div class="col-lg-12">
                               <div class="form-group">
                                  <label for="password_confirmation" class="text-secondary">{{__('auth.confirm_password')}} <span class="text-danger">*</span></label>
-                                 <input class="form-control" onkeyup="checkPasswordMatch()" type="password" id="password_confirmation" name="password_confirmation" required autocomplete="new-password" placeholder="{{ __('auth.enter_name',[ 'name' => __('auth.confirm_password') ]) }}">
+                                 <input class="form-control" type="password" id="password_confirmation" name="password_confirmation" required autocomplete="new-password" placeholder="{{ __('auth.enter_name',[ 'name' => __('auth.confirm_password') ]) }}">
                                  <small class="help-block with-errors text-danger" id="confirm_passsword"></small>
 
                               </div>
@@ -140,7 +153,7 @@
                            </div>
 
                         </div>
-                        <button type="submit" class="btn btn-primary btn-block mt-2 w-100" id="submit-btn">{{ __('auth.create_account') }}</button>
+                        <button type="submit" class="btn btn-primary btn-block mt-2 w-100" id="submit-btn" disabled>{{ __('auth.create_account') }}</button>
                         <div class="col-lg-12 mt-3">
                            <p class="mb-0 text-center">{{__('auth.already_have_account')}} <a class="btn-link p-0 text-capitalize" href="{{route('login')}}">{{__('auth.sign_in')}}</a></p>
                         </div>
@@ -152,22 +165,70 @@
       </div>
       <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
       <script>
-         function checkPasswordMatch() {
-            const password = $("#password").val();
-            const confirmPassword = $("#password_confirmation").val();
-            const errorElement = $("#confirm_passsword");
-            const submitBtn = $("#submit-btn");
+         function passwordPolicyCheck(pwd) {
+            const p = pwd || '';
+            return {
+               lengthOk: p.length >= 8,
+               letterOk: /[a-zA-Z]/.test(p),
+               numberOk: /[0-9]/.test(p)
+            };
+         }
 
-            if (password !== confirmPassword) {
-               errorElement.text("{{ __('auth.password_mismatch_error') }}");
-               submitBtn.prop("disabled", true);
-            } else {
-               errorElement.text("");
-               submitBtn.prop("disabled", false);
+         function passwordPolicySatisfied(pwd) {
+            const c = passwordPolicyCheck(pwd);
+            return c.lengthOk && c.letterOk && c.numberOk;
+         }
+
+         function updatePasswordRulesUi(pwd) {
+            const c = passwordPolicyCheck(pwd);
+            $('#req-length').toggleClass('valid', c.lengthOk);
+            $('#req-letter').toggleClass('valid', c.letterOk);
+            $('#req-number').toggleClass('valid', c.numberOk);
+         }
+
+         function registerFieldsReady() {
+            const username = ($('#username').val() || '').trim();
+            const first = ($('#first_name').val() || '').trim();
+            const last = ($('#last_name').val() || '').trim();
+            const email = ($('#email').val() || '').trim();
+            const emailField = document.getElementById('email');
+            const emailOk = email !== '' && emailField && emailField.checkValidity();
+            if (!(username && first && last && emailOk)) return false;
+            if (!$('#customCheck1').is(':checked')) return false;
+            const ut = $('#user_type').val();
+            if (ut === 'handyman') {
+               if (!$('#providerdata').val()) return false;
+               if (!$('#handymantype').val()) return false;
             }
+            return true;
+         }
+
+         function updateRegisterSubmitState() {
+            const password = $('#password').val() || '';
+            const confirmPassword = $('#password_confirmation').val() || '';
+            const errorElement = $('#confirm_passsword');
+            const submitBtn = $('#submit-btn');
+
+            updatePasswordRulesUi(password);
+
+            const policyOk = passwordPolicySatisfied(password);
+            const matchOk = confirmPassword.length > 0 && password === confirmPassword;
+            if (confirmPassword.length > 0 && password !== confirmPassword) {
+               errorElement.text(@json(__('auth.password_mismatch_error')));
+            } else {
+               errorElement.text('');
+            }
+
+            const ok = registerFieldsReady() && policyOk && matchOk;
+            submitBtn.prop('disabled', !ok);
          }
 
          $(document).ready(function() {
+            $('#password, #password_confirmation, #username, #first_name, #last_name, #email').on('input change', updateRegisterSubmitState);
+            $('#customCheck1').on('change', updateRegisterSubmitState);
+            $('#providerdata, #handymantype').on('change', updateRegisterSubmitState);
+            updateRegisterSubmitState();
+
     function fetchTypes(userType, providerId = null) {
         $.ajax({
             url: '{{ route("ajax-list") }}',
@@ -184,6 +245,7 @@
                         targetDropdown.append($('<option>', { value: item.id, text: item.text }));
                     });
                 }
+                updateRegisterSubmitState();
             },
             error: function() {
                 console.error('Error fetching types');
@@ -206,6 +268,7 @@
                 } else {
                     $sel.append($('<option>', { value: '', text: '{{ __('messages.no_providers_found') }}' }));
                 }
+                updateRegisterSubmitState();
             },
             error: function() {
                 console.error('Error fetching providers');
@@ -221,6 +284,7 @@
             $('#commission_section').hide();
             $('#providertype').prop('required', false);
             $('#handymantype').prop('required', false);
+            setTimeout(updateRegisterSubmitState, 0);
         } else {
             $('#provider_section').toggle(selectedUserType === 'handyman');
             $('#commission_section').show();
@@ -240,6 +304,7 @@
             $('#handymantype').val('');
             $('#providerdata').val('');
         }
+        setTimeout(updateRegisterSubmitState, 0);
     }).trigger('change');
 
     $('#providerdata').change(function() {
@@ -247,6 +312,7 @@
             var providerId = $(this).val();
             fetchTypes('handyman', providerId);
         }
+        updateRegisterSubmitState();
     });
 });
 

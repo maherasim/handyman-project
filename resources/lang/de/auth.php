@@ -32,6 +32,10 @@
   'user_type' => 'Kundentyp',
   'designation' => 'Bezeichnung',
   'password_mismatch_error' => 'Passwort und Passwortbestätigung stimmen nicht überein',
+  'password_requirements_intro' => 'Ihr Passwort muss enthalten:',
+  'password_rule_min' => 'Mindestens 8 Zeichen',
+  'password_rule_letter' => 'Mindestens einen Buchstaben (A–Z oder a–z)',
+  'password_rule_number' => 'Mindestens eine Ziffer (0–9)',
   'assign_provider_msg' => 'Wenden Sie sich an Ihren Admin, um einen Anbieter zuzuweisen.',
   'assign_handyman_msg' => 'Wenden Sie sich an Ihren Admin, um einen Handwerker zuzuweisen.',
 );
