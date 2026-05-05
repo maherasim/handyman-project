@@ -5,7 +5,7 @@
                 <div class="user-body user-profile text-center mx-0 px-0">
                     <div class="user-img">
                         <img class="rounded-circle avatar-90 image-fluid profile_image_preview"
-                            src="{{ getSingleMedia($user_data, 'profile_image', null) }}" alt="profile-pic">
+                            src="{{ getSingleMedia($user_data, 'profile_image', null) }}" alt="{{ __('messages.profile_image') }}">
                     </div>
                     <div class="sideuser-info">
                         <span class="mb-2">{{ $user_data->first_name . ' ' . $user_data->last_name }}</span>
@@ -36,7 +36,7 @@
                         <small class="help-block with-errors text-danger"></small>
                     </div>
                     <div class="form-group col-md-6">
-                        {{ html()->label(__('messages.select_name', ['select' => __('Language')]) . ' <span class="text-danger">*</span>', 'languages')->class('form-control-label text-danger')->for('languages') }}
+                        {{ html()->label(__('messages.select_name', ['select' => __('messages.language')]) . ' <span class="text-danger">*</span>', 'languages')->class('form-control-label text-danger')->for('languages') }}
                         <br />
                         {{ html()->select(
                                 'languages[]',
@@ -81,20 +81,20 @@
                             )->class('form-group select2js city_id')->required()->attribute('data-placeholder', __('messages.select_name', ['select' => __('messages.city')])) }}
                     </div>
                     <div class="form-group col-md-6">
-                        {{ html()->label(__('messages.select_name', ['select' => __('Country tax')]), 'tax_country_id')->class('form-control-label') }}
+                        {{ html()->label(__('messages.country_tax'), 'tax_country_id')->class('form-control-label') }}
                         <br />
                         {{ html()->select(
                                 'tax_country_id',
                                 [optional($user_data->country)->id => optional($user_data->country)->name],
                                 optional($user_data->country)->id,
-                            )->class('form-group select2js tax_country')->attribute('data-placeholder', __('messages.select_name', ['select' => __('Tax Country')]))->attribute('data-ajax--url', route('ajax-list', ['type' => 'country']))->attribute('disabled', true) }}
+                            )->class('form-group select2js tax_country')->attribute('data-placeholder', __('messages.select_name', ['select' => __('messages.tax_country')]))->attribute('data-ajax--url', route('ajax-list', ['type' => 'country']))->attribute('disabled', true) }}
                     </div>
                     <input type="hidden" name="tax_country_id" value="{{ optional($user_data->country)->id }}">
 
 
                     <div class="form-group col-md-6">
                         {{ html()->label(__('messages.email') . ' <span class="text-danger">*</span>', 'email')->class('form-control-label text-danger') }}
-                        {{ html()->email('email', $user_data->email)->placeholder(__('messages.email'))->class('form-control')->required()->attribute('pattern', '[^@]+@[^@]+\.[a-zA-Z]{2,}')->attribute('title', 'Please enter a valid email address') }}
+                        {{ html()->email('email', $user_data->email)->placeholder(__('messages.email'))->class('form-control')->required()->attribute('pattern', '[^@]+@[^@]+\.[a-zA-Z]{2,}')->attribute('title', __('messages.email_valid_title')) }}
                         <small class="help-block with-errors text-danger"></small>
                     </div>
 
@@ -133,70 +133,70 @@
                         </div>
                     </div>
                     <div class="form-group col-md-6">
-                        {{ html()->label(__('Company Name'), 'company_name')->class('form-control-label')->for('company_name') }}
-                        {{ html()->text('company_name', $user_data->company_name)->placeholder(__('Company Name'))->class('form-control') }}
+                        {{ html()->label(__('messages.company_name'), 'company_name')->class('form-control-label')->for('company_name') }}
+                        {{ html()->text('company_name', $user_data->company_name)->placeholder(__('messages.company_name'))->class('form-control') }}
                         <small class="help-block with-errors text-danger"></small>
                     </div>
 
                     <div class="form-group col-md-6">
                         @php $vatRequired = in_array($user_data->user_type ?? '', ['provider', 'handyman'], true); @endphp
-                        {{ html()->label(__('Vat Number') . ($vatRequired ? ' <span class="text-danger">*</span>' : ''))->class('form-control-label' . ($vatRequired ? ' text-danger' : ''))->for('vat_number') }}
-                        {{ html()->text('vat_number', $user_data->vat_number)->placeholder(__('Vat Number'))->class('form-control')->required($vatRequired) }}
+                        {{ html()->label(__('messages.vat_number') . ($vatRequired ? ' <span class="text-danger">*</span>' : ''))->class('form-control-label' . ($vatRequired ? ' text-danger' : ''))->for('vat_number') }}
+                        {{ html()->text('vat_number', $user_data->vat_number)->placeholder(__('messages.vat_number'))->class('form-control')->required($vatRequired) }}
                         <small class="help-block with-errors text-danger"></small>
                     </div>
 
 
                     <div class="form-group col-md-6">
-                        {{ html()->label(__('Skills'))->class('form-control-label')->for('skills') }}
-                        {{ html()->text('skills', $user_data->skills)->placeholder(__('skills'))->class('form-control') }}
+                        {{ html()->label(__('messages.skills'))->class('form-control-label')->for('skills') }}
+                        {{ html()->text('skills', $user_data->skills)->placeholder(__('messages.skills'))->class('form-control') }}
                         <small class="help-block with-errors text-danger"></small>
                     </div>
 
                     <div class="form-group col-md-6">
-                        {{ html()->label(__('Education'), 'education')->class('form-control-label')->for('education') }}
+                        {{ html()->label(__('messages.education'), 'education')->class('form-control-label')->for('education') }}
                         {{ html()->select(
                                 'education',
                                 [
-                                    '' => __('messages.select_name', ['select' => __('Education')]),
-                                    'any_graduate' => 'Any Graduate',
-                                    'apprenticeship_degree' => 'Apprenticeship Degree',
-                                    'traineeship_degree' => 'Traineeship Degree',
-                                    'secondary_degree' => 'Secondary Degree',
-                                    'undergraduate_diploma' => 'Undergraduate Diploma',
-                                    'high_school_graduate' => 'High school graduate',
-                                    'associate_degree' => 'Associate degree',
-                                    'college_degree' => 'College Degree',
-                                    'university_degree' => 'University Degree',
-                                    'bachelors_degree' => "Bachelor's Degree",
-                                    'masters_degree' => "Master's Degree",
-                                    'doctorate_degree' => 'Doctorate Degree',
-                                    'professional_degree' => 'Professional Degree',
+                                    '' => __('messages.select_name', ['select' => __('messages.education')]),
+                                    'any_graduate' => __('messages.education_any_graduate'),
+                                    'apprenticeship_degree' => __('messages.education_apprenticeship_degree'),
+                                    'traineeship_degree' => __('messages.education_traineeship_degree'),
+                                    'secondary_degree' => __('messages.education_secondary_degree'),
+                                    'undergraduate_diploma' => __('messages.education_undergraduate_diploma'),
+                                    'high_school_graduate' => __('messages.education_high_school_graduate'),
+                                    'associate_degree' => __('messages.education_associate_degree'),
+                                    'college_degree' => __('messages.education_college_degree'),
+                                    'university_degree' => __('messages.education_university_degree'),
+                                    'bachelors_degree' => __('messages.education_bachelor_degree'),
+                                    'masters_degree' => __('messages.education_master_degree'),
+                                    'doctorate_degree' => __('messages.education_doctorate_degree'),
+                                    'professional_degree' => __('messages.education_professional_degree'),
                                 ],
                                 $user_data->education ?? '',
-                            )->class('form-control')->attribute('data-placeholder', __('Education')) }}
+                            )->class('form-control')->attribute('data-placeholder', __('messages.education')) }}
                         <small class="help-block with-errors text-danger"></small>
                     </div>
 
                     <div class="form-group col-md-6">
-                        {{ html()->label(__('Career Level'))->class('form-control-label')->for('career_level') }}
+                        {{ html()->label(__('messages.career_level'))->class('form-control-label')->for('career_level') }}
                         {{ html()->select(
                                 'career_level',
                                 [
-                                    'not_specified' => __('Not Specified'),
-                                    'entry_level' => __('Entry Level'),
-                                    'intermediate_level' => __('Intermediate Level'),
-                                    'experienced' => __('Experienced'),
-                                    'professional' => __('Professional'),
-                                    'middle_management' => __('Middle Management'),
-                                    'executive_management' => __('Executive Management'),
-                                    'senior_management' => __('Senior Management'),
-                                    'director' => __('Director'),
-                                    'technician' => __('Technician'),
-                                    'leader' => __('Leader'),
-                                    'manager' => __('Manager'),
+                                    'not_specified' => __('messages.career_level_not_specified'),
+                                    'entry_level' => __('messages.career_level_entry_level'),
+                                    'intermediate_level' => __('messages.career_level_intermediate_level'),
+                                    'experienced' => __('messages.career_level_experienced'),
+                                    'professional' => __('messages.career_level_professional'),
+                                    'middle_management' => __('messages.career_level_middle_management'),
+                                    'executive_management' => __('messages.career_level_executive_management'),
+                                    'senior_management' => __('messages.career_level_senior_management'),
+                                    'director' => __('messages.career_level_director'),
+                                    'technician' => __('messages.career_level_technician'),
+                                    'leader' => __('messages.career_level_leader'),
+                                    'manager' => __('messages.career_level_manager'),
                                 ],
                                 old('career_level', $user_data->career_level ?: 'not_specified'),
-                            )->class('form-control')->required()->attribute('data-placeholder', __('Career Level')) }}
+                            )->class('form-control')->required()->attribute('data-placeholder', __('messages.career_level')) }}
                         <small class="help-block with-errors text-danger"></small>
                     </div>
 
@@ -219,13 +219,13 @@
                     </div>
 
                     <div class="form-group col-md-6">
-                        {{ html()->label(__('Certification'))->class('form-control-label')->for('certification') }}
-                        {{ html()->text('certification', $user_data->certification)->placeholder(__('Certification'))->class('form-control') }}
+                        {{ html()->label(__('messages.certification'))->class('form-control-label')->for('certification') }}
+                        {{ html()->text('certification', $user_data->certification)->placeholder(__('messages.certification'))->class('form-control') }}
                         <small class="help-block with-errors text-danger"></small>
                     </div>
 
                     <div class="form-group col-md-6">
-                        {{ html()->label(__('Availability'), 'availability')->class('form-control-label') }}
+                        {{ html()->label(__('messages.availability'), 'availability')->class('form-control-label') }}
                         @php
                             // Convert old values (1/0 or 'Full-time'/'Part-time') to new format for display
                             $availabilityValue = $user_data->availability;
@@ -238,9 +238,9 @@
                         {{ html()->select(
                                 'availability',
                                 [
-                                    '' => __('messages.select_name', ['select' => __('Availability')]),
-                                    'full_time' => 'Full-time',
-                                    'part_time' => 'Part-time',
+                                    '' => __('messages.select_name', ['select' => __('messages.availability')]),
+                                    'full_time' => __('messages.full_time'),
+                                    'part_time' => __('messages.part_time'),
                                 ],
                                 $availabilityValue,
                             )->class('form-control')->required() }}
@@ -248,8 +248,8 @@
                     </div>
 
                     <div class="form-group col-md-6">
-                        {{ html()->label(__('Mobility'))->class('form-control-label')->for('mobility') }}
-                        {{ html()->text('mobility', $user_data->mobility)->placeholder(__('Mobility'))->class('form-control') }}
+                        {{ html()->label(__('messages.mobility'))->class('form-control-label')->for('mobility') }}
+                        {{ html()->text('mobility', $user_data->mobility)->placeholder(__('messages.mobility'))->class('form-control') }}
                         <small class="help-block with-errors text-danger"></small>
                     </div>
 
@@ -267,17 +267,17 @@
                         </div>
                     @endif
                     <div class="form-group col-md-12">
-                        {{ html()->label(__('Experience'), 'experience')->class('form-control-label') }}
-                        {{ html()->textarea('experience', strip_tags((string) $user_data->experience))->class('form-control textarea')->rows(2)->placeholder(__('experience'))->id('experience') }}
+                        {{ html()->label(__('messages.experience'), 'experience')->class('form-control-label') }}
+                        {{ html()->textarea('experience', strip_tags((string) $user_data->experience))->class('form-control textarea')->rows(2)->placeholder(__('messages.experience'))->id('experience') }}
                     </div>
                     <div class="form-group col-md-12">
-                        {{ html()->label(__('About Me'))->class('form-control-label')->for('about_me') }}
-                        {{ html()->textarea('about_me', strip_tags((string) $user_data->about_me))->class('form-control textarea')->rows(2)->placeholder(__('about_me'))->id('about_me') }}
+                        {{ html()->label(__('messages.about_me'))->class('form-control-label')->for('about_me') }}
+                        {{ html()->textarea('about_me', strip_tags((string) $user_data->about_me))->class('form-control textarea')->rows(2)->placeholder(__('messages.about_me'))->id('about_me') }}
                     </div>
 
 
                     <div class="form-group col-md-12">
-                        {{ html()->label(__('messages.address') . ' <span class="text-danger">*</span>', 'Address')->class('form-control-label text-danger') }}
+                        {{ html()->label(__('messages.address') . ' <span class="text-danger">*</span>', 'address')->class('form-control-label text-danger') }}
                         {{ html()->textarea('address', strip_tags((string) $user_data->address))->class('form-control textarea')->rows(2)->placeholder(__('messages.address'))->id('address')->required() }}
                     </div>
 
@@ -310,7 +310,7 @@
                                             <small class="help-block with-errors text-danger"></small>
                                             <div class="form-group col-3 mb-0 align-self-center">
                                                 <button class="remove-section1 button-custom button-remove"
-                                                    data-title="remove" title="Remove">
+                                                    data-title="remove" title="{{ __('landingpage.remove') }}">
                                                     <i class="far fa-trash-alt"></i>
                                                 </button>
                                             </div>
@@ -341,7 +341,7 @@
                             <div class="form-group row">
                                 <div class="col-md-9 text-md-right pe-1">
                                     <button type="button" id="add-section" class="button-custom button-added">
-                                        <i class="fas fa-plus me-2"></i>Add More Reason
+                                        <i class="fas fa-plus me-2"></i>{{ __('messages.profile_add_more_reason') }}
                                     </button>
                                 </div>
                                 <div class="col-md-3"></div>
@@ -434,7 +434,7 @@
 
             if (inputValue.length > 15) {
                 inputValue = inputValue.substring(0, 15);
-                $('#contact_number_err').text('Contact number should not exceed 15 characters');
+                $('#contact_number_err').text({!! json_encode(__('messages.contact_number_max_15')) !!});
             } else {
                 $('#contact_number_err').text('');
             }
@@ -444,7 +444,7 @@
             if (inputValue.match(/^[0-9+\- ]+$/)) {
                 $('#contact_number_err').text('');
             } else {
-                $('#contact_number_err').text('Please enter a valid mobile number');
+                $('#contact_number_err').text({!! json_encode(__('messages.valid_mobile_number')) !!});
             }
         });
 

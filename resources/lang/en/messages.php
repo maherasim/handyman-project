@@ -1248,6 +1248,8 @@
     'booking_enter_reason' => 'Enter reason',
     'add_extra_charges' => 'Add Extra Charges',
     'add_more' => '+ Add More',
+    'profile_add_more_reason' => 'Add more reason',
+    'country_tax' => 'Country tax',
     'submit_charges' => 'Submit Charges',
     'rate_the_service' => 'Rate the Service',
     'write_your_review' => 'Write your review...',

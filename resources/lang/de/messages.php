@@ -1241,6 +1241,8 @@
     'booking_enter_reason' => 'Grund angeben',
     'add_extra_charges' => 'Zusatzkosten hinzufügen',
     'add_more' => '+ Weitere hinzufügen',
+    'profile_add_more_reason' => 'Weiteren Grund hinzufügen',
+    'country_tax' => 'Steuerland',
     'submit_charges' => 'Kosten absenden',
     'rate_the_service' => 'Service bewerten',
     'write_your_review' => 'Bewertung schreiben...',
@@ -1271,7 +1273,7 @@
     'remaining_amount' => 'Restbetrag',
 
     // Service create page
-    'tax_country' => 'Steuersatz',
+    'tax_country' => 'Steuerland',
     'daily' => 'Täglich',
     'minimum_booking' => 'Mindestbuchung',
     'minimum_booking_placeholder' => 'Mindestbuchung (Zahl in Stunden)',
