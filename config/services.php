@@ -46,4 +46,13 @@ return [
         'api_key' => env('GOOGLE_MAP_KEY'),
     ],
 
+    'recaptcha' => [
+        // Google reCAPTCHA v2 checkbox by default
+        'enabled' => (bool) env('RECAPTCHA_ENABLED', false),
+        'site_key' => env('RECAPTCHA_SITE_KEY'),
+        'secret_key' => env('RECAPTCHA_SECRET_KEY'),
+        // Optional: allow skipping verification for localhost during dev
+        'skip_on_local' => (bool) env('RECAPTCHA_SKIP_ON_LOCAL', true),
+    ],
+
 ];

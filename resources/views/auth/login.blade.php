@@ -46,6 +46,17 @@
                                  <a href="{{route('password.request')}}" class="btn-link p-0 text-capitalize"><i>{{__('auth.forgot_password')}}</i></a>
                               </div>
                            </div>
+
+                           @if (config('services.recaptcha.enabled') && config('services.recaptcha.site_key'))
+                              <div class="col-lg-12 mt-2">
+                                 <div class="form-group">
+                                    <div class="g-recaptcha" data-sitekey="{{ config('services.recaptcha.site_key') }}"></div>
+                                    @if ($errors->has('g-recaptcha-response'))
+                                       <small class="help-block text-danger">{{ $errors->first('g-recaptcha-response') }}</small>
+                                    @endif
+                                 </div>
+                              </div>
+                           @endif
                         </div>
                         <button type="submit" class="btn btn-primary btn-block mt-2 w-100">{{ __('auth.login') }}</button>
                         <div class="text-center my-4 text-signup">
@@ -59,6 +70,10 @@
          </div>
       </div>
    </section>
+
+   @if (config('services.recaptcha.enabled') && config('services.recaptcha.site_key'))
+      <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+   @endif
 
    <script>
       document.addEventListener('DOMContentLoaded', function() {

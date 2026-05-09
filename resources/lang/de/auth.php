@@ -36,6 +36,8 @@
   'password_rule_min' => 'Mindestens 8 Zeichen',
   'password_rule_letter' => 'Mindestens einen Buchstaben (A–Z oder a–z)',
   'password_rule_number' => 'Mindestens eine Ziffer (0–9)',
+  'recaptcha_failed' => 'reCAPTCHA-Überprüfung fehlgeschlagen. Bitte erneut versuchen.',
+  'recaptcha_not_configured' => 'reCAPTCHA ist nicht konfiguriert. Bitte den Support kontaktieren.',
   'assign_provider_msg' => 'Wenden Sie sich an Ihren Admin, um einen Anbieter zuzuweisen.',
   'assign_handyman_msg' => 'Wenden Sie sich an Ihren Admin, um einen Handwerker zuzuweisen.',
 );
