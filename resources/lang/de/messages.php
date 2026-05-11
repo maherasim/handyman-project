@@ -1307,20 +1307,32 @@
     'serviceaddon_status_label' => 'Status',
 
     // Education (DB key => readable label)
-    'education_not_specified' => 'Nicht angegeben',
-    'education_any_graduate' => 'Abschluss (beliebig)',
-    'education_apprenticeship_degree' => 'Lehre / Ausbildungsabschluss',
-    'education_traineeship_degree' => 'Praktikum / Trainee-Abschluss',
-    'education_secondary_degree' => 'Sekundarabschluss',
-    'education_undergraduate_diploma' => 'Grundstudium-Diplom',
-    'education_high_school_graduate' => 'Abitur / Mittlere Reife',
-    'education_associate_degree' => 'Associate Degree',
-    'education_college_degree' => 'Fachhochschulabschluss',
-    'education_university_degree' => 'Uni-Abschluss',
-    'education_bachelor_degree' => 'Bachelor',
-    'education_master_degree' => 'Master',
-    'education_doctorate_degree' => 'Promotion / Doktor',
-    'education_professional_degree' => 'Fachabschluss / Professioneller Abschluss',
+    
+
+ 
+// Education (DB key => readable label)
+'education_not_specified' => 'Grundschule',
+'education_any_graduate' => 'Hauptschule',
+'education_apprenticeship_degree' => 'Realschule',
+'education_traineeship_degree' => 'Gesamtschule',
+'education_secondary_degree' => 'Gymnasium',
+'education_undergraduate_diploma' => 'Hauptschulabschluss',
+'education_high_school_graduate' => 'Realschulabschluss (Mittlere Reife)',
+'education_associate_degree' => 'Fachhochschulreife (Fachabitur)',
+'education_college_degree' => 'Allgemeine Hochschulreife (Abitur)',
+'education_university_degree' => 'Berufsausbildung / Ausbildung',
+'education_bachelor_degree' => 'Berufsschule',
+'education_master_degree' => 'Fachschule',
+'education_doctorate_degree' => 'Fachhochschule',
+'education_professional_degree' => 'Universität',
+'education_not_specified_2' => 'Bachelor',
+'education_any_graduate_2' => 'Master',
+'education_apprenticeship_degree_2' => 'Staatsexamen',
+'education_traineeship_degree_2' => 'Promotion (Doktor)',
+'education_secondary_degree_2' => 'Habilitation',
+'education_undergraduate_diploma_2' => 'Professur',
+```
+
 
     // Career Level (DB key => readable label)
     'career_level_not_specified' => 'Nicht angegeben',
