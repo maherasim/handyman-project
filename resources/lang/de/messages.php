@@ -1331,7 +1331,7 @@
 'education_traineeship_degree_2' => 'Promotion (Doktor)',
 'education_secondary_degree_2' => 'Habilitation',
 'education_undergraduate_diploma_2' => 'Professur',
-```
+
 
 
     // Career Level (DB key => readable label)
