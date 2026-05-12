@@ -28,7 +28,7 @@ class User extends Authenticatable implements HasMedia
         'login_type','service_address_id' , 'uid','is_subscribe','about_me','mobility','certification','about_me','availability',
         'social_image','is_available','designation','last_online_time','education','career_level',
                 'known_languages','skills','description','why_choose_me','is_email_verified','languages','experience','minimum_booking',
-        'handyman_commission','years_of_experience'
+        'handyman_commission','years_of_experience','profile_complete'
      ];
 
     /**
@@ -63,6 +63,7 @@ class User extends Authenticatable implements HasMedia
         'is_available'            => 'integer',
         'slots_for_all_services' => 'integer',
         'is_email_verified'    => 'integer',
+        'profile_complete'     => 'integer',
         'handyman_commission'  => 'string'
     ];
 

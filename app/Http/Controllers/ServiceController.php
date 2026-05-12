@@ -310,6 +310,11 @@ class ServiceController extends Controller
 
         $auth_user = authSession();
 
+        if ($auth_user->user_type === 'provider' && !$auth_user->profile_complete) {
+            return redirect()->route('setting.index', ['page' => 'profile_form'])
+                ->withErrors(__('messages.complete_profile_first'));
+        }
+
         $servicedata = Service::find($id);
 
         // If editing and service has any bookings, do not allow edit
@@ -372,6 +377,14 @@ public function store(ServiceRequest $request)
    // dd($request->all());
     if (demoUserPermission()) {
         return redirect()->back()->withErrors(trans('messages.demo_permission_denied'));
+    }
+
+    if (auth()->user()->user_type === 'provider' && !auth()->user()->profile_complete) {
+        $message = __('messages.complete_profile_first');
+        if ($request->is('api/*')) {
+            return comman_message_response($message);
+        }
+        return redirect()->route('setting.index', ['page' => 'profile_form'])->withErrors($message);
     }
 
     // If updating and service has any bookings, do not allow update

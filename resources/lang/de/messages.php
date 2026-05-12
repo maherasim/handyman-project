@@ -55,6 +55,7 @@
     'confirm_new_password' => 'Neues Passwort bestätigen',
     'update' => 'Aktualisieren',
     'profile' => 'Profil',
+    'complete_profile_first' => 'Bitte vervollständigen Sie zuerst Ihr Profil, bevor Sie einen Service erstellen.',
     'demo_permission_denied' => 'Sie haben keine Berechtigung für diese Aktion.',
     'service_has_bookings_cannot_edit' => 'Diese Service kann nicht bearbeitet werden, da bereits Buchungen existieren.',
     'old_new_pass_same' => 'Ihr neues Passwort darf nicht mit dem alten übereinstimmen. Bitte geben Sie ein anderes Passwort ein.',

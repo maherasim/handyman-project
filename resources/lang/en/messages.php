@@ -55,6 +55,7 @@
     'confirm_new_password' => 'Confirm New Password',
     'update' => 'Update',
     'profile' => 'Profile',
+    'complete_profile_first' => 'Please complete your profile before creating a service.',
     'demo_permission_denied' => 'You don\'t have permission to perform this action.',
     'service_has_bookings_cannot_edit' => 'This service cannot be edited because it has existing bookings.',
     'old_new_pass_same' => 'Old password is same as new password please try with other new password.',
