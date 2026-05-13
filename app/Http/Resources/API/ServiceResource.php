@@ -67,6 +67,7 @@ class ServiceResource extends JsonResource
             'provider_image' => optional($this->providers)->login_type != null 
                 ? optional($this->providers)->social_image 
                 : getSingleMedia(optional($this->providers), 'profile_image', null),
+            'provider_profile_complete' => (int) optional($this->providers)->profile_complete,
             'city_id' => optional($this->providers)->city_id,
             // provider location names for mobile UI
             'city_name' => optional(optional($this->providers)->city)->name,
