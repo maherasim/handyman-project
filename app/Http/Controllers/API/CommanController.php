@@ -119,7 +119,7 @@ class CommanController extends Controller
         return comman_custom_response($response);
     }
    public function getSearchList(Request $request){
-        $providerProfileComplete = null;
+        $providerProfileComplete = 0;
         $providerIds = [];
         if($request->has('provider_id') && $request->provider_id != '' ){
             $providerIds = array_filter(explode(',',$request->provider_id), function($v){
