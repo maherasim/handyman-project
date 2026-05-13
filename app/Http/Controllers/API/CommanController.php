@@ -126,7 +126,7 @@ class CommanController extends Controller
                 return $v !== '' && $v !== 'null' && $v !== null;
             });
             if(!empty($providerIds)){
-                $providerProfileComplete = (int) optional(User::whereIn('id', $providerIds)->first())->profile_complete;
+                $providerProfileComplete = (int) optional(User::whereIn('id', $providerIds)->withTrashed()->first())->profile_complete;
             }
         }
 
