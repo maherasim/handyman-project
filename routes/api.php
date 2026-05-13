@@ -43,7 +43,7 @@ Route::get('landing-page-list',[API\FrontendSettingController::class,'getLanding
 Route::post('country-list',[ API\CommanController::class, 'getCountryList' ]);
 Route::post('state-list',[ API\CommanController::class, 'getStateList' ]);
 Route::post('city-list',[ API\CommanController::class, 'getCityList' ]);
-Route::get('search-list', [ API\CommanController::class, 'getSearchList' ] );
+Route::middleware([OptionalSanctumAuth::class])->get('search-list', [ API\CommanController::class, 'getSearchList' ] );
 Route::get('slider-list',[ API\SliderController::class, 'getSliderList' ]);
 Route::get('top-rated-service',[ API\ServiceController::class, 'getTopRatedService' ]);
 Route::get('coupon-list',[ API\CouponController::class, 'getCouponList' ]);

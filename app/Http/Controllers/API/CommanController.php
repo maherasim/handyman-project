@@ -125,9 +125,12 @@ class CommanController extends Controller
             $providerIds = array_filter(explode(',',$request->provider_id), function($v){
                 return $v !== '' && $v !== 'null' && $v !== null;
             });
-            if(!empty($providerIds)){
-                $providerProfileComplete = (int) optional(User::whereIn('id', $providerIds)->withTrashed()->first())->profile_complete;
-            }
+        } elseif (auth()->check() && auth()->user()->user_type === 'provider') {
+            $providerIds = [auth()->id()];
+        }
+
+        if(!empty($providerIds)){
+            $providerProfileComplete = (int) optional(User::whereIn('id', $providerIds)->withTrashed()->first())->profile_complete;
         }
 
         $service = Service::where('status',1)
