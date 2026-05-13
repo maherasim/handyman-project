@@ -72,7 +72,7 @@
    </section>
 
    @if (config('services.recaptcha.enabled') && config('services.recaptcha.site_key'))
-      <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+      <script src="https://www.google.com/recaptcha/api.js?hl={{ app()->getLocale() }}" async defer></script>
    @endif
 
    <script>

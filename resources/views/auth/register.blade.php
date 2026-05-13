@@ -152,6 +152,17 @@
                               </div>
                            </div>
 
+                           @if (config('services.recaptcha.enabled') && config('services.recaptcha.site_key'))
+                              <div class="col-lg-12 mt-2">
+                                 <div class="form-group">
+                                    <div class="g-recaptcha" data-sitekey="{{ config('services.recaptcha.site_key') }}"></div>
+                                    @if ($errors->has('g-recaptcha-response'))
+                                       <small class="help-block text-danger">{{ $errors->first('g-recaptcha-response') }}</small>
+                                    @endif
+                                 </div>
+                              </div>
+                           @endif
+
                         </div>
                         <button type="submit" class="btn btn-primary btn-block mt-2 w-100" id="submit-btn" disabled>{{ __('auth.create_account') }}</button>
                         <div class="col-lg-12 mt-3">
@@ -164,6 +175,9 @@
          </div>
       </div>
       <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+      @if (config('services.recaptcha.enabled') && config('services.recaptcha.site_key'))
+         <script src="https://www.google.com/recaptcha/api.js?hl={{ app()->getLocale() }}" async defer></script>
+      @endif
       <script>
          function passwordPolicyCheck(pwd) {
             const p = pwd || '';

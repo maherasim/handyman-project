@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\VerificationEmail;
+use App\Support\RecaptchaValidator;
 
 class RegisteredUserController extends Controller
 {
@@ -41,7 +42,10 @@ class RegisteredUserController extends Controller
         'last_name'    => 'required|string|max:255',
         'email'        => 'required|string|email|max:255|unique:users',
         'password'     => 'required|string|confirmed|min:8',
+        'g-recaptcha-response' => (bool) config('services.recaptcha.enabled', false) ? 'required|string' : 'nullable|string',
     ]);
+
+    RecaptchaValidator::validate($request);
 
     $userType = $request->usertype ?? 'user';
     $designation = $request->designation ?? null;
