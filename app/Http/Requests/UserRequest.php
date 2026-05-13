@@ -77,7 +77,7 @@ class UserRequest extends FormRequest
                 $rules['city_id'] = 'required|exists:cities,id';
             }
             if (empty($id)) {
-                $rules['password'] = 'required|string|min:8';
+                $rules['password'] = 'required|string|min:12';
             }
         }
 

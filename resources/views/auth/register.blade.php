@@ -182,7 +182,7 @@
          function passwordPolicyCheck(pwd) {
             const p = pwd || '';
             return {
-               lengthOk: p.length >= 8,
+               lengthOk: p.length >= 12,
                letterOk: /[a-zA-Z]/.test(p),
                numberOk: /[0-9]/.test(p)
             };

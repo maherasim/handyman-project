@@ -33,7 +33,7 @@
   'designation' => 'Designation',
   'password_mismatch_error' => 'Password and Confirm password does not match',
   'password_requirements_intro' => 'Your password must include:',
-  'password_rule_min' => 'At least 8 characters',
+  'password_rule_min' => 'At least 12 characters',
   'password_rule_letter' => 'At least one letter (A–Z or a–z)',
   'password_rule_number' => 'At least one number (0–9)',
   'recaptcha_failed' => 'reCAPTCHA verification failed. Please try again.',
