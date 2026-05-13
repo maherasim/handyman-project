@@ -549,6 +549,8 @@ public function register(UserRequest $request)
             $data['why_choose_me_reason'],
         );
 
+        $data['profile_complete'] = 1;
+
         $user->fill($data)->update();
 
         $this->attachProfileImageFromRequest($request, $user);
