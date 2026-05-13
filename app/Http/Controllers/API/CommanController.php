@@ -21,6 +21,7 @@ use App\Models\Coupon;
 use App\Models\Booking;
 use App\Models\Tax;
 use App\Models\AppSetting;
+use App\Models\User;
 use App\Http\Resources\API\ServiceResource;
 use App\Http\Resources\API\TypeResource;
 use App\Http\Resources\API\BankResource;
@@ -118,6 +119,17 @@ class CommanController extends Controller
         return comman_custom_response($response);
     }
    public function getSearchList(Request $request){
+        $providerProfileComplete = null;
+        $providerIds = [];
+        if($request->has('provider_id') && $request->provider_id != '' ){
+            $providerIds = array_filter(explode(',',$request->provider_id), function($v){
+                return $v !== '' && $v !== 'null' && $v !== null;
+            });
+            if(!empty($providerIds)){
+                $providerProfileComplete = (int) optional(User::whereIn('id', $providerIds)->first())->profile_complete;
+            }
+        }
+
         $service = Service::where('status',1)
             ->where('service_type','service')->where('is_hidden_from_public',0)
             ->with([
@@ -129,8 +141,8 @@ class CommanController extends Controller
                 'city',
                 'country'
             ])->orderBy('created_at','desc');
-        if($request->has('provider_id') && $request->provider_id != '' ){
-            $service->whereIn('provider_id',explode(',',$request->provider_id));
+        if(!empty($providerIds)){
+            $service->whereIn('provider_id',$providerIds);
         }
         
         // Check if subcategory_id is provided and valid
@@ -247,7 +259,8 @@ class CommanController extends Controller
             'data' => $items,
             'max'=> $maxprice,
             'min'=> $minprice,
-            'userservices' => $userservices
+            'userservices' => $userservices,
+            'provider_profile_complete' => $providerProfileComplete,
         ];
 
         return comman_custom_response($response);
