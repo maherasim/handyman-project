@@ -51,7 +51,10 @@ class CommonNotification extends Notification implements ShouldQueue
         
         if ($notifications) {
         $notify_data = NotificationTemplateContentMapping::where('template_id', $notifications->id)->get();
-        $templateData = $notify_data->where('user_type', $userType)->first();
+        $locale = app()->getLocale();
+        $templateData = $notify_data->where('user_type', $userType)->where('language', $locale)->first()
+            ?: $notify_data->where('user_type', $userType)->where('language', config('app.fallback_locale'))->first()
+            ?: $notify_data->where('user_type', $userType)->first();
         $templateDetail = $templateData->template_detail ?? null;
         $templateSubject = $templateData->subject ?? 'None';
         foreach ($this->data as $key => $value) {
@@ -137,7 +140,10 @@ class CommonNotification extends Notification implements ShouldQueue
 
         if ($mail) {
         $notify_data = MailTemplateContentMapping::where('template_id', $mail->id)->get();
-        $templateData = $notify_data->where('user_type', $userType)->first();
+        $locale = app()->getLocale();
+        $templateData = $notify_data->where('user_type', $userType)->where('language', $locale)->first()
+            ?: $notify_data->where('user_type', $userType)->where('language', config('app.fallback_locale'))->first()
+            ?: $notify_data->where('user_type', $userType)->first();
             $mailSubject = $templateData->subject ?? ucwords(str_replace('_', ' ', $this->type));
             $mailTemplateDetail = $templateData->template_detail ?? __('messages.default_notification_body');
             // Replace placeholders in mail subject and template detail

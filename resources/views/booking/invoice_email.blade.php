@@ -2,6 +2,6 @@
 <body>
     <p>{{ $body }}</p>
      
-    <p>Thank you</p>
+    <p>{{ __('messages.email_thank_you') }}</p>
 </body>
 </html>

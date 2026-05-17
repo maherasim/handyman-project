@@ -19,11 +19,12 @@ class BookingStatusUpdateMail extends Mailable
     public $actorName;
     public $actorType;
     public $recipientType;
+    public $mailLocale;
 
     /**
      * Create a new message instance.
      */
-    public function __construct(User $recipient, Booking $booking, $oldStatus, $newStatus, $actorName, $actorType, $recipientType = null)
+    public function __construct(User $recipient, Booking $booking, $oldStatus, $newStatus, $actorName, $actorType, $recipientType = null, $mailLocale = null)
     {
         $this->recipient = $recipient;
         $this->booking = $booking;
@@ -32,6 +33,7 @@ class BookingStatusUpdateMail extends Mailable
         $this->actorName = $actorName;
         $this->actorType = $actorType;
         $this->recipientType = $recipientType;
+        $this->mailLocale = $mailLocale ?: app()->getLocale();
     }
 
     /**
@@ -39,9 +41,13 @@ class BookingStatusUpdateMail extends Mailable
      */
     public function envelope(): \Illuminate\Mail\Mailables\Envelope
     {
-        $statusLabel = ucwords(str_replace('_', ' ', $this->newStatus));
+        $statusKey = 'messages.booking_status_option_' . $this->newStatus;
+        $statusLabel = \Illuminate\Support\Facades\Lang::has($statusKey, $this->mailLocale)
+            ? __($statusKey, [], $this->mailLocale)
+            : ucwords(str_replace('_', ' ', $this->newStatus));
+
         return new \Illuminate\Mail\Mailables\Envelope(
-            subject: '📋 Booking Status Updated - Booking #' . $this->booking->id . ' - ' . $statusLabel,
+            subject: __('messages.booking_status_email_subject', ['id' => $this->booking->id, 'status' => $statusLabel], $this->mailLocale),
         );
     }
 
@@ -65,4 +71,3 @@ class BookingStatusUpdateMail extends Mailable
         return [];
     }
 }
-

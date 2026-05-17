@@ -28,11 +28,24 @@ use App\Http\Resources\API\BankResource;
 use App\Http\Resources\API\CouponResource;
 use App\Http\Resources\API\TaxResource;
 use App\Support\UgcListing;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\App;
 use PDF;
 
 
 class CommanController extends Controller
 {
+    protected function resolveRequestLocale(Request $request): string
+    {
+        $allowed = ['en', 'de', 'fr', 'it', 'pt', 'es'];
+        $requested = $request->get('lang') ?: $request->get('locale');
+        if (is_string($requested) && in_array($requested, $allowed, true)) {
+            return $requested;
+        }
+
+        return app()->getLocale();
+    }
+
     public function getCountryList(Request $request)
     {
         $list = Country::get();
@@ -383,6 +396,13 @@ class CommanController extends Controller
         return comman_custom_response($items);
     }
 public function downloadInvoice(Request $request){
+    $previousLocale = app()->getLocale();
+    $previousCarbonLocale = Carbon::getLocale();
+    $locale = $this->resolveRequestLocale($request);
+    App::setLocale($locale);
+    Carbon::setLocale($locale);
+
+    try {
     $email = $request->email;
     $booking_id = $request->booking_id;
 
@@ -404,7 +424,6 @@ public function downloadInvoice(Request $request){
         'payment' => $payment
     ]);
 
-    try {
         \Mail::send('booking.invoice_email', $emailData, function($message) use ($data, $pdf, $emailData, $booking_id) {
             $message->to($emailData['email'])
                     ->subject($emailData['title'])
@@ -416,6 +435,9 @@ public function downloadInvoice(Request $request){
     } catch (\Throwable $th) {
         $messagedata = __('messages.something_wrong');
         return comman_message_response($messagedata);
+    } finally {
+        App::setLocale($previousLocale);
+        Carbon::setLocale($previousCarbonLocale);
     }
 }
 

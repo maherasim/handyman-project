@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
-	<title>{{ __('Invoice') }} — {{ env('APP_NAME') }}</title>
+	<title>{{ __('messages.invoice') }} - {{ env('APP_NAME') }}</title>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<style type="text/css">
@@ -240,18 +240,18 @@ $logoPath = public_path('assets/frobster logo.png');
 <body>
 @if(!empty($preview))
 <div class="print-actions no-print">
-	<button type="button" onclick="window.print();">{{ __('Print / Save as PDF') }}</button>
+	<button type="button" onclick="window.print();">{{ __('messages.invoice_print_save_pdf') }}</button>
 </div>
 @endif
 <div class="invoice-wrap">
 	<div class="invoice-paper">
 		<header class="invoice-header">
 			<div class="invoice-header-left">
-				<div class="invoice-label">{{ __('Invoice') }}</div>
+				<div class="invoice-label">{{ __('messages.invoice') }}</div>
 				<h1 class="invoice-title">#{{ $bid->id }}</h1>
 				<div class="invoice-meta">
-					<span>{{ __('Date Issued:') }} {{ optional($bid->created_at)->format('d M Y') }}</span>
-					<span>{{ __('Currency:') }} {{ $bid->currency ?? 'EUR' }}</span>
+					<span>{{ __('messages.invoice_pdf_date_issued') }} {{ $bid->created_at ? \Carbon\Carbon::parse($bid->created_at)->locale(app()->getLocale())->translatedFormat('d F Y') : '-' }}</span>
+					<span>{{ __('messages.invoice_pdf_currency') }} {{ $bid->currency ?? 'EUR' }}</span>
 				</div>
 			</div>
 			<div class="invoice-header-right">
@@ -271,23 +271,23 @@ $logoPath = public_path('assets/frobster logo.png');
 
 		<div class="invoice-parties">
 			<div class="party-block">
-				<div class="party-label">{{ __('Bill From') }}</div>
+				<div class="party-label">{{ __('messages.invoice_pdf_bill_from') }}</div>
 				<div class="party-name">{{ optional($bid->provider)->display_name ?? '—' }}</div>
-				<div class="party-detail">Address: {{ optional($bid->provider)->address ?? '—' }}</div>
-				<div class="party-detail">{{ __('Company Name:') }} {{ optional($bid->provider)->company_name ?? '—' }}</div>
-				<div class="party-detail">{{ __('VAT Number:') }} {{ optional($bid->provider)->vat_number ?? '—' }}</div>
+				<div class="party-detail">{{ __('messages.address') }}: {{ optional($bid->provider)->address ?? '—' }}</div>
+				<div class="party-detail">{{ __('messages.company_name') }}: {{ optional($bid->provider)->company_name ?? '—' }}</div>
+				<div class="party-detail">{{ __('messages.invoice_pdf_vat_number') }} {{ optional($bid->provider)->vat_number ?? '—' }}</div>
 			</div>
 			<div class="party-block">
-				<div class="party-label">{{ __('Bill To') }}</div>
+				<div class="party-label">{{ __('messages.invoice_pdf_bill_to') }}</div>
 				<div class="party-name">{{ optional($bid->customer)->display_name ?? '—' }}</div>
-				<div class="party-detail">Address: {{ optional($bid->customer)->address ?? '—' }}</div>
-				<div class="party-detail">{{ __('Company Name:') }} {{ optional($bid->customer)->company_name ?? '—' }}</div>
-				<div class="party-detail">{{ __('VAT Number:') }} {{ optional($bid->customer)->vat_number ?? '—' }}</div>
+				<div class="party-detail">{{ __('messages.address') }}: {{ optional($bid->customer)->address ?? '—' }}</div>
+				<div class="party-detail">{{ __('messages.company_name') }}: {{ optional($bid->customer)->company_name ?? '—' }}</div>
+				<div class="party-detail">{{ __('messages.invoice_pdf_vat_number') }} {{ optional($bid->customer)->vat_number ?? '—' }}</div>
 			</div>
 		</div>
 
 		<div class="job-ref-block">
-			<div class="job-ref-label">{{ __('Job Request') }}</div>
+			<div class="job-ref-label">{{ __('messages.post_job_request') }}</div>
 			<div class="job-ref-title">{{ optional($bid->postrequest)->title ?? '—' }}</div>
 		</div>
 
@@ -295,10 +295,10 @@ $logoPath = public_path('assets/frobster logo.png');
 			<table class="items-table">
 				<thead>
 					<tr>
-						<th style="width: 52%">{{ __('Description') }}</th>
-						<th style="width: 12%" class="text-right">{{ __('Qty') }}</th>
-						<th style="width: 18%" class="text-right">{{ __('Unit Price') }}</th>
-						<th style="width: 18%" class="text-right">{{ __('Amount') }}</th>
+						<th style="width: 52%">{{ __('messages.description') }}</th>
+						<th style="width: 12%" class="text-right">{{ __('messages.Qty') }}</th>
+						<th style="width: 18%" class="text-right">{{ __('messages.invoice_pdf_unit_price') }}</th>
+						<th style="width: 18%" class="text-right">{{ __('messages.amount') }}</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -319,7 +319,7 @@ $logoPath = public_path('assets/frobster logo.png');
 						@endforeach
 					@else
 						<tr>
-							<td class="desc">{{ __('Extra Charges') }}</td>
+							<td class="desc">{{ __('messages.extra_charges') }}</td>
 							<td class="text-right">{{ $extraChargeQty }}</td>
 							<td class="text-right">{{ $fmt($extraChargeUnit) }}</td>
 							<td class="text-right amount">{{ $fmt($extraChargeTotal) }}</td>
@@ -333,49 +333,49 @@ $logoPath = public_path('assets/frobster logo.png');
 				<div class="totals-box">
 					<table>
 						<tr>
-							<td class="total-label">{{ __('Rate (Unit Price)') }}</td>
+							<td class="total-label">{{ __('messages.pjr_rate_unit_price') }}</td>
 							<td class="total-value">{{ $fmt($unitPrice) }}</td>
 						</tr>
 						<tr>
-							<td class="total-label">{{ __('Quantity (Packages / Hours / Days)') }}</td>
+							<td class="total-label">{{ __('messages.pjr_quantity_packages_hours_days') }}</td>
 							<td class="total-value">{{ $quantity }}</td>
 						</tr>
 						<tr>
-							<td class="total-label">{{ __('Total Amount') }}</td>
+							<td class="total-label">{{ __('messages.pjr_total_amount') }}</td>
 							<td class="total-value">{{ $fmt($baseTotal) }}</td>
 						</tr>
 						<tr>
 							<td class="total-label">
 								@if($hasExtraLines)
-									{{ __('Extra Charges (items)') }}
+									{{ __('messages.pjr_extra_charges_n_items', ['count' => $bid->extraCharges->count()]) }}
 								@else
-									{{ __('Extra Charges') }} ({{ $extraChargeQty }} × {{ number_format($extraChargeUnit, 2) }})
+									{{ __('messages.pjr_extra_charges_n_times', ['qty' => $extraChargeQty, 'unit' => number_format($extraChargeUnit, 2)]) }}
 								@endif
 							</td>
 							<td class="total-value">{{ $fmt($extraChargeTotal) }}</td>
 						</tr>
 						<tr class="emphasis">
-							<td class="total-label">{{ __('Subtotal') }}</td>
+							<td class="total-label">{{ __('messages.sub_total') }}</td>
 							<td class="total-value">{{ $fmt($subTotal) }}</td>
 						</tr>
 						<tr>
-							<td class="total-label">{{ __('Net Amount (Subtotal - Tax)') }}</td>
+							<td class="total-label">{{ __('messages.invoice_net_amount_subtotal_tax') }}</td>
 							<td class="total-value">{{ $fmt($netAmount) }}</td>
 						</tr>
 						<tr>
-							<td class="total-label">{{ __('Tax') }} ({{ number_format($taxRate, 0) }}%) {{ $taxTitle ?: $countryName }}</td>
+							<td class="total-label">{{ __('messages.pjr_tax_line', ['rate' => number_format($taxRate, 0), 'title' => $taxTitle ?: $countryName]) }}</td>
 							<td class="total-value">{{ $fmt($taxAmount) }}</td>
 						</tr>
 						<tr class="grand-total">
-							<td class="total-label">{{ __('Grand Total') }}</td>
+							<td class="total-label">{{ __('messages.grand_total') }}</td>
 							<td class="total-value">{{ $fmt($grandTotal) }}</td>
 						</tr>
 						<tr>
-							<td class="total-label">{{ __('Advance Payment') }} ({{ number_format($advancePercent, 0) }}%)</td>
+							<td class="total-label">{{ __('messages.pjr_advance_payment_line', ['pct' => number_format($advancePercent, 0)]) }}</td>
 							<td class="total-value">{{ $fmt($advancePaid) }}</td>
 						</tr>
 						<tr class="emphasis">
-							<td class="total-label">{{ __('Remaining Amount') }}</td>
+							<td class="total-label">{{ __('messages.pjr_remaining_amount') }}</td>
 							<td class="total-value">{{ $fmt($remainingAmount) }}</td>
 						</tr>
 					</table>
@@ -384,7 +384,7 @@ $logoPath = public_path('assets/frobster logo.png');
 		</div>
 
 		<footer class="invoice-footer">
-			{{ __('Thank you for your business.') }}
+			{{ __('messages.invoice_thank_you_business') }}
 		</footer>
 	</div>
 </div>

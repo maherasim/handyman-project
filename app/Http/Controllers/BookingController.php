@@ -1347,7 +1347,7 @@ public function bookingAssigned(Request $request)
     {
         $previousLocale = app()->getLocale();
         $previousCarbonLocale = Carbon::getLocale();
-        $locale = $this->resolveInvoicePdfLocale();
+        $locale = request('lang') ?: $this->resolveInvoicePdfLocale();
         App::setLocale($locale);
         Carbon::setLocale($locale);
 
@@ -1395,12 +1395,14 @@ public function bookingAssigned(Request $request)
                     // Only dispatch if status actually changed to avoid unnecessary jobs
                     if ($oldStatus != $request->status) {
                         $actorId = auth()->id();
-                        // Dispatch the job
+                        $mailLocale = app()->getLocale();
+                        // Dispatch the job with the current request locale so queued email content stays language-specific.
                         \App\Jobs\ProcessBookingStatusUpdateJob::dispatch(
-                            $bookingdata->id, 
-                            $request->all(), 
-                            $oldStatus, 
-                            $actorId
+                            $bookingdata->id,
+                            $request->all(),
+                            $oldStatus,
+                            $actorId,
+                            $mailLocale
                         );
                     }
                 }

@@ -900,9 +900,10 @@ class BookingController extends Controller
                 }
                 
                 // Send emails to all recipients
+                $mailLocale = $request->get('lang') ?: app()->getLocale();
                 foreach ($emailsToSend as $emailData) {
                     try {
-                        Mail::to($emailData['user']->email)->send(
+                        Mail::to($emailData['user']->email)->locale($mailLocale)->send(
                             new BookingStatusUpdateMail(
                                 $emailData['user'],
                                 $bookingdata,
@@ -910,7 +911,8 @@ class BookingController extends Controller
                                 $newStatus,
                                 $actorName,
                                 $actorType,
-                                $emailData['type'] // recipient type: 'provider', 'handyman', or 'user'
+                                $emailData['type'], // recipient type: 'provider', 'handyman', or 'user'
+                                $mailLocale
                             )
                         );
                         \Log::info('Booking status update email sent', [
@@ -1883,19 +1885,27 @@ class BookingController extends Controller
     private function createDirectDatabaseNotification($booking, $activity_type, $old_status, $new_status)
     {
         try {
-            $statusLabel = ucwords(str_replace('_', ' ', $new_status));
-            $oldStatusLabel = ucwords(str_replace('_', ' ', $old_status));
-            $serviceName = optional($booking->service)->name ?? 'Service';
-            $customerName = optional($booking->customer)->display_name ?? optional($booking->customer)->name ?? 'Customer';
-            $providerName = optional($booking->provider)->display_name ?? optional($booking->provider)->name ?? 'Provider';
+            $locale = app()->getLocale();
+            $statusKey = 'messages.booking_status_option_' . $new_status;
+            $oldStatusKey = 'messages.booking_status_option_' . $old_status;
+            $statusLabel = \Illuminate\Support\Facades\Lang::has($statusKey, $locale) ? __($statusKey, [], $locale) : ucwords(str_replace('_', ' ', $new_status));
+            $oldStatusLabel = \Illuminate\Support\Facades\Lang::has($oldStatusKey, $locale) ? __($oldStatusKey, [], $locale) : ucwords(str_replace('_', ' ', $old_status));
+            $serviceName = optional($booking->service)->name ?? __('messages.service', [], $locale);
+            $customerName = optional($booking->customer)->display_name ?? optional($booking->customer)->name ?? __('messages.customer', [], $locale);
+            $providerName = optional($booking->provider)->display_name ?? optional($booking->provider)->name ?? __('messages.provider', [], $locale);
             
             // Create a proper notification message
-            $message = "Booking #{$booking->id} for {$serviceName} status has been updated from {$oldStatusLabel} to {$statusLabel}";
+            $message = __('messages.booking_status_direct_notification', [
+                'id' => $booking->id,
+                'service' => $serviceName,
+                'from' => $oldStatusLabel,
+                'to' => $statusLabel,
+            ], $locale);
             
             $notificationData = [
                 'id' => $booking->id,
                 'type' => $activity_type,
-                'subject' => 'Booking Status Updated',
+                'subject' => __('messages.booking_status_email_title', [], $locale),
                 'booking_id' => $booking->id,
                 'old_status' => $old_status,
                 'new_status' => $new_status,

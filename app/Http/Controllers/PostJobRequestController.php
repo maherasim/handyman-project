@@ -31,6 +31,7 @@ use App\Models\PostJobBid;
 use App\Models\PostJobBidRating;
 use App\Models\PostJobBidCustomerRating;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\App;
 use App\Mail\PostJobBankTransferPaymentNotificationMail;
 use App\Models\PostJobExtraCharge;
 use App\Traits\NotificationTrait;
@@ -2346,8 +2347,36 @@ class PostJobRequestController extends Controller
     }
    
     // ...
+    protected function resolveInvoicePdfLocale(): string
+    {
+        $domainLocale = config('app.domain_locale', []);
+        $host = request()->getHost();
+        $hostVariants = array_unique(array_filter([
+            $host,
+            preg_replace('/^www\./i', '', $host),
+            str_starts_with(strtolower($host), 'www.') ? null : 'www.'.$host,
+        ]));
+        foreach ($hostVariants as $h) {
+            if ($h !== '' && isset($domainLocale[$h])) {
+                return $domainLocale[$h];
+            }
+        }
+        if (config('app.show_language_switcher', false) && session()->has('locale')) {
+            return session('locale');
+        }
+
+        return config('app.locale', 'en');
+    }
+
     public function invoice($id)
     {
+        $previousLocale = app()->getLocale();
+        $previousCarbonLocale = Carbon::getLocale();
+        $locale = request('lang') ?: $this->resolveInvoicePdfLocale();
+        App::setLocale($locale);
+        Carbon::setLocale($locale);
+
+        try {
         $bid = \App\Models\PostJobBid::with([
             'provider:id,display_name,address,vat_number,company_name',
             'customer:id,display_name,address,company_name,vat_number',
@@ -2363,6 +2392,10 @@ class PostJobRequestController extends Controller
         $pdf = Pdf::loadView('postrequest.invoice', compact('bid', 'payment'))->setPaper('a4');
         $filename = 'post-bid-invoice-' . $bid->id . '.pdf';
         return $pdf->download($filename);
+        } finally {
+            App::setLocale($previousLocale);
+            Carbon::setLocale($previousCarbonLocale);
+        }
     }
     
     /* bulck action method */

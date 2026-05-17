@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 use App\Models\PostRequestStatus;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\App;
+use Carbon\Carbon;
 use App\Models\User;
 
 use App\Models\PostJobRequest;
@@ -23,6 +25,17 @@ use App\Support\UgcListing;
 class PostJobRequestController extends Controller
 {
     use NotificationTrait;
+
+    protected function resolveRequestLocale(Request $request): string
+    {
+        $allowed = ['en', 'de', 'fr', 'it', 'pt', 'es'];
+        $requested = $request->get('lang') ?: $request->get('locale');
+        if (is_string($requested) && in_array($requested, $allowed, true)) {
+            return $requested;
+        }
+
+        return app()->getLocale();
+    }
   
     public function postRequestStatus(Request $request)
     {
@@ -137,6 +150,13 @@ class PostJobRequestController extends Controller
 
     public function invoice($id)
     {
+        $previousLocale = app()->getLocale();
+        $previousCarbonLocale = Carbon::getLocale();
+        $locale = $this->resolveRequestLocale(request());
+        App::setLocale($locale);
+        Carbon::setLocale($locale);
+
+        try {
         $bid = \App\Models\PostJobBid::with([
             'provider:id,display_name,address,vat_number,company_name',
             'customer:id,display_name,address,company_name,vat_number',
@@ -173,18 +193,24 @@ class PostJobRequestController extends Controller
         }
 
         try {
-            $subject = 'Your Invoice for Post Job Bid #' . $bid->id;
-            $body = 'Hello ' . (trim((string)($recipient->display_name ?? $recipient->name ?? '')) ?: 'there') . ",\n\nPlease find your invoice attached.\n\nThank you.";
+            $subject = __('messages.pjr_invoice_email_subject', ['id' => $bid->id]);
+            $body = __('messages.pjr_invoice_email_body', [
+                'name' => trim((string)($recipient->display_name ?? $recipient->name ?? '')) ?: __('messages.email_there'),
+            ]);
             Mail::raw($body, function ($message) use ($recipient, $subject, $filename, $pdfOutput) {
                 $message->to($recipient->email, $recipient->display_name ?? $recipient->name ?? null)
                     ->subject($subject)
                     ->attachData($pdfOutput, $filename, ['mime' => 'application/pdf']);
             });
         } catch (\Throwable $e) {
-            return response()->json(['status' => false, 'message' => 'Failed to send email'], 500);
+            return response()->json(['status' => false, 'message' => __('messages.pjr_invoice_email_failed')], 500);
         }
 
-        return response()->json(['status' => true, 'message' => 'Email sent successfully']);
+        return response()->json(['status' => true, 'message' => __('messages.pjr_invoice_email_sent')]);
+        } finally {
+            App::setLocale($previousLocale);
+            Carbon::setLocale($previousCarbonLocale);
+        }
     }
     
     

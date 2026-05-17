@@ -26,18 +26,20 @@ class ProcessBookingStatusUpdateJob implements ShouldQueue
     protected $data; // Contains 'status' and optionally 'type'
     protected $oldStatus;
     protected $actorId;
+    protected $mailLocale;
 
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct($bookingId, $data, $oldStatus, $actorId)
+    public function __construct($bookingId, $data, $oldStatus, $actorId, $mailLocale = null)
     {
         $this->bookingId = $bookingId;
         $this->data = $data; // e.g. ['status' => 'accepted']
         $this->oldStatus = $oldStatus;
         $this->actorId = $actorId;
+        $this->mailLocale = $mailLocale ?: app()->getLocale();
     }
 
     /**
@@ -160,7 +162,7 @@ class ProcessBookingStatusUpdateJob implements ShouldQueue
 
         foreach ($emailsToSend as $emailData) {
             try {
-                Mail::to($emailData['user']->email)->send(
+                Mail::to($emailData['user']->email)->locale($this->mailLocale)->send(
                     new \App\Mail\BookingStatusUpdateMail(
                         $emailData['user'],
                         $bookingdata,
@@ -168,7 +170,8 @@ class ProcessBookingStatusUpdateJob implements ShouldQueue
                         $newStatus,
                         $actorName,
                         $actorType,
-                        $emailData['type'] // recipient type: 'provider', 'handyman', or 'user'
+                        $emailData['type'], // recipient type: 'provider', 'handyman', or 'user'
+                        $this->mailLocale
                     )
                 );
             } catch (\Exception $e) {
