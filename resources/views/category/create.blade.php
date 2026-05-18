@@ -118,10 +118,31 @@
             const fileLabel = document.querySelector('.custom-file-label');
             const saveButton = document.getElementById('saveButton');
             const removeButton = document.getElementById('removeButton');
+            const file = event.target.files[0];
+            const maxSize = 5 * 1024 * 1024;
 
-            preview.src = URL.createObjectURL(event.target.files[0]);
+            if (!file) {
+                return;
+            }
+
+            if (file.size > maxSize) {
+                event.target.value = '';
+                preview.src = '';
+                preview.style.display = 'none';
+                fileLabel.textContent = '{{ __('messages.choose_file', ['file' => __('messages.image')]) }}';
+                saveButton.disabled = true;
+                $('#removeButton').addClass('d-none');
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Image too large',
+                    text: 'Please upload an image smaller than 5 MB.'
+                });
+                return;
+            }
+
+            preview.src = URL.createObjectURL(file);
             preview.style.display = 'block'; // Show the image
-            fileLabel.textContent = event.target.files[0].name; // Update label with the file name
+            fileLabel.textContent = file.name; // Update label with the file name
 
             // Show the remove button and enable the save button
             $('#removeButton').removeClass('d-none');

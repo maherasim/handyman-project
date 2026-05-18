@@ -192,6 +192,20 @@ class CategoryController extends Controller
             ->withInput();
     }
 
+    $category = $request->id ? Category::find($request->id) : null;
+    $imageRule = $category && getMediaFileExit($category, 'category_image') ? 'nullable' : 'required';
+
+    $request->validate([
+        'name' => 'required|unique:categories,name,' . $request->id,
+        'status' => 'required',
+        'category_image' => $imageRule . '|image|mimes:jpg,jpeg,png,gif,webp|max:5120',
+    ], [
+        'category_image.required' => 'The image field is required.',
+        'category_image.image' => 'The image must be a valid image file.',
+        'category_image.mimes' => 'The image must be a file of type: jpg, jpeg, png, gif, or webp.',
+        'category_image.max' => 'The image must not be larger than 5 MB.',
+    ]);
+
     $data = $request->all();
    
     $data['is_featured'] = $request->has('is_featured') ? $request->is_featured : 0;
