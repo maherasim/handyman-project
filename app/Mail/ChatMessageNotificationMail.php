@@ -36,9 +36,9 @@ class ChatMessageNotificationMail extends Mailable
      */
     public function envelope(): Envelope
     {
-        $senderName = $this->sender->display_name ?? $this->sender->first_name ?? 'Someone';
+        $senderName = $this->sender->display_name ?? $this->sender->first_name ?? __('messages.someone');
         return new Envelope(
-            subject: '💬 New Message from ' . $senderName,
+            subject: __('messages.email_subject_new_message_from', ['name' => $senderName]),
         );
     }
 

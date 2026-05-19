@@ -7,16 +7,16 @@
         <div class="row">
             <div class="col-12 col-md-4 col-lg-3 border-end d-flex flex-column p-0 mb-3 mb-md-0">
                 <div class="p-3 border-bottom">
-                    <h5 class="mb-0">Messages</h5>
+                    <h5 class="mb-0">{{ __('messages.messages') }}</h5>
                     @php
                         $headerLine = '';
                         if (isset($bid)) {
-                            $headerLine = 'Bid #' . ($bid->id ?? '-') . ' — ' . (($bid->postrequest->title ?? null) ?: 'Post');
+                            $headerLine = __('messages.bid') . ' #' . ($bid->id ?? '-') . ' — ' . (($bid->postrequest->title ?? null) ?: __('messages.post'));
                         } elseif (isset($booking)) {
-                            $serviceName = optional(optional($booking)->service)->name ?? 'Booking';
-                            $headerLine = 'Booking #' . ($booking->id ?? '-') . ' — ' . $serviceName;
+                            $serviceName = optional(optional($booking)->service)->name ?? __('messages.booking');
+                            $headerLine = __('messages.booking') . ' #' . ($booking->id ?? '-') . ' — ' . $serviceName;
                         } elseif (isset($isStandaloneChat) && $isStandaloneChat) {
-                            $headerLine = 'Direct Message';
+                            $headerLine = __('messages.chat_direct_message');
                         }
                         $providerObj = isset($bid) ? optional($bid->provider) : (isset($booking) ? optional($booking->provider) : null);
                         $customerObj = isset($bid) ? optional($bid->customer) : (isset($booking) ? optional($booking->customer) : null);
@@ -33,7 +33,7 @@
                             </div>
                             <div class="flex-grow-1">
                                 <div class="fw-bold mb-0 small">{{ $targetUser->display_name }}</div>
-                                <div class="text-muted small">{{ ucfirst($targetUser->user_type ?? 'User') }}</div>
+                                <div class="text-muted small">{{ __('messages.' . ($targetUser->user_type ?? 'user')) }}</div>
                             </div>
                         </div>
                     @elseif(isset($isHandymanChat) && $isHandymanChat && isset($handyman))
@@ -43,7 +43,7 @@
                             </div>
                             <div class="flex-grow-1">
                                 <div class="fw-bold mb-0 small">{{ $handyman->display_name }}</div>
-                                <div class="text-muted small">Handyman</div>
+                                <div class="text-muted small">{{ __('messages.handyman') }}</div>
                             </div>
                         </div>
                     @else
@@ -54,7 +54,7 @@
                                 </div>
                                 <div class="flex-grow-1">
                                     <div class="fw-bold mb-0 small">{{ $providerObj->display_name }}</div>
-                                    <div class="text-muted small">Provider</div>
+                                    <div class="text-muted small">{{ __('messages.provider') }}</div>
                                 </div>
                             </div>
                         @endif
@@ -65,7 +65,7 @@
                                 </div>
                                 <div class="flex-grow-1">
                                     <div class="fw-bold mb-0 small">{{ $customerObj->display_name }}</div>
-                                    <div class="text-muted small">Customer</div>
+                                    <div class="text-muted small">{{ __('messages.customer') }}</div>
                                 </div>
                             </div>
                         @endif
@@ -77,18 +77,18 @@
                 <div class="p-3 border-bottom d-flex align-items-center gap-2">
                     <img src="{{ getSingleMedia(optional($auth), 'profile_image', null) ?? $fallbackAvatar }}" class="rounded-circle" style="width:36px;height:36px;object-fit:cover;">
                     <div class="fw-bold">{{ $auth->display_name }}</div>
-                    <div class="ms-auto small text-muted" id="typingDot" style="display:none;">typing...</div>
+                    <div class="ms-auto small text-muted" id="typingDot" style="display:none;">{{ __('messages.chat_typing') }}</div>
                 </div>
                 <div id="msgScroll" class="flex-grow-1 overflow-auto p-3 bg-light" style="position:relative; min-height: 300px;">
                     <div id="loadMoreTop" class="text-center mb-2">
-                        <button class="btn btn-sm btn-outline-secondary" id="loadOlderBtn">Load older</button>
+                        <button class="btn btn-sm btn-outline-secondary" id="loadOlderBtn">{{ __('messages.chat_load_older') }}</button>
                     </div>
                     <div id="messages"></div>
                 </div>
                 <div class="border-top p-2" style="position: sticky; bottom: 0; background: #fff; z-index: 2;">
                     <form id="composer" class="d-flex align-items-center gap-2">
                         <input type="file" id="fileInput" class="form-control" style="max-width:260px;">
-                        <input type="text" id="textInput" class="form-control" placeholder="Type a message...">
+                        <input type="text" id="textInput" class="form-control" placeholder="{{ __('messages.chat_type_message') }}">
                         <button class="btn btn-primary" id="sendBtn" type="submit"><i class="fas fa-paper-plane"></i></button>
                     </form>
                     <div id="policyWarning" class="alert alert-warning py-2 px-3 d-none mt-2" role="alert"></div>
@@ -110,6 +110,8 @@
             const currentUserId = {{ (int) auth()->id() }};
             const chatPiiWarning = {!! json_encode(__('messages.chat_pii_warning')) !!};
             const chatPiiWarningBubble = {!! json_encode(__('messages.chat_pii_warning_bubble')) !!};
+            const chatPolicyViolationTitle = {!! json_encode(__('messages.chat_policy_violation_title')) !!};
+            const chatOkText = {!! json_encode(__('messages.ok')) !!};
             const messagesEl = document.getElementById('messages');
             const msgScroll = document.getElementById('msgScroll');
             const textInput = document.getElementById('textInput');
@@ -174,9 +176,9 @@
                 const bubbleCls = isViolation ? 'bg-white border border-danger policy-warning-bubble text-danger' : (mine ? 'bg-primary text-white' : 'bg-white border');
                 bubble.className = 'p-2 rounded ' + bubbleCls;
                 let html = '';
-                const name = safe(m.sender_name || 'User');
+                const name = safe(m.sender_name || @json(__('messages.user')));
                 const avatar = safe(m.sender_avatar_url || '{{ $fallbackAvatar }}');
-                const violationText = safe(m.violation_message || chatPiiWarningBubble || 'You violated the rules. This message was hidden.');
+                const violationText = safe(m.violation_message || chatPiiWarningBubble || @json(__('messages.chat_policy_violation_hidden')));
                 html += `<div class="d-flex align-items-center mb-1 ${isViolation ? 'text-danger' : ''}">`+
                     `<img src="${avatar}" class="rounded-circle me-2" style="width:22px;height:22px;object-fit:cover;">`+
                     `<span class="small fw-bold">${name}</span>`+
@@ -192,7 +194,7 @@
                     html += `<div class="small">${safe(m.message)}</div>`;
                 }
                 if (m.attachment) {
-                    const name = safe(m.attachment.name || 'attachment');
+                    const name = safe(m.attachment.name || @json(__('messages.attachment')));
                     html += `<div class="mt-1"><a href="${m.attachment.download_url}" target="_blank" class="text-decoration-underline ${mine ? 'text-white' : ''}"><i class="fas fa-paperclip"></i> ${name}</a></div>`;
                 }
                 html += `<div class="text-end small opacity-75 mt-1">${safe(m.created_at || '')}${m.read ? ' · <i class="fas fa-check-double"></i>' : ''}</div>`;
@@ -229,9 +231,9 @@
                         wrap.className = 'd-flex mb-2 ' + (mine ? 'justify-content-end' : 'justify-content-start');
                         const bubble = document.createElement('div');
                         bubble.className = 'p-2 rounded ' + (isViolation ? 'bg-white border border-danger policy-warning-bubble text-danger' : (mine ? 'bg-primary text-white' : 'bg-white border'));
-                        const violationText = safe(m.violation_message || chatPiiWarningBubble || 'You violated the rules. This message was hidden.');
+                        const violationText = safe(m.violation_message || chatPiiWarningBubble || @json(__('messages.chat_policy_violation_hidden')));
                         let html = '';
-                        const name = safe(m.sender_name || 'User');
+                        const name = safe(m.sender_name || @json(__('messages.user')));
                         const avatar = safe(m.sender_avatar_url || '{{ $fallbackAvatar }}');
                         html += `<div class="d-flex align-items-center mb-1">`+
                             `<img src="${avatar}" class="rounded-circle me-2" style="width:22px;height:22px;object-fit:cover;">`+
@@ -241,7 +243,7 @@
                             html += `<div class=\"small text-danger\"><i class=\"fas fa-exclamation-triangle me-1\"></i> ${violationText}</div>`;
                         } else {
                             if (m.message) { html += `<div class=\"small\">${safe(m.message)}</div>`; }
-                            if (m.attachment) { const attName = safe(m.attachment.name || 'attachment'); html += `<div class=\"mt-1\"><a href=\"${m.attachment.download_url}\" target=\"_blank\" class=\"text-decoration-underline ${mine ? 'text-white' : ''}\"><i class=\"fas fa-paperclip\"></i> ${attName}</a></div>`; }
+                            if (m.attachment) { const attName = safe(m.attachment.name || @json(__('messages.attachment'))); html += `<div class=\"mt-1\"><a href=\"${m.attachment.download_url}\" target=\"_blank\" class=\"text-decoration-underline ${mine ? 'text-white' : ''}\"><i class=\"fas fa-paperclip\"></i> ${attName}</a></div>`; }
                         }
                         html += `<div class="text-end small opacity-75 mt-1">${safe(m.created_at || '')}${m.read ? ' · <i class=\"fas fa-check-double\"></i>' : ''}</div>`;
                         bubble.innerHTML = html;
@@ -333,7 +335,7 @@
                         warn.classList.remove('d-none');
                     }
                     if (window.Swal) {
-                        Swal.fire({ icon:'warning', title:'Policy violation', text: chatPiiWarning, confirmButtonText:'OK' });
+                        Swal.fire({ icon:'warning', title: chatPolicyViolationTitle, text: chatPiiWarning, confirmButtonText: chatOkText });
                     }
                 }
                 if (text) fd.append('message', text);
@@ -376,7 +378,7 @@
                                 pii_types: j.pii_types || []
                             });
                             if (window.Swal) {
-                                Swal.fire({ icon:'warning', title:'Policy violation', text: chatPiiWarning });
+                                Swal.fire({ icon:'warning', title: chatPolicyViolationTitle, text: chatPiiWarning });
                             }
                         }
                         pollNewer();

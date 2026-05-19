@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>New Chat Message</title>
+    <title>{{ __('messages.email_chat_title') }}</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -128,13 +128,13 @@
 <body>
     <div class="email-container">
         <div class="header">
-            <h1>💬 New Message Received</h1>
+            <h1>{{ __('messages.email_chat_title') }}</h1>
         </div>
         
         <div class="content">
-            <h2>Dear {{ $recipient->display_name ?? $recipient->first_name ?? 'Valued User' }},</h2>
+            <h2>{{ __('messages.email_dear_name', ['name' => $recipient->display_name ?? $recipient->first_name ?? __('messages.email_valued_user')]) }}</h2>
             
-            <p>You have received a new message from <strong>{{ $sender->display_name ?? ($sender->first_name . ' ' . $sender->last_name) ?? 'Someone' }}</strong>.</p>
+            <p>{!! __('messages.email_chat_received_from', ['name' => '<strong>' . e($sender->display_name ?? ($sender->first_name . ' ' . $sender->last_name) ?? __('messages.someone')) . '</strong>']) !!}</p>
             
             <div class="message-box">
                 <div class="sender-info">
@@ -143,32 +143,32 @@
                     </div>
                     <div class="sender-details">
                         <div class="sender-name">{{ $sender->display_name ?? ($sender->first_name . ' ' . $sender->last_name) ?? 'User' }}</div>
-                        <div class="message-time">{{ \Carbon\Carbon::parse($chatMessage->created_at)->format('F d, Y h:i A') }}</div>
+                        <div class="message-time">{{ \Carbon\Carbon::parse($chatMessage->created_at)->locale(app()->getLocale())->translatedFormat('F d, Y H:i') }}</div>
                     </div>
                 </div>
                 
                 <div style="margin-top: 15px; padding: 15px; background-color: #fff3cd; border-left: 4px solid #ffc107; border-radius: 8px;">
                     <p style="margin: 0; color: #856404; font-size: 15px;">
-                        <strong>📩 New Message Received</strong>
+                        <strong>{{ __('messages.email_chat_title') }}</strong>
                     </p>
                     <p style="margin: 10px 0 0 0; color: #856404; font-size: 14px;">
-                        To view the message content, please open the app or visit our website.
+                        {{ __('messages.email_chat_open_hint') }}
                     </p>
                 </div>
             </div>
             
             <div class="button-container">
-                <a href="{{ url('/messages') }}" class="button">View Message on Website</a>
+                <a href="{{ url('/messages') }}" class="button">{{ __('messages.email_chat_view_button') }}</a>
             </div>
             
             <p style="margin-top: 30px; color: #6c757d; font-size: 14px; text-align: center;">
-                <strong>Note:</strong> For your privacy and security, message content is not displayed in email notifications. Please log in to your account or open the app to read the full message.
+                <strong>{{ __('messages.email_note') }}:</strong> {{ __('messages.email_chat_privacy_note') }}
             </p>
         </div>
         
         <div class="footer">
-            <p>Thank you for using our services!</p>
-            <p>This is an automated email, please do not reply.</p>
+            <p>{{ __('messages.email_footer_user_thanks') }}</p>
+            <p>{{ __('messages.email_automated_no_reply') }}</p>
         </div>
     </div>
 </body>

@@ -36,7 +36,7 @@ class BankTransferInstructionsMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: '🏦 Bank Transfer Instructions - ' . $this->subscription->title . ' Subscription',
+            subject: __('messages.email_subject_bank_transfer_instructions', ['plan' => $this->subscription->title]),
         );
     }
 

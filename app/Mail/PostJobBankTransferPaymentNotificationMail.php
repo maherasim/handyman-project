@@ -34,9 +34,9 @@ class PostJobBankTransferPaymentNotificationMail extends Mailable
      */
     public function envelope(): Envelope
     {
-        $typeLabel = $this->paymentType === 'advance' ? 'Advance' : 'Remaining';
+        $typeLabel = $this->paymentType === 'advance' ? __('messages.advance') : __('messages.remaining');
         return new Envelope(
-            subject: 'Cash payment submitted – Post Job Bid #' . $this->bid->id . ' (' . $typeLabel . ') – please verify',
+            subject: __('messages.email_subject_cash_payment_post_job_verify', ['id' => $this->bid->id, 'type' => $typeLabel]),
         );
     }
 

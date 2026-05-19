@@ -20,7 +20,7 @@ class VerificationEmail extends Mailable
     public function build()
     {
         return $this->from(config('mail.from.address'), config('mail.from.name'))
-            ->subject('Verify your email — ' . (string) config('app.name'))
+            ->subject(__('messages.email_subject_verify_email', ['app' => (string) config('app.name')]))
             ->view('emails.verification');
     }
 }

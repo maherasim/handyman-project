@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Policy Warning</title>
+    <title>{{ __('messages.chat_policy_warning_email_title') }}</title>
     <style>
         body { font-family: Arial, sans-serif; color:#222; }
         .wrap { max-width:600px; margin:0 auto; padding:20px; }
@@ -15,25 +15,26 @@
     </head>
 <body>
     <div class="wrap">
-        <h2>Policy Warning: Sharing personal contact information</h2>
-        <p>Hi {{ $name }},</p>
-        <p>We detected that one of your recent chat messages appears to include personal contact information, which is not permitted on our platform.</p>
+        <h2>{{ __('messages.chat_policy_warning_email_subject') }}</h2>
+        <p>{{ __('messages.chat_policy_warning_email_greeting', ['name' => $name]) }}</p>
+        <p>{{ __('messages.chat_policy_warning_email_intro') }}</p>
         @if(!empty($types))
-        <p>Detected types:
+        <p>{{ __('messages.chat_detected_types') }}:
             @foreach($types as $t)
-                <span class="badge">{{ $t }}</span>
+                @php $typeKey = 'messages.chat_pii_type_' . $t; @endphp
+                <span class="badge">{{ \Illuminate\Support\Facades\Lang::has($typeKey) ? __($typeKey) : ucfirst(str_replace('_', ' ', $t)) }}</span>
             @endforeach
         </p>
         @endif
         @if(!empty($snippet))
         <div class="card">
-            <div class="small">Message excerpt ({{ $date }}):</div>
+            <div class="small">{{ __('messages.chat_message_excerpt_with_date', ['date' => $date]) }}:</div>
             <div>{{ $snippet }}</div>
         </div>
         @endif
-        <p>Please keep all communications within the platform and avoid sharing emails, phone numbers, or messenger handles. Repeated violations may lead to account actions.</p>
-        <p>Thank you for understanding and helping us keep transactions safe for everyone.</p>
-        <p class="small">This is an automated message. If you believe this was a mistake, please contact support.</p>
+        <p>{{ __('messages.chat_policy_warning_email_keep_platform') }}</p>
+        <p>{{ __('messages.chat_policy_warning_email_thanks') }}</p>
+        <p class="small">{{ __('messages.chat_policy_warning_email_footer') }}</p>
     </div>
 </body>
 </html>

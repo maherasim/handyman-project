@@ -1,12 +1,12 @@
 <x-master-layout>
     <div class="container py-3">
         <div class="d-flex align-items-center mb-3">
-            <h5 class="mb-0">Messages</h5>
+            <h5 class="mb-0">{{ __('messages.messages') }}</h5>
             <div class="ms-auto d-flex gap-2">
-                <button type="button" id="enableNotificationsBtn" class="btn btn-sm btn-outline-primary" aria-label="Enable Notifications" title="Enable Browser Notifications" style="display: none;">
-                    <i class="fas fa-bell"></i> Enable Notifications
+                <button type="button" id="enableNotificationsBtn" class="btn btn-sm btn-outline-primary" aria-label="{{ __('messages.chat_enable_notifications') }}" title="{{ __('messages.chat_enable_browser_notifications') }}" style="display: none;">
+                    <i class="fas fa-bell"></i> {{ __('messages.chat_enable_notifications') }}
                 </button>
-                <button type="button" id="refreshUnreadBtn" class="btn btn-sm btn-outline-secondary" aria-label="Refresh" title="Refresh"><i class="fas fa-sync-alt"></i></button>
+                <button type="button" id="refreshUnreadBtn" class="btn btn-sm btn-outline-secondary" aria-label="{{ __('messages.refresh') }}" title="{{ __('messages.refresh') }}"><i class="fas fa-sync-alt"></i></button>
             </div>
         </div>
         <div class="card">
@@ -14,37 +14,37 @@
             <form method="GET" class="p-3 border-bottom">
                 <div class="row g-2 align-items-end">
                     <div class="col-12 col-md-2">
-                        <label class="form-label">User type</label>
+                        <label class="form-label">{{ __('messages.chat_user_type') }}</label>
                         <select name="user_type" class="form-select" id="filterUserType">
-                            <option value="">All</option>
-                            <option value="user" {{ (($filters['user_type'] ?? '')==='user') ? 'selected' : '' }}>User</option>
-                            <option value="provider" {{ (($filters['user_type'] ?? '')==='provider') ? 'selected' : '' }}>Provider</option>
-                            <option value="handyman" {{ (($filters['user_type'] ?? '')==='handyman') ? 'selected' : '' }}>Handyman</option>
+                            <option value="">{{ __('messages.all') }}</option>
+                            <option value="user" {{ (($filters['user_type'] ?? '')==='user') ? 'selected' : '' }}>{{ __('messages.user') }}</option>
+                            <option value="provider" {{ (($filters['user_type'] ?? '')==='provider') ? 'selected' : '' }}>{{ __('messages.provider') }}</option>
+                            <option value="handyman" {{ (($filters['user_type'] ?? '')==='handyman') ? 'selected' : '' }}>{{ __('messages.handyman') }}</option>
                         </select>
                     </div>
                     <div class="col-12 col-md-3">
-                        <label class="form-label">Country</label>
+                        <label class="form-label">{{ __('messages.country') }}</label>
                         <select name="country_id" class="form-select" id="filterCountry">
-                            <option value="">All</option>
+                            <option value="">{{ __('messages.all') }}</option>
                             @foreach($countries as $ct)
                                 <option value="{{ $ct->id }}" {{ ((string)($filters['country_id'] ?? '') === (string)$ct->id) ? 'selected' : '' }}>{{ $ct->name }}</option>
                             @endforeach
                         </select>
                     </div>
                     <div class="col-12 col-md-3">
-                        <label class="form-label">State</label>
+                        <label class="form-label">{{ __('messages.state') }}</label>
                         <select name="state_id" class="form-select" id="filterState">
-                            <option value="">All</option>
+                            <option value="">{{ __('messages.all') }}</option>
                         </select>
                     </div>
                     <div class="col-12 col-md-3">
-                        <label class="form-label">City</label>
+                        <label class="form-label">{{ __('messages.city') }}</label>
                         <select name="city_id" class="form-select" id="filterCity">
-                            <option value="">All</option>
+                            <option value="">{{ __('messages.all') }}</option>
                         </select>
                     </div>
                     <div class="col-12 col-md-1 d-grid">
-                        <button type="submit" class="btn btn-primary">Filter</button>
+                        <button type="submit" class="btn btn-primary">{{ __('messages.filter') }}</button>
                     </div>
                 </div>
             </form>
@@ -55,7 +55,7 @@
                         <img src="{{ $c['other_avatar'] ?? asset('images/user/user.png') }}" class="rounded-circle" style="width:40px;height:40px;object-fit:cover;">
                         <div class="flex-grow-1">
                             <div class="d-flex align-items-center">
-                                <div class="fw-bold">{{ $c['other_name'] ?? 'User' }}</div>
+                                <div class="fw-bold">{{ $c['other_name'] ?? __('messages.user') }}</div>
                                 @if($c['unread'] > 0)
                                     <span class="badge bg-danger ms-2">{{ $c['unread'] }}</span>
                                 @endif
@@ -66,7 +66,7 @@
                         </div>
                     </a>
                 @empty
-                    <div class="list-group-item text-center text-muted">No conversations yet.</div>
+                    <div class="list-group-item text-center text-muted">{{ __('messages.chat_no_conversations') }}</div>
                 @endforelse
             </div>
         </div>
@@ -84,8 +84,8 @@
 
             async function loadStates(countryId, preselect) {
                 if (!stateEl) return;
-                stateEl.innerHTML = '<option value="">All</option>';
-                cityEl && (cityEl.innerHTML = '<option value="">All</option>');
+                stateEl.innerHTML = '<option value="">{{ __('messages.all') }}</option>';
+                cityEl && (cityEl.innerHTML = '<option value="">{{ __('messages.all') }}</option>');
                 if (!countryId) return;
                 try {
                     const r = await fetch(apiStates(countryId));
@@ -100,7 +100,7 @@
             }
             async function loadCities(stateId, preselect) {
                 if (!cityEl) return;
-                cityEl.innerHTML = '<option value="">All</option>';
+                cityEl.innerHTML = '<option value="">{{ __('messages.all') }}</option>';
                 if (!stateId) return;
                 try {
                     const r = await fetch(apiCities(stateId));
@@ -146,7 +146,7 @@
                 
                 enableNotificationsBtn.addEventListener('click', () => {
                     if (notificationPermission === 'denied') {
-                        alert('Notifications are blocked. Please enable them in your browser settings.');
+                        alert(@json(__('messages.chat_notifications_blocked')));
                         return;
                     }
                     Notification.requestPermission().then(permission => {
@@ -203,7 +203,7 @@
                 }
 
                 const notificationOptions = {
-                    body: message.snippet || 'New message',
+                    body: message.snippet || @json(__('messages.chat_new_message')),
                     icon: message.sender_avatar || '{{ asset("images/user/user.png") }}',
                     badge: '{{ asset("images/logo.png") }}',
                     tag: `chat-${message.conversation_id || message.id}`,
@@ -221,7 +221,7 @@
                     navigator.serviceWorker.ready.then(registration => {
                         console.log('Showing notification via Service Worker');
                         registration.showNotification(
-                            `New message from ${message.sender_name || 'User'}`,
+                            @json(__('messages.chat_new_message_from')) + ` ${message.sender_name || @json(__('messages.user'))}`,
                             notificationOptions
                         ).then(() => {
                             console.log('Browser notification shown successfully');
@@ -230,7 +230,7 @@
                             // Fallback to direct notification
                             try {
                                 new Notification(
-                                    `New message from ${message.sender_name || 'User'}`,
+                                @json(__('messages.chat_new_message_from')) + ` ${message.sender_name || @json(__('messages.user'))}`,
                                     notificationOptions
                                 );
                             } catch (e) {
@@ -242,7 +242,7 @@
                         // Fallback to direct notification
                         try {
                             new Notification(
-                                `New message from ${message.sender_name || 'User'}`,
+                                @json(__('messages.chat_new_message_from')) + ` ${message.sender_name || @json(__('messages.user'))}`,
                                 notificationOptions
                             );
                         } catch (e) {
@@ -253,7 +253,7 @@
                     console.log('Service Worker not supported, using direct notification');
                     try {
                         new Notification(
-                            `New message from ${message.sender_name || 'User'}`,
+                            @json(__('messages.chat_new_message_from')) + ` ${message.sender_name || @json(__('messages.user'))}`,
                             notificationOptions
                         );
                     } catch (e) {

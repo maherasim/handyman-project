@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Full Payment Received</title>
+    <title>{{ __('messages.email_full_payment_title') }}</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -132,88 +132,88 @@
 <body>
     <div class="email-container">
         <div class="header">
-            <h1>🎉 Payment Received Successfully!</h1>
+            <h1>{{ __('messages.email_full_payment_title') }}</h1>
         </div>
         
         <div class="content">
-            <h2>Dear {{ $provider->display_name ?? $provider->first_name ?? 'Valued Provider' }},</h2>
+            <h2>{{ __('messages.email_dear_name', ['name' => $provider->display_name ?? $provider->first_name ?? __('messages.email_valued_provider')]) }}</h2>
             
-            <p>Great news! The full payment for your booking has been successfully completed and processed.</p>
+            <p>{{ __('messages.email_full_payment_intro') }}</p>
             
             <div class="success-box">
-                <div style="font-size: 20px; margin-bottom: 10px;">✅ Payment Completed</div>
+                <div style="font-size: 20px; margin-bottom: 10px;">{{ __('messages.email_payment_completed') }}</div>
                 <div class="amount">{{ getPriceFormat((float)$totalAmount) }}</div>
-                <div class="message">Your payment has been released to your account!</div>
+                <div class="message">{{ __('messages.email_payment_released_message') }}</div>
             </div>
             
             <div class="info-box">
-                <h3>📋 Booking Details</h3>
+                <h3>{{ __('messages.email_booking_details') }}</h3>
                 <div class="detail-row">
-                    <span class="detail-label">Booking ID:</span>
+                    <span class="detail-label">{{ __('messages.booking_id') }}:</span>
                     <span class="detail-value">#{{ $booking->id }}</span>
                 </div>
                 <div class="detail-row">
-                    <span class="detail-label">Service:</span>
-                    <span class="detail-value">{{ optional($booking->service)->name ?? 'N/A' }}</span>
+                    <span class="detail-label">{{ __('messages.service') }}:</span>
+                    <span class="detail-value">{{ optional($booking->service)->name ?? __('messages.not_available') }}</span>
                 </div>
                 <div class="detail-row">
-                    <span class="detail-label">Customer:</span>
-                    <span class="detail-value">{{ optional($booking->customer)->display_name ?? 'N/A' }}</span>
+                    <span class="detail-label">{{ __('messages.customer') }}:</span>
+                    <span class="detail-value">{{ optional($booking->customer)->display_name ?? __('messages.not_available') }}</span>
                 </div>
                 <div class="detail-row">
-                    <span class="detail-label">Payment Method:</span>
-                    <span class="detail-value">{{ ucfirst(str_replace('_', ' ', $payment->payment_type ?? 'N/A')) }}</span>
+                    <span class="detail-label">{{ __('messages.email_payment_method') }}:</span>
+                    <span class="detail-value">{{ ucfirst(str_replace('_', ' ', $payment->payment_type ?? __('messages.not_available'))) }}</span>
                 </div>
                 <div class="detail-row">
-                    <span class="detail-label">Payment Date:</span>
-                    <span class="detail-value">{{ \Carbon\Carbon::parse($payment->datetime ?? now())->format('F d, Y h:i A') }}</span>
+                    <span class="detail-label">{{ __('messages.email_payment_date') }}:</span>
+                    <span class="detail-value">{{ \Carbon\Carbon::parse($payment->datetime ?? now())->locale(app()->getLocale())->translatedFormat('F d, Y H:i') }}</span>
                 </div>
                 <div class="detail-row">
-                    <span class="detail-label">Payment Status:</span>
-                    <span class="detail-value" style="color: #28a745; font-weight: bold;">Paid</span>
+                    <span class="detail-label">{{ __('messages.email_payment_status') }}:</span>
+                    <span class="detail-value" style="color: #28a745; font-weight: bold;">{{ __('messages.paid') }}</span>
                 </div>
             </div>
             
             @if($advanceAmount > 0)
             <div class="payment-breakdown">
-                <h3>💰 Payment Breakdown</h3>
+                <h3>{{ __('messages.email_payment_breakdown') }}</h3>
                 <div class="breakdown-item">
-                    <span>Advance Payment:</span>
+                    <span>{{ __('messages.email_advance_payment') }}:</span>
                     <span>{{ getPriceFormat((float)$advanceAmount) }}</span>
                 </div>
                 <div class="breakdown-item">
-                    <span>Remaining Payment:</span>
+                    <span>{{ __('messages.email_remaining_payment') }}:</span>
                     <span>{{ getPriceFormat((float)$remainingAmount) }}</span>
                 </div>
                 <div class="breakdown-item total">
-                    <span>Total Amount:</span>
+                    <span>{{ __('messages.total_amount') }}:</span>
                     <span>{{ getPriceFormat((float)$totalAmount) }}</span>
                 </div>
             </div>
             @endif
             
             <div class="released-box">
-                <h3>✅ Payment Released</h3>
-                <p><strong>Your payment has been successfully processed and released to your account.</strong></p>
+                <h3>{{ __('messages.email_payment_released') }}</h3>
+                <p><strong>{{ __('messages.email_payment_released_strong') }}</strong></p>
                 <ul style="margin: 10px 0; padding-left: 20px;">
-                    <li>✅ Full payment amount: <strong>{{ getPriceFormat((float)$totalAmount) }}</strong></li>
-                    <li>✅ Payment method: <strong>{{ ucfirst(str_replace('_', ' ', $payment->payment_type ?? 'N/A')) }}</strong></li>
-                    <li>✅ Payment status: <strong>Completed</strong></li>
-                    <li>✅ Funds are now available in your account</li>
+                    <li>{{ __('messages.email_full_payment_amount') }}: <strong>{{ getPriceFormat((float)$totalAmount) }}</strong></li>
+                    <li>{{ __('messages.email_payment_method') }}: <strong>{{ ucfirst(str_replace('_', ' ', $payment->payment_type ?? __('messages.not_available'))) }}</strong></li>
+                    <li>{{ __('messages.email_payment_status') }}: <strong>{{ __('messages.completed') }}</strong></li>
+                    <li>{{ __('messages.email_funds_available') }}</li>
                 </ul>
                 <p style="margin-top: 15px; font-weight: 600; color: #155724;">
-                    You can now withdraw or use these funds as needed. Thank you for your excellent service!
+                    {{ __('messages.email_withdraw_funds_hint') }}
                 </p>
             </div>
             
             <p style="margin-top: 30px; color: #6c757d; font-size: 14px;">
-                <strong>Note:</strong> This is an automated email notification. If you have any questions or concerns, please contact our support team.
+                <strong>{{ __('messages.email_note') }}:</strong> {{ __('messages.email_auto_support_note') }}
             </p>
         </div>
         
         <div class="footer">
-            <p>Thank you for being a valued provider on our platform!</p>
-            <p>This is an automated email, please do not reply.</p>
+            <p>{{ __('messages.email_footer_provider_thanks') }}</p>
+            <p>{{ __('messages.email_automated_no_reply') }}</p>
         </div>
     </div>
 </body>

@@ -78,14 +78,14 @@ class ChatApiController extends Controller
             $maskedSnippet = '';
             if ($last) {
                 $maskedSnippet = $last->contains_pii
-                    ? 'Message hidden due to policy violation'
-                    : ($last->message ? mb_substr($last->message, 0, 80) : 'Attachment');
+                    ? __('messages.chat_policy_violation_hidden')
+                    : ($last->message ? mb_substr($last->message, 0, 80) : __('messages.attachment'));
             }
 
             return [
                 'id' => $c->id,
                 'conversation_type' => $c->conversation_type,
-                'title' => optional($other)->user_type ?? 'Unknown',
+                'title' => optional($other)->user_type ?? __('messages.unknown'),
                 'post_job_bid_id' => $c->post_job_bid_id,
                 'booking_id' => $c->booking_id,
                 'other_user' => $other ? [
@@ -140,7 +140,7 @@ class ChatApiController extends Controller
         $currentUserId = Auth::id();
         
         // Prevent self-chat
-        abort_unless($targetUserId !== $currentUserId, 422, 'Cannot chat with yourself');
+        abort_unless($targetUserId !== $currentUserId, 422, __('messages.chat_cannot_chat_self'));
         
         // Check if conversation already exists between these users
         $existingConversation = ChatConversation::where('conversation_type', 'standalone')
@@ -257,7 +257,7 @@ class ChatApiController extends Controller
         }
 
         if (!$attachmentPath && !$request->filled('message')) {
-            return response()->json(['status' => false, 'message' => 'Message or attachment required'], 422);
+            return response()->json(['status' => false, 'message' => __('messages.chat_message_or_attachment_required')], 422);
         }
 
         // PII detection
@@ -574,7 +574,7 @@ class ChatApiController extends Controller
         
         // Use CommonNotification with template system for consistency
         try {
-            $messagePreview = $message->message ? mb_substr($message->message, 0, 100) : 'New attachment';
+            $messagePreview = $message->message ? mb_substr($message->message, 0, 100) : __('messages.chat_new_attachment');
             
             $notificationData = [
                 'id' => $message->id,
@@ -594,7 +594,7 @@ class ChatApiController extends Controller
             \Log::error('Failed to send chat notification (API): ' . $e->getMessage());
             // Fallback: create direct database notification if template system fails
             try {
-                $messagePreview = $message->message ? mb_substr($message->message, 0, 100) : 'New attachment';
+                $messagePreview = $message->message ? mb_substr($message->message, 0, 100) : __('messages.chat_new_attachment');
                 $notificationData = [
                     'id' => $message->id,
                     'type' => 'chat_message',

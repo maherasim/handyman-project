@@ -38,9 +38,8 @@ class FullPaymentReceivedMail extends Mailable
      */
     public function envelope(): \Illuminate\Mail\Mailables\Envelope
     {
-        $providerName = $this->provider->display_name ?? $this->provider->first_name ?? 'Provider';
         return new \Illuminate\Mail\Mailables\Envelope(
-            subject: '🎉 Full Payment Received - Booking #' . $this->booking->id,
+            subject: __('messages.email_subject_full_payment_received', ['id' => $this->booking->id]),
         );
     }
 

@@ -10,16 +10,16 @@
                 <div class="chat-header">
                     <div class="d-flex align-items-center gap-3">
                         <a href="javascript:history.back()" class="btn btn-light btn-sm rounded-pill px-3 shadow-none">
-                            <i class="fas fa-arrow-left me-1"></i> Back
+                            <i class="fas fa-arrow-left me-1"></i> {{ __('messages.back') }}
                         </a>
                         <img src="{{ getSingleMedia($targetUser, 'profile_image', null) ?? $fallbackAvatar }}" 
                              class="rounded-circle chat-avatar">
                         <div>
                             <div class="chat-name">{{ $targetUser->display_name }}</div>
-                            <div class="chat-sub">{{ ucfirst($targetUser->user_type ?? 'User') }}</div>
+                            <div class="chat-sub">{{ __('messages.' . ($targetUser->user_type ?? 'user')) }}</div>
                         </div>
                         <div class="ms-auto">
-                            <small class="text-muted" id="typingIndicator" style="display:none;">typing...</small>
+                            <small class="text-muted" id="typingIndicator" style="display:none;">{{ __('messages.chat_typing') }}</small>
                         </div>
                     </div>
                 </div>
@@ -37,11 +37,11 @@
                 <div class="chat-composer">
                     <form id="messageForm" class="composer-inner">
                         <input type="file" id="fileInput" class="d-none" accept="image/*,application/pdf,.doc,.docx">
-                        <label for="fileInput" class="btn btn-light composer-btn" title="Attach">
+                        <label for="fileInput" class="btn btn-light composer-btn" title="{{ __('messages.chat_attach') }}">
                             <i class="fas fa-paperclip"></i>
                         </label>
-                        <input type="text" id="messageInput" class="composer-input" placeholder="Type a message" required>
-                        <button class="btn btn-primary composer-send" type="submit" aria-label="Send">
+                        <input type="text" id="messageInput" class="composer-input" placeholder="{{ __('messages.chat_type_message') }}" required>
+                        <button class="btn btn-primary composer-send" type="submit" aria-label="{{ __('messages.send') }}">
                             <i class="fas fa-paper-plane"></i>
                         </button>
                     </form>
@@ -109,7 +109,7 @@
                 }
 
                 const notificationOptions = {
-                    body: message.message || 'New attachment',
+                    body: message.message || @json(__('messages.chat_new_attachment')),
                     icon: message.sender_avatar_url || '{{ $fallbackAvatar }}',
                     badge: '{{ asset("images/logo.png") }}',
                     tag: `chat-${conversationId}-${message.id}`,
@@ -127,7 +127,7 @@
                     navigator.serviceWorker.ready.then(registration => {
                         console.log('Showing notification via Service Worker');
                         registration.showNotification(
-                            `New message from ${message.sender_name || 'User'}`,
+                            @json(__('messages.chat_new_message_from')) + ` ${message.sender_name || @json(__('messages.user'))}`,
                             notificationOptions
                         ).then(() => {
                             console.log('Notification shown successfully');
@@ -139,7 +139,7 @@
                         // Fallback to direct notification
                         try {
                             new Notification(
-                                `New message from ${message.sender_name || 'User'}`,
+                                @json(__('messages.chat_new_message_from')) + ` ${message.sender_name || @json(__('messages.user'))}`,
                                 notificationOptions
                             );
                         } catch (e) {
@@ -150,7 +150,7 @@
                     console.log('Service Worker not supported, using direct notification');
                     try {
                         new Notification(
-                            `New message from ${message.sender_name || 'User'}`,
+                            @json(__('messages.chat_new_message_from')) + ` ${message.sender_name || @json(__('messages.user'))}`,
                             notificationOptions
                         );
                     } catch (e) {
@@ -214,7 +214,7 @@
 
                 // Policy violation: message was hidden by the system
                 if (message.policy_violation || message.hidden) {
-                    content += `<span class="chat-violation">🔒 Policy violation — message hidden</span>`;
+                    content += `<span class="chat-violation">${@json(__('messages.chat_policy_violation_hidden'))}</span>`;
                 } else {
                     // Message text
                     if (message.message) {
@@ -269,10 +269,10 @@
                 if (!isNaN(d.getTime())) {
                     const today = new Date();
                     const isToday = d.toDateString() === today.toDateString();
-                    if (isToday) return 'Today';
+                    if (isToday) return @json(__('messages.today'));
                     const yesterday = new Date();
                     yesterday.setDate(today.getDate() - 1);
-                    if (d.toDateString() === yesterday.toDateString()) return 'Yesterday';
+                    if (d.toDateString() === yesterday.toDateString()) return @json(__('messages.yesterday'));
                     return d.toLocaleDateString();
                 }
                 return fallback;
@@ -351,7 +351,7 @@
                         <div class="alert alert-info py-2 px-3 mb-0 rounded-pill d-inline-flex align-items-center">
                             <i class="fas fa-paperclip me-2"></i> 
                             <span>${escapeHtml(file.name)} (${Math.round(file.size/1024)} KB)</span>
-                            <button type="button" class="btn btn-sm btn-link text-danger ms-2 p-0" onclick="clearFile()" title="Remove">
+                            <button type="button" class="btn btn-sm btn-link text-danger ms-2 p-0" onclick="clearFile()" title="{{ __('messages.remove') }}">
                                 <i class="fas fa-times-circle"></i>
                             </button>
                         </div>

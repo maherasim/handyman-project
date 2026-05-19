@@ -68,19 +68,19 @@
             @if($booking->service)
             <div class="info-row">
                 <span class="info-label">{{ $t('messages.service') }}:</span>
-                <span>{{ $booking->service->name ?? 'N/A' }}</span>
+                <span>{{ $booking->service->name ?? $t('messages.not_available') }}</span>
             </div>
             @endif
             @if($booking->customer)
             <div class="info-row">
                 <span class="info-label">{{ $t('messages.customer') }}:</span>
-                <span>{{ $booking->customer->display_name ?? 'N/A' }}</span>
+                <span>{{ $booking->customer->display_name ?? $t('messages.not_available') }}</span>
             </div>
             @endif
             @if($booking->provider)
             <div class="info-row">
                 <span class="info-label">{{ $t('messages.provider') }}:</span>
-                <span>{{ $booking->provider->display_name ?? 'N/A' }}</span>
+                <span>{{ $booking->provider->display_name ?? $t('messages.not_available') }}</span>
             </div>
             @endif
             @if($booking->handymanAdded && $booking->handymanAdded->count() > 0)
@@ -88,7 +88,7 @@
                 <span class="info-label">{{ $t('messages.worker') }}:</span>
                 <span>
                     @foreach($booking->handymanAdded as $handymanMapping)
-                        {{ $handymanMapping->handyman->display_name ?? 'N/A' }}@if(!$loop->last), @endif
+                        {{ $handymanMapping->handyman->display_name ?? $t('messages.not_available') }}@if(!$loop->last), @endif
                     @endforeach
                 </span>
             </div>

@@ -34,9 +34,9 @@ class BankTransferPaymentNotificationMail extends Mailable
      */
     public function envelope(): Envelope
     {
-        $typeLabel = $this->paymentType === 'advance_payment' ? 'Advance' : 'Remaining';
+        $typeLabel = $this->paymentType === 'advance_payment' ? __('messages.advance') : __('messages.remaining');
         return new Envelope(
-            subject: 'Cash payment submitted – Booking #' . $this->booking->id . ' (' . $typeLabel . ') – please verify',
+            subject: __('messages.email_subject_cash_payment_booking_verify', ['id' => $this->booking->id, 'type' => $typeLabel]),
         );
     }
 

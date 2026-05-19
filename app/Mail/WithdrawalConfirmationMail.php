@@ -35,7 +35,7 @@ class WithdrawalConfirmationMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: '✅ Withdrawal Request Confirmed - ' . getPriceFormat($this->withdrawal->amount),
+            subject: __('messages.email_subject_withdrawal_confirmed', ['amount' => getPriceFormat($this->withdrawal->amount)]),
         );
     }
 

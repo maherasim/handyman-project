@@ -11,7 +11,7 @@ class TestEmail extends Mailable
 
     public function build()
     {
-        return $this->subject('Test Email')
+        return $this->subject(__('messages.email_subject_test'))
                     ->view('test');
     }
 }

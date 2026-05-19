@@ -47,7 +47,7 @@
                         </li>
                         @role('admin|demo_admin')
                         <li class="nav-item nav-icon">
-                            <a href="{{ route('chat.flagged.index') }}" class="position-relative" title="Flagged messages">
+                            <a href="{{ route('chat.flagged.index') }}" class="position-relative" title="{{ __('messages.chat_flagged_messages') }}">
                                 <span class="d-inline-flex align-items-center justify-content-center rounded-circle" style="width:30px; height:30px; background-color: rgba(220, 53, 69, 0.12);">
                                     <i class="ri-flag-2-fill text-danger" style="font-size:20px;"></i>
                                 </span>

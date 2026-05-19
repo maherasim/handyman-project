@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Email Verification</title>
+    <title>{{ __('messages.email_verification_title') }}</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -64,14 +64,14 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>Email Verification</h1>
+            <h1>{{ __('messages.email_verification_title') }}</h1>
         </div>
         <div class="content">
-            <p>Thank you for registering with us! To complete your registration, please verify your email address by clicking the button below.</p>
-            <a style="color:#f4f4f4;" href="{{ $verificationLink }}" class="btn">Verify Email</a>
+            <p>{{ __('messages.email_verification_intro') }}</p>
+            <a style="color:#f4f4f4;" href="{{ $verificationLink }}" class="btn">{{ __('messages.email_verify_button') }}</a>
         </div>
         <div class="footer">
-            <p>If you did not create an account, no further action is required.</p>
+            <p>{{ __('messages.email_verification_ignore') }}</p>
         </div>
     </div>
 </body>

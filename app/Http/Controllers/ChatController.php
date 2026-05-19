@@ -178,7 +178,7 @@ class ChatController extends Controller
         }
 
         if (!$attachmentPath && !$request->filled('message')) {
-            return response()->json(['status' => false, 'message' => 'Message or attachment required'], 422);
+            return response()->json(['status' => false, 'message' => __('messages.chat_message_or_attachment_required')], 422);
         }
 
         // PII detection
@@ -233,7 +233,7 @@ class ChatController extends Controller
 
         return response()->json([
             'status' => true,
-            'message' => 'Sent',
+            'message' => __('messages.chat_sent'),
             'id' => $msg->id,
             'flagged' => (bool) $containsPii,
             'pii_types' => $containsPii ? $piiTypes : [],
@@ -273,7 +273,7 @@ class ChatController extends Controller
         
         // Use CommonNotification with template system for consistency
         try {
-            $messagePreview = $message->message ? mb_substr($message->message, 0, 100) : 'New attachment';
+            $messagePreview = $message->message ? mb_substr($message->message, 0, 100) : __('messages.chat_new_attachment');
             
             $notificationData = [
                 'id' => $message->id,
@@ -303,7 +303,7 @@ class ChatController extends Controller
                     'conversation_id' => $conversation->id,
                     'sender_id' => $sender->id,
                     'sender_name' => $sender->display_name ?? $sender->name,
-                    'message_preview' => $message->message ? mb_substr($message->message, 0, 100) : 'New attachment',
+                    'message_preview' => $message->message ? mb_substr($message->message, 0, 100) : __('messages.chat_new_attachment'),
                 ];
                 \DB::table('notifications')->insert([
                     'id' => \Str::uuid()->toString(),
@@ -359,8 +359,8 @@ class ChatController extends Controller
                     'Content-Type: application/json',
                 ];
 
-                $heading = 'New Message from ' . ($sender->display_name ?? $sender->name);
-                $content = $message->message ? mb_substr($message->message, 0, 100) : 'New attachment';
+                $heading = __('messages.chat_new_message_from') . ' ' . ($sender->display_name ?? $sender->name);
+                $content = $message->message ? mb_substr($message->message, 0, 100) : __('messages.chat_new_attachment');
 
                 // FCM v1 API requires payload wrapped in 'message' object
                 $firebase_data = [
@@ -526,7 +526,7 @@ class ChatController extends Controller
         \Log::info('Chat viewWithUser - Current user: ' . $currentUser->id . ' (' . $currentUser->user_type . '), Target user: ' . $userId . ' (' . $targetUser->user_type . '), Status: ' . $targetUser->status . ', Verified: ' . ($targetUser->email_verified_at ? 'Yes' : 'No'));
         
         // Prevent users from chatting with themselves
-        abort_if($currentUser->id === $userId, 403, 'Cannot chat with yourself');
+        abort_if($currentUser->id === $userId, 403, __('messages.chat_cannot_chat_self'));
         
         // Find or create conversation between these two users
         // Prefer the most recently active conversation between these two users (any type)
@@ -601,7 +601,7 @@ class ChatController extends Controller
                 'sender_name' => optional($latest->sender)->display_name,
                 'other_user_id' => optional($otherUser)->id,
                 'other_user_name' => optional($otherUser)->display_name,
-                'snippet' => $latest->message ? mb_substr($latest->message, 0, 80) : ($latest->attachment_path ? 'Attachment' : ''),
+                'snippet' => $latest->message ? mb_substr($latest->message, 0, 80) : ($latest->attachment_path ? __('messages.attachment') : ''),
                 'created_at' => $latest->created_at?->toDateTimeString(),
             ];
         }
@@ -694,13 +694,13 @@ class ChatController extends Controller
                 }
                 if ($last) {
                     $lastAt = $last->created_at?->toDateTimeString();
-                    $snippet = $last->contains_pii ? 'Message hidden due to policy violation' : ($last->message ? mb_substr($last->message, 0, 80) : 'Attachment');
+                    $snippet = $last->contains_pii ? __('messages.chat_policy_violation_hidden') : ($last->message ? mb_substr($last->message, 0, 80) : __('messages.attachment'));
                 }
 
                 $items[] = [
                     'conversation_id' => null,
                     'url' => route('chat.view.user', $u->id),
-                    'title' =>  $u->user_type ?? 'Unknown',
+                    'title' =>  $u->user_type ?? __('messages.unknown'),
                     'other_name' => $u->display_name ?: trim(($u->first_name.' '.$u->last_name)),
                     'other_avatar' => getSingleMedia($u, 'profile_image', null),
                     'unread' => $unread,
@@ -741,12 +741,12 @@ class ChatController extends Controller
             $other = $otherId === optional($c->userOne)->id ? $c->userOne : $c->userTwo;
 
             $url = route('chat.view.user', $otherId);
-            $title = $other->user_type ?? 'Unknown';
+            $title = $other->user_type ?? __('messages.unknown');
 
 
             $maskedSnippet = '';
             if ($last) {
-                $maskedSnippet = $last->contains_pii ? 'Message hidden due to policy violation' : ($last->message ? mb_substr($last->message, 0, 80) : 'Attachment');
+                $maskedSnippet = $last->contains_pii ? __('messages.chat_policy_violation_hidden') : ($last->message ? mb_substr($last->message, 0, 80) : __('messages.attachment'));
             }
             $list[] = [
                 'conversation_id' => $c->id,
@@ -791,17 +791,17 @@ class ChatController extends Controller
         $snippet = $message->message ? (mb_strlen($message->message) > 160 ? (mb_substr($message->message, 0, 160) . '…') : $message->message) : '';
 
         $data = [
-            'name' => $recipient->display_name ?? ($recipient->first_name ?? 'User'),
+            'name' => $recipient->display_name ?? ($recipient->first_name ?? __('messages.user')),
             'types' => $piiTypes,
             'snippet' => $snippet,
             'date' => $message->created_at?->toDateTimeString(),
         ];
 
         Mail::send('emails.chat_pii_warning', $data, function($m) use ($email) {
-            $m->to($email)->subject('Policy Warning: Sharing personal contact information');
+            $m->to($email)->subject(__('messages.chat_policy_warning_email_subject'));
         });
 
-        return back()->with('status', 'Warning email sent to sender.');
+        return back()->with('status', __('messages.chat_warning_email_sent'));
     }
 
     /**

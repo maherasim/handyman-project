@@ -37,7 +37,7 @@ class SubscriptionUpgradeMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: '🎉 Subscription Upgrade Successful - ' . $this->subscription->title,
+            subject: __('messages.email_subject_subscription_upgrade', ['plan' => $this->subscription->title]),
         );
     }
 

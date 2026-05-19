@@ -31,9 +31,8 @@ class ServiceBookingNotificationMail extends Mailable
      */
     public function envelope(): \Illuminate\Mail\Mailables\Envelope
     {
-        $providerName = $this->provider->display_name ?? $this->provider->first_name ?? 'Provider';
         return new \Illuminate\Mail\Mailables\Envelope(
-            subject: '📅 New Service Booking Received - Booking #' . $this->booking->id,
+            subject: __('messages.email_subject_new_service_booking', ['id' => $this->booking->id]),
         );
     }
 

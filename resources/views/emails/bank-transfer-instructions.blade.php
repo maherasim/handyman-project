@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bank Transfer Payment Instructions</title>
+    <title>{{ __('messages.email_bank_transfer_title') }}</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -198,7 +198,7 @@
 <body>
     <div class="email-container">
         <div class="header">
-            <h1>🏦 Bank Transfer Payment Instructions</h1>
+            <h1>{{ __('messages.email_bank_transfer_title') }}</h1>
         </div>
         
         <div class="content">
@@ -206,40 +206,40 @@
                 <div class="icon">🏦</div>
             </div>
             
-            <h2>Dear {{ $user->first_name }} {{ $user->last_name }},</h2>
+            <h2>{{ __('messages.email_dear_name', ['name' => trim(($user->first_name ?? '') . ' ' . ($user->last_name ?? '')) ?: __('messages.email_valued_user')]) }}</h2>
             
-            <p>Thank you for choosing bank transfer as your payment method. Please follow the instructions below to complete your subscription upgrade.</p>
+            <p>{{ __('messages.email_bank_transfer_intro') }}</p>
             
             <div class="subscription-details">
-                <h3>📋 Subscription Details</h3>
+                <h3>{{ __('messages.email_subscription_details') }}</h3>
                 <div class="detail-row">
-                    <span class="detail-label">Plan Name:</span>
+                    <span class="detail-label">{{ __('messages.email_plan_name') }}:</span>
                     <span class="detail-value"><strong>{{ $subscription->title }}</strong></span>
                 </div>
                 <div class="detail-row">
-                    <span class="detail-label">Plan Type:</span>
+                    <span class="detail-label">{{ __('messages.email_plan_type') }}:</span>
                     <span class="detail-value">{{ ucfirst($subscription->plan_type) }}</span>
                 </div>
                 <div class="detail-row">
-                    <span class="detail-label">Amount to Transfer:</span>
+                    <span class="detail-label">{{ __('messages.email_amount_to_transfer') }}:</span>
                     <span class="detail-value"><strong>€{{ number_format($subscription->amount, 2) }}</strong></span>
                 </div>
                 <div class="detail-row">
-                    <span class="detail-label">Duration:</span>
+                    <span class="detail-label">{{ __('messages.email_duration') }}:</span>
                     <span class="detail-value">{{ ucfirst($subscription->type) }}</span>
                 </div>
                 <div class="detail-row">
-                    <span class="detail-label">Transaction ID:</span>
+                    <span class="detail-label">{{ __('messages.email_transaction_id') }}:</span>
                     <span class="detail-value">{{ $transaction->txn_id }}</span>
                 </div>
             </div>
             
             <div class="bank-info">
-                <h3>🏦 Bank Transfer Information</h3>
-                <div class="mb-2"><strong>For local and international transfers</strong></div>
+                <h3>{{ __('messages.email_bank_transfer_information') }}</h3>
+                <div class="mb-2"><strong>{{ __('messages.email_for_local_international') }}</strong></div>
                 <div class="bank-details">
                     <div class="bank-row">
-                        <span class="bank-label">Recipient:</span>
+                        <span class="bank-label">{{ __('messages.email_recipient') }}:</span>
                         <span class="bank-value">Ben Ghezaiel</span>
                     </div>
                     <div class="bank-row">
@@ -251,7 +251,7 @@
                         <span class="bank-value">REVODEB2</span>
                     </div>
                     <div class="bank-row">
-                        <span class="bank-label">Bank Name and Address:</span>
+                        <span class="bank-label">{{ __('messages.email_bank_name_address') }}:</span>
                         <span class="bank-value">Revolut Bank UAB,<br>
                             Zweigniederlassung Deutschland<br>
                             FORA Linden Palais, Unter den<br>
@@ -259,51 +259,51 @@
                             10117, Berlin, Germany</span>
                     </div>
                     <div class="bank-row">
-                        <span class="bank-label">BIC of Sender Bank:</span>
+                        <span class="bank-label">{{ __('messages.email_bic_sender_bank') }}:</span>
                         <span class="bank-value">CHASDEFX</span>
                     </div>
                 </div>
             </div>
             
             <div class="instructions">
-                <h3>📝 Important Instructions</h3>
+                <h3>{{ __('messages.email_important_instructions') }}</h3>
                 <div class="instruction-steps">
                     <div class="step">
                         <span class="step-number">1</span>
-                        <span class="step-text">Transfer the exact amount <strong>€{{ number_format($subscription->amount, 2) }}</strong> to the bank account above</span>
+                        <span class="step-text">{!! __('messages.email_bt_step_transfer', ['amount' => '<strong>€' . number_format($subscription->amount, 2) . '</strong>']) !!}</span>
                     </div>
                     <div class="step">
                         <span class="step-number">2</span>
-                        <span class="step-text">Include your name and "Subscription {{ $subscription->title }}" in the transfer reference</span>
+                        <span class="step-text">{{ __('messages.email_bt_step_reference', ['plan' => $subscription->title]) }}</span>
                     </div>
                     <div class="step">
                         <span class="step-number">3</span>
-                        <span class="step-text">Send proof of payment (screenshot or PDF document) to: <a href="mailto:billing@frobster.com" class="email-link">billing@frobster.com</a></span>
+                        <span class="step-text">{{ __('messages.email_bt_step_proof') }} <a href="mailto:billing@frobster.com" class="email-link">billing@frobster.com</a></span>
                     </div>
                     <div class="step">
                         <span class="step-number">4</span>
-                        <span class="step-text">Your subscription will be activated within 24 hours after payment verification</span>
+                        <span class="step-text">{{ __('messages.email_bt_step_activation') }}</span>
                     </div>
                 </div>
             </div>
             
             <div class="highlight">
-                <h4>⏰ Processing Time</h4>
-                <p>Bank transfers may take varying business days to process. Your subscription will be activated once payment is verified by our team.</p>
+                <h4>{{ __('messages.email_processing_time') }}</h4>
+                <p>{{ __('messages.email_processing_hint') }}</p>
             </div>
             
-            <p>If you have any questions about this bank transfer or need assistance, please don't hesitate to contact our support team.</p>
+            <p>{{ __('messages.email_bank_support_hint') }}</p>
             
             <div style="text-align: center;">
-                <a href="{{ config('app.url') }}/provider_info/{{ $user->id }}" class="cta-button">View My Account</a>
+                <a href="{{ config('app.url') }}/provider_info/{{ $user->id }}" class="cta-button">{{ __('messages.email_view_my_account') }}</a>
             </div>
         </div>
         
         <div class="footer">
-            <p>Thank you for choosing FROBSTER!</p>
-            <p>This is an automated message. Please do not reply to this email.</p>
-            <p>If you have any questions, contact us at <a href="mailto:support@frobster.com">support@frobster.com</a></p>
-            <p>&copy; {{ date('Y') }} FROBSTER. All rights reserved.</p>
+            <p>{{ __('messages.email_footer_frobster_thanks') }}</p>
+            <p>{{ __('messages.email_automated_no_reply_long') }}</p>
+            <p>{!! __('messages.email_contact_support_at', ['email' => '<a href="mailto:support@frobster.com">support@frobster.com</a>']) !!}</p>
+            <p>&copy; {{ date('Y') }} FROBSTER. {{ __('messages.email_all_rights_reserved') }}</p>
         </div>
     </div>
 </body>
