@@ -88,8 +88,8 @@ class CommonNotification extends Notification implements ShouldQueue
     {
         $notificationSettings = $this->appData ?? [];
         $notification_settings = [];
-        // Chat messages use ChatMessageNotificationMail (chat-message-notification.blade.php) only; skip template mail to avoid duplicate
-        $skipMail = ($this->type === 'chat_message');
+        // Chat messages and booking status updates use custom mails (BookingStatusUpdateMail/ChatMessageNotificationMail) only; skip template mail to avoid duplicate
+        $skipMail = in_array($this->type, ['chat_message', 'update_booking_status', 'cancel_booking'], true);
 
         if (is_array($notificationSettings) && !empty($notificationSettings)) {
             foreach ($notificationSettings as $key => $notification) {

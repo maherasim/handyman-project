@@ -945,9 +945,10 @@ class BookingController extends Controller
                 }
                 
                 // Send emails to all recipients
+                $mailLocale = request('lang') ?: app()->getLocale();
                 foreach ($emailsToSend as $emailData) {
                     try {
-                        Mail::to($emailData['user']->email)->send(
+                        Mail::to($emailData['user']->email)->locale($mailLocale)->send(
                             new \App\Mail\BookingStatusUpdateMail(
                                 $emailData['user'],
                                 $bookingdata,
@@ -955,7 +956,8 @@ class BookingController extends Controller
                                 $newStatus,
                                 $actorName,
                                 $actorType,
-                                $emailData['type'] // recipient type: 'provider', 'handyman', or 'user'
+                                $emailData['type'], // recipient type: 'provider', 'handyman', or 'user'
+                                $mailLocale
                             )
                         );
                         \Log::info('Booking status update email sent (web)', [
