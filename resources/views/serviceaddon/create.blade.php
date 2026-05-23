@@ -102,19 +102,115 @@
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
         <script type="text/javascript">
+            const MAX_UPLOAD_IMAGE_BYTES = 300 * 1024;
+            const MAX_UPLOAD_IMAGE_SIDE = 1200;
+
+            function formatBytes(bytes) {
+                if (!bytes) {
+                    return '0 KB';
+                }
+
+                return bytes >= 1024 * 1024
+                    ? (bytes / (1024 * 1024)).toFixed(2) + ' MB'
+                    : Math.ceil(bytes / 1024) + ' KB';
+            }
+
+            function loadImageFromFile(file) {
+                return new Promise((resolve, reject) => {
+                    const image = new Image();
+                    image.onload = function() {
+                        URL.revokeObjectURL(image.src);
+                        resolve(image);
+                    };
+                    image.onerror = reject;
+                    image.src = URL.createObjectURL(file);
+                });
+            }
+
+            function canvasToBlob(canvas, quality) {
+                return new Promise((resolve) => {
+                    canvas.toBlob(resolve, 'image/jpeg', quality);
+                });
+            }
+
+            async function compressImage(file) {
+                if (!file || !file.type || !file.type.startsWith('image/') || file.size <= MAX_UPLOAD_IMAGE_BYTES) {
+                    return file;
+                }
+
+                const image = await loadImageFromFile(file);
+                const scale = Math.min(1, MAX_UPLOAD_IMAGE_SIDE / Math.max(image.width, image.height));
+                const canvas = document.createElement('canvas');
+                canvas.width = Math.max(1, Math.round(image.width * scale));
+                canvas.height = Math.max(1, Math.round(image.height * scale));
+
+                const context = canvas.getContext('2d');
+                context.fillStyle = '#ffffff';
+                context.fillRect(0, 0, canvas.width, canvas.height);
+                context.drawImage(image, 0, 0, canvas.width, canvas.height);
+
+                let compressedBlob = null;
+                for (const quality of [0.82, 0.72, 0.62, 0.52]) {
+                    compressedBlob = await canvasToBlob(canvas, quality);
+                    if (compressedBlob && compressedBlob.size <= MAX_UPLOAD_IMAGE_BYTES) {
+                        break;
+                    }
+                }
+
+                if (!compressedBlob || compressedBlob.size >= file.size) {
+                    return file;
+                }
+
+                const fileName = file.name.replace(/\.[^.]+$/, '') + '.jpg';
+                return new File([compressedBlob], fileName, {
+                    type: 'image/jpeg',
+                    lastModified: Date.now()
+                });
+            }
+
+            function replaceSelectedFile(input, file) {
+                const dataTransfer = new DataTransfer();
+                dataTransfer.items.add(file);
+                input.files = dataTransfer.files;
+            }
+
             function previewImage(event) {
                 const preview = document.getElementById('serviceaddon_image_preview');
                 const fileLabel = document.querySelector('.custom-file-label');
                 const saveButton = document.getElementById('saveButton');
                 const removeButton = document.getElementById('removeButton');
+                const input = event.target;
+                const selectedFile = input.files[0];
 
-                preview.src = URL.createObjectURL(event.target.files[0]);
-                preview.style.display = 'block'; // Show the image
-                fileLabel.textContent = event.target.files[0].name; // Update label with the file name
+                if (!selectedFile) {
+                    return;
+                }
 
-                // Show the remove button and enable the save button
-                removeButton.style.display = 'inline';
-                saveButton.disabled = false;
+                saveButton.disabled = true;
+                fileLabel.textContent = 'Optimizing image...';
+
+                compressImage(selectedFile).then(function(file) {
+                    if (file !== selectedFile) {
+                        replaceSelectedFile(input, file);
+                    }
+
+                    preview.src = URL.createObjectURL(file);
+                    preview.style.display = 'block'; // Show the image
+                    fileLabel.textContent = file.name + ' (' + formatBytes(file.size) + ')'; // Update label with the file name
+
+                    // Show the remove button and enable the save button
+                    removeButton.style.display = 'inline';
+                    saveButton.disabled = false;
+                }).catch(function(error) {
+                    console.error('Image optimization failed:', error);
+                    input.value = '';
+                    preview.src = '';
+                    preview.style.display = 'none';
+                    fileLabel.textContent = '{{ __('messages.choose_file', ['file' => __('messages.image')]) }}';
+                    removeButton.style.display = 'none';
+                    saveButton.disabled = true;
+                    Swal.fire('Upload error', 'Please choose a valid JPG, PNG, or WebP image.', 'error');
+                });
             }
 
             function removeImage(event, removeUrl) {

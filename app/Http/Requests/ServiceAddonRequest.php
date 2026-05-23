@@ -31,7 +31,7 @@ class ServiceAddonRequest extends FormRequest
             'name'                           => 'required|unique:service_addons,name,'.$id,
             'service_id'                     => 'required',
             'price'                          => 'required|min:0',
-            'serviceaddon_image'             => 'mimes:jpg,jpeg,png,webp'
+            'serviceaddon_image'             => 'mimes:jpg,jpeg,png,webp|max:10240'
         ];
     }
     protected function failedValidation(Validator $validator)
