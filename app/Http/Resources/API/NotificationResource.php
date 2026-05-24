@@ -15,11 +15,18 @@ class NotificationResource extends JsonResource
      */
     public function toArray($request)
     {
-       $image = '';
-        $booking = Booking::where('id',$this->data['id'])->first();
-        if(!empty($booking)){
-            $user = User::where('id',$booking->customer_id)->first();
-            $image = $user->login_type != null ? $user->social_image: getSingleMedia($user, 'profile_image',null);
+        $image = '';
+        $data = is_array($this->data) ? $this->data : [];
+        $bookingId = $data['booking_id'] ?? $data['id'] ?? null;
+
+        if (!empty($bookingId)) {
+            $booking = Booking::where('id', $bookingId)->first();
+            if (!empty($booking)) {
+                $user = User::where('id', $booking->customer_id)->first();
+                if (!empty($user)) {
+                    $image = $user->login_type != null ? $user->social_image : getSingleMedia($user, 'profile_image', null);
+                }
+            }
         }
         // Format timestamps in ISO 8601 with UTC timezone (Z format)
         $formatTimestamp = function($timestamp) {
