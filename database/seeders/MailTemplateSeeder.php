@@ -211,6 +211,21 @@ class MailTemplateSeeder extends Seeder
             ],
             [
                 'type' => 'notification_param_button',
+                'value' => 'city_id',
+                'name' => 'City',
+            ],
+            [
+                'type' => 'notification_param_button',
+                'value' => 'country_id',
+                'name' => 'Country',
+            ],
+            [
+                'type' => 'notification_param_button',
+                'value' => 'total_amount',
+                'name' => 'Total Amount',
+            ],
+            [
+                'type' => 'notification_param_button',
                 'value' => 'booking_status',
                 'name' => 'Booking Status',
             ],
@@ -401,19 +416,27 @@ class MailTemplateSeeder extends Seeder
             'status' => 1,
             'subject' => 'New Booking Received',
             'template_detail' => '<p>Hello [[ admin_name ]],</p>
-                                  <p>Below are the booking details for a recent booking request received from a customer.</p>
-                                  <p>&nbsp;</p>
+                                  <p>We want to inform you that a new booking request has been submitted by a customer.</p>
+                                  <p>Please find the full details below, including all relevant information needed to process and respond to the request accordingly.</p>
                                   <p><strong>Booking Details:</strong></p>
                                   <ul>
-                                  <li>Customer Name: [[ customer_name ]]</li>
                                   <li>Booking ID: #[[ booking_id ]]</li>
-                                  <li>Service Requested: [[ booking_services_name]]</li>
-                                  <li>Date: [[ booking_date ]]</li>
-                                  <li>Time: [[ booking_time ]]</li>
-                                  <li>Location: [[ venue_address ]]</li>
+                                  <li>Customer Name: [[ customer_name ]]</li>
+                                  <li>Provider: [[ provider_name ]]</li>
+                                  <li>Service Booked: [[ booking_services_name ]]</li>
+                                  <li>Service Location: [[ city_id ]] - [[ country_id ]]</li>
+                                  <li>Booking Date: [[ booking_date ]]</li>
+                                  <li>Booking Time: [[ booking_time ]]</li>
+                                  <li>Amount: [[ total_amount ]]</li>
                                   </ul>
-                                  <p>&nbsp;</p>
-                                  <p>Best regards,<br />[[ company_name ]]</p>',
+                                  <ul>
+                                  <li>You can view and manage this request in your admin panel.</li>
+                                  <li>If you have any questions or need further assistance, please feel free to contact our support team at: info@frobster.com</li>
+                                  </ul>
+                                  <p>Best regards,</p>
+                                  <p>Your Frobster-Team</p>
+                                  <p>Website: frobster.com</p>
+                                  <p>Email: info@frobster.com</p>',
         ]);
         $template->defaultMailTemplateMap()->create([
             'language' => 'en',
@@ -423,18 +446,87 @@ class MailTemplateSeeder extends Seeder
             'status' => 1,
             'subject' => 'New Booking Received',
             'template_detail' => '<p>Hello [[ provider_name ]],</p>
-                                  <p>Below are the booking details for a recent booking request received from a [[ customer_name ]].</p>
-                                  <p>&nbsp;</p>
+                                  <p>We want to inform you that a new booking request has been submitted by a customer.</p>
+                                  <p>Please find the full details below, including all relevant information needed to process and respond to the request accordingly.</p>
                                   <p><strong>Booking Details:</strong></p>
                                   <ul>
                                   <li>Booking ID: #[[ booking_id ]]</li>
-                                  <li>Service Requested: [[ booking_services_name ]]</li>
-                                  <li>Date: [[ booking_date ]]</li>
-                                  <li>Time: [[ booking_time ]]</li>
-                                  <li>Location: [[ venue_address ]]</li>
+                                  <li>Customer Name: [[ customer_name ]]</li>
+                                  <li>Provider: [[ provider_name ]]</li>
+                                  <li>Service Booked: [[ booking_services_name ]]</li>
+                                  <li>Service Location: [[ city_id ]] - [[ country_id ]]</li>
+                                  <li>Booking Date: [[ booking_date ]]</li>
+                                  <li>Booking Time: [[ booking_time ]]</li>
+                                  <li>Amount: [[ total_amount ]]</li>
                                   </ul>
-                                  <p>&nbsp;</p>
-                                  <p>Best regards, <br />[[ company_name ]]</p>',
+                                  <ul>
+                                  <li>You can view and manage this request in your admin panel.</li>
+                                  <li>If you have any questions or need further assistance, please feel free to contact our support team at: info@frobster.com</li>
+                                  </ul>
+                                  <p>Best regards,</p>
+                                  <p>Your Frobster-Team</p>
+                                  <p>Website: frobster.com</p>
+                                  <p>Email: info@frobster.com</p>',
+        ]);
+        $template->defaultMailTemplateMap()->create([
+            'language' => 'de',
+            'notification_link' => '',
+            'notification_message' => '',
+            'user_type' => 'admin',
+            'status' => 1,
+            'subject' => 'Neue Buchung erhalten',
+            'template_detail' => '<p>Hallo [[ admin_name ]],</p>
+                                  <p>Wir mochten Sie daruber informieren, dass eine neue Buchungsanfrage von einem Kunden eingereicht wurde.</p>
+                                  <p>Nachfolgend finden Sie alle Details, einschliesslich aller relevanten Informationen, die zur Bearbeitung und Beantwortung der Anfrage erforderlich sind.</p>
+                                  <p><strong>Buchungsdetails:</strong></p>
+                                  <ul>
+                                  <li>Buchungs-ID: #[[ booking_id ]]</li>
+                                  <li>Kundenname: [[ customer_name ]]</li>
+                                  <li>Anbieter: [[ provider_name ]]</li>
+                                  <li>Gebuchte Dienstleistung: [[ booking_services_name ]]</li>
+                                  <li>Serviceort: [[ city_id ]] - [[ country_id ]]</li>
+                                  <li>Buchungsdatum: [[ booking_date ]]</li>
+                                  <li>Buchungszeit: [[ booking_time ]]</li>
+                                  <li>Betrag: [[ total_amount ]]</li>
+                                  </ul>
+                                  <ul>
+                                  <li>Sie konnen diese Anfrage in Ihrem Admin-Panel ansehen und verwalten.</li>
+                                  <li>Wenn Sie Fragen haben oder weitere Unterstutzung benotigen, kontaktieren Sie bitte unser Support-Team unter: info@frobster.com</li>
+                                  </ul>
+                                  <p>Mit freundlichen Grussen,</p>
+                                  <p>Ihr Frobster-Team</p>
+                                  <p>Website: frobster.com</p>
+                                  <p>E-Mail: info@frobster.com</p>',
+        ]);
+        $template->defaultMailTemplateMap()->create([
+            'language' => 'de',
+            'notification_link' => '',
+            'notification_message' => '',
+            'user_type' => 'provider',
+            'status' => 1,
+            'subject' => 'Neue Buchung erhalten',
+            'template_detail' => '<p>Hallo [[ provider_name ]],</p>
+                                  <p>Wir mochten Sie daruber informieren, dass eine neue Buchungsanfrage von einem Kunden eingereicht wurde.</p>
+                                  <p>Nachfolgend finden Sie alle Details, einschliesslich aller relevanten Informationen, die zur Bearbeitung und Beantwortung der Anfrage erforderlich sind.</p>
+                                  <p><strong>Buchungsdetails:</strong></p>
+                                  <ul>
+                                  <li>Buchungs-ID: #[[ booking_id ]]</li>
+                                  <li>Kundenname: [[ customer_name ]]</li>
+                                  <li>Anbieter: [[ provider_name ]]</li>
+                                  <li>Gebuchte Dienstleistung: [[ booking_services_name ]]</li>
+                                  <li>Serviceort: [[ city_id ]] - [[ country_id ]]</li>
+                                  <li>Buchungsdatum: [[ booking_date ]]</li>
+                                  <li>Buchungszeit: [[ booking_time ]]</li>
+                                  <li>Betrag: [[ total_amount ]]</li>
+                                  </ul>
+                                  <ul>
+                                  <li>Sie konnen diese Anfrage in Ihrem Admin-Panel ansehen und verwalten.</li>
+                                  <li>Wenn Sie Fragen haben oder weitere Unterstutzung benotigen, kontaktieren Sie bitte unser Support-Team unter: info@frobster.com</li>
+                                  </ul>
+                                  <p>Mit freundlichen Grussen,</p>
+                                  <p>Ihr Frobster-Team</p>
+                                  <p>Website: frobster.com</p>
+                                  <p>E-Mail: info@frobster.com</p>',
         ]);
 
         $template = MailTemplates::create([
@@ -457,13 +549,22 @@ class MailTemplateSeeder extends Seeder
                                   <p>&nbsp;</p>
                                   <p><strong>Booking Details:</strong></p>
                                   <ul>
-                                  <li>Service Requested: [[ booking_services_name ]]</li>
-                                  <li>Date: [[ booking_date ]]</li>
-                                  <li>Time: [[ booking_time ]]</li>
-                                  <li>Location: [[ venue_address ]]</li>
+                                  <li>Booking ID: #[[ booking_id ]]</li>
+                                  <li>Customer Name: [[ customer_name ]]</li>
+                                  <li>Employer: [[ provider_name ]]</li>
+                                  <li>Service Booked: [[ booking_services_name ]]</li>
+                                  <li>Service Location: [[ city_id ]] - [[ country_id ]]</li>
+                                  <li>Booking Date: [[ booking_date ]]</li>
+                                  <li>Booking Time: [[ booking_time ]]</li>
                                   </ul>
-                                  <p>&nbsp;</p>
-                                  <p>Best regards,<br />[[ company_name ]]</p>',
+                                  <ul>
+                                  <li>You can view and manage this request in your admin panel.</li>
+                                  <li>If you have any questions or need further assistance, please feel free to contact our support team at: info@frobster.com</li>
+                                  </ul>
+                                  <p>Best regards,</p>
+                                  <p>Your Frobster-Team</p>
+                                  <p>Website: frobster.com</p>
+                                  <p>Email: info@frobster.com</p>',
         ]);
         $template->defaultMailTemplateMap()->create([
             'language' => 'en',
@@ -493,17 +594,84 @@ class MailTemplateSeeder extends Seeder
             'status' => 1,
             'subject' => 'Booking Assigned!',
             'template_detail' => '<p>Hello [[ provider_name ]],</p>
-                                  <p>You have been assigned to handle a booking #[[ booking_id ]]. Please be prepared to provide service for [[ booking_services_name ]].</p>
+                                  <p>You have been assigned to manage a booking. Please be prepared to provide service for [[ booking_services_name ]].</p>
                                   <p>&nbsp;</p>
-                                  <p><strong>Booking</strong><strong>&nbsp;Details:</strong></p>
+                                  <p><strong>Booking Details:</strong></p>
                                   <ul>
-                                  <li>Service Requested: [[ booking_services_name ]]</li>
-                                  <li>Date: [[ booking_date ]]</li>
-                                  <li>Time: [[ booking_time ]]</li>
-                                  <li>Location: [[ venue_address ]]</li>
+                                  <li>Booking ID: #[[ booking_id ]]</li>
+                                  <li>Customer Name: [[ customer_name ]]</li>
+                                  <li>Employer: [[ provider_name ]]</li>
+                                  <li>Service Booked: [[ booking_services_name ]]</li>
+                                  <li>Service Location: [[ city_id ]] - [[ country_id ]]</li>
+                                  <li>Booking Date: [[ booking_date ]]</li>
+                                  <li>Booking Time: [[ booking_time ]]</li>
                                   </ul>
+                                  <ul>
+                                  <li>You can view and manage this request in your admin panel.</li>
+                                  <li>If you have any questions or need further assistance, please feel free to contact our support team at: info@frobster.com</li>
+                                  </ul>
+                                  <p>Best regards,</p>
+                                  <p>Your Frobster-Team</p>
+                                  <p>Website: frobster.com</p>
+                                  <p>Email: info@frobster.com</p>',
+        ]);
+        $template->defaultMailTemplateMap()->create([
+            'language' => 'de',
+            'notification_link' => '',
+            'notification_message' => '',
+            'user_type' => 'handyman',
+            'status' => 1,
+            'subject' => 'Buchung zugewiesen!',
+            'template_detail' => '<p>Hallo [[ handyman_name ]],</p>
+                                  <p>Ihnen wurde eine Buchung zur Bearbeitung zugewiesen. Bitte seien Sie darauf vorbereitet, die Dienstleistung fur [[ booking_services_name ]] zu erbringen.</p>
                                   <p>&nbsp;</p>
-                                  <p>Best regards,<br />[[ company_name ]]</p>',
+                                  <p><strong>Buchungsdetails:</strong></p>
+                                  <ul>
+                                  <li>Buchungs-ID: #[[ booking_id ]]</li>
+                                  <li>Kundenname: [[ customer_name ]]</li>
+                                  <li>Arbeitgeber: [[ provider_name ]]</li>
+                                  <li>Gebuchte Dienstleistung: [[ booking_services_name ]]</li>
+                                  <li>Serviceort: [[ city_id ]] - [[ country_id ]]</li>
+                                  <li>Buchungsdatum: [[ booking_date ]]</li>
+                                  <li>Buchungszeit: [[ booking_time ]]</li>
+                                  </ul>
+                                  <ul>
+                                  <li>Sie konnen diese Anfrage in Ihrem Admin-Panel ansehen und verwalten.</li>
+                                  <li>Wenn Sie Fragen haben oder weitere Unterstutzung benotigen, kontaktieren Sie bitte unser Support-Team unter: info@frobster.com</li>
+                                  </ul>
+                                  <p>Mit freundlichen Grussen,</p>
+                                  <p>Ihr Frobster-Team</p>
+                                  <p>Website: frobster.com</p>
+                                  <p>E-Mail: info@frobster.com</p>',
+        ]);
+        $template->defaultMailTemplateMap()->create([
+            'language' => 'de',
+            'notification_link' => '',
+            'notification_message' => '',
+            'user_type' => 'provider',
+            'status' => 1,
+            'subject' => 'Buchung zugewiesen!',
+            'template_detail' => '<p>Hallo [[ provider_name ]],</p>
+                                  <p>Ihnen wurde eine Buchung zur Bearbeitung zugewiesen. Bitte seien Sie darauf vorbereitet, die Dienstleistung fur [[ booking_services_name ]] zu erbringen.</p>
+                                  <p>&nbsp;</p>
+                                  <p><strong>Buchungsdetails:</strong></p>
+                                  <ul>
+                                  <li>Buchungs-ID: #[[ booking_id ]]</li>
+                                  <li>Kundenname: [[ customer_name ]]</li>
+                                  <li>Arbeitgeber: [[ provider_name ]]</li>
+                                  <li>Gebuchte Dienstleistung: [[ booking_services_name ]]</li>
+                                  <li>Serviceort: [[ city_id ]] - [[ country_id ]]</li>
+                                  <li>Buchungsdatum: [[ booking_date ]]</li>
+                                  <li>Buchungszeit: [[ booking_time ]]</li>
+                                  </ul>
+                                  <ul>
+                                  <li>Sie konnen diese Anfrage in Ihrem Admin-Panel ansehen und verwalten.</li>
+                                  <li>Wenn Sie Fragen haben oder weitere Unterstutzung benotigen, kontaktieren Sie bitte unser Support-Team unter: info@frobster.com</li>
+                                  </ul>
+                                  <p>Mit freundlichen Grussen,</p>
+                                  <p>Ihr Frobster-Team</p>
+                                  <p>Website: frobster.com</p>
+                                  <p>E-Mail: info@frobster.com</p>',
         ]);
 
 

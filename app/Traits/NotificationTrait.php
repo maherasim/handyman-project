@@ -630,6 +630,10 @@ trait NotificationTrait
             $notification_data['booking_duration'] = isset($booking->service) ? $booking->service->duration : '';
             $notification_data['booking_time'] = $time;
             $notification_data['venue_address'] = $booking->emailVenueLocation();
+            $booking->loadMissing(['customer.city', 'customer.country', 'service.city', 'service.country']);
+            $notification_data['city_id'] = optional(optional($booking->customer)->city)->name ?: optional(optional($booking->service)->city)->name ?: '';
+            $notification_data['country_id'] = optional(optional($booking->customer)->country)->name ?: optional(optional($booking->service)->country)->name ?: '';
+            $notification_data['total_amount'] = isset($booking->total_amount) ? getPriceFormat($booking->total_amount) : '';
             $notification_data['payment_status'] = isset($data['payment_status']) ? $data['payment_status'] : '';
             $notification_data['payment_type'] = isset($booking->payment) ? $booking->payment->payment_type : '';
             $notification_data['pay_amount'] = isset($booking->payment) ? getPriceFormat($booking->payment->total_amount) : '';
@@ -652,6 +656,8 @@ trait NotificationTrait
             $notification_data['wallet_transaction_type'] = isset($data['transaction_type']) ? $data['transaction_type'] : '';
             $notification_data['wallet_amount'] = isset($data['wallet']->amount) ? getPriceFormat($data['wallet']->amount) : '';
             $notification_data['credit_debit_amount'] = isset($data['credit_debit_amount']) ? getPriceFormat($data['credit_debit_amount']) : '';
+            $notification_data['wallet_transaction_date'] = $date;
+            $notification_data['wallet_transaction_time'] = $time;
 			$notification_data['job_id'] = isset($job_id) ? $job_id: '';
 			// Provide a clickable link for web notifications when a job request is created
 			if ($notification_type === 'job_requested') {
@@ -698,13 +704,29 @@ trait NotificationTrait
             $notification_data['job_description'] = (isset($data['postjob_data']) && isset($data['postjob_data']->description)) ? $data['postjob_data']->description : '';
             // For job_requested: pass description and address from post_job for a meaningful provider email
             if ($notification_type === 'job_requested' && isset($post_job)) {
+                $post_job->loadMissing(['city', 'country']);
                 $notification_data['job_description'] = $post_job->description ?? '';
                 $notification_data['job_description_short'] = Str::limit(strip_tags($post_job->description ?? ''), 280) ?: 'No description provided.';
                 $addr = trim(($post_job->working_address ?? '') . ' ' . ($post_job->street_address ?? '') . ' ' . ($post_job->house_number ?? ''));
                 $notification_data['job_address'] = $addr ?: 'Not specified';
+                $notification_data['job_request_id'] = $post_job->id ?? $notification_data['job_request_id'];
+                $notification_data['job_request_name'] = $post_job->title ?? $notification_data['job_name'];
+                $notification_data['job_request_start_date'] = $post_job->start_date ?? '';
+                $notification_data['job_request_end_date'] = $post_job->end_date ?? '';
+                $notification_data['job_request_amount'] = isset($post_job->total_budget) ? getPriceFormat($post_job->total_budget) : (isset($post_job->price) ? getPriceFormat($post_job->price) : '');
+                $notification_data['job_request_created_at'] = isset($post_job->created_at) ? $post_job->created_at->format('Y-m-d H:i:s') : '';
+                $notification_data['job_request_city'] = optional($post_job->city)->name ?: '';
+                $notification_data['job_country'] = optional($post_job->country)->name ?: '';
             } else {
                 $notification_data['job_description_short'] = Str::limit(strip_tags($notification_data['job_description'] ?? ''), 280) ?: 'No description provided.';
                 $notification_data['job_address'] = 'Not specified';
+                $notification_data['job_request_name'] = $notification_data['job_name'];
+                $notification_data['job_request_start_date'] = '';
+                $notification_data['job_request_end_date'] = '';
+                $notification_data['job_request_amount'] = $notification_data['job_price'] ?? '';
+                $notification_data['job_request_created_at'] = '';
+                $notification_data['job_request_city'] = '';
+                $notification_data['job_country'] = '';
             }
             $notification_data['bid_amount'] = isset($bid_amount) ? $bid_amount: '';
             $notification_data['provider_name'] = isset($data['provider_name']) ? $data['provider_name'] : '';
@@ -800,6 +822,9 @@ trait NotificationTrait
                                         if ($notification_type === 'job_requested') {
                                             $notification_data['provider_name'] = $employee->display_name ?? $employee->username ?? '';
                                         }
+                                        if ($notification_type === 'assigned_booking') {
+                                            $notification_data['handyman_name'] = $employee->display_name ?? $employee->username ?? '';
+                                        }
                                         $employee->notify(new \App\Notifications\CommonNotification($notification_type, $notification_data));
                                     } catch (\Exception $e) {
                                         Log::error($e);
@@ -816,6 +841,7 @@ trait NotificationTrait
                                 if (isset($employee->email) && $employee->user_type == 'handyman') {
                                     try {
                                         $notification_data['user_type'] = $mailTo;
+                                        $notification_data['handyman_name'] = $employee->display_name ?? $employee->username ?? '';
                                         $employee->notify(new \App\Notifications\CommonNotification($notification_type, $notification_data));
                                     } catch (\Exception $e) {
                                         Log::error($e);

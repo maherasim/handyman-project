@@ -13,7 +13,7 @@
                 {{ getPriceFormat($bookingdata->amount) }}
             </td>
         </tr>
-
+when 
         <!-- Quantity -->
         <tr>
             <td>{{ __('messages.quantity_nbr_packages') }}</td>
