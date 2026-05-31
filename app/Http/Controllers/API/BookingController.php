@@ -1268,7 +1268,7 @@ class BookingController extends Controller
         $showHidden = $user->hasAnyRole(['admin', 'demo_admin']) || $request->boolean('show_hidden');
 
         $customerRatingQuery = CustomerRating::where('customer_id', $customer_id)
-            ->with(['provider', 'customer'])
+            ->with(['provider', 'customer', 'booking.service'])
             ->orderBy('created_at', 'desc');
         if (!$showHidden) {
             $customerRatingQuery->publicVisible();
@@ -1276,7 +1276,7 @@ class BookingController extends Controller
         $customerRatingInfo = $customerRatingQuery->get();
 
         $postJobBidQuery = PostJobBidRating::where('customer_id', $customer_id)
-            ->with(['provider', 'customer'])
+            ->with(['provider', 'customer', 'postJobBid.postrequest'])
             ->orderBy('created_at', 'desc');
         if (!$showHidden) {
             $postJobBidQuery->publicVisible();
@@ -1286,10 +1286,31 @@ class BookingController extends Controller
         $customer = User::find($customer_id);
         $mapItem = function ($r) use ($customer) {
             $bookingId = $r->booking_id ?? null;
+            $booking = $r instanceof CustomerRating ? $r->booking : null;
+            $service = optional($booking)->service;
+            $postJob = $r instanceof PostJobBidRating ? optional($r->postJobBid)->postrequest : null;
+            $images = [];
+
+            if ($service) {
+                $images = getAttachments($service->getMedia('service_attachment'));
+            } elseif ($postJob) {
+                $images = collect(array_merge(
+                    $postJob->image ? [$postJob->image] : [],
+                    is_array($postJob->images) ? $postJob->images : []
+                ))->filter()->map(function ($image) {
+                    return filter_var($image, FILTER_VALIDATE_URL)
+                        ? $image
+                        : asset('storage/' . ltrim($image, '/'));
+                })->unique()->values()->all();
+            }
+
             $cust = $customer ?? $r->customer ?? null;
             return [
                 'id' => $r->id,
                 'booking_id' => $bookingId,
+                'service_id' => optional($service)->id,
+                'post_job_id' => optional($postJob)->id,
+                'images' => $images,
                 'customer_id' => $r->customer_id,
                 'customer_name' => optional($cust)->display_name,
                 'customer_profile_image' => optional($cust)->login_type != null ? optional($cust)->social_image : getSingleMedia($cust, 'profile_image', null),

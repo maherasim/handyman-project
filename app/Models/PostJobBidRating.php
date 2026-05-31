@@ -48,6 +48,11 @@ class PostJobBidRating extends Model
     {
         return $this->belongsTo(User::class, 'provider_id', 'id');
     }
+
+    public function postJobBid()
+    {
+        return $this->belongsTo(PostJobBid::class, 'post_job_bid_id', 'id');
+    }
 }
 
 
