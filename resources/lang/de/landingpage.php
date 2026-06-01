@@ -399,7 +399,7 @@
   'jdd_fixed_short' => 'Pauschal',
   'jdd_per_day_short' => '/Tag',
   'jdd_per_hour_short' => '/Std.',
-  'jdd_remote_percent' => ':Prozent % Remote',
+  'jdd_remote_percent' => ':percent % Remote',
   'jdd_read_more' => 'Weiterlesen',
   'jdd_great_opportunity' => 'Exklusiver Auftrag',
   'jdd_ready_to_win' => 'Bereit, diesen Auftrag zu gewinnen?',

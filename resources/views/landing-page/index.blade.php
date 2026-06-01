@@ -1717,7 +1717,7 @@
                         <h3 class="landing-section-head">{{ __('landingpage.recently_booked_title') }}</h3>
                         <p class="landing-section-lead mb-3">{{ __('landingpage.recently_booked_lead') }}</p>
                         <div class="landing-recent-card">
-                            @foreach ($recentBookings as $rb)
+                            @foreach (collect($recentBookings)->take(6) as $rb)
                                 <div class="landing-recent-job-item">
                                     <span class="landing-recent-dot" aria-hidden="true"></span>
                                     @if(!empty($rb['service_id']))

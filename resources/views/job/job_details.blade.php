@@ -268,6 +268,31 @@
                 return ucwords(str_replace('_', ' ', strtolower($v)));
             }
         }
+        if (!function_exists('formatJobDetailLanguages')) {
+            function formatJobDetailLanguages($languages) {
+                if (is_string($languages)) {
+                    $decodedLanguages = json_decode($languages, true);
+                    $languages = is_array($decodedLanguages) ? $decodedLanguages : [$languages];
+                }
+
+                return collect($languages ?: [])
+                    ->map(fn ($language) => formatJobDetailLabel($language))
+                    ->filter()
+                    ->implode(', ') ?: __('messages.na');
+            }
+        }
+        if (!function_exists('formatJobRemoteWorkLevel')) {
+            function formatJobRemoteWorkLevel($remoteWorkLevel) {
+                return match ((string) $remoteWorkLevel) {
+                    'onsite' => __('messages.pjr_onsite_100'),
+                    '25_remote' => __('messages.pjr_25_remote'),
+                    '50_remote' => __('messages.pjr_50_remote'),
+                    '75_remote' => __('messages.pjr_75_remote'),
+                    '100_remote' => __('messages.pjr_100_remote'),
+                    default => __('messages.na'),
+                };
+            }
+        }
         $jobPriceTypeLabel = match (strtolower((string) ($jobrequest->price_type ?? 'fixed'))) {
             'hourly' => __('messages.pjr_hourly'),
             'daily' => __('messages.pjr_daily'),
@@ -721,16 +746,7 @@
                                     </div>
                                     <div class="detail-item mb-2">
                                         <span class="detail-label"><b>{{ __('landingpage.jdd_remote_level') }}</b></span>
-                                        @php
-                                            $remoteLevelRaw = $jobrequest->remote_work_level ?? null;
-                                            $remoteLevelPercent = $remoteLevelRaw ? (int) preg_replace('/\D+/', '', $remoteLevelRaw) : null;
-                                            $remoteLevelDisplay = is_null($remoteLevelPercent)
-                                                ? __('messages.na')
-                                                : ($remoteLevelPercent === 100
-                                                    ? __('landingpage.jdd_remote_100')
-                                                    : __('landingpage.jdd_remote_percent', ['percent' => $remoteLevelPercent]));
-                                        @endphp
-                                        <span class="detail-value"> {{ $remoteLevelDisplay }}</span>
+                                        <span class="detail-value"> {{ formatJobRemoteWorkLevel($jobrequest->remote_work_level ?? null) }}</span>
                                     </div>
                                     <div class="detail-item mb-2">
                                         <span class="detail-label"><b>{{ __('landingpage.jdd_career_level') }}</b></span>
@@ -796,7 +812,7 @@
                                     </div>
                                     <div class="detail-item mb-2">
                                         <span class="detail-label"><b>{{ __('landingpage.jdd_languages') }}</b></span>
-                                        <span class="detail-value"> {{ is_array($jobrequest->customer->languages ?? null) ? implode(', ', $jobrequest->customer->languages) : ($jobrequest->customer->languages ?? __('messages.na')) }}</span>
+                                        <span class="detail-value"> {{ formatJobDetailLanguages($jobrequest->customer->languages ?? null) }}</span>
                                     </div>
                                     <div class="detail-item mb-2">
                                         <span class="detail-label"><b>{{ __('landingpage.jdd_location') }}</b></span>
@@ -840,16 +856,7 @@
                                     </div>
                                     <div class="detail-item mb-2">
                                         <span class="detail-label"><b>{{ __('landingpage.jdd_remote_level_lower') }}</b></span>
-                                        @php
-                                            $remoteLevelRawCd = $jobrequest->remote_work_level ?? null;
-                                            $remoteLevelPercentCd = $remoteLevelRawCd ? (int) preg_replace('/\D+/', '', $remoteLevelRawCd) : null;
-                                            $remoteLevelDisplayCd = is_null($remoteLevelPercentCd)
-                                                ? __('messages.na')
-                                                : ($remoteLevelPercentCd === 100
-                                                    ? __('landingpage.jdd_remote_100')
-                                                    : __('landingpage.jdd_remote_percent', ['percent' => $remoteLevelPercentCd]));
-                                        @endphp
-                                        <span class="detail-value"> {{ $remoteLevelDisplayCd }}</span>
+                                        <span class="detail-value"> {{ formatJobRemoteWorkLevel($jobrequest->remote_work_level ?? null) }}</span>
                                     </div>
                                     <div class="detail-item mb-2">
                                         <span class="detail-label"><b>{{ __('landingpage.jdd_career_level_lower') }}</b></span>
