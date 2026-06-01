@@ -1709,6 +1709,21 @@
             <div class="row g-4 align-items-stretch">
                 @if (count($recentBookings ?? []) > 0)
                     <div class="col-lg-6">
+                        <style>
+                            /* Keep the recently-booked and nearby-services cards on the same baseline. */
+                            .row:has(.landing-section-head) {
+                                align-items: stretch;
+                            }
+
+                            .row:has(.landing-section-head) > [class*="col-"] {
+                                display: flex;
+                                flex-direction: column;
+                            }
+
+                            .row:has(.landing-section-head) > [class*="col-"] > :last-child {
+                                flex: 1;
+                            }
+                        </style>
                         <h3 class="landing-section-head">{{ __('landingpage.recently_booked_title') }}</h3>
                         <p class="landing-section-lead mb-3">{{ __('landingpage.recently_booked_lead') }}</p>
                         <div class="landing-recent-card h-100">

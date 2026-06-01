@@ -24,6 +24,15 @@ return [
     */
     'display_name' => env('APP_DISPLAY_NAME', 'Frobster'),
 
+    /*
+    | Public brand name selected by request domain.
+    | The generic display_name above remains the fallback for local or unknown hosts.
+    */
+    'domain_display_name' => [
+        env('APP_DOMAIN_EN', 'frobster.com') => env('APP_DISPLAY_NAME_EN', 'Frobster'),
+        env('APP_DOMAIN_DE', 'persotel.de') => env('APP_DISPLAY_NAME_DE', 'Persotel'),
+    ],
+
     'version' => env('APP_VERSION', '11.10.0'),
 
     /*

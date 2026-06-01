@@ -1,7 +1,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta http-equiv="X-UA-Compatible" content="ie=edge">
-<title>{{ config('app.display_name', 'Frobster') }} Service - On-Demand Home Service Flutter App with Complete Solution</title>
+@php
+    $titleHost = preg_replace('/^www\./i', '', request()->getHost());
+    $domainDisplayNames = config('app.domain_display_name', []);
+    $displayName = $domainDisplayNames[$titleHost] ?? config('app.display_name', 'Frobster');
+@endphp
+<title>{{ $displayName }} - {{ __('landingpage.browser_title_tagline') }}</title>
 
 {{-- Google Analytics (gtag.js) --}}
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-RQ69M877X0"></script>

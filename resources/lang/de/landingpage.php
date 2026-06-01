@@ -1,5 +1,6 @@
 <?php return array (
   'home' => 'Home',
+  'browser_title_tagline' => 'Dienstleistungen auf Abruf',
   'play_video' => 'Video abspielen',
   'open_on_youtube' => 'Video auf YouTube öffnen',
   'categories' => 'Kategorien',
