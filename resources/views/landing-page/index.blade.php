@@ -1723,6 +1723,11 @@
                             .row:has(.landing-section-head) > [class*="col-"] > :last-child {
                                 flex: 1;
                             }
+
+                            .row:has(.landing-section-head) > [class*="col-"]:first-child > :last-child {
+                                min-height: 0 !important;
+                                height: auto !important;
+                            }
                         </style>
                         <h3 class="landing-section-head">{{ __('landingpage.recently_booked_title') }}</h3>
                         <p class="landing-section-lead mb-3">{{ __('landingpage.recently_booked_lead') }}</p>
