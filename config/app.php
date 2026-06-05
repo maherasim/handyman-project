@@ -107,7 +107,7 @@ return [
     | Set to true to show the language switcher (en, de, etc.) in header.
     | When false, locale is always the default above and the switcher is hidden.
     */
-    'show_language_switcher' => env('SHOW_LANGUAGE_SWITCHER', false),
+    'show_language_switcher' => env('SHOW_LANGUAGE_SWITCHER', true),
 
     /*
     | Domain-based locale: same codebase, different language per domain.

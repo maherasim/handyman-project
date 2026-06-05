@@ -24,6 +24,34 @@
             <li class="nav-item">
                 <a class="nav-link {{ request()->routeIs('frontend.index') ? 'active' : '' }}" href="{{ route('frontend.index') }}">{{__('landingpage.home')}}</a>
             </li>
+            @if(config('app.show_language_switcher', true) && !empty($sectionData['enable_language']))
+                @php
+                    $language_option = sitesetupSession('get')->language_option ?? ['en', 'de', 'fr'];
+                    if (is_array($language_option)) {
+                        $language_option = array_values(array_unique(array_merge($language_option, ['en', 'de', 'fr'])));
+                    }
+                    $language_option = array_values(array_filter($language_option, function ($locale) {
+                        return is_dir(resource_path('lang/' . $locale));
+                    }));
+                    $language_array = !empty($language_option) ? languagesArray($language_option) : [];
+                @endphp
+                @if(count($language_array) > 0)
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="landingLanguageDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            {{ strtoupper(app()->getLocale()) }}
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="landingLanguageDropdown">
+                            @foreach($language_array as $lang)
+                                <li>
+                                    <a class="dropdown-item {{ app()->getLocale() == $lang['id'] ? 'active' : '' }}" href="{{ route('switch-language', ['locale' => $lang['id']]) }}">
+                                        {{ strtoupper($lang['id']) }}
+                                    </a>
+                                </li>
+                            @endforeach
+                        </ul>
+                    </li>
+                @endif
+            @endif
             @if( isset($sectionData['categories']) && $sectionData['categories'] == 1)
             {{-- @if(isset($sectionData['categories']) && $sectionData['categories'] == 1) --}}
             <li class="nav-item">
