@@ -1048,11 +1048,15 @@ $data['remaining_payout'] = round($providerRemainingPayout, $digitafter_decimal_
 
     public function lang($locale)
     {
-        // Build allowed locales: site settings + always include German (de)
+        // Allow every installed frontend language, regardless of domain/site toggle.
         $setup = sitesetupSession('get');
         $language_option = ($setup && isset($setup->language_option)) ? $setup->language_option : ['nl', 'fr', 'it', 'pt', 'es', 'en'];
+        $installedLocales = collect(\File::directories(resource_path('lang')))
+            ->map(fn ($path) => basename($path))
+            ->values()
+            ->all();
         if (is_array($language_option)) {
-            $language_option = array_values(array_unique(array_merge($language_option, ['de'])));
+            $language_option = array_values(array_unique(array_merge($language_option, ['en', 'de', 'fr'], $installedLocales)));
         }
         $langDir = resource_path('lang/' . $locale);
         $localeAllowed = in_array($locale, $language_option) && \File::isDirectory($langDir);
