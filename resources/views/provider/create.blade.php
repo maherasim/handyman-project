@@ -48,7 +48,13 @@
                             @if (!isset($providerdata->id) || $providerdata->id == null)
                             <div class="form-group col-md-4">
                                 {{ html()->label(__('messages.password') . ' <span class="text-danger">*</span>', 'password')->class('form-control-label') }}
-                                {{ html()->password('password')->class('form-control')->placeholder(__('messages.password'))->required()->autocomplete('new-password') }}
+                                {{ html()->password('password')->class('form-control')->placeholder(__('messages.password'))->required()->autocomplete('new-password')->attribute('minlength', 12)->attribute('pattern', '^(?=.*[A-Za-z])(?=.*\d).{12,}$')->attribute('title', __('auth.password_requirements_intro') . ' ' . __('auth.password_rule_min') . ', ' . __('auth.password_rule_letter') . ', ' . __('auth.password_rule_number')) }}
+                                <small class="text-muted d-block mt-1">
+                                    {{ __('auth.password_requirements_intro') }}
+                                    <br>{{ __('auth.password_rule_min') }}
+                                    <br>{{ __('auth.password_rule_letter') }}
+                                    <br>{{ __('auth.password_rule_number') }}
+                                </small>
                                 <small class="help-block with-errors text-danger"></small>
                             </div>
                             @endif

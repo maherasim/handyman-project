@@ -38,6 +38,13 @@ class UserRequest extends FormRequest
     public function rules()
     {
         $id = request()->id;
+        $passwordRules = [
+            'required',
+            'string',
+            'min:12',
+            'regex:/[A-Za-z]/',
+            'regex:/[0-9]/',
+        ];
         $rules = [
                 'username'          => 'required|max:255|unique:users,username,'.$id,
                 'email'             => 'required|email|max:255|unique:users,email,'.$id,
@@ -77,12 +84,15 @@ class UserRequest extends FormRequest
                 $rules['city_id'] = 'required|exists:cities,id';
             }
             if (empty($id)) {
-                $rules['password'] = 'required|string|min:12';
+                $rules['password'] = $passwordRules;
             }
         }
 
         if (request()->user_type === 'provider') {
             $rules['vat_number'] = $vatNumberRule;
+            if (empty($id)) {
+                $rules['password'] = $passwordRules;
+            }
         }
 
         // Profile form (setting/profile_form) – VAT Number required only for provider & handyman; optional for customers
@@ -143,6 +153,8 @@ class UserRequest extends FormRequest
            'availability.required' => __('Availability') . ' ' . __('messages.is_required'),
            'experience.required' => __('Experience') . ' ' . __('messages.is_required'),
            'languages.required' => __('messages.select_name', ['select' => __('Language')]),
+           'password.min' => __('auth.password_rule_min'),
+           'password.regex' => __('auth.password_requirements_intro') . ' ' . __('auth.password_rule_letter') . ', ' . __('auth.password_rule_number'),
         ];
     }
 
