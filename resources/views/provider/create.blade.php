@@ -48,12 +48,12 @@
                             @if (!isset($providerdata->id) || $providerdata->id == null)
                             <div class="form-group col-md-4">
                                 {{ html()->label(__('messages.password') . ' <span class="text-danger">*</span>', 'password')->class('form-control-label') }}
-                                {{ html()->password('password')->class('form-control')->placeholder(__('messages.password'))->required()->autocomplete('new-password')->attribute('minlength', 12)->attribute('pattern', '^(?=.*[A-Za-z])(?=.*\d).{12,}$')->attribute('title', __('auth.password_requirements_intro') . ' ' . __('auth.password_rule_min') . ', ' . __('auth.password_rule_letter') . ', ' . __('auth.password_rule_number')) }}
-                                <small class="text-muted d-block mt-1">
+                                {{ html()->password('password')->id('password')->class('form-control')->placeholder(__('messages.password'))->required()->autocomplete('new-password')->attribute('minlength', 12)->attribute('pattern', '^(?=.*[A-Za-z])(?=.*\d).{12,}$')->attribute('title', __('auth.password_requirements_intro') . ' ' . __('auth.password_rule_min') . ', ' . __('auth.password_rule_letter') . ', ' . __('auth.password_rule_number')) }}
+                                <small class="text-muted d-block mt-1 password-policy">
                                     {{ __('auth.password_requirements_intro') }}
-                                    <br>{{ __('auth.password_rule_min') }}
-                                    <br>{{ __('auth.password_rule_letter') }}
-                                    <br>{{ __('auth.password_rule_number') }}
+                                    <br><span class="text-muted" data-password-rule="length">{{ __('auth.password_rule_min') }}</span>
+                                    <br><span class="text-muted" data-password-rule="letter">{{ __('auth.password_rule_letter') }}</span>
+                                    <br><span class="text-muted" data-password-rule="number">{{ __('auth.password_rule_number') }}</span>
                                 </small>
                                 <small class="help-block with-errors text-danger"></small>
                             </div>
@@ -436,8 +436,9 @@
         $('input[name="tax_country_id"]').val(initialTaxCountryId);
     }
 
-    document.addEventListener('DOMContentLoaded', function() { 
+document.addEventListener('DOMContentLoaded', function() { 
     checkImage();
+    initPasswordPolicyChecklist();
 });
 function checkImage() { 
         var id = @json($providerdata->id ?? null); 
@@ -465,6 +466,33 @@ function checkImage() {
             console.error('Error:', error);  
         }
     });
+}
+
+function initPasswordPolicyChecklist() {
+    var passwordInput = document.getElementById('password');
+    if (!passwordInput) return;
+
+    var rules = {
+        length: document.querySelector('[data-password-rule="length"]'),
+        letter: document.querySelector('[data-password-rule="letter"]'),
+        number: document.querySelector('[data-password-rule="number"]')
+    };
+
+    function setRuleState(rule, isValid) {
+        if (!rule) return;
+        rule.classList.toggle('text-success', isValid);
+        rule.classList.toggle('text-muted', !isValid);
+    }
+
+    function updatePasswordPolicy() {
+        var value = passwordInput.value || '';
+        setRuleState(rules.length, value.length >= 12);
+        setRuleState(rules.letter, /[A-Za-z]/.test(value));
+        setRuleState(rules.number, /[0-9]/.test(value));
+    }
+
+    passwordInput.addEventListener('input', updatePasswordPolicy);
+    updatePasswordPolicy();
 }
     </script>
     @endsection

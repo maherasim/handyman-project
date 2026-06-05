@@ -367,7 +367,7 @@ class SettingController extends Controller
 
         $data['why_choose_me'] = json_encode($why_choose_me);
 
-        if ($page === 'profile_form') {
+        if ($page === 'profile_form' || $request->profile === 'profile') {
             $data['profile_complete'] = 1;
         }
 

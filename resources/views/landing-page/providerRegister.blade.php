@@ -77,13 +77,19 @@
                                         <div class="form-group icon-right mb-5 custom-form-field">
                                             <label>{{__('landingpage.your')}} {{__('auth.login_password')}} <span class="text-danger">*</span></label>
                                             <div class="input-group">
-                                                <input type="password" id="password" name="password" class="form-control" placeholder="{{__('placeholder.login_password')}}" aria-label="Password" aria-describedby="togglePasswordIcon" required>
+                                                <input type="password" id="password" name="password" class="form-control" placeholder="{{__('placeholder.login_password')}}" aria-label="Password" aria-describedby="togglePasswordIcon" minlength="12" pattern="^(?=.*[A-Za-z])(?=.*\d).{12,}$" title="{{ __('auth.password_requirements_intro') }} {{ __('auth.password_rule_min') }}, {{ __('auth.password_rule_letter') }}, {{ __('auth.password_rule_number') }}" required>
                                                 <div class="input-group-append">
                                                     <span class="input-group-text" onclick="togglePassword('password', 'togglePasswordIcon')">
                                                         <i class="fa fa-eye-slash" id="togglePasswordIcon" aria-hidden="true"></i>
                                                     </span>
                                                 </div>
                                             </div>
+                                            <small class="text-muted d-block mt-1 password-policy">
+                                                {{ __('auth.password_requirements_intro') }}
+                                                <br><span class="text-muted" data-password-rule="length">{{ __('auth.password_rule_min') }}</span>
+                                                <br><span class="text-muted" data-password-rule="letter">{{ __('auth.password_rule_letter') }}</span>
+                                                <br><span class="text-muted" data-password-rule="number">{{ __('auth.password_rule_number') }}</span>
+                                            </small>
                                             <small class="help-block with-errors text-danger"></small>
                                         </div>
 
@@ -151,6 +157,7 @@
 <script>
 
 $(document).ready(function() {
+        initPasswordPolicyChecklist();
         const baseUrl = document.querySelector('meta[name="baseUrl"]').getAttribute('content');
         var csrfToken = $('meta[name="csrf-token"]').attr('content');
         $('#providerregisterForm').submit(function(e) {
@@ -216,5 +223,32 @@ $(document).ready(function() {
     const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
     passwordInput.setAttribute('type', type);
     icon.className = type === 'password' ? 'fa fa-eye-slash' : 'fa fa-eye';
+}
+
+function initPasswordPolicyChecklist() {
+    var passwordInput = document.getElementById('password');
+    if (!passwordInput) return;
+
+    var rules = {
+        length: document.querySelector('[data-password-rule="length"]'),
+        letter: document.querySelector('[data-password-rule="letter"]'),
+        number: document.querySelector('[data-password-rule="number"]')
+    };
+
+    function setRuleState(rule, isValid) {
+        if (!rule) return;
+        rule.classList.toggle('text-success', isValid);
+        rule.classList.toggle('text-muted', !isValid);
+    }
+
+    function updatePasswordPolicy() {
+        var value = passwordInput.value || '';
+        setRuleState(rules.length, value.length >= 12);
+        setRuleState(rules.letter, /[A-Za-z]/.test(value));
+        setRuleState(rules.number, /[0-9]/.test(value));
+    }
+
+    passwordInput.addEventListener('input', updatePasswordPolicy);
+    updatePasswordPolicy();
 }
 </script>
