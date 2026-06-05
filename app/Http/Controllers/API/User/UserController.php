@@ -22,6 +22,7 @@ use App\Traits\NotificationTrait;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\VerificationEmail;
 use App\Models\ProviderDocument;
+use App\Models\ProviderSubscription;
 use App\Http\Resources\API\DocumentResource;
 use App\Models\Setting;
 use Illuminate\Support\Facades\App;
@@ -148,6 +149,10 @@ public function register(UserRequest $request)
             'user_id' => $user->id,
             'amount' => 0
         ]);
+    }
+
+    if ($user->user_type === 'provider') {
+        $this->createDefaultFreeProviderSubscription($user);
     }
 
     $userFresh = User::with(['country', 'state', 'city', 'providertype', 'handymantype'])->find($user->id);
@@ -1132,6 +1137,43 @@ public function register(UserRequest $request)
                 }
             }
         }
+    }
+
+    protected function createDefaultFreeProviderSubscription(User $user): void
+    {
+        if (ProviderSubscription::where('user_id', $user->id)->exists()) {
+            return;
+        }
+
+        $startDate = now();
+        $planType = 'weekly';
+
+        $endDate = match ($planType) {
+            'monthly' => $startDate->copy()->addMonth(),
+            'yearly' => $startDate->copy()->addYear(),
+            default => $startDate->copy()->addWeek(),
+        };
+
+        ProviderSubscription::create([
+            'plan_id'         => 1,
+            'user_id'         => $user->id,
+            'title'           => 'Free plan',
+            'identifier'      => 'free',
+            'type'            => $planType,
+            'start_at'        => $startDate,
+            'end_at'          => $endDate,
+            'amount'          => 0,
+            'status'          => 'active',
+            'payment_id'      => '1',
+            'plan_limitation' => json_encode([
+                'featured_service' => ['is_checked' => null, 'limit' => null],
+                'handyman'         => ['is_checked' => null, 'limit' => null],
+                'service'          => ['is_checked' => null, 'limit' => null],
+            ]),
+            'duration'        => null,
+            'description'     => 'Free plan',
+            'plan_type'       => 'Free plan',
+        ]);
     }
 
 }
