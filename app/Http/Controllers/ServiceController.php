@@ -308,9 +308,9 @@ class ServiceController extends Controller
     {
         $id = $request->id;
 
-        $auth_user = authSession();
+        $auth_user = auth()->user()->fresh() ?? authSession();
 
-        if ($auth_user->user_type === 'provider' && !$auth_user->profile_complete) {
+        if ($auth_user->user_type === 'provider' && (int) $auth_user->profile_complete === 0) {
             return redirect()->route('setting.index', ['page' => 'profile_form'])
                 ->withErrors(__('messages.complete_profile_first'));
         }
@@ -379,7 +379,9 @@ public function store(ServiceRequest $request)
         return redirect()->back()->withErrors(trans('messages.demo_permission_denied'));
     }
 
-    if (auth()->user()->user_type === 'provider' && !auth()->user()->profile_complete) {
+    $auth_user = auth()->user()->fresh();
+
+    if ($auth_user->user_type === 'provider' && (int) $auth_user->profile_complete === 0) {
         $message = __('messages.complete_profile_first');
         if ($request->is('api/*')) {
             return comman_message_response($message);
