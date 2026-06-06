@@ -708,10 +708,10 @@ Route::get('/handyman/earnings-data', [PaymentController::class, 'handymanEarnin
 Route::get('/test-mail', function () {
     try {
         \Illuminate\Support\Facades\Mail::raw('This is a test email to verify SMTP configuration.', function ($message) {
-            $message->to('asimriazasim107@gmail.com')
+            $message->to('asimsahirgithub68@gmail.com')
                     ->subject('SMTP Test Email');
         });
-        return 'Test email sent successfully to asimriazasim107@gmail.com';
+        return 'Test email sent successfully to asimsahirgithub68@gmail.com';
     } catch (\Exception $e) {
         return 'Failed to send email: ' . $e->getMessage();
     }
