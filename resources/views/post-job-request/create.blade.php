@@ -371,6 +371,10 @@
                      const container = document.getElementById('imageContainer');
                      const showMoreBtn = document.getElementById('showMoreButton');
                      const MAX_VISIBLE = 4;
+                     const pjrCreateLang = {
+                         show_more: @json(__('messages.pjr_show_more')),
+                         show_less: @json(__('messages.pjr_show_less')),
+                     };
                      
                      function clearContainer() {
                          while (container.firstChild) container.removeChild(container.firstChild);
