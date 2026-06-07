@@ -242,14 +242,14 @@
                             <div class="form-group col-md-3">
                                 <label class="form-control-label" for="service_attachment">{{ __('messages.image') }} <span class="text-danger">*</span></label>
                                 <div class="custom-file">
-                                    <input type="file" onchange="previewSelectedImages(this)"
+                                    <input type="file" onchange="handleServiceImageSelection(this)"
                                         name="service_attachment[]" class="custom-file-input"
                                         data-file-error="{{ __('messages.files_not_allowed') }}" multiple
                                         accept="image/*" @if (empty($servicedata->id)) required @endif>
                                     <label
                                         class="custom-file-label upload-label">{{ __('messages.choose_file', ['file' => __('messages.attachments')]) }}</label>
                                 </div>
-                                <small id="service-image-prepare-status" class="text-muted d-none"></small>
+                                <small id="service-image-prepare-status" class="d-none mt-1 text-primary fw-bold"></small>
                             </div>
                         </div>
 
@@ -374,7 +374,9 @@
                             </div>
                         </div>
 
-                        {{ html()->submit(__('messages.publish'))->class('btn btn-md btn-primary float-end')->id('service-submit-button')->attribute('data-default-text', __('messages.publish')) }}
+                        <button type="submit" id="service-submit-button" class="btn btn-md btn-primary float-end" data-default-text="{{ __('messages.publish') }}">
+                            {{ __('messages.publish') }}
+                        </button>
                         {{ html()->form()->close() }}
                     </div>
                 </div>
@@ -638,6 +640,18 @@
         </script>
 
         <script>
+            function handleServiceImageSelection(input) {
+                previewSelectedImages(input).catch(function(error) {
+                    console.error('Service image preparation failed:', error);
+                    setServiceImagesPreparing(false);
+                    if (typeof Snackbar !== 'undefined') {
+                        Snackbar.show({ text: 'Image preparation failed. Please try another image.', pos: 'bottom-center', backgroundColor: '#d32f2f', actionTextColor: '#fff' });
+                    } else {
+                        alert('Image preparation failed. Please try another image.');
+                    }
+                });
+            }
+
             async function previewSelectedImages(input) {
                 const previewRow = document.getElementById('new_attachment_previews');
                 if (!previewRow) return;
@@ -708,6 +722,9 @@
                 }
 
                 submitButton.disabled = isPreparing;
+                submitButton.classList.toggle('disabled', isPreparing);
+                submitButton.classList.toggle('btn-secondary', isPreparing);
+                submitButton.classList.toggle('btn-primary', !isPreparing);
 
                 if (submitButton.tagName === 'INPUT') {
                     submitButton.value = isPreparing ? 'Preparing images...' : submitButton.dataset.defaultText;
