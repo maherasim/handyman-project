@@ -709,7 +709,7 @@ Route::get('/test-mail', function () {
     try {
         \Illuminate\Support\Facades\Mail::raw('This is a test email to verify SMTP configuration.', function ($message) {
             $message->to('maherasimriaz@gmail.com')
-                    ->subject('SMTP Test Email');
+                    ->subject('SMTP Test Email ');
         });
         return 'Test email sent successfully to maherasimriaz@gmail.com';
     } catch (\Exception $e) {
