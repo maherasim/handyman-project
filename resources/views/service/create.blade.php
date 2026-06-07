@@ -707,8 +707,8 @@
             }
 
             function prepareServiceImageForUpload(file) {
-                const maxSize = 450 * 1024;
-                const maxDimension = 1200;
+                const maxSize = 250 * 1024;
+                const maxDimension = 1000;
 
                 if (!file.type || !file.type.startsWith('image/')) {
                     return Promise.resolve(file);
@@ -734,7 +734,7 @@
                         const context = canvas.getContext('2d');
                         context.drawImage(image, 0, 0, canvas.width, canvas.height);
 
-                        compressServiceImage(canvas, file, [0.78, 0.68, 0.58], maxSize, resolve);
+                        compressServiceImage(canvas, file, [0.72, 0.62, 0.52, 0.44], maxSize, resolve);
                     };
 
                     image.onerror = function() {
@@ -747,7 +747,7 @@
             }
 
             function compressServiceImage(canvas, originalFile, qualities, maxSize, resolve) {
-                const quality = qualities.shift() || 0.58;
+                const quality = qualities.shift() || 0.44;
 
                 canvas.toBlob(function(blob) {
                     if (!blob) {
