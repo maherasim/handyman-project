@@ -249,6 +249,7 @@
                                     <label
                                         class="custom-file-label upload-label">{{ __('messages.choose_file', ['file' => __('messages.attachments')]) }}</label>
                                 </div>
+                                <small id="service-image-prepare-status" class="text-muted d-none"></small>
                             </div>
                         </div>
 
@@ -649,8 +650,12 @@
                         const files = Array.from(input.files);
                         const maxOriginalSize = 4 * 1024 * 1024;
                         const rejectedFiles = [];
+                        updateServiceImagePrepareStatus('Preparing 0 of ' + files.length + ' images...');
 
-                        for (const file of files) {
+                        for (let index = 0; index < files.length; index++) {
+                            const file = files[index];
+                            updateServiceImagePrepareStatus('Preparing ' + (index + 1) + ' of ' + files.length + ' images...');
+
                             if (file.size > maxOriginalSize) {
                                 rejectedFiles.push(file.name);
                                 continue;
@@ -673,6 +678,7 @@
                         }
 
                         input.files = dataTransfer.files;
+                        updateServiceImagePrepareStatus(input.files.length + ' image' + (input.files.length === 1 ? '' : 's') + ' ready for upload.');
 
                         if (rejectedFiles.length) {
                             if (typeof Snackbar !== 'undefined') {
@@ -689,9 +695,13 @@
 
             function setServiceImagesPreparing(isPreparing) {
                 window.serviceImagesPreparing = isPreparing;
+                const status = document.getElementById('service-image-prepare-status');
 
                 const submitButton = document.getElementById('service-submit-button');
-                if (!submitButton) return;
+                if (!submitButton) {
+                    if (status && !isPreparing && !status.textContent) status.classList.add('d-none');
+                    return;
+                }
 
                 if (!submitButton.dataset.defaultText) {
                     submitButton.dataset.defaultText = submitButton.value || submitButton.textContent || 'Publish';
@@ -704,6 +714,14 @@
                 } else {
                     submitButton.textContent = isPreparing ? 'Preparing images...' : submitButton.dataset.defaultText;
                 }
+            }
+
+            function updateServiceImagePrepareStatus(message) {
+                const status = document.getElementById('service-image-prepare-status');
+                if (!status) return;
+
+                status.textContent = message;
+                status.classList.toggle('d-none', !message);
             }
 
             function prepareServiceImageForUpload(file) {
