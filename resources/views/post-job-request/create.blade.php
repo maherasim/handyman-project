@@ -280,6 +280,7 @@
                                     <input type="file" name="image[]" id="image"
                                         class="custom-file-input custom-file-input-sm detail" accept="image/*"
                                         multiple>
+                                    <small id="post-job-image-prepare-status" class="d-none mt-1 text-primary fw-bold"></small>
                                     <div id="imageContainer"></div>
                                     <button type="button" id="showMoreButton" class="btn btn-primary mt-3"
                                         style="display: none;">{{ __('messages.pjr_show_more') }}</button>
@@ -287,7 +288,7 @@
                             </div>
                             <div class="row mt-4 mb-4">
                                 <div class="col-md-12 d-flex justify-content-end">
-                                    <button type="submit" class="btn btn-md btn-primary px-4 py-2 me-3">{{ __('messages.publish') }}</button>
+                                    <button type="submit" id="post-job-submit-button" class="btn btn-md btn-primary px-4 py-2 me-3" data-default-text="{{ __('messages.publish') }}">{{ __('messages.publish') }}</button>
                                 </div>
                             </div>
                         </form>
@@ -377,30 +378,28 @@
                      
                      function renderPreviews(files) {
                          clearContainer();
-                         const urls = [];
                          Array.from(files).forEach((file, idx) => {
-                             const reader = new FileReader();
-                             reader.onload = (e) => {
-                                 const img = document.createElement('img');
-                                 img.src = e.target.result;
-                                 img.alt = 'preview-' + idx;
-                                 img.className = 'rounded';
-                                 img.style.maxWidth = '120px';
-                                 img.style.maxHeight = '120px';
-                                 img.style.marginRight = '10px';
-                                 img.style.marginBottom = '10px';
-                                 const wrapper = document.createElement('div');
-                                 wrapper.style.display = idx < MAX_VISIBLE ? 'inline-block' : 'none';
-                                 wrapper.appendChild(img);
-                                 container.appendChild(wrapper);
-                                 urls.push({ wrapper });
-                                 if (idx === files.length - 1) {
-                                     showMoreBtn.style.display = files.length > MAX_VISIBLE ? 'inline-block' : 'none';
-                                     showMoreBtn.textContent = pjrCreateLang.show_more;
-                                     showMoreBtn.dataset.expanded = 'false';
-                                 }
-                             };
-                             reader.readAsDataURL(file);
+                             const objectUrl = URL.createObjectURL(file);
+                             const img = document.createElement('img');
+                             img.src = objectUrl;
+                             img.alt = 'preview-' + idx;
+                             img.className = 'rounded';
+                             img.style.maxWidth = '120px';
+                             img.style.maxHeight = '120px';
+                             img.style.marginRight = '10px';
+                             img.style.marginBottom = '10px';
+                             img.addEventListener('load', function() {
+                                 URL.revokeObjectURL(objectUrl);
+                             }, { once: true });
+                             const wrapper = document.createElement('div');
+                             wrapper.style.display = idx < MAX_VISIBLE ? 'inline-block' : 'none';
+                             wrapper.appendChild(img);
+                             container.appendChild(wrapper);
+                             if (idx === files.length - 1) {
+                                 showMoreBtn.style.display = files.length > MAX_VISIBLE ? 'inline-block' : 'none';
+                                 showMoreBtn.textContent = pjrCreateLang.show_more;
+                                 showMoreBtn.dataset.expanded = 'false';
+                             }
                          });
                          showMoreBtn.onclick = () => {
                              const expanded = showMoreBtn.dataset.expanded === 'true';
@@ -413,6 +412,90 @@
                              showMoreBtn.textContent = expanded ? pjrCreateLang.show_more : pjrCreateLang.show_less;
                              showMoreBtn.dataset.expanded = expanded ? 'false' : 'true';
                          };
+                     }
+
+                     function setPostJobImagesPreparing(isPreparing) {
+                         window.postJobImagesPreparing = isPreparing;
+                         const submitButton = document.getElementById('post-job-submit-button');
+                         if (!submitButton) return;
+                         if (!submitButton.dataset.defaultText) {
+                             submitButton.dataset.defaultText = submitButton.textContent || 'Publish';
+                         }
+                         submitButton.disabled = isPreparing;
+                         submitButton.classList.toggle('disabled', isPreparing);
+                         submitButton.classList.toggle('btn-secondary', isPreparing);
+                         submitButton.classList.toggle('btn-primary', !isPreparing);
+                         submitButton.textContent = isPreparing ? 'Preparing images...' : submitButton.dataset.defaultText;
+                     }
+
+                     function updatePostJobImagePrepareStatus(message) {
+                         const status = document.getElementById('post-job-image-prepare-status');
+                         if (!status) return;
+                         status.textContent = message || '';
+                         status.classList.toggle('d-none', !message);
+                     }
+
+                     function postJobCanvasToBlob(canvas, quality) {
+                         return new Promise((resolve) => canvas.toBlob(resolve, 'image/jpeg', quality));
+                     }
+
+                     function loadPostJobImage(file) {
+                         return new Promise((resolve, reject) => {
+                             const image = new Image();
+                             const objectUrl = URL.createObjectURL(file);
+                             image.onload = function() {
+                                 URL.revokeObjectURL(objectUrl);
+                                 resolve(image);
+                             };
+                             image.onerror = function() {
+                                 URL.revokeObjectURL(objectUrl);
+                                 reject();
+                             };
+                             image.src = objectUrl;
+                         });
+                     }
+
+                     async function preparePostJobImageForUpload(file, batchSize) {
+                         const isLargeBatch = batchSize >= 3;
+                         const maxOriginalSize = 4 * 1024 * 1024;
+                         const maxPreparedSize = isLargeBatch ? 120 * 1024 : 250 * 1024;
+                         const maxDimension = isLargeBatch ? 800 : 1000;
+
+                         if (file.size > maxOriginalSize) {
+                             throw new Error('Each image must be 4 MB or smaller.');
+                         }
+
+                         if (!file.type || !file.type.startsWith('image/')) {
+                             return file;
+                         }
+
+                         const image = await loadPostJobImage(file);
+                         if (!isLargeBatch && file.size <= maxPreparedSize && Math.max(image.width, image.height) <= maxDimension) {
+                             return file;
+                         }
+
+                         const ratio = Math.min(maxDimension / image.width, maxDimension / image.height, 1);
+                         const canvas = document.createElement('canvas');
+                         canvas.width = Math.max(1, Math.round(image.width * ratio));
+                         canvas.height = Math.max(1, Math.round(image.height * ratio));
+                         const context = canvas.getContext('2d');
+                         context.fillStyle = '#ffffff';
+                         context.fillRect(0, 0, canvas.width, canvas.height);
+                         context.drawImage(image, 0, 0, canvas.width, canvas.height);
+
+                         const qualities = isLargeBatch ? [0.62, 0.52, 0.44, 0.36] : [0.72, 0.62, 0.52, 0.44];
+                         let blob = null;
+                         for (const quality of qualities) {
+                             blob = await postJobCanvasToBlob(canvas, quality);
+                             if (blob && blob.size <= maxPreparedSize) break;
+                         }
+
+                         if (!blob) return file;
+
+                         return new File([blob], file.name.replace(/\.[^.]+$/, '') + '.jpg', {
+                             type: 'image/jpeg',
+                             lastModified: Date.now()
+                         });
                      }
                      
                      // Load existing images on page load (for edit mode)
@@ -462,7 +545,56 @@
                      loadExistingImages();
                      
                      if (input) {
-                         input.addEventListener('change', (e) => renderPreviews(e.target.files));
+                         input.addEventListener('change', async function(e) {
+                             const files = Array.from(e.target.files || []);
+                             if (!files.length) {
+                                 updatePostJobImagePrepareStatus('');
+                                 renderPreviews([]);
+                                 return;
+                             }
+
+                             setPostJobImagesPreparing(true);
+                             try {
+                                 const dataTransfer = new DataTransfer();
+                                 updatePostJobImagePrepareStatus('Preparing 0 of ' + files.length + ' images...');
+
+                                 for (let index = 0; index < files.length; index++) {
+                                     updatePostJobImagePrepareStatus('Preparing ' + (index + 1) + ' of ' + files.length + ' images...');
+                                     const preparedFile = await preparePostJobImageForUpload(files[index], files.length);
+                                     dataTransfer.items.add(preparedFile);
+                                 }
+
+                                 e.target.files = dataTransfer.files;
+                                 renderPreviews(e.target.files);
+                                 updatePostJobImagePrepareStatus(e.target.files.length + ' image' + (e.target.files.length === 1 ? '' : 's') + ' ready for upload.');
+                             } catch (error) {
+                                 e.target.value = '';
+                                 clearContainer();
+                                 updatePostJobImagePrepareStatus('');
+                                 if (typeof Snackbar !== 'undefined') {
+                                     Snackbar.show({ text: error.message || 'Please choose valid images.', pos: 'bottom-center', backgroundColor: '#d32f2f', actionTextColor: '#fff' });
+                                 } else {
+                                     alert(error.message || 'Please choose valid images.');
+                                 }
+                             } finally {
+                                 setPostJobImagesPreparing(false);
+                             }
+                         });
+                     }
+
+                     const postJobForm = document.getElementById('postJob');
+                     if (postJobForm) {
+                         postJobForm.addEventListener('submit', function(e) {
+                             if (window.postJobImagesPreparing) {
+                                 e.preventDefault();
+                                 if (typeof Snackbar !== 'undefined') {
+                                     Snackbar.show({ text: 'Please wait, images are preparing for upload.', pos: 'bottom-center', backgroundColor: '#d32f2f', actionTextColor: '#fff' });
+                                 } else {
+                                     alert('Please wait, images are preparing for upload.');
+                                 }
+                                 return false;
+                             }
+                         });
                      }
  
                      // Fetch states based on selected country

@@ -2476,8 +2476,8 @@ class PostJobRequestController extends Controller
             'education_level' => 'required|in:not_specified,any_graduate,apprenticeship_degree,traineeship_degree,secondary_degree,undergraduate_diploma,high_school_graduate,associate_degree,college_degree,university_degree,bachelors_degree,masters_degree,doctorate_degree,professional_degree',
             'duties' => 'required|string',
             'benefits' => 'required|string',
-            'image.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:20480', // 20MB in KB
-            'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:20480', // 20MB in KB
+            'image.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:4096',
+            'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:4096',
             'total_days' => 'nullable|integer|min:0',
             'total_hours' => 'nullable|integer|min:0',
         ]);
@@ -2515,12 +2515,30 @@ class PostJobRequestController extends Controller
 
         // ✅ Handle image uploads (supports single and multiple) with resizing
         $imagePaths = [];
-        $maxWidth = 1920; // Maximum width for images
-        $maxHeight = 1920; // Maximum height for images
-        $quality = 85; // JPEG quality (1-100)
+        $uploadedImageFiles = [];
+
+        if ($request->hasFile('image')) {
+            $incoming = $request->file('image');
+            foreach ((is_array($incoming) ? $incoming : [$incoming]) as $file) {
+                $uploadedImageFiles[] = $file;
+            }
+        }
+
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $file) {
+                $uploadedImageFiles[] = $file;
+            }
+        }
+
+        $uploadedImageCount = count($uploadedImageFiles);
+        $isLargeBatch = $uploadedImageCount >= 3;
+        $maxOriginalSize = 4 * 1024 * 1024;
+        $maxWidth = $isLargeBatch ? 800 : 1000;
+        $maxHeight = $maxWidth;
+        $maxPreparedSize = $isLargeBatch ? 120 * 1024 : 250 * 1024;
         
         // Helper function to resize and save image
-        $resizeAndSave = function($file, $filename) use ($maxWidth, $maxHeight, $quality) {
+        $resizeAndSave = function($file, $filename) use ($maxWidth, $maxHeight, $maxPreparedSize, $isLargeBatch) {
             try {
                 // Increase memory limit for this operation
                 $originalMemoryLimit = ini_get('memory_limit');
@@ -2537,14 +2555,9 @@ class PostJobRequestController extends Controller
                 $mimeType = $imageInfo['mime'];
                 
                 // Calculate new dimensions maintaining aspect ratio
-                $ratio = min($maxWidth / $originalWidth, $maxHeight / $originalHeight);
+                $ratio = min($maxWidth / $originalWidth, $maxHeight / $originalHeight, 1);
                 $newWidth = (int)($originalWidth * $ratio);
                 $newHeight = (int)($originalHeight * $ratio);
-                
-                // Only resize if image is larger than max dimensions
-                if ($originalWidth <= $maxWidth && $originalHeight <= $maxHeight) {
-                    return $file->storeAs('images', $filename, 'public');
-                }
                 
                 // Create image resource based on mime type
                 switch ($mimeType) {
@@ -2575,13 +2588,8 @@ class PostJobRequestController extends Controller
                 // Create new image with calculated dimensions
                 $newImage = imagecreatetruecolor($newWidth, $newHeight);
                 
-                // Preserve transparency for PNG and GIF
-                if ($mimeType === 'image/png' || $mimeType === 'image/gif') {
-                    imagealphablending($newImage, false);
-                    imagesavealpha($newImage, true);
-                    $transparent = imagecolorallocatealpha($newImage, 255, 255, 255, 127);
-                    imagefilledrectangle($newImage, 0, 0, $newWidth, $newHeight, $transparent);
-                }
+                $white = imagecolorallocate($newImage, 255, 255, 255);
+                imagefilledrectangle($newImage, 0, 0, $newWidth, $newHeight, $white);
                 
                 // Resize image
                 imagecopyresampled($newImage, $sourceImage, 0, 0, 0, 0, $newWidth, $newHeight, $originalWidth, $originalHeight);
@@ -2593,21 +2601,12 @@ class PostJobRequestController extends Controller
                 }
                 $fullPath = $storagePath . '/' . $filename;
                 
-                switch ($mimeType) {
-                    case 'image/jpeg':
-                        imagejpeg($newImage, $fullPath, $quality);
+                $qualities = $isLargeBatch ? [62, 52, 44, 36] : [72, 62, 52, 44];
+                foreach ($qualities as $jpegQuality) {
+                    imagejpeg($newImage, $fullPath, $jpegQuality);
+                    if (file_exists($fullPath) && filesize($fullPath) <= $maxPreparedSize) {
                         break;
-                    case 'image/png':
-                        imagepng($newImage, $fullPath, 9);
-                        break;
-                    case 'image/gif':
-                        imagegif($newImage, $fullPath);
-                        break;
-                    case 'image/webp':
-                        if (function_exists('imagewebp')) {
-                            imagewebp($newImage, $fullPath, $quality);
-                        }
-                        break;
+                    }
                 }
                 
                 // Free memory
@@ -2629,23 +2628,22 @@ class PostJobRequestController extends Controller
             }
         };
         
-        if ($request->hasFile('image')) {
-            $incoming = $request->file('image');
-            $files = is_array($incoming) ? $incoming : [$incoming];
-            foreach ($files as $idx => $file) {
-                $filename = time() . '_' . uniqid() . '_' . preg_replace('/[^a-zA-Z0-9._-]/', '', $file->getClientOriginalName());
-                $path = $resizeAndSave($file, $filename);
-                $imagePaths[] = $path;
-                if ($idx === 0) {
-                    $data['image'] = $path; // first image as cover
-                }
+        foreach ($uploadedImageFiles as $idx => $file) {
+            if ($file->getSize() > $maxOriginalSize) {
+                $message = 'Each image must be 4 MB or smaller.';
+                return $request->is('api/*')
+                    ? comman_custom_response(['status' => false, 'message' => $message], 422)
+                    : redirect()->back()->withErrors(['image' => $message])->withInput();
             }
-        }
-        if ($request->hasFile('images')) {
-            foreach ($request->file('images') as $img) {
-                $filename = time() . '_' . uniqid() . '_' . preg_replace('/[^a-zA-Z0-9._-]/', '', $img->getClientOriginalName());
-                $path = $resizeAndSave($img, $filename);
-                $imagePaths[] = $path;
+
+            $originalName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+            $safeName = preg_replace('/[^a-zA-Z0-9_-]/', '', $originalName) ?: 'post-job-image';
+            $filename = time() . '_' . uniqid() . '_' . $safeName . '.jpg';
+            $path = $resizeAndSave($file, $filename);
+            $imagePaths[] = $path;
+
+            if ($idx === 0) {
+                $data['image'] = $path; // first image as cover
             }
         }
         if (!empty($imagePaths)) {
