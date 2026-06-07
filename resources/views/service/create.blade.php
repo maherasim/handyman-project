@@ -373,7 +373,7 @@
                             </div>
                         </div>
 
-                        {{ html()->submit(__('messages.publish'))->class('btn btn-md btn-primary float-end') }}
+                        {{ html()->submit(__('messages.publish'))->class('btn btn-md btn-primary float-end')->id('service-submit-button')->attribute('data-default-text', __('messages.publish')) }}
                         {{ html()->form()->close() }}
                     </div>
                 </div>
@@ -641,7 +641,7 @@
                 const previewRow = document.getElementById('new_attachment_previews');
                 if (!previewRow) return;
                 previewRow.innerHTML = '';
-                window.serviceImagesPreparing = true;
+                setServiceImagesPreparing(true);
 
                 try {
                     if (input.files && input.files.length) {
@@ -668,7 +668,26 @@
                         input.files = dataTransfer.files;
                     }
                 } finally {
-                    window.serviceImagesPreparing = false;
+                    setServiceImagesPreparing(false);
+                }
+            }
+
+            function setServiceImagesPreparing(isPreparing) {
+                window.serviceImagesPreparing = isPreparing;
+
+                const submitButton = document.getElementById('service-submit-button');
+                if (!submitButton) return;
+
+                if (!submitButton.dataset.defaultText) {
+                    submitButton.dataset.defaultText = submitButton.value || submitButton.textContent || 'Publish';
+                }
+
+                submitButton.disabled = isPreparing;
+
+                if (submitButton.tagName === 'INPUT') {
+                    submitButton.value = isPreparing ? 'Preparing images...' : submitButton.dataset.defaultText;
+                } else {
+                    submitButton.textContent = isPreparing ? 'Preparing images...' : submitButton.dataset.defaultText;
                 }
             }
 
