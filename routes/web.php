@@ -707,37 +707,12 @@ Route::get('/handyman/earnings-data', [PaymentController::class, 'handymanEarnin
 
 Route::get('/test-mail', function () {
     try {
-        $sentAt = now()->toDateTimeString();
-        $host = request()->getHost();
-        $subject = 'SMTP Test Email - ' . $host . ' - ' . $sentAt;
-
-        \Illuminate\Support\Facades\Mail::raw("This is a test email to verify SMTP configuration.\n\nHost: {$host}\nSent at: {$sentAt}", function ($message) use ($subject) {
-            $message->to('maherasimriaz@gmail.com')
-                    ->subject($subject);
+        \Illuminate\Support\Facades\Mail::raw('This is a test email to verify SMTP configuration.', function ($message) {
+            $message->to('ariaz@cvbtt.com')
+                    ->subject('SMTP Test Email');
         });
-
-        return response()->json([
-            'status' => true,
-            'message' => 'Test email handed to mail transport.',
-            'to' => 'maherasimriaz@gmail.com',
-            'host' => $host,
-            'sent_at' => $sentAt,
-            'mail_mailer' => config('mail.default'),
-            'mail_host' => config('mail.mailers.smtp.host'),
-            'mail_port' => config('mail.mailers.smtp.port'),
-            'mail_encryption' => config('mail.mailers.smtp.encryption'),
-            'mail_from_address' => config('mail.from.address'),
-            'mail_from_name' => config('mail.from.name'),
-        ])->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
-            ->header('Pragma', 'no-cache')
-            ->header('Expires', '0');
-    } catch (\Throwable $e) {
-        return response()->json([
-            'status' => false,
-            'message' => 'Failed to send email.',
-            'error' => $e->getMessage(),
-        ], 500)->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
-            ->header('Pragma', 'no-cache')
-            ->header('Expires', '0');
+        return 'Test email sent successfully toariaz@cvbtt.com';
+    } catch (\Exception $e) {
+        return 'Failed to send email: ' . $e->getMessage();
     }
 });
