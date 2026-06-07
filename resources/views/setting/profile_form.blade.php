@@ -350,7 +350,7 @@
                     @endif
 
                     <div class="col-md-12">
-                        {{ html()->submit(__('messages.update'))->class('btn btn-md btn-primary float-md-end') }}
+                        {{ html()->submit(__('messages.update'))->class('btn btn-md btn-primary float-md-end')->id('profile-submit-button')->attribute('data-default-text', __('messages.update')) }}
                     </div>
                 </div>
             </div>
@@ -493,9 +493,20 @@
             readURL(this);
         });
 
-        function readURL(input) {
+        $(document).on('submit', '#user-form', function () {
+            if (window.profileImagePreparing) {
+                Snackbar.show({
+                    text: 'Please wait, image is preparing for upload.',
+                    pos: 'bottom-center',
+                    backgroundColor: '#d32f2f',
+                    actionTextColor: '#fff'
+                });
+                return false;
+            }
+        });
+
+        async function readURL(input) {
             if (input.files && input.files[0]) {
-                var reader = new FileReader();
                 var res = isImage(input.files[0].name);
 
                 if (res == false) {
@@ -509,13 +520,104 @@
                     return false;
                 }
 
-                reader.onload = function (e) {
-                    $('.profile_image_preview').attr('src', e.target.result);
-                    $("#imagelabel").text((input.files[0].name));
+                setProfileImagePreparing(true);
+
+                try {
+                    const preparedFile = await prepareProfileImageForUpload(input.files[0]);
+                    const dataTransfer = new DataTransfer();
+                    dataTransfer.items.add(preparedFile);
+                    input.files = dataTransfer.files;
+
+                    const objectUrl = URL.createObjectURL(preparedFile);
+                    $('.profile_image_preview').attr('src', objectUrl);
+                    $('.profile_image_preview').one('load', function () {
+                        URL.revokeObjectURL(objectUrl);
+                    });
+                    $("#imagelabel").text(preparedFile.name);
+                } finally {
+                    setProfileImagePreparing(false);
+                }
+            }
+        }
+
+        function setProfileImagePreparing(isPreparing) {
+            window.profileImagePreparing = isPreparing;
+
+            const submitButton = document.getElementById('profile-submit-button');
+            if (!submitButton) return;
+
+            if (!submitButton.dataset.defaultText) {
+                submitButton.dataset.defaultText = submitButton.value || submitButton.textContent || 'Update';
+            }
+
+            submitButton.disabled = isPreparing;
+            if (submitButton.tagName === 'INPUT') {
+                submitButton.value = isPreparing ? 'Preparing image...' : submitButton.dataset.defaultText;
+            } else {
+                submitButton.textContent = isPreparing ? 'Preparing image...' : submitButton.dataset.defaultText;
+            }
+        }
+
+        function prepareProfileImageForUpload(file) {
+            const maxSize = 450 * 1024;
+            const maxDimension = 1200;
+
+            if (!file.type || !file.type.startsWith('image/')) {
+                return Promise.resolve(file);
+            }
+
+            return new Promise(function(resolve) {
+                const image = new Image();
+                const objectUrl = URL.createObjectURL(file);
+
+                image.onload = function() {
+                    URL.revokeObjectURL(objectUrl);
+
+                    if (file.size <= maxSize && Math.max(image.width, image.height) <= maxDimension) {
+                        resolve(file);
+                        return;
+                    }
+
+                    const ratio = Math.min(maxDimension / image.width, maxDimension / image.height, 1);
+                    const canvas = document.createElement('canvas');
+                    canvas.width = Math.max(1, Math.round(image.width * ratio));
+                    canvas.height = Math.max(1, Math.round(image.height * ratio));
+
+                    const context = canvas.getContext('2d');
+                    context.drawImage(image, 0, 0, canvas.width, canvas.height);
+
+                    compressProfileImage(canvas, file, [0.78, 0.68, 0.58], maxSize, resolve);
+                };
+
+                image.onerror = function() {
+                    URL.revokeObjectURL(objectUrl);
+                    resolve(file);
+                };
+
+                image.src = objectUrl;
+            });
+        }
+
+        function compressProfileImage(canvas, originalFile, qualities, maxSize, resolve) {
+            const quality = qualities.shift() || 0.58;
+
+            canvas.toBlob(function(blob) {
+                if (!blob) {
+                    resolve(originalFile);
+                    return;
                 }
 
-                reader.readAsDataURL(input.files[0]);
-            }
+                if (blob.size > maxSize && qualities.length) {
+                    compressProfileImage(canvas, originalFile, qualities, maxSize, resolve);
+                    return;
+                }
+
+                const safeName = originalFile.name.replace(/\.[^.]+$/, '') + '.jpg';
+                resolve(new File([blob], safeName, {
+                    type: 'image/jpeg',
+                    lastModified: Date.now()
+                }));
+            }, 'image/jpeg', quality);
         }
 
         // Show image file name if already uploaded
