@@ -675,7 +675,7 @@
                                 continue;
                             }
 
-                            const preparedFile = await prepareServiceImageForUpload(file);
+                            const preparedFile = await prepareServiceImageForUpload(file, files.length);
                             dataTransfer.items.add(preparedFile);
 
                             if (preparedFile.type && preparedFile.type.startsWith('image/')) {
@@ -692,7 +692,10 @@
                         }
 
                         input.files = dataTransfer.files;
-                        updateServiceImagePrepareStatus(input.files.length + ' image' + (input.files.length === 1 ? '' : 's') + ' ready for upload.');
+                        const totalPreparedSize = Array.from(input.files).reduce(function(total, file) {
+                            return total + file.size;
+                        }, 0);
+                        updateServiceImagePrepareStatus(input.files.length + ' image' + (input.files.length === 1 ? '' : 's') + ' ready for upload (' + formatServiceUploadSize(totalPreparedSize) + ').');
 
                         if (rejectedFiles.length) {
                             if (typeof Snackbar !== 'undefined') {
@@ -741,9 +744,18 @@
                 status.classList.toggle('d-none', !message);
             }
 
-            function prepareServiceImageForUpload(file) {
-                const maxSize = 250 * 1024;
-                const maxDimension = 1000;
+            function formatServiceUploadSize(bytes) {
+                if (bytes >= 1024 * 1024) {
+                    return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
+                }
+
+                return Math.max(1, Math.round(bytes / 1024)) + ' KB';
+            }
+
+            function prepareServiceImageForUpload(file, batchSize) {
+                const isLargeBatch = batchSize >= 3;
+                const maxSize = isLargeBatch ? 120 * 1024 : 250 * 1024;
+                const maxDimension = isLargeBatch ? 800 : 1000;
 
                 if (!file.type || !file.type.startsWith('image/')) {
                     return Promise.resolve(file);
@@ -756,7 +768,7 @@
                     image.onload = function() {
                         URL.revokeObjectURL(objectUrl);
 
-                        if (file.size <= maxSize && Math.max(image.width, image.height) <= maxDimension) {
+                        if (!isLargeBatch && file.size <= maxSize && Math.max(image.width, image.height) <= maxDimension) {
                             resolve(file);
                             return;
                         }
@@ -769,7 +781,8 @@
                         const context = canvas.getContext('2d');
                         context.drawImage(image, 0, 0, canvas.width, canvas.height);
 
-                        compressServiceImage(canvas, file, [0.72, 0.62, 0.52, 0.44], maxSize, resolve);
+                        const qualities = isLargeBatch ? [0.62, 0.52, 0.44, 0.36] : [0.72, 0.62, 0.52, 0.44];
+                        compressServiceImage(canvas, file, qualities, maxSize, resolve);
                     };
 
                     image.onerror = function() {
@@ -782,7 +795,7 @@
             }
 
             function compressServiceImage(canvas, originalFile, qualities, maxSize, resolve) {
-                const quality = qualities.shift() || 0.44;
+                const quality = qualities.shift() || 0.36;
 
                 canvas.toBlob(function(blob) {
                     if (!blob) {
