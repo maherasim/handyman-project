@@ -102,8 +102,9 @@
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
         <script type="text/javascript">
-            const MAX_UPLOAD_IMAGE_BYTES = 300 * 1024;
-            const MAX_UPLOAD_IMAGE_SIDE = 1200;
+            const MAX_ORIGINAL_IMAGE_BYTES = 4 * 1024 * 1024;
+            const MAX_UPLOAD_IMAGE_BYTES = 120 * 1024;
+            const MAX_UPLOAD_IMAGE_SIDE = 800;
 
             function formatBytes(bytes) {
                 if (!bytes) {
@@ -134,7 +135,7 @@
             }
 
             async function compressImage(file) {
-                if (!file || !file.type || !file.type.startsWith('image/') || file.size <= MAX_UPLOAD_IMAGE_BYTES) {
+                if (!file || !file.type || !file.type.startsWith('image/')) {
                     return file;
                 }
 
@@ -150,7 +151,7 @@
                 context.drawImage(image, 0, 0, canvas.width, canvas.height);
 
                 let compressedBlob = null;
-                for (const quality of [0.82, 0.72, 0.62, 0.52]) {
+                for (const quality of [0.62, 0.52, 0.44, 0.36]) {
                     compressedBlob = await canvasToBlob(canvas, quality);
                     if (compressedBlob && compressedBlob.size <= MAX_UPLOAD_IMAGE_BYTES) {
                         break;
@@ -187,7 +188,20 @@
                 }
 
                 saveButton.disabled = true;
-                fileLabel.textContent = 'Optimizing image...';
+                saveButton.value = 'Preparing image...';
+                fileLabel.textContent = 'Preparing image...';
+
+                if (selectedFile.size > MAX_ORIGINAL_IMAGE_BYTES) {
+                    input.value = '';
+                    preview.src = '';
+                    preview.style.display = 'none';
+                    fileLabel.textContent = '{{ __('messages.choose_file', ['file' => __('messages.image')]) }}';
+                    removeButton.style.display = 'none';
+                    saveButton.disabled = true;
+                    saveButton.value = '{{ __('messages.save') }}';
+                    Swal.fire('Upload error', 'Image must be 4 MB or smaller.', 'error');
+                    return;
+                }
 
                 compressImage(selectedFile).then(function(file) {
                     if (file !== selectedFile) {
@@ -196,11 +210,12 @@
 
                     preview.src = URL.createObjectURL(file);
                     preview.style.display = 'block'; // Show the image
-                    fileLabel.textContent = file.name + ' (' + formatBytes(file.size) + ')'; // Update label with the file name
+                    fileLabel.textContent = file.name; // Update label with the file name
 
                     // Show the remove button and enable the save button
                     removeButton.style.display = 'inline';
                     saveButton.disabled = false;
+                    saveButton.value = '{{ __('messages.save') }}';
                 }).catch(function(error) {
                     console.error('Image optimization failed:', error);
                     input.value = '';
@@ -209,6 +224,7 @@
                     fileLabel.textContent = '{{ __('messages.choose_file', ['file' => __('messages.image')]) }}';
                     removeButton.style.display = 'none';
                     saveButton.disabled = true;
+                    saveButton.value = '{{ __('messages.save') }}';
                     Swal.fire('Upload error', 'Please choose a valid JPG, PNG, or WebP image.', 'error');
                 });
             }

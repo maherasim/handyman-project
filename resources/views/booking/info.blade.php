@@ -2538,6 +2538,7 @@ when
                         <label for="proof_images" class="form-label">{{ __('messages.upload_images') }}</label>
                         <input type="file" class="form-control" id="proof_images" name="images[]" multiple accept="image/*" required>
                         <div class="form-text">{{ __('messages.upload_multiple_images') }}</div>
+                        <small id="proof-image-prepare-status" class="d-none mt-1 text-primary fw-bold"></small>
                     </div>
                     
                     <div id="imagePreview" class="mb-3"></div>
@@ -2870,26 +2871,148 @@ $(document).ready(function() {
         $('#serviceProofModal').modal('show');
     });
     
-    // Image Preview
-    $('#proof_images').change(function() {
-        var files = this.files;
+    function setProofImagesPreparing(isPreparing) {
+        window.proofImagesPreparing = isPreparing;
+        $('#submitServiceProof')
+            .prop('disabled', isPreparing)
+            .toggleClass('btn-secondary', isPreparing)
+            .toggleClass('btn-primary', !isPreparing)
+            .text(isPreparing ? 'Preparing images...' : '{{ __("messages.submit") }}');
+    }
+
+    function updateProofImagePrepareStatus(message) {
+        var status = $('#proof-image-prepare-status');
+        status.text(message || '');
+        status.toggleClass('d-none', !message);
+    }
+
+    function proofCanvasToBlob(canvas, quality) {
+        return new Promise(function(resolve) {
+            canvas.toBlob(resolve, 'image/jpeg', quality);
+        });
+    }
+
+    function loadProofImage(file) {
+        return new Promise(function(resolve, reject) {
+            var image = new Image();
+            var objectUrl = URL.createObjectURL(file);
+            image.onload = function() {
+                URL.revokeObjectURL(objectUrl);
+                resolve(image);
+            };
+            image.onerror = function() {
+                URL.revokeObjectURL(objectUrl);
+                reject();
+            };
+            image.src = objectUrl;
+        });
+    }
+
+    async function prepareProofImageForUpload(file, batchSize) {
+        var isLargeBatch = batchSize >= 3;
+        var maxOriginalSize = 4 * 1024 * 1024;
+        var maxPreparedSize = isLargeBatch ? 120 * 1024 : 250 * 1024;
+        var maxDimension = isLargeBatch ? 800 : 1000;
+
+        if (file.size > maxOriginalSize) {
+            throw new Error('Each image must be 4 MB or smaller.');
+        }
+
+        if (!file.type || !file.type.startsWith('image/')) {
+            return file;
+        }
+
+        var image = await loadProofImage(file);
+        if (!isLargeBatch && file.size <= maxPreparedSize && Math.max(image.width, image.height) <= maxDimension) {
+            return file;
+        }
+
+        var ratio = Math.min(maxDimension / image.width, maxDimension / image.height, 1);
+        var canvas = document.createElement('canvas');
+        canvas.width = Math.max(1, Math.round(image.width * ratio));
+        canvas.height = Math.max(1, Math.round(image.height * ratio));
+        var context = canvas.getContext('2d');
+        context.fillStyle = '#ffffff';
+        context.fillRect(0, 0, canvas.width, canvas.height);
+        context.drawImage(image, 0, 0, canvas.width, canvas.height);
+
+        var qualities = isLargeBatch ? [0.62, 0.52, 0.44, 0.36] : [0.72, 0.62, 0.52, 0.44];
+        var blob = null;
+        for (var i = 0; i < qualities.length; i++) {
+            blob = await proofCanvasToBlob(canvas, qualities[i]);
+            if (blob && blob.size <= maxPreparedSize) {
+                break;
+            }
+        }
+
+        if (!blob) {
+            return file;
+        }
+
+        return new File([blob], file.name.replace(/\.[^.]+$/, '') + '.jpg', {
+            type: 'image/jpeg',
+            lastModified: Date.now()
+        });
+    }
+
+    $('#proof_images').change(async function() {
+        var input = this;
+        var files = Array.from(input.files || []);
         var preview = $('#imagePreview');
         preview.empty();
-        
-        for (var i = 0; i < files.length; i++) {
-            var file = files[i];
-            if (file.type.startsWith('image/')) {
-                var reader = new FileReader();
-                reader.onload = function(e) {
-                    preview.append('<img src="' + e.target.result + '" class="img-thumbnail me-2 mb-2" style="width: 100px; height: 100px; object-fit: cover;">');
-                };
-                reader.readAsDataURL(file);
+
+        if (!files.length) {
+            updateProofImagePrepareStatus('');
+            return;
+        }
+
+        setProofImagesPreparing(true);
+
+        try {
+            var dataTransfer = new DataTransfer();
+            updateProofImagePrepareStatus('Preparing 0 of ' + files.length + ' images...');
+
+            for (var i = 0; i < files.length; i++) {
+                updateProofImagePrepareStatus('Preparing ' + (i + 1) + ' of ' + files.length + ' images...');
+                var preparedFile = await prepareProofImageForUpload(files[i], files.length);
+                dataTransfer.items.add(preparedFile);
+
+                if (preparedFile.type && preparedFile.type.startsWith('image/')) {
+                    var objectUrl = URL.createObjectURL(preparedFile);
+                    preview.append('<img src="' + objectUrl + '" class="img-thumbnail me-2 mb-2 proof-preview-image" style="width: 100px; height: 100px; object-fit: cover;">');
+                    preview.find('img').last().one('load', function() {
+                        URL.revokeObjectURL(this.src);
+                    });
+                }
             }
+
+            input.files = dataTransfer.files;
+            updateProofImagePrepareStatus(input.files.length + ' image' + (input.files.length === 1 ? '' : 's') + ' ready for upload.');
+        } catch (error) {
+            input.value = '';
+            preview.empty();
+            updateProofImagePrepareStatus('');
+            if (typeof Swal !== 'undefined' && Swal.fire) {
+                Swal.fire('Upload error', error.message || 'Please choose valid images.', 'error');
+            } else {
+                alert(error.message || 'Please choose valid images.');
+            }
+        } finally {
+            setProofImagesPreparing(false);
         }
     });
     
     // Submit Service Proof
     $('#submitServiceProof').click(function() {
+        if (window.proofImagesPreparing) {
+            if (typeof Swal !== 'undefined' && Swal.fire) {
+                Swal.fire('Please wait', 'Images are preparing for upload.', 'info');
+            } else {
+                alert('Images are preparing for upload.');
+            }
+            return;
+        }
+
         var formData = new FormData();
         
         // Add form fields

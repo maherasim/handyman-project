@@ -514,6 +514,13 @@ public function store(ServiceRequest $request)
                 if ($request->hasFile($attachment)) {
                     $uploadedFile = $request->file($attachment);
                     if ($uploadedFile && $uploadedFile->isValid()) {
+                        if ($uploadedFile->getSize() > 4 * 1024 * 1024) {
+                            return comman_custom_response([
+                                'message' => 'Each image must be 4 MB or smaller.',
+                                'status' => false
+                            ], 422);
+                        }
+
                         $file[] = $uploadedFile;
                         $hasValidAttachment = true;
                     }
@@ -636,12 +643,14 @@ public function store(ServiceRequest $request)
 
     private function prepareServiceAttachmentsForStorage(array $files, array &$temporaryFiles): array
     {
-        return array_values(array_filter(array_map(function ($file) use (&$temporaryFiles) {
-            return $this->prepareServiceAttachmentForStorage($file, $temporaryFiles);
+        $batchSize = count($files);
+
+        return array_values(array_filter(array_map(function ($file) use (&$temporaryFiles, $batchSize) {
+            return $this->prepareServiceAttachmentForStorage($file, $temporaryFiles, $batchSize);
         }, $files)));
     }
 
-    private function prepareServiceAttachmentForStorage($file, array &$temporaryFiles)
+    private function prepareServiceAttachmentForStorage($file, array &$temporaryFiles, int $batchSize = 1)
     {
         if (!$file instanceof \Illuminate\Http\UploadedFile || !$file->isValid()) {
             return $file;
@@ -664,10 +673,12 @@ public function store(ServiceRequest $request)
             }
 
             [$width, $height] = $size;
-            $maxDimension = 1600;
+            $isLargeBatch = $batchSize >= 3;
+            $maxDimension = $isLargeBatch ? 800 : 1000;
+            $maxPreparedSize = $isLargeBatch ? 120 * 1024 : 250 * 1024;
             $fileSize = (int) $file->getSize();
 
-            if ($fileSize <= 3 * 1024 * 1024 && max($width, $height) <= $maxDimension) {
+            if (!$isLargeBatch && $fileSize <= $maxPreparedSize && max($width, $height) <= $maxDimension) {
                 return $file;
             }
 
@@ -681,12 +692,8 @@ public function store(ServiceRequest $request)
             $newHeight = max(1, (int) round($height * $ratio));
             $newImage = imagecreatetruecolor($newWidth, $newHeight);
 
-            if (in_array($mimeType, ['image/png', 'image/gif'], true)) {
-                imagealphablending($newImage, false);
-                imagesavealpha($newImage, true);
-                $transparent = imagecolorallocatealpha($newImage, 255, 255, 255, 127);
-                imagefilledrectangle($newImage, 0, 0, $newWidth, $newHeight, $transparent);
-            }
+            $background = imagecolorallocate($newImage, 255, 255, 255);
+            imagefilledrectangle($newImage, 0, 0, $newWidth, $newHeight, $background);
 
             imagecopyresampled($newImage, $sourceImage, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
 
@@ -695,13 +702,15 @@ public function store(ServiceRequest $request)
                 mkdir($temporaryDirectory, 0755, true);
             }
 
-            $extension = in_array($mimeType, ['image/png', 'image/gif'], true) ? 'png' : 'jpg';
-            $temporaryPath = $temporaryDirectory . DIRECTORY_SEPARATOR . uniqid('service_', true) . '.' . $extension;
+            $temporaryPath = $temporaryDirectory . DIRECTORY_SEPARATOR . uniqid('service_', true) . '.jpg';
+            $qualities = $isLargeBatch ? [62, 52, 44, 36] : [72, 62, 52, 44];
 
-            if ($extension === 'png') {
-                imagepng($newImage, $temporaryPath, 6);
-            } else {
-                imagejpeg($newImage, $temporaryPath, 82);
+            foreach ($qualities as $quality) {
+                imagejpeg($newImage, $temporaryPath, $quality);
+
+                if (file_exists($temporaryPath) && filesize($temporaryPath) <= $maxPreparedSize) {
+                    break;
+                }
             }
 
             imagedestroy($sourceImage);

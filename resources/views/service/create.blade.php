@@ -692,10 +692,7 @@
                         }
 
                         input.files = dataTransfer.files;
-                        const totalPreparedSize = Array.from(input.files).reduce(function(total, file) {
-                            return total + file.size;
-                        }, 0);
-                        updateServiceImagePrepareStatus(input.files.length + ' image' + (input.files.length === 1 ? '' : 's') + ' ready for upload (' + formatServiceUploadSize(totalPreparedSize) + ').');
+                        updateServiceImagePrepareStatus(input.files.length + ' image' + (input.files.length === 1 ? '' : 's') + ' ready for upload.');
 
                         if (rejectedFiles.length) {
                             if (typeof Snackbar !== 'undefined') {
@@ -742,14 +739,6 @@
 
                 status.textContent = message;
                 status.classList.toggle('d-none', !message);
-            }
-
-            function formatServiceUploadSize(bytes) {
-                if (bytes >= 1024 * 1024) {
-                    return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
-                }
-
-                return Math.max(1, Math.round(bytes / 1024)) + ' KB';
             }
 
             function prepareServiceImageForUpload(file, batchSize) {
