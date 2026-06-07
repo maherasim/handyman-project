@@ -46,7 +46,7 @@ class ProviderDocumentRequest extends FormRequest
                     }
                 }
             ],
-            'provider_document'        => 'mimes:jpg,jpeg,png,pdf,docx'
+            'provider_document'        => 'mimes:jpg,jpeg,png,pdf,docx|max:3072'
         ];
     }
 

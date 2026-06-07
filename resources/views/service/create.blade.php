@@ -647,8 +647,15 @@
                     if (input.files && input.files.length) {
                         const dataTransfer = new DataTransfer();
                         const files = Array.from(input.files);
+                        const maxOriginalSize = 4 * 1024 * 1024;
+                        const rejectedFiles = [];
 
                         for (const file of files) {
+                            if (file.size > maxOriginalSize) {
+                                rejectedFiles.push(file.name);
+                                continue;
+                            }
+
                             const preparedFile = await prepareServiceImageForUpload(file);
                             dataTransfer.items.add(preparedFile);
 
@@ -666,6 +673,14 @@
                         }
 
                         input.files = dataTransfer.files;
+
+                        if (rejectedFiles.length) {
+                            if (typeof Snackbar !== 'undefined') {
+                                Snackbar.show({ text: 'Each image must be 4 MB or smaller.', pos: 'bottom-center', backgroundColor: '#d32f2f', actionTextColor: '#fff' });
+                            } else {
+                                alert('Each image must be 4 MB or smaller.');
+                            }
+                        }
                     }
                 } finally {
                     setServiceImagesPreparing(false);

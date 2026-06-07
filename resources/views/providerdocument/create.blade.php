@@ -19,7 +19,7 @@
             <div class="col-lg-12">
                 <div class="card">
                     <div class="card-body">
-                        {{ html()->form('POST', route('providerdocument.store'))->attribute('enctype', 'multipart/form-data')->attribute('data-toggle', 'validator')->id('provider_document')->open() }}
+                        {{ html()->form('POST', route('providerdocument.store'))->attribute('enctype', 'multipart/form-data')->attribute('data-toggle', 'validator')->id('provider_document_form')->open() }}
                         {{ html()->hidden('id', $provider_document->id ?? null) }}
                         <div class="row">
                             @if (auth()->user()->hasAnyRole(['admin', 'demo_admin']))
@@ -67,7 +67,7 @@
                             <div class="form-group col-md-4">
                                 {{ html()->label(__('messages.upload_document') . ' <span class="text-danger">*</span>', 'provider_document')->class('form-control-label') }}
                                 <div class="custom-file">
-                                    <input type="file" id="provider_document" name="provider_document"
+                                    <input type="file" id="provider_document_file" name="provider_document"
                                         class="custom-file-input" @if (!$provider_document || !getMediaFileExit($provider_document, 'provider_document')) required @endif>
                                     @if ($provider_document && getMediaFileExit($provider_document, 'provider_document'))
                                         <label
@@ -107,7 +107,7 @@
                             @endif
                         </div>
 
-                        {{ html()->submit(trans('messages.save'))->class('btn btn-md btn-primary float-end') }}
+                        {{ html()->submit(trans('messages.save'))->class('btn btn-md btn-primary float-end')->id('provider-document-submit-button')->attribute('data-default-text', trans('messages.save')) }}
                         {{ html()->form()->close() }}
                     </div>
 
@@ -125,14 +125,141 @@
 
                         if (data.is_required == 1) {
                             $('#document_required').text('*');
-                            $('#provider_document').attr('required');
+                            $('#provider_document_file').attr('required');
                         } else {
                             $('#document_required').text('');
-                            $('#provider_document').attr('required', false);
+                            $('#provider_document_file').attr('required', false);
                         }
                     })
+
+                    $(document).on('change', '#provider_document_file', function() {
+                        prepareProviderDocumentInput(this);
+                    });
+
+                    $(document).on('submit', '#provider_document_form', function() {
+                        if (window.providerDocumentPreparing) {
+                            Snackbar.show({
+                                text: 'Please wait, file is preparing for upload.',
+                                pos: 'bottom-center',
+                                backgroundColor: '#d32f2f',
+                                actionTextColor: '#fff'
+                            });
+                            return false;
+                        }
+                    });
                 })
             })(jQuery);
+
+            async function prepareProviderDocumentInput(input) {
+                if (!input.files || !input.files[0]) return;
+
+                setProviderDocumentPreparing(true);
+
+                try {
+                    const maxSize = 3 * 1024 * 1024;
+                    const file = input.files[0];
+                    let preparedFile = file;
+
+                    if (file.type && file.type.startsWith('image/')) {
+                        preparedFile = await prepareProviderDocumentImage(file);
+                    }
+
+                    if (preparedFile.size > maxSize) {
+                        input.value = '';
+                        $('.upload-label').text("{{ __('messages.choose_file', ['file' => __('messages.document')]) }}");
+                        Snackbar.show({
+                            text: 'File must be 3 MB or smaller.',
+                            pos: 'bottom-center',
+                            backgroundColor: '#d32f2f',
+                            actionTextColor: '#fff'
+                        });
+                        return;
+                    }
+
+                    const dataTransfer = new DataTransfer();
+                    dataTransfer.items.add(preparedFile);
+                    input.files = dataTransfer.files;
+                    $('.upload-label').text(preparedFile.name);
+                } finally {
+                    setProviderDocumentPreparing(false);
+                }
+            }
+
+            function setProviderDocumentPreparing(isPreparing) {
+                window.providerDocumentPreparing = isPreparing;
+
+                const submitButton = document.getElementById('provider-document-submit-button');
+                if (!submitButton) return;
+
+                if (!submitButton.dataset.defaultText) {
+                    submitButton.dataset.defaultText = submitButton.value || submitButton.textContent || 'Save';
+                }
+
+                submitButton.disabled = isPreparing;
+
+                if (submitButton.tagName === 'INPUT') {
+                    submitButton.value = isPreparing ? 'Preparing file...' : submitButton.dataset.defaultText;
+                } else {
+                    submitButton.textContent = isPreparing ? 'Preparing file...' : submitButton.dataset.defaultText;
+                }
+            }
+
+            function prepareProviderDocumentImage(file) {
+                const maxSize = 3 * 1024 * 1024;
+                const maxDimension = 1600;
+
+                return new Promise(function(resolve) {
+                    const image = new Image();
+                    const objectUrl = URL.createObjectURL(file);
+
+                    image.onload = function() {
+                        URL.revokeObjectURL(objectUrl);
+
+                        if (file.size <= maxSize && Math.max(image.width, image.height) <= maxDimension) {
+                            resolve(file);
+                            return;
+                        }
+
+                        const ratio = Math.min(maxDimension / image.width, maxDimension / image.height, 1);
+                        const canvas = document.createElement('canvas');
+                        canvas.width = Math.max(1, Math.round(image.width * ratio));
+                        canvas.height = Math.max(1, Math.round(image.height * ratio));
+                        const context = canvas.getContext('2d');
+                        context.drawImage(image, 0, 0, canvas.width, canvas.height);
+
+                        compressProviderDocumentImage(canvas, file, [0.82, 0.72, 0.62], maxSize, resolve);
+                    };
+
+                    image.onerror = function() {
+                        URL.revokeObjectURL(objectUrl);
+                        resolve(file);
+                    };
+
+                    image.src = objectUrl;
+                });
+            }
+
+            function compressProviderDocumentImage(canvas, originalFile, qualities, maxSize, resolve) {
+                const quality = qualities.shift() || 0.62;
+
+                canvas.toBlob(function(blob) {
+                    if (!blob) {
+                        resolve(originalFile);
+                        return;
+                    }
+
+                    if (blob.size > maxSize && qualities.length) {
+                        compressProviderDocumentImage(canvas, originalFile, qualities, maxSize, resolve);
+                        return;
+                    }
+
+                    const safeName = originalFile.name.replace(/\.[^.]+$/, '') + '.jpg';
+                    resolve(new File([blob], safeName, {
+                        type: 'image/jpeg',
+                        lastModified: Date.now()
+                    }));
+                }, 'image/jpeg', quality);
+            }
 
             document.addEventListener('DOMContentLoaded', function() {
                 checkImage();

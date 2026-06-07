@@ -62,8 +62,8 @@
                                     <label class="form-control-label" for="helpdesk_attachment">{{ __('messages.image') }}
                                     </label>
                                     <div class="custom-file">
-                                        <input type="file" onchange="preview()"  name="helpdesk_attachment[]" class="custom-file-input"
-                                            data-file-error="{{ __('messages.files_not_allowed') }}" accept="image/*">
+                                        <input type="file" id="helpdesk_attachment_input" onchange="prepareHelpdeskAttachments(this)" name="helpdesk_attachment[]" class="custom-file-input"
+                                            data-file-error="{{ __('messages.files_not_allowed') }}" accept="image/*" multiple>
                                         <label
                                             class="custom-file-label upload-label">{{ __('messages.choose_file',['file' =>  __('messages.attachments') ]) }}</label>
                                     </div>
@@ -74,6 +74,8 @@
                             <div class="row helpdesk_attachment_div">
                             <div class="col-md-12">
 
+
+                                <div class="row" id="new_helpdesk_attachment_previews"></div>
 
                                 @if(getMediaFileExit($helpdesk, 'helpdesk_attachment'))
                                 @php
@@ -132,7 +134,7 @@
                                 
                         </div>
                             
-                            {{ html()->submit( __('messages.save'))->class('btn btn-md btn-primary float-end') }}
+                            {{ html()->submit( __('messages.save'))->class('btn btn-md btn-primary float-end')->id('helpdesk-submit-button')->attribute('data-default-text', __('messages.save')) }}
                             {{ html()->form()->close() }}
                     </div>
                 </div>
@@ -141,9 +143,133 @@
     </div>
 </x-master-layout>
 <script>
-        function preview() {
-            helpdesk_attachment_preview.src = URL.createObjectURL(event.target.files[0]);
+        async function prepareHelpdeskAttachments(input) {
+            const previewRow = document.getElementById('new_helpdesk_attachment_previews');
+            if (previewRow) previewRow.innerHTML = '';
+            setHelpdeskAttachmentsPreparing(true);
+
+            try {
+                if (!input.files || !input.files.length) return;
+
+                const dataTransfer = new DataTransfer();
+                const files = Array.from(input.files);
+
+                for (const file of files) {
+                    const preparedFile = await prepareHelpdeskImageForUpload(file);
+                    dataTransfer.items.add(preparedFile);
+
+                    if (previewRow && preparedFile.type && preparedFile.type.startsWith('image/')) {
+                        const objectUrl = URL.createObjectURL(preparedFile);
+                        const col = document.createElement('div');
+                        col.className = 'col-md-2 text-center';
+                        col.innerHTML = '<img src="' + objectUrl + '" class="attachment-image" alt="">';
+                        previewRow.appendChild(col);
+
+                        col.querySelector('img').addEventListener('load', function() {
+                            URL.revokeObjectURL(objectUrl);
+                        }, { once: true });
+                    }
+                }
+
+                input.files = dataTransfer.files;
+                $('.upload-label').text(files.length > 1 ? files.length + ' files selected' : input.files[0].name);
+            } finally {
+                setHelpdeskAttachmentsPreparing(false);
+            }
         }
+
+        function setHelpdeskAttachmentsPreparing(isPreparing) {
+            window.helpdeskAttachmentsPreparing = isPreparing;
+
+            const submitButton = document.getElementById('helpdesk-submit-button');
+            if (!submitButton) return;
+
+            if (!submitButton.dataset.defaultText) {
+                submitButton.dataset.defaultText = submitButton.value || submitButton.textContent || 'Save';
+            }
+
+            submitButton.disabled = isPreparing;
+
+            if (submitButton.tagName === 'INPUT') {
+                submitButton.value = isPreparing ? 'Preparing images...' : submitButton.dataset.defaultText;
+            } else {
+                submitButton.textContent = isPreparing ? 'Preparing images...' : submitButton.dataset.defaultText;
+            }
+        }
+
+        function prepareHelpdeskImageForUpload(file) {
+            const maxSize = 450 * 1024;
+            const maxDimension = 1200;
+
+            if (!file.type || !file.type.startsWith('image/')) {
+                return Promise.resolve(file);
+            }
+
+            return new Promise(function(resolve) {
+                const image = new Image();
+                const objectUrl = URL.createObjectURL(file);
+
+                image.onload = function() {
+                    URL.revokeObjectURL(objectUrl);
+
+                    if (file.size <= maxSize && Math.max(image.width, image.height) <= maxDimension) {
+                        resolve(file);
+                        return;
+                    }
+
+                    const ratio = Math.min(maxDimension / image.width, maxDimension / image.height, 1);
+                    const canvas = document.createElement('canvas');
+                    canvas.width = Math.max(1, Math.round(image.width * ratio));
+                    canvas.height = Math.max(1, Math.round(image.height * ratio));
+
+                    const context = canvas.getContext('2d');
+                    context.drawImage(image, 0, 0, canvas.width, canvas.height);
+
+                    compressHelpdeskImage(canvas, file, [0.78, 0.68, 0.58], maxSize, resolve);
+                };
+
+                image.onerror = function() {
+                    URL.revokeObjectURL(objectUrl);
+                    resolve(file);
+                };
+
+                image.src = objectUrl;
+            });
+        }
+
+        function compressHelpdeskImage(canvas, originalFile, qualities, maxSize, resolve) {
+            const quality = qualities.shift() || 0.58;
+
+            canvas.toBlob(function(blob) {
+                if (!blob) {
+                    resolve(originalFile);
+                    return;
+                }
+
+                if (blob.size > maxSize && qualities.length) {
+                    compressHelpdeskImage(canvas, originalFile, qualities, maxSize, resolve);
+                    return;
+                }
+
+                const safeName = originalFile.name.replace(/\.[^.]+$/, '') + '.jpg';
+                resolve(new File([blob], safeName, {
+                    type: 'image/jpeg',
+                    lastModified: Date.now()
+                }));
+            }, 'image/jpeg', quality);
+        }
+
+        $(document).on('submit', '#helpdesk-form', function() {
+            if (window.helpdeskAttachmentsPreparing) {
+                Snackbar.show({
+                    text: 'Please wait, images are preparing for upload.',
+                    pos: 'bottom-center',
+                    backgroundColor: '#d32f2f',
+                    actionTextColor: '#fff'
+                });
+                return false;
+            }
+        });
         $(document).ready(function() {
     $(document).on('keyup', '.contact_number', function() {
         var contactNumberInput = document.getElementById('contact_number');
