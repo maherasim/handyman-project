@@ -2532,13 +2532,14 @@ class PostJobRequestController extends Controller
 
         $uploadedImageCount = count($uploadedImageFiles);
         $isLargeBatch = $uploadedImageCount >= 3;
+        $isVeryLargeBatch = $uploadedImageCount >= 5;
         $maxOriginalSize = 4 * 1024 * 1024;
-        $maxWidth = $isLargeBatch ? 800 : 1000;
+        $maxWidth = $isVeryLargeBatch ? 700 : ($isLargeBatch ? 800 : 1000);
         $maxHeight = $maxWidth;
-        $maxPreparedSize = $isLargeBatch ? 120 * 1024 : 250 * 1024;
+        $maxPreparedSize = $isVeryLargeBatch ? 80 * 1024 : ($isLargeBatch ? 120 * 1024 : 250 * 1024);
         
         // Helper function to resize and save image
-        $resizeAndSave = function($file, $filename) use ($maxWidth, $maxHeight, $maxPreparedSize, $isLargeBatch) {
+        $resizeAndSave = function($file, $filename) use ($maxWidth, $maxHeight, $maxPreparedSize, $isLargeBatch, $isVeryLargeBatch) {
             try {
                 // Increase memory limit for this operation
                 $originalMemoryLimit = ini_get('memory_limit');
@@ -2553,6 +2554,15 @@ class PostJobRequestController extends Controller
                 $originalWidth = $imageInfo[0];
                 $originalHeight = $imageInfo[1];
                 $mimeType = $imageInfo['mime'];
+
+                if (
+                    $mimeType === 'image/jpeg'
+                    && $file->getSize() <= $maxPreparedSize
+                    && $originalWidth <= $maxWidth
+                    && $originalHeight <= $maxHeight
+                ) {
+                    return $file->storeAs('images', $filename, 'public');
+                }
                 
                 // Calculate new dimensions maintaining aspect ratio
                 $ratio = min($maxWidth / $originalWidth, $maxHeight / $originalHeight, 1);
@@ -2601,7 +2611,7 @@ class PostJobRequestController extends Controller
                 }
                 $fullPath = $storagePath . '/' . $filename;
                 
-                $qualities = $isLargeBatch ? [62, 52, 44, 36] : [72, 62, 52, 44];
+                $qualities = $isVeryLargeBatch ? [52, 44, 36, 30] : ($isLargeBatch ? [62, 52, 44, 36] : [72, 62, 52, 44]);
                 foreach ($qualities as $jpegQuality) {
                     imagejpeg($newImage, $fullPath, $jpegQuality);
                     if (file_exists($fullPath) && filesize($fullPath) <= $maxPreparedSize) {
