@@ -566,7 +566,7 @@ public function store(ServiceRequest $request)
     }
 
     $temporaryFiles = [];
-    if ($request->is('api/*') && $hasValidAttachment && !empty($file)) {
+    if ($hasValidAttachment && !empty($file)) {
         $file = $this->prepareServiceAttachmentsForStorage($file, $temporaryFiles);
     }
 

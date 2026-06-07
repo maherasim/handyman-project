@@ -58,6 +58,12 @@ class ServiceRequest extends FormRequest
             $rules['service_attachment'] = 'required';
         }
 
+        $rules['service_attachment.*'] = 'file|mimes:jpg,jpeg,png,webp,gif|max:10240';
+
+        if ($this->hasFile('service_attachment') && !is_array($this->file('service_attachment'))) {
+            $rules['service_attachment'] = trim(($rules['service_attachment'] ?? '') . '|file|mimes:jpg,jpeg,png,webp,gif|max:10240', '|');
+        }
+
         // Advance payment amount required when advance payment is enabled (20–99%)
         if ($this->boolean('is_enable_advance_payment')) {
             $rules['advance_payment_amount'] = 'required|numeric|min:20|max:99';
