@@ -391,23 +391,149 @@ class HelpDeskController extends Controller
     {
    
         $file = [];
+        $temporaryFiles = [];
 
         if ($request->is('api/*')) {
             if ($request->has('attachment_count')) {
                 for ($i = 0; $i < $request->attachment_count; $i++) {
                     $attachment = "{$attachmentPrefix}_{$i}";
-                    if ($request->$attachment != null) {
+                    if ($request->hasFile($attachment)) {
+                        $uploadedFile = $request->file($attachment);
+                        if ($uploadedFile && $uploadedFile->isValid()) {
+                            if ($uploadedFile->getSize() > 4 * 1024 * 1024) {
+                                continue;
+                            }
+
+                            $file[] = $uploadedFile;
+                        }
+                    } elseif ($request->$attachment != null) {
                         $file[] = $request->$attachment;
                     }
                 }
-                storeMediaFile($data, $file, $attachmentPrefix);
+                $file = $this->prepareHelpdeskAttachmentsForStorage($file, $temporaryFiles);
+                if (!empty($file)) {
+                    storeMediaFile($data, $file, $attachmentPrefix);
+                }
             }
         } else {
 
             if ($request->hasFile($attachmentPrefix)) {
-                
-                storeMediaFile($data, $request->file($attachmentPrefix), $attachmentPrefix);
+                $uploadedFiles = $request->file($attachmentPrefix);
+                $file = is_array($uploadedFiles) ? $uploadedFiles : [$uploadedFiles];
+                $file = array_values(array_filter($file, function ($uploadedFile) {
+                    return $uploadedFile && $uploadedFile->isValid() && $uploadedFile->getSize() <= 4 * 1024 * 1024;
+                }));
+                $file = $this->prepareHelpdeskAttachmentsForStorage($file, $temporaryFiles);
+                if (!empty($file)) {
+                    storeMediaFile($data, $file, $attachmentPrefix);
+                }
             }	
+        }
+
+        foreach ($temporaryFiles as $temporaryFile) {
+            if (is_string($temporaryFile) && file_exists($temporaryFile)) {
+                @unlink($temporaryFile);
+            }
+        }
+    }
+
+    private function prepareHelpdeskAttachmentsForStorage(array $files, array &$temporaryFiles): array
+    {
+        $batchSize = count($files);
+
+        return array_values(array_filter(array_map(function ($file) use (&$temporaryFiles, $batchSize) {
+            return $this->prepareHelpdeskAttachmentForStorage($file, $temporaryFiles, $batchSize);
+        }, $files)));
+    }
+
+    private function prepareHelpdeskAttachmentForStorage($file, array &$temporaryFiles, int $batchSize = 1)
+    {
+        if (!$file instanceof \Illuminate\Http\UploadedFile || !$file->isValid()) {
+            return $file;
+        }
+
+        $mimeType = (string) $file->getMimeType();
+        if (strpos($mimeType, 'image/') !== 0) {
+            return $file;
+        }
+
+        $sourcePath = $file->getRealPath();
+        if (!$sourcePath || !file_exists($sourcePath)) {
+            return $file;
+        }
+
+        try {
+            $size = @getimagesize($sourcePath);
+            if (!$size || empty($size[0]) || empty($size[1])) {
+                return $file;
+            }
+
+            [$width, $height] = $size;
+            $isLargeBatch = $batchSize >= 3;
+            $maxDimension = $isLargeBatch ? 800 : 1000;
+            $maxPreparedSize = $isLargeBatch ? 120 * 1024 : 250 * 1024;
+            $fileSize = (int) $file->getSize();
+
+            if (!$isLargeBatch && $fileSize <= $maxPreparedSize && max($width, $height) <= $maxDimension) {
+                return $file;
+            }
+
+            $sourceImage = $this->createHelpdeskImageResource($sourcePath, $mimeType);
+            if (!$sourceImage) {
+                return $file;
+            }
+
+            $ratio = min($maxDimension / $width, $maxDimension / $height, 1);
+            $newWidth = max(1, (int) round($width * $ratio));
+            $newHeight = max(1, (int) round($height * $ratio));
+            $newImage = imagecreatetruecolor($newWidth, $newHeight);
+            $background = imagecolorallocate($newImage, 255, 255, 255);
+            imagefilledrectangle($newImage, 0, 0, $newWidth, $newHeight, $background);
+            imagecopyresampled($newImage, $sourceImage, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
+
+            $temporaryDirectory = storage_path('app/tmp/helpdesk-uploads');
+            if (!is_dir($temporaryDirectory)) {
+                mkdir($temporaryDirectory, 0755, true);
+            }
+
+            $temporaryPath = $temporaryDirectory . DIRECTORY_SEPARATOR . uniqid('helpdesk_', true) . '.jpg';
+            $qualities = $isLargeBatch ? [62, 52, 44, 36] : [72, 62, 52, 44];
+
+            foreach ($qualities as $quality) {
+                imagejpeg($newImage, $temporaryPath, $quality);
+                if (file_exists($temporaryPath) && filesize($temporaryPath) <= $maxPreparedSize) {
+                    break;
+                }
+            }
+
+            imagedestroy($sourceImage);
+            imagedestroy($newImage);
+
+            if (file_exists($temporaryPath) && filesize($temporaryPath) > 0) {
+                $temporaryFiles[] = $temporaryPath;
+                return $temporaryPath;
+            }
+        } catch (\Throwable $e) {
+            \Log::warning('Helpdesk attachment resize skipped: ' . $e->getMessage());
+        }
+
+        return $file;
+    }
+
+    private function createHelpdeskImageResource(string $path, string $mimeType)
+    {
+        switch ($mimeType) {
+            case 'image/jpeg':
+            case 'image/jpg':
+                return imagecreatefromjpeg($path);
+            case 'image/png':
+                return imagecreatefrompng($path);
+            case 'image/gif':
+                return imagecreatefromgif($path);
+            case 'image/webp':
+                return function_exists('imagecreatefromwebp') ? imagecreatefromwebp($path) : null;
+            default:
+                return null;
         }
     }
     

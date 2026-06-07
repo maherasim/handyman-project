@@ -67,6 +67,7 @@
                                         <label
                                             class="custom-file-label upload-label">{{ __('messages.choose_file',['file' =>  __('messages.attachments') ]) }}</label>
                                     </div>
+                                    <small id="helpdesk-image-prepare-status" class="d-none mt-1 text-primary fw-bold"></small>
                                 </div>
                                
                                 
@@ -153,9 +154,19 @@
 
                 const dataTransfer = new DataTransfer();
                 const files = Array.from(input.files);
+                const maxOriginalSize = 4 * 1024 * 1024;
+                const rejectedFiles = [];
+                updateHelpdeskImagePrepareStatus('Preparing 0 of ' + files.length + ' images...');
 
-                for (const file of files) {
-                    const preparedFile = await prepareHelpdeskImageForUpload(file);
+                for (let index = 0; index < files.length; index++) {
+                    const file = files[index];
+                    updateHelpdeskImagePrepareStatus('Preparing ' + (index + 1) + ' of ' + files.length + ' images...');
+                    if (file.size > maxOriginalSize) {
+                        rejectedFiles.push(file.name);
+                        continue;
+                    }
+
+                    const preparedFile = await prepareHelpdeskImageForUpload(file, files.length);
                     dataTransfer.items.add(preparedFile);
 
                     if (previewRow && preparedFile.type && preparedFile.type.startsWith('image/')) {
@@ -172,10 +183,30 @@
                 }
 
                 input.files = dataTransfer.files;
-                $('.upload-label').text(files.length > 1 ? files.length + ' files selected' : input.files[0].name);
+                if (input.files.length > 0) {
+                    $('.upload-label').text(input.files.length > 1 ? input.files.length + ' files selected' : input.files[0].name);
+                } else {
+                    $('.upload-label').text("{{ __('messages.choose_file',['file' =>  __('messages.attachments') ]) }}");
+                }
+                updateHelpdeskImagePrepareStatus(input.files.length ? input.files.length + ' image' + (input.files.length === 1 ? '' : 's') + ' ready for upload.' : '');
+                if (rejectedFiles.length) {
+                    if (typeof Snackbar !== 'undefined') {
+                        Snackbar.show({ text: 'Each image must be 4 MB or smaller.', pos: 'bottom-center', backgroundColor: '#d32f2f', actionTextColor: '#fff' });
+                    } else {
+                        alert('Each image must be 4 MB or smaller.');
+                    }
+                }
             } finally {
                 setHelpdeskAttachmentsPreparing(false);
             }
+        }
+
+        function updateHelpdeskImagePrepareStatus(message) {
+            const status = document.getElementById('helpdesk-image-prepare-status');
+            if (!status) return;
+
+            status.textContent = message;
+            status.classList.toggle('d-none', !message);
         }
 
         function setHelpdeskAttachmentsPreparing(isPreparing) {
@@ -197,9 +228,10 @@
             }
         }
 
-        function prepareHelpdeskImageForUpload(file) {
-            const maxSize = 450 * 1024;
-            const maxDimension = 1200;
+        function prepareHelpdeskImageForUpload(file, batchSize) {
+            const isLargeBatch = batchSize >= 3;
+            const maxSize = isLargeBatch ? 120 * 1024 : 250 * 1024;
+            const maxDimension = isLargeBatch ? 800 : 1000;
 
             if (!file.type || !file.type.startsWith('image/')) {
                 return Promise.resolve(file);
@@ -212,7 +244,7 @@
                 image.onload = function() {
                     URL.revokeObjectURL(objectUrl);
 
-                    if (file.size <= maxSize && Math.max(image.width, image.height) <= maxDimension) {
+                    if (!isLargeBatch && file.size <= maxSize && Math.max(image.width, image.height) <= maxDimension) {
                         resolve(file);
                         return;
                     }
@@ -225,7 +257,8 @@
                     const context = canvas.getContext('2d');
                     context.drawImage(image, 0, 0, canvas.width, canvas.height);
 
-                    compressHelpdeskImage(canvas, file, [0.78, 0.68, 0.58], maxSize, resolve);
+                    const qualities = isLargeBatch ? [0.62, 0.52, 0.44, 0.36] : [0.72, 0.62, 0.52, 0.44];
+                    compressHelpdeskImage(canvas, file, qualities, maxSize, resolve);
                 };
 
                 image.onerror = function() {
@@ -238,7 +271,7 @@
         }
 
         function compressHelpdeskImage(canvas, originalFile, qualities, maxSize, resolve) {
-            const quality = qualities.shift() || 0.58;
+            const quality = qualities.shift() || 0.36;
 
             canvas.toBlob(function(blob) {
                 if (!blob) {
