@@ -463,8 +463,8 @@
                          const isLargeBatch = batchSize >= 3;
                          const isVeryLargeBatch = batchSize >= 5;
                          const maxOriginalSize = 4 * 1024 * 1024;
-                         const maxPreparedSize = isVeryLargeBatch ? 80 * 1024 : (isLargeBatch ? 120 * 1024 : 250 * 1024);
-                         const maxDimension = isVeryLargeBatch ? 700 : (isLargeBatch ? 800 : 1000);
+                         const maxPreparedSize = isVeryLargeBatch ? 50 * 1024 : (isLargeBatch ? 80 * 1024 : 180 * 1024);
+                         const maxDimension = isVeryLargeBatch ? 560 : (isLargeBatch ? 650 : 900);
 
                          if (file.size > maxOriginalSize) {
                              throw new Error('Each image must be 4 MB or smaller.');
@@ -488,7 +488,7 @@
                          context.fillRect(0, 0, canvas.width, canvas.height);
                          context.drawImage(image, 0, 0, canvas.width, canvas.height);
 
-                         const qualities = isVeryLargeBatch ? [0.52, 0.44, 0.36, 0.30] : (isLargeBatch ? [0.62, 0.52, 0.44, 0.36] : [0.72, 0.62, 0.52, 0.44]);
+                         const qualities = isVeryLargeBatch ? [0.40, 0.34, 0.28, 0.22] : (isLargeBatch ? [0.50, 0.42, 0.34, 0.28] : [0.64, 0.54, 0.44, 0.36]);
                          let blob = null;
                          for (const quality of qualities) {
                              blob = await postJobCanvasToBlob(canvas, quality);

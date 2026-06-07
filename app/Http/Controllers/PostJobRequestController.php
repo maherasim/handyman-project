@@ -2534,9 +2534,9 @@ class PostJobRequestController extends Controller
         $isLargeBatch = $uploadedImageCount >= 3;
         $isVeryLargeBatch = $uploadedImageCount >= 5;
         $maxOriginalSize = 4 * 1024 * 1024;
-        $maxWidth = $isVeryLargeBatch ? 700 : ($isLargeBatch ? 800 : 1000);
+        $maxWidth = $isVeryLargeBatch ? 560 : ($isLargeBatch ? 650 : 900);
         $maxHeight = $maxWidth;
-        $maxPreparedSize = $isVeryLargeBatch ? 80 * 1024 : ($isLargeBatch ? 120 * 1024 : 250 * 1024);
+        $maxPreparedSize = $isVeryLargeBatch ? 50 * 1024 : ($isLargeBatch ? 80 * 1024 : 180 * 1024);
         
         // Helper function to resize and save image
         $resizeAndSave = function($file, $filename) use ($maxWidth, $maxHeight, $maxPreparedSize, $isLargeBatch, $isVeryLargeBatch) {
@@ -2611,7 +2611,7 @@ class PostJobRequestController extends Controller
                 }
                 $fullPath = $storagePath . '/' . $filename;
                 
-                $qualities = $isVeryLargeBatch ? [52, 44, 36, 30] : ($isLargeBatch ? [62, 52, 44, 36] : [72, 62, 52, 44]);
+                $qualities = $isVeryLargeBatch ? [40, 34, 28, 22] : ($isLargeBatch ? [50, 42, 34, 28] : [64, 54, 44, 36]);
                 foreach ($qualities as $jpegQuality) {
                     imagejpeg($newImage, $fullPath, $jpegQuality);
                     if (file_exists($fullPath) && filesize($fullPath) <= $maxPreparedSize) {
