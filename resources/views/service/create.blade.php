@@ -637,23 +637,101 @@
         </script>
 
         <script>
-            function previewSelectedImages(input) {
+            async function previewSelectedImages(input) {
                 const previewRow = document.getElementById('new_attachment_previews');
                 if (!previewRow) return;
                 previewRow.innerHTML = '';
+                window.serviceImagesPreparing = true;
 
-                if (input.files && input.files.length) {
-                    Array.from(input.files).forEach(file => {
-                        const reader = new FileReader();
-                        reader.onload = function(e) {
-                            const col = document.createElement('div');
-                            col.className = 'col-md-2 text-center';
-                            col.innerHTML = '<img src="' + e.target.result + '" class="attachment-image" alt="">';
-                            previewRow.appendChild(col);
-                        };
-                        reader.readAsDataURL(file);
-                    });
+                try {
+                    if (input.files && input.files.length) {
+                        const dataTransfer = new DataTransfer();
+                        const files = Array.from(input.files);
+
+                        for (const file of files) {
+                            const preparedFile = await prepareServiceImageForUpload(file);
+                            dataTransfer.items.add(preparedFile);
+
+                            if (preparedFile.type && preparedFile.type.startsWith('image/')) {
+                                const objectUrl = URL.createObjectURL(preparedFile);
+                                const col = document.createElement('div');
+                                col.className = 'col-md-2 text-center';
+                                col.innerHTML = '<img src="' + objectUrl + '" class="attachment-image" alt="">';
+                                previewRow.appendChild(col);
+
+                                col.querySelector('img').addEventListener('load', function() {
+                                    URL.revokeObjectURL(objectUrl);
+                                }, { once: true });
+                            }
+                        }
+
+                        input.files = dataTransfer.files;
+                    }
+                } finally {
+                    window.serviceImagesPreparing = false;
                 }
+            }
+
+            function prepareServiceImageForUpload(file) {
+                const maxSize = 450 * 1024;
+                const maxDimension = 1200;
+
+                if (!file.type || !file.type.startsWith('image/')) {
+                    return Promise.resolve(file);
+                }
+
+                return new Promise(function(resolve) {
+                    const image = new Image();
+                    const objectUrl = URL.createObjectURL(file);
+
+                    image.onload = function() {
+                        URL.revokeObjectURL(objectUrl);
+
+                        if (file.size <= maxSize && Math.max(image.width, image.height) <= maxDimension) {
+                            resolve(file);
+                            return;
+                        }
+
+                        const ratio = Math.min(maxDimension / image.width, maxDimension / image.height, 1);
+                        const canvas = document.createElement('canvas');
+                        canvas.width = Math.max(1, Math.round(image.width * ratio));
+                        canvas.height = Math.max(1, Math.round(image.height * ratio));
+
+                        const context = canvas.getContext('2d');
+                        context.drawImage(image, 0, 0, canvas.width, canvas.height);
+
+                        compressServiceImage(canvas, file, [0.78, 0.68, 0.58], maxSize, resolve);
+                    };
+
+                    image.onerror = function() {
+                        URL.revokeObjectURL(objectUrl);
+                        resolve(file);
+                    };
+
+                    image.src = objectUrl;
+                });
+            }
+
+            function compressServiceImage(canvas, originalFile, qualities, maxSize, resolve) {
+                const quality = qualities.shift() || 0.58;
+
+                canvas.toBlob(function(blob) {
+                    if (!blob) {
+                        resolve(originalFile);
+                        return;
+                    }
+
+                    if (blob.size > maxSize && qualities.length) {
+                        compressServiceImage(canvas, originalFile, qualities, maxSize, resolve);
+                        return;
+                    }
+
+                    const safeName = originalFile.name.replace(/\.[^.]+$/, '') + '.jpg';
+                    resolve(new File([blob], safeName, {
+                        type: 'image/jpeg',
+                        lastModified: Date.now()
+                    }));
+                }, 'image/jpeg', quality);
             }
         </script>
 
@@ -670,6 +748,16 @@
                 addDurationValidation();
 
                 $('#service').on('submit', function(e) {
+                    if (window.serviceImagesPreparing) {
+                        if (typeof Snackbar !== 'undefined') {
+                            Snackbar.show({ text: 'Please wait, images are preparing for upload.', pos: 'bottom-center', backgroundColor: '#d32f2f', actionTextColor: '#fff' });
+                        } else {
+                            alert('Please wait, images are preparing for upload.');
+                        }
+                        e.preventDefault();
+                        return false;
+                    }
+
                     // Required field validation (all except Discount %)
                     var $form = $(this);
                     var requiredFields = [
