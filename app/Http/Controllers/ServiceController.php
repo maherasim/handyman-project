@@ -565,6 +565,11 @@ public function store(ServiceRequest $request)
         }
     }
 
+    $temporaryFiles = [];
+    if ($request->is('api/*') && $hasValidAttachment && !empty($file)) {
+        $file = $this->prepareServiceAttachmentsForStorage($file, $temporaryFiles);
+    }
+
     // Use database transaction to ensure service is only saved if image upload succeeds
     try {
         \DB::beginTransaction();
@@ -591,7 +596,7 @@ public function store(ServiceRequest $request)
         }
 
         \DB::commit();
-    } catch (\Exception $e) {
+    } catch (\Throwable $e) {
         \DB::rollBack();
         \Log::error('Service save error: ' . $e->getMessage());
         
@@ -604,6 +609,12 @@ public function store(ServiceRequest $request)
             return redirect()->back()
                 ->withErrors(['error' => __('messages.save_form_error', ['form' => __('messages.service')])])
                 ->withInput();
+        }
+    } finally {
+        foreach ($temporaryFiles as $temporaryFile) {
+            if (is_string($temporaryFile) && file_exists($temporaryFile)) {
+                @unlink($temporaryFile);
+            }
         }
     }
 
@@ -622,6 +633,107 @@ public function store(ServiceRequest $request)
 
     return redirect(route('service.index'))->withSuccess($message);
 }
+
+    private function prepareServiceAttachmentsForStorage(array $files, array &$temporaryFiles): array
+    {
+        return array_values(array_filter(array_map(function ($file) use (&$temporaryFiles) {
+            return $this->prepareServiceAttachmentForStorage($file, $temporaryFiles);
+        }, $files)));
+    }
+
+    private function prepareServiceAttachmentForStorage($file, array &$temporaryFiles)
+    {
+        if (!$file instanceof \Illuminate\Http\UploadedFile || !$file->isValid()) {
+            return $file;
+        }
+
+        $mimeType = (string) $file->getMimeType();
+        if (strpos($mimeType, 'image/') !== 0) {
+            return $file;
+        }
+
+        $sourcePath = $file->getRealPath();
+        if (!$sourcePath || !file_exists($sourcePath)) {
+            return $file;
+        }
+
+        try {
+            $size = @getimagesize($sourcePath);
+            if (!$size || empty($size[0]) || empty($size[1])) {
+                return $file;
+            }
+
+            [$width, $height] = $size;
+            $maxDimension = 1600;
+            $fileSize = (int) $file->getSize();
+
+            if ($fileSize <= 3 * 1024 * 1024 && max($width, $height) <= $maxDimension) {
+                return $file;
+            }
+
+            $sourceImage = $this->createImageResource($sourcePath, $mimeType);
+            if (!$sourceImage) {
+                return $file;
+            }
+
+            $ratio = min($maxDimension / $width, $maxDimension / $height, 1);
+            $newWidth = max(1, (int) round($width * $ratio));
+            $newHeight = max(1, (int) round($height * $ratio));
+            $newImage = imagecreatetruecolor($newWidth, $newHeight);
+
+            if (in_array($mimeType, ['image/png', 'image/gif'], true)) {
+                imagealphablending($newImage, false);
+                imagesavealpha($newImage, true);
+                $transparent = imagecolorallocatealpha($newImage, 255, 255, 255, 127);
+                imagefilledrectangle($newImage, 0, 0, $newWidth, $newHeight, $transparent);
+            }
+
+            imagecopyresampled($newImage, $sourceImage, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
+
+            $temporaryDirectory = storage_path('app/tmp/service-uploads');
+            if (!is_dir($temporaryDirectory)) {
+                mkdir($temporaryDirectory, 0755, true);
+            }
+
+            $extension = in_array($mimeType, ['image/png', 'image/gif'], true) ? 'png' : 'jpg';
+            $temporaryPath = $temporaryDirectory . DIRECTORY_SEPARATOR . uniqid('service_', true) . '.' . $extension;
+
+            if ($extension === 'png') {
+                imagepng($newImage, $temporaryPath, 6);
+            } else {
+                imagejpeg($newImage, $temporaryPath, 82);
+            }
+
+            imagedestroy($sourceImage);
+            imagedestroy($newImage);
+
+            if (file_exists($temporaryPath) && filesize($temporaryPath) > 0) {
+                $temporaryFiles[] = $temporaryPath;
+                return $temporaryPath;
+            }
+        } catch (\Throwable $e) {
+            \Log::warning('Service attachment resize skipped: ' . $e->getMessage());
+        }
+
+        return $file;
+    }
+
+    private function createImageResource(string $path, string $mimeType)
+    {
+        switch ($mimeType) {
+            case 'image/jpeg':
+            case 'image/jpg':
+                return imagecreatefromjpeg($path);
+            case 'image/png':
+                return imagecreatefrompng($path);
+            case 'image/gif':
+                return imagecreatefromgif($path);
+            case 'image/webp':
+                return function_exists('imagecreatefromwebp') ? imagecreatefromwebp($path) : null;
+            default:
+                return null;
+        }
+    }
 
 
     /**
