@@ -49,7 +49,7 @@ class UserRequest extends FormRequest
                 'username'          => 'required|max:255|unique:users,username,'.$id,
                 'email'             => 'required|email|max:255|unique:users,email,'.$id,
                 'contact_number'    => 'nullable', //unique:users,contact_number,'.$id,
-                'profile_image'     => 'nullable|mimetypes:image/jpeg,image/png,image/jpg,image/gif',
+                'profile_image'     => 'nullable|mimetypes:image/jpeg,image/png,image/jpg,image/gif,image/webp|max:4096',
                 'handyman_commission' => 'nullable|numeric|min:1|max:99',
         ];
 

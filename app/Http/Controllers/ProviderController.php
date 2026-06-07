@@ -300,6 +300,98 @@ class ProviderController extends Controller
         return view('provider.create', compact('pageTitle' ,'providerdata' ,'auth_user' ));
     }
 
+    private function compressProfileImageForUpload($file): ?array
+    {
+        $maxDimension = 800;
+        $maxPreparedSize = 120 * 1024;
+        $qualities = [62, 52, 44, 36, 28];
+        $originalMemoryLimit = ini_get('memory_limit');
+        $sourceImage = null;
+        $newImage = null;
+
+        try {
+            ini_set('memory_limit', '256M');
+
+            $imageInfo = @getimagesize($file->getRealPath());
+            if (!$imageInfo) {
+                return null;
+            }
+
+            $originalWidth = (int) $imageInfo[0];
+            $originalHeight = (int) $imageInfo[1];
+            $mimeType = $imageInfo['mime'] ?? '';
+
+            if (
+                $mimeType === 'image/jpeg'
+                && $file->getSize() <= $maxPreparedSize
+                && max($originalWidth, $originalHeight) <= $maxDimension
+            ) {
+                return null;
+            }
+
+            switch ($mimeType) {
+                case 'image/jpeg':
+                    $sourceImage = imagecreatefromjpeg($file->getRealPath());
+                    break;
+                case 'image/png':
+                    $sourceImage = imagecreatefrompng($file->getRealPath());
+                    break;
+                case 'image/gif':
+                    $sourceImage = imagecreatefromgif($file->getRealPath());
+                    break;
+                case 'image/webp':
+                    $sourceImage = function_exists('imagecreatefromwebp') ? imagecreatefromwebp($file->getRealPath()) : null;
+                    break;
+                default:
+                    return null;
+            }
+
+            if (!$sourceImage) {
+                return null;
+            }
+
+            $ratio = min($maxDimension / $originalWidth, $maxDimension / $originalHeight, 1);
+            $newWidth = max(1, (int) round($originalWidth * $ratio));
+            $newHeight = max(1, (int) round($originalHeight * $ratio));
+
+            $newImage = imagecreatetruecolor($newWidth, $newHeight);
+            $white = imagecolorallocate($newImage, 255, 255, 255);
+            imagefilledrectangle($newImage, 0, 0, $newWidth, $newHeight, $white);
+            imagecopyresampled($newImage, $sourceImage, 0, 0, 0, 0, $newWidth, $newHeight, $originalWidth, $originalHeight);
+
+            $baseName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+            $safeName = preg_replace('/[^a-zA-Z0-9_-]/', '', $baseName) ?: 'provider-profile';
+            $fileName = $safeName . '.jpg';
+            $tempPath = tempnam(sys_get_temp_dir(), 'provider_profile_');
+            $jpgPath = $tempPath . '.jpg';
+
+            foreach ($qualities as $quality) {
+                imagejpeg($newImage, $jpgPath, $quality);
+                if (file_exists($jpgPath) && filesize($jpgPath) <= $maxPreparedSize) {
+                    break;
+                }
+            }
+
+            @unlink($tempPath);
+
+            return [
+                'path' => $jpgPath,
+                'name' => $fileName,
+            ];
+        } catch (\Throwable $e) {
+            Log::warning('Provider profile image compression failed: ' . $e->getMessage());
+            return null;
+        } finally {
+            if ($sourceImage) {
+                imagedestroy($sourceImage);
+            }
+            if ($newImage) {
+                imagedestroy($newImage);
+            }
+            ini_set('memory_limit', $originalMemoryLimit);
+        }
+    }
+
     /**
      * Store a newly created resource in storage.
      *
@@ -416,7 +508,24 @@ public function store(UserRequest $request)
     } 
 
     $user->assignRole($data['user_type']);
-    storeMediaFile($user, $request->profile_image, 'profile_image');
+    if($request->hasFile('profile_image')){
+        $compressedProfileImage = $this->compressProfileImageForUpload($request->file('profile_image'));
+
+        try {
+            if ($compressedProfileImage && file_exists($compressedProfileImage['path'])) {
+                $user->clearMediaCollection('profile_image');
+                $user->addMedia($compressedProfileImage['path'])
+                    ->usingFileName($compressedProfileImage['name'])
+                    ->toMediaCollection('profile_image');
+            } else {
+                storeMediaFile($user, $request->profile_image, 'profile_image');
+            }
+        } finally {
+            if (!empty($compressedProfileImage['path']) && file_exists($compressedProfileImage['path'])) {
+                @unlink($compressedProfileImage['path']);
+            }
+        }
+    }
 
     $message = __('messages.update_form',[ 'form' => __('messages.provider') ]);
     if($user->wasRecentlyCreated){

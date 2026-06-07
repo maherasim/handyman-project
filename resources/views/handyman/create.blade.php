@@ -194,11 +194,12 @@
                                     for="profile_image">{{ __('messages.profile_image') }}
                                 </label>
                                 <div class="custom-file">
-                                    <input type="file" name="profile_image" class="custom-file-input"
+                                    <input type="file" name="profile_image" id="handyman_profile_image" class="custom-file-input"
                                         accept="image/*">
                                     <label
                                         class="custom-file-label upload-label">{{ __('messages.choose_file', ['file' => __('messages.profile_image')]) }}</label>
                                 </div>
+                                <small id="handyman-profile-image-status" class="d-none mt-1 text-primary fw-bold"></small>
                                 <!-- <span class="selected_file"></span> -->
                             </div>
 
@@ -235,7 +236,7 @@
                             </div>
 
                         </div>
-                        {{ html()->submit(__('messages.save'))->class('btn btn-md btn-primary float-end') }}
+                        <button type="submit" id="handyman-submit-button" class="btn btn-md btn-primary float-end" data-default-text="{{ __('messages.save') }}">{{ __('messages.save') }}</button>
                         {{ html()->form()->close() }}
                     </div>
                 </div>
@@ -418,6 +419,14 @@
 });
 
             $('#handyman').on('submit', function () {
+                if (window.handymanProfileImagePreparing) {
+                    if (typeof Snackbar !== 'undefined') {
+                        Snackbar.show({ text: 'Please wait, image is preparing for upload.', pos: 'bottom-center', backgroundColor: '#d32f2f', actionTextColor: '#fff' });
+                    } else {
+                        alert('Please wait, image is preparing for upload.');
+                    }
+                    return false;
+                }
                 if (typeof tinymce !== 'undefined') {
                     tinymce.triggerSave();
                 }
@@ -428,6 +437,123 @@
                     return false;
                 }
                 err.text('');
+            });
+
+            function setHandymanProfileImagePreparing(isPreparing) {
+                window.handymanProfileImagePreparing = isPreparing;
+                var button = document.getElementById('handyman-submit-button');
+                if (!button) return;
+                button.disabled = isPreparing;
+                button.classList.toggle('btn-secondary', isPreparing);
+                button.classList.toggle('btn-primary', !isPreparing);
+                button.textContent = isPreparing ? 'Preparing image...' : button.dataset.defaultText;
+            }
+
+            function updateHandymanProfileImageStatus(message) {
+                var status = document.getElementById('handyman-profile-image-status');
+                if (!status) return;
+                status.textContent = message || '';
+                status.classList.toggle('d-none', !message);
+            }
+
+            function handymanCanvasToBlob(canvas, quality) {
+                return new Promise(function(resolve) {
+                    canvas.toBlob(resolve, 'image/jpeg', quality);
+                });
+            }
+
+            function loadHandymanProfileImage(file) {
+                return new Promise(function(resolve, reject) {
+                    var image = new Image();
+                    var objectUrl = URL.createObjectURL(file);
+                    image.onload = function() {
+                        URL.revokeObjectURL(objectUrl);
+                        resolve(image);
+                    };
+                    image.onerror = function() {
+                        URL.revokeObjectURL(objectUrl);
+                        reject();
+                    };
+                    image.src = objectUrl;
+                });
+            }
+
+            async function prepareHandymanProfileImage(file) {
+                var maxOriginalSize = 4 * 1024 * 1024;
+                var maxPreparedSize = 120 * 1024;
+                var maxDimension = 800;
+
+                if (file.size > maxOriginalSize) {
+                    throw new Error('Image must be 4 MB or smaller.');
+                }
+
+                if (!file.type || !file.type.startsWith('image/')) {
+                    return file;
+                }
+
+                var image = await loadHandymanProfileImage(file);
+                if (file.type === 'image/jpeg' && file.size <= maxPreparedSize && Math.max(image.width, image.height) <= maxDimension) {
+                    return file;
+                }
+
+                var ratio = Math.min(maxDimension / image.width, maxDimension / image.height, 1);
+                var canvas = document.createElement('canvas');
+                canvas.width = Math.max(1, Math.round(image.width * ratio));
+                canvas.height = Math.max(1, Math.round(image.height * ratio));
+                var context = canvas.getContext('2d');
+                context.fillStyle = '#ffffff';
+                context.fillRect(0, 0, canvas.width, canvas.height);
+                context.drawImage(image, 0, 0, canvas.width, canvas.height);
+
+                var qualities = [0.62, 0.52, 0.44, 0.36, 0.28];
+                var blob = null;
+                for (var i = 0; i < qualities.length; i++) {
+                    blob = await handymanCanvasToBlob(canvas, qualities[i]);
+                    if (blob && blob.size <= maxPreparedSize) break;
+                }
+
+                if (!blob) return file;
+
+                return new File([blob], file.name.replace(/\.[^.]+$/, '') + '.jpg', {
+                    type: 'image/jpeg',
+                    lastModified: Date.now()
+                });
+            }
+
+            $(document).on('change', '#handyman_profile_image', async function() {
+                var input = this;
+                var file = input.files && input.files[0];
+                updateHandymanProfileImageStatus('');
+
+                if (!file) return;
+
+                setHandymanProfileImagePreparing(true);
+                updateHandymanProfileImageStatus('Preparing image...');
+
+                try {
+                    var preparedFile = await prepareHandymanProfileImage(file);
+                    var dataTransfer = new DataTransfer();
+                    dataTransfer.items.add(preparedFile);
+                    input.files = dataTransfer.files;
+                    $('.upload-label').text(preparedFile.name);
+                    updateHandymanProfileImageStatus('Image ready for upload.');
+
+                    var objectUrl = URL.createObjectURL(preparedFile);
+                    $('#profile_image_preview').attr('src', objectUrl).one('load', function() {
+                        URL.revokeObjectURL(objectUrl);
+                    });
+                } catch (error) {
+                    input.value = '';
+                    $('.upload-label').text("{{ __('messages.choose_file', ['file' => __('messages.profile_image')]) }}");
+                    updateHandymanProfileImageStatus('');
+                    if (typeof Snackbar !== 'undefined') {
+                        Snackbar.show({ text: error.message || 'Please choose a valid image.', pos: 'bottom-center', backgroundColor: '#d32f2f', actionTextColor: '#fff' });
+                    } else {
+                        alert(error.message || 'Please choose a valid image.');
+                    }
+                } finally {
+                    setHandymanProfileImagePreparing(false);
+                }
             });
 
         </script>
