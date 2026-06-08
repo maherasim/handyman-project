@@ -44,9 +44,10 @@
                             <div class="form-group col-md-4">
                                 <label class="form-control-label" for="blog_attachment">{{ __('messages.image') }} <span class="text-danger"></span> </label>
                                 <div class="custom-file">
-                                    <input type="file" name="blog_attachment[]" class="custom-file-input" data-file-error="{{ __('messages.files_not_allowed') }}" multiple>
+                                    <input type="file" id="blog_attachment_input" onchange="prepareBlogAttachments(this)" name="blog_attachment[]" class="custom-file-input" data-file-error="{{ __('messages.files_not_allowed') }}" accept="image/*" multiple>
                                     <label class="custom-file-label upload-label">{{ __('messages.choose_file',['file' =>  __('messages.attachments') ]) }}</label>
                                 </div>
+                                <small id="blog-image-prepare-status" class="d-none mt-1 text-primary fw-bold"></small>
                             </div>
                     
                             <div class="form-group col-md-4">
@@ -64,6 +65,7 @@
                     
                             <div class="row blog_attachment_div">
                                 <div class="col-md-12">
+                                    <div class="row" id="new_blog_attachment_previews"></div>
                                     @if(getMediaFileExit($blogdata, 'blog_attachment'))
                                         @php
                                     $attchments = $blogdata->getMedia('blog_attachment');
@@ -109,7 +111,7 @@
                             </div>
                         </div>
                         
-                        {{ html()->submit(trans('messages.save'))->class('btn btn-md btn-primary float-end') }}
+                        {{ html()->submit(trans('messages.save'))->class('btn btn-md btn-primary float-end')->id('blog-submit-button')->attribute('data-default-text', trans('messages.save')) }}
                         {{ html()->form()->close() }}
                     </div>
                 </div>
@@ -176,6 +178,170 @@
         }
     });
 }
+
+        async function prepareBlogAttachments(input) {
+            const previewRow = document.getElementById('new_blog_attachment_previews');
+            if (previewRow) previewRow.innerHTML = '';
+            setBlogAttachmentsPreparing(true);
+
+            try {
+                if (!input.files || !input.files.length) return;
+
+                const dataTransfer = new DataTransfer();
+                const files = Array.from(input.files);
+                const maxOriginalSize = 4 * 1024 * 1024;
+                const rejectedFiles = [];
+                updateBlogImagePrepareStatus('Preparing 0 of ' + files.length + ' images...');
+
+                for (let index = 0; index < files.length; index++) {
+                    const file = files[index];
+                    updateBlogImagePrepareStatus('Preparing ' + (index + 1) + ' of ' + files.length + ' images...');
+                    if (file.size > maxOriginalSize) {
+                        rejectedFiles.push(file.name);
+                        continue;
+                    }
+
+                    const preparedFile = await prepareBlogImageForUpload(file, files.length);
+                    dataTransfer.items.add(preparedFile);
+
+                    if (previewRow && preparedFile.type && preparedFile.type.startsWith('image/')) {
+                        const objectUrl = URL.createObjectURL(preparedFile);
+                        const col = document.createElement('div');
+                        col.className = 'col-md-2 text-center mt-2';
+                        col.innerHTML = '<img src="' + objectUrl + '" class="attachment-image" alt="">';
+                        previewRow.appendChild(col);
+
+                        col.querySelector('img').addEventListener('load', function() {
+                            URL.revokeObjectURL(objectUrl);
+                        }, { once: true });
+                    }
+                }
+
+                input.files = dataTransfer.files;
+                if (input.files.length > 0) {
+                    $('.upload-label').text(input.files.length > 1 ? input.files.length + ' files selected' : input.files[0].name);
+                } else {
+                    $('.upload-label').text("{{ __('messages.choose_file',['file' =>  __('messages.attachments') ]) }}");
+                }
+                updateBlogImagePrepareStatus(input.files.length ? input.files.length + ' image' + (input.files.length === 1 ? '' : 's') + ' ready for upload.' : '');
+                if (rejectedFiles.length) {
+                    if (typeof Snackbar !== 'undefined') {
+                        Snackbar.show({ text: 'Each image must be 4 MB or smaller.', pos: 'bottom-center', backgroundColor: '#d32f2f', actionTextColor: '#fff' });
+                    } else {
+                        alert('Each image must be 4 MB or smaller.');
+                    }
+                }
+            } finally {
+                setBlogAttachmentsPreparing(false);
+            }
+        }
+
+        function updateBlogImagePrepareStatus(message) {
+            const status = document.getElementById('blog-image-prepare-status');
+            if (!status) return;
+
+            status.textContent = message;
+            status.classList.toggle('d-none', !message);
+        }
+
+        function setBlogAttachmentsPreparing(isPreparing) {
+            window.blogAttachmentsPreparing = isPreparing;
+
+            const submitButton = document.getElementById('blog-submit-button');
+            if (!submitButton) return;
+
+            if (!submitButton.dataset.defaultText) {
+                submitButton.dataset.defaultText = submitButton.value || submitButton.textContent || 'Save';
+            }
+
+            submitButton.disabled = isPreparing;
+
+            if (submitButton.tagName === 'INPUT') {
+                submitButton.value = isPreparing ? 'Preparing images...' : submitButton.dataset.defaultText;
+            } else {
+                submitButton.textContent = isPreparing ? 'Preparing images...' : submitButton.dataset.defaultText;
+            }
+        }
+
+        function prepareBlogImageForUpload(file, batchSize) {
+            const isLargeBatch = batchSize >= 3;
+            const maxSize = isLargeBatch ? 120 * 1024 : 250 * 1024;
+            const maxDimension = isLargeBatch ? 800 : 1000;
+
+            if (!file.type || !file.type.startsWith('image/')) {
+                return Promise.resolve(file);
+            }
+
+            return new Promise(function(resolve) {
+                const image = new Image();
+                const objectUrl = URL.createObjectURL(file);
+
+                image.onload = function() {
+                    URL.revokeObjectURL(objectUrl);
+
+                    if (!isLargeBatch && file.size <= maxSize && Math.max(image.width, image.height) <= maxDimension) {
+                        resolve(file);
+                        return;
+                    }
+
+                    const ratio = Math.min(maxDimension / image.width, maxDimension / image.height, 1);
+                    const canvas = document.createElement('canvas');
+                    canvas.width = Math.max(1, Math.round(image.width * ratio));
+                    canvas.height = Math.max(1, Math.round(image.height * ratio));
+
+                    const context = canvas.getContext('2d');
+                    context.drawImage(image, 0, 0, canvas.width, canvas.height);
+
+                    const qualities = isLargeBatch ? [0.62, 0.52, 0.44, 0.36] : [0.72, 0.62, 0.52, 0.44];
+                    compressBlogImage(canvas, file, qualities, maxSize, resolve);
+                };
+
+                image.onerror = function() {
+                    URL.revokeObjectURL(objectUrl);
+                    resolve(file);
+                };
+
+                image.src = objectUrl;
+            });
+        }
+
+        function compressBlogImage(canvas, originalFile, qualities, maxSize, resolve) {
+            const quality = qualities.shift() || 0.36;
+
+            canvas.toBlob(function(blob) {
+                if (!blob) {
+                    resolve(originalFile);
+                    return;
+                }
+
+                if (blob.size > maxSize && qualities.length) {
+                    compressBlogImage(canvas, originalFile, qualities, maxSize, resolve);
+                    return;
+                }
+
+                const safeName = originalFile.name.replace(/\.[^.]+$/, '') + '.jpg';
+                resolve(new File([blob], safeName, {
+                    type: 'image/jpeg',
+                    lastModified: Date.now()
+                }));
+            }, 'image/jpeg', quality);
+        }
+
+        $(document).on('submit', '#blog', function() {
+            if (window.blogAttachmentsPreparing) {
+                if (typeof Snackbar !== 'undefined') {
+                    Snackbar.show({
+                        text: 'Please wait, images are preparing for upload.',
+                        pos: 'bottom-center',
+                        backgroundColor: '#d32f2f',
+                        actionTextColor: '#fff'
+                    });
+                } else {
+                    alert('Please wait, images are preparing for upload.');
+                }
+                return false;
+            }
+        });
         </script>
     @endsection
 </x-master-layout>

@@ -186,6 +186,7 @@
             <div class="col-md-offset-3 col-sm-12 ">
                 {{ html()->submit(__('messages.save'))
                     ->class('btn btn-md btn-primary float-md-end submit_section1')
+                    ->id('theme-setup-submit')
                     ->attribute('onclick', 'saveThemeColors(event)') }}
             </div>
         </div>
@@ -252,23 +253,105 @@
             updateThemeColors();
         }
     })
-    function preview() {
-    var input = event.target;
-    var previewImage;
-    if (input.name === 'logo') {
-        previewImage = logo;
-    } else if (input.name === 'favicon') {
-        previewImage = favicon;
-    } else if (input.name === 'footer_logo') {
-        previewImage = footer_logo;
-    } else if (input.name === 'loader') {
-        previewImage = loader;
+    const MAX_UPLOAD_IMAGE_BYTES = 120 * 1024;
+    const MAX_UPLOAD_IMAGE_SIDE = 800;
+
+    function loadImageFromFile(file) {
+        return new Promise((resolve, reject) => {
+            const image = new Image();
+            image.onload = function() {
+                URL.revokeObjectURL(image.src);
+                resolve(image);
+            };
+            image.onerror = reject;
+            image.src = URL.createObjectURL(file);
+        });
     }
-    previewImage.src = URL.createObjectURL(input.files[0]);
-    var fileName = input.files[0].name;
-    var label = $(input).closest('.custom-file').find('.custom-file-label');
-    label.text(fileName);
-}
+
+    function canvasToBlob(canvas, quality) {
+        return new Promise((resolve) => {
+            canvas.toBlob(resolve, 'image/jpeg', quality);
+        });
+    }
+
+    async function compressImage(file) {
+        if (!file || !file.type || !file.type.startsWith('image/')) {
+            return file;
+        }
+
+        const image = await loadImageFromFile(file);
+        const scale = Math.min(1, MAX_UPLOAD_IMAGE_SIDE / Math.max(image.width, image.height));
+        const canvas = document.createElement('canvas');
+        canvas.width = Math.max(1, Math.round(image.width * scale));
+        canvas.height = Math.max(1, Math.round(image.height * scale));
+
+        const context = canvas.getContext('2d');
+        context.fillStyle = '#ffffff';
+        context.fillRect(0, 0, canvas.width, canvas.height);
+        context.drawImage(image, 0, 0, canvas.width, canvas.height);
+
+        let compressedBlob = null;
+        for (const quality of [0.62, 0.52, 0.44, 0.36]) {
+            compressedBlob = await canvasToBlob(canvas, quality);
+            if (compressedBlob && compressedBlob.size <= MAX_UPLOAD_IMAGE_BYTES) {
+                break;
+            }
+        }
+
+        if (!compressedBlob || compressedBlob.size >= file.size) {
+            return file;
+        }
+
+        const fileName = file.name.replace(/\.[^.]+$/, '') + '.jpg';
+        return new File([compressedBlob], fileName, {
+            type: 'image/jpeg',
+            lastModified: Date.now()
+        });
+    }
+
+    function replaceSelectedFile(input, file) {
+        const dataTransfer = new DataTransfer();
+        dataTransfer.items.add(file);
+        input.files = dataTransfer.files;
+    }
+
+    function preview() {
+        var input = event.target;
+        var selectedFile = input.files[0];
+        if (!selectedFile) return;
+
+        var saveButton = document.getElementById('theme-setup-submit');
+        var label = $(input).closest('.custom-file').find('.custom-file-label');
+        
+        saveButton.disabled = true;
+        label.text('Preparing image...');
+
+        var previewImage;
+        if (input.name === 'logo') {
+            previewImage = document.getElementById('logo_preview');
+        } else if (input.name === 'favicon') {
+            previewImage = document.getElementById('favicon_preview');
+        } else if (input.name === 'footer_logo') {
+            previewImage = document.getElementById('footer_logo_preview');
+        } else if (input.name === 'loader') {
+            previewImage = document.getElementById('loader_preview');
+        }
+
+        compressImage(selectedFile).then(function(file) {
+            if (file !== selectedFile) {
+                replaceSelectedFile(input, file);
+            }
+            if (previewImage) {
+                previewImage.src = URL.createObjectURL(file);
+            }
+            label.text(file.name);
+            saveButton.disabled = false;
+        }).catch(function(error) {
+            console.error('Image optimization failed:', error);
+            label.text('Choose file');
+            saveButton.disabled = false;
+        });
+    }
 
 function updateThemeColors() {
     const root = document.documentElement;
