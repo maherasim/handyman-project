@@ -25,7 +25,13 @@ class LanguageTranslator
         }
 
         if ($localeFromDomain !== null) {
-            \App::setLocale($localeFromDomain);
+            // Domain locale is the default for new visitors.
+            // An explicit user choice (stored in session) always overrides it.
+            if (session()->has('locale')) {
+                \App::setLocale(session()->get('locale'));
+            } else {
+                \App::setLocale($localeFromDomain);
+            }
         } elseif (!config('app.show_language_switcher', false)) {
             \App::setLocale(config('app.locale'));
         } elseif (session()->has('locale')) {

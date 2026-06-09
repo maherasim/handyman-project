@@ -32,7 +32,12 @@ class SetUserLocale
         }
 
         if ($localeSetByDomain) {
-            // LanguageTranslator already set locale by domain; do not override
+            // Domain locale is the default, but the authenticated user's saved
+            // language preference always overrides it (explicit choice > domain default).
+            if (Auth::check() && Auth::user()->language_option) {
+                \App::setLocale(Auth::user()->language_option);
+            }
+            // If no user preference, LanguageTranslator already set domain or session locale.
         } elseif (!config('app.show_language_switcher', false)) {
             \App::setLocale(config('app.locale'));
         } elseif (Auth::check() && Auth::user()->language_option) {
