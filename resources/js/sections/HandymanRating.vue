@@ -41,7 +41,7 @@
                         </div>
                         <div class="mb-4">
                             <label class="form-label text-capitalize">{{$t('messages.description')}}</label>
-                            <textarea class="form-control" v-model="review" id="description" name="review" rows="4" placeholder="Write Here..."></textarea>
+                            <textarea class="form-control" v-model="review" id="description" name="review" rows="4" :placeholder="$t('messages.write_here')"></textarea>
                         </div>
                         <div class="d-flex align-items-center gap-3 flex-wrap">
                             <button type="submit" class="btn btn-primary">{{$t('messages.submit')}}</button>
@@ -56,11 +56,13 @@
 
 <script setup>
 import { ref,computed,onMounted} from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useField, useForm } from 'vee-validate';
-import { STORE_HANDYMAN_RATING_API, DELETE_HANDYMAN_RATING_API} from '../data/api'; 
+import { STORE_HANDYMAN_RATING_API, DELETE_HANDYMAN_RATING_API} from '../data/api';
 import * as yup from 'yup';
 import Swal from 'sweetalert2';
 
+const { t } = useI18n()
 const props = defineProps(['booking_id','service_id','customer_id','handyman_id','handymanrating']);
 console.log(props.handymanrating);
 
@@ -86,7 +88,7 @@ const defaultData = () => {
 }
 
 const validationSchema = yup.object({
-    rating: yup.string().required('Rating is Required'),
+    rating: yup.string().required(() => t('messages.rating_is_required')),
 })
 
 const { handleSubmit, errors, resetForm } = useForm({
@@ -120,7 +122,7 @@ const formSubmit = handleSubmit(async(values) => {
         if(response.ok) {
             const responseData = await response.json();
             Swal.fire({
-            title: 'Done',
+            title: t('messages.done'),
             text: responseData.message,
             icon: 'success',
             iconColor: '#3333ff'
@@ -218,7 +220,7 @@ const deleteRating = async(id) =>{
         if(response.ok) {
             const responseData = await response.json();
             Swal.fire({
-            title: 'Done',
+            title: t('messages.done'),
             text: responseData.message,
             icon: 'success',
             iconColor: '#3333ff'

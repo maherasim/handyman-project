@@ -12,8 +12,8 @@
                             <path d="M60.7272 65.1807C60.7272 64.1923 59.9254 63.3904 58.937 63.3904H45.6037C44.6153 63.3904 43.8135 64.1923 43.8135 65.1807C43.8135 66.169 44.6153 66.9709 45.6037 66.9709H58.937C59.9254 66.9709 60.7272 66.169 60.7272 65.1807Z" fill="currentColor"/>
                         </svg>
                     </div>
-                    <h5 class="mb-1 text-secondary">No Query Yet</h5>
-                    <p> To submit your problem simply press add button and explain your concern</p>
+                    <h5 class="mb-1 text-secondary">{{ $t('messages.no_query_yet') }}</h5>
+                    <p>{{ $t('messages.no_query_description') }}</p>
                     <a v-if="canhelpdesklist" href="javascript:void(0);" class="btn btn-primary px-5"
                     data-bs-toggle="modal" data-bs-target="#helpdeskModal">{{$t('messages.add')}}</a>
                 </div>
@@ -46,7 +46,7 @@
                         <input type="hidden" name="_token" :value="csrfToken">
                         <div class="mb-4">
                             <label class="form-label text-capitalize">{{$t('messages.subject')}} <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" v-model="subject" placeholder="subject" id="subject" name="subject" @input="clearError('subject')">
+                            <input type="text" class="form-control" v-model="subject" :placeholder="$t('messages.subject')" id="subject" name="subject" @input="clearError('subject')">
                             <span v-if="errorMessages['subject']">
                                     <ul class="text-danger">
                                         <li v-for="err in errorMessages['subject']" :key="err">{{ err }}</li>
@@ -57,7 +57,7 @@
                         </div>
                         <div class="mb-4">
                             <label class="form-label text-capitalize">{{$t('messages.description')}} <span class="text-danger">*</span></label>
-                            <textarea class="form-control" v-model="description" id="description" name="description" rows="4" placeholder="Write Here..." @input="clearError('description')"></textarea>
+                            <textarea class="form-control" v-model="description" id="description" name="description" rows="4" :placeholder="$t('messages.write_here')" @input="clearError('description')"></textarea>
                             <span v-if="errorMessages['description']">
                                     <ul class="text-danger">
                                         <li v-for="err in errorMessages['description']" :key="err">{{ err }}</li>
@@ -85,6 +85,7 @@
 
 <script setup>
 import { ref,computed,onMounted} from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useField, useForm } from 'vee-validate';
 import { STORE_HELPDESK_API} from '../data/api';
 import * as yup from 'yup';
@@ -93,6 +94,7 @@ import useDataTable from '../hooks/Datatable'
 import {useSection} from '../store/index'
 import {useObserveSection} from '../hooks/Observer'
 
+const { t } = useI18n()
 const props = defineProps(['employee_id','canhelpdesklist']);
 console.log(props.canhelpdesklist)
 const IsLoading=ref(0)
@@ -115,8 +117,8 @@ const defaultData = () => {
 const subjectError = ref('');
 const descriptionError = ref('');
 const validationSchema = yup.object({
-    subject: yup.string().required('Subject is Required'),
-    description: yup.string().required('Description is Required'),
+    subject: yup.string().required(() => t('messages.subject_is_required')),
+    description: yup.string().required(() => t('messages.description_required')),
 })
 
 const { handleSubmit, errors, resetForm } = useForm({

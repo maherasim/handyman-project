@@ -99,11 +99,11 @@
                                 {{ html()->select(
                                         'availability',
                                         [
-                                            'full_time' => 'Full-time',
-                                            'part_time' => 'Part-time',
+                                            'full_time' => __('messages.full_time'),
+                                            'part_time' => __('messages.part_time'),
                                         ],
                                         $availabilityValue,
-                                    )->class('form-control')->placeholder(__('Select Availability')) }}
+                                    )->class('form-control')->placeholder(__('messages.select_availability')) }}
                                 <small class="help-block with-errors text-danger"></small>
                             </div>
 
@@ -227,8 +227,8 @@
                                 {{ html()->textarea('experience', $handymandata->experience)->class('form-control textarea')->rows(2)->placeholder(__('messages.experience'))->id('experience') }}
                             </div>
                             <div class="form-group col-md-4">
-                                {{ html()->label(__('About Me'))->class('form-control-label')->for('about_me') }}
-                                {{ html()->textarea('about_me', $handymandata->about_me)->class('form-control textarea')->rows(2)->placeholder(__('about_me'))->id('about_me') }}
+                                {{ html()->label(__('messages.about_me'))->class('form-control-label')->for('about_me') }}
+                                {{ html()->textarea('about_me', $handymandata->about_me)->class('form-control textarea')->rows(2)->placeholder(__('messages.about_me'))->id('about_me') }}
                             </div>
                             <div class="form-group col-md-4">
                                 {{ html()->label(__('messages.address'), 'address')->class('form-control-label') }}
@@ -287,7 +287,7 @@
                     inputValue = inputValue.replace(/[^0-9+\- ]/g, '');
                     if (inputValue.length > 15) {
                         inputValue = inputValue.substring(0, 15);
-                        $('#contact_number_err').text('Contact number should not exceed 15 characters');
+                        $('#contact_number_err').text('{{ __("messages.contact_number_max_15") }}');
                     } else {
                         $('#contact_number_err').text('');
                     }
@@ -412,7 +412,7 @@
     }
 
     if (value < 1 || value > 99) {
-        errorField.text('Commission must be between 1 and 99.');
+        errorField.text('{{ __("messages.commission_between_1_85") }}');
     } else {
         errorField.text('');
     }
@@ -421,9 +421,9 @@
             $('#handyman').on('submit', function () {
                 if (window.handymanProfileImagePreparing) {
                     if (typeof Snackbar !== 'undefined') {
-                        Snackbar.show({ text: 'Please wait, image is preparing for upload.', pos: 'bottom-center', backgroundColor: '#d32f2f', actionTextColor: '#fff' });
+                        Snackbar.show({ text: '{{ __("messages.please_wait_image_preparing") }}', pos: 'bottom-center', backgroundColor: '#d32f2f', actionTextColor: '#fff' });
                     } else {
-                        alert('Please wait, image is preparing for upload.');
+                        alert('{{ __("messages.please_wait_image_preparing") }}');
                     }
                     return false;
                 }
@@ -446,7 +446,7 @@
                 button.disabled = isPreparing;
                 button.classList.toggle('btn-secondary', isPreparing);
                 button.classList.toggle('btn-primary', !isPreparing);
-                button.textContent = isPreparing ? 'Preparing image...' : button.dataset.defaultText;
+                button.textContent = isPreparing ? '{{ __("messages.preparing_image") }}' : button.dataset.defaultText;
             }
 
             function updateHandymanProfileImageStatus(message) {
@@ -484,7 +484,7 @@
                 var maxDimension = 800;
 
                 if (file.size > maxOriginalSize) {
-                    throw new Error('Image must be 4 MB or smaller.');
+                    throw new Error('{{ __("messages.image_max_4mb") }}');
                 }
 
                 if (!file.type || !file.type.startsWith('image/')) {
@@ -528,7 +528,7 @@
                 if (!file) return;
 
                 setHandymanProfileImagePreparing(true);
-                updateHandymanProfileImageStatus('Preparing image...');
+                updateHandymanProfileImageStatus('{{ __("messages.preparing_image") }}');
 
                 try {
                     var preparedFile = await prepareHandymanProfileImage(file);
@@ -536,7 +536,7 @@
                     dataTransfer.items.add(preparedFile);
                     input.files = dataTransfer.files;
                     $('.upload-label').text(preparedFile.name);
-                    updateHandymanProfileImageStatus('Image ready for upload.');
+                    updateHandymanProfileImageStatus('{{ __("messages.image_ready_for_upload") }}');
 
                     var objectUrl = URL.createObjectURL(preparedFile);
                     $('#profile_image_preview').attr('src', objectUrl).one('load', function() {
@@ -547,9 +547,9 @@
                     $('.upload-label').text("{{ __('messages.choose_file', ['file' => __('messages.profile_image')]) }}");
                     updateHandymanProfileImageStatus('');
                     if (typeof Snackbar !== 'undefined') {
-                        Snackbar.show({ text: error.message || 'Please choose a valid image.', pos: 'bottom-center', backgroundColor: '#d32f2f', actionTextColor: '#fff' });
+                        Snackbar.show({ text: error.message || '{{ __("messages.please_choose_valid_image") }}', pos: 'bottom-center', backgroundColor: '#d32f2f', actionTextColor: '#fff' });
                     } else {
-                        alert(error.message || 'Please choose a valid image.');
+                        alert(error.message || '{{ __("messages.please_choose_valid_image") }}');
                     }
                 } finally {
                     setHandymanProfileImagePreparing(false);

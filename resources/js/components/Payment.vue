@@ -20,11 +20,11 @@
             </div>
             <div class="form-check" v-if="isPaypalEnabled">
               <input class="form-check-input" type="radio" name="payment_method" v-model="payment_method" id="paypal" value="paypal" />
-              <label class="form-check-label h6 fw-normal text-capitalize" for="paypal">{{ $t('PayPal') }}</label>
+              <label class="form-check-label h6 fw-normal text-capitalize" for="paypal">{{ $t('messages.paypal') }}</label>
             </div>
             <div class="form-check">
               <input class="form-check-input" type="radio" name="payment_method" v-model="payment_method" id="bank_transfer" value="bank_transfer" @change="onPaymentMethodChange" />
-              <label class="form-check-label h6 fw-normal text-capitalize" for="bank_transfer">{{ $t('Bank Transfer') || 'Bank Transfer' }}</label>
+              <label class="form-check-label h6 fw-normal text-capitalize" for="bank_transfer">{{ $t('messages.bank_transfer') }}</label>
             </div>
           </div>
             <p>
@@ -53,7 +53,7 @@
       <div class="modal-content shadow-lg border-0 rounded-4">
         <div class="modal-header bg-primary text-white rounded-top-4">
           <h5 class="modal-title" id="bankTransferModalLabel">
-            <i class="bi bi-bank2 me-2"></i> {{ $t('Bank Transfer Details') || 'Bank Transfer Details' }}
+            <i class="bi bi-bank2 me-2"></i> {{ $t('messages.bank_transfer_details') }}
           </h5>
           <button type="button" class="btn-close btn-close-white" aria-label="Close" @click.stop.prevent="hideBankInfoModal"></button>
         </div>
@@ -61,18 +61,18 @@
           <div class="mb-4">
             <p class="fs-6 mb-0">
               <strong>
-                Please pay the amount of <span class="text-success">{{ formatCurrencyVue(paymentDisplayAmount) }}</span>
-                via bank transfer using the details below:
+                {{ $t('messages.please_pay_amount') }} <span class="text-success">{{ formatCurrencyVue(paymentDisplayAmount) }}</span>
+                {{ $t('messages.via_bank_transfer_below') }}
               </strong>
             </p>
           </div>
           <div class="mb-3">
-            <h6 class="text-primary mb-3"><strong>For local and international transfers</strong></h6>
+            <h6 class="text-primary mb-3"><strong>{{ $t('messages.for_local_international_transfers') }}</strong></h6>
           </div>
           <div class="row g-3">
             <div class="col-md-6">
               <div class="bg-light p-3 rounded border">
-                <h6 class="text-primary mb-2"><i class="bi bi-credit-card-2-front-fill me-2"></i>Bank Information</h6>
+                <h6 class="text-primary mb-2"><i class="bi bi-credit-card-2-front-fill me-2"></i>{{ $t('messages.bank_information') }}</h6>
                 <ul class="list-unstyled mb-0">
                   <li><strong>Recipient:</strong>Frobster international</li>
                   <li><strong>IBAN:</strong> DE02 1001 0178 1361 6331 79</li>
@@ -89,10 +89,10 @@
             </div>
             <div class="col-md-6">
               <div class="bg-light p-3 rounded border h-100">
-                <h6 class="text-primary mb-2"><i class="bi bi-info-circle-fill me-2"></i>Instructions</h6>
-                <p class="mb-2">Mention your Booking ID <code>#{{ booking_id }}</code> in the transfer reference.</p>
+                <h6 class="text-primary mb-2"><i class="bi bi-info-circle-fill me-2"></i>{{ $t('messages.instructions') }}</h6>
+                <p class="mb-2">{{ $t('messages.mention_booking_id_reference', { id: booking_id }) }}</p>
                 <p class="mb-0">
-                  <strong>Send Proof of Payment (screenshot or pdf Document) to:</strong>
+                  <strong>{{ $t('messages.send_proof_of_payment') }}</strong>
                   <a href="mailto:billing@frobster.com">billing@frobster.com</a>
                 </p>
               </div>
@@ -100,7 +100,7 @@
           </div>
         </div>
         <div class="modal-footer border-top-0 px-4 pb-4">
-          <button type="button" class="btn btn-secondary rounded-pill px-4" @click.stop.prevent="hideBankInfoModal">Close</button>
+          <button type="button" class="btn btn-secondary rounded-pill px-4" @click.stop.prevent="hideBankInfoModal">{{ $t('messages.close') }}</button>
         </div>
       </div>
     </div>
@@ -109,6 +109,7 @@
 
 <script setup>
 import { ref, defineProps, computed, onMounted, onBeforeUnmount } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { Modal } from 'bootstrap'
 import * as yup from 'yup'
 import { useField, useForm } from 'vee-validate'
@@ -123,6 +124,7 @@ import Swal from 'sweetalert2'
 import { confirmcancleSwal, confirmcancleWallet } from '../data/utilities'
 import Wallet from '../components/Wallet.vue'
 
+const { t } = useI18n()
 const props = defineProps(['booking_id', 'customer_id', 'discount', 'total_amount', 'advance_payment_amount', 'wallet_amount', 'payment_type', 'total_advance_paid_amount', 'total_booking_amount', 'advance_percentage'])
 
 const paymentLabel = computed(() => {
@@ -239,7 +241,7 @@ const formSubmit = handleSubmit(async (values) => {
   if (values.payment_type === 'wallet') {
     const walletBal = Number(props.wallet_amount) || 0;
     if (walletBal <= 0) {
-      Swal.fire({ title: '', text: 'Insufficient wallet balance. Please choose another payment method.', icon: 'warning', iconColor: '#3333ff' });
+      Swal.fire({ title: '', text: t('messages.insufficient_wallet_balance_choose_another'), icon: 'warning', iconColor: '#3333ff' });
       return;
     }
     if (values.wallet_amount > 0 && values.total_amount < values.wallet_amount) {
@@ -247,7 +249,7 @@ const formSubmit = handleSubmit(async (values) => {
       values.txn_id = `#${props.booking_id}`
       values.payment_status = values.type === 'advance_payment' ? 'advanced_paid' : 'paid'
 
-      confirmcancleSwal({ title: 'Confirm Payment', subtitle: 'Do you want to pay with Wallet?' }).then(async (result) => {
+      confirmcancleSwal({ title: t('messages.confirm_payment'), subtitle: t('messages.pay_with_wallet_confirm') }).then(async (result) => {
         IsLoading.value = 0
         if (!result.isConfirmed) return
         IsLoading.value = 1
@@ -262,12 +264,12 @@ const formSubmit = handleSubmit(async (values) => {
 
         if (response.ok) {
           const responseData = await response.json()
-          Swal.fire({ title: 'Done', text: responseData.message, icon: 'success', iconColor: '#3333ff' }).then(() => {
+          Swal.fire({ title: t('messages.done'), text: responseData.message, icon: 'success', iconColor: '#3333ff' }).then(() => {
             const baseUrl = document.querySelector('meta[name="baseUrl"]').getAttribute('content')
             window.location.href = baseUrl + '/booking-list'
           })
         } else {
-          Swal.fire({ title: 'Error', text: 'Something Went Wrong!', icon: 'error', iconColor: '#3333ff' })
+          Swal.fire({ title: t('messages.error'), text: t('messages.something_went_wrong'), icon: 'error', iconColor: '#3333ff' })
         }
         IsLoading.value = 0
       })
@@ -282,7 +284,7 @@ const formSubmit = handleSubmit(async (values) => {
       values.txn_id = `#${props.booking_id}`
       values.payment_status = values.type === 'advance_payment' ? 'advanced_paid' : 'paid'
 
-      confirmcancleSwal({ title: 'Bank Transfer Selected', subtitle: 'Please complete your payment via bank transfer and email proof to billing@frobster.com' }).then(async (result) => {
+      confirmcancleSwal({ title: t('messages.bank_transfer_selected'), subtitle: t('messages.bank_transfer_email_proof') }).then(async (result) => {
           IsLoading.value = 0
           // if (!result.isConfirmed) return
           IsLoading.value = 1
@@ -297,12 +299,12 @@ const formSubmit = handleSubmit(async (values) => {
 
           if (response.ok) {
               const responseData = await response.json()
-              Swal.fire({ title: 'Done', text: responseData.message, icon: 'success', iconColor: '#3333ff' }).then(() => {
+              Swal.fire({ title: t('messages.done'), text: responseData.message, icon: 'success', iconColor: '#3333ff' }).then(() => {
                   const baseUrl = document.querySelector('meta[name="baseUrl"]').getAttribute('content')
                   window.location.href = baseUrl + '/booking-list'
               })
           } else {
-              Swal.fire({ title: 'Error', text: 'Something Went Wrong!', icon: 'error', iconColor: '#3333ff' })
+              Swal.fire({ title: t('messages.error'), text: t('messages.something_went_wrong'), icon: 'error', iconColor: '#3333ff' })
           }
           IsLoading.value = 0
       });
@@ -321,11 +323,11 @@ const formSubmit = handleSubmit(async (values) => {
           if (responseData.payment_geteway_data != null) {
               redirectToPayPal(values)
           } else {
-              Swal.fire({ title: 'Error', text: 'Check Your Paypal key Integration!', icon: 'error', iconColor: '#3333ff' })
+              Swal.fire({ title: t('messages.error'), text: t('messages.check_paypal_integration'), icon: 'error', iconColor: '#3333ff' })
               IsLoading.value = 0
           }
       } else {
-          Swal.fire({ title: 'Error', text: 'Something Went Wrong!', icon: 'error', iconColor: '#3333ff' })
+          Swal.fire({ title: t('messages.error'), text: t('messages.something_went_wrong'), icon: 'error', iconColor: '#3333ff' })
           IsLoading.value = 0
       }
   } else if (values.payment_type === 'stripe') {
@@ -343,11 +345,11 @@ const formSubmit = handleSubmit(async (values) => {
       if (responseData.payment_geteway_data != null) {
         Openstripepayment(responseData)
       } else {
-        Swal.fire({ title: 'Error', text: 'Check Your Stripe key Integration!', icon: 'error', iconColor: '#3333ff' })
+        Swal.fire({ title: t('messages.error'), text: t('messages.check_stripe_integration'), icon: 'error', iconColor: '#3333ff' })
         IsLoading.value = 0
       }
     } else {
-      Swal.fire({ title: 'Error', text: 'Something Went Wrong!', icon: 'error', iconColor: '#3333ff' })
+      Swal.fire({ title: t('messages.error'), text: t('messages.something_went_wrong'), icon: 'error', iconColor: '#3333ff' })
       IsLoading.value = 0
     }
   }
@@ -369,13 +371,13 @@ const redirectToPayPal = async (values) => {
       if (data.url) {
         window.location.href = data.url
       } else {
-        Swal.fire({ title: 'Error', text: 'Invalid PayPal response.', icon: 'error', iconColor: '#3333ff' })
+        Swal.fire({ title: t('messages.error'), text: t('messages.invalid_paypal_response'), icon: 'error', iconColor: '#3333ff' })
       }
     } else {
-      Swal.fire({ title: 'Error', text: 'Failed to redirect to PayPal.', icon: 'error', iconColor: '#3333ff' })
+      Swal.fire({ title: t('messages.error'), text: t('messages.failed_redirect_paypal'), icon: 'error', iconColor: '#3333ff' })
     }
   } catch (error) {
-    Swal.fire({ title: 'Error', text: 'Something went wrong.', icon: 'error', iconColor: '#3333ff' })
+    Swal.fire({ title: t('messages.error'), text: t('messages.something_went_wrong'), icon: 'error', iconColor: '#3333ff' })
     console.error(error)
   } finally {
     IsLoading.value = 0
@@ -398,10 +400,10 @@ const Openstripepayment = async (data) => {
     if (responseData.url) {
       window.location.href = responseData.url
     } else {
-      Swal.fire({ title: 'Error', text: responseData.message || 'Something went wrong.', icon: 'error', iconColor: '#3333ff' })
+      Swal.fire({ title: t('messages.error'), text: responseData.message || t('messages.something_went_wrong'), icon: 'error', iconColor: '#3333ff' })
     }
   } else {
-    Swal.fire({ title: 'Error', text: 'Stripe redirect failed.', icon: 'error', iconColor: '#3333ff' })
+    Swal.fire({ title: t('messages.error'), text: t('messages.stripe_redirect_failed'), icon: 'error', iconColor: '#3333ff' })
   }
 }
 

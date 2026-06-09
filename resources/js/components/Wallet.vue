@@ -5,10 +5,10 @@
       <form @submit="formSubmit">
         <input type="hidden" name="_token" :value="csrfToken">
         <h6 class="mb-2 mt-3 text-capitalize">{{ $t('messages.wallet_top_up') }}</h6>
-        <p>What amount would you prefer to top up with?</p>
+        <p>{{ $t('messages.wallet_topup_question') }}</p>
         <div class="d-flex align-items-center flex-wrap gap-3">
           <div class="input-group ml-auto">
-            <input type="number" min="0" step="any" v-model="amount" class="form-control" placeholder="Amount..." aria-label="Amount" aria-describedby="addon-wrapping">
+            <input type="number" min="0" step="any" v-model="amount" class="form-control" :placeholder="$t('messages.amount_placeholder')" aria-label="Amount" aria-describedby="addon-wrapping">
 <ul class="nav nav-tabs pay-tabs nav-fill tabslink gap-3 provider-slot">
   <li class="nav-item m-0">
     <!-- Add a click event to set the amount -->

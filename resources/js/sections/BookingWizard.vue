@@ -18,7 +18,7 @@
                 <div class="text-end">
                   <div class="h5 text-primary mb-0">
                     <span v-if="service.price > 0">{{ formatCurrencyVue(service.price) }}</span>
-                    <span v-else>Free</span>
+                    <span v-else>{{ $t('messages.free') }}</span>
                     <span v-if="service.type"> / {{ service.type }}</span>
                     <span v-if="service.type && service.duration"> ({{ formattedDuration(service.duration).replace('(','').replace(')','') }})</span>
                   </div>

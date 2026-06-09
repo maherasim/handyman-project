@@ -7,14 +7,14 @@
                 <div class="row">
                     <div class="col-lg-8">
                       <div  class="booking-list-content-active">
-                          <h5 class="text-capitalize">schedule service</h5>
+                          <h5 class="text-capitalize">{{ $t('messages.schedule_service') }}</h5>
         
                           <div class="mt-5 card bg-light rounded-3">
                             <div class="card-body booking-service-form">
                               <div class="row">
                                   
                                   <div class="col-12">
-                                      <label class="form-label">Date And Time</label>
+                                      <label class="form-label">{{ $t('messages.date_and_time') }}</label>
                                       <div class="input-group icon-left custom-form-field flex-nowrap">
                                           <span class="input-group-text flex-shrink-0" id="dateandtime">
                                               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="17" viewBox="0 0 16 17" fill="none">
@@ -34,7 +34,7 @@
                                                 v-model="date"
                                                 :config="config"
                                                 class="form-control"
-                                                placeholder="Select date and time"
+                                                :placeholder="$t('messages.select_date_and_time')"
                                                 name="date" />
                                       </div>
       
@@ -46,7 +46,7 @@
                                         <span class="text-danger">{{ errors.date }}</span>
                                   </div>
                                   <div class="col-12">
-                                      <label class="form-label">Date And Time</label>
+                                      <label class="form-label">{{ $t('messages.date_and_time') }}</label>
                                       <div class="input-group icon-left custom-form-field flex-nowrap">
                                           <span class="input-group-text flex-shrink-0" id="dateandtime">
                                               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="17" viewBox="0 0 16 17" fill="none">
@@ -66,7 +66,7 @@
                                                 v-model="date"
                                                 :config="config"
                                                 class="form-control"
-                                                placeholder="Select date and time"
+                                                :placeholder="$t('messages.select_date_and_time')"
                                                 name="date" />
                                       </div>
       
@@ -78,7 +78,7 @@
                                         <span class="text-danger">{{ errors.date }}</span>
                                   </div>
                                   <div class="col-12 mt-5">
-                                      <label class="form-label">location</label>
+                                      <label class="form-label">{{ $t('messages.location') }}</label>
                                       <div class="input-group icon-left custom-form-field">
                                           <span class="input-group-text align-items-start pt-4">
                                               <svg xmlns="http://www.w3.org/2000/svg" width="14" height="15"
@@ -94,7 +94,7 @@
                                               </svg>
                                           </span>
                                           <textarea class="form-control"
-                                              placeholder="Address" v-model="address" name="address"></textarea>
+                                              :placeholder="$t('messages.address')" v-model="address" name="address"></textarea>
       
                                           
                                       </div>
@@ -106,7 +106,7 @@
                                         <span class="text-danger">{{ errors.address }}</span>
 
                                         <div>
-                                            <a @click="getCurrentLocation" class="btn btn-primary mt-5">Get Current riaz Location</a>
+                                            <a @click="getCurrentLocation" class="btn btn-primary mt-5">{{ $t('messages.get_current_location') }}</a>
                                         </div>
                                   </div>
                               </div>
@@ -118,9 +118,9 @@
             </div>
             <div class="mt-5 pt-md-5 pt-3 text-center">
                 <div class="d-inline-flex align-items-center flex-wrap gap-3">
-                    <a :href="`${baseUrl}/post-job-detail/${post_job.post_request_detail.id}`" class="btn btn-outline-primary">Cancel</a>
-                    
-                    <button type="submit" class="btn btn-primary"><span>Save Booking</span></button>
+                    <a :href="`${baseUrl}/post-job-detail/${post_job.post_request_detail.id}`" class="btn btn-outline-primary">{{ $t('messages.cancel') }}</a>
+
+                    <button type="submit" class="btn btn-primary"><span>{{ $t('messages.save_booking') }}</span></button>
                 </div>
             </div>
            </form>

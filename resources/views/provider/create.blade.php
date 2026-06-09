@@ -129,7 +129,7 @@
                             @endif
                     
                             <div class="form-group col-md-6">
-                                {{ html()->label(__('messages.select_name', ['select' => __('Language')]), 'languages')->class('form-control-label') }}
+                                {{ html()->label(__('messages.select_name', ['select' => __('messages.language')]), 'languages')->class('form-control-label') }}
                                 <br />
                                 {{ html()->select(
                                         'languages[]',
@@ -139,48 +139,48 @@
                             </div>
 
                             <div class="form-group col-md-6">
-                                {{ html()->label(__('messages.select_name', ['select' => __('Country tax')]), 'tax_country_id')->class('form-control-label') }}
+                                {{ html()->label(__('messages.select_name', ['select' => __('messages.country_tax')]), 'tax_country_id')->class('form-control-label') }}
                                 <br />
                                 {{ html()->select(
                                         'tax_country_id',
                                         [optional($providerdata->country)->id => optional($providerdata->country)->name],
                                         optional($providerdata->country)->id,
-                                    )->class('form-group select2js tax_country')->attribute('data-placeholder', __('messages.select_name', ['select' => __('Tax Country')]))->attribute('data-ajax--url', route('ajax-list', ['type' => 'country']))->attribute('disabled', true) }}
+                                    )->class('form-group select2js tax_country')->attribute('data-placeholder', __('messages.select_name', ['select' => __('messages.tax_country')]))->attribute('data-ajax--url', route('ajax-list', ['type' => 'country']))->attribute('disabled', true) }}
                             </div>
                             <input type="hidden" name="tax_country_id" value="{{ optional($providerdata->country)->id }}">
 
                             <div class="form-group col-md-6">
-                                {{ html()->label(__('Company Name'))->class('form-control-label')->for('company_name') }}
-                                {{ html()->text('company_name', $providerdata->company_name)->placeholder(__('Company Name'))->class('form-control') }}
+                                {{ html()->label(__('messages.company_name'))->class('form-control-label')->for('company_name') }}
+                                {{ html()->text('company_name', $providerdata->company_name)->placeholder(__('messages.company_name'))->class('form-control') }}
                                 <small class="help-block with-errors text-danger"></small>
                             </div>
 
                             <div class="form-group col-md-6">
-                                {{ html()->label(__('Vat Number') . ' <span class="text-danger">*</span>')->class('form-control-label text-danger')->for('vat_number') }}
-                                {{ html()->text('vat_number', $providerdata->vat_number)->placeholder(__('Vat Number'))->class('form-control')->required() }}
+                                {{ html()->label(__('messages.vat_number') . ' <span class="text-danger">*</span>')->class('form-control-label text-danger')->for('vat_number') }}
+                                {{ html()->text('vat_number', $providerdata->vat_number)->placeholder(__('messages.vat_number'))->class('form-control')->required() }}
                                 <small class="help-block with-errors text-danger"></small>
                             </div>
 
                             <div class="form-group col-md-6">
-                                {{ html()->label(__('skills'))->class('form-control-label')->for('skills') }}
-                                {{ html()->text('skills', $providerdata->skills)->placeholder(__('skills'))->class('form-control') }}
+                                {{ html()->label(__('messages.skills'))->class('form-control-label')->for('skills') }}
+                                {{ html()->text('skills', $providerdata->skills)->placeholder(__('messages.skills'))->class('form-control') }}
                                 <small class="help-block with-errors text-danger"></small>
                             </div>
 
                             <div class="form-group col-md-6">
-                                {{ html()->label(__('Education'))->class('form-control-label')->for('education') }}
-                                {{ html()->text('education', $providerdata->education)->placeholder(__('education'))->class('form-control') }}
+                                {{ html()->label(__('messages.education'))->class('form-control-label')->for('education') }}
+                                {{ html()->text('education', $providerdata->education)->placeholder(__('messages.education'))->class('form-control') }}
                                 <small class="help-block with-errors text-danger"></small>
                             </div>
 
                             <div class="form-group col-md-6">
-                                {{ html()->label(__('Certification'))->class('form-control-label')->for('certification') }}
-                                {{ html()->text('certification', $providerdata->certification)->placeholder(__('Certification'))->class('form-control') }}
+                                {{ html()->label(__('messages.certification'))->class('form-control-label')->for('certification') }}
+                                {{ html()->text('certification', $providerdata->certification)->placeholder(__('messages.certification'))->class('form-control') }}
                                 <small class="help-block with-errors text-danger"></small>
                             </div>
 
                             <div class="form-group col-md-6">
-                                {{ html()->label(__('Availability'))->class('form-control-label')->for('availability') }}
+                                {{ html()->label(__('messages.availability'))->class('form-control-label')->for('availability') }}
                                 @php
                                     // Convert old values (1/0 or 'Full-time'/'Part-time') to new format for display
                                     $availabilityValue = $providerdata->availability;
@@ -193,28 +193,28 @@
                                 {{ html()->select(
                                         'availability',
                                         [
-                                            'full_time' => 'Full-time',
-                                            'part_time' => 'Part-time',
+                                            'full_time' => __('messages.full_time'),
+                                            'part_time' => __('messages.part_time'),
                                         ],
                                         $availabilityValue,
-                                    )->class('form-control')->placeholder(__('Select Availability')) }}
+                                    )->class('form-control')->placeholder(__('messages.select_availability')) }}
                                 <small class="help-block with-errors text-danger"></small>
                             </div>
 
                             <div class="form-group col-md-6">
-                                {{ html()->label(__('Mobility'))->class('form-control-label')->for('mobility') }}
-                                {{ html()->text('mobility', $providerdata->mobility)->placeholder(__('Mobility'))->class('form-control') }}
+                                {{ html()->label(__('messages.mobility'))->class('form-control-label')->for('mobility') }}
+                                {{ html()->text('mobility', $providerdata->mobility)->placeholder(__('messages.mobility'))->class('form-control') }}
                                 <small class="help-block with-errors text-danger"></small>
                             </div>
 
                             <div class="form-group col-md-12">
-                                {{ html()->label(__('experience'), 'experience')->class('form-control-label') }}
-                                {{ html()->textarea('experience', $providerdata->experience)->class('form-control textarea')->rows(2)->placeholder(__('experience'))->id('experience') }}
+                                {{ html()->label(__('messages.experience'), 'experience')->class('form-control-label') }}
+                                {{ html()->textarea('experience', $providerdata->experience)->class('form-control textarea')->rows(2)->placeholder(__('messages.experience'))->id('experience') }}
                             </div>
 
                             <div class="form-group col-md-12">
-                                {{ html()->label(__('About Me'))->class('form-control-label')->for('about_me') }}
-                                {{ html()->textarea('about_me', $providerdata->about_me)->class('form-control textarea')->rows(2)->placeholder(__('about_me'))->id('about_me') }}
+                                {{ html()->label(__('messages.about_me'))->class('form-control-label')->for('about_me') }}
+                                {{ html()->textarea('about_me', $providerdata->about_me)->class('form-control textarea')->rows(2)->placeholder(__('messages.about_me'))->id('about_me') }}
                             </div>
 
                             <div class="form-group col-md-12">
@@ -285,7 +285,7 @@
                                 <div class="form-group row">
                                     <div class="col-md-9 text-md-right pe-1">
                                         <button type="button" id="add-section" class="button-custom button-added">
-                                            <i class="fas fa-plus me-2"></i>Add More Reason
+                                            <i class="fas fa-plus me-2"></i>{{ __('messages.profile_add_more_reason') }}
                                         </button>
                                     </div>
                                     <div class="col-md-3"></div>
@@ -347,7 +347,7 @@
         inputValue = inputValue.replace(/[^0-9+\- ]/g, '');
         if (inputValue.length > 15) {
             inputValue = inputValue.substring(0, 15);
-            $('#contact_number_err').text('Contact number should not exceed 15 characters');
+            $('#contact_number_err').text('{{ __("messages.contact_number_max_15") }}');
         } else {
             $('#contact_number_err').text('');
         }
@@ -355,7 +355,7 @@
         if (inputValue.match(/^[0-9+\- ]+$/)) {
             $('#contact_number_err').text('');
         } else {
-            $('#contact_number_err').text('Please enter a valid mobile number');
+            $('#contact_number_err').text('{{ __("messages.enter_valid_mobile") }}');
         }
     });
 
@@ -449,7 +449,7 @@ function setProviderProfileImagePreparing(isPreparing) {
     button.disabled = isPreparing;
     button.classList.toggle('btn-secondary', isPreparing);
     button.classList.toggle('btn-primary', !isPreparing);
-    button.textContent = isPreparing ? 'Preparing image...' : button.dataset.defaultText;
+    button.textContent = isPreparing ? '{{ __("messages.preparing_image") }}' : button.dataset.defaultText;
 }
 
 function updateProviderProfileImageStatus(message) {
@@ -487,7 +487,7 @@ async function prepareProviderProfileImage(file) {
     var maxDimension = 800;
 
     if (file.size > maxOriginalSize) {
-        throw new Error('Image must be 4 MB or smaller.');
+        throw new Error('{{ __("messages.image_max_4mb") }}');
     }
 
     if (!file.type || !file.type.startsWith('image/')) {
@@ -531,7 +531,7 @@ $(document).on('change', '#provider_profile_image', async function() {
     if (!file) return;
 
     setProviderProfileImagePreparing(true);
-    updateProviderProfileImageStatus('Preparing image...');
+    updateProviderProfileImageStatus('{{ __("messages.preparing_image") }}');
 
     try {
         var preparedFile = await prepareProviderProfileImage(file);
@@ -539,7 +539,7 @@ $(document).on('change', '#provider_profile_image', async function() {
         dataTransfer.items.add(preparedFile);
         input.files = dataTransfer.files;
         $('.upload-label').text(preparedFile.name);
-        updateProviderProfileImageStatus('Image ready for upload.');
+        updateProviderProfileImageStatus('{{ __("messages.image_ready_for_upload") }}');
 
         var objectUrl = URL.createObjectURL(preparedFile);
         $('#profile_image_preview').attr('src', objectUrl).one('load', function() {
@@ -550,9 +550,9 @@ $(document).on('change', '#provider_profile_image', async function() {
         $('.upload-label').text("{{ __('messages.choose_file',['file' =>  __('messages.profile_image') ]) }}");
         updateProviderProfileImageStatus('');
         if (typeof Snackbar !== 'undefined') {
-            Snackbar.show({ text: error.message || 'Please choose a valid image.', pos: 'bottom-center', backgroundColor: '#d32f2f', actionTextColor: '#fff' });
+            Snackbar.show({ text: error.message || '{{ __("messages.please_choose_valid_image") }}', pos: 'bottom-center', backgroundColor: '#d32f2f', actionTextColor: '#fff' });
         } else {
-            alert(error.message || 'Please choose a valid image.');
+            alert(error.message || '{{ __("messages.please_choose_valid_image") }}');
         }
     } finally {
         setProviderProfileImagePreparing(false);
@@ -562,9 +562,9 @@ $(document).on('change', '#provider_profile_image', async function() {
 $('#provider').on('submit', function() {
     if (window.providerProfileImagePreparing) {
         if (typeof Snackbar !== 'undefined') {
-            Snackbar.show({ text: 'Please wait, image is preparing for upload.', pos: 'bottom-center', backgroundColor: '#d32f2f', actionTextColor: '#fff' });
+            Snackbar.show({ text: '{{ __("messages.please_wait_image_preparing") }}', pos: 'bottom-center', backgroundColor: '#d32f2f', actionTextColor: '#fff' });
         } else {
-            alert('Please wait, image is preparing for upload.');
+            alert('{{ __("messages.please_wait_image_preparing") }}');
         }
         return false;
     }

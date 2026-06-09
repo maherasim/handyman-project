@@ -154,7 +154,7 @@
                     {
                         data: 'bank_details',
                         name: 'bank_details',
-                        title: "Bank Details",
+                        title: "{{ __('messages.bank_details') }}",
                         orderable: false,
                         searchable: false
                     },
@@ -267,13 +267,13 @@
             const bankId = $(this).data('bank-id');
             
             if (!withdrawalId) {
-                Swal.fire('Error', 'Withdrawal request ID not found', 'error');
+                Swal.fire('{{ __("messages.error") }}', 'Withdrawal request ID not found', 'error');
                 return;
             }
 
             // Show loading
             Swal.fire({
-                title: 'Loading...',
+                title: '{{ __("messages.loading") }}',
                 allowOutsideClick: false,
                 didOpen: () => {
                     Swal.showLoading();
@@ -291,39 +291,39 @@
                         const bankDetailsHtml = `
                             <div class="text-start">
                                 <div class="mb-3">
-                                    <h6 class="text-primary mb-3"><i class="fas fa-university"></i> Bank Information</h6>
+                                    <h6 class="text-primary mb-3"><i class="fas fa-university"></i> {{ __("messages.bank_information") }}</h6>
                                 </div>
                                 <div class="row g-3">
                                     <div class="col-md-6">
-                                        <strong>Bank Name:</strong>
+                                        <strong>{{ __("messages.bank_name") }}:</strong>
                                         <p class="mb-2">${bank.bank_name}</p>
                                     </div>
                                     <div class="col-md-6">
-                                        <strong>Branch Name:</strong>
+                                        <strong>{{ __("messages.branch_name") }}:</strong>
                                         <p class="mb-2">${bank.branch_name}</p>
                                     </div>
                                     <div class="col-md-6">
-                                        <strong>Account Holder (Full Name):</strong>
+                                        <strong>{{ __("messages.account_holder") }}:</strong>
                                         <p class="mb-2">${bank.account_holder}</p>
                                     </div>
                                     <div class="col-md-6">
-                                        <strong>Account Number:</strong>
+                                        <strong>{{ __("messages.account_number") }}:</strong>
                                         <p class="mb-2">${bank.account_no}</p>
                                     </div>
                                     <div class="col-md-6">
-                                        <strong>IBAN Code:</strong>
+                                        <strong>{{ __("messages.iban_code") }}:</strong>
                                         <p class="mb-2">${bank.iban_no}</p>
                                     </div>
                                     <div class="col-md-6">
-                                        <strong>SWIFT/BIC Code:</strong>
+                                        <strong>{{ __("messages.swift_bic_code") }}:</strong>
                                         <p class="mb-2">${bank.bic_number}</p>
                                     </div>
                                     <div class="col-md-6">
-                                        <strong>Mobile Number:</strong>
+                                        <strong>{{ __("messages.mobile_number") }}:</strong>
                                         <p class="mb-2">${bank.mobile_no}</p>
                                     </div>
                                     <div class="col-md-6">
-                                        <strong>Status:</strong>
+                                        <strong>{{ __("messages.status") }}:</strong>
                                         <p class="mb-2">
                                             <span class="badge ${bank.status === 'Active' ? 'bg-success' : 'bg-danger'}">
                                                 ${bank.status}
@@ -333,22 +333,22 @@
                                 </div>
                             </div>
                         `;
-                        
+
                         Swal.fire({
-                            title: 'Bank Details',
+                            title: '{{ __("messages.bank_details") }}',
                             html: bankDetailsHtml,
                             width: '600px',
-                            confirmButtonText: 'Close',
+                            confirmButtonText: '{{ __("messages.close") }}',
                             confirmButtonColor: '#3085d6'
                         });
                     } else {
-                        Swal.fire('Error', response.error || 'Failed to load bank details', 'error');
+                        Swal.fire('{{ __("messages.error") }}', response.error || 'Failed to load bank details', 'error');
                     }
                 },
                 error: function(xhr) {
                     Swal.close();
                     const errorMsg = xhr.responseJSON?.error || 'Failed to load bank details';
-                    Swal.fire('Error', errorMsg, 'error');
+                    Swal.fire('{{ __("messages.error") }}', errorMsg, 'error');
                 }
             });
         });

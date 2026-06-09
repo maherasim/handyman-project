@@ -1,6 +1,8 @@
 import 'sweetalert2/dist/sweetalert2.min.css';
 import Swal from 'sweetalert2';
 
+const getConfirmText = () => window.i18n?.global?.t('messages.confirm') || 'Confirm'
+
 export const confirmSwal = async ({title}) => {
     return await Swal.fire({
         title: title,
@@ -8,7 +10,7 @@ export const confirmSwal = async ({title}) => {
         showCancelButton: true,
         confirmButtonColor: '#3333ff',
         cancelButtonColor: '#d33',
-        confirmButtonText: 'Confirm',
+        confirmButtonText: getConfirmText(),
         iconColor: '#3333ff'
       }).then((result) => {
         return result
@@ -18,13 +20,12 @@ export const confirmSwal = async ({title}) => {
 export const confirmcancleSwal = async ({title,subtitle,text}) => {
     return await Swal.fire({
         title: title,
-        html: subtitle, 
-        html: text,
+        html: subtitle || text,
         icon: 'success',
         showCancelButton: true,
         confirmButtonColor: '#3333ff',
         cancelButtonColor: '#858482',
-        confirmButtonText: 'Confirm',
+        confirmButtonText: getConfirmText(),
         iconColor: '#3333ff'
       }).then((result) => {
         return result
@@ -38,7 +39,7 @@ export const confirmcancleWallet = async ({title}) => {
       showCancelButton: true,
       confirmButtonColor: '#3333ff',
       cancelButtonColor: '#858482',
-      confirmButtonText: 'Confirm',
+      confirmButtonText: getConfirmText(),
       iconColor: '#3333ff'
     }).then((result) => {
       return result

@@ -154,8 +154,8 @@
 
 
                             <div class="form-group col-md-3" id="minimum_booking_div">
-                                {{ html()->label(__('Minimum Booking'), 'minimum_booking')->class('form-control-label') }}
-                                {{ html()->text('minimum_booking', old('minimum_booking', $servicedata->minimum_booking))->placeholder(__('minimum booking'))->class('form-control')->required()->id('minimum_booking') }}
+                                {{ html()->label(__('messages.minimum_booking'), 'minimum_booking')->class('form-control-label') }}
+                                {{ html()->text('minimum_booking', old('minimum_booking', $servicedata->minimum_booking))->placeholder(__('messages.minimum_booking_placeholder'))->class('form-control')->required()->id('minimum_booking') }}
                                 <small class="help-block with-errors text-danger"></small>
                             </div>
 
@@ -206,18 +206,18 @@
                                 {{ html()->select(
                                         'career_level',
                                         [
-                                            'not_specified' => __('Not Specified'),
-                                            'entry_level' => __('Entry Level'),
-                                            'intermediate_level' => __('Intermediate Level'),
-                                            'experienced' => __('Experienced'),
-                                            'professional' => __('Professional'),
-                                            'middle_management' => __('Middle Management'),
-                                            'executive_management' => __('Executive Management'),
-                                            'senior_management' => __('Senior Management'),
-                                            'director' => __('Director'),
-                                            'technician' => __('Technician'),
-                                            'leader' => __('Leader'),
-                                            'manager' => __('Manager'),
+                                            'not_specified' => __('messages.career_level_not_specified'),
+                                            'entry_level' => __('messages.career_level_entry_level'),
+                                            'intermediate_level' => __('messages.career_level_intermediate_level'),
+                                            'experienced' => __('messages.career_level_experienced'),
+                                            'professional' => __('messages.career_level_professional'),
+                                            'middle_management' => __('messages.career_level_middle_management'),
+                                            'executive_management' => __('messages.career_level_executive_management'),
+                                            'senior_management' => __('messages.career_level_senior_management'),
+                                            'director' => __('messages.career_level_director'),
+                                            'technician' => __('messages.career_level_technician'),
+                                            'leader' => __('messages.career_level_leader'),
+                                            'manager' => __('messages.career_level_manager'),
                                         ],
                                         old('career_level', $servicedata->career_level ?? 'entry_level'),
                                     )->class('form-control select2js')->required()->id('career_level') }}
@@ -324,8 +324,8 @@
                                 {{ html()->textarea('description', old('description', $servicedata->description))->class('form-control textarea js-richtext')->rows(3)->placeholder(__('messages.description'))->id('description')->attribute('data-required', '1') }}
                             </div>
                             <div class="form-group col-md-6 quill-group">
-                                {{ html()->label(__('Cancellation Policy & Fees') . ' <span class="text-danger">*</span>', 'cancellation_policy')->class('form-control-label') }}
-                                {{ html()->textarea('cancellation_policy', old('cancellation_policy', $servicedata->cancellation_policy))->class('form-control textarea js-richtext')->rows(3)->placeholder(__('cancellation_policy'))->id('cancellation_policy') }}
+                                {{ html()->label(__('messages.cancellation_policy_fees') . ' <span class="text-danger">*</span>', 'cancellation_policy')->class('form-control-label') }}
+                                {{ html()->textarea('cancellation_policy', old('cancellation_policy', $servicedata->cancellation_policy))->class('form-control textarea js-richtext')->rows(3)->placeholder(__('messages.cancellation_policy_placeholder'))->id('cancellation_policy') }}
                             </div>
                         </div>
                         <div class="row">

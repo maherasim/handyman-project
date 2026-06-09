@@ -48,7 +48,7 @@
                         <input type="hidden" name="_token" :value="csrfToken">
                         <div class="mb-4">
                             <label class="form-label text-capitalize">{{$t('messages.subject')}} <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" v-model="subject" placeholder="subject" id="subject" name="subject" @input="clearError('subject')">
+                            <input type="text" class="form-control" v-model="subject" :placeholder="$t('messages.subject')" id="subject" name="subject" @input="clearError('subject')">
                             <span v-if="errorMessages['subject']">
                                     <ul class="text-danger">
                                         <li v-for="err in errorMessages['subject']" :key="err">{{ err }}</li>
@@ -59,7 +59,7 @@
                         </div>
                         <div class="mb-4">
                             <label class="form-label text-capitalize">{{$t('messages.description')}} <span class="text-danger">*</span></label>
-                            <textarea class="form-control" v-model="description" id="description" name="description" rows="4" placeholder="Write Here..." @input="clearError('description')"></textarea>
+                            <textarea class="form-control" v-model="description" id="description" name="description" rows="4" :placeholder="$t('messages.write_here')" @input="clearError('description')"></textarea>
                             <span v-if="errorMessages['description']">
                                     <ul class="text-danger">
                                         <li v-for="err in errorMessages['description']" :key="err">{{ err }}</li>
@@ -87,6 +87,7 @@
 
 <script setup>
 import { ref,computed,onMounted} from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useField, useForm } from 'vee-validate';
 import { STORE_HELPDESK_API} from '../data/api';
 import * as yup from 'yup';
@@ -95,6 +96,7 @@ import useDataTable from '../hooks/Datatable'
 import {useSection} from '../store/index'
 import {useObserveSection} from '../hooks/Observer'
 
+const { t } = useI18n()
 const props = defineProps(['employee_id','link','canhelpdesklist']);
 console.log(props.canhelpdesklist)
 const IsLoading=ref(0)
@@ -147,8 +149,8 @@ const defaultData = () => {
 const subjectError = ref('');
 const descriptionError = ref('');
 const validationSchema = yup.object({
-    subject: yup.string().required('Subject is Required'),
-    description: yup.string().required('Description is Required'),
+    subject: yup.string().required(() => t('messages.subject_is_required')),
+    description: yup.string().required(() => t('messages.description_required')),
 })
 
 const { handleSubmit, errors, resetForm } = useForm({
@@ -166,13 +168,13 @@ const formSubmit = handleSubmit(async () => {
 
     // Validate subject
     if (!trimmedSubject) {
-        subjectError.value = 'Subject is required.';
+        subjectError.value = t('messages.subject_is_required');
     } else {
         subjectError.value = '';
     }
     // Validate description
     if (!trimmedDescription) {
-        descriptionError.value = 'Description is required.';
+        descriptionError.value = t('messages.description_required');
     } else {
         descriptionError.value = '';
     }

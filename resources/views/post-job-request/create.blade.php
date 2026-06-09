@@ -137,10 +137,10 @@
                             </div>
                             <div class="row">
                                 <div class="form-group col-md-4">
-                                    <label for="total_hours_div">{{ __('Total Hours') }} <span class="text-danger">*</span></label>
+                                    <label for="total_hours_div">{{ __('messages.pjr_total_hours') }} <span class="text-danger">*</span></label>
                                     <div class="input-group">
                                         <span class="input-group-text">⏱</span>
-                                        <input type="number" name="total_hours" id="total_hours_div" class="form-control" min="1" step="any" placeholder="{{ __('total_hours') }}" required value="{{ old('total_hours', $postJob->total_hours) }}">
+                                        <input type="number" name="total_hours" id="total_hours_div" class="form-control" min="1" step="any" placeholder="{{ __('messages.pjr_total_hours_placeholder') }}" required value="{{ old('total_hours', $postJob->total_hours) }}">
                                     </div>
                                     <small class="help-block with-errors text-danger"></small>
                                 </div>
@@ -178,52 +178,52 @@
                                     </select>
                                 </div>
                                 <div class="form-group col-md-4">
-                                    <label for="career_level">{{ __('Career Level') }} <span class="text-danger">*</span></label>
+                                    <label for="career_level">{{ __('messages.career_level') }} <span class="text-danger">*</span></label>
                                     <select name="career_level" id="career_level" class="form-control" required>
                                         @php $oldCareer = old('career_level', $postJob->career_level); @endphp
-                                        <option value="not_specified" {{ $oldCareer == 'not_specified' ? 'selected' : '' }}>{{ __('Not Specified') }}</option>
-                                        <option value="entry_level" {{ $oldCareer == 'entry_level' ? 'selected' : '' }}>{{ __('Entry Level') }}</option>
-                                        <option value="intermediate_level" {{ $oldCareer == 'intermediate_level' ? 'selected' : '' }}>{{ __('Intermediate Level') }}</option>
-                                        <option value="experienced" {{ $oldCareer == 'experienced' ? 'selected' : '' }}>{{ __('Experienced') }}</option>
-                                        <option value="professional" {{ $oldCareer == 'professional' ? 'selected' : '' }}>{{ __('Professional') }}</option>
-                                        <option value="middle_management" {{ $oldCareer == 'middle_management' ? 'selected' : '' }}>{{ __('Middle Management') }}</option>
-                                        <option value="executive_management" {{ $oldCareer == 'executive_management' ? 'selected' : '' }}>{{ __('Executive Management') }}</option>
-                                        <option value="senior_management" {{ $oldCareer == 'senior_management' ? 'selected' : '' }}>{{ __('Senior Management') }}</option>
-                                        <option value="director" {{ $oldCareer == 'director' ? 'selected' : '' }}>{{ __('Director') }}</option>
-                                        <option value="technician" {{ $oldCareer == 'technician' ? 'selected' : '' }}>{{ __('Technician') }}</option>
-                                        <option value="leader" {{ $oldCareer == 'leader' ? 'selected' : '' }}>{{ __('Leader') }}</option>
-                                        <option value="manager" {{ $oldCareer == 'manager' ? 'selected' : '' }}>{{ __('Manager') }}</option>
+                                        <option value="not_specified" {{ $oldCareer == 'not_specified' ? 'selected' : '' }}>{{ __('messages.career_level_not_specified') }}</option>
+                                        <option value="entry_level" {{ $oldCareer == 'entry_level' ? 'selected' : '' }}>{{ __('messages.career_level_entry_level') }}</option>
+                                        <option value="intermediate_level" {{ $oldCareer == 'intermediate_level' ? 'selected' : '' }}>{{ __('messages.career_level_intermediate_level') }}</option>
+                                        <option value="experienced" {{ $oldCareer == 'experienced' ? 'selected' : '' }}>{{ __('messages.career_level_experienced') }}</option>
+                                        <option value="professional" {{ $oldCareer == 'professional' ? 'selected' : '' }}>{{ __('messages.career_level_professional') }}</option>
+                                        <option value="middle_management" {{ $oldCareer == 'middle_management' ? 'selected' : '' }}>{{ __('messages.career_level_middle_management') }}</option>
+                                        <option value="executive_management" {{ $oldCareer == 'executive_management' ? 'selected' : '' }}>{{ __('messages.career_level_executive_management') }}</option>
+                                        <option value="senior_management" {{ $oldCareer == 'senior_management' ? 'selected' : '' }}>{{ __('messages.career_level_senior_management') }}</option>
+                                        <option value="director" {{ $oldCareer == 'director' ? 'selected' : '' }}>{{ __('messages.career_level_director') }}</option>
+                                        <option value="technician" {{ $oldCareer == 'technician' ? 'selected' : '' }}>{{ __('messages.career_level_technician') }}</option>
+                                        <option value="leader" {{ $oldCareer == 'leader' ? 'selected' : '' }}>{{ __('messages.career_level_leader') }}</option>
+                                        <option value="manager" {{ $oldCareer == 'manager' ? 'selected' : '' }}>{{ __('messages.career_level_manager') }}</option>
                                     </select>
                                 </div>
                                 <div class="form-group col-md-4">
-                                    <label for="travel_required">{{ __('Travel Required') }} <span class="text-danger">*</span></label>
+                                    <label for="travel_required">{{ __('messages.travel_required') }} <span class="text-danger">*</span></label>
                                     <select name="travel_required" id="travel_required" class="form-control" required>
                                         @php $oldTravel = old('travel_required', $postJob->travel_required); @endphp
-                                        <option value="0" {{ (string)$oldTravel === '0' ? 'selected' : '' }}>{{ __('No') }}</option>
-                                        <option value="1" {{ (string)$oldTravel === '1' ? 'selected' : '' }}>{{ __('Yes') }}</option>
+                                        <option value="0" {{ (string)$oldTravel === '0' ? 'selected' : '' }}>{{ __('messages.no') }}</option>
+                                        <option value="1" {{ (string)$oldTravel === '1' ? 'selected' : '' }}>{{ __('messages.yes') }}</option>
                                     </select>
                                 </div>
                             </div>
                             <div class="row">
                                 <!-- Education Level -->
                                 <div class="form-group col-md-4">
-                                    <label for="education_level">{{ __('Education Level') }} <span class="text-danger">*</span></label>
+                                    <label for="education_level">{{ __('messages.education_level') }} <span class="text-danger">*</span></label>
                                     <select name="education_level" id="education_level" class="form-control" required>
                                         @php $oldEdu = old('education_level', $postJob->education_level); @endphp
-                                        <option value="not_specified" {{ $oldEdu == 'not_specified' ? 'selected' : '' }}>{{ __('Not Specified') }}</option>
-                                        <option value="any_graduate" {{ $oldEdu == 'any_graduate' ? 'selected' : '' }}>{{ __('Any Graduate') }}</option>
-                                        <option value="apprenticeship_degree" {{ $oldEdu == 'apprenticeship_degree' ? 'selected' : '' }}>{{ __('Apprenticeship Degree') }}</option>
-                                        <option value="traineeship_degree" {{ $oldEdu == 'traineeship_degree' ? 'selected' : '' }}>{{ __('Traineeship Degree') }}</option>
-                                        <option value="secondary_degree" {{ $oldEdu == 'secondary_degree' ? 'selected' : '' }}>{{ __('Secondary Degree') }}</option>
-                                        <option value="undergraduate_diploma" {{ $oldEdu == 'undergraduate_diploma' ? 'selected' : '' }}>{{ __('Undergraduate Diploma') }}</option>
-                                        <option value="high_school_graduate" {{ $oldEdu == 'high_school_graduate' ? 'selected' : '' }}>{{ __('High school graduate') }}</option>
-                                        <option value="associate_degree" {{ $oldEdu == 'associate_degree' ? 'selected' : '' }}>{{ __('Associate degree') }}</option>
-                                        <option value="college_degree" {{ $oldEdu == 'college_degree' ? 'selected' : '' }}>{{ __('College Degree') }}</option>
-                                        <option value="university_degree" {{ $oldEdu == 'university_degree' ? 'selected' : '' }}>{{ __('University Degree') }}</option>
-                                        <option value="bachelors_degree" {{ $oldEdu == 'bachelors_degree' ? 'selected' : '' }}>{{ __("Bachelor's Degree") }}</option>
-                                        <option value="masters_degree" {{ $oldEdu == 'masters_degree' ? 'selected' : '' }}>{{ __("Master's Degree") }}</option>
-                                        <option value="doctorate_degree" {{ $oldEdu == 'doctorate_degree' ? 'selected' : '' }}>{{ __('Doctorate Degree') }}</option>
-                                        <option value="professional_degree" {{ $oldEdu == 'professional_degree' ? 'selected' : '' }}>{{ __('Professional Degree') }}</option>
+                                        <option value="not_specified" {{ $oldEdu == 'not_specified' ? 'selected' : '' }}>{{ __('messages.education_not_specified') }}</option>
+                                        <option value="any_graduate" {{ $oldEdu == 'any_graduate' ? 'selected' : '' }}>{{ __('messages.education_any_graduate') }}</option>
+                                        <option value="apprenticeship_degree" {{ $oldEdu == 'apprenticeship_degree' ? 'selected' : '' }}>{{ __('messages.education_apprenticeship_degree') }}</option>
+                                        <option value="traineeship_degree" {{ $oldEdu == 'traineeship_degree' ? 'selected' : '' }}>{{ __('messages.education_traineeship_degree') }}</option>
+                                        <option value="secondary_degree" {{ $oldEdu == 'secondary_degree' ? 'selected' : '' }}>{{ __('messages.education_secondary_degree') }}</option>
+                                        <option value="undergraduate_diploma" {{ $oldEdu == 'undergraduate_diploma' ? 'selected' : '' }}>{{ __('messages.education_undergraduate_diploma') }}</option>
+                                        <option value="high_school_graduate" {{ $oldEdu == 'high_school_graduate' ? 'selected' : '' }}>{{ __('messages.education_high_school_graduate') }}</option>
+                                        <option value="associate_degree" {{ $oldEdu == 'associate_degree' ? 'selected' : '' }}>{{ __('messages.education_associate_degree') }}</option>
+                                        <option value="college_degree" {{ $oldEdu == 'college_degree' ? 'selected' : '' }}>{{ __('messages.education_college_degree') }}</option>
+                                        <option value="university_degree" {{ $oldEdu == 'university_degree' ? 'selected' : '' }}>{{ __('messages.education_university_degree') }}</option>
+                                        <option value="bachelors_degree" {{ $oldEdu == 'bachelors_degree' ? 'selected' : '' }}>{{ __('messages.education_bachelor_degree') }}</option>
+                                        <option value="masters_degree" {{ $oldEdu == 'masters_degree' ? 'selected' : '' }}>{{ __('messages.education_master_degree') }}</option>
+                                        <option value="doctorate_degree" {{ $oldEdu == 'doctorate_degree' ? 'selected' : '' }}>{{ __('messages.education_doctorate_degree') }}</option>
+                                        <option value="professional_degree" {{ $oldEdu == 'professional_degree' ? 'selected' : '' }}>{{ __('messages.education_professional_degree') }}</option>
                                     </select>
                                 </div>
                             
@@ -264,12 +264,12 @@
                             </div>
                             <div class="row">
                                 <div class="form-group col-md-6 quill-group">
-                                    <label for="duties">{{ __('Duties & Responsibilities') }} <span class="text-danger">*</span></label>
-                                    <textarea name="duties" id="duties" class="form-control textarea editor-fixed" rows="6" placeholder="{{ __('duties & responsibilities') }}" required>{{ old('duties', $postJob->duties) }}</textarea>
+                                    <label for="duties">{{ __('messages.pjr_duties_responsibilities') }} <span class="text-danger">*</span></label>
+                                    <textarea name="duties" id="duties" class="form-control textarea editor-fixed" rows="6" placeholder="{{ __('messages.pjr_duties_placeholder') }}" required>{{ old('duties', $postJob->duties) }}</textarea>
                                 </div>
                                 <div class="form-group col-md-6 quill-group">
-                                    <label for="benefits">{{ __('Benefits') }} <span class="text-danger">*</span></label>
-                                    <textarea name="benefits" id="benefits" class="form-control textarea editor-fixed" rows="6" placeholder="{{ __('benefits') }}" required>{{ old('benefits', $postJob->benefits) }}</textarea>
+                                    <label for="benefits">{{ __('messages.pjr_benefits') }} <span class="text-danger">*</span></label>
+                                    <textarea name="benefits" id="benefits" class="form-control textarea editor-fixed" rows="6" placeholder="{{ __('messages.pjr_benefits_placeholder') }}" required>{{ old('benefits', $postJob->benefits) }}</textarea>
                                 </div></div>
                            
 
