@@ -645,9 +645,9 @@
                     console.error('Service image preparation failed:', error);
                     setServiceImagesPreparing(false);
                     if (typeof Snackbar !== 'undefined') {
-                        Snackbar.show({ text: 'Image preparation failed. Please try another image.', pos: 'bottom-center', backgroundColor: '#d32f2f', actionTextColor: '#fff' });
+                        Snackbar.show({ text: '{{ __("messages.image_preparation_failed") }}', pos: 'bottom-center', backgroundColor: '#d32f2f', actionTextColor: '#fff' });
                     } else {
-                        alert('Image preparation failed. Please try another image.');
+                        alert('{{ __("messages.image_preparation_failed") }}');
                     }
                 });
             }
@@ -696,9 +696,9 @@
 
                         if (rejectedFiles.length) {
                             if (typeof Snackbar !== 'undefined') {
-                                Snackbar.show({ text: 'Each image must be 4 MB or smaller.', pos: 'bottom-center', backgroundColor: '#d32f2f', actionTextColor: '#fff' });
+                                Snackbar.show({ text: '{{ __("messages.image_max_4mb") }}', pos: 'bottom-center', backgroundColor: '#d32f2f', actionTextColor: '#fff' });
                             } else {
-                                alert('Each image must be 4 MB or smaller.');
+                                alert('{{ __("messages.image_max_4mb") }}');
                             }
                         }
                     }
@@ -821,9 +821,9 @@
                 $('#service').on('submit', function(e) {
                     if (window.serviceImagesPreparing) {
                         if (typeof Snackbar !== 'undefined') {
-                            Snackbar.show({ text: 'Please wait, images are preparing for upload.', pos: 'bottom-center', backgroundColor: '#d32f2f', actionTextColor: '#fff' });
+                            Snackbar.show({ text: '{{ __("messages.please_wait_image_preparing") }}', pos: 'bottom-center', backgroundColor: '#d32f2f', actionTextColor: '#fff' });
                         } else {
-                            alert('Please wait, images are preparing for upload.');
+                            alert('{{ __("messages.please_wait_image_preparing") }}');
                         }
                         e.preventDefault();
                         return false;

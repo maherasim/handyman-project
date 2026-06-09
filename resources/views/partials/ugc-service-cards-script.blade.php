@@ -107,7 +107,7 @@
                     },
                     error: function (xhr) {
                         var msg = (xhr.responseJSON && xhr.responseJSON.message) ? xhr.responseJSON.message : 'Error';
-                        Swal.fire({ icon: 'error', title: 'Error', text: msg });
+                        Swal.fire({ icon: 'error', title: '{{ __("messages.error") }}', text: msg });
                     }
                 });
             });
@@ -168,7 +168,7 @@
                     },
                     error: function (xhr) {
                         var msg = (xhr.responseJSON && xhr.responseJSON.message) ? xhr.responseJSON.message : 'Error';
-                        Swal.fire({ icon: 'error', title: 'Error', text: msg });
+                        Swal.fire({ icon: 'error', title: '{{ __("messages.error") }}', text: msg });
                     }
                 });
             });
@@ -232,7 +232,7 @@
                     },
                     error: function (xhr) {
                         var msg = (xhr.responseJSON && xhr.responseJSON.message) ? xhr.responseJSON.message : 'Error';
-                        Swal.fire({ icon: 'error', title: 'Error', text: msg });
+                        Swal.fire({ icon: 'error', title: '{{ __("messages.error") }}', text: msg });
                     }
                 });
             });
@@ -346,7 +346,7 @@
                     },
                     error: function (xhr) {
                         var msg = (xhr.responseJSON && xhr.responseJSON.message) ? xhr.responseJSON.message : 'Error';
-                        Swal.fire({ icon: 'error', title: 'Error', text: msg });
+                        Swal.fire({ icon: 'error', title: '{{ __("messages.error") }}', text: msg });
                     }
                 });
             });

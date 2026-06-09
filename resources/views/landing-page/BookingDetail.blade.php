@@ -1071,7 +1071,7 @@ Reason Modal
             })
             .then(data => {
                 Swal.fire({
-                    title: 'Done',
+                    title: '{{ __("messages.done") }}',
                     text: data.message,
                     icon: 'success',
                     iconColor: '#3333ff'
@@ -1146,14 +1146,14 @@ Reason Modal
 
     function doneBooking() {
         Swal.fire({
-            title: 'Done',
-            text: 'Do you want to end this service?',
+            title: '{{ __("messages.done") }}',
+            text: '{{ __("messages.do_you_want_to_end_this_service") }}',
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#3333ff',
             cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes',
-            cancelButtonText: 'No'
+            confirmButtonText: '{{ __("messages.yes") }}',
+            cancelButtonText: '{{ __("messages.no") }}'
         }).then((result) => {
             if (result.isConfirmed) {
                 status = "pending_approval";

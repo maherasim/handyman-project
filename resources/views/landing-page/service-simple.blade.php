@@ -329,8 +329,8 @@ document.addEventListener('DOMContentLoaded', function(){
         if (!userId) {
             console.error('User ID not found');
             Swal.fire({
-                title: 'Error',
-                text: 'Please log in to add favorites',
+                title: '{{ __("messages.error") }}',
+                text: '{{ __("messages.please_login_to_add_favorites") }}',
                 icon: 'error'
             });
             return;
@@ -350,8 +350,8 @@ document.addEventListener('DOMContentLoaded', function(){
             },
             success: function (response) {
                 Swal.fire({
-                    title: 'Done',
-                    text: response.message || 'Favorite saved successfully',
+                    title: '{{ __("messages.done") }}',
+                    text: response.message || '{{ __("messages.favorite_saved") }}',
                     icon: 'success',
                     iconColor: '#3333ff'
                 }).then((result) => {
@@ -362,14 +362,14 @@ document.addEventListener('DOMContentLoaded', function(){
                 console.error('Error:', error, xhr);
                 if (xhr.responseJSON && xhr.responseJSON.message) {
                     Swal.fire({
-                        title: 'Error',
+                        title: '{{ __("messages.error") }}',
                         text: xhr.responseJSON.message,
                         icon: 'error'
                     });
                 } else {
                     Swal.fire({
-                        title: 'Error',
-                        text: 'Failed to save favorite. Please try again.',
+                        title: '{{ __("messages.error") }}',
+                        text: '{{ __("messages.failed_save_favorite") }}',
                         icon: 'error'
                     });
                 }
@@ -386,8 +386,8 @@ document.addEventListener('DOMContentLoaded', function(){
         if (!userId) {
             console.error('User ID not found');
             Swal.fire({
-                title: 'Error',
-                text: 'Please log in to remove favorites',
+                title: '{{ __("messages.error") }}',
+                text: '{{ __("messages.please_login_to_remove_favorites") }}',
                 icon: 'error'
             });
             return;
@@ -407,8 +407,8 @@ document.addEventListener('DOMContentLoaded', function(){
             },
             success: function (response) {
                 Swal.fire({
-                    title: 'Done',
-                    text: response.message || 'Favorite removed successfully',
+                    title: '{{ __("messages.done") }}',
+                    text: response.message || '{{ __("messages.favorite_removed") }}',
                     icon: 'success',
                     iconColor: '#3333ff'
                 }).then((result) => {
@@ -419,14 +419,14 @@ document.addEventListener('DOMContentLoaded', function(){
                 console.error('Error:', error, xhr);
                 if (xhr.responseJSON && xhr.responseJSON.message) {
                     Swal.fire({
-                        title: 'Error',
+                        title: '{{ __("messages.error") }}',
                         text: xhr.responseJSON.message,
                         icon: 'error'
                     });
                 } else {
                     Swal.fire({
-                        title: 'Error',
-                        text: 'Failed to delete favorite. Please try again.',
+                        title: '{{ __("messages.error") }}',
+                        text: '{{ __("messages.failed_delete_favorite") }}',
                         icon: 'error'
                     });
                 }

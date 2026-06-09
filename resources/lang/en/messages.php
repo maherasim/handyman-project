@@ -2165,5 +2165,15 @@
     'via_bank_transfer_below' => 'via bank transfer using the details below:',
     'mention_booking_id_reference' => 'Mention your Booking ID #{id} in the transfer reference.',
     'schedule_service' => 'Schedule Service',
+    'weekly' => 'Weekly',
+    'favorite_saved' => 'Favorite saved successfully',
+    'favorite_removed' => 'Favorite removed successfully',
+    'failed_save_favorite' => 'Failed to save favorite. Please try again.',
+    'failed_delete_favorite' => 'Failed to delete favorite. Please try again.',
+    'please_login_to_add_favorites' => 'Please log in to add favorites',
+    'please_login_to_remove_favorites' => 'Please log in to remove favorites',
+    'do_you_want_to_end_this_service' => 'Do you want to end this service?',
+    'image_preparation_failed' => 'Image preparation failed. Please try another image.',
+    'about_employer' => 'About Employer',
 
 );

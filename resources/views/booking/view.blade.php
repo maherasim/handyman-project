@@ -320,7 +320,7 @@
                             Swal.fire({ icon: 'success', title: payload.data.message || 'OK', text: payload.data.policy || '' });
                         })
                         .catch(function (error) {
-                            Swal.fire({ icon: 'error', title: 'Error', text: error.message || 'Error' });
+                            Swal.fire({ icon: 'error', title: '{{ __("messages.error") }}', text: error.message || 'Error' });
                         });
                 });
             };

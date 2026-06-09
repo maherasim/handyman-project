@@ -79,7 +79,7 @@
                                                 <span class="input-group-text" id="addon-wrapping"><i
                                                         class="fas fa-search"></i></span>
                                                 <input type="text" class="form-control dt-search"
-                                                    placeholder="Search..." aria-label="Search"
+                                                    placeholder="{{ __("messages.search_placeholder") }}" aria-label="Search"
                                                     aria-describedby="addon-wrapping" aria-controls="dataTableBuilder">
                                             </div>
                                         </div>

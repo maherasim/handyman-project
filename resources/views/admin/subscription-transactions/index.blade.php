@@ -184,7 +184,7 @@ function confirmVerify(userName, planName, amount) {
         confirmButtonColor: '#28a745',
         cancelButtonColor: '#6c757d',
         confirmButtonText: 'Yes, Verify Payment',
-        cancelButtonText: 'Cancel'
+        cancelButtonText: '{{ __("messages.cancel") }}'
     }).then((result) => {
         if (result.isConfirmed) {
             // Show loading

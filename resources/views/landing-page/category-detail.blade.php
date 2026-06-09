@@ -37,8 +37,8 @@
                     <a href="javascript:void(0);" class="readmore-btn">{{__('landingpage.read_more')}}</a>
 
                     <div class="d-flex gap-2 mt-4 mb-4">
-                        <input type="text" id="category-search-input" class="form-control" placeholder="{{ __('Text here') }}" aria-label="Search">
-                        <button type="button" id="category-search-btn" class="btn btn-primary text-nowrap">{{ __('Search') }}</button>
+                        <input type="text" id="category-search-input" class="form-control" placeholder="{{ __('messages.search_placeholder') }}" aria-label="{{ __('messages.search') }}">
+                        <button type="button" id="category-search-btn" class="btn btn-primary text-nowrap">{{ __('messages.search') }}</button>
                     </div>
 
                     <ul class="nav nav-tabs align-items-start gap-5 bg-transparent pb-0 mt-5 mb-0">

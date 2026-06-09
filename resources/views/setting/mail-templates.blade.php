@@ -58,7 +58,7 @@
                     </div>
                     <div class="input-group input-group-search ms-2">
                       <span class="input-group-text" id="addon-wrapping"><i class="fas fa-search"></i></span>
-                      <input type="text" class="form-control dt-search" placeholder="Search..." aria-label="Search" aria-describedby="addon-wrapping" aria-controls="dataTableBuilder">
+                      <input type="text" class="form-control dt-search" placeholder="{{ __("messages.search_placeholder") }}" aria-label="Search" aria-describedby="addon-wrapping" aria-controls="dataTableBuilder">
                     </div>
                 </div>
                 
@@ -196,7 +196,7 @@
           document.dispatchEvent(event)
         } else {
           Swal.fire({
-            title: 'Error',
+            title: '{{ __("messages.error") }}',
             text: res.message,
             icon: "error"
           })

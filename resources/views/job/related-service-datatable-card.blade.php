@@ -78,7 +78,7 @@ $serviceData = json_decode($service->content(), true);
              },
              success: function (response) {
                 Swal.fire({
-                title: 'Done',
+                title: '{{ __("messages.done") }}',
                 text: response.message,
                 icon: 'success',
                 iconColor: '#3333ff'
@@ -110,7 +110,7 @@ $serviceData = json_decode($service->content(), true);
              },
              success: function (response) {
                 Swal.fire({
-                title: 'Done',
+                title: '{{ __("messages.done") }}',
                 text: response.message,
                 icon: 'success',
                 iconColor: '#3333ff'

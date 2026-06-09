@@ -623,7 +623,7 @@
                                 </div>
                                 <div class="col-4">
                                     <button class="tab-btn" data-tab="about-provider">
-                                        About Employer
+                                        {{ __('messages.about_employer') }}
                                     </button>
                                 </div>
                                 <div class="col-4">
@@ -1849,7 +1849,7 @@
                     },
                     success: function(response) {
                         Swal.fire({
-                            title: 'Done',
+                            title: '{{ __("messages.done") }}',
                             text: response.message,
                             icon: 'success',
                             iconColor: '#3333ff'
@@ -1881,7 +1881,7 @@
                     },
                     success: function(response) {
                         Swal.fire({
-                            title: 'Done',
+                            title: '{{ __("messages.done") }}',
                             text: response.message,
                             icon: 'success',
                             iconColor: '#3333ff'

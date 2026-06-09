@@ -71,7 +71,7 @@
          @if($data->price==0)
             {{ __('messages.free') }}
          @else
-            {{ getPriceFormat($data->price) }} @if(!empty($data->type)) / {{ ucfirst($data->type) }} @endif
+            {{ getPriceFormat($data->price) }} @if(!empty($data->type)) / {{ __('messages.' . strtolower($data->type)) }} @endif
          @endif
       </div>
    </div>
@@ -291,8 +291,8 @@
                 success: function (response) {
                    if (typeof Swal !== 'undefined') {
                        Swal.fire({
-                          title: 'Done',
-                          text: response.message || 'Favorite saved successfully',
+                          title: '{{ __("messages.done") }}',
+                          text: response.message || '{{ __("messages.favorite_saved") }}',
                           icon: 'success',
                           iconColor: '#3333ff'
                        }).then((result) => {
@@ -303,7 +303,7 @@
                           }
                        });
                    } else {
-                       alert(response.message || 'Favorite saved successfully');
+                       alert(response.message || '{{ __("messages.favorite_saved") }}');
                        if ($('#datatable').length && typeof $('#datatable').DataTable !== 'undefined') {
                            $('#datatable').DataTable().ajax.reload(null, false);
                        } else {
@@ -316,19 +316,19 @@
                     if (typeof Swal !== 'undefined') {
                         if (xhr.responseJSON && xhr.responseJSON.message) {
                             Swal.fire({
-                                title: 'Error',
+                                title: '{{ __("messages.error") }}',
                                 text: xhr.responseJSON.message,
                                 icon: 'error'
                             });
                         } else {
                             Swal.fire({
-                                title: 'Error',
-                                text: 'Failed to save favorite. Please try again.',
+                                title: '{{ __("messages.error") }}',
+                                text: '{{ __("messages.failed_save_favorite") }}',
                                 icon: 'error'
                             });
                         }
                     } else {
-                        alert('Failed to save favorite. Please try again.');
+                        alert('{{ __("messages.failed_save_favorite") }}');
                     }
                 }
             });
@@ -360,8 +360,8 @@
                 success: function (response) {
                    if (typeof Swal !== 'undefined') {
                        Swal.fire({
-                          title: 'Done',
-                          text: response.message || 'Favorite removed successfully',
+                          title: '{{ __("messages.done") }}',
+                          text: response.message || '{{ __("messages.favorite_removed") }}',
                           icon: 'success',
                           iconColor: '#3333ff'
                        }).then((result) => {
@@ -372,7 +372,7 @@
                           }
                        });
                    } else {
-                       alert(response.message || 'Favorite removed successfully');
+                       alert(response.message || '{{ __("messages.favorite_removed") }}');
                        if ($('#datatable').length && typeof $('#datatable').DataTable !== 'undefined') {
                            $('#datatable').DataTable().ajax.reload(null, false);
                        } else {
@@ -385,19 +385,19 @@
                     if (typeof Swal !== 'undefined') {
                         if (xhr.responseJSON && xhr.responseJSON.message) {
                             Swal.fire({
-                                title: 'Error',
+                                title: '{{ __("messages.error") }}',
                                 text: xhr.responseJSON.message,
                                 icon: 'error'
                             });
                         } else {
                             Swal.fire({
-                                title: 'Error',
-                                text: 'Failed to delete favorite. Please try again.',
+                                title: '{{ __("messages.error") }}',
+                                text: '{{ __("messages.failed_delete_favorite") }}',
                                 icon: 'error'
                             });
                         }
                     } else {
-                        alert('Failed to delete favorite. Please try again.');
+                        alert('{{ __("messages.failed_delete_favorite") }}');
                     }
                 }
             });

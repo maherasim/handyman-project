@@ -154,7 +154,7 @@ $(document).on('click', 'a[data-approve-cash="1"]', function(e){
             icon: 'warning',
             showCancelButton: true,
             confirmButtonText: 'Yes, approve',
-            cancelButtonText: 'Cancel'
+            cancelButtonText: '{{ __("messages.cancel") }}'
         }).then(function(result){ if(result.isConfirmed){ doRedirect(); } });
     } else if (typeof swal !== 'undefined') {
         swal({

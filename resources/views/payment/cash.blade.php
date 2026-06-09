@@ -127,7 +127,7 @@
                             </div>
                             <div class="input-group input-group-search ms-2">
                                 <span class="input-group-text" id="addon-wrapping"><i class="fas fa-search"></i></span>
-                                <input type="text" class="form-control dt-search" placeholder="Search..."
+                                <input type="text" class="form-control dt-search" placeholder="{{ __("messages.search_placeholder") }}"
                                     aria-label="Search" aria-describedby="addon-wrapping"
                                     aria-controls="dataTableBuilder">
                             </div>
@@ -352,7 +352,7 @@
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonText: 'Yes, approve',
-                cancelButtonText: 'Cancel'
+                cancelButtonText: '{{ __("messages.cancel") }}'
             }).then((result) => {
                 if(result.isConfirmed){
                     window.location.href = href;
