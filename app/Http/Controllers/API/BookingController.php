@@ -34,7 +34,6 @@ use App\Traits\EarningTrait;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Mail;
-use App\Mail\BookingStatusUpdateMail;
 use Carbon\Carbon;
 use App\Models\Setting;
 
@@ -743,201 +742,15 @@ class BookingController extends Controller
         // }
         //$this->addBookingCommission($bookingdata);
 
-        // Send notification if status changed and activity_type is set
-        if($old_status != $data['status']){
-            // Reload booking to get fresh data after update with all relationships
-            $bookingdata->refresh();
-            $bookingdata->load(['customer', 'provider', 'service', 'handymanAdded.handyman', 'payment']);
-            $bookingdata->old_status = $old_status;
-            
-            // Ensure activity_type is set
-            if(empty($activity_type)) {
-                if($data['status'] == 'cancelled'){
-                    $activity_type = 'cancel_booking';
-                } else {
-                    $activity_type = 'update_booking_status';
-                }
-            }
-            
-            $activity_data = [
-                'activity_type' => $activity_type,
-                'booking_id' => $id,
-                'booking' => $bookingdata,
-            ];
-            
-            // Log for debugging
-            \Log::info('Sending booking notification', [
-                'old_status' => $old_status,
-                'new_status' => $data['status'],
-                'activity_type' => $activity_type,
-                'booking_id' => $id,
-                'has_handyman' => $bookingdata->handymanAdded ? $bookingdata->handymanAdded->count() : 0,
-                'provider_id' => $bookingdata->provider_id,
-                'customer_id' => $bookingdata->customer_id
-            ]);
-            
-            try {
-                $this->sendNotification($activity_data);
-                \Log::info('Booking notification sent successfully', [
-                    'booking_id' => $id,
-                    'activity_type' => $activity_type
-                ]);
-                
-                // Ensure database notification is created immediately (fallback if queue fails)
-                $this->createDirectDatabaseNotification($bookingdata, $activity_type, $old_status, $data['status']);
-            } catch (\Exception $e) {
-                \Log::error('Failed to send booking notification: ' . $e->getMessage(), [
-                    'booking_id' => $id,
-                    'activity_type' => $activity_type,
-                    'trace' => $e->getTraceAsString()
-                ]);
-                
-                // Fallback: create direct database notification even if sendNotification fails
-                try {
-                    $this->createDirectDatabaseNotification($bookingdata, $activity_type, $old_status, $data['status']);
-                } catch (\Exception $fallbackError) {
-                    \Log::error('Failed to create fallback database notification: ' . $fallbackError->getMessage());
-                }
-            }
-            
-            // ✅ Send direct email notifications to relevant parties
-            try {
-                $actor = auth()->user();
-                $actorName = $actor ? ($actor->display_name ?? $actor->first_name ?? 'System') : 'System';
-                $actorType = 'system';
-                
-                if ($actor) {
-                    if ($actor->hasAnyRole(['provider']) && $actor->id == $bookingdata->provider_id) {
-                        $actorType = 'provider';
-                    } elseif ($actor->hasAnyRole(['handyman'])) {
-                        $actorType = 'handyman';
-                    } elseif ($actor->hasAnyRole(['user']) && $actor->id == $bookingdata->customer_id) {
-                        $actorType = 'user';
-                    }
-                }
-                
-                $newStatus = $data['status'];
-                $oldStatusLabel = ucwords(str_replace('_', ' ', $old_status));
-                $newStatusLabel = ucwords(str_replace('_', ' ', $newStatus));
-                
-                // Determine who should receive emails based on who performed the action
-                $emailsToSend = [];
-                
-                if ($actorType === 'handyman') {
-                    // Handyman action: notify provider and user
-                    if ($bookingdata->provider && $bookingdata->provider->email) {
-                        $emailsToSend[] = [
-                            'user' => $bookingdata->provider,
-                            'type' => 'provider'
-                        ];
-                    }
-                    if ($bookingdata->customer && $bookingdata->customer->email) {
-                        $emailsToSend[] = [
-                            'user' => $bookingdata->customer,
-                            'type' => 'user'
-                        ];
-                    }
-                } elseif ($actorType === 'provider') {
-                    // Provider action: notify user and handyman
-                    if ($bookingdata->customer && $bookingdata->customer->email) {
-                        $emailsToSend[] = [
-                            'user' => $bookingdata->customer,
-                            'type' => 'user'
-                        ];
-                    }
-                    if ($bookingdata->handymanAdded && $bookingdata->handymanAdded->count() > 0) {
-                        foreach ($bookingdata->handymanAdded as $handymanMapping) {
-                            if ($handymanMapping->handyman && $handymanMapping->handyman->email) {
-                                $emailsToSend[] = [
-                                    'user' => $handymanMapping->handyman,
-                                    'type' => 'handyman'
-                                ];
-                            }
-                        }
-                    }
-                } elseif ($actorType === 'user') {
-                    // User action: notify provider and handyman
-                    if ($bookingdata->provider && $bookingdata->provider->email) {
-                        $emailsToSend[] = [
-                            'user' => $bookingdata->provider,
-                            'type' => 'provider'
-                        ];
-                    }
-                    if ($bookingdata->handymanAdded && $bookingdata->handymanAdded->count() > 0) {
-                        foreach ($bookingdata->handymanAdded as $handymanMapping) {
-                            if ($handymanMapping->handyman && $handymanMapping->handyman->email) {
-                                $emailsToSend[] = [
-                                    'user' => $handymanMapping->handyman,
-                                    'type' => 'handyman'
-                                ];
-                            }
-                        }
-                    }
-                } else {
-                    // System/admin action: notify all parties
-                    if ($bookingdata->provider && $bookingdata->provider->email) {
-                        $emailsToSend[] = [
-                            'user' => $bookingdata->provider,
-                            'type' => 'provider'
-                        ];
-                    }
-                    if ($bookingdata->customer && $bookingdata->customer->email) {
-                        $emailsToSend[] = [
-                            'user' => $bookingdata->customer,
-                            'type' => 'user'
-                        ];
-                    }
-                    if ($bookingdata->handymanAdded && $bookingdata->handymanAdded->count() > 0) {
-                        foreach ($bookingdata->handymanAdded as $handymanMapping) {
-                            if ($handymanMapping->handyman && $handymanMapping->handyman->email) {
-                                $emailsToSend[] = [
-                                    'user' => $handymanMapping->handyman,
-                                    'type' => 'handyman'
-                                ];
-                            }
-                        }
-                    }
-                }
-                
-                // Send emails to all recipients
-                $mailLocale = $request->get('lang') ?: app()->getLocale();
-                foreach ($emailsToSend as $emailData) {
-                    try {
-                        Mail::to($emailData['user']->email)->locale($mailLocale)->send(
-                            new BookingStatusUpdateMail(
-                                $emailData['user'],
-                                $bookingdata,
-                                $old_status,
-                                $newStatus,
-                                $actorName,
-                                $actorType,
-                                $emailData['type'], // recipient type: 'provider', 'handyman', or 'user'
-                                $mailLocale
-                            )
-                        );
-                        \Log::info('Booking status update email sent', [
-                            'booking_id' => $id,
-                            'recipient' => $emailData['user']->email,
-                            'recipient_type' => $emailData['type'],
-                            'old_status' => $old_status,
-                            'new_status' => $newStatus,
-                            'actor' => $actorName,
-                            'actor_type' => $actorType
-                        ]);
-                    } catch (\Exception $e) {
-                        \Log::error('Failed to send booking status update email', [
-                            'booking_id' => $id,
-                            'recipient' => $emailData['user']->email ?? 'unknown',
-                            'error' => $e->getMessage()
-                        ]);
-                    }
-                }
-            } catch (\Exception $e) {
-                \Log::error('Failed to send booking status update emails: ' . $e->getMessage(), [
-                    'booking_id' => $id,
-                    'trace' => $e->getTraceAsString()
-                ]);
-            }
+        // Dispatch async job to handle notifications and emails on status change
+        if ($old_status != $data['status']) {
+            \App\Jobs\ProcessBookingStatusUpdateJob::dispatch(
+                $id,
+                $data,
+                $old_status,
+                auth()->id(),
+                $request->get('lang') ?: app()->getLocale()
+            );
         }
 
         if($bookingdata->payment_id != null){

@@ -43,14 +43,32 @@ class PaymentController extends Controller
         $data['datetime'] = isset($request->datetime) ? date('Y-m-d H:i:s', strtotime($request->datetime)) : date('Y-m-d H:i:s');
 
         $booking = Booking::find($request->booking_id);
-        $result = Payment::create($data);
 
-        if (!$booking || !$result) {
+        if (!$booking) {
             return comman_message_response(__('messages.booking_not_found'), 404);
         }
 
-        $isAdvance = $result->payment_status == 'advanced_paid';
-        $isRemaining = $result->payment_status == 'paid';
+        // Idempotency: prevent double-processing on network retry or double-tap
+        $paymentStatus = $data['payment_status'] ?? null;
+        if ($paymentStatus) {
+            $existing = Payment::where('booking_id', $request->booking_id)
+                ->where('payment_status', $paymentStatus)
+                ->first();
+            if ($existing) {
+                return response()->json(['status' => false, 'message' => 'Payment already processed.']);
+            }
+        }
+
+        $result = Payment::create($data);
+
+        if (!$result) {
+            return comman_message_response(__('messages.booking_not_found'), 404);
+        }
+
+        // Prefer explicit 'type' field; fall back to payment_status for backward compat
+        $sentType = $request->type ?? '';
+        $isAdvance  = $sentType === 'advance_payment' || (!$sentType && $result->payment_status == 'advanced_paid');
+        $isRemaining = $sentType === 'remaining'       || (!$sentType && $result->payment_status == 'paid');
 
         $admin_commission_percentage = Setting::getValueByKey('admin_commission_percentage', 'site-setup')->value ?? 10;
         $admin_user_id = User::where('user_type', 'admin')->value('id');
@@ -64,7 +82,8 @@ class PaymentController extends Controller
             $provider_earning = $advance_paid_amount - $admin_commission_amount;
 
             // Credit only admin on advance; hold provider share until final payment to avoid later clawbacks
-            Wallet::firstOrCreate(['user_id' => $admin_user_id])->increment('amount', $admin_commission_amount);
+            $adminWallet = Wallet::firstOrCreate(['user_id' => $admin_user_id]);
+            $adminWallet->increment('amount', $admin_commission_amount);
 
             CommissionEarning::create([
                 'booking_id' => $booking->id,
@@ -72,6 +91,21 @@ class PaymentController extends Controller
                 'employee_id' => $admin_user_id,
                 'commission_amount' => $admin_commission_amount,
                 'commission_status' => 'paid',
+            ]);
+
+            WalletHistory::create([
+                'datetime' => $data['datetime'],
+                'user_id' => $admin_user_id,
+                'activity_type' => 'credit',
+                'activity_message' => 'Admin commission (advance) for booking #' . $booking->id . ' — ' . getPriceFormat($admin_commission_amount),
+                'activity_data' => json_encode([
+                    'user_id' => $booking->customer_id,
+                    'credit_debit_amount' => $admin_commission_amount,
+                    'amount' => $adminWallet->fresh()->amount,
+                    'transaction_type' => 'Credit',
+                    'booking_id' => $booking->id,
+                    'commission_type' => 'advance',
+                ]),
             ]);
             
             // Send email notification to provider about advance payment
@@ -159,7 +193,8 @@ class PaymentController extends Controller
             }
 
             if ($remaining_admin_commission > 0) {
-                Wallet::firstOrCreate(['user_id' => $admin_user_id])->increment('amount', $remaining_admin_commission);
+                $adminWallet = Wallet::firstOrCreate(['user_id' => $admin_user_id]);
+                $adminWallet->increment('amount', $remaining_admin_commission);
 
                 CommissionEarning::create([
                     'booking_id' => $booking->id,
@@ -167,6 +202,21 @@ class PaymentController extends Controller
                     'employee_id' => $admin_user_id,
                     'commission_amount' => $remaining_admin_commission,
                     'commission_status' => 'paid',
+                ]);
+
+                WalletHistory::create([
+                    'datetime' => $data['datetime'],
+                    'user_id' => $admin_user_id,
+                    'activity_type' => 'credit',
+                    'activity_message' => 'Admin commission (remaining) for booking #' . $booking->id . ' — ' . getPriceFormat($remaining_admin_commission),
+                    'activity_data' => json_encode([
+                        'user_id' => $booking->customer_id,
+                        'credit_debit_amount' => $remaining_admin_commission,
+                        'amount' => $adminWallet->fresh()->amount,
+                        'transaction_type' => 'Credit',
+                        'booking_id' => $booking->id,
+                        'commission_type' => 'remaining',
+                    ]),
                 ]);
             }
 

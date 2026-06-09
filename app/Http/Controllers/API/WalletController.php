@@ -69,7 +69,7 @@ class WalletController extends Controller
         if (!$wallet) {
             $user = User::where('id', $user_id)->first();
 
-            if ($user && $user->user_type == 'user' || $user->user_type = "provider") {
+            if ($user && ($user->user_type == 'user' || $user->user_type == 'provider')) {
                 $wallet = Wallet::create([
                     'title' => $user->display_name,
                     'user_id' => $user->id,
@@ -188,6 +188,10 @@ class WalletController extends Controller
 public function withdarawMoney(Request $request)
 {
     try {
+        if (auth()->user()->hasRole('user')) {
+            return comman_message_response('Not allowed.', 403);
+        }
+
         $data = $request->except('_token');
 
         $user_id = $data['user_id'];

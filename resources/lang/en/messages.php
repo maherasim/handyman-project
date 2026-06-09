@@ -1303,6 +1303,12 @@
     'withdrawal_request_submitted' => 'Withdrawal request submitted successfully. It will be processed after admin confirmation.',
     'withdrawal_paid_activity' => 'Withdrawal paid :amount',
     'transaction_complete_success' => 'Transaction Completed Successfully',
+    'withdrawal_rejected_refunded' => 'Withdrawal request rejected and amount refunded to user wallet.',
+    'reject_refund' => 'Reject & Refund',
+    'yes_reject_refund' => 'Yes, Reject & Refund',
+    'confirm_approve_withdrawal' => 'Are you sure you want to approve and pay this withdrawal?',
+    'confirm_reject_withdrawal' => 'Are you sure you want to reject this withdrawal? The amount will be refunded to the user\'s wallet.',
+    'rejected' => 'Rejected',
     'json_file' => 'Firebase Service Json File',
     'paid_elsewhere' => 'Paid ElseWhere?',
     'manual_transaction' => 'Manual Transaction',
@@ -2096,6 +2102,17 @@
         'post_job_bid_customer_rating' => 'Employer rates provider (post job)',
         'booking_rating' => 'Customer rates provider (booking)',
         'handyman_rating' => 'Customer rates worker (booking)',
+
+
+
+
+
+        'withdrawal_rejected_refunded' => 'Withdrawal request rejected and amount refunded to user wallet.',
+    'reject_refund' => 'Reject & Refund',
+    'yes_reject_refund' => 'Yes, Reject & Refund',
+    'confirm_approve_withdrawal' => 'Are you sure you want to approve and pay this withdrawal?',
+    'confirm_reject_withdrawal' => 'Are you sure you want to reject this withdrawal? The amount will be refunded to the user\'s wallet.',
+    'rejected' => 'Rejected',
     ],
 
 );

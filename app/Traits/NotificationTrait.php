@@ -659,6 +659,20 @@ trait NotificationTrait
             $notification_data['wallet_transaction_date'] = $date;
             $notification_data['wallet_transaction_time'] = $time;
 			$notification_data['job_id'] = isset($job_id) ? $job_id: '';
+			// Explicitly expose post_request_id and bid_id for mobile push notification routing
+			if ($notification_type === 'job_requested' && isset($post_job)) {
+				$notification_data['post_request_id'] = $post_job->id ?? '';
+				$notification_data['bid_id'] = '';
+			} elseif ($notification_type === 'provider_send_bid' && isset($bid_data)) {
+				$notification_data['post_request_id'] = $bid_data->post_request_id ?? '';
+				$notification_data['bid_id'] = $bid_data->id ?? '';
+			} elseif (in_array($notification_type, ['user_accept_bid', 'post_job_bid_status_update']) && isset($post_job)) {
+				$notification_data['post_request_id'] = $post_job->post_request_id ?? '';
+				$notification_data['bid_id'] = $post_job->id ?? '';
+			} else {
+				$notification_data['post_request_id'] = '';
+				$notification_data['bid_id'] = '';
+			}
 			// Provide a clickable link for web notifications when a job request is created
 			if ($notification_type === 'job_requested') {
 				$targetId = $notification_data['job_id'] ?? null;

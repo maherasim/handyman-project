@@ -716,16 +716,13 @@ class ChatController extends Controller
             ]);
         }
 
-        // Non-admin: show user's standalone conversations list (unchanged)
+        // Non-admin: show all conversations the user participates in
         $conversations = ChatConversation::where(function ($q) use ($uid) {
                 $q->where('user_one_id', $uid)->orWhere('user_two_id', $uid);
             })
-            ->whereNull('booking_id')
-            ->whereNull('post_job_bid_id')
-            ->where('conversation_type', 'standalone')
             ->with([
-                'userOne:id,display_name,user_type', // include user_type
-                'userTwo:id,display_name,user_type', // include user_type
+                'userOne:id,display_name,user_type',
+                'userTwo:id,display_name,user_type',
             ])
             ->orderBy('updated_at', 'desc')
             ->get();
@@ -740,9 +737,17 @@ class ChatController extends Controller
             $otherId = ($c->user_one_id === $uid) ? $c->user_two_id : $c->user_one_id;
             $other = $otherId === optional($c->userOne)->id ? $c->userOne : $c->userTwo;
 
-            $url = route('chat.view.user', $otherId);
-            $title = $other->user_type ?? __('messages.unknown');
-
+            // Route to per-conversation view for booking/bid threads; user-to-user for standalone
+            if ($c->booking_id || $c->post_job_bid_id) {
+                $url = route('chat.messages', $c->id);
+                $contextLabel = $c->booking_id
+                    ? __('messages.booking') . ' #' . $c->booking_id
+                    : __('messages.post_job') . ' #' . $c->post_job_bid_id;
+                $title = ($other->user_type ?? __('messages.unknown')) . ' — ' . $contextLabel;
+            } else {
+                $url = route('chat.view.user', $otherId);
+                $title = $other->user_type ?? __('messages.unknown');
+            }
 
             $maskedSnippet = '';
             if ($last) {

@@ -129,8 +129,8 @@
             readURL(this,'login_register_image');
         });
     })
-    const MAX_UPLOAD_IMAGE_BYTES = 120 * 1024;
-    const MAX_UPLOAD_IMAGE_SIDE = 800;
+    var MAX_UPLOAD_IMAGE_BYTES = 120 * 1024;
+    var MAX_UPLOAD_IMAGE_SIDE = 800;
 
     function loadImageFromFile(file) {
         return new Promise((resolve, reject) => {
@@ -206,7 +206,10 @@
             if (file !== selectedFile) {
                 replaceSelectedFile(input, file);
             }
-            login_register_image.src = URL.createObjectURL(file);
+            var previewImg = document.getElementById('login_register_image_preview');
+            if (previewImg) {
+                previewImg.src = URL.createObjectURL(file);
+            }
             label.text(file.name);
             saveButton.disabled = false;
         }).catch(function(error) {

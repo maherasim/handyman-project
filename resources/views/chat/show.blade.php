@@ -276,15 +276,15 @@
 
             document.getElementById('loadOlderBtn').addEventListener('click', fetchOlder);
 
-            document.getElementById('composer').addEventListener('submit', (e) => {
+            document.getElementById('composer').addEventListener('submit', async (e) => {
                 e.preventDefault();
-                
+
                 // Prevent double submission
                 if (isSending) {
                     console.log('Message already sending, ignoring duplicate submit');
                     return;
                 }
-                
+
                 const fd = new FormData();
                 const text = (textInput.value || '').trim();
                 // Client-side quick PII check
@@ -346,17 +346,38 @@
                 sendBtn.disabled = true;
                 sendBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
                 textInput.disabled = true;
-                
+
+                // Optimistic rendering: show text message immediately before server responds
+                const hasFile = fileInput.files && fileInput.files[0];
+                let optimisticEl = null;
+                if (text && !hasFile) {
+                    textInput.value = '';
+                    optimisticEl = document.createElement('div');
+                    optimisticEl.className = 'd-flex mb-2 justify-content-end';
+                    const optBubble = document.createElement('div');
+                    optBubble.className = 'p-2 rounded bg-primary text-white opacity-75';
+                    const ts = new Date().toISOString().slice(0, 19).replace('T', ' ');
+                    optBubble.innerHTML = `<div class="d-flex align-items-center mb-1"><span class="small fw-bold">{{ $auth->display_name }}</span></div><div class="small">${safe(text)}</div><div class="text-end small opacity-75 mt-1">${ts} <i class="fas fa-clock"></i></div>`;
+                    optimisticEl.appendChild(optBubble);
+                    messagesEl.appendChild(optimisticEl);
+                    msgScroll.scrollTop = msgScroll.scrollHeight;
+                }
+
                 fetch(sendUrl, {
                     method: 'POST',
                     headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
                     body: fd
                 }).then(r => r.json()).then(j => {
                     if (j && j.status) {
-                        textInput.value = '';
+                        if (!optimisticEl) textInput.value = '';
                         if (fileInput) fileInput.value = '';
                         previewEl.style.display = 'none';
                         previewEl.innerHTML = '';
+                        // Remove optimistic bubble before pollNewer renders the real message
+                        if (optimisticEl && optimisticEl.parentNode) {
+                            optimisticEl.parentNode.removeChild(optimisticEl);
+                            optimisticEl = null;
+                        }
                         if (j.flagged) {
                             const warn = document.getElementById('policyWarning');
                             if (warn) {
@@ -385,6 +406,11 @@
                     }
                 }).catch(err => {
                     console.error('Error sending message:', err);
+                    // Remove optimistic bubble and restore input on failure
+                    if (optimisticEl && optimisticEl.parentNode) {
+                        optimisticEl.parentNode.removeChild(optimisticEl);
+                    }
+                    if (text && !hasFile) textInput.value = text;
                 }).finally(() => {
                     // Re-enable form after request completes
                     isSending = false;
@@ -414,7 +440,7 @@
 
             // init
             fetchInitial();
-            pollTimer = setInterval(pollNewer, 4000);
+            pollTimer = setInterval(pollNewer, 3000);
         });
     </script>
 </x-master-layout>

@@ -253,8 +253,8 @@
             updateThemeColors();
         }
     })
-    const MAX_UPLOAD_IMAGE_BYTES = 120 * 1024;
-    const MAX_UPLOAD_IMAGE_SIDE = 800;
+    var MAX_UPLOAD_IMAGE_BYTES = 120 * 1024;
+    var MAX_UPLOAD_IMAGE_SIDE = 800;
 
     function loadImageFromFile(file) {
         return new Promise((resolve, reject) => {

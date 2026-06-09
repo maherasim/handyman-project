@@ -515,6 +515,7 @@ Route::group(['middleware' => ['auth', 'verified', 'active']], function () {
     Route::get('withdrawal-request-index-data', [WalletController::class, 'wallet_transaction_index_data'])->name('wallet_transaction.index_data');
     Route::get('withdrawal-request-payout/{id}', [WalletController::class, 'wallet_transaction_payout'])->name('wallet.wallet_transaction_payout');
     Route::get('withdrawal-request-bank-details/{id}', [WalletController::class, 'getWithdrawalBankDetails'])->name('wallet.withdrawal_bank_details');
+    Route::get('withdrawal-request-reject/{id}', [WalletController::class, 'wallet_transaction_reject'])->name('wallet.wallet_transaction_reject');
 
 
     Route::group(['middleware' => ['permission:subcategory list']], function () {

@@ -626,10 +626,12 @@ public function getWalletPaymentMethod(Request $request)
 
             })
             ->editColumn('status' , function ($query){
-                if($query->status == 'paid'){
+                if ($query->status == 'paid') {
                     $status = '<span class="badge badge-active text-success bg-success-subtle">'.ucfirst($query->status).'</span>';
-                }else{
-                    $status = '<span class="badge badge-inactive text-danger bg-danger-subtle">'.ucfirst($query->status).'</span>';
+                } elseif ($query->status == 'rejected') {
+                    $status = '<span class="badge badge-inactive text-white bg-danger">'.ucfirst($query->status).'</span>';
+                } else {
+                    $status = '<span class="badge badge-inactive text-warning bg-warning-subtle">'.ucfirst($query->status).'</span>';
                 }
                 return $status;
             })
@@ -718,6 +720,35 @@ public function getWalletPaymentMethod(Request $request)
     
     return redirect(route('wallet_transaction'))->withSuccess($message);
 }
+
+    public function wallet_transaction_reject($id)
+    {
+        $withdraw_money = WithdrawMoney::with(['providers'])->where('id', $id)->first();
+
+        if (!$withdraw_money) {
+            return redirect(route('wallet_transaction'))->withErrors('Withdrawal request not found.');
+        }
+
+        if ($withdraw_money->status === 'paid') {
+            return redirect(route('wallet_transaction'))->withErrors('Cannot reject a withdrawal that has already been paid.');
+        }
+
+        if ($withdraw_money->status === 'rejected') {
+            return redirect(route('wallet_transaction'))->withErrors('This withdrawal request has already been rejected.');
+        }
+
+        // Refund the amount back to the user's wallet
+        $wallet = Wallet::where('user_id', $withdraw_money->user_id)->first();
+        if ($wallet) {
+            $wallet->amount += $withdraw_money->amount;
+            $wallet->save();
+        }
+
+        $withdraw_money->status = 'rejected';
+        $withdraw_money->save();
+
+        return redirect(route('wallet_transaction'))->withSuccess(__('messages.withdrawal_rejected_refunded'));
+    }
 
     public function getWithdrawalBankDetails($id)
     {

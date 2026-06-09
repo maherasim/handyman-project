@@ -119,12 +119,22 @@ class BookingStatusesTableSeeder extends Seeder
                 'updated_at' => '2021-05-30 16:55:12',
                 'created_at' => '2021-05-30 16:55:11',
             ),
-            10 => 
+            10 =>
             array (
                 'id' => 11,
                 'label' => 'Waiting',
                 'value' => 'waiting',
                 'sequence' => 11,
+                'status' => 1,
+                'updated_at' => '2021-05-30 16:55:12',
+                'created_at' => '2021-05-30 16:55:11',
+            ),
+            11 =>
+            array (
+                'id' => 12,
+                'label' => 'Done By Provider',
+                'value' => 'done_by_provider',
+                'sequence' => 10,
                 'status' => 1,
                 'updated_at' => '2021-05-30 16:55:12',
                 'created_at' => '2021-05-30 16:55:11',

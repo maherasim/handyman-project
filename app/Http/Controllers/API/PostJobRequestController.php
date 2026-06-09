@@ -221,7 +221,7 @@ class PostJobRequestController extends Controller
         // Update advance, remaining, and status
         $bid->advance_percent = $request->input('advance_percent');
         $bid->remaining_percent = $request->input('remaining_percent');
-        $bid->status = 'Advance Payment Pending';
+        $bid->status = 'advance_payment_pending';
         $bid->save();
 
         // Notify customer (same as web): email + notification when provider sets payment split
