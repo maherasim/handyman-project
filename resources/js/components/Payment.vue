@@ -83,7 +83,7 @@
                     FORA Linden Palais, Unter den<br>
                     Linden 40<br>
                     10117, Berlin, Germany</li>
-                  <li class="mt-2"><strong>BIC of Sender Bank:</strong> CHASDEFX</li>
+                 
                 </ul>
               </div>
             </div>
