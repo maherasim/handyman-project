@@ -212,7 +212,7 @@
             $locationText = $cityName . ', ' . $countryName;
             $serviceShareUrl = route('service.detail', $data->id) . '?v=' . (optional($data->updated_at)->timestamp ?? time());
             $serviceDescSnippet = $data->description ? \Illuminate\Support\Str::limit(strip_tags($data->description), 100) : '';
-            $serviceQuote = Str::limit($data->name, 80) . ' • ' . getPriceFormat($data->price) . ' • ' . ucfirst($data->type ?? '') . ' • ' . $locationText . ($serviceDescSnippet ? ' • ' . $serviceDescSnippet : '');
+            $serviceQuote = Str::limit($data->name, 80) . ' • ' . getPriceFormat($data->price) . ' • ' . __('messages.' . strtolower($data->type ?? 'fixed')) . ' • ' . $locationText . ($serviceDescSnippet ? ' • ' . $serviceDescSnippet : '');
          @endphp
          <span role="button" tabindex="0" class="social-link share-link"
                data-platform="facebook"

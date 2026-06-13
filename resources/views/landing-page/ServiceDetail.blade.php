@@ -4,7 +4,7 @@
     $sd = $serviceData['service_detail'] ?? [];
     $ogName = \Illuminate\Support\Str::limit($sd['name'] ?? __('landingpage.service'), 60);
     $ogPrice = getPriceFormat($sd['price'] ?? 0);
-    $ogType = ucfirst(trim($sd['type'] ?? 'fixed'));
+    $ogType = __('messages.' . strtolower(trim($sd['type'] ?? 'fixed')));
     $ogCity = trim($sd['city_name'] ?? '');
     $ogCountry = trim($sd['country_name'] ?? '');
     $ogLocation = trim(implode(', ', array_filter([$ogCity, $ogCountry])));
@@ -12,7 +12,7 @@
     $ogTitle = \Illuminate\Support\Str::limit($ogTitle, 100);
     $ogDescRaw = $sd['description'] ?? '';
     $ogDescSnippet = $ogDescRaw ? \Illuminate\Support\Str::limit(strip_tags($ogDescRaw), 100) : '';
-    $ogDescription = 'Price: ' . $ogPrice . ' | Type: ' . $ogType . ($ogLocation !== '' ? ' | Location: ' . $ogLocation : '') . ($ogDescSnippet !== '' ? '. ' . $ogDescSnippet : '');
+    $ogDescription = __('messages.price') . ': ' . $ogPrice . ' | ' . __('messages.type') . ': ' . $ogType . ($ogLocation !== '' ? ' | ' . __('messages.location') . ': ' . $ogLocation : '') . ($ogDescSnippet !== '' ? '. ' . $ogDescSnippet : '');
     $ogDescription = \Illuminate\Support\Str::limit($ogDescription, 256);
     $ogUrl = !empty($sd['id']) ? route('service.detail', $sd['id']) : url()->current();
     $imgUrl = null;
@@ -540,8 +540,8 @@
                                         
                                         <div>
                                             <div>
-                                                {{ $serviceData['service_detail']['city_name'] ?? 'City' }} -
-                                                {{ $serviceData['service_detail']['country_name'] ?? 'Country' }}
+                                                {{ $serviceData['service_detail']['city_name'] ?? __('landingpage.sl_city_fallback') }} -
+                                                {{ $serviceData['service_detail']['country_name'] ?? __('landingpage.sl_country_fallback') }}
                                             </div>
                                             
                                         </div>
@@ -803,7 +803,7 @@
                                                             <label class="text-capitalize">
                                                                 <h6>{{ __('messages.discount') }} <span
                                                                         class="text-success">({{ $serviceData['service_detail']['discount'] }}%
-                                                                        Off)</span></h6>
+                                                                        {{ __('messages.off') }})</span></h6>
                                                             </label>
                                                         </td>
                                                         <td class="pe-0 py-2 text-end">
@@ -1088,7 +1088,7 @@
 
                                 <h4 class="mt-2 text-primary">
                                     {{ getPriceFormat($serviceData['service_detail']['price']) }} /
-                                    {{ $serviceData['service_detail']['type'] }}</h4>
+                                    {{ __('messages.' . strtolower($serviceData['service_detail']['type'] ?? 'fixed')) }}</h4>
 
                             </div>
                             <div class="flex-shrink-0">
@@ -1194,7 +1194,7 @@
                                         </span>
                                         <span class="cta-stat">
                                             <i class="fas fa-wallet"></i>
-                                            {{ getPriceFormat($serviceData['service_detail']['price']) }} / {{ $serviceData['service_detail']['type'] }}
+                                            {{ getPriceFormat($serviceData['service_detail']['price']) }} / {{ __('messages.' . strtolower($serviceData['service_detail']['type'] ?? 'fixed')) }}
                                         </span>
                                         @if(!empty($serviceData['service_detail']['duration']))
                                         <span class="cta-stat">
@@ -1204,7 +1204,7 @@
                                         @endif
                                         <span class="cta-stat">
                                             <i class="fas fa-tag"></i>
-                                            {{ $serviceData['service_detail']['type'] ?? __('messages.service') }}
+                                            {{ __('messages.' . strtolower($serviceData['service_detail']['type'] ?? 'service')) }}
                                         </span>
                                     </div>
                                     <div class="cta-trust">
@@ -1226,7 +1226,7 @@
                                 $serviceId = $serviceData['service_detail']['id'] ?? null;
                                 $serviceName = Str::limit($serviceData['service_detail']['name'] ?? __('landingpage.service'), 80);
                                 $servicePrice = getPriceFormat($serviceData['service_detail']['price'] ?? 0);
-                                $serviceType = ucfirst($serviceData['service_detail']['type'] ?? 'service');
+                                $serviceType = __('messages.' . strtolower($serviceData['service_detail']['type'] ?? 'service'));
                                 $cityName = $serviceData['service_detail']['city_name'] ?? __('landingpage.sl_city_fallback');
                                 $countryName = $serviceData['service_detail']['country_name'] ?? __('landingpage.sl_country_fallback');
                                 $locationText = $cityName . ', ' . $countryName;
@@ -1506,7 +1506,7 @@
                                         }
                                         $availabilityText = str_ireplace(
                                             ['full_time', 'part_time'],
-                                            ['Full Time', 'Part Time'],
+                                            [__('messages.full_time'), __('messages.part_time')],
                                             $availabilityText
                                         );
                                     @endphp

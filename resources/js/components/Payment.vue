@@ -10,14 +10,15 @@
               <input class="form-check-input" type="radio" name="payment_method" v-model="payment_method" id="stripe" value="stripe" />
               <label class="form-check-label h6 fw-normal text-capitalize" for="stripe">{{ $t('messages.stripe') }}</label>
             </div>
-            <div class="form-check">
+            <div class="form-check">   
               <input class="form-check-input" type="radio" name="payment_method" v-model="payment_method" id="wallet" value="wallet"
                 :disabled="!canUseWallet" />
               <label class="form-check-label h6 fw-normal text-capitalize" for="wallet" :class="{ 'text-muted': !canUseWallet }">
                 {{ $t('messages.wallet') }}
                 <span v-if="!canUseWallet" class="small">({{ $t('messages.insufficient_balance') }})</span>
               </label>
-            </div>
+            </div>           
+            
             <div class="form-check" v-if="isPaypalEnabled">
               <input class="form-check-input" type="radio" name="payment_method" v-model="payment_method" id="paypal" value="paypal" />
               <label class="form-check-label h6 fw-normal text-capitalize" for="paypal">{{ $t('messages.paypal') }}</label>
@@ -46,7 +47,7 @@
       </form>
     </div>
   </div>
-
+                                                
   <!-- Bank Transfer Info Modal -->
   <div class="modal fade" id="bankTransferModal" ref="bankModalRef" tabindex="-1" aria-labelledby="bankTransferModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
