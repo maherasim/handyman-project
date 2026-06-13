@@ -113,7 +113,7 @@ class PaymentController extends Controller
                 $booking->load(['customer', 'service']);
                 $provider = User::find($booking->provider_id);
                 if ($provider && $provider->email) {
-                    Mail::to($provider->email)->send(new AdvancePaymentNotificationMail($provider, $result, $booking));
+                    Mail::to($provider->email)->locale(getRecipientLocale($provider))->send(new AdvancePaymentNotificationMail($provider, $result, $booking, getRecipientLocale($provider))); // *** new: locale-aware email ***
                     \Log::info('Advance payment notification email sent to provider: ' . $provider->email . ' for booking ID: ' . $booking->id);
                 }
             } catch (\Exception $e) {
@@ -249,7 +249,7 @@ class PaymentController extends Controller
                 $booking->load(['customer', 'service']);
                 $provider = User::find($booking->provider_id);
                 if ($provider && $provider->email) {
-                    Mail::to($provider->email)->send(new FullPaymentReceivedMail($provider, $result, $booking));
+                    Mail::to($provider->email)->locale(getRecipientLocale($provider))->send(new FullPaymentReceivedMail($provider, $result, $booking, getRecipientLocale($provider))); // *** new: locale-aware email ***
                     \Log::info('Full payment received notification email sent to provider: ' . $provider->email . ' for booking ID: ' . $booking->id);
                 }
             } catch (\Exception $e) {
@@ -502,7 +502,7 @@ class PaymentController extends Controller
                 $booking->load(['customer', 'service']);
                 $provider = User::find($booking->provider_id);
                 if ($provider && $provider->email) {
-                    Mail::to($provider->email)->send(new AdvancePaymentNotificationMail($provider, $payment, $booking));
+                    Mail::to($provider->email)->locale(getRecipientLocale($provider))->send(new AdvancePaymentNotificationMail($provider, $payment, $booking, getRecipientLocale($provider))); // *** new: locale-aware email ***
                     \Log::info('Advance payment notification email sent to provider: ' . $provider->email . ' for booking ID: ' . $booking->id);
                 }
             } catch (\Exception $e) {
@@ -647,7 +647,7 @@ class PaymentController extends Controller
     
         // ✅ Send email notification to admin (cash/bank transfer verification)
         try {
-            Mail::to('frobminator@frobster.com')->send(new BankTransferPaymentNotificationMail($payment, $booking, $request->type));
+            Mail::to(config('mail.from.address'))->locale(app()->getLocale())->send(new BankTransferPaymentNotificationMail($payment, $booking, $request->type, app()->getLocale())); // *** new: configurable admin email + locale ***
         } catch (\Exception $e) {
             // Log error but don't fail the payment creation
             \Log::error('Failed to send bank transfer payment notification email: ' . $e->getMessage());

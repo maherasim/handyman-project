@@ -322,7 +322,7 @@ class ChatController extends Controller
         // Send only the chat-message-notification.blade.php email (no template email for chat_message)
         try {
             if ($recipient && $recipient->email) {
-                Mail::to($recipient->email)->send(new ChatMessageNotificationMail($recipient, $sender, $message, $conversation));
+                Mail::to($recipient->email)->locale(getRecipientLocale($recipient))->send(new ChatMessageNotificationMail($recipient, $sender, $message, $conversation, getRecipientLocale($recipient))); // *** new: locale-aware email ***
             }
         } catch (\Exception $e) {
             \Log::error('Failed to send chat message email: ' . $e->getMessage());
@@ -795,6 +795,7 @@ class ChatController extends Controller
         $piiTypes = $message->pii_types ? explode(',', $message->pii_types) : [];
         $snippet = $message->message ? (mb_strlen($message->message) > 160 ? (mb_substr($message->message, 0, 160) . '…') : $message->message) : '';
 
+        $recipientLocale = getRecipientLocale($recipient); // *** new: recipient locale ***
         $data = [
             'name' => $recipient->display_name ?? ($recipient->first_name ?? __('messages.user')),
             'types' => $piiTypes,
@@ -802,9 +803,7 @@ class ChatController extends Controller
             'date' => $message->created_at?->toDateTimeString(),
         ];
 
-        Mail::send('emails.chat_pii_warning', $data, function($m) use ($email) {
-            $m->to($email)->subject(__('messages.chat_policy_warning_email_subject'));
-        });
+        Mail::to($email)->locale($recipientLocale)->send(new \App\Mail\ChatPiiWarningMail($data, $recipientLocale)); // *** new: locale-aware email ***
 
         return back()->with('status', __('messages.chat_warning_email_sent'));
     }

@@ -95,7 +95,7 @@ class RegisteredUserController extends Controller
     // Assign role and send verification email
     $user->assignRole($userType);
     $verificationLink = route('verify', ['id' => $user->id]);
-    Mail::to($user->email)->send(new VerificationEmail($verificationLink));
+    Mail::to($user->email)->locale(getRecipientLocale($user))->send(new VerificationEmail($verificationLink, getRecipientLocale($user))); // *** new: locale-aware email ***
 
     // Create wallet for all user types (provider, handyman, and user)
     if (in_array($userType, ['provider', 'handyman', 'user'])) {

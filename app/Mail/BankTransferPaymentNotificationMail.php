@@ -19,14 +19,18 @@ class BankTransferPaymentNotificationMail extends Mailable
     public $booking;
     public $paymentType;
 
-    /**
+    // *** new: locale for translated email subject and body ***
+    public $mailLocale;
+
+        /**
      * Create a new message instance.
      */
-    public function __construct(Payment $payment, Booking $booking, $paymentType = 'payment')
+    public function __construct(Payment $payment, Booking $booking, $paymentType = 'payment', string $mailLocale = null)
     {
         $this->payment = $payment;
         $this->booking = $booking;
         $this->paymentType = $paymentType;
+        $this->mailLocale = $mailLocale ?: app()->getLocale(); // *** new: recipient locale ***
     }
 
     /**
@@ -36,7 +40,7 @@ class BankTransferPaymentNotificationMail extends Mailable
     {
         $typeLabel = $this->paymentType === 'advance_payment' ? __('messages.advance') : __('messages.remaining');
         return new Envelope(
-            subject: __('messages.email_subject_cash_payment_booking_verify', ['id' => $this->booking->id, 'type' => $typeLabel]),
+            subject: __('messages.email_subject_cash_payment_booking_verify', ['id' => $this->booking->id, 'type' => $typeLabel], $this->mailLocale),
         );
     }
 

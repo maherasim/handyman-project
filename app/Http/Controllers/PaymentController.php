@@ -130,11 +130,11 @@ class PaymentController extends Controller
 
             if ($bid->customer) {
                 $customerData = array_merge($baseData, ['user_type' => 'user']);
-                $bid->customer->notify(new CommonNotification('bank_transfer_payment_approved', $customerData));
+                $bid->customer->notify(new CommonNotification('bank_transfer_payment_approved', $customerData, getRecipientLocale($bid->customer))); // *** new: recipient locale ***
             }
             if ($bid->provider) {
                 $providerData = array_merge($baseData, ['user_type' => 'provider']);
-                $bid->provider->notify(new CommonNotification('bank_transfer_payment_approved', $providerData));
+                $bid->provider->notify(new CommonNotification('bank_transfer_payment_approved', $providerData, getRecipientLocale($bid->provider))); // *** new: recipient locale ***
             }
         }
     }
@@ -1239,7 +1239,7 @@ class PaymentController extends Controller
                 $booking->load(['customer', 'service']);
                 $provider = \App\Models\User::find($booking->provider_id);
                 if ($provider && $provider->email) {
-                    \Illuminate\Support\Facades\Mail::to($provider->email)->send(new \App\Mail\FullPaymentReceivedMail($provider, $paymentdata, $booking));
+                    \Illuminate\Support\Facades\Mail::to($provider->email)->locale(getRecipientLocale($provider))->send(new \App\Mail\FullPaymentReceivedMail($provider, $paymentdata, $booking, getRecipientLocale($provider))); // *** new: locale-aware email ***
                     \Log::info('Full payment received notification email sent to provider: ' . $provider->email . ' for booking ID: ' . $booking->id);
                 }
             } catch (\Exception $e) {

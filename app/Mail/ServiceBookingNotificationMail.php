@@ -19,7 +19,7 @@ class ServiceBookingNotificationMail extends Mailable
     /**
      * Create a new message instance.
      */
-    public function __construct(User $provider, Booking $booking, User $customer)
+    public function __construct(User $provider, Booking $booking, User $customer, string $mailLocale = null)
     {
         $this->provider = $provider;
         $this->booking = $booking;

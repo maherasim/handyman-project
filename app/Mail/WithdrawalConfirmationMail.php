@@ -19,14 +19,18 @@ class WithdrawalConfirmationMail extends Mailable
     public $withdrawal;
     public $bank;
 
-    /**
+    // *** new: locale for translated email subject and body ***
+    public $mailLocale;
+
+        /**
      * Create a new message instance.
      */
-    public function __construct(User $user, WithdrawMoney $withdrawal)
+    public function __construct(User $user, WithdrawMoney $withdrawal, string $mailLocale = null)
     {
         $this->user = $user;
         $this->withdrawal = $withdrawal;
         $this->bank = $withdrawal->bank;
+        $this->mailLocale = $mailLocale ?: app()->getLocale(); // *** new: recipient locale ***
     }
 
     /**
@@ -35,7 +39,7 @@ class WithdrawalConfirmationMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: __('messages.email_subject_withdrawal_confirmed', ['amount' => getPriceFormat($this->withdrawal->amount)]),
+            subject: __('messages.email_subject_withdrawal_confirmed', ['amount' => getPriceFormat($this->withdrawal->amount)], $this->mailLocale),
         );
     }
 

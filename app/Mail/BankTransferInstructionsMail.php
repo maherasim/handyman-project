@@ -20,14 +20,18 @@ class BankTransferInstructionsMail extends Mailable
     public $subscription;
     public $transaction;
 
-    /**
+    // *** new: locale for translated email subject and body ***
+    public $mailLocale;
+
+        /**
      * Create a new message instance.
      */
-    public function __construct(User $user, ProviderSubscription $subscription, SubscriptionTransaction $transaction)
+    public function __construct(User $user, ProviderSubscription $subscription, SubscriptionTransaction $transaction, string $mailLocale = null)
     {
         $this->user = $user;
         $this->subscription = $subscription;
         $this->transaction = $transaction;
+        $this->mailLocale = $mailLocale ?: app()->getLocale(); // *** new: recipient locale ***
     }
 
     /**
@@ -36,7 +40,7 @@ class BankTransferInstructionsMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: __('messages.email_subject_bank_transfer_instructions', ['plan' => $this->subscription->title]),
+            subject: __('messages.email_subject_bank_transfer_instructions', ['plan' => $this->subscription->title], $this->mailLocale),
         );
     }
 

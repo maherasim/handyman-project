@@ -20,15 +20,19 @@ class ChatMessageNotificationMail extends Mailable
     public $chatMessage;
     public $conversation;
 
-    /**
+    // *** new: locale for translated email subject and body ***
+    public $mailLocale;
+
+        /**
      * Create a new message instance.
      */
-    public function __construct(User $recipient, User $sender, ChatMessage $message, $conversation)
+    public function __construct(User $recipient, User $sender, ChatMessage $message, $conversation, string $mailLocale = null)
     {
         $this->recipient = $recipient;
         $this->sender = $sender;
         $this->chatMessage = $message;
         $this->conversation = $conversation;
+        $this->mailLocale = $mailLocale ?: app()->getLocale(); // *** new: recipient locale ***
     }
 
     /**
@@ -38,7 +42,7 @@ class ChatMessageNotificationMail extends Mailable
     {
         $senderName = $this->sender->display_name ?? $this->sender->first_name ?? __('messages.someone');
         return new Envelope(
-            subject: __('messages.email_subject_new_message_from', ['name' => $senderName]),
+            subject: __('messages.email_subject_new_message_from', ['name' => $senderName], $this->mailLocale),
         );
     }
 

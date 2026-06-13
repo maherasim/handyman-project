@@ -1,5 +1,6 @@
+@php $locale = $mailLocale ?? app()->getLocale(); @endphp
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ $locale }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -216,13 +217,13 @@
                 @foreach($booking->slots as $slot)
                 <div style="padding: 10px 0; border-bottom: 1px solid #b3d9ff;">
                     <div style="font-weight: 600; color: #1976d2; margin-bottom: 5px;">
-                        {{ \Carbon\Carbon::parse($slot->date)->locale(app()->getLocale())->translatedFormat('F d, Y') }}
+                        {{ \Carbon\Carbon::parse($slot->date)->locale($locale)->translatedFormat('F d, Y') }}
                     </div>
                     @if($slot->start_time && $slot->end_time)
                     <div style="color: #6c757d; font-size: 14px;">
                         <i class="ri-time-line"></i> 
-                        {{ \Carbon\Carbon::parse($slot->start_time)->locale(app()->getLocale())->translatedFormat('H:i') }} - 
-                        {{ \Carbon\Carbon::parse($slot->end_time)->locale(app()->getLocale())->translatedFormat('H:i') }}
+                        {{ \Carbon\Carbon::parse($slot->start_time)->locale($locale)->translatedFormat('H:i') }} - 
+                        {{ \Carbon\Carbon::parse($slot->end_time)->locale($locale)->translatedFormat('H:i') }}
                     </div>
                     @endif
                     @if($slot->total_hours)

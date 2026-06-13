@@ -21,7 +21,7 @@ class AdvancePaymentNotificationMail extends Mailable
     /**
      * Create a new message instance.
      */
-    public function __construct(User $provider, Payment $payment, Booking $booking)
+    public function __construct(User $provider, Payment $payment, Booking $booking, string $mailLocale = null)
     {
         $this->provider = $provider;
         $this->payment = $payment;

@@ -621,7 +621,7 @@ class ChatApiController extends Controller
         // Send only the chat-message-notification.blade.php email (no template email for chat_message)
         try {
             if ($recipient && $recipient->email) {
-                Mail::to($recipient->email)->send(new ChatMessageNotificationMail($recipient, $sender, $message, $conversation));
+                Mail::to($recipient->email)->locale(getRecipientLocale($recipient))->send(new ChatMessageNotificationMail($recipient, $sender, $message, $conversation, getRecipientLocale($recipient))); // *** new: locale-aware email ***
             }
         } catch (\Exception $e) {
             \Log::error('Failed to send chat message email (API): ' . $e->getMessage());

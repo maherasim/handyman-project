@@ -120,7 +120,7 @@ public function register(UserRequest $request)
     $recipientEmail = strtolower(trim((string) $email));
     $emailSent = true;
     try {
-        Mail::to($recipientEmail)->send(new VerificationEmail($verificationLink));
+        Mail::to($recipientEmail)->locale(app()->getLocale())->send(new VerificationEmail($verificationLink, app()->getLocale())); // *** new: locale-aware email ***
         Log::info('Verification email dispatched', [
             'user_id' => $user->id,
             'user_type' => $user->user_type,
@@ -1037,7 +1037,7 @@ public function register(UserRequest $request)
             $verificationLink = route('verify',['id' => $user->id]);
             $emailSent = true;
             try {
-                Mail::to($user->email)->send(new VerificationEmail($verificationLink));
+                Mail::to($user->email)->locale(getRecipientLocale($user))->send(new VerificationEmail($verificationLink, getRecipientLocale($user))); // *** new: locale-aware email ***
             } catch (\Throwable $e) {
                 $emailSent = false;
                 Log::error('Verification email resend failed', [

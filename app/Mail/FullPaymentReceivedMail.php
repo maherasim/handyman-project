@@ -20,10 +20,13 @@ class FullPaymentReceivedMail extends Mailable
     public $advanceAmount;
     public $remainingAmount;
 
-    /**
+    // *** new: locale for translated email subject and body ***
+    public $mailLocale;
+
+        /**
      * Create a new message instance.
      */
-    public function __construct(User $provider, Payment $payment, Booking $booking)
+    public function __construct(User $provider, Payment $payment, Booking $booking, string $mailLocale = null)
     {
         $this->provider = $provider;
         $this->payment = $payment;
@@ -31,6 +34,7 @@ class FullPaymentReceivedMail extends Mailable
         $this->totalAmount = $booking->total_amount ?? 0;
         $this->advanceAmount = $booking->advance_paid_amount ?? 0;
         $this->remainingAmount = $this->totalAmount - $this->advanceAmount;
+        $this->mailLocale = $mailLocale ?: app()->getLocale(); // *** new: recipient locale ***
     }
 
     /**
@@ -39,7 +43,7 @@ class FullPaymentReceivedMail extends Mailable
     public function envelope(): \Illuminate\Mail\Mailables\Envelope
     {
         return new \Illuminate\Mail\Mailables\Envelope(
-            subject: __('messages.email_subject_full_payment_received', ['id' => $this->booking->id]),
+            subject: __('messages.email_subject_full_payment_received', ['id' => $this->booking->id], $this->mailLocale),
         );
     }
 

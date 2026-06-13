@@ -2390,9 +2390,18 @@ function formatString($input)
             return ucfirst(str_replace('_', ' ', $input));
         }
 
+// *** new: resolve the best locale for a given recipient user (language_option > app locale) ***
+function getRecipientLocale($user): string {
+    if ($user && !empty($user->language_option)) {
+        return $user->language_option;
+    }
+    return app()->getLocale();
+}
+
 function sendBankTransferConfirmationEmail($user, $subscription, $transaction) {
     try {
-        \Mail::to($user->email)->send(new \App\Mail\BankTransferInstructionsMail($user, $subscription, $transaction));
+        $locale = getRecipientLocale($user);
+        \Mail::to($user->email)->locale($locale)->send(new \App\Mail\BankTransferInstructionsMail($user, $subscription, $transaction, $locale));
         \Log::info('Bank transfer instructions email sent successfully to: ' . $user->email);
         return true;
     } catch (\Exception $e) {
@@ -2403,7 +2412,8 @@ function sendBankTransferConfirmationEmail($user, $subscription, $transaction) {
 
 function sendSubscriptionUpgradeEmail($user, $subscription, $paymentMethod, $transactionId) {
     try {
-        \Mail::to($user->email)->send(new \App\Mail\SubscriptionUpgradeMail($user, $subscription, $paymentMethod, $transactionId));
+        $locale = getRecipientLocale($user);
+        \Mail::to($user->email)->locale($locale)->send(new \App\Mail\SubscriptionUpgradeMail($user, $subscription, $paymentMethod, $transactionId, $locale));
         \Log::info('Subscription upgrade email sent successfully to: ' . $user->email);
         return true;
     } catch (\Exception $e) {

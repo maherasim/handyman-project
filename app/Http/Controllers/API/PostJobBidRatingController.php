@@ -61,7 +61,7 @@ class PostJobBidRatingController extends Controller
                     'rating' => (string) $request->rating,
                     'link' => $link,
                     'company_name' => config('app.name', 'Frobster'),
-                ]));
+                ], getRecipientLocale($provider))); // *** new: recipient locale ***
             }
         } catch (\Throwable $e) {
             \Illuminate\Support\Facades\Log::warning('post_job_bid_rated_provider notification failed: ' . $e->getMessage());
@@ -132,7 +132,7 @@ class PostJobBidRatingController extends Controller
                     'rating' => (string) $request->rating,
                     'link' => $link,
                     'company_name' => config('app.name', 'Frobster'),
-                ]));
+                ], getRecipientLocale($customer))); // *** new: recipient locale ***
             }
         } catch (\Throwable $e) {
             \Illuminate\Support\Facades\Log::warning('post_job_bid_rated_customer notification failed: ' . $e->getMessage());

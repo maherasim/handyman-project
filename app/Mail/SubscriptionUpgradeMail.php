@@ -20,15 +20,19 @@ class SubscriptionUpgradeMail extends Mailable
     public $paymentMethod;
     public $transactionId;
 
-    /**
+    // *** new: locale for translated email subject and body ***
+    public $mailLocale;
+
+        /**
      * Create a new message instance.
      */
-    public function __construct(User $user, ProviderSubscription $subscription, string $paymentMethod, string $transactionId)
+    public function __construct(User $user, ProviderSubscription $subscription, string $paymentMethod, string $transactionId, string $mailLocale = null)
     {
         $this->user = $user;
         $this->subscription = $subscription;
         $this->paymentMethod = $paymentMethod;
         $this->transactionId = $transactionId;
+        $this->mailLocale = $mailLocale ?: app()->getLocale(); // *** new: recipient locale ***
     }
 
     /**
@@ -37,7 +41,7 @@ class SubscriptionUpgradeMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: __('messages.email_subject_subscription_upgrade', ['plan' => $this->subscription->title]),
+            subject: __('messages.email_subject_subscription_upgrade', ['plan' => $this->subscription->title], $this->mailLocale),
         );
     }
 

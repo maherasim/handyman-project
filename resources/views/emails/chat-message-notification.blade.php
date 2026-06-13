@@ -1,5 +1,6 @@
+@php $locale = $mailLocale ?? app()->getLocale(); @endphp
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ $locale }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -143,7 +144,7 @@
                     </div>
                     <div class="sender-details">
                         <div class="sender-name">{{ $sender->display_name ?? ($sender->first_name . ' ' . $sender->last_name) ?? 'User' }}</div>
-                        <div class="message-time">{{ \Carbon\Carbon::parse($chatMessage->created_at)->locale(app()->getLocale())->translatedFormat('F d, Y H:i') }}</div>
+                        <div class="message-time">{{ \Carbon\Carbon::parse($chatMessage->created_at)->locale($locale)->translatedFormat('F d, Y H:i') }}</div>
                     </div>
                 </div>
                 

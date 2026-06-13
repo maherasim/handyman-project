@@ -817,7 +817,7 @@ trait NotificationTrait
                         if (isset($admin->email)) {
                             try {
                                 $notification_data['user_type'] = $mailTo;
-                                $admin->notify(new \App\Notifications\CommonNotification($notification_type, $notification_data));
+                                $admin->notify(new \App\Notifications\CommonNotification($notification_type, $notification_data, getRecipientLocale($admin))); // *** new: recipient locale ***
                             } catch (\Exception $e) {
                                 Log::error($e);
                             }
@@ -839,7 +839,7 @@ trait NotificationTrait
                                         if ($notification_type === 'assigned_booking') {
                                             $notification_data['handyman_name'] = $employee->display_name ?? $employee->username ?? '';
                                         }
-                                        $employee->notify(new \App\Notifications\CommonNotification($notification_type, $notification_data));
+                                        $employee->notify(new \App\Notifications\CommonNotification($notification_type, $notification_data, getRecipientLocale($employee))); // *** new: recipient locale ***
                                     } catch (\Exception $e) {
                                         Log::error($e);
                                     }
@@ -856,7 +856,7 @@ trait NotificationTrait
                                     try {
                                         $notification_data['user_type'] = $mailTo;
                                         $notification_data['handyman_name'] = $employee->display_name ?? $employee->username ?? '';
-                                        $employee->notify(new \App\Notifications\CommonNotification($notification_type, $notification_data));
+                                        $employee->notify(new \App\Notifications\CommonNotification($notification_type, $notification_data, getRecipientLocale($employee))); // *** new: recipient locale ***
                                     } catch (\Exception $e) {
                                         Log::error($e);
                                     }
@@ -871,7 +871,7 @@ trait NotificationTrait
                             if ($user && isset($user->email)) {
                                 try {
                                     $notification_data['user_type'] = $mailTo;
-                                    $user->notify(new \App\Notifications\CommonNotification($notification_type, $notification_data));
+                                    $user->notify(new \App\Notifications\CommonNotification($notification_type, $notification_data, getRecipientLocale($user))); // *** new: recipient locale ***
                                 } catch (\Exception $e) {
                                     Log::error($e);
                                 }

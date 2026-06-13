@@ -698,7 +698,7 @@ public function getWalletPaymentMethod(Request $request)
     try {
         $user = $withdraw_money->providers;
         if ($user && $user->email) {
-            Mail::to($user->email)->send(new WithdrawalConfirmationMail($user, $withdraw_money));
+            Mail::to($user->email)->locale(getRecipientLocale($user))->send(new WithdrawalConfirmationMail($user, $withdraw_money, getRecipientLocale($user))); // *** new: locale-aware email ***
             $emailSent = true;
             \Log::info('Withdrawal confirmation email sent successfully to: ' . $user->email . ' for withdrawal ID: ' . $id);
         } else {

@@ -1,5 +1,6 @@
+@php $locale = $mailLocale ?? app()->getLocale(); @endphp
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ $locale }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -143,7 +144,7 @@
                 </div>
                 <div class="detail-row">
                     <span class="detail-label">{{ __('messages.email_payment_date') }}:</span>
-                    <span class="detail-value">{{ \Carbon\Carbon::parse($payment->datetime ?? now())->locale(app()->getLocale())->translatedFormat('F d, Y H:i') }}</span>
+                    <span class="detail-value">{{ \Carbon\Carbon::parse($payment->datetime ?? now())->locale($locale)->translatedFormat('F d, Y H:i') }}</span>
                 </div>
             </div>
             

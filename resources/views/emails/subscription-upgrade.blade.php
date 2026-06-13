@@ -1,5 +1,6 @@
+@php $locale = $mailLocale ?? app()->getLocale(); @endphp
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ $locale }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -158,11 +159,11 @@
                 </div>
                 <div class="detail-row">
                     <span class="detail-label">{{ __('messages.email_start_date') }}:</span>
-                    <span class="detail-value">{{ \Carbon\Carbon::parse($subscription->start_at)->locale(app()->getLocale())->translatedFormat('F j, Y') }}</span>
+                    <span class="detail-value">{{ \Carbon\Carbon::parse($subscription->start_at)->locale($locale)->translatedFormat('F j, Y') }}</span>
                 </div>
                 <div class="detail-row">
                     <span class="detail-label">{{ __('messages.email_end_date') }}:</span>
-                    <span class="detail-value">{{ \Carbon\Carbon::parse($subscription->end_at)->locale(app()->getLocale())->translatedFormat('F j, Y') }}</span>
+                    <span class="detail-value">{{ \Carbon\Carbon::parse($subscription->end_at)->locale($locale)->translatedFormat('F j, Y') }}</span>
                 </div>
                 <div class="detail-row">
                     <span class="detail-label">{{ __('messages.status') }}:</span>
@@ -182,7 +183,7 @@
                 </div>
                 <div class="detail-row">
                     <span class="detail-label">{{ __('messages.email_payment_date') }}:</span>
-                    <span class="detail-value">{{ \Carbon\Carbon::now()->locale(app()->getLocale())->translatedFormat('F j, Y H:i') }}</span>
+                    <span class="detail-value">{{ \Carbon\Carbon::now()->locale($locale)->translatedFormat('F j, Y H:i') }}</span>
                 </div>
             </div>
             

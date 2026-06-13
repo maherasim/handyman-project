@@ -19,14 +19,18 @@ class PostJobBankTransferPaymentNotificationMail extends Mailable
     public $bid;
     public $paymentType;
 
-    /**
+    // *** new: locale for translated email subject and body ***
+    public $mailLocale;
+
+        /**
      * Create a new message instance.
      */
-    public function __construct(PaymentPostJOb $payment, PostJobBid $bid, $paymentType = 'advance')
+    public function __construct(PaymentPostJOb $payment, PostJobBid $bid, $paymentType = 'advance', string $mailLocale = null)
     {
         $this->payment = $payment;
         $this->bid = $bid;
         $this->paymentType = $paymentType;
+        $this->mailLocale = $mailLocale ?: app()->getLocale(); // *** new: recipient locale ***
     }
 
     /**
@@ -36,7 +40,7 @@ class PostJobBankTransferPaymentNotificationMail extends Mailable
     {
         $typeLabel = $this->paymentType === 'advance' ? __('messages.advance') : __('messages.remaining');
         return new Envelope(
-            subject: __('messages.email_subject_cash_payment_post_job_verify', ['id' => $this->bid->id, 'type' => $typeLabel]),
+            subject: __('messages.email_subject_cash_payment_post_job_verify', ['id' => $this->bid->id, 'type' => $typeLabel], $this->mailLocale),
         );
     }
 

@@ -35,23 +35,28 @@ class CommonNotification extends Notification implements ShouldQueue
 
     public $custom_webhook;
 
+    // *** new: recipient locale — captured in web process, serialized so queue worker uses correct language ***
+    public $notificationLocale;
+
 
     /**
      * Create a new notification instance.
      */
-    public function __construct($type, $data)
+    public function __construct($type, $data, string $locale = null)
     {
         $this->type = $type;
         $this->data = $data;
+        // *** new: capture locale now (web request context), not in queue worker where it would be wrong ***
+        $this->notificationLocale = $locale ?: app()->getLocale();
 
         $userType = $data['user_type'] ?? 'user';
         $notifications = NotificationTemplate::where('type', $this->type)
             ->with('defaultNotificationTemplateMap')
             ->first();
-        
+
         if ($notifications) {
         $notify_data = NotificationTemplateContentMapping::where('template_id', $notifications->id)->get();
-        $locale = app()->getLocale();
+        $locale = $this->notificationLocale;
         $templateData = $notify_data->where('user_type', $userType)->where('language', $locale)->first()
             ?: $notify_data->where('user_type', $userType)->where('language', config('app.fallback_locale'))->first()
             ?: $notify_data->where('user_type', $userType)->first();
@@ -140,7 +145,7 @@ class CommonNotification extends Notification implements ShouldQueue
 
         if ($mail) {
         $notify_data = MailTemplateContentMapping::where('template_id', $mail->id)->get();
-        $locale = app()->getLocale();
+        $locale = $this->notificationLocale; // *** new: use serialized locale, not queue worker locale ***
         $templateData = $notify_data->where('user_type', $userType)->where('language', $locale)->first()
             ?: $notify_data->where('user_type', $userType)->where('language', config('app.fallback_locale'))->first()
             ?: $notify_data->where('user_type', $userType)->first();

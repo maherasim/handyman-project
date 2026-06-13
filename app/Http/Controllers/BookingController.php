@@ -573,7 +573,7 @@ class BookingController extends Controller
                 $customer = User::find($result->customer_id);
                 
                 if ($provider && $provider->email && $customer) {
-                    Mail::to($provider->email)->send(new ServiceBookingNotificationMail($provider, $result, $customer));
+                    Mail::to($provider->email)->locale(getRecipientLocale($provider))->send(new ServiceBookingNotificationMail($provider, $result, $customer, getRecipientLocale($provider))); // *** new: locale-aware email ***
                     \Log::info('Service booking notification email sent to provider: ' . $provider->email . ' for booking ID: ' . $result->id);
                 }
             }

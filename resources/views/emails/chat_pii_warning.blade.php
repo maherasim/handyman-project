@@ -1,9 +1,10 @@
+@php $locale = $mailLocale ?? app()->getLocale(); @endphp
 <!DOCTYPE html>
-<html>
+<html lang="{{ $locale }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ __('messages.chat_policy_warning_email_title') }}</title>
+    <title>{{ __('messages.chat_policy_warning_email_title', [], $locale) }}</title>
     <style>
         body { font-family: Arial, sans-serif; color:#222; }
         .wrap { max-width:600px; margin:0 auto; padding:20px; }
@@ -15,27 +16,26 @@
     </head>
 <body>
     <div class="wrap">
-        <h2>{{ __('messages.chat_policy_warning_email_subject') }}</h2>
-        <p>{{ __('messages.chat_policy_warning_email_greeting', ['name' => $name]) }}</p>
-        <p>{{ __('messages.chat_policy_warning_email_intro') }}</p>
+        <h2>{{ __('messages.chat_policy_warning_email_subject', [], $locale) }}</h2>
+        <p>{{ __('messages.chat_policy_warning_email_greeting', ['name' => $name], $locale) }}</p>
+        <p>{{ __('messages.chat_policy_warning_email_intro', [], $locale) }}</p>
         @if(!empty($types))
-        <p>{{ __('messages.chat_detected_types') }}:
+        <p>{{ __('messages.chat_detected_types', [], $locale) }}:
             @foreach($types as $t)
                 @php $typeKey = 'messages.chat_pii_type_' . $t; @endphp
-                <span class="badge">{{ \Illuminate\Support\Facades\Lang::has($typeKey) ? __($typeKey) : ucfirst(str_replace('_', ' ', $t)) }}</span>
+                <span class="badge">{{ \Illuminate\Support\Facades\Lang::has($typeKey, $locale) ? __($typeKey, [], $locale) : ucfirst(str_replace('_', ' ', $t)) }}</span>
             @endforeach
         </p>
         @endif
         @if(!empty($snippet))
         <div class="card">
-            <div class="small">{{ __('messages.chat_message_excerpt_with_date', ['date' => $date]) }}:</div>
+            <div class="small">{{ __('messages.chat_message_excerpt_with_date', ['date' => $date], $locale) }}:</div>
             <div>{{ $snippet }}</div>
         </div>
         @endif
-        <p>{{ __('messages.chat_policy_warning_email_keep_platform') }}</p>
-        <p>{{ __('messages.chat_policy_warning_email_thanks') }}</p>
-        <p class="small">{{ __('messages.chat_policy_warning_email_footer') }}</p>
+        <p>{{ __('messages.chat_policy_warning_email_keep_platform', [], $locale) }}</p>
+        <p>{{ __('messages.chat_policy_warning_email_thanks', [], $locale) }}</p>
+        <p class="small">{{ __('messages.chat_policy_warning_email_footer', [], $locale) }}</p>
     </div>
 </body>
 </html>
-

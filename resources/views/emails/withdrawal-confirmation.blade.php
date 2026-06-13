@@ -1,5 +1,6 @@
+@php $locale = $mailLocale ?? app()->getLocale(); @endphp
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ $locale }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -140,7 +141,7 @@
                 </div>
                 <div class="detail-row">
                     <span class="detail-label">{{ __('messages.email_transaction_date') }}:</span>
-                    <span class="detail-value">{{ \Carbon\Carbon::parse($withdrawal->datetime ?? $withdrawal->created_at)->locale(app()->getLocale())->translatedFormat('F d, Y H:i') }}</span>
+                    <span class="detail-value">{{ \Carbon\Carbon::parse($withdrawal->datetime ?? $withdrawal->created_at)->locale($locale)->translatedFormat('F d, Y H:i') }}</span>
                 </div>
                 @if($withdrawal->transaction)
                 <div class="detail-row">

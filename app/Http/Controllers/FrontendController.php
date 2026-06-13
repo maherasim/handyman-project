@@ -1764,8 +1764,8 @@ class FrontendController extends Controller
     public function userSubscribe(Request $request)
     {
         $emailData['email'] = $request->email;
-        $emailData['title'] = env('APP_NAME');
-        $emailData['body'] = 'Thank you for subscribe us.';
+        $emailData['title'] = config('app.name');
+        $emailData['body'] = __('landingpage.subscribe_msg'); // *** new: translated subscribe message ***
         try {
             \Mail::send('customer.subscribe_email', $emailData, function ($message) use ($emailData) {
                 $message->to($emailData['email'])
