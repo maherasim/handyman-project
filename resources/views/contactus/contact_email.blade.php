@@ -1,4 +1,4 @@
-<h2>Hello</h2> <br><br>
+<h2>{{ __('messages.hello_greeting') }}</h2> <br><br>
 You have got an email from : {{ $first_name }} <br><br>
 
 User details: <br><br>
@@ -9,4 +9,4 @@ Phone: {{ $phone_no }} <br>
 Subject: {{ $subject }} <br>
 Message: {{ $user_message }} <br><br>
 
-Thanks
+{{ __('messages.email_thank_you') }}

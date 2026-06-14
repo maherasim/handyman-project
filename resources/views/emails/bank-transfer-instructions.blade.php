@@ -241,27 +241,24 @@
                 <div class="bank-details">
                     <div class="bank-row">
                         <span class="bank-label">{{ __('messages.email_recipient') }}:</span>
-                        <span class="bank-value">Ben Ghezaiel</span>
+                        <span class="bank-value">{{ config('bank_transfer.recipient') }}</span>
                     </div>
                     <div class="bank-row">
                         <span class="bank-label">IBAN:</span>
-                        <span class="bank-value">DE02 1001 0178 1361 6331 79</span>
+                        <span class="bank-value">{{ config('bank_transfer.iban') }}</span>
                     </div>
                     <div class="bank-row">
                         <span class="bank-label">BIC:</span>
-                        <span class="bank-value">REVODEB2</span>
+                        <span class="bank-value">{{ config('bank_transfer.bic') }}</span>
                     </div>
                     <div class="bank-row">
                         <span class="bank-label">{{ __('messages.email_bank_name_address') }}:</span>
-                        <span class="bank-value">Revolut Bank UAB,<br>
-                            Zweigniederlassung Deutschland<br>
-                            FORA Linden Palais, Unter den<br>
-                            Linden 40<br>
-                            10117, Berlin, Germany</span>
+                        <span class="bank-value">{{ config('bank_transfer.bank_name') }},<br>
+                            {!! nl2br(e(config('bank_transfer.bank_address'))) !!}</span>
                     </div>
                     <div class="bank-row">
                         <span class="bank-label">{{ __('messages.email_bic_sender_bank') }}:</span>
-                        <span class="bank-value">CHASDEFX</span>
+                        <span class="bank-value">{{ config('bank_transfer.sender_bic') }}</span>
                     </div>
                 </div>
             </div>

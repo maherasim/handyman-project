@@ -422,7 +422,7 @@ class BookingController extends Controller
                 $auth_user->unreadNotifications->where('data.id', $id)->markAsRead();
             }
         } else {
-            return response()->json(['error' => 'User not authenticated'], 401);
+            return response()->json(['error' => __('messages.user_not_authenticated')], 401);
         }
         $booking_activity = BookingActivity::where('booking_id',$id)->orderBy('id', 'asc')->get();
         $serviceProof = ServiceProofResource::collection(ServiceProof::with('service','handyman','booking')->where('booking_id',$id)->get());
@@ -1058,7 +1058,7 @@ class BookingController extends Controller
                     if ($uploadedFile && $uploadedFile->isValid()) {
                         if ($uploadedFile->getSize() > 4 * 1024 * 1024) {
                             return comman_custom_response([
-                                'message' => 'Each image must be 4 MB or smaller.',
+                                'message' => __('messages.image_max_size'),
                                 'status' => false,
                             ], 422);
                         }
@@ -1177,7 +1177,7 @@ class BookingController extends Controller
     public function getUserRatings(Request $request){
         $user = auth()->user();
         if ($user === null) {
-            return response()->json(['message' => 'Unauthenticated'], 401);
+            return response()->json(['message' => __('messages.unauthenticated')], 401);
         }
 
         // Ratings OF the customer (received): from customer_ratings and post_job_bid_ratings (provider rates customer, customer_id = customer being rated)
@@ -1320,7 +1320,7 @@ class BookingController extends Controller
                 }
                 $ratings = $ratings->orderBy('id', 'desc');
         }else {
-                return response()->json(['message' => 'Invalid type parameter'], 400);
+                return response()->json(['message' => __('messages.invalid_type_parameter')], 400);
         }
 
         $per_page = config('constant.PER_PAGE_LIMIT');
@@ -1413,7 +1413,7 @@ class BookingController extends Controller
                 ->first();
         });
         if (!$latestLiveLocation) {
-            return response()->json(['error' => 'Live location not found for this booking ID'], 404);
+            return response()->json(['error' => __('messages.live_location_not_found')], 404);
         }
 
         $time_zone=getTimeZone();
@@ -1567,7 +1567,7 @@ class BookingController extends Controller
     {
         $user = auth()->user();
         if ($user === null) {
-            return response()->json(['message' => 'Unauthenticated'], 401);
+            return response()->json(['message' => __('messages.unauthenticated')], 401);
         }
 
         // For handyman, get ratings for bookings where they were assigned
@@ -1680,7 +1680,7 @@ class BookingController extends Controller
     {
         $user = auth()->user();
         if ($user === null) {
-            return response()->json(['message' => 'Unauthenticated'], 401);
+            return response()->json(['message' => __('messages.unauthenticated')], 401);
         }
 
         // Use myRating scope which filters by handyman_id for handyman role

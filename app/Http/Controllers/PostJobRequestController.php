@@ -279,7 +279,7 @@ class PostJobRequestController extends Controller
             \Log::warning('setAdvanceSplit notification failed: ' . $e->getMessage());
         }
 
-        return response()->json(['status' => true, 'message' => 'Payment split set & work started.']);
+        return response()->json(['status' => true, 'message' => __('messages.payment_split_work_started')]);
     }
     public function bidshow(Request $request)
     {
@@ -436,12 +436,12 @@ class PostJobRequestController extends Controller
     
         // Validate payment type
         if (!in_array($paymentType, ['advance', 'remaining'])) {
-            return response()->json(['status' => false, 'message' => 'Invalid payment type'], 422);
+            return response()->json(['status' => false, 'message' => __('messages.invalid_payment_type')], 422);
         }
     
         // Validate amount
         if ($requestedAmount <= 0) {
-            return response()->json(['status' => false, 'message' => 'Invalid amount'], 422);
+            return response()->json(['status' => false, 'message' => __('messages.invalid_amount')], 422);
         }
     
         // Use frontend amount directly
@@ -474,7 +474,7 @@ class PostJobRequestController extends Controller
         // Check wallet balance
         $wallet = Wallet::where('user_id', $user->id)->first();
         if (!$wallet || $wallet->amount < $payAmount) {
-            return response()->json(['status' => false, 'message' => 'Insufficient wallet balance'], 400);
+            return response()->json(['status' => false, 'message' => __('messages.insufficient_wallet_balance')], 400);
         }
     
         DB::beginTransaction();
@@ -635,7 +635,7 @@ class PostJobRequestController extends Controller
             DB::rollBack();
             return response()->json([
                 'status'  => false,
-                'message' => 'Payment failed',
+                'message' => __('messages.payment_failed'),
                 'error'   => $e->getMessage()
             ], 500);
         }
@@ -698,7 +698,7 @@ class PostJobRequestController extends Controller
 
         return response()->json([
             'status' => true,
-            'message' => 'Status updated successfully',
+            'message' => __('messages.status_updated_successfully'),
         ]);
     }
     
@@ -821,7 +821,7 @@ class PostJobRequestController extends Controller
         $user = auth()->user();
     
         if ((int)$user->id !== (int)$bid->customer_id) {
-            return response()->json(['status' => false, 'message' => 'Unauthorized'], 403);
+            return response()->json(['status' => false, 'message' => __('messages.unauthorized')], 403);
         }
     
         // Validate payment type & amount
@@ -857,7 +857,7 @@ class PostJobRequestController extends Controller
         $stripe_secret = $payment_geteway_value['stripe_key'] ?? null;
     
         if (!$stripe_secret) {
-            return response()->json(['status' => false, 'message' => 'Stripe not configured'], 500);
+            return response()->json(['status' => false, 'message' => __('messages.stripe_not_configured')], 500);
         }
     
         $stripe = new \Stripe\StripeClient($stripe_secret);
@@ -1084,11 +1084,11 @@ class PostJobRequestController extends Controller
             ]);
 
             return redirect()->route('post-job-bid.show', ['id' => $bid->post_request_id])
-                ->with('success', 'Stripe payment processed successfully. Commission and payouts recorded.');
+                ->with('success', __('messages.stripe_payment_success'));
         }
 
         return redirect()->route('post-job-bid.show', ['id' => $bid->post_request_id])
-            ->withErrors('Stripe payment not completed.');
+            ->withErrors(__('messages.stripe_payment_not_completed'));
     }
 
     /**
@@ -1114,7 +1114,7 @@ class PostJobRequestController extends Controller
         $payment_geteway_value = getPaymentMethodkey('stripe');
         $stripe_secret = $payment_geteway_value['stripe_key'] ?? null;
         if (!$stripe_secret) {
-            return response()->json(['status' => false, 'message' => 'Stripe not configured'], 500);
+            return response()->json(['status' => false, 'message' => __('messages.stripe_not_configured')], 500);
         }
         $stripe = new \Stripe\StripeClient($stripe_secret);
 
@@ -1258,13 +1258,13 @@ class PostJobRequestController extends Controller
 
             return response()->json([
                 'status' => true,
-                'message' => 'Stripe payment processed successfully. Commission and payouts recorded.',
+                'message' => __('messages.stripe_payment_success'),
             ]);
         }
 
         return response()->json([
             'status' => false,
-            'message' => 'Stripe payment not completed.',
+            'message' => __('messages.stripe_payment_not_completed'),
         ], 422);
     }
     /**
@@ -1412,14 +1412,14 @@ class PostJobRequestController extends Controller
 
             return response()->json([
                 'status' => true,
-                'message' => 'Stripe payment processed successfully',
+                'message' => __('messages.stripe_payment_success'),
                 'new_status' => $bid->status,
             ]);
         }
 
         return response()->json([
             'status' => false,
-            'message' => 'Stripe payment not completed',
+            'message' => __('messages.stripe_payment_not_completed'),
         ], 400);
     }
 
@@ -1454,7 +1454,7 @@ class PostJobRequestController extends Controller
 
         return response()->json([
             'status'  => true,
-            'message' => 'Advance terms saved successfully. Awaiting customer payment.'
+            'message' => __('messages.advance_terms_saved')
         ]);
     }
     public function createPostJobPayPalPayment(Request $request, $id)
@@ -1479,7 +1479,7 @@ class PostJobRequestController extends Controller
             $payAmount = (float)$request->input('amount'); // exact value from frontend
     
             if ($payAmount <= 0) {
-                return response()->json(['status' => false, 'error' => 'Invalid amount'], 422);
+                return response()->json(['status' => false, 'error' => __('messages.invalid_amount')], 422);
             }
     
             // Get PayPal credentials from settings
@@ -1490,7 +1490,7 @@ class PostJobRequestController extends Controller
             $mode = $paymentGatewayValue['mode'] ?? 'sandbox';
     
             if (!$clientId || !$clientSecret) {
-                return response()->json(['status' => false, 'error' => 'PayPal not configured'], 500);
+                return response()->json(['status' => false, 'error' => __('messages.paypal_not_configured')], 500);
             }
     
             // Setup PayPal environment
@@ -1574,7 +1574,7 @@ class PostJobRequestController extends Controller
 
     if (!$token) {
         return redirect()->route('post-job-bid.show', ['id' => $bid->post_request_id])
-            ->with('error', 'Missing PayPal token');
+            ->with('error', __('messages.missing_paypal_token'));
     }
 
     // Build PayPal client using configured settings (match create step)
@@ -1585,7 +1585,7 @@ class PostJobRequestController extends Controller
 
     if (!$clientId || !$clientSecret) {
         return redirect()->route('post-job-bid.show', ['id' => $bid->post_request_id])
-            ->with('error', 'PayPal not configured');
+            ->with('error', __('messages.paypal_not_configured'));
     }
 
     $environment  = $mode === 'live'
@@ -1601,7 +1601,7 @@ class PostJobRequestController extends Controller
 
         if (!in_array($response->statusCode, [200, 201])) {
             return redirect()->route('post-job-bid.show', ['id' => $bid->post_request_id])
-                ->with('error', 'Payment not completed');
+                ->with('error', __('messages.payment_not_completed'));
         }
 
         $txnId = $response->result->purchase_units[0]->payments->captures[0]->id ?? null;
@@ -1744,7 +1744,7 @@ class PostJobRequestController extends Controller
         ]);
 
         return redirect()->route('post-job-bid.show', ['id' => $bid->post_request_id])
-            ->with('success', 'PayPal payment completed and payout recorded.');
+            ->with('success', __('messages.paypal_payment_success'));
 
     } catch (\Exception $e) {
         \Log::error('PayPal capture error: ' . $e->getMessage());
@@ -1765,10 +1765,10 @@ class PostJobRequestController extends Controller
         $bid   = PostJobBid::find($id);
 
         if (!$bid) {
-            return response()->json(['status' => false, 'message' => 'Bid not found'], 404);
+            return response()->json(['status' => false, 'message' => __('messages.bid_not_found')], 404);
         }
         if (!$token) {
-            return response()->json(['status' => false, 'message' => 'Missing PayPal token'], 400);
+            return response()->json(['status' => false, 'message' => __('messages.missing_paypal_token')], 400);
         }
 
         $paymentGatewayValue = getPaymentMethodkey('paypal');
@@ -1777,7 +1777,7 @@ class PostJobRequestController extends Controller
         $mode = $paymentGatewayValue['mode'] ?? 'sandbox';
 
         if (!$clientId || !$clientSecret) {
-            return response()->json(['status' => false, 'message' => 'PayPal not configured'], 500);
+            return response()->json(['status' => false, 'message' => __('messages.paypal_not_configured')], 500);
         }
 
         $environment = $mode === 'live'
@@ -1792,7 +1792,7 @@ class PostJobRequestController extends Controller
             $response = $client->execute($captureRequest);
 
             if (!in_array($response->statusCode, [200, 201])) {
-                return response()->json(['status' => false, 'message' => 'Payment not completed'], 400);
+                return response()->json(['status' => false, 'message' => __('messages.payment_not_completed')], 400);
             }
 
             $txnId = $response->result->purchase_units[0]->payments->captures[0]->id ?? null;
@@ -1920,7 +1920,7 @@ class PostJobRequestController extends Controller
 
             return response()->json([
                 'status'  => true,
-                'message' => 'PayPal payment completed and payout recorded.',
+                'message' => __('messages.paypal_payment_success'),
                 'data'    => [
                     'bid_id'       => (int) $bid->id,
                     'post_request_id' => (int) $bid->post_request_id,
@@ -1947,7 +1947,7 @@ class PostJobRequestController extends Controller
     {
         return response()->json([
             'status'  => false,
-            'message' => 'Payment cancelled by user.',
+            'message' => __('messages.payment_cancelled'),
         ], 200);
     }
 
@@ -1976,14 +1976,14 @@ class PostJobRequestController extends Controller
 
         // Check authorization
         if ((int)$user->id !== (int)$bid->customer_id) {
-            return response()->json(['status' => false, 'message' => 'Unauthorized'], 403);
+            return response()->json(['status' => false, 'message' => __('messages.unauthorized')], 403);
         }
 
         $payAmount = (float)$request->input('amount', 0);
         $type = strtolower((string)$request->input('type', 'advance')); // advance or remaining
 
         if ($payAmount <= 0) {
-            return response()->json(['status' => false, 'message' => 'Invalid amount'], 422);
+            return response()->json(['status' => false, 'message' => __('messages.invalid_amount')], 422);
         }
 
         // Calculate admin commission and provider earning
@@ -2081,7 +2081,7 @@ class PostJobRequestController extends Controller
 
         return response()->json([
             'status' => true,
-            'message' => 'Waiting for admin approval.',
+            'message' => __('messages.waiting_admin_approval'),
             'payment_id' => $payment->id,
             'admin_commission' => $admin_commission_amount,
             'provider_earning' => $provider_earning,
@@ -2100,7 +2100,7 @@ class PostJobRequestController extends Controller
     //     $bid = PostJobBid::findOrFail($id);
 
     //     if (!$token) {
-    //         return redirect()->route('post-job-bid.show', ['id' => $bid->post_request_id])->with('error', 'Missing PayPal token');
+    //         return redirect()->route('post-job-bid.show', ['id' => $bid->post_request_id])->with('error', __('messages.missing_paypal_token'));
     //     }
 
     //     // Build PayPal client (same as above)
@@ -2118,7 +2118,7 @@ class PostJobRequestController extends Controller
     //     try {
     //         $response = $client->execute($captureRequest);
     //         if (!in_array($response->statusCode, [200, 201])) {
-    //             return redirect()->route('post-job-bid.show', ['id' => $bid->post_request_id])->with('error', 'Payment not completed');
+    //             return redirect()->route('post-job-bid.show', ['id' => $bid->post_request_id])->with('error', __('messages.payment_not_completed'));
     //         }
 
     //         $payment = Payment::where('post_job_request_id', $bid->id)
@@ -2215,7 +2215,7 @@ class PostJobRequestController extends Controller
 
         // Ensure customer owns this job request
         if (!$bid->postrequest || (int)$auth_user->id !== (int)$bid->postrequest->customer_id) {
-            return response()->json(['status' => false, 'message' => 'Unauthorized'], 403);
+            return response()->json(['status' => false, 'message' => __('messages.unauthorized')], 403);
         }
 
         // Update the bid and post request

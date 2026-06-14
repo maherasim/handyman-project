@@ -78,6 +78,7 @@
         'noteLabel' => __('messages.provider_sub_note_label'),
         'bankNote' => __('messages.provider_sub_bank_note'),
     ];
+    $bankConfig = config('bank_transfer');
 @endphp
 
 <div class="subscription-management-container">
@@ -625,6 +626,7 @@
 
 <script type="text/javascript">
     var planLang = @json($planLang);
+    var bankTransferConfig = @json($bankConfig);
     $(document).ready(function() {
         var table;
         var loadurl =
@@ -1149,27 +1151,23 @@
                         <div class="bank-info-card">
                             <div class="bank-row">
                                 <span class="bank-label">${planLang.bankRecipient}</span>
-                                <span class="bank-value">Ben Ghezaiel</span>
+                                <span class="bank-value">${bankTransferConfig.recipient}</span>
                             </div>
                             <div class="bank-row">
                                 <span class="bank-label">${planLang.bankIban}</span>
-                                <span class="bank-value">DE02 1001 0178 1361 6331 79</span>
+                                <span class="bank-value">${bankTransferConfig.iban}</span>
                             </div>
                             <div class="bank-row">
                                 <span class="bank-label">${planLang.bankBic}</span>
-                                <span class="bank-value">REVODEB2</span>
+                                <span class="bank-value">${bankTransferConfig.bic}</span>
                             </div>
                             <div class="bank-row">
                                 <span class="bank-label">${planLang.bankNameAddress}</span>
-                                <span class="bank-value">Revolut Bank UAB,<br>
-                                    Zweigniederlassung Deutschland<br>
-                                    FORA Linden Palais, Unter den<br>
-                                    Linden 40<br>
-                                    10117, Berlin, Germany</span>
+                                <span class="bank-value">${bankTransferConfig.bank_name},<br>${bankTransferConfig.bank_address.replace(/\n/g,'<br>')}</span>
                             </div>
                             <div class="bank-row">
                                 <span class="bank-label">${planLang.bankBicSender}</span>
-                                <span class="bank-value">CHASDEFX</span>
+                                <span class="bank-value">${bankTransferConfig.sender_bic}</span>
                             </div>
                         </div>
                     </div>
@@ -1187,7 +1185,7 @@
                             </div>
                             <div class="step">
                                 <span class="step-number">3</span>
-                                <span class="step-text">${planLang.bankStep3} <a href="mailto:billing@frobster.com" class="email-link">billing@frobster.com</a></span>
+                                <span class="step-text">${planLang.bankStep3} <a href="mailto:${bankTransferConfig.email}" class="email-link">${bankTransferConfig.email}</a></span>
                             </div>
                             <div class="step">
                                 <span class="step-number">4</span>
@@ -1339,7 +1337,7 @@
                                         <p><strong>${planLang.bankNextSteps}</strong></p>
                                         <ol class="text-left">
                                             <li>${planLang.bankNext1}</li>
-                                            <li>${planLang.bankNext2} <a href="mailto:billing@frobster.com">billing@frobster.com</a></li>
+                                            <li>${planLang.bankNext2} <a href="mailto:${bankTransferConfig.email}">${bankTransferConfig.email}</a></li>
                                             <li>${planLang.bankNext3}</li>
                                         </ol>
                                         <p class="text-muted mt-3">${planLang.bankEmailFollowup}</p>

@@ -749,7 +749,7 @@ $menu->add('<span>'.__('messages.sidebar_content_reports').'</span><span class="
 ->nickname('content_reports')
 ->data('permission', 'helpdesk list');
 
-$menu->add('<span>Profile Reports</span><span class="custom-tooltip"><span class="tooltip-text">Review user profile reports</span></span>', ['route' => 'admin.profile-reports.index'])
+$menu->add('<span>'.__('messages.profile_reports').'</span><span class="custom-tooltip"><span class="tooltip-text">'.__('messages.review_user_profile_reports').'</span></span>', ['route' => 'admin.profile-reports.index'])
 ->prepend(' <svg class="mr-2" width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M12 12a5 5 0 1 0-0.001-10.001A5 5 0 0 0 12 12Z" stroke="currentColor" stroke-width="1.5"/>
 <path d="M3.5 21c.6-3.6 3.8-6 8.5-6s7.9 2.4 8.5 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
@@ -758,7 +758,7 @@ $menu->add('<span>Profile Reports</span><span class="custom-tooltip"><span class
 ->nickname('profile_reports')
 ->data('permission', 'helpdesk list');
 
-$menu->add('<span>Review Reports</span><span class="custom-tooltip"><span class="tooltip-text">Review reported ratings</span></span>', ['route' => 'admin.review-reports.index'])
+$menu->add('<span>'.__('messages.review_reports').'</span><span class="custom-tooltip"><span class="tooltip-text">'.__('messages.review_reported_ratings').'</span></span>', ['route' => 'admin.review-reports.index'])
 ->prepend(' <svg class="mr-2" width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M12 17.75l-5.878 3.09 1.122-6.545L2.488 9.66l6.572-.955L12 2.75l2.94 5.955 6.572.955-4.756 4.635 1.122 6.545L12 17.75Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
 </svg>

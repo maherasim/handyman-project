@@ -85,7 +85,7 @@
                         </div>
                         <small class="help-block with-errors text-danger"></small>
                         <div class="form-group col-3 mb-0 align-self-center">
-                                <button class="remove-section1 button-custom button-remove"  title="Remove" data--confirmation1='true'>
+                                <button class="remove-section1 button-custom button-remove"  title="{{ __('messages.remove') }}" data--confirmation1='true'>
                                 <i class="far fa-trash-alt"></i>
                             </button>
                         </div>
@@ -177,7 +177,7 @@
                         {{ html()->textarea('subdescription[]', '')->class('form-control textarea')->rows(2)->placeholder(__('messages.subdescription'))->required() }}
                     </div>
                     <div class="col-md-6 text-md-left pe-1">
-                        <button class="remove-section button-custom button-remove" title="Remove" data--confirmation1="true">
+                        <button class="remove-section button-custom button-remove" title="{{ __('messages.remove') }}" data--confirmation1="true">
                             <i class="far fa-trash-alt"></i>
                         </button>
                     </div>
@@ -201,7 +201,7 @@
             $.confirm({
                 content: confirmationMessage,
                 type: '',
-                title: 'Remove Section',
+                title: '{{ __('messages.remove_section') }}',
                 buttons: {
                     yes: {
                         action: function() {
@@ -239,7 +239,7 @@
             $.confirm({
                 content: confirmationMessage,
                 type: '',
-                title: 'Remove Section1',
+                title: '{{ __('messages.remove_section') }}',
                 buttons: {
                     yes: {
                         action: function() {

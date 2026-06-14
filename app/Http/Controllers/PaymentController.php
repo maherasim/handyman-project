@@ -544,13 +544,13 @@ class PaymentController extends Controller
             ? (($post->price * $post->advance_percent) / 100)
             : (float) $requestedAmount;
         if ($advanceAmount <= 0) {
-            return response()->json(['status' => false, 'message' => 'Invalid advance amount'], 422);
+            return response()->json(['status' => false, 'message' => __('messages.invalid_advance_amount')], 422);
         }
         // Check wallet balance
         $wallet = Wallet::where('user_id', $user->id)->first();
 
         if (!$wallet || $wallet->amount < $advanceAmount) {
-            return response()->json(['status' => false, 'message' => 'Insufficient wallet balance'], 400);
+            return response()->json(['status' => false, 'message' => __('messages.insufficient_wallet_balance')], 400);
         }
 
         DB::beginTransaction();
@@ -632,7 +632,7 @@ class PaymentController extends Controller
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
-            return response()->json(['status' => false, 'message' => 'Payment failed'], 500);
+            return response()->json(['status' => false, 'message' => __('messages.payment_failed')], 500);
         }
     }
 
@@ -1071,7 +1071,7 @@ class PaymentController extends Controller
                 break;
 
             default:
-                return response()->json(['status' => false, 'message' => 'Action Invalid']);
+                return response()->json(['status' => false, 'message' => __('messages.action_invalid')]);
         }
 
         return response()->json(['status' => true, 'message' => $message]);

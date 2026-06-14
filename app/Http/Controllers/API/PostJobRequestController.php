@@ -94,7 +94,7 @@ class PostJobRequestController extends Controller
 
         return response()->json([
             'status' => true,
-            'message' => 'Status updated successfully',
+            'message' => __('messages.status_updated_successfully'),
         ]);
     }
     public function editPostJob($id)
@@ -105,7 +105,7 @@ class PostJobRequestController extends Controller
         if (!$postJob) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Post Job not found'
+                'message' => __('messages.post_job_not_found')
             ], 404);
         }
     
@@ -113,7 +113,7 @@ class PostJobRequestController extends Controller
         if (!$auth_user->hasAnyRole(['admin']) && $auth_user->id !== $postJob->customer_id) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'You are not authorized to edit this job'
+                'message' => __('messages.not_authorized_to_edit_job')
             ], 403);
         }
     
@@ -168,13 +168,13 @@ class PostJobRequestController extends Controller
         
         // Authorize: Only the customer or provider associated with the bid may request the invoice
         if (!auth()->check()) {
-            return response()->json(['message' => 'Unauthenticated'], 401);
+            return response()->json(['message' => __('messages.unauthenticated')], 401);
         }
         $authUser = auth()->user();
         $isCustomer = (int) $authUser->id === (int) $bid->customer_id;
         $isProvider = (int) $authUser->id === (int) $bid->provider_id;
         if (!$isCustomer && !$isProvider) {
-            return response()->json(['message' => 'Forbidden'], 403);
+            return response()->json(['message' => __('messages.forbidden')], 403);
         }
 
         $payment = \App\Models\PaymentPostJOb::where('post_job_bid_request_id', $bid->id)
@@ -189,7 +189,7 @@ class PostJobRequestController extends Controller
         $recipientId = $isCustomer ? $bid->customer_id : $bid->provider_id;
         $recipient = User::find($recipientId);
         if (!$recipient || empty($recipient->email)) {
-            return response()->json(['status' => false, 'message' => 'Recipient email not found'], 422);
+            return response()->json(['status' => false, 'message' => __('messages.recipient_email_not_found')], 422);
         }
 
         try {
@@ -239,7 +239,7 @@ class PostJobRequestController extends Controller
 
         return response()->json([
             'status' => true,
-            'message' => ' payment split updated successfully!'
+            'message' => __('messages.payment_split_updated')
         ]);
     }
     public function showBidById($bidId) 

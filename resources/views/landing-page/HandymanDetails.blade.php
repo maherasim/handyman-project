@@ -189,7 +189,7 @@
             <p class="m-0">
                {{$why_choose_me['about_description'] ?? ''}}
             </p>
-            <h6 class="mt-3">Reasons</h6>
+            <h6 class="mt-3">{{ __('messages.reasons') }}</h6>
             @if(isset($why_choose_me['reason']) && !empty($why_choose_me['reason']))
             <ul class="list-inline mt-2 mb-0 p-0">
                @foreach($why_choose_me['reason'] as $reason)

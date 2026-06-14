@@ -268,7 +268,7 @@ class ProviderController extends Controller
                 break;
 
             default:
-                return response()->json(['status' => false, 'message' => 'Action Invalid']);
+                return response()->json(['status' => false, 'message' => __('messages.action_invalid')]);
                 break;
         }
 
@@ -595,7 +595,7 @@ public function store(UserRequest $request)
             // Get the new plan details
             $newPlan = Plans::where('title', $request->plan_type)->first();
             if (!$newPlan) {
-                return redirect()->back()->with('error', 'Plan not found.');
+                return redirect()->back()->with('error', __('messages.plan_not_found'));
             }
 
             // Get current user's active subscription
@@ -663,10 +663,10 @@ public function store(UserRequest $request)
                 $user->save();
 
                 Log::info('Subscription created successfully for user: ' . $user_id);
-                return redirect()->back()->with('success', 'Subscription upgraded successfully.');
+                return redirect()->back()->with('success', __('messages.subscription_upgraded'));
             }
 
-            return redirect()->back()->with('error', 'Failed to create subscription.');
+            return redirect()->back()->with('error', __('messages.failed_to_create_subscription'));
         } catch (\Exception $e) {
             Log::error('Stripe charge failed: ' . $e->getMessage());
             return redirect()->back()->with('error', 'Payment failed: ' . $e->getMessage());
@@ -685,7 +685,7 @@ public function store(UserRequest $request)
         $newPlan = Plans::where('title', $request->plan_type)->first();
         if (!$newPlan) {
             Log::error('Plan not found for type: ' . $request->plan_type);
-            return response()->json(['error' => 'Plan not found.'], 404);
+            return response()->json(['error' => __('messages.plan_not_found')], 404);
         }
 
         Log::info('Found plan:', ['id' => $newPlan->id, 'title' => $newPlan->title, 'amount' => $newPlan->amount]);
@@ -738,7 +738,7 @@ public function store(UserRequest $request)
             // Send subscription upgrade email
             sendSubscriptionUpgradeEmail($user, $existing_subscription, 'free', 'FREE_' . time());
 
-            return response()->json(['status' => true, 'message' => 'Subscription upgraded to Free Plan successfully.']);
+            return response()->json(['status' => true, 'message' => __('messages.subscription_upgraded_free')]);
         } else {
             // If no existing subscription, create new one
             $data = [
@@ -783,7 +783,7 @@ public function store(UserRequest $request)
                 // Send subscription upgrade email
                 sendSubscriptionUpgradeEmail($user, $result, 'free', 'FREE_' . time());
 
-                return response()->json(['status' => true, 'message' => 'Subscription created successfully.']);
+                return response()->json(['status' => true, 'message' => __('messages.subscription_created')]);
             }
         }
 
@@ -801,7 +801,7 @@ public function store(UserRequest $request)
         // Get the new plan details
         $newPlan = Plans::where('title', $request->plan_type)->first();
         if (!$newPlan) {
-            return response()->json(['status' => false, 'message' => 'Plan not found.'], 404);
+            return response()->json(['status' => false, 'message' => __('messages.plan_not_found')], 404);
         }
 
         $user_id = auth()->id();
@@ -810,7 +810,7 @@ public function store(UserRequest $request)
         // Check wallet balance
         $wallet = $user->wallet;
         if (!$wallet || $wallet->amount < $request->plan_amount) {
-            return response()->json(['status' => false, 'message' => 'Insufficient wallet balance.'], 400);
+            return response()->json(['status' => false, 'message' => __('messages.insufficient_wallet_balance')], 400);
         }
 
         // Find existing active subscription to update
@@ -861,7 +861,7 @@ public function store(UserRequest $request)
             // Send subscription upgrade email
             sendSubscriptionUpgradeEmail($user, $existing_subscription, 'wallet', 'WALLET_' . time());
 
-            return response()->json(['status' => true, 'message' => 'Subscription upgraded successfully using wallet payment.']);
+            return response()->json(['status' => true, 'message' => __('messages.subscription_upgrade_wallet')]);
         } else {
             // If no existing subscription, create new one
             $data = [
@@ -910,11 +910,11 @@ public function store(UserRequest $request)
                 // Send subscription upgrade email
                 sendSubscriptionUpgradeEmail($user, $result, 'wallet', 'WALLET_' . time());
 
-                return response()->json(['status' => true, 'message' => 'Subscription created successfully using wallet payment.']);
+                return response()->json(['status' => true, 'message' => __('messages.subscription_created_wallet')]);
             }
         }
 
-        return response()->json(['status' => false, 'message' => 'Failed to update subscription.'], 500);
+        return response()->json(['status' => false, 'message' => __('messages.failed_to_update_subscription')], 500);
     }
 
     public function paypalCreate(Request $request)
@@ -928,7 +928,7 @@ public function store(UserRequest $request)
         // Get the new plan details
         $newPlan = Plans::where('title', $request->plan_type)->first();
         if (!$newPlan) {
-            return response()->json(['status' => false, 'message' => 'Plan not found.'], 404);
+            return response()->json(['status' => false, 'message' => __('messages.plan_not_found')], 404);
         }
 
         // Create PayPal payment session
@@ -948,13 +948,13 @@ public function store(UserRequest $request)
                 return response()->json([
                     'status' => true,
                     'url' => $responseData['url'],
-                    'message' => 'PayPal payment initiated successfully.'
+                    'message' => __('messages.paypal_payment_initiated')
                 ]);
             } elseif (isset($responseData['error'])) {
                 return response()->json(['status' => false, 'message' => $responseData['error']], 500);
             }
             
-            return response()->json(['status' => false, 'message' => 'Failed to create PayPal payment.'], 500);
+            return response()->json(['status' => false, 'message' => __('messages.failed_to_create_paypal')], 500);
         } catch (\Exception $e) {
             Log::error('PayPal subscription payment failed: ' . $e->getMessage());
             return response()->json(['status' => false, 'message' => 'PayPal payment failed: ' . $e->getMessage()], 500);
@@ -972,7 +972,7 @@ public function store(UserRequest $request)
         // Get the new plan details
         $newPlan = Plans::where('title', $request->plan_type)->first();
         if (!$newPlan) {
-            return response()->json(['status' => false, 'message' => 'Plan not found.'], 404);
+            return response()->json(['status' => false, 'message' => __('messages.plan_not_found')], 404);
         }
 
         $user_id = auth()->id();
@@ -1018,7 +1018,7 @@ public function store(UserRequest $request)
             $user = User::find($user_id);
             sendBankTransferConfirmationEmail($user, $existing_subscription, $payment);
 
-            return response()->json(['status' => true, 'message' => 'Subscription upgrade recorded. Please send proof of payment to billing@frobster.com.']);
+            return response()->json(['status' => true, 'message' => __('messages.subscription_upgrade_pending_payment')]);
         } else {
             // If no existing subscription, create new one
             $data = [
@@ -1059,11 +1059,11 @@ public function store(UserRequest $request)
                 $user = User::find($user_id);
                 sendBankTransferConfirmationEmail($user, $result, $payment);
 
-                return response()->json(['status' => true, 'message' => 'Subscription created. Please send proof of payment to billing@frobster.com.']);
+                return response()->json(['status' => true, 'message' => __('messages.subscription_created_pending_payment')]);
             }
         }
 
-        return response()->json(['status' => false, 'message' => 'Failed to update subscription.'], 500);
+        return response()->json(['status' => false, 'message' => __('messages.failed_to_update_subscription')], 500);
     }
 
  
@@ -1673,7 +1673,7 @@ public function getProviderTimeSlot(Request $request)
                 // Get the new plan details
                 $newPlan = Plans::where('title', $plan_type)->first();
                 if (!$newPlan) {
-                    return redirect()->route('provider_info', $user_id)->with('error', 'Plan not found.');
+                    return redirect()->route('provider_info', $user_id)->with('error', __('messages.plan_not_found'));
                 }
     
                 // Get current user's active subscription

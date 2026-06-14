@@ -336,7 +336,7 @@ public function cancelSubscription(Request $request)
                 
                 return comman_custom_response([
                     'data' => $subscriptionResource,
-                    'message' => 'Subscription upgrade recorded. Please send proof of payment to billing@frobster.com.'
+                    'message' => __('messages.subscription_upgrade_pending_payment')
                 ]);
             } else {
                 // If no existing subscription, create new one
@@ -381,7 +381,7 @@ public function cancelSubscription(Request $request)
                     
                     return comman_custom_response([
                         'data' => $subscriptionResource,
-                        'message' => 'Subscription created. Please send proof of payment to billing@frobster.com.'
+                        'message' => __('messages.subscription_created_pending_payment')
                     ]);
                 } else {
                     return comman_message_response('Failed to create subscription.', 500);

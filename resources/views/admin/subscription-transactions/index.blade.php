@@ -68,7 +68,7 @@
                                                 Unknown Plan
                                             @endif
                                         </td>
-                                        <td>€{{ number_format($transaction->amount, 2) }}</td>
+                                        <td>{{ getPriceFormat($transaction->amount) }}</td>
                                         <td>{{ ucfirst(str_replace('_', ' ', $transaction->payment_type)) }}</td>
                                         <td>
                                             @if($transaction->payment_status === 'pending')
@@ -87,7 +87,7 @@
                                                 <form method="POST" action="{{ route('admin.subscription-transactions.verify', $transaction->id) }}" style="display: inline;">
                                                     @csrf
                                                     <button type="submit" class="btn btn-sm btn-success verify-btn" 
-                                                            onclick="return confirmVerify('{{ $transaction->user->first_name ?? 'User' }}', '{{ $transaction->subscription->title ?? 'Plan' }}', '€{{ number_format($transaction->amount, 2) }}')">
+                                                            onclick="return confirmVerify('{{ $transaction->user->first_name ?? 'User' }}', '{{ $transaction->subscription->title ?? 'Plan' }}', '{{ getPriceFormat($transaction->amount) }}')">
                                                         Verify
                                                     </button>
                                                 </form>

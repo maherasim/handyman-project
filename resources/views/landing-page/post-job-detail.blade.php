@@ -45,7 +45,7 @@
                     </div>
                 </div>
                 <div class="mt-5 pt-3">
-                    <h5 class="mt-0 mb-4 text-capitalize">services</h5>
+                    <h5 class="mt-0 mb-4 text-capitalize">{{ __('messages.services_heading') }}</h5>
                     
                    
                    @if(count($postJobData['post_request_detail']['service']) < 5)
@@ -91,7 +91,7 @@
 
                 @if($postJobData['post_request_detail']['status'] == 'assigned')
                 <div class="mt-5 pt-3 bidder-list">
-                    <h5 class="mt-0 mb-4 text-capitalize">Assigned Provider</h5>
+                    <h5 class="mt-0 mb-4 text-capitalize">{{ __('messages.assigned_provider') }}</h5>
                     <div class="row">
                         @foreach($postJobData['bider_data'] as $bidderData)
                             @if($bidderData['provider']['id'] == $postJobData['post_request_detail']['provider_id'])
@@ -115,7 +115,7 @@
                                             <div class="add-button text-end">
                                                 <h5 class="text-capitalize text-priamry">{{ getPriceFormat($bidderData['price']) }}</h5>
                                                 <div class="mt-2">
-                                                    <span class="badge rounded-3 py-2 px-3 text-bg-primary">Assigned</span>
+                                                    <span class="badge rounded-3 py-2 px-3 text-bg-primary">{{ __('messages.assigned') }}</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -130,7 +130,7 @@
 
                 @if(!empty($postJobData['bider_data']))
                 <div class="mt-5 pt-3 bidder-list">
-                    <h5 class="mt-0 mb-4 text-capitalize">bidder list</h5>
+                    <h5 class="mt-0 mb-4 text-capitalize">{{ __('messages.bidder_list') }}</h5>
                     <div class="row">
                         @foreach($postJobData['bider_data'] as $bidderData)
 
@@ -161,7 +161,7 @@
                                                     <h5 class="text-capitalize text-priamry">{{ getPriceFormat($bidderData['price']) }}</h5>
                                                     @if($postJobData['post_request_detail']['status'] == 'requested')
                                                         <div class="mt-2">
-                                                            <button type="button" class="btn btn-primary px-5 text-capitalize d-block update_post_job" >accept</button>
+                                                            <button type="button" class="btn btn-primary px-5 text-capitalize d-block update_post_job" >{{ __('messages.accept') }}</button>
                                                         </div>
                                                     @endif
                                                 </div>

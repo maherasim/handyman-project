@@ -223,7 +223,7 @@
                             >
                                 <!-- Date -->
                                 <div class="col-md-3">
-                                    <label class="form-label">Date</label>
+                                    <label class="form-label">{{ $t('messages.date') }}</label>
                                     <flat-pickr
                                         v-model="slot.date"
                                         :config="{ dateFormat: 'Y-m-d' }"
@@ -235,7 +235,7 @@
 
                                 <!-- Start Time -->
                                 <div class="col-md-2">
-                                    <label class="form-label">Start Time</label>
+                                    <label class="form-label">{{ $t('messages.start_time') }}</label>
                                     <flat-pickr
                                         v-model="slot.startTime"
                                         :config="{
@@ -254,7 +254,7 @@
 
                                 <!-- End Time -->
                                 <div class="col-md-2">
-                                    <label class="form-label">End Time</label>
+                                    <label class="form-label">{{ $t('messages.end_time') }}</label>
                                     <flat-pickr
                                         v-model="slot.endTime"
                                         :config="{
@@ -272,13 +272,13 @@
 
                                 <!-- Days -->
                                 <div class="col-md-1">
-                                    <label class="form-label">Days</label>
+                                    <label class="form-label">{{ $t('messages.days') }}</label>
                                     <input type="text" class="form-control text-center bg-light" :value="slot.totalDays" readonly />
                                 </div>
 
                                 <!-- Hours -->
                                 <div class="col-md-1">
-                                    <label class="form-label">Hours</label>
+                                    <label class="form-label">{{ $t('messages.hours') }}</label>
                                     <input type="text" class="form-control text-center bg-light" :value="slot.totalHours" readonly />
                                 </div>
 

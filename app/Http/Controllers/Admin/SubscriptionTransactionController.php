@@ -125,7 +125,7 @@ class SubscriptionTransactionController extends Controller
             if ($transaction->payment_status !== 'pending') {
                 return response()->json([
                     'status' => false,
-                    'message' => 'Transaction is not pending verification.'
+                    'message' => __('messages.transaction_not_pending')
                 ]);
             }
 
@@ -157,7 +157,7 @@ class SubscriptionTransactionController extends Controller
             ]);
 
             return redirect()->route('admin.subscription-transactions.index')
-                ->with('success', 'Payment verified successfully! Subscription activated.');
+                ->with('success', __('messages.payment_verified_subscription'));
 
         } catch (\Exception $e) {
             Log::error('Failed to verify payment: ' . $e->getMessage());
@@ -177,7 +177,7 @@ class SubscriptionTransactionController extends Controller
             if ($transaction->payment_status !== 'pending') {
                 return response()->json([
                     'status' => false,
-                    'message' => 'Transaction is not pending verification.'
+                    'message' => __('messages.transaction_not_pending')
                 ]);
             }
 
@@ -200,7 +200,7 @@ class SubscriptionTransactionController extends Controller
 
             return response()->json([
                 'status' => true,
-                'message' => 'Payment rejected successfully.'
+                'message' => __('messages.payment_rejected')
             ]);
 
         } catch (\Exception $e) {
@@ -241,7 +241,7 @@ class SubscriptionTransactionController extends Controller
         if (empty($ids)) {
             return response()->json([
                 'status' => false,
-                'message' => 'No transactions selected.'
+                'message' => __('messages.no_transactions_selected')
             ]);
         }
 
@@ -298,7 +298,7 @@ class SubscriptionTransactionController extends Controller
                 default:
                     return response()->json([
                         'status' => false,
-                        'message' => 'Invalid action.'
+                        'message' => __('messages.action_invalid')
                     ]);
             }
         } catch (\Exception $e) {

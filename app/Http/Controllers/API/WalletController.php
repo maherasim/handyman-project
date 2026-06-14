@@ -76,7 +76,7 @@ class WalletController extends Controller
                     'amount' => 0,
                 ]);
             } else {
-                return comman_custom_response(['error' => 'User not found or invalid user type']);
+                return comman_custom_response(['error' => __('messages.user_not_found_invalid_type')]);
             }
         }
         

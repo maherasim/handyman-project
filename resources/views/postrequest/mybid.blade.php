@@ -87,8 +87,8 @@
         @php
             $pjrJsLang = [
                 'update_payment_split' => __('messages.pjr_update_payment_split'),
-                'advance_percentage' => __('messages.pjr_advance_percentage'),
-                'remaining_percentage' => __('messages.pjr_remaining_percentage'),
+                'advance_percentage' => __('messages.advance_percentage'),
+                'remaining_percentage' => __('messages.remaining_percentage'),
                 'update' => __('messages.pjr_update'),
                 'advance_validation' => __('messages.pjr_advance_percentage_validation'),
                 'updated' => __('messages.pjr_updated'),
@@ -96,6 +96,27 @@
                 'error' => __('messages.pjr_error'),
                 'unable_to_update' => __('messages.pjr_unable_to_update'),
                 'something_went_wrong' => __('messages.pjr_something_went_wrong_short'),
+                // *** new: JS dialog strings ***
+                'confirm_advance_payment' => __('messages.confirm_advance_payment'),
+                'proceed_advance_payment' => __('messages.proceed_advance_payment'),
+                'yes_pay_advance' => __('messages.yes_pay_advance'),
+                'cancel' => __('messages.cancel'),
+                'put_on_hold' => __('messages.put_on_hold'),
+                'provide_hold_reason' => __('messages.provide_hold_reason'),
+                'type_reason_here' => __('messages.type_reason_here'),
+                'hold_reason_label' => __('messages.input_hold_reason_label'),
+                'submit' => __('messages.submit'),
+                'hold_reason_required' => __('messages.hold_reason_required'),
+                'reason_too_long' => __('messages.reason_too_long'),
+                'confirm_label' => __('messages.confirm_label'),
+                'yes_update' => __('messages.yes_update'),
+                'add_extra_charges' => __('messages.add_extra_charges'),
+                'title_label' => __('messages.title_label'),
+                'amount' => __('messages.amount'),
+                'quantity_optional' => __('messages.quantity_optional'),
+                'add' => __('messages.add'),
+                'set_payment_split' => __('messages.set_payment_split'),
+                'notice' => __('messages.notice'),
             ];
         @endphp
         var pjrJsLang = @json($pjrJsLang);
@@ -231,15 +252,15 @@
                 if (!postId) return;
 
                 Swal.fire({
-                    title: "Confirm Advance Payment",
-                    text: providedAmount ? `Pay advance amount: ${providedAmount}. Proceed?` :
-                        "Are you sure you want to proceed with the advance payment?",
+                    title: pjrJsLang.confirm_advance_payment,
+                    text: providedAmount ? `${pjrJsLang.yes_pay_advance}: ${providedAmount}` :
+                        pjrJsLang.proceed_advance_payment,
                     icon: "warning",
                     showCancelButton: true,
                     confirmButtonColor: "#28a745",
                     cancelButtonColor: "#d33",
-                    confirmButtonText: "Yes, pay advance",
-                    cancelButtonText: "Cancel"
+                    confirmButtonText: pjrJsLang.yes_pay_advance,
+                    cancelButtonText: pjrJsLang.cancel
                 }).then((result) => {
                     if (!result.isConfirmed) return;
 
@@ -323,22 +344,22 @@
             $(document).on('click', '.holdBidBtn', function() {
                 const bidId = $(this).data('id');
                 Swal.fire({
-                    title: 'Put on Hold',
+                    title: pjrJsLang.put_on_hold,
                     input: 'textarea',
-                    inputLabel: 'Provide hold reason',
-                    inputPlaceholder: 'Type your reason here... (max 500 chars)',
+                    inputLabel: pjrJsLang.provide_hold_reason,
+                    inputPlaceholder: pjrJsLang.type_reason_here,
                     inputAttributes: {
-                        'aria-label': 'Hold reason'
+                        'aria-label': pjrJsLang.hold_reason_label
                     },
                     showCancelButton: true,
-                    confirmButtonText: 'Submit',
+                    confirmButtonText: pjrJsLang.submit,
                     preConfirm: (value) => {
                         if (!value || value.trim().length === 0) {
-                            Swal.showValidationMessage('Hold reason is required');
+                            Swal.showValidationMessage(pjrJsLang.hold_reason_required);
                             return false;
                         }
                         if (value.length > 500) {
-                            Swal.showValidationMessage('Reason too long (max 500 chars)');
+                            Swal.showValidationMessage(pjrJsLang.reason_too_long);
                             return false;
                         }
                         return value;
@@ -394,11 +415,11 @@
                 }
 
                 Swal.fire({
-                    title: 'Confirm',
-                    text: 'Do you want to update status to ' + label + '?',
+                    title: pjrJsLang.confirm_label,
+                    text: pjrJsLang.yes_update + ' ' + label + '?',
                     icon: 'question',
                     showCancelButton: true,
-                    confirmButtonText: 'Yes, update',
+                    confirmButtonText: pjrJsLang.yes_update,
                 }).then((result) => {
                     if (!result.isConfirmed) return;
 
@@ -428,24 +449,24 @@
             $(document).on('click', '.extraChargesBtn', function() {
                 const bidId = $(this).data('id');
                 Swal.fire({
-                    title: 'Add Extra Charges',
+                    title: pjrJsLang.add_extra_charges,
                     html: `
                         <div class="text-start">
-                            <label class="form-label fw-bold">Title</label>
+                            <label class="form-label fw-bold">${pjrJsLang.title_label}</label>
                             <input type="text" id="ec_title" class="form-control" placeholder="e.g., Title" />
                         </div>
                         <div class="mt-2 text-start">
-                            <label class="form-label fw-bold">Amount</label>
+                            <label class="form-label fw-bold">${pjrJsLang.amount}</label>
                             <input type="number" id="ec_amount" class="form-control" step="0.01" min="0.01" placeholder="e.g., 20" />
                         </div>
                         <div class="mt-2 text-start">
-                            <label class="form-label fw-bold">Quantity (optional)</label>
+                            <label class="form-label fw-bold">${pjrJsLang.quantity_optional}</label>
                             <input type="number" id="ec_qty" class="form-control" step="1" min="1" placeholder="1" />
                         </div>
                     `,
                     focusConfirm: false,
                     showCancelButton: true,
-                    confirmButtonText: 'Add',
+                    confirmButtonText: pjrJsLang.add,
                     preConfirm: () => {
                         const title = document.getElementById('ec_title').value.trim();
                         const amount = parseFloat(document.getElementById('ec_amount').value);
@@ -497,20 +518,20 @@
                 const postId = $(this).data('post-id');
 
                 Swal.fire({
-                    title: "Set Payment Split",
+                    title: pjrJsLang.set_payment_split,
                     html: `
                         <div class="mb-3 text-start">
-                            <label class="form-label fw-bold">Advance Percentage</label>
+                            <label class="form-label fw-bold">${pjrJsLang.advance_percentage}</label>
                             <input type="number" id="advanceInput" class="form-control" placeholder="Enter advance %" min="0" max="100" />
                         </div>
                         <div class="text-start">
-                            <label class="form-label fw-bold">Remaining Percentage</label>
+                            <label class="form-label fw-bold">${pjrJsLang.remaining_percentage}</label>
                             <input type="number" id="remainingInput" class="form-control" readonly />
                         </div>
                     `,
                     focusConfirm: false,
                     showCancelButton: true,
-                    confirmButtonText: "Submit",
+                    confirmButtonText: pjrJsLang.submit,
                     preConfirm: () => {
                         const advance = document.getElementById('advanceInput').value;
                         const remaining = document.getElementById('remainingInput').value;

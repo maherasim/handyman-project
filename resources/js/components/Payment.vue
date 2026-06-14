@@ -75,16 +75,11 @@
               <div class="bg-light p-3 rounded border">
                 <h6 class="text-primary mb-2"><i class="bi bi-credit-card-2-front-fill me-2"></i>{{ $t('messages.bank_information') }}</h6>
                 <ul class="list-unstyled mb-0">
-                  <li><strong>Recipient:</strong>Frobster international</li>
-                  <li><strong>IBAN:</strong> DE02 1001 0178 1361 6331 79</li>
-                  <li><strong>BIC:</strong> REVODEB2</li>
-                  <li class="mt-2"><strong>Bank Name and Address:</strong></li>
-                  <li class="ms-3">Revolut Bank UAB,<br>
-                    Zweigniederlassung Deutschland<br>
-                    FORA Linden Palais, Unter den<br>
-                    Linden 40<br>
-                    10117, Berlin, Germany</li>
-                 
+                  <li><strong>{{ $t('messages.pjr_bank_recipient') }}</strong> {{ bankConfig.recipient }}</li>
+                  <li><strong>{{ $t('messages.pjr_bank_iban') }}</strong> {{ bankConfig.iban }}</li>
+                  <li><strong>{{ $t('messages.pjr_bank_bic') }}</strong> {{ bankConfig.bic }}</li>
+                  <li class="mt-2"><strong>{{ $t('messages.pjr_bank_name_address') }}</strong></li>
+                  <li class="ms-3" style="white-space: pre-line">{{ bankConfig.bank_name }},<br>{{ bankConfig.bank_address }}</li>
                 </ul>
               </div>
             </div>
@@ -94,7 +89,7 @@
                 <p class="mb-2">{{ $t('messages.mention_booking_id_reference', { id: booking_id }) }}</p>
                 <p class="mb-0">
                   <strong>{{ $t('messages.send_proof_of_payment') }}</strong>
-                  <a href="mailto:billing@frobster.com">billing@frobster.com</a>
+                  <a :href="`mailto:${bankConfig.email}`">{{ bankConfig.email }}</a>
                 </p>
               </div>
             </div>
@@ -127,6 +122,8 @@ import Wallet from '../components/Wallet.vue'
 
 const { t } = useI18n()
 const props = defineProps(['booking_id', 'customer_id', 'discount', 'total_amount', 'advance_payment_amount', 'wallet_amount', 'payment_type', 'total_advance_paid_amount', 'total_booking_amount', 'advance_percentage'])
+
+const bankConfig = window.bankTransferConfig || {}
 
 const paymentLabel = computed(() => {
   if (props.payment_type === 'paid') return `${$t('messages.total_amount')}`

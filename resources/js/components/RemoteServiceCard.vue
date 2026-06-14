@@ -51,7 +51,7 @@
    <ul class="list-inline p-0 mt-1 mb-0 price-content">
     <li class="text-primary fw-500 d-inline-block position-relative" style="font-size: 16px">
         <span v-if="price>0">{{ formatCurrencyVue(price) }} <span v-if="discount && discount > 0"> ({{ discount }}% off)</span></span>
-        <span v-else>Free</span>
+        <span v-else>{{ $t('messages.free') }}</span>
     </li>
     <li v-if="duration && duration !== '00:00'" class="d-inline-block fw-500 position-relative service-price">({{ formattedDuration(duration) }})</li>
 </ul>
@@ -88,7 +88,7 @@
                      </svg>
                      <span class="stats-value">{{ props.totalBookings || 0 }}</span>
                   </div>
-                  <div class="stats-label">Bookings</div>
+                  <div class="stats-label">{{ $t('messages.bookings') }}</div>
                </div>
             </div>
             
@@ -101,7 +101,7 @@
                      </svg>
                      <span class="stats-value">{{ Number(props.totalViews || 0) }}</span>
                   </div>
-                  <div class="stats-label">Views</div>
+                  <div class="stats-label">{{ $t('messages.views') }}</div>
                </div>
             </div>
          </div>

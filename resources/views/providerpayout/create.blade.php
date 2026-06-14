@@ -233,7 +233,7 @@
                 if (typeof Swal !== 'undefined') {
                     Swal.fire({
                         icon: 'error',
-                        title: 'Validation Error',
+                        title: '{{ __('messages.validation_error') }}',
                         text: '{{ __('messages.minimum_withdrawal_amount') ?? 'Minimum withdrawal amount is 5' }}',
                         confirmButtonText: 'OK'
                     });

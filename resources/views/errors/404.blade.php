@@ -5,9 +5,9 @@
                <div class="iq-error position-relative">
                      <img src="{{ asset('images/error/404.png') }}" class="img-fluid iq-error-img iq-error-img-dark mx-auto" alt="">
                      <img src="{{ asset('images/error/404-dark.png') }}" class="img-fluid iq-error-img" alt="">
-                     <h2 class="mb-0 mt-4">Oops! This Page is Not Found.</h2>
-                     <p>The requested page does not exist.</p>
-                     <a class="btn btn-primary d-inline-flex align-items-center mt-3" href="{{route('frontend.index')}}"><i class="ri-home-4-line"></i>Back to Home</a>
+                     <h2 class="mb-0 mt-4">{{ __('messages.error_404_heading') }}</h2>
+                     <p>{{ __('messages.error_404_text') }}</p>
+                     <a class="btn btn-primary d-inline-flex align-items-center mt-3" href="{{route('frontend.index')}}"><i class="ri-home-4-line"></i>{{ __('messages.back_to_home') }}</a>
                </div>
             </div>
          </div>

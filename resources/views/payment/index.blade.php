@@ -176,7 +176,7 @@
                             return data;
                         }
                     },
-                    { data: 'post_job', name: 'post_job', title: "Post Job", visible: false },
+                    { data: 'post_job', name: 'post_job', title: "{{ __('messages.post_job') }}", visible: false },
                     { data: 'customer_id', name: 'customer_id', title: "{{ __('messages.user') }}" },
                     { data: 'payment_type', name: 'payment_type', title: "{{ __('messages.payment_type') }}" },
                     { data: 'payment_status', name: 'payment_status', title: "{{ __('messages.status') }}" },
@@ -238,7 +238,7 @@
                     { data: 'payment_type', name: 'payment_type', title: "{{ __('messages.payment_type') }}" },
                     { data: 'payment_status', name: 'payment_status', title: "{{ __('messages.status') }}" },
                     { data: 'datetime', name: 'datetime', title: "{{ __('messages.datetime') }}" },
-                    { data: 'handyman_earning', name: 'handyman_earning', title: "My Earning" }
+                    { data: 'handyman_earning', name: 'handyman_earning', title: "{{ __('messages.my_earning') }}" }
                 ],
                 order: [[6, 'desc']],
                 language: {

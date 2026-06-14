@@ -1632,6 +1632,22 @@ when
 <script>
     var baseUrl = "{{ url('/') }}";
     var csrfToken = "{{ csrf_token() }}";
+    @php
+        $bookingJsLang = [
+            'cancellation_reason'   => __('messages.cancellation_reason'),
+            'please_provide_reason' => __('messages.please_provide_cancellation_reason'),
+            'type_reason_here'      => __('messages.type_reason_here'),
+            'submit'                => __('messages.submit'),
+            'close'                 => __('messages.close'),
+            'reason_required'       => __('messages.cancellation_reason_required'),
+            'put_on_hold'           => __('messages.put_on_hold'),
+            'provide_hold_reason'   => __('messages.provide_hold_reason'),
+            'hold_reason_required'  => __('messages.hold_reason_required'),
+            'reason_too_long'       => __('messages.reason_too_long'),
+            'success'               => __('messages.success'),
+        ];
+    @endphp
+    var bookingJsLang = @json($bookingJsLang);
 
     $(document).ready(function () {
         // Handle booking status dropdown
@@ -1705,19 +1721,19 @@ when
 
             if (status === 'cancelled') {
                 Swal.fire({
-                    title: 'Cancellation Reason',
+                    title: bookingJsLang.cancellation_reason,
                     input: 'textarea',
-                    inputLabel: 'Please provide a reason for cancellation',
-                    inputPlaceholder: 'Type your reason here...',
+                    inputLabel: bookingJsLang.please_provide_reason,
+                    inputPlaceholder: bookingJsLang.type_reason_here,
                     inputAttributes: {
-                        'aria-label': 'Cancellation reason'
+                        'aria-label': bookingJsLang.cancellation_reason
                     },
                     showCancelButton: true,
-                    confirmButtonText: 'Submit',
-                    cancelButtonText: 'Close',
+                    confirmButtonText: bookingJsLang.submit,
+                    cancelButtonText: bookingJsLang.close,
                     inputValidator: (value) => {
                         if (!value || value.trim() === '') {
-                            return 'Reason is required';
+                            return bookingJsLang.reason_required;
                         }
                     }
                 }).then((inputResult) => {
@@ -1797,15 +1813,15 @@ when
         $(document).on('click', '.hold-booking', function () {
             const bookingId = $(this).data('id');
             Swal.fire({
-                title: 'Put on Hold',
+                title: bookingJsLang.put_on_hold,
                 input: 'textarea',
-                inputLabel: 'Provide hold reason',
-                inputPlaceholder: 'Type your reason here... (max 500 chars)',
+                inputLabel: bookingJsLang.provide_hold_reason,
+                inputPlaceholder: bookingJsLang.type_reason_here,
                 showCancelButton: true,
-                confirmButtonText: 'Submit',
+                confirmButtonText: bookingJsLang.submit,
                 preConfirm: (value) => {
-                    if (!value || value.trim().length === 0) return Swal.showValidationMessage('Hold reason is required');
-                    if (value.length > 500) return Swal.showValidationMessage('Reason too long (max 500 chars)');
+                    if (!value || value.trim().length === 0) return Swal.showValidationMessage(bookingJsLang.hold_reason_required);
+                    if (value.length > 500) return Swal.showValidationMessage(bookingJsLang.reason_too_long);
                     return value;
                 }
             }).then((result) => {
@@ -2832,7 +2848,7 @@ $(document).ready(function() {
                 if (typeof Swal !== 'undefined' && Swal.fire) {
                     Swal.fire({
                         icon: 'success',
-                        title: 'Success',
+                        title: bookingJsLang.success,
                         text: response.message || 'Rating submitted successfully.',
                         showConfirmButton: true
                     }).then(function(){

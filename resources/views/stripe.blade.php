@@ -6,13 +6,13 @@
     </head>
 
     <div class="container">
-        <h1>Proceed payment with stripe</h1>
+        <h1>{{ __('messages.proceed_payment_stripe') }}</h1>
 <br>
         <div class="row">
             <div class="col-md-6 offset-md-3">
                 <div class="card credit-card-box">
                     <div class="card-header">
-                        <h3 class="card-title">Payment Details</h3>
+                        <h3 class="card-title">{{ __('messages.payment_details') }}</h3>
                     </div>
                     <div class="card-body">
                         @if (Session::has('success'))
@@ -30,28 +30,28 @@
 
                             <div class='form-row row'>
                                 <div class='col-xs-6 form-group required'>
-                                    <label class='control-label'>Name</label>
+                                    <label class='control-label'>{{ __('messages.name') }}</label>
                                     <input class='form-control' size='20' type='text'>
                                 </div>
                                 <div class='col-xs-6 form-group card required'>
-                                    <label class='control-form'>Card Number</label>
+                                    <label class='control-form'>{{ __('messages.card_number') }}</label>
                                     <input autocomplete='off' class='form-control card-number' size='20' type='text'>
                                 </div>
                             </div>
 
-                          
+
 
                             <div class='form-row row'>
                                 <div class='col-xs-12 col-md-4 form-group cvc required'>
-                                    <label class='control-label'>CVC</label>
+                                    <label class='control-label'>{{ __('messages.cvc') }}</label>
                                     <input autocomplete='off' class='form-control card-cvc' placeholder='ex. 311' size='4' type='text'>
                                 </div>
                                 <div class='col-xs-12 col-md-4 form-group expiration required'>
-                                    <label class='control-label'>Expiration Month</label>
+                                    <label class='control-label'>{{ __('messages.expiration_month') }}</label>
                                     <input class='form-control card-expiry-month' placeholder='MM' size='2' type='text'>
                                 </div>
                                 <div class='col-xs-12 col-md-4 form-group expiration required'>
-                                    <label class='control-label'>Expiration Year</label>
+                                    <label class='control-label'>{{ __('messages.expiration_year') }}</label>
                                     <input class='form-control card-expiry-year' placeholder='YYYY' size='4' type='text'>
                                 </div>
                             </div>

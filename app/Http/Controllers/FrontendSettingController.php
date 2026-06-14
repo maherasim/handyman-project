@@ -356,7 +356,7 @@ class FrontendSettingController extends Controller
             return response()->json(['success' => true, 'message' => $recentlyViewed]);
         }
 
-        return response()->json(['success' => false, 'message' => 'Service not found'], 404);
+        return response()->json(['success' => false, 'message' => __('messages.service_not_found')], 404);
     }
     public function recentlyViewedGet()
     {

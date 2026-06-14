@@ -25,7 +25,7 @@ class TransactionRequestController extends Controller
         $transaction = TransactionRequest::create($validated);
 
         return response()->json([
-            'message' => 'Transaction request sent successfully.',
+            'message' => __('messages.transaction_request_sent'),
             'data' => $transaction,
         ], 201);
     }
@@ -36,7 +36,7 @@ class TransactionRequestController extends Controller
         if ($transactions->isEmpty()) {
             return response()->json([
                 'success' => false,
-                'message' => 'No transactions found for this user.',
+                'message' => __('messages.no_transactions_found'),
             ], 404);
         }
 
@@ -112,13 +112,13 @@ class TransactionRequestController extends Controller
                 } catch (\Throwable $e) {
                     \DB::rollBack();
                     \Log::error('TransactionRequest bulk_action: ' . $e->getMessage());
-                    return response()->json(['status' => false, 'message' => 'Failed to update.']);
+                    return response()->json(['status' => false, 'message' => __('messages.failed_to_update')]);
                 }
                 $message = 'Bulk Payment Status Updated' . ($newStatus === 'completed' ? '. Balance added to wallets.' : '');
                 break;
 
             default:
-                return response()->json(['status' => false, 'message' => 'Action Invalid']);
+                return response()->json(['status' => false, 'message' => __('messages.action_invalid')]);
         }
 
         return response()->json(['status' => true, 'message' => $message]);
@@ -203,7 +203,7 @@ public function confirmSingle($id)
     $transaction = TransactionRequest::findOrFail($id);
 
     if ($transaction->status === 'completed') {
-        return response()->json(['message' => 'Request already confirmed.']);
+        return response()->json(['message' => __('messages.request_already_confirmed')]);
     }
 
     \DB::beginTransaction();
@@ -238,11 +238,11 @@ public function confirmSingle($id)
         ]);
 
         \DB::commit();
-        return response()->json(['message' => 'Request confirmed successfully. Balance added to wallet.']);
+        return response()->json(['message' => __('messages.request_confirmed_wallet')]);
     } catch (\Throwable $e) {
         \DB::rollBack();
         \Log::error('TransactionRequest confirmSingle: ' . $e->getMessage());
-        return response()->json(['message' => 'Failed to confirm request.'], 500);
+        return response()->json(['message' => __('messages.failed_to_confirm_request')], 500);
     }
 }
 

@@ -134,7 +134,7 @@
                 $('#removeButton').addClass('d-none');
                 Swal.fire({
                     icon: 'error',
-                    title: 'Image too large',
+                    title: '{{ __('messages.image_too_large') }}',
                     text: 'Please upload an image smaller than 5 MB.'
                 });
                 return;

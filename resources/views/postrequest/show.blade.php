@@ -943,8 +943,10 @@
                 'bank_instructions' => __('messages.pjr_bank_instructions'),
                 'bank_send_proof' => __('messages.pjr_bank_send_proof'),
             ];
+            $bankConfig = config('bank_transfer');
         @endphp
         var pjrJsLang = @json($pjrJsLang);
+        var bankTransferConfig = @json($bankConfig);
         function formatCurrencyJS(amount) {
             const n = Number(amount || 0).toFixed(DECIMALS);
             switch (String(POSITION)) {
@@ -1129,22 +1131,18 @@
   <h6 class="mb-2">${pjrJsLang.bank_info_heading}</h6>
   <div class="mb-2"><strong>${pjrJsLang.amount_label}</strong> ${formatCurrencyJS(formattedAmount)}</div>
   <div class="mb-2"><strong>${pjrJsLang.bank_for_transfers}</strong></div>
-  <div><strong>${pjrJsLang.bank_recipient}</strong> Ben Ghezaiel</div>
-  <div><strong>${pjrJsLang.bank_iban}</strong> DE02 1001 0178 1361 6331 79</div>
-  <div><strong>${pjrJsLang.bank_bic}</strong> REVODEB2</div>
+  <div><strong>${pjrJsLang.bank_recipient}</strong> ${bankTransferConfig.recipient}</div>
+  <div><strong>${pjrJsLang.bank_iban}</strong> ${bankTransferConfig.iban}</div>
+  <div><strong>${pjrJsLang.bank_bic}</strong> ${bankTransferConfig.bic}</div>
   <div class="mt-2"><strong>${pjrJsLang.bank_name_address}</strong></div>
-  <div class="ms-3">Revolut Bank UAB,<br>
-    Zweigniederlassung Deutschland<br>
-    FORA Linden Palais, Unter den<br>
-    Linden 40<br>
-    10117, Berlin, Germany</div>
-  <div class="mt-2"><strong>${pjrJsLang.bank_bic_sender}</strong> CHASDEFX</div>
+  <div class="ms-3">${bankTransferConfig.bank_name},<br>${bankTransferConfig.bank_address.replace(/\n/g,'<br>')}</div>
+  <div class="mt-2"><strong>${pjrJsLang.bank_bic_sender}</strong> ${bankTransferConfig.sender_bic}</div>
   
   <h6 class="mt-3">${pjrJsLang.bank_instructions}</h6>
  
   <div class="small mt-1">
     ${pjrJsLang.bank_send_proof}
-    <a href="mailto:billing@frobster.com">billing@frobster.com</a>
+    <a href="mailto:${bankTransferConfig.email}">${bankTransferConfig.email}</a>
   </div>
 </div>
 

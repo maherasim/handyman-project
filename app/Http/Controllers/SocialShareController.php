@@ -14,14 +14,14 @@ class SocialShareController extends Controller
         abort_unless(auth()->check() && (auth()->user()->hasRole('admin') || auth()->user()->hasRole('demo_admin')), 403);
 
         if (!config('services.facebook.page_id') || !config('services.facebook.access_token')) {
-            return response()->json(['message' => 'Facebook not configured'], 422);
+            return response()->json(['message' => __('messages.facebook_not_configured')], 422);
         }
 
         $job = PostJobRequest::with(['city', 'country', 'customer'])
             ->find($id);
 
         if (!$job) {
-            return response()->json(['message' => 'Job not found'], 404);
+            return response()->json(['message' => __('messages.job_not_found')], 404);
         }
 
         $pageId = config('services.facebook.page_id');
@@ -65,20 +65,20 @@ class SocialShareController extends Controller
                     'body' => $response->body(),
                 ]);
                 return response()->json([
-                    'message' => 'Facebook publish failed',
+                    'message' => __('messages.facebook_publish_failed'),
                     'details' => $response->json(),
                 ], 422);
             }
 
             return response()->json([
-                'message' => 'Published to Facebook',
+                'message' => __('messages.published_to_facebook'),
                 'result' => $response->json(),
             ]);
         } catch (\Throwable $e) {
             Log::error('Facebook post exception', [
                 'error' => $e->getMessage(),
             ]);
-            return response()->json(['message' => 'Facebook publish error'], 500);
+            return response()->json(['message' => __('messages.facebook_publish_error')], 500);
         }
     }
 }

@@ -60,7 +60,7 @@
                 <div class="card card-block card-stretch">
                     <div class="card-body p-0">
                         <div class="d-flex justify-content-between align-items-center p-3">
-                            <h5 class="fw-bold">Transaction Request</h5>
+                            <h5 class="fw-bold">{{ __('messages.transaction_request') }}</h5>
                         </div>
                     </div>
                 </div>
@@ -132,25 +132,25 @@
                     {
                         data: 'user_id',
                         name: 'user.username',
-                        title: "Name"
+                        title: "{{ __('messages.name') }}"
                     },
                     {
                         data: 'amount',
                         name: 'amount',
-                        title: "Amount",
+                        title: "{{ __('messages.amount') }}",
                         orderable: false,
                     },
                     {
                         data: 'transaction_type',
                         name: 'transaction_type',
-                        title: "Transaction Type",
+                        title: "{{ __('messages.transaction_type') }}",
                         orderable: false,
                         searchable: false
                     },
                     {
                         data: 'created_at',
                         name: 'created_at',
-                        title: "Request Date",
+                        title: "{{ __('messages.request_date') }}",
                         orderable: true,
                     },
                    

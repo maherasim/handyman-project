@@ -156,7 +156,7 @@ class PermissionController extends Controller
                     ]);
                     break;
             default :
-                    return response()->json(['status'=>false,'event' => 'validation' , 'message' => 'Try Again']);
+                    return response()->json(['status'=>false,'event' => 'validation' , 'message' => __('messages.try_again')]);
                     break;
         }
         $message = trans('messages.added_permission',['name'=> trans('messages.'.$data['type']) ] );

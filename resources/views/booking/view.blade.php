@@ -100,7 +100,7 @@
                         <input type="hidden" id="newStatus">
                         <div class="mb-3">
                             <label for="reasonInput" class="form-label">{{__('messages.reason')}}</label>
-                            <textarea type="text" class="form-control" id="reasonInput" placeholder="Enter reason" required> </textarea>
+                            <textarea type="text" class="form-control" id="reasonInput" placeholder="{{ __('messages.enter_reason_placeholder') }}" required> </textarea>
                         </div>
                     </form>
                 </div>
@@ -221,7 +221,7 @@
                             <input type="hidden" name="user_id" id="user_id">
 
                             <div class="mb-3">
-                                <label for="title" class="form-label">Title</label>
+                                <label for="title" class="form-label">{{ __('messages.title_label') }}</label>
                                 <input type="text" name="title" class="form-control" id="title" placeholder="e.g. Completed Electrical Repair" required>
                             </div>
                             <div class="mb-3">

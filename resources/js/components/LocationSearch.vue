@@ -26,7 +26,7 @@
                                stroke-linecap="round" stroke-linejoin="round"></path>
                          </svg>
                       </span>
-                      <input type="text" class="font-size-14 bg-transparent border-0" placeholder="Search Service" @keyup="getServiceList" v-model="keyword">
+                      <input type="text" class="font-size-14 bg-transparent border-0" :placeholder="$t('messages.search_service')" @keyup="getServiceList" v-model="keyword">
                          <div :class="`top-width dropdown-menu dropdown-menu-end user-dropdown mt-5 ${keyword.length > 0 ? 'show' : ''}`" aria-labelledby="dropdownMenuButton1">
                             <!-- <button class="btn btn-close" @click="closeDropdown"></button> -->
                             <span type="button" class="text-primary custom-btn-close" @click="closeDropdown">

@@ -271,7 +271,7 @@
             {{-- {{ Form::label('json_file',trans('messages.json_file').' ',['class'=>'form-control-label'], false ) }} --}}
             <div class="custom-file">
                 {{ html()->file('json_file')->class('custom-file-input')->id('json_file')->attribute('accept', '.json')->attribute('aria-describedby', 'additionalFileHelp')}}                
-                <label id="additionalFileHelp" class="custom-file-label upload-label border-0">Upload Firebase JSON files only Once.</label>
+                <label id="additionalFileHelp" class="custom-file-label upload-label border-0">{{ __('messages.firebase_upload_note') }}</label>
                 <small class="help-block with-errors text-danger"></small>
             </div>
         </div>

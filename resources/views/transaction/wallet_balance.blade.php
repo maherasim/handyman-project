@@ -143,18 +143,18 @@
                     {
                         data: 'user_id',
                         name: 'user_id',
-                        title: "User Name"
+                        title: "{{ __('messages.user_name') }}"
                     },
                     {
                         data: 'amount',
                         name: 'amount',
-                        title: "Amount",
+                        title: "{{ __('messages.amount') }}",
                         orderable: false,
                     },
                     {
                         data: 'created_at',
                         name: 'created_at',
-                        title: "Created At",
+                        title: "{{ __('messages.created_at_label') }}",
                         orderable: true,
                     },
                    

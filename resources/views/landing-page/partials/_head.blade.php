@@ -77,6 +77,7 @@
     @endforeach
     <script>
         window.cancellationCharge = @json($serviceconfig);
+        window.bankTransferConfig = @json(config('bank_transfer'));
     </script>
 <script>
     // Static primary color - Red-Blue Gradient

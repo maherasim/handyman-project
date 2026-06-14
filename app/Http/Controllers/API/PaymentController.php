@@ -55,7 +55,7 @@ class PaymentController extends Controller
                 ->where('payment_status', $paymentStatus)
                 ->first();
             if ($existing) {
-                return response()->json(['status' => false, 'message' => 'Payment already processed.']);
+                return response()->json(['status' => false, 'message' => __('messages.payment_already_processed')]);
             }
         }
 

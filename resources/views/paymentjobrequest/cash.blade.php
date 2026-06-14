@@ -186,7 +186,7 @@
                         {
                             data: 'post_job',
                             name: 'post_job',
-                            title: "Post Job Request"
+                            title: "{{ __('messages.post_job_request_label') }}"
                         },
                         {
                             data: 'customer_id',
@@ -196,7 +196,7 @@
                        {
                         data:'history',
                         name:'history',
-                        title:"View History",
+                        title:"{{ __('messages.view_history') }}",
                         orderable: false,
                         searchable: false
                        },

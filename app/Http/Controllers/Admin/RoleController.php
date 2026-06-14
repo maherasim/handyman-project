@@ -53,7 +53,7 @@ class RoleController extends Controller
 
         $actionType = $request->action_type;
 
-        $message = 'Bulk Action Updated';
+        $message = __('messages.bulk_action_updated');
         switch ($actionType) {
             case 'change-status':
                 $branches = Role::whereIn('id', $ids)->update(['status' => $request->status]);
@@ -66,11 +66,11 @@ class RoleController extends Controller
                 break;
 
             default:
-                return response()->json(['status' => false, 'message' => 'Action Invalid']);
+                return response()->json(['status' => false, 'message' => __('messages.action_invalid')]);
                 break;
         }
 
-        return response()->json(['status' => true, 'message' => 'Bulk Action Updated']);
+        return response()->json(['status' => true, 'message' => __('messages.bulk_action_updated')]);
     }
     /**
      * Show the form for creating a new resource.

@@ -3,7 +3,7 @@
 
 @section('content')
 <div class="my-5">
-   <h4 class="text-center text-capitalize fw-bold my-5">Imprint</h4>
+   <h4 class="text-center text-capitalize fw-bold my-5">{{ __('messages.imprint_heading') }}</h4>
    <div class="container">
       {!! $imprint->value ?? null !!}
    </div>

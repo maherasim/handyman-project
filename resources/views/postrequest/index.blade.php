@@ -179,7 +179,7 @@
                     <div id="bidAmountError"></div>
 
                     <!-- Why Choose Me -->
-                    <label for="why_choose_me" class="mt-3">Why Choose Me:</label>
+                    <label for="why_choose_me" class="mt-3">{{ __('messages.why_choose_me_colon') }}</label>
                     <textarea id="why_choose_me" name="why_choose_me" class="form-control"></textarea>
                     <div id="whyChooseMeError"></div>
 
@@ -386,7 +386,7 @@
                         $('#datatable').DataTable().ajax.reload();
                         Swal.fire({
                             icon: 'info',
-                            title: 'Notice',
+                            title: '{{ __('messages.notice') }}',
                             text: 'You have already placed a bid on this post.',
                         });
                     } else {

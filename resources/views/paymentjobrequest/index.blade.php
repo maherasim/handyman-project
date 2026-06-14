@@ -60,7 +60,7 @@
                 <div class="card card-block card-stretch">
                     <div class="card-body p-0">
                         <div class="d-flex justify-content-between align-items-center p-3">
-                            <h5 class="fw-bold">Payment Job Request</h5>
+                            <h5 class="fw-bold">{{ __('messages.payment_job_request_title') }}</h5>
                         </div>
 
                     </div>
@@ -182,7 +182,7 @@
                         {
                             data: 'post_job',
                             name: 'post_job',
-                            title: "Post Job Request"
+                            title: "{{ __('messages.post_job_request_label') }}"
                         },
                         {
                             data: 'customer_id',
@@ -192,7 +192,7 @@
                        {
                         data:'history',
                         name:'history',
-                        title:"View History",
+                        title:"{{ __('messages.view_history') }}",
                         orderable: false,
                         searchable: false
                        },
@@ -293,7 +293,7 @@
                         {
                             data: 'handyman_earning',
                             name: 'handyman_earning',
-                            title: "My Earning"
+                            title: "{{ __('messages.my_earning') }}"
                         }
                     ],
                     order: [

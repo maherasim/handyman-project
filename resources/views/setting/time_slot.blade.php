@@ -49,7 +49,7 @@
             times.forEach(time => {
                 const [hour, minute] = time.split(':');
                 events.push({
-                    title: 'Available',
+                    title: '{{ __('messages.available') }}',
                     daysOfWeek: [dayMap[day.toLowerCase()]],
                     startTime: `${hour}:${minute}`,
                     endTime: `${String(parseInt(hour) + 1).padStart(2, '0')}:${minute}`, // 1 hour slot
@@ -101,7 +101,7 @@
                 } else {
                     selectedSlots.push({ day: dayName, time: hour });
                     calendar.addEvent({
-                        title: 'Selected',
+                        title: '{{ __('messages.selected_label') }}',
                         start: info.start,
                         end: info.end,
                         backgroundColor: '#198754',

@@ -23,7 +23,7 @@
                              <div class="col-lg-12">
                                 <div class="form-group">
                                    <label class="text-secondary">{{__('auth.email')}}</label>
-                                   <input class="form-control" type="email" placeholder="Enter Email" id="email" name="email" :value="old('email')" required autofocus>
+                                   <input class="form-control" type="email" placeholder="{{ __('messages.enter_email_placeholder') }}" id="email" name="email" :value="old('email')" required autofocus>
                                 </div>
                              </div>
                           </div>

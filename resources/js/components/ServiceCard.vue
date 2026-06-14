@@ -51,7 +51,7 @@
    <ul class="list-inline p-0 mt-1 mb-0 price-content">
     <li class="text-primary fw-500 d-inline-block position-relative font-size-18">
         <span v-if="price>0">{{ formatCurrencyVue(price) }} <span v-if="discount && discount > 0"> ({{ discount }}% off)</span></span>
-        <span v-else>Free</span>
+        <span v-else>{{ $t('messages.free') }}</span>
     </li>
     <li v-if="duration && duration !== '00:00'" class="d-inline-block fw-500 position-relative service-price">({{ formattedDuration(duration) }})</li>
 </ul>
