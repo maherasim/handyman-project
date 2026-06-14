@@ -10,7 +10,7 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                    <h4 class="card-title mb-0">Subscription Transactions</h4>
+                    <h4 class="card-title mb-0">{{ __('messages.sidebar_subscription_transactions') }}</h4>
                     <p class="text-muted">All subscription payments with status</p>
                     
                     @if(session('success'))

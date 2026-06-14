@@ -2,7 +2,7 @@
    <div class="row">
       <div class="col-12">
          <div class="text-center mb-5">
-            <h3>Request Post Job Services</h3>
+            <h3>{{ $t('messages.request_post_job_services') }}</h3>
          </div>
       </div>
    </div>
@@ -29,7 +29,7 @@
          </div>
          <div class="col-lg-4 col-md-5 mt-md-0 mt-5">
             <div class="d-flex align-items-center justify-content-between gap-3 flex-wrap">
-               <h5 class="m-0 text-capitalize">Services</h5>
+               <h5 class="m-0 text-capitalize">{{ $t('messages.services') }}</h5>
                <a href="#modaladdservice" class="btn btn-primary text-capitalize" data-bs-toggle="modal" @show="onModalShow">
                   <i class="fas fa-plus font-size-14"></i>
                   Create Service
@@ -170,7 +170,7 @@
       </div>
 
       <div class="text-center mt-5">
-         <button type="submit" class="btn btn-primary">Post Request Save</button>
+         <button type="submit" class="btn btn-primary">{{ $t('messages.post_request_save') }}</button>
       </div>
    </form>
 </template> 

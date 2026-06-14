@@ -223,7 +223,7 @@
                 </div>
                 <div class="detail-row">
                     <span class="detail-label">{{ __('messages.email_amount_to_transfer') }}:</span>
-                    <span class="detail-value"><strong>€{{ number_format($subscription->amount, 2) }}</strong></span>
+                    <span class="detail-value"><strong>{{ getPriceFormat($subscription->amount) }}</strong></span>
                 </div>
                 <div class="detail-row">
                     <span class="detail-label">{{ __('messages.email_duration') }}:</span>
@@ -268,7 +268,7 @@
                 <div class="instruction-steps">
                     <div class="step">
                         <span class="step-number">1</span>
-                        <span class="step-text">{!! __('messages.email_bt_step_transfer', ['amount' => '<strong>€' . number_format($subscription->amount, 2) . '</strong>']) !!}</span>
+                        <span class="step-text">{!! __('messages.email_bt_step_transfer', ['amount' => '<strong>' . getPriceFormat($subscription->amount) . '</strong>']) !!}</span>
                     </div>
                     <div class="step">
                         <span class="step-number">2</span>

@@ -627,7 +627,7 @@ class PaymentController extends Controller
 
             return response()->json([
                 'status' => true,
-                'message' => "Advance payment of €{$advanceAmount} successful",
+                'message' => __('messages.advance_payment_success', ['amount' => getPriceFormat($advanceAmount)]),
                 'balance' => $wallet->amount
             ]);
         } catch (\Exception $e) {

@@ -130,7 +130,7 @@
                                 </div>
                                 @endif
                                 <div class="p-3 col-12 ">
-                                    <h6 class="mb-3" id="replytitle" style="display: none;">Reply to this message</h6>
+                                    <h6 class="mb-3" id="replytitle" style="display: none;">{{ __('messages.reply_to_this_message') }}</h6>
                                     <form method="POST" enctype="multipart/form-data" id="replyForm" style="display: none;">
                                     
                                     @csrf

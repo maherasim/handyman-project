@@ -2354,4 +2354,10 @@
     'my_review' => 'Mon avis',
     'provider_sub_benefits_title' => 'Ce que vous obtiendrez :',
     'pjr_invoice_email_body' => "Bonjour :name,\n\nVeuillez trouver ci-joint votre facture.\n\nMerci.",
+    // *** new words (W-08/W-10/W-11/W-13 fixes) ***
+    'reply_to_this_message' => 'Répondre à ce message',
+    'advance_payment_success' => 'Acompte de :amount réussi',
+    'data_not_available' => 'Données non disponibles',
+    'request_post_job_services' => 'Demander des services de travail',
+    'post_request_save' => 'Enregistrer la demande',
 ];

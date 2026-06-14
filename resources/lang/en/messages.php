@@ -2316,4 +2316,10 @@
     'published_to_facebook' => 'Published to Facebook',
     'facebook_publish_error' => 'Facebook publish error',
     'service_not_found' => 'Service not found',
+    // *** new words (W-08/W-10/W-11/W-13 fixes) ***
+    'reply_to_this_message' => 'Reply to this message',
+    'advance_payment_success' => 'Advance payment of :amount successful',
+    'data_not_available' => 'Data Not Available',
+    'request_post_job_services' => 'Request Post Job Services',
+    'post_request_save' => 'Post Request Save',
 );

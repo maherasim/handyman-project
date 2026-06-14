@@ -393,8 +393,8 @@
                         // Successful bid
                         Swal.fire({
                             icon: 'success',
-                            title: 'Success!',
-                            text: 'Your bid has been submitted successfully.',
+                            title: pjrLang.success_title,
+                            text: pjrLang.bid_submitted_success,
                             timer: 2000,
                             showConfirmButton: false
                         }).then(() => {

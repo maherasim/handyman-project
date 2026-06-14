@@ -2330,4 +2330,10 @@
     'education_traineeship_degree' => 'Praktikumsabschluss',
     'education_undergraduate_diploma' => 'Undergraduate-Diplom',
     'education_university_degree' => 'Universitätsabschluss',
+    // *** new words (W-08/W-10/W-11/W-13 fixes) ***
+    'reply_to_this_message' => 'Auf diese Nachricht antworten',
+    'advance_payment_success' => 'Vorauszahlung von :amount erfolgreich',
+    'data_not_available' => 'Keine Daten verfügbar',
+    'request_post_job_services' => 'Jobanfrage stellen',
+    'post_request_save' => 'Jobanfrage speichern',
 );

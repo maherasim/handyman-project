@@ -1905,11 +1905,11 @@ when
                             <input type="text" class="form-control charge-detail" placeholder="{{ __('messages.extra_charge_placeholder_detail') }}">
                         </div>
                         <div class="col-md-3">
-                            <label class="form-label">Amount</label>
+                            <label class="form-label">{{ __('messages.amount') }}</label>
                             <input type="number" class="form-control charge-amount" placeholder="{{ __('messages.extra_charge_placeholder_amount') }}">
                         </div>
                         <div class="col-md-3">
-                            <label class="form-label">Quantity</label>
+                            <label class="form-label">{{ __('messages.quantity') }}</label>
                             <div class="input-group">
                                 <button class="btn btn-outline-secondary btn-sm decrease-qty" type="button">-</button>
                                 <input type="number" class="form-control text-center charge-quantity" value="1" min="1">
