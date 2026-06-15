@@ -2371,4 +2371,9 @@
     'bulk_booking_permanently_deleted' => 'Buchungen dauerhaft gelöscht',
     'bulk_provider_payout_status_updated' => 'Anbieterauszahlungsstatus in Masse aktualisiert',
     'bulk_provider_payout_deleted' => 'Anbieterauszahlungen in Masse gelöscht',
+    // *** BookingWizard i18n strings ***
+    'add_more_dates' => 'Weitere Termine hinzufügen',
+    'confirm_booking_title' => 'Buchung bestätigen',
+    'remove_addon_confirm' => 'Möchten Sie diesen Zusatzservice entfernen?',
+    'cancellation_fee_note' => 'Bei Stornierung innerhalb von {hours} Stunden vor dem geplanten Service wird eine Stornierungsgebühr von {fee} erhoben.',
 );

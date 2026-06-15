@@ -2357,4 +2357,9 @@
     'bulk_booking_permanently_deleted' => 'Bulk Booking Permanently Deleted',
     'bulk_provider_payout_status_updated' => 'Bulk Provider Payout Status Updated',
     'bulk_provider_payout_deleted' => 'Bulk Provider Payout Deleted',
+    // *** BookingWizard i18n strings ***
+    'add_more_dates' => 'Add More Dates',
+    'confirm_booking_title' => 'Confirm Booking',
+    'remove_addon_confirm' => 'Do you want to remove this Add-on Service?',
+    'cancellation_fee_note' => 'A {fee} fee applies for cancellation within {hours} hours of the scheduled service.',
 );

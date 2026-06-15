@@ -298,7 +298,7 @@ class PaymentController extends Controller
                 // Create wallet history entry for customer (debit) - sender paid amount
                 $customerActivityMessage = trans('messages.paid_with_wallet', ['value' => $request->booking_id]);
                 WalletHistory::create([
-                    'datetime' => $request->datetime,
+                    'datetime' => $data['datetime'],
                     'user_id' => $booking->customer_id, // Customer (sender)
                     'activity_type' => 'debit',
                     'activity_message' => $customerActivityMessage,
@@ -328,7 +328,7 @@ class PaymentController extends Controller
                 }
                 
                 WalletHistory::create([
-                    'datetime' => $request->datetime,
+                    'datetime' => $data['datetime'],
                     'user_id' => $booking->provider_id, // Provider (receiver)
                     'activity_type' => 'credit',
                     'activity_message' => $providerActivityMessage,

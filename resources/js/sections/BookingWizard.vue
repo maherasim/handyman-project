@@ -228,7 +228,7 @@
                                         v-model="slot.date"
                                         :config="{ dateFormat: 'Y-m-d' }"
                                         class="form-control"
-                                        placeholder="Select date"
+                                        :placeholder="$t('messages.select_date_and_time')"
                                         @change="() => calculateDuration(index)"
                                     />
                                 </div>
@@ -246,7 +246,7 @@
     minuteIncrement: 60
   }"
                                         class="form-control"
-                                        placeholder="Start time (hour)"
+                                        :placeholder="$t('messages.start_time')"
                                         @input="$nextTick(() => calculateDuration(index))"
                                     />
 
@@ -265,7 +265,7 @@
     minuteIncrement: 60
   }"
                                         class="form-control"
-                                        placeholder="End time (hour)"
+                                        :placeholder="$t('messages.end_time')"
                                         @input="$nextTick(() => calculateDuration(index))"
                                     />
                                 </div>
@@ -293,7 +293,7 @@
                             <!-- Add Button -->
                             <div class="mb-4">
                                 <button type="button" class="btn btn-primary" @click="addMoreDates">
-                                    ➕ Add More Dates
+                                    ➕ {{ $t('messages.add_more_dates') }}
                                 </button>
                             </div>
 
@@ -410,7 +410,7 @@
                       <tbody>
                         <!-- Unit Price -->
                         <tr>
-                          <td class="ps-0"><span class="text-capitalize">{{ $t(' Price (Unit Price)') }}</span>
+                          <td class="ps-0"><span class="text-capitalize">{{ $t('messages.price_unit_price') }}</span>
                           </td>
                           <td class="pe-0">
                             <span class="d-block text-primary text-end">{{ formatCurrencyVue(service.price) }}</span>
@@ -419,7 +419,7 @@
 
                         <!-- Quantity -->
                         <tr>
-                          <td class="ps-0"><span class="text-capitalize">{{ $t(' Quantity (Nbr of Packages,Hours, Days)') }}</span></td>
+                          <td class="ps-0"><span class="text-capitalize">{{ $t('messages.quantity_nbr_packages') }}</span></td>
                           <td class="pe-0">
                             <span class="d-block text-primary text-end">{{ quantity }}</span>
                           </td>
@@ -427,7 +427,7 @@
 
                         <!-- Total Amount -->
                         <tr>
-                          <td class="ps-0"><span class="text-capitalize">{{ $t(' Total Amount') }}</span></td>
+                          <td class="ps-0"><span class="text-capitalize">{{ $t('messages.total_amount') }}</span></td>
                           <td class="pe-0">
                             <span class="d-block text-primary text-end">{{ formatCurrencyVue(service.price * quantity)
                               }}</span>
@@ -436,7 +436,7 @@
 
                         <!-- Discount -->
                         <tr v-if="discount > 0">
-                          <td class="ps-0"><span class="text-capitalize">{{ $t(' Discount') }} ({{
+                          <td class="ps-0"><span class="text-capitalize">{{ $t('messages.discount') }} ({{
                               service.discount }}% off)</span></td>
                           <td class="pe-0">
                             <span class="d-block text-success text-end">-{{ formatCurrencyVue(discount) }}</span>
@@ -445,10 +445,10 @@
 
                         <!-- Coupon -->
                         <tr v-if="coupons !== '' && SeletedCouponId == 0 && service.package_type == null">
-                          <td class="ps-0"><span class="text-capitalize">{{ $t('Coupon') }}</span></td>
+                          <td class="ps-0"><span class="text-capitalize">{{ $t('messages.coupon') }}</span></td>
                           <td class="pe-0">
                             <span class="d-block text-primary text-end cursor-pointer" @click="OpenCouponCardMethod()">
-                              {{ $t('Apply Coupon') }}
+                              {{ $t('messages.apply_coupon') }}
                             </span>
                           </td>
                         </tr>
@@ -457,7 +457,7 @@
                           v-if="coupons !== '' && SeletedCouponId > 0 && selectedCoupon != null && service.package_type == null">
                           <td class="ps-0">
                             <span class="text-capitalize cursor-pointer" @click="OpenCouponCardMethod()">
-                              {{ $t('Coupon') }} ({{ selectedCoupon.code }})
+                              {{ $t('messages.coupon') }} ({{ selectedCoupon.code }})
                             </span>
                           </td>
                           <td class="pe-0">
@@ -476,7 +476,7 @@
 
                         <!-- Add-ons -->
                         <tr v-if="serviceaddon">
-                          <td class="ps-0"><span class="text-capitalize">{{ $t(' .Add-ons') }}</span></td>
+                          <td class="ps-0"><span class="text-capitalize">{{ $t('messages.add_ons') }}</span></td>
                           <td class="pe-0">
                             <span class="d-block text-primary text-end">{{ formatCurrencyVue(addonAmount) }}</span>
                           </td>
@@ -484,7 +484,7 @@
 
                         <!-- Sub Total -->
                         <tr>
-                          <td class="ps-0"><span class="text-capitalize">{{ $t(' Sub Total') }}</span></td>
+                          <td class="ps-0"><span class="text-capitalize">{{ $t('messages.sub_total') }}</span></td>
                           <td class="pe-0">
                             <span class="d-block text-primary text-end">{{ formatCurrencyVue(subtotal || 0) }}</span>
                           </td>
@@ -492,7 +492,7 @@
 
                         <!-- Extra Charges -->
                         <tr>
-                          <td class="ps-0"><span class="text-capitalize">{{ $t(' Extra Charges') }}</span>
+                          <td class="ps-0"><span class="text-capitalize">{{ $t('messages.extra_charge') }}</span>
                           </td>
                           <td class="pe-0">
                             <span class="d-block text-primary text-end">{{ formatCurrencyVue(extraCharges) }}</span>
@@ -502,7 +502,7 @@
                         <!-- Tax -->
                         <tr>
                           <td class="ps-0">
-                           <span class="text-capitalize">{{ $t('Tax') }} ({{ taxRatesDisplay }})</span>
+                           <span class="text-capitalize">{{ $t('messages.tax') }} ({{ taxRatesDisplay }})</span>
                             </td>
                           <td class="pe-0">
                             <span class="d-block text-danger text-end">
@@ -516,7 +516,7 @@
                         <!-- Grand Total -->
                         <tr>
                           <td class="border-bottom-0 ps-0 pt-3">
-                            <h5 class="m-0 text-capitalize">{{ $t(' Grand Total') }}</h5>
+                            <h5 class="m-0 text-capitalize">{{ $t('messages.grand_total') }}</h5>
                           </td>
                           <td class="border-bottom-0 pe-0 pt-3">
                             <h5 class="m-0 text-end">{{ formatCurrencyVue(totalAmount) }}</h5>
@@ -526,7 +526,7 @@
                         <!-- Advance Payment -->
                         <tr v-if="service.is_enable_advance_payment == 1">
                           <td class="border-bottom-0 ps-0 pt-3">
-                            <h5 class="m-0 text-capitalize">{{ $t(' Advance Payment') }} ({{
+                            <h5 class="m-0 text-capitalize">{{ $t('messages.advance_payment') }} ({{
                               service.advance_payment_amount }}%)</h5>
                           </td>
                           <td class="border-bottom-0 pe-0 pt-3">
@@ -537,7 +537,7 @@
                         <!-- Remaining Amount -->
                         <tr>
                           <td class="border-bottom-0 ps-0 pt-3">
-                            <h5 class="m-0 text-capitalize">{{ $t('Remaining Amount') }}</h5>
+                            <h5 class="m-0 text-capitalize">{{ $t('messages.remaining_amount') }}</h5>
                           </td>
                           <td class="border-bottom-0 pe-0 pt-3">
                             <h5 class="m-0 text-end">
@@ -551,7 +551,7 @@
                   </div>
                   <div class="mt-1 pt-md-1 pt-1 text-md-end">
                     <div class="d-inline-flex align-items-center flex-wrap gap-3">
-                      <p class="m-0 text-capitalize">{{ $t('wallet_balance') }}:</p>
+                      <p class="m-0 text-capitalize">{{ $t('messages.wallet_balance') }}:</p>
                       <p class="m-0 text-end">{{ formatCurrencyVue(wallet_amount) }}</p>
                     </div>
                   </div>
@@ -1037,12 +1037,12 @@ const calculateAddonAmount = () => {
 
 const removeAddons = (index) => {
   Swal.fire({
-    title: 'Do you want to remove this Add-on Service?',
+    title: t('messages.remove_addon_confirm'),
     icon: 'warning',
     showCancelButton: true,
     confirmButtonColor: '#d33',
     cancelButtonColor: '#3085d6',
-    confirmButtonText: 'Yes'
+    confirmButtonText: t('messages.yes')
   }).then((result) => {
     if (result.isConfirmed) {
       const removedService = props.serviceaddon.splice(index, 1)[0];
@@ -1226,7 +1226,7 @@ const defaultData = () => {
 
 
 const validationSchema = yup.object({
-  address: yup.string().required('Address is Required'),
+  address: yup.string().required(t('messages.address_required')),
 
 
   //   date: yup.string().test('date', "Date and Time is Required", function(value) {
@@ -1416,15 +1416,15 @@ const formSubmit = handleSubmit(async (values) => {
 
   IsLoading.value = 1
 
-  const title = 'Confirm Booking '
+  const title = t('messages.confirm_booking_title')
 
-  const subtitle = 'Do you want to Confirm this booking ?'
+  const subtitle = t('messages.booking_confirm_confirm_booking')
 
   let note = '';
 
   // Add note about cancellation charge if applicable
   if (cancellationCharge > 0 && cancellation['cancellation_charge'] == 1) {
-    note = `A ${formatCurrencyVue(cancellationCharge)} fee applies for cancellation within ${cancellation['cancellation_charge_hours']} hours of the scheduled service.`;
+    note = t('messages.cancellation_fee_note', { fee: formatCurrencyVue(cancellationCharge), hours: cancellation['cancellation_charge_hours'] });
   }
 
 
@@ -1521,7 +1521,7 @@ const formSubmit = handleSubmit(async (values) => {
 
         IsLoading.value = 0
         Swal.fire({
-          title: 'Done',
+          title: t('messages.done'),
           text: responseData.message,
           icon: 'success',
           iconColor: '#3333ff'
@@ -1541,8 +1541,8 @@ const formSubmit = handleSubmit(async (values) => {
       IsLoading.value = 0
 
       Swal.fire({
-        title: 'Error',
-        text: 'Something Went Wrong!',
+        title: t('messages.error'),
+        text: t('messages.something_went_wrong'),
         icon: 'error',
         iconColor: '#3333ff'
       }).then((result) => {
