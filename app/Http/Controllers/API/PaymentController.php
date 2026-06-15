@@ -52,10 +52,11 @@ class PaymentController extends Controller
         $paymentStatus = $data['payment_status'] ?? null;
         if ($paymentStatus) {
             $existing = Payment::where('booking_id', $request->booking_id)
+                ->where('payment_type', $data['payment_type'] ?? '')
                 ->where('payment_status', $paymentStatus)
                 ->first();
             if ($existing) {
-                return response()->json(['status' => false, 'message' => __('messages.payment_already_processed')]);
+                return response()->json(['status' => true, 'message' => __('messages.payment_already_processed')]);
             }
         }
 
@@ -169,80 +170,89 @@ class PaymentController extends Controller
             $provider_extra_earning = $extra_total;
             $provider_final_earning = $provider_from_pool + $provider_extra_earning;
 
-            foreach ($handyman_payouts as $payout) {
-                Wallet::firstOrCreate(['user_id' => $payout['handyman_id']])->increment('amount', $payout['amount']);
+            // Idempotency: skip all wallet credits and payout records if provider was already paid
+            $providerAlreadyPaid = CommissionEarning::where('booking_id', $booking->id)
+                ->where('user_type', 'provider')
+                ->where('commission_status', 'paid')
+                ->whereNull('post_job_bid_request_id')
+                ->exists();
 
-                HandymanPayout::create([
-                    'handyman_id' => $payout['handyman_id'],
-                    'booking_id' => $booking->id,
+            if (!$providerAlreadyPaid) {
+                foreach ($handyman_payouts as $payout) {
+                    Wallet::firstOrCreate(['user_id' => $payout['handyman_id']])->increment('amount', $payout['amount']);
+
+                    HandymanPayout::create([
+                        'handyman_id' => $payout['handyman_id'],
+                        'booking_id' => $booking->id,
+                        'payment_id' => $result->id ?? null,
+                        'amount' => $payout['amount'],
+                        'status' => 'paid',
+                        'paid_date' => Carbon::now(),
+                        'payment_method' => 'wallet',
+                        'payment_gateway' => 'wallet',
+                    ]);
+
+                    CommissionEarning::create([
+                        'booking_id' => $booking->id,
+                        'user_type' => 'handyman',
+                        'employee_id' => $payout['handyman_id'],
+                        'commission_amount' => $payout['amount'],
+                        'commission_status' => 'paid',
+                    ]);
+                }
+
+                if ($remaining_admin_commission > 0) {
+                    $adminWallet = Wallet::firstOrCreate(['user_id' => $admin_user_id]);
+                    $adminWallet->increment('amount', $remaining_admin_commission);
+
+                    CommissionEarning::create([
+                        'booking_id' => $booking->id,
+                        'user_type' => 'admin',
+                        'employee_id' => $admin_user_id,
+                        'commission_amount' => $remaining_admin_commission,
+                        'commission_status' => 'paid',
+                    ]);
+
+                    WalletHistory::create([
+                        'datetime' => $data['datetime'],
+                        'user_id' => $admin_user_id,
+                        'activity_type' => 'credit',
+                        'activity_message' => 'Admin commission (remaining) for booking #' . $booking->id . ' — ' . getPriceFormat($remaining_admin_commission),
+                        'activity_data' => json_encode([
+                            'user_id' => $booking->customer_id,
+                            'credit_debit_amount' => $remaining_admin_commission,
+                            'amount' => $adminWallet->fresh()->amount,
+                            'transaction_type' => 'Credit',
+                            'booking_id' => $booking->id,
+                            'commission_type' => 'remaining',
+                        ]),
+                    ]);
+                }
+
+                Wallet::firstOrCreate(['user_id' => $booking->provider_id])->increment('amount', $provider_final_earning);
+
+                ProviderPayout::create([
+                    'provider_id' => $booking->provider_id,
+                    'amount' => $provider_final_earning,
                     'payment_id' => $result->id ?? null,
-                    'amount' => $payout['amount'],
-                    'status' => 'paid',
-                    'paid_date' => Carbon::now(),
                     'payment_method' => 'wallet',
+                    'paid_date' => Carbon::now(),
+                    'status' => 'paid',
+                    'booking_id' => $booking->id,
                     'payment_gateway' => 'wallet',
                 ]);
 
                 CommissionEarning::create([
                     'booking_id' => $booking->id,
-                    'user_type' => 'handyman',
-                    'employee_id' => $payout['handyman_id'],
-                    'commission_amount' => $payout['amount'],
-                    'commission_status' => 'paid',
-                ]);
-            }
-
-            if ($remaining_admin_commission > 0) {
-                $adminWallet = Wallet::firstOrCreate(['user_id' => $admin_user_id]);
-                $adminWallet->increment('amount', $remaining_admin_commission);
-
-                CommissionEarning::create([
-                    'booking_id' => $booking->id,
-                    'user_type' => 'admin',
-                    'employee_id' => $admin_user_id,
-                    'commission_amount' => $remaining_admin_commission,
+                    'user_type' => 'provider',
+                    'employee_id' => $booking->provider_id,
+                    'commission_amount' => $provider_final_earning,
                     'commission_status' => 'paid',
                 ]);
 
-                WalletHistory::create([
-                    'datetime' => $data['datetime'],
-                    'user_id' => $admin_user_id,
-                    'activity_type' => 'credit',
-                    'activity_message' => 'Admin commission (remaining) for booking #' . $booking->id . ' — ' . getPriceFormat($remaining_admin_commission),
-                    'activity_data' => json_encode([
-                        'user_id' => $booking->customer_id,
-                        'credit_debit_amount' => $remaining_admin_commission,
-                        'amount' => $adminWallet->fresh()->amount,
-                        'transaction_type' => 'Credit',
-                        'booking_id' => $booking->id,
-                        'commission_type' => 'remaining',
-                    ]),
-                ]);
+                // Mark all commissions as paid (keeps previous admin advance record consistent)
+                CommissionEarning::where('booking_id', $booking->id)->update(['commission_status' => 'paid']);
             }
-
-            Wallet::firstOrCreate(['user_id' => $booking->provider_id])->increment('amount', $provider_final_earning);
-
-            ProviderPayout::create([
-                'provider_id' => $booking->provider_id,
-                'amount' => $provider_final_earning,
-                'payment_id' => $result->id ?? null,
-                'payment_method' => 'wallet',
-                'paid_date' => Carbon::now(),
-                'status' => 'paid',
-                'booking_id' => $booking->id,
-                'payment_gateway' => 'wallet',
-            ]);
-
-            CommissionEarning::create([
-                'booking_id' => $booking->id,
-                'user_type' => 'provider',
-                'employee_id' => $booking->provider_id,
-                'commission_amount' => $provider_final_earning,
-                'commission_status' => 'paid',
-            ]);
-
-            // Mark all commissions as paid (keeps previous admin advance record consistent)
-            CommissionEarning::where('booking_id', $booking->id)->update(['commission_status' => 'paid']);
             
             // Send email notification to provider about full payment received
             try {
