@@ -43,14 +43,32 @@ class PaymentController extends Controller
         $data['datetime'] = isset($request->datetime) ? date('Y-m-d H:i:s', strtotime($request->datetime)) : date('Y-m-d H:i:s');
 
         $booking = Booking::find($request->booking_id);
-        $result = Payment::create($data);
 
-        if (!$booking || !$result) {
+        if (!$booking) {
             return comman_message_response(__('messages.booking_not_found'), 404);
         }
 
-        $isAdvance = $result->payment_status == 'advanced_paid';
-        $isRemaining = $result->payment_status == 'paid';
+        // Idempotency: prevent double-processing on network retry or double-tap
+        $paymentStatus = $data['payment_status'] ?? null;
+        if ($paymentStatus) {
+            $existing = Payment::where('booking_id', $request->booking_id)
+                ->where('payment_status', $paymentStatus)
+                ->first();
+            if ($existing) {
+                return response()->json(['status' => false, 'message' => __('messages.payment_already_processed')]);
+            }
+        }
+
+        $result = Payment::create($data);
+
+        if (!$result) {
+            return comman_message_response(__('messages.booking_not_found'), 404);
+        }
+
+        // Prefer explicit 'type' field; fall back to payment_status for backward compat
+        $sentType = $request->type ?? '';
+        $isAdvance  = $sentType === 'advance_payment' || (!$sentType && $result->payment_status == 'advanced_paid');
+        $isRemaining = $sentType === 'remaining'       || (!$sentType && $result->payment_status == 'paid');
 
         $admin_commission_percentage = Setting::getValueByKey('admin_commission_percentage', 'site-setup')->value ?? 10;
         $admin_user_id = User::where('user_type', 'admin')->value('id');
@@ -64,7 +82,8 @@ class PaymentController extends Controller
             $provider_earning = $advance_paid_amount - $admin_commission_amount;
 
             // Credit only admin on advance; hold provider share until final payment to avoid later clawbacks
-            Wallet::firstOrCreate(['user_id' => $admin_user_id])->increment('amount', $admin_commission_amount);
+            $adminWallet = Wallet::firstOrCreate(['user_id' => $admin_user_id]);
+            $adminWallet->increment('amount', $admin_commission_amount);
 
             CommissionEarning::create([
                 'booking_id' => $booking->id,
@@ -73,13 +92,28 @@ class PaymentController extends Controller
                 'commission_amount' => $admin_commission_amount,
                 'commission_status' => 'paid',
             ]);
+
+            WalletHistory::create([
+                'datetime' => $data['datetime'],
+                'user_id' => $admin_user_id,
+                'activity_type' => 'credit',
+                'activity_message' => 'Admin commission (advance) for booking #' . $booking->id . ' — ' . getPriceFormat($admin_commission_amount),
+                'activity_data' => json_encode([
+                    'user_id' => $booking->customer_id,
+                    'credit_debit_amount' => $admin_commission_amount,
+                    'amount' => $adminWallet->fresh()->amount,
+                    'transaction_type' => 'Credit',
+                    'booking_id' => $booking->id,
+                    'commission_type' => 'advance',
+                ]),
+            ]);
             
             // Send email notification to provider about advance payment
             try {
                 $booking->load(['customer', 'service']);
                 $provider = User::find($booking->provider_id);
                 if ($provider && $provider->email) {
-                    Mail::to($provider->email)->send(new AdvancePaymentNotificationMail($provider, $result, $booking));
+                    Mail::to($provider->email)->locale(getRecipientLocale($provider))->send(new AdvancePaymentNotificationMail($provider, $result, $booking, getRecipientLocale($provider))); // *** new: locale-aware email ***
                     \Log::info('Advance payment notification email sent to provider: ' . $provider->email . ' for booking ID: ' . $booking->id);
                 }
             } catch (\Exception $e) {
@@ -159,7 +193,8 @@ class PaymentController extends Controller
             }
 
             if ($remaining_admin_commission > 0) {
-                Wallet::firstOrCreate(['user_id' => $admin_user_id])->increment('amount', $remaining_admin_commission);
+                $adminWallet = Wallet::firstOrCreate(['user_id' => $admin_user_id]);
+                $adminWallet->increment('amount', $remaining_admin_commission);
 
                 CommissionEarning::create([
                     'booking_id' => $booking->id,
@@ -167,6 +202,21 @@ class PaymentController extends Controller
                     'employee_id' => $admin_user_id,
                     'commission_amount' => $remaining_admin_commission,
                     'commission_status' => 'paid',
+                ]);
+
+                WalletHistory::create([
+                    'datetime' => $data['datetime'],
+                    'user_id' => $admin_user_id,
+                    'activity_type' => 'credit',
+                    'activity_message' => 'Admin commission (remaining) for booking #' . $booking->id . ' — ' . getPriceFormat($remaining_admin_commission),
+                    'activity_data' => json_encode([
+                        'user_id' => $booking->customer_id,
+                        'credit_debit_amount' => $remaining_admin_commission,
+                        'amount' => $adminWallet->fresh()->amount,
+                        'transaction_type' => 'Credit',
+                        'booking_id' => $booking->id,
+                        'commission_type' => 'remaining',
+                    ]),
                 ]);
             }
 
@@ -199,7 +249,7 @@ class PaymentController extends Controller
                 $booking->load(['customer', 'service']);
                 $provider = User::find($booking->provider_id);
                 if ($provider && $provider->email) {
-                    Mail::to($provider->email)->send(new FullPaymentReceivedMail($provider, $result, $booking));
+                    Mail::to($provider->email)->locale(getRecipientLocale($provider))->send(new FullPaymentReceivedMail($provider, $result, $booking, getRecipientLocale($provider))); // *** new: locale-aware email ***
                     \Log::info('Full payment received notification email sent to provider: ' . $provider->email . ' for booking ID: ' . $booking->id);
                 }
             } catch (\Exception $e) {
@@ -248,7 +298,7 @@ class PaymentController extends Controller
                 // Create wallet history entry for customer (debit) - sender paid amount
                 $customerActivityMessage = trans('messages.paid_with_wallet', ['value' => $request->booking_id]);
                 WalletHistory::create([
-                    'datetime' => $request->datetime,
+                    'datetime' => $data['datetime'],
                     'user_id' => $booking->customer_id, // Customer (sender)
                     'activity_type' => 'debit',
                     'activity_message' => $customerActivityMessage,
@@ -278,7 +328,7 @@ class PaymentController extends Controller
                 }
                 
                 WalletHistory::create([
-                    'datetime' => $request->datetime,
+                    'datetime' => $data['datetime'],
                     'user_id' => $booking->provider_id, // Provider (receiver)
                     'activity_type' => 'credit',
                     'activity_message' => $providerActivityMessage,
@@ -405,17 +455,29 @@ class PaymentController extends Controller
     public function saveBankTransferPayment(Request $request)
     {
         $data = $request->all();
-        
+
         // Normalize datetime - handle invalid times like 24:59:00
         $normalizedDatetime = $this->normalizeDatetime($request->datetime ?? null);
         $data['datetime'] = $normalizedDatetime;
-    
+
+        // Idempotency: reject duplicate submissions (network retry / double-tap).
+        // A pending bank_transfer for the same booking + same amount is always a duplicate.
+        $alreadyExists = Payment::where('booking_id', $request->booking_id)
+            ->where('payment_type', 'bank_transfer')
+            ->where('payment_status', 'pending_by_admin')
+            ->where('total_amount', $request->total_amount)
+            ->exists();
+
+        if ($alreadyExists) {
+            return comman_message_response(__('messages.payment_already_processed'), 200);
+        }
+
         // Always pending for bank transfers until admin verifies
         $data['status'] = 0;
         $data['payment_status'] = 'pending_by_admin';
         $data['payment_method'] = 'bank_transfer';
         $data['payment_gateway'] = 'bank_transfer';
-    
+
         $payment = Payment::create($data);
         $booking = Booking::with(['customer', 'provider'])->find($request->booking_id);
     
@@ -452,7 +514,7 @@ class PaymentController extends Controller
                 $booking->load(['customer', 'service']);
                 $provider = User::find($booking->provider_id);
                 if ($provider && $provider->email) {
-                    Mail::to($provider->email)->send(new AdvancePaymentNotificationMail($provider, $payment, $booking));
+                    Mail::to($provider->email)->locale(getRecipientLocale($provider))->send(new AdvancePaymentNotificationMail($provider, $payment, $booking, getRecipientLocale($provider))); // *** new: locale-aware email ***
                     \Log::info('Advance payment notification email sent to provider: ' . $provider->email . ' for booking ID: ' . $booking->id);
                 }
             } catch (\Exception $e) {
@@ -597,7 +659,7 @@ class PaymentController extends Controller
     
         // ✅ Send email notification to admin (cash/bank transfer verification)
         try {
-            Mail::to('frobminator@frobster.com')->send(new BankTransferPaymentNotificationMail($payment, $booking, $request->type));
+            Mail::to(config('mail.from.address'))->locale(app()->getLocale())->send(new BankTransferPaymentNotificationMail($payment, $booking, $request->type, app()->getLocale())); // *** new: configurable admin email + locale ***
         } catch (\Exception $e) {
             // Log error but don't fail the payment creation
             \Log::error('Failed to send bank transfer payment notification email: ' . $e->getMessage());
