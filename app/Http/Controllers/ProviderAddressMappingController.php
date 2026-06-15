@@ -104,29 +104,30 @@ class ProviderAddressMappingController extends Controller
      */
     public function create(Request $request)
     {
-        if (!auth()->user()->can('provideraddress add')) {
-            return redirect()->back()->withErrors(trans('messages.demo_permission_denied'));
-        }
-        $id = $request->id;
         $auth_user = authSession();
-        $provider_address = $request->provideraddress;
-        if ($provider_address != auth()->user()->id && !auth()->user()->hasRole(['admin', 'demo_admin'])) {
-            return redirect(route('home'))->withErrors(trans('messages.demo_permission_denied'));
+        $id = $request->id;
+
+        // Providers always create addresses for themselves; admins can pass any provider_id
+        if (auth()->user()->hasAnyRole(['admin', 'demo_admin'])) {
+            $provider_address = $request->provideraddress ?? $request->provider_id;
+        } else {
+            $provider_address = auth()->user()->id;
         }
+
         $providerdata = User::with('handymanAddressMapping')->where('user_type','provider')->where('id',$provider_address)->first();
         $provideraddress = ProviderAddressMapping::find($id);
         $pageTitle = trans('messages.update_form_title',['form'=>trans('messages.provider_address')]);
 
-        if($provideraddress == null){
+        if ($provideraddress == null) {
             $pageTitle = trans('messages.add_button_form',['form' => trans('messages.provider_address')]);
             $provideraddress = new ProviderAddressMapping;
-        }else{
-            if ($provideraddress->provider_id != auth()->user()->id && !auth()->user()->hasRole(['admin', 'demo_admin'])) {
-                return redirect(route('provideraddress.show',$provider_address ))->withErrors(trans('messages.demo_permission_denied'));
+        } else {
+            if ($provideraddress->provider_id != auth()->user()->id && !auth()->user()->hasAnyRole(['admin', 'demo_admin'])) {
+                return redirect(route('provideraddress.show', $provider_address))->withErrors(trans('messages.permission_denied'));
             }
         }
 
-        return view('provideraddress.create', compact('pageTitle' ,'provideraddress' ,'auth_user','providerdata' ));
+        return view('provideraddress.create', compact('pageTitle','provideraddress','auth_user','providerdata'));
     }
 
     public function getLatLong(Request $request)
@@ -193,8 +194,8 @@ class ProviderAddressMappingController extends Controller
     public function show(Request $request,$id)
     {
         $auth_user = authSession();
-        if ($id != auth()->user()->id && !auth()->user()->hasRole(['admin', 'demo_admin'])) {
-            return redirect(route('home'))->withErrors(trans('messages.demo_permission_denied'));
+        if (!auth()->user()->hasAnyRole(['admin', 'demo_admin']) && $id != auth()->user()->id) {
+            $id = auth()->user()->id;
         }
         $providerdata = User::with('handymanAddressMapping')->where('user_type','provider')->where('id',$id)->first();
         $filter = [
