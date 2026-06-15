@@ -2362,4 +2362,12 @@
     'confirm_booking_title' => 'Confirm Booking',
     'remove_addon_confirm' => 'Do you want to remove this Add-on Service?',
     'cancellation_fee_note' => 'A {fee} fee applies for cancellation within {hours} hours of the scheduled service.',
+    'minimum' => 'Minimum',
+    'proceed' => 'Proceed to Payment',
+    'no_addresses_found' => 'No addresses found for this provider.',
+    'add_address' => 'Add Address',
+    'wallet_topup' => 'Wallet Top-Up',
+    'topup_amount' => 'Top-Up Amount',
+    'topup_amount_placeholder' => 'Enter amount to add',
+    'topup_success' => 'Wallet topped up successfully.',
 );

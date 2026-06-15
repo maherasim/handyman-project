@@ -2376,4 +2376,12 @@
     'confirm_booking_title' => 'Buchung bestätigen',
     'remove_addon_confirm' => 'Möchten Sie diesen Zusatzservice entfernen?',
     'cancellation_fee_note' => 'Bei Stornierung innerhalb von {hours} Stunden vor dem geplanten Service wird eine Stornierungsgebühr von {fee} erhoben.',
+    'minimum' => 'Minimum',
+    'proceed' => 'Zur Zahlung',
+    'no_addresses_found' => 'Keine Adressen für diesen Anbieter gefunden.',
+    'add_address' => 'Adresse hinzufügen',
+    'wallet_topup' => 'Guthaben aufladen',
+    'topup_amount' => 'Aufladebetrag',
+    'topup_amount_placeholder' => 'Betrag eingeben',
+    'topup_success' => 'Guthaben erfolgreich aufgeladen.',
 );

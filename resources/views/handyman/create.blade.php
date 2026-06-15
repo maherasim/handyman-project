@@ -115,7 +115,13 @@
                             @if (!isset($handymandata->id) || $handymandata->id == null)
                                 <div class="form-group col-md-3">
                                     {{ html()->label(__('messages.password') . ' <span class="text-danger">*</span>', 'password')->class('form-control-label') }}
-                                    {{ html()->password('password')->class('form-control')->placeholder(__('messages.password'))->required()->attribute('autocomplete', 'new-password') }}
+                                    {{ html()->password('password')->class('form-control')->placeholder(__('messages.password'))->required()->attribute('autocomplete', 'new-password')->attribute('minlength', '12')->attribute('maxlength', '20')->attribute('pattern', '(?=.*[A-Za-z])(?=.*[0-9]).{12,20}') }}
+                                    <small class="text-muted d-block mt-1">
+                                        {{ __('auth.password_requirements_intro') }}:
+                                        {{ __('auth.password_rule_min') }},
+                                        {{ __('auth.password_rule_letter') }},
+                                        {{ __('auth.password_rule_number') }}
+                                    </small>
                                     <small class="help-block with-errors text-danger"></small>
                                 </div>
                             @endif
@@ -152,6 +158,12 @@
                                 {{ html()->label(__('messages.select_name', ['select' => __('messages.provider_address')]) . ' <span class="text-danger">*</span>', 'name')->class('form-control-label') }}
                                 <br />
                                 {{ html()->select('service_address_id', [], old('service_address_id'))->class('select2js form-group service_address_id')->id('service_address_id')->required()->attribute('data-placeholder', __('messages.select_name', ['select' => __('messages.provider_address')])) }}
+                                <small id="no-address-hint" class="d-none mt-1">
+                                    {{ __('messages.no_addresses_found') }}
+                                    <a id="add-address-link" href="{{ route('provideraddress.create') }}" target="_blank" class="text-primary">
+                                        <i class="fa fa-plus-circle"></i> {{ __('messages.add_address') }}
+                                    </a>
+                                </small>
                             </div>
 
                             <div class="form-group col-md-3">
@@ -353,6 +365,12 @@
                             });
                             if (service_address_id != "") {
                                 $('#service_address_id').val(service_address_id).trigger('change');
+                            }
+                            var hasAddresses = result.results && result.results.length > 0;
+                            $('#no-address-hint').toggleClass('d-none', hasAddresses);
+                            if (provider_id) {
+                                var addLink = "{{ route('provideraddress.create') }}?provider_id=" + provider_id;
+                                $('#add-address-link').attr('href', addLink);
                             }
                         }
                     });

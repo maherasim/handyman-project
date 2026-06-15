@@ -506,6 +506,8 @@ Route::group(['middleware' => ['auth', 'verified', 'active']], function () {
     Route::resource('wallet', WalletController::class);
     Route::get('wallet-index-data', [WalletController::class, 'cash_index_data'])->name('wallet.index_data');
     Route::get('wallet/history/{id?}', [WalletController::class, 'cashIndex'])->name('wallet2.index');
+    Route::get('wallet-topup', [WalletController::class, 'showTopup'])->name('wallet.topup');
+    Route::post('wallet-topup/stripe', [WalletController::class, 'initiateStripeTopup'])->name('wallet.topup.stripe');
 
     Route::post('wallet-bulk-action', [WalletController::class, 'bulk_action'])->name('wallet.bulk-action');
     Route::post('wallet/{id}', [WalletController::class, 'destroy'])->name('wallet.destroy');

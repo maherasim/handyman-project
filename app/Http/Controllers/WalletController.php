@@ -47,6 +47,39 @@ class WalletController extends Controller
         $walletBalance = Wallet::where('user_id', auth()->id())->value('amount') ?? 0;
         return view('wallet.indexpostjob', compact('pageTitle','auth_user','assets','filter','walletBalance'));
     }
+
+    public function showTopup(Request $request)
+    {
+        $auth_user = authSession();
+        $walletBalance = Wallet::where('user_id', auth()->id())->value('amount') ?? 0;
+        $pageTitle = __('messages.wallet_topup');
+        $paymentGateways = \App\Models\PaymentGateway::where('status', 1)->get();
+        return view('wallet.topup', compact('pageTitle', 'auth_user', 'walletBalance', 'paymentGateways'));
+    }
+
+    public function initiateStripeTopup(Request $request)
+    {
+        $request->validate(['amount' => 'required|numeric|min:1']);
+
+        $sitesetup = Setting::where('type', 'site-setup')->where('key', 'site-setup')->first();
+        $sitesetupdata = $sitesetup ? json_decode($sitesetup->value, true) : null;
+
+        $data = [
+            'payment_type'  => 'stripe',
+            'customer_id'   => auth()->id(),
+            'amount'        => $request->amount,
+            'currency_code' => 'EUR',
+            'booking_id'    => null,
+        ];
+
+        $checkout_session = addWalletAmount($data);
+
+        if (isset($checkout_session['message'])) {
+            return back()->withErrors($checkout_session['message']);
+        }
+
+        return redirect($checkout_session['url']);
+    }
     public function cashIndex($id)
     {
         $pageTitle = __('messages.list_form_title',['form' => __('messages.cash_history')] );

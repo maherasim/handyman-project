@@ -43,7 +43,14 @@
             <div class="card-body p-0">
                 <div class="d-flex justify-content-between align-items-center p-3 flex-wrap gap-3">
                     <h5 class="fw-bold">{{ __('messages.wallet_balance') }}</h5>
-                    <span class="fw-bold">{{ __('messages.wallet_balance') }}: {{ isset($walletBalance) ? getPriceFormat($walletBalance) : getPriceFormat(0) }}</span>
+                    <div class="d-flex align-items-center gap-3">
+                        <span class="fw-bold">{{ __('messages.wallet_balance') }}: {{ isset($walletBalance) ? getPriceFormat($walletBalance) : getPriceFormat(0) }}</span>
+                        @if(auth()->user()->hasAnyRole(['user', 'provider']))
+                        <a href="{{ route('wallet.topup') }}" class="btn btn-sm btn-success">
+                            <i class="fas fa-plus-circle me-1"></i> {{ __('messages.wallet_topup') }}
+                        </a>
+                        @endif
+                    </div>
                 </div>
             </div>
         </div>
