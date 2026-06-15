@@ -32,7 +32,7 @@
                <h5 class="m-0 text-capitalize">{{ $t('messages.services') }}</h5>
                <a href="#modaladdservice" class="btn btn-primary text-capitalize" data-bs-toggle="modal" @show="onModalShow">
                   <i class="fas fa-plus font-size-14"></i>
-                  Create Service
+                  {{ $t('messages.create_service') }}
                </a>
             </div>
             <div class="error-message" style="color: red;">{{ serviceError }}</div>

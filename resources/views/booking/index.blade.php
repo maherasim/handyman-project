@@ -771,7 +771,7 @@
                     },
                     error: function() {
                         console.error('Failed to fetch earning breakdown data.');
-                        $('#earningList').html('<div class="alert alert-danger">Failed to load data. Please try again later.</div>');
+                        $('#earningList').html('<div class="alert alert-danger">{{ __("messages.failed_to_load_data") }}</div>');
                     }
                 });
             });
@@ -867,7 +867,7 @@
                         // Reset the button state on error
                         downloadButton.disabled = false;
                         spinner.classList.add('d-none');
-                        buttonText.textContent = "Export";
+                        buttonText.textContent = "{{ __('messages.export') }}";
                         return;
                     }
 
@@ -882,12 +882,12 @@
                     // Reset the button state
                     downloadButton.disabled = false;
                     spinner.classList.add('d-none');
-                    buttonText.textContent = "Export";
+                    buttonText.textContent = "{{ __('messages.export') }}";
                 })
                 .catch(error => {
                     console.error('Export error:', error);
                     Snackbar.show({
-                        text: 'Failed to export data. Please try again.',
+                        text: '{{ __("messages.failed_to_export_data") }}',
                         pos: 'bottom-right',
                         backgroundColor: '#d32f2f',
                         actionTextColor: '#fff'
@@ -896,7 +896,7 @@
                     // Reset the button state on error
                     downloadButton.disabled = false;
                     spinner.classList.add('d-none');
-                    buttonText.textContent = "Export";
+                    buttonText.textContent = "{{ __('messages.export') }}";
                 });
         });
 

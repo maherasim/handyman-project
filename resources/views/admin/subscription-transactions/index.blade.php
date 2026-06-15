@@ -2,6 +2,17 @@
     $transactions = \App\Models\SubscriptionTransaction::with(['user', 'subscription'])
         ->orderBy('created_at', 'desc')
         ->get();
+    $subTxLang = [
+        'verify_payment'            => __('messages.verify_payment'),
+        'user_label'                => __('messages.name'),
+        'plan_label'                => __('messages.plan'),
+        'amount_label'              => __('messages.amount'),
+        'verify_bank_transfer_confirm' => __('messages.verify_bank_transfer_confirm'),
+        'yes_verify_payment'        => __('messages.yes_verify_payment'),
+        'verifying'                 => __('messages.verifying'),
+        'please_wait_verifying'     => __('messages.please_wait_verifying'),
+        'cancel'                    => __('messages.cancel'),
+    ];
 @endphp
 
 <x-master-layout>
@@ -11,15 +22,15 @@
             <div class="card">
                 <div class="card-header">
                     <h4 class="card-title mb-0">{{ __('messages.sidebar_subscription_transactions') }}</h4>
-                    <p class="text-muted">All subscription payments with status</p>
-                    
+                    <p class="text-muted">{{ __('messages.subscription_transactions_subtitle') }}</p>
+
                     @if(session('success'))
                         <div class="alert alert-success alert-dismissible fade show" role="alert">
                             <i class="fas fa-check-circle"></i> {{ session('success') }}
                             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                         </div>
                     @endif
-                    
+
                     @if(session('error'))
                         <div class="alert alert-danger alert-dismissible fade show" role="alert">
                             <i class="fas fa-exclamation-circle"></i> {{ session('error') }}
@@ -32,15 +43,15 @@
                         <table class="table table-striped">
                             <thead>
                                 <tr>
-                                    <th>ID</th>
-                                    <th>User</th>
-                                    <th>Email</th>
-                                    <th>Plan</th>
-                                    <th>Amount</th>
-                                    <th>Payment Type</th>
-                                    <th>Status</th>
-                                    <th>Date</th>
-                                    <th>Action</th>
+                                    <th>{{ __('messages.id') }}</th>
+                                    <th>{{ __('messages.name') }}</th>
+                                    <th>{{ __('messages.email') }}</th>
+                                    <th>{{ __('messages.plan') }}</th>
+                                    <th>{{ __('messages.amount') }}</th>
+                                    <th>{{ __('messages.payment_type') }}</th>
+                                    <th>{{ __('messages.status') }}</th>
+                                    <th>{{ __('messages.date') }}</th>
+                                    <th>{{ __('messages.action') }}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -51,32 +62,32 @@
                                             @if($transaction->user)
                                                 {{ $transaction->user->first_name }} {{ $transaction->user->last_name }}
                                             @else
-                                                Unknown User
+                                                {{ __('messages.unknown_user') }}
                                             @endif
                                         </td>
                                         <td>
                                             @if($transaction->user)
                                                 {{ $transaction->user->email }}
                                             @else
-                                                No Email
+                                                {{ __('messages.no_email') }}
                                             @endif
                                         </td>
                                         <td>
                                             @if($transaction->subscription)
                                                 {{ $transaction->subscription->title }}
                                             @else
-                                                Unknown Plan
+                                                {{ __('messages.unknown_plan') }}
                                             @endif
                                         </td>
                                         <td>{{ getPriceFormat($transaction->amount) }}</td>
                                         <td>{{ ucfirst(str_replace('_', ' ', $transaction->payment_type)) }}</td>
                                         <td>
                                             @if($transaction->payment_status === 'pending')
-                                                <span class="badge bg-warning">Pending</span>
+                                                <span class="badge bg-warning">{{ __('messages.pending') }}</span>
                                             @elseif($transaction->payment_status === 'paid')
-                                                <span class="badge bg-success">Paid</span>
+                                                <span class="badge bg-success">{{ __('messages.paid') }}</span>
                                             @elseif($transaction->payment_status === 'rejected')
-                                                <span class="badge bg-danger">Rejected</span>
+                                                <span class="badge bg-danger">{{ __('messages.rejected') }}</span>
                                             @else
                                                 <span class="badge bg-secondary">{{ ucfirst($transaction->payment_status) }}</span>
                                             @endif
@@ -86,9 +97,9 @@
                                             @if($transaction->payment_status === 'pending' && $transaction->payment_type === 'bank_transfer')
                                                 <form method="POST" action="{{ route('admin.subscription-transactions.verify', $transaction->id) }}" style="display: inline;">
                                                     @csrf
-                                                    <button type="submit" class="btn btn-sm btn-success verify-btn" 
-                                                            onclick="return confirmVerify('{{ $transaction->user->first_name ?? 'User' }}', '{{ $transaction->subscription->title ?? 'Plan' }}', '{{ getPriceFormat($transaction->amount) }}')">
-                                                        Verify
+                                                    <button type="submit" class="btn btn-sm btn-success verify-btn"
+                                                            onclick="return confirmVerify('{{ $transaction->user->first_name ?? __('messages.unknown') }}', '{{ $transaction->subscription->title ?? __('messages.unknown_plan') }}', '{{ getPriceFormat($transaction->amount) }}')">
+                                                        {{ __('messages.verify') }}
                                                     </button>
                                                 </form>
                                             @else
@@ -98,7 +109,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="9" class="text-center">No subscription transactions found</td>
+                                        <td colspan="9" class="text-center">{{ __('messages.no_subscription_transactions') }}</td>
                                     </tr>
                                 @endforelse
                             </tbody>
@@ -168,42 +179,43 @@
         </style>
     </head>script>
 <script>
+var subTxLang = @json($subTxLang);
 function confirmVerify(userName, planName, amount) {
     Swal.fire({
-        title: 'Verify Payment?',
+        title: subTxLang.verify_payment,
         html: `
             <div class="text-start">
-                <p><strong>User:</strong> ${userName}</p>
-                <p><strong>Plan:</strong> ${planName}</p>
-                <p><strong>Amount:</strong> ${amount}</p>
-                <p class="mt-3">Are you sure you want to verify this bank transfer payment?</p>
+                <p><strong>${subTxLang.user_label}:</strong> ${userName}</p>
+                <p><strong>${subTxLang.plan_label}:</strong> ${planName}</p>
+                <p><strong>${subTxLang.amount_label}:</strong> ${amount}</p>
+                <p class="mt-3">${subTxLang.verify_bank_transfer_confirm}</p>
             </div>
         `,
         icon: 'question',
         showCancelButton: true,
         confirmButtonColor: '#28a745',
         cancelButtonColor: '#6c757d',
-        confirmButtonText: 'Yes, Verify Payment',
-        cancelButtonText: '{{ __("messages.cancel") }}'
+        confirmButtonText: subTxLang.yes_verify_payment,
+        cancelButtonText: subTxLang.cancel
     }).then((result) => {
         if (result.isConfirmed) {
             // Show loading
             Swal.fire({
-                title: 'Verifying...',
-                text: 'Please wait while we verify the payment.',
+                title: subTxLang.verifying,
+                text: subTxLang.please_wait_verifying,
                 allowOutsideClick: false,
                 didOpen: () => {
                     Swal.showLoading();
                 }
             });
-            
+
             // The form will submit automatically after confirmation
             return true;
         } else {
             return false;
         }
     });
-    
+
     // Return false to prevent form submission until confirmed
     return false;
 }

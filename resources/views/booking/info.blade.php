@@ -1634,17 +1634,30 @@ when
     var csrfToken = "{{ csrf_token() }}";
     @php
         $bookingJsLang = [
-            'cancellation_reason'   => __('messages.cancellation_reason'),
-            'please_provide_reason' => __('messages.please_provide_cancellation_reason'),
-            'type_reason_here'      => __('messages.type_reason_here'),
-            'submit'                => __('messages.submit'),
-            'close'                 => __('messages.close'),
-            'reason_required'       => __('messages.cancellation_reason_required'),
-            'put_on_hold'           => __('messages.put_on_hold'),
-            'provide_hold_reason'   => __('messages.provide_hold_reason'),
-            'hold_reason_required'  => __('messages.hold_reason_required'),
-            'reason_too_long'       => __('messages.reason_too_long'),
-            'success'               => __('messages.success'),
+            'cancellation_reason'           => __('messages.cancellation_reason'),
+            'please_provide_reason'         => __('messages.please_provide_cancellation_reason'),
+            'type_reason_here'              => __('messages.type_reason_here'),
+            'submit'                        => __('messages.submit'),
+            'close'                         => __('messages.close'),
+            'reason_required'               => __('messages.cancellation_reason_required'),
+            'put_on_hold'                   => __('messages.put_on_hold'),
+            'provide_hold_reason'           => __('messages.provide_hold_reason'),
+            'hold_reason_required'          => __('messages.hold_reason_required'),
+            'reason_too_long'               => __('messages.reason_too_long'),
+            'success'                       => __('messages.success'),
+            'are_you_sure'                  => __('messages.are_you_sure'),
+            'are_you_sure_perform_action'   => __('messages.are_you_sure_perform_action'),
+            'yes_excl'                      => __('messages.yes_excl'),
+            'no_cancel'                     => __('messages.no_cancel'),
+            'will_not_recover_review'       => __('messages.will_not_recover_review'),
+            'yes_delete_it'                 => __('messages.yes_delete_it'),
+            'you_want_to_accept_booking'    => __('messages.you_want_to_accept_booking'),
+            'yes_accept_it'                 => __('messages.yes_accept_it'),
+            'do_you_want_to_assign_employer'  => __('messages.do_you_want_to_assign_employer'),
+            'yes_assign_it'                   => __('messages.yes_assign_it'),
+            'no_reviews_available'            => __('messages.no_reviews_available'),
+            'no_rating_info_available'        => __('messages.no_rating_info_available'),
+            'failed_to_load_customer_rating'  => __('messages.failed_to_load_customer_rating'),
         ];
     @endphp
     var bookingJsLang = @json($bookingJsLang);
@@ -1686,14 +1699,14 @@ when
             var handymanIds = [$(this).data('handyman-id')];
 
             Swal.fire({
-                title: 'Are you sure?',
-                text: "Do you want to assign this Employer?",
+                title: bookingJsLang.are_you_sure,
+                text: bookingJsLang.do_you_want_to_assign_employer,
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#3085d6',
                 cancelButtonColor: '#d33',
-                confirmButtonText: 'Yes, assign it!',
-                cancelButtonText: 'No, cancel'
+                confirmButtonText: bookingJsLang.yes_assign_it,
+                cancelButtonText: bookingJsLang.no_cancel
             }).then((willAssign) => {
                 if (!willAssign.isConfirmed) return;
                 fetch('{{ route('booking.assigned') }}', {
@@ -1744,12 +1757,12 @@ when
                 });
             } else {
                 Swal.fire({
-                    title: 'Are you sure?',
+                    title: bookingJsLang.are_you_sure,
                     text: confirmMessage,
                     icon: 'warning',
                     showCancelButton: true,
-                    confirmButtonText: 'Yes!',
-                    cancelButtonText: 'No, cancel'
+                    confirmButtonText: bookingJsLang.yes_excl,
+                    cancelButtonText: bookingJsLang.no_cancel
                 }).then((result) => {
                     if (result.isConfirmed) {
                         updateBookingStatus(bookingId, status, isAdvancePaid);
@@ -1881,12 +1894,12 @@ when
             const bookingId = $('#extraChargesModal').find('#bookingId').val();
 
             Swal.fire({
-                title: 'Are you sure?',
-                text: 'Are you sure you want to perform this action?',
+                title: bookingJsLang.are_you_sure,
+                text: bookingJsLang.are_you_sure_perform_action,
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonText: 'Yes!',
-                cancelButtonText: 'No, cancel'
+                confirmButtonText: bookingJsLang.yes_excl,
+                cancelButtonText: bookingJsLang.no_cancel
             }).then((result) => {
                 if (result.isConfirmed) {
                     updateBookingStatus(bookingId, 'completed', 1, '', charges);
@@ -2003,11 +2016,11 @@ when
             const reviewId = $(this).data('id');
 
             Swal.fire({
-                title: 'Are you sure?',
-                text: 'You will not be able to recover this review!',
+                title: bookingJsLang.are_you_sure,
+                text: bookingJsLang.will_not_recover_review,
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonText: 'Yes, delete it!'
+                confirmButtonText: bookingJsLang.yes_delete_it
             }).then((result) => {
                 if (result.isConfirmed) {
                     $.ajax({
@@ -2727,18 +2740,18 @@ $(document).ready(function() {
                         html += '</div>';
                         html += '</div>';
                     } else {
-                        html += '<div class="alert alert-info">No reviews available for this customer yet.</div>';
+                        html += '<div class="alert alert-info">' + bookingJsLang.no_reviews_available + '</div>';
                     }
                 } else {
-                    html += '<div class="alert alert-info">No rating information available for this customer.</div>';
+                    html += '<div class="alert alert-info">' + bookingJsLang.no_rating_info_available + '</div>';
                 }
-                
+
                 html += '</div>';
                 $('#customer-rating-info-content').html(html);
             },
             error: function(xhr) {
                 console.error('Error:', xhr);
-                $('#customer-rating-info-content').html('<div class="alert alert-danger">Failed to load customer rating information.</div>');
+                $('#customer-rating-info-content').html('<div class="alert alert-danger">' + bookingJsLang.failed_to_load_customer_rating + '</div>');
             }
         });
     });
@@ -2749,12 +2762,12 @@ $(document).ready(function() {
         
         // Show confirmation dialog
         Swal.fire({
-            title: 'Are you sure?',
-            text: 'You want to accept this booking?',
+            title: bookingJsLang.are_you_sure,
+            text: bookingJsLang.you_want_to_accept_booking,
             icon: 'warning',
             showCancelButton: true,
-            confirmButtonText: 'Yes, accept it!',
-            cancelButtonText: 'No, cancel'
+            confirmButtonText: bookingJsLang.yes_accept_it,
+            cancelButtonText: bookingJsLang.no_cancel
         }).then((result) => {
             if (result.isConfirmed) {
                 // Update booking status to accept

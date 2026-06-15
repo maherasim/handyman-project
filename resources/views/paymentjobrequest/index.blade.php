@@ -281,7 +281,7 @@
                             name: 'payment_status',
                             title: "{{ __('messages.status') }}",
                             render: function(data, type, row, meta) {
-                                return '<span class="badge bg-primary text-white">Paid</span>';
+                                return '<span class="badge bg-primary text-white">{{ __("messages.paid") }}</span>';
                             }
                         },
 

@@ -49,9 +49,9 @@
                                 <div class="statistics-card statistics-card__style2 statistics-card__order-overview">
                                     <span class="helpdesk-status">
                                         @if($helpdeskdata->status == '0')
-                                            <span class="badge text-white bg-success text-uppercase">Open</span>
+                                            <span class="badge text-white bg-success text-uppercase">{{ __('messages.open') }}</span>
                                         @else
-                                            <span class="badge text-white bg-danger text-uppercase">Closed</span>
+                                            <span class="badge text-white bg-danger text-uppercase">{{ __('messages.closed') }}</span>
                                         @endif
                                     </span>
                                     <table class="table mb-0">

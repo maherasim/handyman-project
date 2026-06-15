@@ -342,12 +342,12 @@
                             confirmButtonColor: '#3085d6'
                         });
                     } else {
-                        Swal.fire('{{ __("messages.error") }}', response.error || 'Failed to load bank details', 'error');
+                        Swal.fire('{{ __("messages.error") }}', response.error || '{{ __("messages.failed_to_load_bank_details") }}', 'error');
                     }
                 },
                 error: function(xhr) {
                     Swal.close();
-                    const errorMsg = xhr.responseJSON?.error || 'Failed to load bank details';
+                    const errorMsg = xhr.responseJSON?.error || '{{ __("messages.failed_to_load_bank_details") }}';
                     Swal.fire('{{ __("messages.error") }}', errorMsg, 'error');
                 }
             });

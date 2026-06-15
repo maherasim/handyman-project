@@ -15,7 +15,7 @@
                 <table class="table table-striped mb-0">
                     <thead>
                         <tr>
-                            <th>ID</th>
+                            <th>{{ __('messages.id') }}</th>
                             <th>{{ __('messages.sender') }}</th>
                             <th>{{ __('messages.type') }}</th>
                             <th>{{ __('messages.chat_excerpt') }}</th>
