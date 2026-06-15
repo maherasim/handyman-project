@@ -549,7 +549,7 @@ class BookingController extends Controller
             foreach ($request->schedule_slots as $slot) {
                 $conflict = ServiceSlot::whereHas('booking', function ($q) use ($data) {
                     $q->where('provider_id', $data['provider_id'])
-                      ->whereNotIn('status', ['cancelled', 'rejected']);
+                      ->whereNotIn('status', ['cancelled', 'rejected', 'completed']);
                 })->where('date', $slot['date'])
                   ->where('start_time', $slot['start_time'])
                   ->exists();
