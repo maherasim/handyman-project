@@ -159,13 +159,13 @@
                                     {{ __('messages.select_name', ['select' => __('messages.provider_address')]) }}
                                     <span class="text-danger addr-required-star">*</span>
                                 </label>
+                                <a id="add-address-link" href="{{ route('provideraddress.create') }}" target="_blank" class="btn btn-sm btn-outline-primary float-end mb-1">
+                                    <i class="fa fa-plus-circle"></i> {{ __('messages.add_address') }}
+                                </a>
                                 <br />
                                 {{ html()->select('service_address_id', [], old('service_address_id'))->class('select2js form-group service_address_id')->id('service_address_id')->required()->attribute('data-placeholder', __('messages.select_name', ['select' => __('messages.provider_address')])) }}
                                 <small id="no-address-hint" class="d-none d-block mt-1 text-warning">
                                     <i class="fas fa-exclamation-triangle me-1"></i>{{ __('messages.no_addresses_found') }}
-                                    <a id="add-address-link" href="{{ route('provideraddress.create') }}" target="_blank" class="text-primary ms-1">
-                                        <i class="fa fa-plus-circle"></i> {{ __('messages.add_address') }}
-                                    </a>
                                 </small>
                             </div>
 
@@ -372,21 +372,19 @@
                             var hasAddresses = result.results && result.results.length > 0;
                             var $select = $('#service_address_id');
                             var $hint = $('#no-address-hint');
-                            var $label = $('label[for="name"]').first(); // the address label
 
                             if (hasAddresses) {
                                 $select.attr('required', true);
                                 $hint.addClass('d-none');
-                                $label.find('.addr-required-star').show();
+                                $('.addr-required-star').show();
                             } else {
                                 $select.removeAttr('required');
                                 $hint.removeClass('d-none');
-                                $label.find('.addr-required-star').hide();
-                                if (provider_id) {
-                                    var addLink = "{{ route('provideraddress.create') }}?provider_id=" + provider_id;
-                                    $('#add-address-link').attr('href', addLink);
-                                }
+                                $('.addr-required-star').hide();
                             }
+
+                            var addLink = "{{ route('provideraddress.create') }}" + (provider_id ? "?provider_id=" + provider_id : "");
+                            $('#add-address-link').attr('href', addLink);
                         }
                     });
                 }
