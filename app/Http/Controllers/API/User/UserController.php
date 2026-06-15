@@ -213,6 +213,8 @@ public function register(UserRequest $request)
             $user = Auth::user();
             if($user->status == 0){
                 Auth::logout();
+                $message = trans('auth.failed');
+                return comman_message_response($message, 406);
             }
             if(request('loginfrom') === 'vue-app'){
                 if($user->user_type != 'user'){
@@ -220,7 +222,11 @@ public function register(UserRequest $request)
                     return comman_message_response($message,400);
                 }
             }
-            $user->save();
+            // Admin-activated users (status=1) are implicitly verified — auto-mark so Flutter app lets them in.
+            if ($user->status == 1 && $user->is_email_verified == 0) {
+                $user->is_email_verified = 1;
+                $user->save();
+            }
 
             $success = $user;
             $success['user_role'] = $user->getRoleNames();
