@@ -28,12 +28,18 @@
               <label class="form-check-label h6 fw-normal text-capitalize" for="bank_transfer">{{ $t('messages.bank_transfer') }}</label>
             </div>
           </div>
-            <p>
-                {{ paymentLabel }}:
-                {{ formatCurrencyVue(paymentDisplayAmount) }}
-            </p>
-
-            <p>{{ $t('messages.wallet_balance') }}: {{ formatCurrencyVue(wallet_amount) }}</p>
+            <div class="mt-3 p-3 rounded border bg-light">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="text-muted text-capitalize">{{ paymentLabel }}</span>
+                <strong class="text-primary fs-5">{{ formatCurrencyVue(paymentDisplayAmount) }}</strong>
+              </div>
+              <div class="d-flex justify-content-between align-items-center border-top pt-2">
+                <span class="text-muted text-capitalize">{{ $t('messages.wallet_balance') }}</span>
+                <span :class="canUseWallet ? 'text-success' : 'text-danger'" class="fw-semibold">
+                  {{ formatCurrencyVue(wallet_amount) }}
+                </span>
+              </div>
+            </div>
           <div class="mt-3">
             <div class="d-inline-flex align-items-center flex-wrap gap-3">
               <button class="btn btn-primary" type="submit" :disabled="isProceedDisabled">
@@ -126,10 +132,10 @@ const props = defineProps(['booking_id', 'customer_id', 'discount', 'total_amoun
 const bankConfig = window.bankTransferConfig || {}
 
 const paymentLabel = computed(() => {
-  if (props.payment_type === 'paid') return `${$t('messages.total_amount')}`
+  if (props.payment_type === 'paid') return t('messages.total_amount')
   const pct = Number(props.advance_percentage)
-  if (Number.isFinite(pct) && pct > 0) return `${$t('messages.advance_pay')} (${pct}%)`
-  return `${$t('messages.advance_pay')}`
+  if (Number.isFinite(pct) && pct > 0) return `${t('messages.advance_pay')} (${pct}%)`
+  return t('messages.advance_pay')
 })
 
 const remainingAmount = computed(() => {

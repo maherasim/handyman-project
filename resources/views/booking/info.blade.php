@@ -1374,7 +1374,8 @@ when
         </div>
     @endif --}}
 
-    {{-- Review by customer (booking_ratings: customer rates provider) — always visible; same for customer and provider --}}
+    {{-- Review by customer (booking_ratings: customer rates provider) — hidden for handyman --}}
+    @if(!$auth_user->hasRole('handyman'))
     <div class="col-md-12 mt-4">
         <div class="card">
             <div class="card-body">
@@ -1419,6 +1420,7 @@ when
             </div>
         </div>
     </div>
+    @endif
 
     {{-- Customer rates each assigned worker (handyman_ratings) — uses /api/save-handyman-rating --}}
     <div class="col-md-12 mt-4">
@@ -1449,6 +1451,7 @@ when
                                             ?: trim((optional($hmUser)->first_name ?? '') . ' ' . (optional($hmUser)->last_name ?? ''));
                                         $workerName = $workerName !== '' ? $workerName : '—';
                                     @endphp
+                                    @if(!$auth_user->hasRole('handyman') || (int) $hid === (int) $auth_user->id)
                                     <tr>
                                         <td>{{ $workerName }}</td>
                                         <td>{{ $hr ? $hr->rating : '—' }}</td>
@@ -1474,6 +1477,7 @@ when
                                             @endif
                                         </td>
                                     </tr>
+                                    @endif
                                 @endforeach
                             </tbody>
                         </table>
@@ -1487,7 +1491,8 @@ when
         </div>
     </div>
 
-    {{-- Review by provider (customer_ratings: provider rates customer) — always visible --}}
+    {{-- Review by provider (customer_ratings: provider rates customer) — hidden for handyman --}}
+    @if(!$auth_user->hasRole('handyman'))
     <div class="col-md-12 mt-4">
         <div class="card">
             <div class="card-body">
@@ -1531,6 +1536,7 @@ when
             </div>
         </div>
     </div>
+    @endif
 
     @if (!empty($serviceProof) && count($serviceProof) > 0)
         <div class="col-md-12 mt-4">
