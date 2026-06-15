@@ -65,13 +65,14 @@ class ProviderPayoutController extends Controller
         ->editColumn('payment_method', function($payout) {
             $method = strtolower($payout->payment_method ?? 'cash');
             $badges = [
-                'stripe'  => ['bg-primary',   'fab fa-stripe-s', 'Stripe'],
-                'paypal'  => ['bg-info',       'fab fa-paypal',   'PayPal'],
-                'wallet'  => ['bg-success',    'fas fa-wallet',   'Wallet'],
-                'bank'    => ['bg-secondary',  'fas fa-university','Bank Transfer'],
-                'cash'    => ['bg-warning text-dark', 'fas fa-money-bill', 'Cash'],
+                'stripe'         => ['bg-primary',            'fab fa-stripe-s',    'Stripe'],
+                'paypal'         => ['bg-info',                'fab fa-paypal',      'PayPal'],
+                'wallet'         => ['bg-success',             'fas fa-wallet',      'Wallet'],
+                'bank'           => ['bg-secondary',           'fas fa-university',  'Bank Transfer'],
+                'bank_transfer'  => ['bg-secondary',           'fas fa-university',  'Bank Transfer'],
+                'cash'           => ['bg-warning text-dark',   'fas fa-money-bill',  'Cash'],
             ];
-            [$cls, $icon, $label] = $badges[$method] ?? ['bg-dark', 'fas fa-credit-card', ucfirst($method)];
+            [$cls, $icon, $label] = $badges[$method] ?? ['bg-secondary', 'fas fa-credit-card', ucwords(str_replace('_', ' ', $method))];
             return '<span class="badge '.$cls.' px-2 py-1"><i class="'.$icon.' me-1"></i>'.$label.'</span>';
         })
         ->addColumn('bank_name', function($payout) {
