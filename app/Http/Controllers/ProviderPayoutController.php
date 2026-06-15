@@ -107,21 +107,21 @@ class ProviderPayoutController extends Controller
 
         $actionType = $request->action_type;
 
-        $message = 'Bulk Action Updated';
+        $message = __('messages.bulk_action_updated');
 
         switch ($actionType) {
             case 'change-status':
                 $branches = ProviderPayout::whereIn('id', $ids)->update(['status' => $request->status]);
-                $message = 'Bulk Provider Payout Status Updated';
+                $message = __('messages.bulk_provider_payout_status_updated');
                 break;
 
             case 'delete':
                 ProviderPayout::whereIn('id', $ids)->delete();
-                $message = 'Bulk Provider Payout Deleted';
+                $message = __('messages.bulk_provider_payout_deleted');
                 break;
 
             default:
-                return response()->json(['status' => false, 'message' => 'Action Invalid']);
+                return response()->json(['status' => false, 'message' => __('messages.action_invalid')]);
                 break;
         }
 

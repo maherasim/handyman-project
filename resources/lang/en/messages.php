@@ -2349,4 +2349,12 @@
     'no_reviews_available' => 'No reviews available for this customer yet.',
     'no_rating_info_available' => 'No rating information available for this customer.',
     'failed_to_load_customer_rating' => 'Failed to load customer rating information.',
+    // *** new words (BUG-1 slot conflict / BUG-4 bulk messages) ***
+    'slot_already_booked' => 'This time slot is already booked for the selected provider.',
+    'bulk_booking_status_updated' => 'Bulk Booking Status Updated',
+    'bulk_booking_deleted' => 'Bulk Booking Deleted',
+    'bulk_booking_restored' => 'Bulk Booking Restored',
+    'bulk_booking_permanently_deleted' => 'Bulk Booking Permanently Deleted',
+    'bulk_provider_payout_status_updated' => 'Bulk Provider Payout Status Updated',
+    'bulk_provider_payout_deleted' => 'Bulk Provider Payout Deleted',
 );

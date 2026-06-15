@@ -430,11 +430,11 @@ class BookingController extends Controller
 
         $actionType = $request->action_type;
 
-        $message = 'Bulk Action Updated';
+        $message = __('messages.bulk_action_updated');
         switch ($actionType) {
             case 'change-status':
                 $branches = Booking::whereIn('id', $ids)->update(['status' => $request->status]);
-                $message = 'Bulk Booking Status Updated';
+                $message = __('messages.bulk_booking_status_updated');
                 break;
 
             case 'delete':
@@ -443,7 +443,7 @@ class BookingController extends Controller
                     $booking->delete();
                 }
 
-                $message = 'Bulk Booking Deleted';
+                $message = __('messages.bulk_booking_deleted');
                 break;
 
             case 'restore':
@@ -451,7 +451,7 @@ class BookingController extends Controller
                 foreach ($bookings as $booking) {
                     $booking->restore();
                 }
-                $message = 'Bulk Booking Restored';
+                $message = __('messages.bulk_booking_restored');
                 break;
 
             case 'permanently-delete':
@@ -459,11 +459,11 @@ class BookingController extends Controller
                 foreach ($bookings as $booking) {
                     $booking->forceDelete();
                 }
-                $message = 'Bulk Booking Permanently Deleted';
+                $message = __('messages.bulk_booking_permanently_deleted');
                 break;
 
             default:
-                return response()->json(['status' => false, 'message' => 'Action Invalid']);
+                return response()->json(['status' => false, 'message' => __('messages.action_invalid')]);
                 break;
         }
 
@@ -543,7 +543,23 @@ class BookingController extends Controller
         }
 
         $user = User::where('id', $data['provider_id'])->with('providertype')->first();
- $message="something";
+
+        // BUG-1: reject duplicate slot before persisting anything
+        if (empty($request->id)) {
+            foreach ($request->schedule_slots as $slot) {
+                $conflict = ServiceSlot::whereHas('booking', function ($q) use ($data) {
+                    $q->where('provider_id', $data['provider_id'])
+                      ->whereNotIn('status', ['cancelled', 'rejected']);
+                })->where('date', $slot['date'])
+                  ->where('start_time', $slot['start_time'])
+                  ->exists();
+
+                if ($conflict) {
+                    return comman_message_response(__('messages.slot_already_booked'), 409);
+                }
+            }
+        }
+
         $result = Booking::updateOrCreate(['id' => $request->id], $data);
 
         foreach ($request->schedule_slots as $slot) {
@@ -1583,16 +1599,25 @@ public function saveStripePayment(Request $request, $id)
         $advance_paid_amount = $result->total_amount;
         $admin_commission_amount = ($advance_paid_amount * $admin_commission_percentage) / 100;
 
-        // Hold provider advance payout; credit admin only
-        Wallet::firstOrCreate(['user_id' => $admin_user_id])->increment('amount', $admin_commission_amount);
+        // BUG-3: idempotency — skip if admin commission already credited for this booking+type
+        $alreadyCredited = CommissionEarning::where('booking_id', $booking->id)
+            ->where('user_type', 'admin')
+            ->where('commission_status', 'paid')
+            ->whereNull('post_job_bid_request_id')
+            ->exists();
 
-        CommissionEarning::create([
-            'booking_id' => $booking->id,
-            'user_type' => 'admin',
-            'employee_id' => $admin_user_id,
-            'commission_amount' => $admin_commission_amount,
-            'commission_status' => 'paid',
-        ]);
+        if (!$alreadyCredited) {
+            // Hold provider advance payout; credit admin only
+            Wallet::firstOrCreate(['user_id' => $admin_user_id])->increment('amount', $admin_commission_amount);
+
+            CommissionEarning::create([
+                'booking_id' => $booking->id,
+                'user_type' => 'admin',
+                'employee_id' => $admin_user_id,
+                'commission_amount' => $admin_commission_amount,
+                'commission_status' => 'paid',
+            ]);
+        }
     }
 
     if (!empty($result) && $result->payment_status == 'paid') {
@@ -1605,6 +1630,14 @@ public function saveStripePayment(Request $request, $id)
         $result->total_amount = $remaining_amount;
         $result->save();
 
+        // BUG-3: idempotency — skip commission crediting if provider was already paid
+        $remainingAlreadyCredited = CommissionEarning::where('booking_id', $booking->id)
+            ->where('user_type', 'provider')
+            ->where('commission_status', 'paid')
+            ->whereNull('post_job_bid_request_id')
+            ->exists();
+
+        if (!$remainingAlreadyCredited) {
         // Admin: 10% on remaining amount only (not on extra charges); once per remaining payment
         $extra_total = $booking->getExtraChargeValue();
         $remaining_admin_commission = ($remaining_amount > 0)
@@ -1701,6 +1734,7 @@ public function saveStripePayment(Request $request, $id)
         ]);
 
         CommissionEarning::where('booking_id', $booking->id)->update(['commission_status' => 'paid']);
+        } // end !$remainingAlreadyCredited
     }
 
     // ✅ Always create a new PaymentHistory entry

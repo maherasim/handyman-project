@@ -2363,4 +2363,12 @@
     'no_reviews_available' => 'Noch keine Bewertungen für diesen Kunden verfügbar.',
     'no_rating_info_available' => 'Keine Bewertungsinformationen für diesen Kunden verfügbar.',
     'failed_to_load_customer_rating' => 'Kundenbewertungsinformationen konnten nicht geladen werden.',
+    // *** new words (BUG-1 slot conflict / BUG-4 bulk messages) ***
+    'slot_already_booked' => 'Dieser Zeitslot ist für den ausgewählten Anbieter bereits gebucht.',
+    'bulk_booking_status_updated' => 'Buchungsstatus in Masse aktualisiert',
+    'bulk_booking_deleted' => 'Buchungen in Masse gelöscht',
+    'bulk_booking_restored' => 'Buchungen in Masse wiederhergestellt',
+    'bulk_booking_permanently_deleted' => 'Buchungen dauerhaft gelöscht',
+    'bulk_provider_payout_status_updated' => 'Anbieterauszahlungsstatus in Masse aktualisiert',
+    'bulk_provider_payout_deleted' => 'Anbieterauszahlungen in Masse gelöscht',
 );
