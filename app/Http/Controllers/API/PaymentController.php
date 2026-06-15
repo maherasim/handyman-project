@@ -455,17 +455,29 @@ class PaymentController extends Controller
     public function saveBankTransferPayment(Request $request)
     {
         $data = $request->all();
-        
+
         // Normalize datetime - handle invalid times like 24:59:00
         $normalizedDatetime = $this->normalizeDatetime($request->datetime ?? null);
         $data['datetime'] = $normalizedDatetime;
-    
+
+        // Idempotency: reject duplicate submissions (network retry / double-tap).
+        // A pending bank_transfer for the same booking + same amount is always a duplicate.
+        $alreadyExists = Payment::where('booking_id', $request->booking_id)
+            ->where('payment_type', 'bank_transfer')
+            ->where('payment_status', 'pending_by_admin')
+            ->where('total_amount', $request->total_amount)
+            ->exists();
+
+        if ($alreadyExists) {
+            return comman_message_response(__('messages.payment_already_processed'), 200);
+        }
+
         // Always pending for bank transfers until admin verifies
         $data['status'] = 0;
         $data['payment_status'] = 'pending_by_admin';
         $data['payment_method'] = 'bank_transfer';
         $data['payment_gateway'] = 'bank_transfer';
-    
+
         $payment = Payment::create($data);
         $booking = Booking::with(['customer', 'provider'])->find($request->booking_id);
     
