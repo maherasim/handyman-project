@@ -121,6 +121,9 @@
                 'qty_at_least_1'        => __('messages.pjr_js_qty_at_least_1'),
                 'extra_charges_added'   => __('messages.pjr_js_extra_charges_added'),
                 'unable_add_charges'    => __('messages.pjr_js_unable_add_charges'),
+                'saved'                 => __('messages.pjr_js_saved'),
+                'payment_split_started' => __('messages.pjr_js_payment_split_started'),
+                'unable_to_save'        => __('messages.pjr_js_unable_to_save'),
             ];
         @endphp
         var pjrJsLang = @json($pjrJsLang);
@@ -582,17 +585,16 @@
                             },
                             success: function(response) {
                                 if (response.status) {
-                                    Swal.fire("Saved!", response.message ||
-                                        "Payment split set & work started.",
-                                        "success");
+                                    Swal.fire(pjrJsLang.saved, response.message ||
+                                        pjrJsLang.payment_split_started, "success");
                                     $('#myBidsTable').DataTable().ajax.reload();
                                 } else {
-                                    Swal.fire("Error!", response.message ||
-                                        "Unable to save.", "error");
+                                    Swal.fire(pjrJsLang.error, response.message ||
+                                        pjrJsLang.unable_to_save, "error");
                                 }
                             },
                             error: function() {
-                                Swal.fire("Error!", "Something went wrong!", "error");
+                                Swal.fire(pjrJsLang.error, pjrJsLang.something_went_wrong, "error");
                             }
                         });
 
