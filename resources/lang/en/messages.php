@@ -1016,6 +1016,7 @@
     'wallet_amount' => 'Wallet Payout :value',
     'wallet_refund' => 'Refund for Booking #:Value',
     'paid_with_wallet' => 'Paid for Booking #:Value',
+    'payment_received_from_customer' => 'Payment received from :from for booking #:booking_id - Amount: :amount',
     'servicename' => 'Service Name',
     'remaining_amount' => 'Remaining Amount',
     'razorpay_message' => ':razorpay_message!',

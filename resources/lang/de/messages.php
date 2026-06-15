@@ -1013,6 +1013,7 @@
     'wallet_amount' => 'Wallet-Auszahlung :value',
     'wallet_refund' => 'Erstattung für Buchung #:Value',
     'paid_with_wallet' => 'Bezahlt für Buchung #:Value',
+    'payment_received_from_customer' => 'Zahlung erhalten von :from für Buchung #:booking_id - Betrag: :amount',
     'servicename' => 'Service',
     'remaining_amount' => 'Restbetrag',
     'razorpay_message' => ':razorpay_message!',

@@ -329,13 +329,8 @@ class PaymentController extends Controller
                 $providerActivityMessage = __('messages.payment_received_from_customer', [
                     'amount' => getPriceFormat((float)$request->total_amount),
                     'from' => $customerName,
-                    'booking_id' => $request->booking_id
+                    'booking_id' => $request->booking_id,
                 ]);
-                
-                // Fallback message if translation doesn't exist
-                if (strpos($providerActivityMessage, 'messages.') === 0) {
-                    $providerActivityMessage = 'Payment received from ' . $customerName . ' for booking #' . $request->booking_id . ' - Amount: ' . getPriceFormat((float)$request->total_amount);
-                }
                 
                 WalletHistory::create([
                     'datetime' => $data['datetime'],
