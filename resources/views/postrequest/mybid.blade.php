@@ -86,16 +86,41 @@
     <script>
         @php
             $pjrJsLang = [
-                'update_payment_split' => __('messages.pjr_update_payment_split'),
-                'advance_percentage' => __('messages.pjr_advance_percentage'),
-                'remaining_percentage' => __('messages.pjr_remaining_percentage'),
-                'update' => __('messages.pjr_update'),
-                'advance_validation' => __('messages.pjr_advance_percentage_validation'),
-                'updated' => __('messages.pjr_updated'),
+                'update_payment_split'  => __('messages.pjr_update_payment_split'),
+                'advance_percentage'    => __('messages.pjr_advance_percentage'),
+                'remaining_percentage'  => __('messages.pjr_remaining_percentage'),
+                'update'                => __('messages.pjr_update'),
+                'advance_validation'    => __('messages.pjr_advance_percentage_validation'),
+                'updated'               => __('messages.pjr_js_updated'),
                 'payment_split_updated' => __('messages.pjr_payment_split_updated'),
-                'error' => __('messages.pjr_error'),
-                'unable_to_update' => __('messages.pjr_unable_to_update'),
-                'something_went_wrong' => __('messages.pjr_something_went_wrong_short'),
+                'error'                 => __('messages.pjr_js_error'),
+                'unable_to_update'      => __('messages.pjr_unable_to_update'),
+                'something_went_wrong'  => __('messages.pjr_js_something_wrong_exclaim'),
+                'success'               => __('messages.pjr_js_success'),
+                'advance_paid_ok'       => __('messages.pjr_js_advance_paid_ok'),
+                'are_you_sure'          => __('messages.pjr_js_are_you_sure'),
+                'accept_bid_text'       => __('messages.pjr_js_accept_bid_text'),
+                'yes_accept'            => __('messages.pjr_js_yes_accept'),
+                'accepted'              => __('messages.pjr_js_accepted'),
+                'on_hold'               => __('messages.pjr_js_on_hold'),
+                'on_hold_msg'           => __('messages.pjr_js_on_hold_msg'),
+                'put_on_hold'           => __('messages.pjr_js_put_on_hold'),
+                'hold_reason_label'     => __('messages.pjr_js_hold_reason_label'),
+                'hold_reason_ph'        => __('messages.pjr_js_hold_reason_placeholder'),
+                'hold_reason_required'  => __('messages.pjr_js_hold_reason_required'),
+                'reason_too_long'       => __('messages.pjr_js_hold_reason_too_long'),
+                'confirm'               => __('messages.pjr_js_confirm'),
+                'update_status'         => __('messages.pjr_js_update_status'),
+                'yes_update'            => __('messages.pjr_js_yes_update'),
+                'status_updated'        => __('messages.pjr_js_status_updated'),
+                'unable_to_determine'   => __('messages.pjr_js_unable_to_determine'),
+                'add_extra_charges'     => __('messages.pjr_js_add_extra_charges'),
+                'add'                   => __('messages.pjr_js_add'),
+                'title_required'        => __('messages.pjr_js_title_required'),
+                'enter_valid_amount'    => __('messages.pjr_js_enter_valid_amount'),
+                'qty_at_least_1'        => __('messages.pjr_js_qty_at_least_1'),
+                'extra_charges_added'   => __('messages.pjr_js_extra_charges_added'),
+                'unable_add_charges'    => __('messages.pjr_js_unable_add_charges'),
             ];
         @endphp
         var pjrJsLang = @json($pjrJsLang);
@@ -261,8 +286,8 @@
                         })
                         .then(function(response) {
                             if (response && response.status) {
-                                Swal.fire("Success", response.message ||
-                                    "Advance paid successfully.", "success");
+                                Swal.fire(pjrJsLang.success, response.message ||
+                                    pjrJsLang.advance_paid_ok, "success");
                                 if (window.jQuery && window.jQuery.fn && window.jQuery.fn
                                     .DataTable && window.jQuery('#myBidsTable').length) {
                                     window.jQuery('#myBidsTable').DataTable().ajax.reload();
@@ -273,7 +298,7 @@
                             }
                         })
                         .catch(function() {
-                            Swal.fire("Error", "Something went wrong!", "error");
+                            Swal.fire(pjrJsLang.error, pjrJsLang.something_went_wrong, "error");
                         });
                 });
             }, {
@@ -288,13 +313,13 @@
             $(document).on('click', '.acceptBid', function() {
                 let bidId = $(this).data('id');
                 Swal.fire({
-                    title: "Are you sure?",
-                    text: "Do you want to accept this bid?",
+                    title: pjrJsLang.are_you_sure,
+                    text: pjrJsLang.accept_bid_text,
                     icon: "warning",
                     showCancelButton: true,
                     confirmButtonColor: "#28a745",
                     cancelButtonColor: "#d33",
-                    confirmButtonText: "Yes, accept it!"
+                    confirmButtonText: pjrJsLang.yes_accept
                 }).then((result) => {
                     if (result.isConfirmed) {
                         $.ajax({
@@ -305,14 +330,14 @@
                             },
                             success: function(response) {
                                 if (response.status) {
-                                    Swal.fire("Accepted!", response.message, "success");
+                                    Swal.fire(pjrJsLang.accepted, response.message, "success");
                                     $('#myBidsTable').DataTable().ajax.reload();
                                 } else {
                                     Swal.fire(pjrJsLang.error, response.message, "error");
                                 }
                             },
                             error: function() {
-                                Swal.fire("Error!", "Something went wrong!", "error");
+                                Swal.fire(pjrJsLang.error, pjrJsLang.something_went_wrong, "error");
                             }
                         });
                     }
@@ -323,22 +348,22 @@
             $(document).on('click', '.holdBidBtn', function() {
                 const bidId = $(this).data('id');
                 Swal.fire({
-                    title: 'Put on Hold',
+                    title: pjrJsLang.put_on_hold,
                     input: 'textarea',
-                    inputLabel: 'Provide hold reason',
-                    inputPlaceholder: 'Type your reason here... (max 500 chars)',
+                    inputLabel: pjrJsLang.hold_reason_label,
+                    inputPlaceholder: pjrJsLang.hold_reason_ph,
                     inputAttributes: {
                         'aria-label': 'Hold reason'
                     },
                     showCancelButton: true,
-                    confirmButtonText: 'Submit',
+                    confirmButtonText: pjrJsLang.confirm,
                     preConfirm: (value) => {
                         if (!value || value.trim().length === 0) {
-                            Swal.showValidationMessage('Hold reason is required');
+                            Swal.showValidationMessage(pjrJsLang.hold_reason_required);
                             return false;
                         }
                         if (value.length > 500) {
-                            Swal.showValidationMessage('Reason too long (max 500 chars)');
+                            Swal.showValidationMessage(pjrJsLang.reason_too_long);
                             return false;
                         }
                         return value;
@@ -356,10 +381,10 @@
                         },
                         success: function(response) {
                             if (response && response.status) {
-                                Swal.fire('On Hold', response.message || 'Status updated to hold', 'success');
+                                Swal.fire(pjrJsLang.on_hold, response.message || pjrJsLang.on_hold_msg, 'success');
                                 $('#myBidsTable').DataTable().ajax.reload();
                             } else {
-                                Swal.fire('Error', (response && response.message) ? response.message : 'Unable to update', 'error');
+                                Swal.fire(pjrJsLang.error, (response && response.message) ? response.message : pjrJsLang.unable_to_update, 'error');
                             }
                         },
                         error: function(xhr) {
@@ -389,16 +414,16 @@
                     : (($(this).data('label')) || ($(this).text() || '').trim() || 'this action');
 
                 if (!nextStatus) {
-                    Swal.fire('Error', 'Unable to determine next status.', 'error');
+                    Swal.fire(pjrJsLang.error, pjrJsLang.unable_to_determine, 'error');
                     return;
                 }
 
                 Swal.fire({
-                    title: 'Confirm',
-                    text: 'Do you want to update status to ' + label + '?',
+                    title: pjrJsLang.confirm,
+                    text: pjrJsLang.update_status.replace(':status', label),
                     icon: 'question',
                     showCancelButton: true,
-                    confirmButtonText: 'Yes, update',
+                    confirmButtonText: pjrJsLang.yes_update,
                 }).then((result) => {
                     if (!result.isConfirmed) return;
 
@@ -411,10 +436,10 @@
                         },
                         success: function(response) {
                             if (response && response.status) {
-                                Swal.fire('Updated', response.message || 'Status updated', 'success');
+                                Swal.fire(pjrJsLang.updated, response.message || pjrJsLang.status_updated, 'success');
                                 $('#datatable').DataTable().ajax.reload();
                             } else {
-                                Swal.fire('Error', (response && response.message) ? response.message : 'Unable to update', 'error');
+                                Swal.fire(pjrJsLang.error, (response && response.message) ? response.message : pjrJsLang.unable_to_update, 'error');
                             }
                         },
                         error: function(xhr) {
@@ -428,7 +453,7 @@
             $(document).on('click', '.extraChargesBtn', function() {
                 const bidId = $(this).data('id');
                 Swal.fire({
-                    title: 'Add Extra Charges',
+                    title: pjrJsLang.add_extra_charges,
                     html: `
                         <div class="text-start">
                             <label class="form-label fw-bold">Title</label>
@@ -445,22 +470,22 @@
                     `,
                     focusConfirm: false,
                     showCancelButton: true,
-                    confirmButtonText: 'Add',
+                    confirmButtonText: pjrJsLang.add,
                     preConfirm: () => {
                         const title = document.getElementById('ec_title').value.trim();
                         const amount = parseFloat(document.getElementById('ec_amount').value);
                         const qtyRaw = document.getElementById('ec_qty').value;
                         const quantity = qtyRaw ? parseInt(qtyRaw, 10) : 1;
                         if (!title) {
-                            Swal.showValidationMessage('Title is required');
+                            Swal.showValidationMessage(pjrJsLang.title_required);
                             return false;
                         }
                         if (!amount || amount <= 0) {
-                            Swal.showValidationMessage('Enter a valid amount > 0');
+                            Swal.showValidationMessage(pjrJsLang.enter_valid_amount);
                             return false;
                         }
                         if (quantity && quantity < 1) {
-                            Swal.showValidationMessage('Quantity must be at least 1');
+                            Swal.showValidationMessage(pjrJsLang.qty_at_least_1);
                             return false;
                         }
                         return { title, amount, quantity };
@@ -479,10 +504,10 @@
                         },
                         success: function(response) {
                             if (response && response.status) {
-                                Swal.fire('Added', response.message || 'Extra charges added', 'success');
+                                Swal.fire(pjrJsLang.success, response.message || pjrJsLang.extra_charges_added, 'success');
                                 $('#datatable').DataTable().ajax.reload();
                             } else {
-                                Swal.fire('Error', (response && response.message) ? response.message : 'Unable to add charges', 'error');
+                                Swal.fire(pjrJsLang.error, (response && response.message) ? response.message : pjrJsLang.unable_add_charges, 'error');
                             }
                         },
                         error: function(xhr) {
