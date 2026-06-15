@@ -227,13 +227,11 @@ Route::group(['middleware' => ['auth', 'verified', 'active']], function () {
     });
     Route::get('provider_info/{id}', [ProviderController::class, 'show'])->name('provider_info');
 
-    Route::group(['middleware' => ['permission:provideraddress list']], function () {
-        Route::resource('provideraddress', ProviderAddressMappingController::class);
-        Route::get('provideraddress-index-data', [ProviderAddressMappingController::class, 'index_data'])->name('provideraddress.index_data');
-        Route::post('provideraddress-bulk-action', [ProviderAddressMappingController::class, 'bulk_action'])->name('provideraddress.bulk-action');
-        Route::post('provideraddress/{id}', [ProviderAddressMappingController::class, 'destroy'])->name('provideraddress.destroy');
-        Route::post('/get-lat-long', [ProviderAddressMappingController::class, 'getLatLong'])->name('getLatLong');
-    });
+    Route::resource('provideraddress', ProviderAddressMappingController::class);
+    Route::get('provideraddress-index-data', [ProviderAddressMappingController::class, 'index_data'])->name('provideraddress.index_data');
+    Route::post('provideraddress-bulk-action', [ProviderAddressMappingController::class, 'bulk_action'])->name('provideraddress.bulk-action');
+    Route::post('provideraddress/{id}', [ProviderAddressMappingController::class, 'destroy'])->name('provideraddress.destroy');
+    Route::post('/get-lat-long', [ProviderAddressMappingController::class, 'getLatLong'])->name('getLatLong');
 
     Route::group(['middleware' => ['permission:providertype list']], function () {
         Route::resource('providertype', ProviderTypeController::class);
