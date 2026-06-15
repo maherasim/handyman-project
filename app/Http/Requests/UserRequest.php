@@ -71,9 +71,7 @@ class UserRequest extends FormRequest
                 $rules['languages'] = 'required|array|min:1';
                 $rules['languages.*'] = 'string';
             }
-            $rules['service_address_id'] = request()->is('api*')
-                ? 'nullable|exists:provider_address_mappings,id'
-                : 'required|exists:provider_address_mappings,id';
+            $rules['service_address_id'] = 'nullable|exists:provider_address_mappings,id';
             if (request()->is('api*')) {
                 $rules['country_id'] = 'nullable|exists:countries,id';
                 $rules['state_id'] = 'nullable|exists:states,id';

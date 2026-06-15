@@ -115,13 +115,13 @@
                             @if (!isset($handymandata->id) || $handymandata->id == null)
                                 <div class="form-group col-md-3">
                                     {{ html()->label(__('messages.password') . ' <span class="text-danger">*</span>', 'password')->class('form-control-label') }}
-                                    {{ html()->password('password')->class('form-control')->placeholder(__('messages.password'))->required()->attribute('autocomplete', 'new-password')->attribute('minlength', '12')->attribute('maxlength', '20')->attribute('pattern', '(?=.*[A-Za-z])(?=.*[0-9]).{12,20}') }}
-                                    <small class="text-muted d-block mt-1">
-                                        {{ __('auth.password_requirements_intro') }}:
-                                        {{ __('auth.password_rule_min') }},
-                                        {{ __('auth.password_rule_letter') }},
-                                        {{ __('auth.password_rule_number') }}
-                                    </small>
+                                    <input class="form-control" type="password" id="handyman_password" name="password" required autocomplete="new-password" placeholder="{{ __('messages.password') }}">
+                                    <p class="mb-1 mt-2 text-secondary small">{{ __('auth.password_requirements_intro') }}</p>
+                                    <ul class="hm-password-requirements list-unstyled mb-1" aria-live="polite">
+                                        <li id="hm-req-length"><span class="hm-req-icon" aria-hidden="true"></span>{{ __('auth.password_rule_min') }}</li>
+                                        <li id="hm-req-letter"><span class="hm-req-icon" aria-hidden="true"></span>{{ __('auth.password_rule_letter') }}</li>
+                                        <li id="hm-req-number"><span class="hm-req-icon" aria-hidden="true"></span>{{ __('auth.password_rule_number') }}</li>
+                                    </ul>
                                     <small class="help-block with-errors text-danger"></small>
                                 </div>
                             @endif
@@ -155,12 +155,15 @@
 
 
                             <div class="form-group col-md-3">
-                                {{ html()->label(__('messages.select_name', ['select' => __('messages.provider_address')]) . ' <span class="text-danger">*</span>', 'name')->class('form-control-label') }}
+                                <label class="form-control-label" for="service_address_id">
+                                    {{ __('messages.select_name', ['select' => __('messages.provider_address')]) }}
+                                    <span class="text-danger addr-required-star">*</span>
+                                </label>
                                 <br />
                                 {{ html()->select('service_address_id', [], old('service_address_id'))->class('select2js form-group service_address_id')->id('service_address_id')->required()->attribute('data-placeholder', __('messages.select_name', ['select' => __('messages.provider_address')])) }}
-                                <small id="no-address-hint" class="d-none mt-1">
-                                    {{ __('messages.no_addresses_found') }}
-                                    <a id="add-address-link" href="{{ route('provideraddress.create') }}" target="_blank" class="text-primary">
+                                <small id="no-address-hint" class="d-none d-block mt-1 text-warning">
+                                    <i class="fas fa-exclamation-triangle me-1"></i>{{ __('messages.no_addresses_found') }}
+                                    <a id="add-address-link" href="{{ route('provideraddress.create') }}" target="_blank" class="text-primary ms-1">
                                         <i class="fa fa-plus-circle"></i> {{ __('messages.add_address') }}
                                     </a>
                                 </small>
@@ -367,10 +370,22 @@
                                 $('#service_address_id').val(service_address_id).trigger('change');
                             }
                             var hasAddresses = result.results && result.results.length > 0;
-                            $('#no-address-hint').toggleClass('d-none', hasAddresses);
-                            if (provider_id) {
-                                var addLink = "{{ route('provideraddress.create') }}?provider_id=" + provider_id;
-                                $('#add-address-link').attr('href', addLink);
+                            var $select = $('#service_address_id');
+                            var $hint = $('#no-address-hint');
+                            var $label = $('label[for="name"]').first(); // the address label
+
+                            if (hasAddresses) {
+                                $select.attr('required', true);
+                                $hint.addClass('d-none');
+                                $label.find('.addr-required-star').show();
+                            } else {
+                                $select.removeAttr('required');
+                                $hint.removeClass('d-none');
+                                $label.find('.addr-required-star').hide();
+                                if (provider_id) {
+                                    var addLink = "{{ route('provideraddress.create') }}?provider_id=" + provider_id;
+                                    $('#add-address-link').attr('href', addLink);
+                                }
                             }
                         }
                     });
@@ -574,6 +589,36 @@
                 }
             });
 
+        </script>
+
+        <style>
+            .hm-password-requirements { font-size: 0.875rem; }
+            .hm-password-requirements li { margin-bottom: 0.2rem; transition: color 0.15s ease; color: #6c757d; }
+            .hm-password-requirements li.valid { color: #198754; }
+            .hm-password-requirements li.valid .hm-req-icon::before { content: '✓ '; font-weight: bold; }
+            .hm-password-requirements li:not(.valid) .hm-req-icon::before { content: '○ '; }
+        </style>
+        <script>
+            (function () {
+                function hmPasswordPolicyCheck(pwd) {
+                    return {
+                        lengthOk: pwd.length >= 12 && pwd.length <= 20,
+                        letterOk: /[a-zA-Z]/.test(pwd),
+                        numberOk: /[0-9]/.test(pwd)
+                    };
+                }
+                function hmUpdatePasswordUi(pwd) {
+                    var c = hmPasswordPolicyCheck(pwd);
+                    var toggle = function(id, ok) { var el = document.getElementById(id); if (el) el.classList.toggle('valid', ok); };
+                    toggle('hm-req-length', c.lengthOk);
+                    toggle('hm-req-letter', c.letterOk);
+                    toggle('hm-req-number', c.numberOk);
+                }
+                var input = document.getElementById('handyman_password');
+                if (input) {
+                    input.addEventListener('input', function () { hmUpdatePasswordUi(this.value); });
+                }
+            })();
         </script>
     @endsection
 </x-master-layout>
