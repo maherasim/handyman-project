@@ -1718,11 +1718,11 @@ public function saveStripePayment(Request $request, $id)
             'provider_id' => $booking->provider_id,
             'amount' => $provider_final_earning,
             'payment_id' => $result->id ?? null,
-            'payment_method' => 'wallet',
+            'payment_method' => 'stripe',
             'paid_date' => Carbon::now(),
             'status' => 'paid',
             'booking_id' => $booking->id,
-            'payment_gateway' => 'wallet',
+            'payment_gateway' => 'stripe',
         ]);
 
         CommissionEarning::create([
@@ -1927,12 +1927,11 @@ public function saveStripePayment(Request $request, $id)
                 'provider_id' => $booking->provider_id,
                 'payment_id' => $result->id ?? null,
                 'amount' => $provider_final_earning,
-                'payment_id' => $result->id ?? null,
-                'payment_method' => 'wallet',
+                'payment_method' => 'stripe',
                 'paid_date' => Carbon::now(),
                 'status' => 'paid',
                 'booking_id' => $booking->id,
-                'payment_gateway' => 'wallet',
+                'payment_gateway' => 'stripe',
             ]);
             CommissionEarning::create([
                 'booking_id' => $booking->id,

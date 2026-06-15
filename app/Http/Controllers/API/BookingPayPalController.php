@@ -373,11 +373,11 @@ class BookingPayPalController extends Controller
             ProviderPayout::create([
                 'provider_id' => $booking->provider_id,
                 'amount' => $provider_final_earning,
-                'payment_method' => 'wallet',
+                'payment_method' => 'paypal',
                 'paid_date' => Carbon::now(),
                 'status' => 'paid',
                 'booking_id' => $booking->id,
-                'payment_gateway' => 'wallet',
+                'payment_gateway' => 'paypal',
             ]);
 
             CommissionEarning::create([
