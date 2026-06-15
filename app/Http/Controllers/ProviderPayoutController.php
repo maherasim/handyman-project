@@ -63,7 +63,16 @@ class ProviderPayoutController extends Controller
             return '<input type="checkbox" class="form-check-input select-table-row"  id="datatable-row-'.$row->id.'"  name="datatable_ids[]" value="'.$row->id.'" onclick="dataTableRowCheck('.$row->id.')">';
         })
         ->editColumn('payment_method', function($payout) {
-            return !empty($payout->payment_method) ? ucfirst($payout->payment_method) : 'cash';
+            $method = strtolower($payout->payment_method ?? 'cash');
+            $badges = [
+                'stripe'  => ['bg-primary',   'fab fa-stripe-s', 'Stripe'],
+                'paypal'  => ['bg-info',       'fab fa-paypal',   'PayPal'],
+                'wallet'  => ['bg-success',    'fas fa-wallet',   'Wallet'],
+                'bank'    => ['bg-secondary',  'fas fa-university','Bank Transfer'],
+                'cash'    => ['bg-warning text-dark', 'fas fa-money-bill', 'Cash'],
+            ];
+            [$cls, $icon, $label] = $badges[$method] ?? ['bg-dark', 'fas fa-credit-card', ucfirst($method)];
+            return '<span class="badge '.$cls.' px-2 py-1"><i class="'.$icon.' me-1"></i>'.$label.'</span>';
         })
         ->addColumn('bank_name', function($payout) {
 
@@ -96,7 +105,7 @@ class ProviderPayoutController extends Controller
             return view('providerpayout.action',compact('providerpayout'))->render();
         })
         ->addIndexColumn()
-        ->rawColumns(['check','title','action','status','bank_name'])
+        ->rawColumns(['check','title','action','status','bank_name','payment_method'])
             ->toJson();
     }
 
@@ -107,21 +116,21 @@ class ProviderPayoutController extends Controller
 
         $actionType = $request->action_type;
 
-        $message = 'Bulk Action Updated';
+        $message = __('messages.bulk_action_updated');
 
         switch ($actionType) {
             case 'change-status':
                 $branches = ProviderPayout::whereIn('id', $ids)->update(['status' => $request->status]);
-                $message = 'Bulk Provider Payout Status Updated';
+                $message = __('messages.bulk_provider_payout_status_updated');
                 break;
 
             case 'delete':
                 ProviderPayout::whereIn('id', $ids)->delete();
-                $message = 'Bulk Provider Payout Deleted';
+                $message = __('messages.bulk_provider_payout_deleted');
                 break;
 
             default:
-                return response()->json(['status' => false, 'message' => 'Action Invalid']);
+                return response()->json(['status' => false, 'message' => __('messages.action_invalid')]);
                 break;
         }
 
