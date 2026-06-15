@@ -836,11 +836,14 @@ class PaymentController extends Controller
             ->addColumn('post_job', function ($query) {
                 return optional($query->postJobRequest)->title ?: '-';
             })
+            ->addColumn('history', function ($payment) {
+                return '<a class="btn btn-primary btn-sm" href="' . route('cash.index', $payment->id) . '">' . __('messages.view') . '</a>';
+            })
             ->addColumn('action', function ($payment) {
                 return view('payment.action', compact('payment'))->render();
             })
             ->addIndexColumn()
-            ->rawColumns(['action', 'check', 'payment_status', 'id'])
+            ->rawColumns(['action', 'check', 'payment_status', 'id', 'history'])
             ->toJson();
     }
 

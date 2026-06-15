@@ -182,6 +182,13 @@
                     { data: 'payment_status', name: 'payment_status', title: "{{ __('messages.status') }}" },
                     { data: 'datetime', name: 'datetime', title: "{{ __('messages.datetime') }}" },
                     { data: 'total_amount', name: 'total_amount', title: "{{ __('messages.total_paid_amount') }}" },
+                    {
+                        data: 'history',
+                        name: 'history',
+                        title: "{{ __('messages.history') }}",
+                        orderable: false,
+                        searchable: false,
+                    },
                     @if(auth()->user()->hasRole('admin'))
                     {
                         data: 'action',
