@@ -83,7 +83,32 @@
                     name: 'total_amount',
                     title: "{{ __('messages.total_amount') }}"
                 }
-                
+            ];
+        @else
+            columns = [
+                {
+                    name: 'DT_RowIndex',
+                    data: 'DT_RowIndex',
+                    title: "{{ __('messages.no') }}",
+                    exportable: false,
+                    orderable: false,
+                    searchable: false,
+                },
+                {
+                    data: 'datetime',
+                    name: 'datetime',
+                    title: "{{ __('messages.date') }}"
+                },
+                {
+                    data: 'activity_type',
+                    name: 'activity_type',
+                    title: "{{ __('messages.type') }}"
+                },
+                {
+                    data: 'activity_message',
+                    name: 'activity_message',
+                    title: "{{ __('messages.messages') }}"
+                }
             ];
         @endif
 

@@ -325,9 +325,9 @@ public function store(Request $request)
 public function wallethistory_index_data(DataTables $datatable, $id)
 {
     $user = auth()->user();
-    $query = null;
 
-    if ($user->user_type === 'user') {
+    // Admin viewing any user's wallet history by user_id
+    if ($user->hasAnyRole(['admin', 'demo_admin']) || $user->user_type === 'user') {
         $query = WalletHistory::where('user_id', $id)->orderBy('id', 'desc');
 
         return $datatable->eloquent($query)
@@ -339,9 +339,10 @@ public function wallethistory_index_data(DataTables $datatable, $id)
             })
             ->addIndexColumn()
             ->toJson();
+    }
 
-    } elseif ($user->user_type === 'provider') {
-        $query = PaymentHistory::where('receiver_id', $id)->where('type','wallet')->orderBy('id', 'desc');
+    if ($user->user_type === 'provider') {
+        $query = PaymentHistory::where('receiver_id', $id)->where('type', 'wallet')->orderBy('id', 'desc');
 
         return $datatable->eloquent($query)
             ->editColumn('receiver_id', function ($history) {

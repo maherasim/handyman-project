@@ -47,7 +47,9 @@ class PaymentController extends Controller
 
     public function cashIndex($id)
     {
-        $pageTitle = __('messages.list_form_title', ['form' => __('messages.cash_history')]);
+        $payment = \App\Models\Payment::find($id);
+        $type = $payment ? ucfirst(str_replace('_', ' ', $payment->payment_type ?? 'payment')) : __('messages.payment');
+        $pageTitle = __('messages.list_form_title', ['form' => $type . ' ' . __('messages.history')]);
         $auth_user = authSession();
         $assets = ['datatable'];
         return view('paymenthistory.index', compact('pageTitle', 'assets', 'auth_user', 'id'));
@@ -837,7 +839,12 @@ class PaymentController extends Controller
                 return optional($query->postJobRequest)->title ?: '-';
             })
             ->addColumn('history', function ($payment) {
-                return '<a class="btn btn-primary btn-sm" href="' . route('cash.index', $payment->id) . '">' . __('messages.view') . '</a>';
+                if ($payment->payment_type === 'wallet') {
+                    $url = route('wallet.show', $payment->customer_id);
+                } else {
+                    $url = route('cash.index', $payment->id);
+                }
+                return '<a class="btn btn-primary btn-sm" href="' . $url . '">' . __('messages.view') . '</a>';
             })
             ->addColumn('action', function ($payment) {
                 return view('payment.action', compact('payment'))->render();

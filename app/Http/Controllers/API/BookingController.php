@@ -1233,6 +1233,7 @@ class BookingController extends Controller
                 'id' => $r->id,
                 'booking_id' => $bookingId,
                 'service_id' => optional($service)->id,
+                'service_name' => $service ? $service->name : ($postJob ? $postJob->title : null),
                 'post_job_id' => optional($postJob)->id,
                 'images' => $images,
                 'customer_id' => $r->customer_id,
