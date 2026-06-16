@@ -2620,7 +2620,7 @@ $(document).ready(function() {
                         html += '<span class="star-empty-display">&#9734;</span>';
                     }
                     html += '</div>';
-                    html += '<small class="text-muted">No ratings yet</small>';
+                    html += '<small class="text-muted">{{ __('messages.no_ratings_yet') }}</small>';
                     html += '</div>';
                 }
                 
@@ -2629,7 +2629,7 @@ $(document).ready(function() {
             error: function(xhr) {
                 console.error('Error loading customer rating:', xhr);
                 console.error('Response:', xhr.responseText); // Debug
-                $section.html('<div class="text-center"><small class="text-muted">Rating unavailable</small></div>');
+                $section.html('<div class="text-center"><small class="text-muted">{{ __('messages.rating_unavailable') }}</small></div>');
             }
         });
     });
@@ -2684,7 +2684,7 @@ $(document).ready(function() {
                     
                     if (data.recent_reviews && data.recent_reviews.length > 0) {
                         html += '<div class="recent-reviews">';
-                        html += '<h5 class="mb-3">Recent Reviews</h5>';
+                        html += '<h5 class="mb-3">{{ __('messages.recent_reviews') }}</h5>';
                         html += '<div class="list-group">';
                         data.recent_reviews.forEach(function(review) {
                             html += '<div class="list-group-item mb-2">';

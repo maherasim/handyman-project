@@ -786,7 +786,7 @@
                 if (userRole === 'admin' || userRole === 'demo_admin') {
                     html += `
                     <li class="py-2 d-flex justify-content-between">
-                        <span>Admin Earned:</span>
+                        <span>{{ __('messages.admin_earned') }}:</span>
                         <span class="fw-bold" style="color:var(--bs-pink);">$${earnings.admin.toFixed(2)}</span>
                     </li>`;
                 }
@@ -794,22 +794,22 @@
                 if (userRole === 'admin' || userRole === 'demo_admin' || userRole === 'provider') {
                     html += `
                     <li class="py-2 d-flex justify-content-between">
-                        <span>Provider Earned:</span>
+                        <span>{{ __('messages.provider_earned') }}:</span>
                         <span class="text-warning">$${earnings.provider.toFixed(2)}</span>
                     </li>`;
                 }
 
                 html += `
                     <li class="py-2 d-flex justify-content-between">
-                        <span>Handyman Earned:</span>
+                        <span>{{ __('messages.handyman_earned') }}:</span>
                         <span class="fw-bold text-info">$${earnings.handyman.toFixed(2)}</span>
                     </li>
                     <li class="py-2 d-flex justify-content-between">
-                        <span>Tax Amount:</span>
+                        <span>{{ __('messages.tax_amount') }}:</span>
                         <span class="text-danger">$${earnings.tax.toFixed(2)}</span>
                     </li>
                     <li class="py-2 d-flex justify-content-between">
-                        <span>Discount:</span>
+                        <span>{{ __('messages.discount') }}:</span>
                         <span class="text-success">$${earnings.discount.toFixed(2)}</span>
                     </li>`;
 

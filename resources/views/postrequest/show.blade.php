@@ -71,10 +71,11 @@
         {{-- Dynamic Next-Step Marquee --}}
         @php
             $status = (string) ($bid->status ?? '');
+            $normalizedStatus = strtolower(str_replace('_', ' ', trim($status)));
             $nextActor = null; // 'provider' | 'user' | null
             $nextText = null;
 
-            switch ($status) {
+            switch ($normalizedStatus) {
                 case 'requested':
                     $nextActor = 'user';
                     $nextText = __('messages.pjr_waiting_customer_accept');
@@ -83,7 +84,7 @@
                     $nextActor = 'provider';
                     $nextText = __('messages.pjr_waiting_employer_split');
                     break;
-                case 'Advance Payment Pending':
+                case 'advance payment pending':
                     $nextActor = 'user';
                     $nextText = __('messages.pjr_waiting_customer_pay_advance');
                     break;
@@ -252,7 +253,7 @@
                 <a href="{{ route('postrequest.invoice', $bid->id) }}" class="btn btn-outline-success ms-2">
                     <i class="fas fa-file-download"></i> {{ __('messages.pjr_download_invoice') }}
                 </a>
-            @elseif($bid->status === 'Advance Payment Pending')
+            @elseif($normalizedStatus === 'advance payment pending')
                 <button class="btn btn-success rounded-pill px-4 py-2 shadow-sm payAdvanceBtn d-inline-flex align-items-center gap-2" data-post-id="{{ $bid->id }}"
                     data-amount="{{ $advAmount }}">
                     <i class="fas fa-wallet"></i>
@@ -418,19 +419,19 @@
                                 <i class="fas fa-flag fa-2x text-info mb-2"></i>
                                 <h6 class="fw-bold mb-1">{{ __('messages.status') }}</h6>
                                 @php
-                                    $statusKey = strtolower((string)($bid->status ?? ''));
+                                    $statusKey = strtolower(str_replace('_', ' ', trim((string)($bid->status ?? ''))));
                                     $statusMap = [
                                         'requested' => [__('messages.pjr_st_requested'), 'bg-secondary text-white'],
                                         'pending' => [__('messages.pjr_st_pending'), 'bg-warning text-dark'],
                                         'accepted' => [__('messages.pjr_st_accepted'), 'bg-info text-white'],
-                                        'advance_paid' => [__('messages.pjr_st_advance_paid'), 'bg-primary text-white'],
+                                        'advance paid' => [__('messages.pjr_st_advance_paid'), 'bg-primary text-white'],
                                         'advance payment pending' => [__('messages.pjr_st_advance_payment_pending'), 'bg-warning text-dark'],
-                                        'in_progress' => [__('messages.pjr_st_in_progress'), 'bg-primary text-white'],
-                                        'in_process' => [__('messages.pjr_st_in_process'), 'bg-primary text-white'],
+                                        'in progress' => [__('messages.pjr_st_in_progress'), 'bg-primary text-white'],
+                                        'in process' => [__('messages.pjr_st_in_process'), 'bg-primary text-white'],
                                         'done' => [__('messages.pjr_st_done'), 'bg-success text-white'],
-                                        'confirm_done' => [__('messages.pjr_st_confirm_done'), 'bg-success text-white'],
+                                        'confirm done' => [__('messages.pjr_st_confirm_done'), 'bg-success text-white'],
                                         'completed' => [__('messages.pjr_st_completed'), 'bg-success text-white'],
-                                        'remaining_paid' => [__('messages.pjr_st_remaining_paid'), 'bg-primary text-white'],
+                                        'remaining paid' => [__('messages.pjr_st_remaining_paid'), 'bg-primary text-white'],
                                         'hold' => [__('messages.pjr_st_hold'), 'bg-warning text-dark'],
                                         'cancelled' => [__('messages.pjr_st_cancelled'), 'bg-danger text-white'],
                                         'rejected' => [__('messages.pjr_st_rejected'), 'bg-danger text-white'],

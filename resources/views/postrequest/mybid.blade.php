@@ -121,9 +121,17 @@
                 'qty_at_least_1'        => __('messages.pjr_js_qty_at_least_1'),
                 'extra_charges_added'   => __('messages.pjr_js_extra_charges_added'),
                 'unable_add_charges'    => __('messages.pjr_js_unable_add_charges'),
-                'saved'                 => __('messages.pjr_js_saved'),
-                'payment_split_started' => __('messages.pjr_js_payment_split_started'),
-                'unable_to_save'        => __('messages.pjr_js_unable_to_save'),
+                'saved'                     => __('messages.pjr_js_saved'),
+                'payment_split_started'     => __('messages.pjr_js_payment_split_started'),
+                'unable_to_save'            => __('messages.pjr_js_unable_to_save'),
+                'confirm_advance_payment'   => __('messages.pjr_js_confirm_advance_payment'),
+                'set_payment_split'         => __('messages.pjr_set_payment_split'),
+                'advance_pct_label'         => __('messages.pjr_advance_percentage'),
+                'remaining_pct_label'       => __('messages.pjr_remaining_percentage'),
+                'submit'                    => __('messages.pjr_submit'),
+                'title_label'               => __('messages.title'),
+                'amount_label'              => __('messages.amount'),
+                'quantity_optional_label'   => __('messages.pjr_quantity_optional'),
             ];
         @endphp
         var pjrJsLang = @json($pjrJsLang);
@@ -259,7 +267,7 @@
                 if (!postId) return;
 
                 Swal.fire({
-                    title: "Confirm Advance Payment",
+                    title: pjrJsLang.confirm_advance_payment,
                     text: providedAmount ? `Pay advance amount: ${providedAmount}. Proceed?` :
                         "Are you sure you want to proceed with the advance payment?",
                     icon: "warning",
