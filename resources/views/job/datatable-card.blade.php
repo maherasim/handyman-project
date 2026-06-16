@@ -634,7 +634,7 @@
                  // Dependent Dropdowns Logic
                  $('#category-select').on('change', function() {
                      var categoryId = $(this).val();
-                     $('#subcategory-select').empty().append('<option value="">All Sub-Categories</option>');
+                     $('#subcategory-select').empty().append('<option value="">{{ __("messages.all_sub_categories") }}</option>');
                      
                      if (categoryId) {
                          $.ajax({

@@ -459,15 +459,15 @@
                     title: pjrJsLang.add_extra_charges,
                     html: `
                         <div class="text-start">
-                            <label class="form-label fw-bold">Title</label>
+                            <label class="form-label fw-bold">{{ __('messages.title') }}</label>
                             <input type="text" id="ec_title" class="form-control" placeholder="e.g., Title" />
                         </div>
                         <div class="mt-2 text-start">
-                            <label class="form-label fw-bold">Amount</label>
+                            <label class="form-label fw-bold">{{ __('messages.amount') }}</label>
                             <input type="number" id="ec_amount" class="form-control" step="0.01" min="0.01" placeholder="e.g., 20" />
                         </div>
                         <div class="mt-2 text-start">
-                            <label class="form-label fw-bold">Quantity (optional)</label>
+                            <label class="form-label fw-bold">{{ __('messages.pjr_quantity_optional') }}</label>
                             <input type="number" id="ec_qty" class="form-control" step="1" min="1" placeholder="1" />
                         </div>
                     `,
@@ -528,7 +528,7 @@
                     title: "Set Payment Split",
                     html: `
                         <div class="mb-3 text-start">
-                            <label class="form-label fw-bold">Advance Percentage</label>
+                            <label class="form-label fw-bold">{{ __('messages.advance_percentage') }}</label>
                             <input type="number" id="advanceInput" class="form-control" placeholder="Enter advance %" min="0" max="100" />
                         </div>
                         <div class="text-start">

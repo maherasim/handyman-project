@@ -13,15 +13,15 @@
                <div class="card-body">
                   <input type="hidden" name="_token" :value="csrfToken">
                   <div class="custom-form-field mb-4">
-                     <input type="text" class="form-control" v-model="title" placeholder="Title" id="title" name="title" @input="clearError('title')">
+                     <input type="text" class="form-control" v-model="title" :placeholder="$t('messages.title')" id="title" name="title" @input="clearError('title')">
                      <div class="error-message" style="color: red;margin-top: 5px;">{{ titleError }}</div>
                   </div>   
                   <div class="custom-form-field mb-4">
-                     <textarea class="form-control" v-model="description" id="description" placeholder="Description"  name="description" @input="clearError('description')"></textarea>
+                     <textarea class="form-control" v-model="description" id="description" :placeholder="$t('messages.description')"  name="description" @input="clearError('description')"></textarea>
                      <div class="error-message" style="color: red;margin-top: 5px;">{{ descriptionError }}</div>
                   </div>
                   <div class="custom-form-field">
-                     <input type="number" class="form-control" v-model="price" id="price" placeholder="Price"  name="price" @input="clearError('price')" min="1">
+                     <input type="number" class="form-control" v-model="price" id="price" :placeholder="$t('messages.price')"  name="price" @input="clearError('price')" min="1">
                      <div class="error-message" style="color: red;margin-top: 5px;">{{ priceError }}</div>
                   </div>
                </div>

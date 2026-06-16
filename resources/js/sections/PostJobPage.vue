@@ -3,7 +3,7 @@
   <div class="row align-items-center">
           <div class="col-md-4">
             <div class="text-md-start text-center">
-              <a :href="`${baseUrl}/post-job`" class="btn btn-primary text-capitalize">add post job</a>
+              <a :href="`${baseUrl}/post-job`" class="btn btn-primary text-capitalize">{{ $t('messages.add_post_job') }}</a>
             </div>
           </div>
           <div class="col-md-8 mt-md-0 mt-3">

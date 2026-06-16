@@ -126,7 +126,7 @@
                                             <div class="d-flex flex-wrap justify-content-start align-items-center">
                                                 <h4 class="mb-2 booking-text fw-bold fs-2">View</h4>
                                             </div>
-                                            <p class="mb-0 booking-text">User Reporting</p>
+                                            <p class="mb-0 booking-text">{{ __('messages.user_reporting') }}</p>
                                         </div>
                                         <div class="col-auto d-flex flex-column">
                                             <div class="iq-card-icon iq-card-icon-revenue icon-shape text-white rounded-circle shadow" style="background-color: rgba(255, 255, 255, 0.2) !important;">

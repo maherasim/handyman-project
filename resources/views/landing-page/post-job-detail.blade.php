@@ -177,7 +177,7 @@
 
                 @if(!empty($postJobData['post_request_detail']['provider_id']) && $postJobData['post_request_detail']['status'] == 'assigned')
                     <div class="text-center my-4">
-                        <a href="{{ route('book.post_job', ['id' => $postJobData['post_request_detail']['id']]) }}" class="btn btn-lg btn-primary continue-button">Book Now</a>
+                        <a href="{{ route('book.post_job', ['id' => $postJobData['post_request_detail']['id']]) }}" class="btn btn-lg btn-primary continue-button">{{ __('messages.book_now') }}</a>
                     </div>
                 @endif
 
@@ -194,10 +194,10 @@
                             </div>
                             
                             <div class="mt-3">
-                                <h6>Services</h6>
+                                <h6>{{ __('messages.services_heading') }}</h6>
                                 {{-- @foreach ($postJobData['post_request_detail']['service'] as $service) --}}
                                 <div class="mt-3">
-                                    <h6>Split AC Setup</h6>
+                                    {{-- dummy data removed --}}
                                     <img src="" alt="booking"   width="100" height="100" class="mw-100 rounded-3 object-cover">
                                 {{-- <h6>{{ $postJobData['post_request_detail']['service'][0]['name']}}</h6>
                                 <img src="{{ $postJobData['post_request_detail']['service'][0]['attchments'][0] }}" alt="booking"   width="100" height="100" class="mw-100 rounded-3 object-cover"> --}}
@@ -205,9 +205,9 @@
                                 </div>
                             </div>
                             <div class="mt-3">
-                                <h6>Assigned Provider</h6>
+                                <h6>{{ __('messages.assigned_provider') }}</h6>
                                 {{-- @if($postJobData['post_request_detail']['status'] == 'assigned')
-                                <h6>Assigned Provider</h6>
+                                <h6>{{ __('messages.assigned_provider') }}</h6>
                                 @php
                                 $providerId = $postJobData['post_request_detail']['provider_id'];
                                 $bidderData = $postJobData['bider_data'];
@@ -227,7 +227,7 @@
                             </div>
                             <div class="mt-3">
                                 {{-- @if(!$postJobData['bider_data'] == null) --}}
-                                <h6>Bidder List</h6>
+                                <h6>{{ __('messages.bidder_list') }}</h6>
                                 {{-- @foreach($postJobData['bider_data'] as $index => $bidder) --}}
                                     <div class="mt-3">
                                         <h6>Felix Harris</h6>

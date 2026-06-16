@@ -39,7 +39,7 @@
     </Swiper>
 
     <!-- <div v-if="testimonial_data.length == 0 && loading == 0" class="row row-cols-xl-4 row-cols-md-3 row-cols-sm-2 row-cols-1 justify-content-center mt-5">
-      <span>Data Not Available</span>
+      <span>{{ $t('messages.data_not_available') }}</span>
     </div> -->
   </section>
 </template>
