@@ -71,10 +71,11 @@
         {{-- Dynamic Next-Step Marquee --}}
         @php
             $status = (string) ($bid->status ?? '');
+            $normalizedStatus = strtolower(str_replace('_', ' ', trim($status)));
             $nextActor = null; // 'provider' | 'user' | null
             $nextText = null;
 
-            switch ($status) {
+            switch ($normalizedStatus) {
                 case 'requested':
                     $nextActor = 'user';
                     $nextText = __('messages.pjr_waiting_customer_accept');
@@ -83,7 +84,7 @@
                     $nextActor = 'provider';
                     $nextText = __('messages.pjr_waiting_employer_split');
                     break;
-                case 'Advance Payment Pending':
+                case 'advance payment pending':
                     $nextActor = 'user';
                     $nextText = __('messages.pjr_waiting_customer_pay_advance');
                     break;
@@ -252,7 +253,7 @@
                 <a href="{{ route('postrequest.invoice', $bid->id) }}" class="btn btn-outline-success ms-2">
                     <i class="fas fa-file-download"></i> {{ __('messages.pjr_download_invoice') }}
                 </a>
-            @elseif($bid->status === 'Advance Payment Pending')
+            @elseif($normalizedStatus === 'advance payment pending')
                 <button class="btn btn-success rounded-pill px-4 py-2 shadow-sm payAdvanceBtn d-inline-flex align-items-center gap-2" data-post-id="{{ $bid->id }}"
                     data-amount="{{ $advAmount }}">
                     <i class="fas fa-wallet"></i>
@@ -418,19 +419,19 @@
                                 <i class="fas fa-flag fa-2x text-info mb-2"></i>
                                 <h6 class="fw-bold mb-1">{{ __('messages.status') }}</h6>
                                 @php
-                                    $statusKey = strtolower((string)($bid->status ?? ''));
+                                    $statusKey = strtolower(str_replace('_', ' ', trim((string)($bid->status ?? ''))));
                                     $statusMap = [
                                         'requested' => [__('messages.pjr_st_requested'), 'bg-secondary text-white'],
                                         'pending' => [__('messages.pjr_st_pending'), 'bg-warning text-dark'],
                                         'accepted' => [__('messages.pjr_st_accepted'), 'bg-info text-white'],
-                                        'advance_paid' => [__('messages.pjr_st_advance_paid'), 'bg-primary text-white'],
+                                        'advance paid' => [__('messages.pjr_st_advance_paid'), 'bg-primary text-white'],
                                         'advance payment pending' => [__('messages.pjr_st_advance_payment_pending'), 'bg-warning text-dark'],
-                                        'in_progress' => [__('messages.pjr_st_in_progress'), 'bg-primary text-white'],
-                                        'in_process' => [__('messages.pjr_st_in_process'), 'bg-primary text-white'],
+                                        'in progress' => [__('messages.pjr_st_in_progress'), 'bg-primary text-white'],
+                                        'in process' => [__('messages.pjr_st_in_process'), 'bg-primary text-white'],
                                         'done' => [__('messages.pjr_st_done'), 'bg-success text-white'],
-                                        'confirm_done' => [__('messages.pjr_st_confirm_done'), 'bg-success text-white'],
+                                        'confirm done' => [__('messages.pjr_st_confirm_done'), 'bg-success text-white'],
                                         'completed' => [__('messages.pjr_st_completed'), 'bg-success text-white'],
-                                        'remaining_paid' => [__('messages.pjr_st_remaining_paid'), 'bg-primary text-white'],
+                                        'remaining paid' => [__('messages.pjr_st_remaining_paid'), 'bg-primary text-white'],
                                         'hold' => [__('messages.pjr_st_hold'), 'bg-warning text-dark'],
                                         'cancelled' => [__('messages.pjr_st_cancelled'), 'bg-danger text-white'],
                                         'rejected' => [__('messages.pjr_st_rejected'), 'bg-danger text-white'],
@@ -943,10 +944,8 @@
                 'bank_instructions' => __('messages.pjr_bank_instructions'),
                 'bank_send_proof' => __('messages.pjr_bank_send_proof'),
             ];
-            $bankConfig = config('bank_transfer');
         @endphp
         var pjrJsLang = @json($pjrJsLang);
-        var bankTransferConfig = @json($bankConfig);
         function formatCurrencyJS(amount) {
             const n = Number(amount || 0).toFixed(DECIMALS);
             switch (String(POSITION)) {
@@ -1131,18 +1130,22 @@
   <h6 class="mb-2">${pjrJsLang.bank_info_heading}</h6>
   <div class="mb-2"><strong>${pjrJsLang.amount_label}</strong> ${formatCurrencyJS(formattedAmount)}</div>
   <div class="mb-2"><strong>${pjrJsLang.bank_for_transfers}</strong></div>
-  <div><strong>${pjrJsLang.bank_recipient}</strong> ${bankTransferConfig.recipient}</div>
-  <div><strong>${pjrJsLang.bank_iban}</strong> ${bankTransferConfig.iban}</div>
-  <div><strong>${pjrJsLang.bank_bic}</strong> ${bankTransferConfig.bic}</div>
+  <div><strong>${pjrJsLang.bank_recipient}</strong> Ben Ghezaiel</div>
+  <div><strong>${pjrJsLang.bank_iban}</strong> DE02 1001 0178 1361 6331 79</div>
+  <div><strong>${pjrJsLang.bank_bic}</strong> REVODEB2</div>
   <div class="mt-2"><strong>${pjrJsLang.bank_name_address}</strong></div>
-  <div class="ms-3">${bankTransferConfig.bank_name},<br>${bankTransferConfig.bank_address.replace(/\n/g,'<br>')}</div>
-  <div class="mt-2"><strong>${pjrJsLang.bank_bic_sender}</strong> ${bankTransferConfig.sender_bic}</div>
+  <div class="ms-3">Revolut Bank UAB,<br>
+    Zweigniederlassung Deutschland<br>
+    FORA Linden Palais, Unter den<br>
+    Linden 40<br>
+    10117, Berlin, Germany</div>
+  <div class="mt-2"><strong>${pjrJsLang.bank_bic_sender}</strong> CHASDEFX</div>
   
   <h6 class="mt-3">${pjrJsLang.bank_instructions}</h6>
  
   <div class="small mt-1">
     ${pjrJsLang.bank_send_proof}
-    <a href="mailto:${bankTransferConfig.email}">${bankTransferConfig.email}</a>
+    <a href="mailto:billing@frobster.com">billing@frobster.com</a>
   </div>
 </div>
 
