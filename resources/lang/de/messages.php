@@ -452,6 +452,8 @@
     'about_us' => 'Über uns',
     'mark_as_favourite_' => 'Als Favorit markieren',
     'book_now' => 'Jetzt buchen',
+    'add_post_job' => 'Jobanfrage hinzufügen',
+    'write_service_name' => 'Servicenamen schreiben',
     'gallery' => 'Galerie',
     'related_service' => 'Ähnliche Services',
     'mark_as_favourite' => 'Als Favorit markieren',
@@ -1907,6 +1909,11 @@
     'pjr_st_cancelled' => 'Storniert',
     'pjr_st_rejected' => 'Abgelehnt',
     'pjr_st_advance_payment_pending' => 'Anzahlung ausstehend',
+    'pjr_st_assigned' => 'Zugewiesen',
+    'pjr_st_declined' => 'Abgelehnt',
+    'pjr_st_on_going' => 'Laufend',
+    'pjr_job_price' => 'Jobpreis',
+    'pjr_estimate_price' => 'Schätzpreis',
 
     // UGC safety (report / block / moderation)
     'sidebar_content_reports' => 'Content-Meldungen',

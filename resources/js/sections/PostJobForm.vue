@@ -13,15 +13,15 @@
                <div class="card-body">
                   <input type="hidden" name="_token" :value="csrfToken">
                   <div class="custom-form-field mb-4">
-                     <input type="text" class="form-control" v-model="title" placeholder="Title" id="title" name="title" @input="clearError('title')">
+                     <input type="text" class="form-control" v-model="title" :placeholder="$t('messages.title')" id="title" name="title" @input="clearError('title')">
                      <div class="error-message" style="color: red;margin-top: 5px;">{{ titleError }}</div>
                   </div>   
                   <div class="custom-form-field mb-4">
-                     <textarea class="form-control" v-model="description" id="description" placeholder="Description"  name="description" @input="clearError('description')"></textarea>
+                     <textarea class="form-control" v-model="description" id="description" :placeholder="$t('messages.description')"  name="description" @input="clearError('description')"></textarea>
                      <div class="error-message" style="color: red;margin-top: 5px;">{{ descriptionError }}</div>
                   </div>
                   <div class="custom-form-field">
-                     <input type="number" class="form-control" v-model="price" id="price" placeholder="Price"  name="price" @input="clearError('price')" min="1">
+                     <input type="number" class="form-control" v-model="price" id="price" :placeholder="$t('messages.price')"  name="price" @input="clearError('price')" min="1">
                      <div class="error-message" style="color: red;margin-top: 5px;">{{ priceError }}</div>
                   </div>
                </div>
@@ -50,11 +50,11 @@
                                  <div class="d-inline-flex gap-2">
                                     <span type="button" class="text-primary" @click="editService(service.id)">
                                        <i class="fas fa-edit"></i>
-                                       <span class="visually-hidden">Edit</span>
+                                       <span class="visually-hidden">{{ $t('messages.edit') }}</span>
                                     </span>
                                     <span type="button" class="text-danger"  @click="deleteService(service.id)">
                                        <i class="fas fa-trash"></i>
-                                       <span class="visually-hidden">Delete</span>
+                                       <span class="visually-hidden">{{ $t('messages.delete') }}</span>
                                     </span>
                                  </div>
                               </div>
@@ -118,7 +118,7 @@
                                              </div>
                                              <div class="mb-4 col-md-6">
                                                 <label class="form-label text-capitalize">{{ $t('landingpage.service_name') }}</label>
-                                                <input v-model="serviceName" type="text" class="form-control" placeholder="Write Service Name" aria-label="servicename" aria-describedby="basic-addon1" @input="clearServiceError('serviceName')">
+                                                <input v-model="serviceName" type="text" class="form-control" :placeholder="$t('messages.write_service_name')" aria-label="servicename" aria-describedby="basic-addon1" @input="clearServiceError('serviceName')">
                                                 <div class="error-message" style="color: red;margin-top: 5px;">{{ serviceNameError }}</div>
                                              </div>
                                              <div class="mb-4 col-md-6">
@@ -151,7 +151,7 @@
                                              </div>
                                              <div class="mb-4 col-md-12">
                                                    <label class="form-label text-capitalize">{{ $t('messages.description')}}</label>
-                                                   <textarea v-model="serviceDescription" class="form-control" rows="4" placeholder="Description" @click="clearServiceError('serviceDescription')"></textarea>
+                                                   <textarea v-model="serviceDescription" class="form-control" rows="4" :placeholder="$t('messages.description')" @click="clearServiceError('serviceDescription')"></textarea>
                                                    <div class="error-message" style="color: red;margin-top: 5px;">{{ serviceDescriptionError }}</div>
                                              </div>
                                              <div class="mb-4">

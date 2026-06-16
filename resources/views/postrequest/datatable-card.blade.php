@@ -95,11 +95,11 @@
    <ul class="list-inline mt-3 mb-0 d-flex align-items-center justify-content-between flex-wrap gap-3">
       <li>
          <span class="d-flex gap-3">
-            <h6 class="text-capitalize text-body">Price: <span class="text-primary">{{getPriceFormat($data->price)}}</span></h6>
+            <h6 class="text-capitalize text-body">{{ __('messages.price') }}: <span class="text-primary">{{getPriceFormat($data->price)}}</span></h6>
          </span>
       </li>
       <li>
-         <h6 class="text-capitalize text-body">Status: <span class="text-primary">{{ $data->status }}</span></h6>
+         <h6 class="text-capitalize text-body">{{ __('messages.status') }}: <span class="text-primary">{{ __('messages.pjr_st_' . $data->status) }}</span></h6>
       </li>
    </ul>
    <!-- <div class="booking-date bg-primary-subtle text-primary font-size-14 d-flex align-items-center gap-1 position-absolute top-0">

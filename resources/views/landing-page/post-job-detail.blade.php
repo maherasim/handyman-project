@@ -20,10 +20,10 @@
                                 <div class="d-flex align-items-center">
                                 @if($postJobData['post_request_detail']['status'] == 'assigned')
                                     <h5 class="m-0 text-primary">{{ getPriceFormat($postJobData['post_request_detail']['job_price']) }}</h5>
-                                    <span class="text-primary text-capitalize">(job price)</span>
+                                    <span class="text-primary text-capitalize">({{ __('messages.pjr_job_price') }})</span>
                                 @else
                                     <h5 class="m-0 text-primary">{{ getPriceFormat($postJobData['post_request_detail']['price']) }}</h5>
-                                    <span class="text-primary text-capitalize">(estimate price)</span>
+                                    <span class="text-primary text-capitalize">({{ __('messages.pjr_estimate_price') }})</span>
                                 @endif
                                 </div>
                                 <div class="d-inline-flex align-items-center">
@@ -177,7 +177,7 @@
 
                 @if(!empty($postJobData['post_request_detail']['provider_id']) && $postJobData['post_request_detail']['status'] == 'assigned')
                     <div class="text-center my-4">
-                        <a href="{{ route('book.post_job', ['id' => $postJobData['post_request_detail']['id']]) }}" class="btn btn-lg btn-primary continue-button">Book Now</a>
+                        <a href="{{ route('book.post_job', ['id' => $postJobData['post_request_detail']['id']]) }}" class="btn btn-lg btn-primary continue-button">{{ __('messages.book_now') }}</a>
                     </div>
                 @endif
 

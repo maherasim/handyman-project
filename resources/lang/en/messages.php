@@ -454,6 +454,8 @@
     'about_us' => 'About Us',
     'mark_as_favourite_' => 'Mark As Favourite',
     'book_now' => 'Book Now',
+    'add_post_job' => 'Add Post Job',
+    'write_service_name' => 'Write Service Name',
     'gallery' => 'Gallery',
     'related_service' => 'Related Service',
     'mark_as_favourite' => 'Mark as Favourite',
@@ -1897,6 +1899,11 @@
     'pjr_st_cancelled' => 'Cancelled',
     'pjr_st_rejected' => 'Rejected',
     'pjr_st_advance_payment_pending' => 'Advance payment pending',
+    'pjr_st_assigned' => 'Assigned',
+    'pjr_st_declined' => 'Declined',
+    'pjr_st_on_going' => 'On Going',
+    'pjr_job_price' => 'job price',
+    'pjr_estimate_price' => 'estimate price',
 
     // UGC safety (report / block / moderation)
     'sidebar_content_reports' => 'Content reports',
