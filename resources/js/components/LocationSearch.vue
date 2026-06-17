@@ -182,7 +182,7 @@
                                </div>
                                <div class="mb-4 col-md-6">
                                   <label class="form-label text-capitalize">{{ $t('landingpage.service_name') }}</label>
-                                  <input v-model="serviceName" type="text" class="form-control" placeholder="Write Service Name" aria-label="servicename" aria-describedby="basic-addon1">
+                                  <input v-model="serviceName" type="text" class="form-control" :placeholder="$t('landingpage.service_name')" aria-label="servicename" aria-describedby="basic-addon1">
 
                                </div>
                                <div class="mb-4 col-md-6">
@@ -198,7 +198,7 @@
                                </div>
                                <div class="mb-4 col-md-6">
                                   <label class="form-label text-capitalize">{{ $t('messages.price')}}</label>
-                                  <input v-model="price" type="number" class="form-control" placeholder="Price" aria-label="price" aria-describedby="basic-addon1" min="1">
+                                  <input v-model="price" type="number" class="form-control" :placeholder="$t('messages.price')" aria-label="price" aria-describedby="basic-addon1" min="1">
 
                                </div>
                                <div class="mb-4 col-md-6">

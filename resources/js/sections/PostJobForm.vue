@@ -54,7 +54,7 @@
                                     </span>
                                     <span type="button" class="text-danger"  @click="deleteService(service.id)">
                                        <i class="fas fa-trash"></i>
-                                       <span class="visually-hidden">Delete</span>
+                                       <span class="visually-hidden">{{ $t('messages.delete') }}</span>
                                     </span>
                                  </div>
                               </div>
@@ -118,7 +118,7 @@
                                              </div>
                                              <div class="mb-4 col-md-6">
                                                 <label class="form-label text-capitalize">{{ $t('landingpage.service_name') }}</label>
-                                                <input v-model="serviceName" type="text" class="form-control" placeholder="Write Service Name" aria-label="servicename" aria-describedby="basic-addon1" @input="clearServiceError('serviceName')">
+                                                <input v-model="serviceName" type="text" class="form-control" :placeholder="$t('landingpage.service_name')" aria-label="servicename" aria-describedby="basic-addon1" @input="clearServiceError('serviceName')">
                                                 <div class="error-message" style="color: red;margin-top: 5px;">{{ serviceNameError }}</div>
                                              </div>
                                              <div class="mb-4 col-md-6">
