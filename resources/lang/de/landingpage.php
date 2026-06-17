@@ -1,6 +1,7 @@
 <?php return array (
   'home' => 'Home',
   'browser_title_tagline' => 'Dienstleistungen auf Abruf',
+
   'play_video' => 'Video abspielen',
   'open_on_youtube' => 'Video auf YouTube öffnen',
   'categories' => 'Kategorien',
@@ -43,7 +44,7 @@
   'email' => 'E-Mail-Adresse',
   'overall_rating' => 'Ø Bewertung',
   'trusted_by_thousands' => 'Menschen finden. Zukunft gestalten.',
-  'trusted_pros' => 'Geprüfte Profis',
+  'trusted_pros' => 'Geprüfte Fachkräfte',
   'free_quotes' => 'JETZT',
   'no_obligation' => 'ANMELDEN',
   'your' => 'Ihr',
@@ -97,7 +98,7 @@
   'date_time' => 'Datum und Uhrzeit',
   'available_slots' => 'Termine',
   'slot_not_available' => 'Kein Termin',
-  'quantity' => 'Anzahl',
+  'quantity' => 'Menge',
   'remove_coupon' => 'Gutschein entfernen',
   'pay_advance' => 'Anzahlung leisten',
   'save_booking' => 'Buchung speichern',
@@ -246,7 +247,7 @@
   'first_booking_off' => 'Erste Buchung: :discount Rabatt',
   'first_booking_cta' => 'Angebot sichern',
   'completed_jobs' => 'NEW Aufträge',
-  'local_pros' => 'NEW Profis',
+  'local_pros' => 'NEW Fachkraft',
   'most_popular' => 'Am beliebtesten',
 
   'contact_need_help' => 'Benötigen Sie Hilfe? Kontaktieren Sie uns',
@@ -399,7 +400,7 @@
   'jdd_fixed_short' => 'Pauschal',
   'jdd_per_day_short' => '/Tag',
   'jdd_per_hour_short' => '/Std.',
-  'jdd_remote_percent' => ':percent % Remote',
+  'jdd_remote_percent' => ':Prozent % Remote',
   'jdd_read_more' => 'Weiterlesen',
   'jdd_great_opportunity' => 'Exklusiver Auftrag',
   'jdd_ready_to_win' => 'Bereit, diesen Auftrag zu gewinnen?',
