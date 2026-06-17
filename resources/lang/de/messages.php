@@ -2182,5 +2182,8 @@
     'user_reporting' => 'Nutzerbericht',
     'review_reports' => 'Bewertungsberichte',
     'review_reported_ratings' => 'Gemeldete Bewertungen',
+    'profile_reports' => 'Profilmeldungen',
+    'review_user_profile_reports' => 'Gemeldete Benutzerprofile',
+    'bank_details' => 'Bankverbindung',
 
 );

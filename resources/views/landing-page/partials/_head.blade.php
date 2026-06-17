@@ -28,7 +28,7 @@
 
 <meta name="assert_url" content="{{ URL::to('') }}" />
 
-<meta name="baseUrl" content="{{env('APP_URL')}}" />
+<meta name="baseUrl" content="{{ request()->root() }}" />
 
 <script>
     const root = document.documentElement;

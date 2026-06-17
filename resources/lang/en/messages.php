@@ -2162,5 +2162,8 @@
     'user_reporting' => 'User Reporting',
     'review_reports' => 'Review Reports',
     'review_reported_ratings' => 'Reported Ratings',
+    'profile_reports' => 'Profile Reports',
+    'review_user_profile_reports' => 'Reported User Profiles',
+    'bank_details' => 'Bank Details',
 
 );
