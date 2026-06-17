@@ -115,6 +115,26 @@
                     $(this).text('{{ __('landingpage.read_more') }}');
                 }
             });
+
+            // Top header language dropdown – standalone handler that works
+            // regardless of which Bootstrap instance is active after the build.
+            var $topToggle = $('.top-header .dropdown-toggle[data-bs-toggle="dropdown"]');
+            var $topMenu   = $('.top-header .dropdown-menu');
+            if ($topToggle.length && $topMenu.length) {
+                $topToggle.on('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    var open = $topMenu.hasClass('show');
+                    $topMenu.toggleClass('show', !open);
+                    $topToggle.attr('aria-expanded', String(!open));
+                });
+                $(document).on('click', function(e) {
+                    if (!$topToggle.is(e.target) && !$topToggle.has(e.target).length) {
+                        $topMenu.removeClass('show');
+                        $topToggle.attr('aria-expanded', 'false');
+                    }
+                });
+            }
         });
     </script>
 
