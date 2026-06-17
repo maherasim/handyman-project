@@ -29,11 +29,11 @@
                 </ul>
              </div>
              <div class="col-6 text-end">
-                <div class="d-inline-block position-relative">
+                <div class="dropdown d-inline-block">
                   @if ($sectionData && isset($sectionData['header_setting']) && $sectionData['header_setting'] == 1)
                   @if(config('app.show_language_switcher', false) && $sectionData['enable_language'] == 1)
-                     <a class="dropdown text-white d-flex align-items-center" data-bs-toggle="dropdown" href="#"
-                        role="button" aria-haspopup="true" aria-expanded="true">
+                     <a class="dropdown-toggle text-white d-flex align-items-center" data-bs-toggle="dropdown" href="#"
+                        role="button" aria-haspopup="true" aria-expanded="false">
                         {{strtoupper(app()->getLocale())}}
                         <svg width="8" class="ms-1 transform-up" viewBox="0 0 12 8" fill="none"
                            xmlns="http://www.w3.org/2000/svg">
