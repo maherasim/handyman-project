@@ -2122,4 +2122,45 @@
     'cancellation_fee_note' => 'A cancellation fee of {fee} applies if cancelled within {hours} hours.',
     'remove_addon_confirm' => 'Do you want to remove this add-on?',
 
+    // Booking dialogs
+    'yes_excl' => 'Yes!',
+    'no_cancel' => 'No, Cancel',
+    'put_on_hold' => 'Put on Hold',
+    'provide_hold_reason' => 'Provide reason for hold',
+    'type_reason_here' => 'Type reason here...',
+
+    // Bank transfer / payment
+    'bank_transfer_details' => 'Bank Transfer Details',
+    'please_pay_amount' => 'Please pay the amount of',
+    'via_bank_transfer_below' => 'via bank transfer to the account below:',
+    'for_local_international_transfers' => 'For local and international transfers:',
+    'bank_information' => 'Bank Information',
+    'instructions' => 'Instructions',
+    'mention_booking_id_reference' => 'Please mention booking ID {id} as payment reference.',
+    'send_proof_of_payment' => 'Send proof of payment to:',
+    'pay_with_wallet_confirm' => 'Do you want to pay using your wallet balance?',
+
+    // Wallet
+    'wallet_topup' => 'Top Up Wallet',
+    'wallet_topup_question' => 'Do you want to top up your wallet?',
+    'topup_amount_placeholder' => 'Enter amount',
+    'proceed' => 'Proceed',
+
+    // Post job request / payment
+    'post_job_request_label' => 'Post Job Request',
+    'view_history' => 'View History',
+    'payment_job_request_title' => 'Job Request Payment',
+    'why_choose_me_colon' => 'Why choose me:',
+    'status_updated_successfully' => 'Status updated successfully',
+    'paypal_payment_success' => 'PayPal payment completed successfully.',
+
+    // Subscription
+    'no_subscription_transactions' => 'No subscription transactions found.',
+    'subscription_transactions_subtitle' => 'Overview of all subscription transactions',
+
+    // Misc
+    'user_reporting' => 'User Reporting',
+    'review_reports' => 'Review Reports',
+    'review_reported_ratings' => 'Reported Ratings',
+
 );

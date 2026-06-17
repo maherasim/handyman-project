@@ -2142,4 +2142,45 @@
     'cancellation_fee_note' => 'Bei Stornierung innerhalb von {hours} Stunden fällt eine Stornogebühr von {fee} an.',
     'remove_addon_confirm' => 'Möchten Sie diese Zusatzleistung entfernen?',
 
+    // Booking dialogs
+    'yes_excl' => 'Ja!',
+    'no_cancel' => 'Nein, Abbrechen',
+    'put_on_hold' => 'Pausieren',
+    'provide_hold_reason' => 'Grund für die Pause angeben',
+    'type_reason_here' => 'Grund hier eingeben...',
+
+    // Bank transfer / payment
+    'bank_transfer_details' => 'Banküberweisung – Details',
+    'please_pay_amount' => 'Bitte überweisen Sie',
+    'via_bank_transfer_below' => 'per Banküberweisung an folgendes Konto:',
+    'for_local_international_transfers' => 'Für in- und ausländische Überweisungen:',
+    'bank_information' => 'Bankverbindung',
+    'instructions' => 'Hinweise',
+    'mention_booking_id_reference' => 'Bitte geben Sie die Buchungs-ID {id} als Verwendungszweck an.',
+    'send_proof_of_payment' => 'Zahlungsnachweis senden an:',
+    'pay_with_wallet_confirm' => 'Möchten Sie mit Ihrem Guthaben bezahlen?',
+
+    // Wallet
+    'wallet_topup' => 'Guthaben aufladen',
+    'wallet_topup_question' => 'Möchten Sie Ihr Guthaben aufladen?',
+    'topup_amount_placeholder' => 'Betrag eingeben',
+    'proceed' => 'Weiter',
+
+    // Post job request / payment
+    'post_job_request_label' => 'Auftragsanfrage',
+    'view_history' => 'Verlauf anzeigen',
+    'payment_job_request_title' => 'Auftragszahlung',
+    'why_choose_me_colon' => 'Warum ich?',
+    'status_updated_successfully' => 'Status erfolgreich aktualisiert',
+    'paypal_payment_success' => 'PayPal-Zahlung erfolgreich abgeschlossen.',
+
+    // Subscription
+    'no_subscription_transactions' => 'Keine Abo-Transaktionen vorhanden.',
+    'subscription_transactions_subtitle' => 'Übersicht aller Abonnement-Transaktionen',
+
+    // Misc
+    'user_reporting' => 'Nutzerbericht',
+    'review_reports' => 'Bewertungsberichte',
+    'review_reported_ratings' => 'Gemeldete Bewertungen',
+
 );
