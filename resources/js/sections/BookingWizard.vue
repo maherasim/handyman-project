@@ -1540,9 +1540,10 @@ const formSubmit = handleSubmit(async (values) => {
 
       IsLoading.value = 0
 
+      const errorData = await response.json().catch(() => ({}))
       Swal.fire({
         title: t('messages.error'),
-        text: t('messages.something_went_wrong'),
+        text: errorData.message || t('messages.something_went_wrong'),
         icon: 'error',
         iconColor: '#3333ff'
       }).then((result) => {

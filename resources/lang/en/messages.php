@@ -2115,5 +2115,11 @@
     'select_date_and_time' => 'Select Date and Time',
     'about_employer' => 'About Employer',
     'add_more_dates' => 'Add More Dates',
+    'error' => 'Error',
+    'something_went_wrong' => 'Something went wrong. Please try again.',
+    'confirm_booking_title' => 'Confirm Booking',
+    'slot_already_booked' => 'This slot is already booked.',
+    'cancellation_fee_note' => 'A cancellation fee of {fee} applies if cancelled within {hours} hours.',
+    'remove_addon_confirm' => 'Do you want to remove this add-on?',
 
 );

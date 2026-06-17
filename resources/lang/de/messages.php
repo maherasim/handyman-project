@@ -2135,5 +2135,11 @@
     'select_date_and_time' => 'Datum und Uhrzeit auswählen',
     'about_employer' => 'Über den Anbieter',
     'add_more_dates' => 'Weitere Termine hinzufügen',
+    'error' => 'Fehler',
+    'something_went_wrong' => 'Etwas ist schiefgelaufen. Bitte versuchen Sie es erneut.',
+    'confirm_booking_title' => 'Buchung bestätigen',
+    'slot_already_booked' => 'Dieser Termin ist bereits gebucht.',
+    'cancellation_fee_note' => 'Bei Stornierung innerhalb von {hours} Stunden fällt eine Stornogebühr von {fee} an.',
+    'remove_addon_confirm' => 'Möchten Sie diese Zusatzleistung entfernen?',
 
 );
