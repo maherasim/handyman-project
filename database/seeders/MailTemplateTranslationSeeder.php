@@ -33,9 +33,9 @@ class MailTemplateTranslationSeeder extends Seeder
                             'language'    => $lang,
                         ],
                         [
-                            'subject'         => $data['subject'],
-                            'template_detail' => $data['body'],
-                            'status'          => 1,
+                            'subject'              => $data['subject'],
+                            'template_detail'      => $data['body'],
+                            'status'               => 1,
                             'notification_link'    => '',
                             'notification_message' => '',
                         ]
@@ -49,12 +49,9 @@ class MailTemplateTranslationSeeder extends Seeder
         $this->command->info('Done — all mail template translations upserted.');
     }
 
-    // -------------------------------------------------------------------------
-    // Template content
-    // Keys: notification type → user_type → locale → [subject, body]
-    // -------------------------------------------------------------------------
     private function templates(): array
     {
+        // ── Shared footers ────────────────────────────────────────────────────
         $footer_de = '<p>&nbsp;</p>
 <p>Mit freundlichen Grüßen,</p>
 <p>&nbsp;</p>
@@ -68,7 +65,7 @@ class MailTemplateTranslationSeeder extends Seeder
 <p>Email: info@frobster.com</p>';
 
         $support_de = '<li>Sie können diese Anfrage in Ihrem Admin-Panel einsehen und verwalten.</li>
-<li>Falls Sie Fragen haben oder weitere Unterstützung benötigen, kontaktieren Sie bitte jederzeit unser Support-Team unter: info@persotel.de</li>';
+<li>Falls Sie Fragen haben oder weitere Unterstützung benötigen, kontaktieren Sie bitte jederzeit unser Support-Team unter: info@persotel.de </li>';
 
         $support_en = '<li>You can view and manage this request in your admin panel.</li>
 <li>If you have any questions or need further assistance, please feel free to contact our support team at: info@frobster.com</li>';
@@ -76,7 +73,7 @@ class MailTemplateTranslationSeeder extends Seeder
         return [
 
             // =================================================================
-            // add_booking  —  New booking submitted by customer
+            // add_booking
             // =================================================================
             'add_booking' => [
 
@@ -96,7 +93,8 @@ class MailTemplateTranslationSeeder extends Seeder
   <li>Datum: [[ booking_date ]]</li>
   <li>Uhrzeit: [[ booking_time ]]</li>
   <li>Einsatzort: [[ city_id ]] - [[ country_id ]]</li>
-  <li>Betrag: [[ total_amount ]]</li>
+  <li>Betrag: [[total_amount ]]</li>
+  <li> </li>
   ' . $support_de . '
 </ul>' . $footer_de,
                     ],
@@ -104,7 +102,6 @@ class MailTemplateTranslationSeeder extends Seeder
                         'subject' => 'New Booking Received #[[ booking_id ]]',
                         'body'    => '<p>Hello [[ admin_name ]],</p>
 <p>We want to inform you that a new booking request has been submitted by a customer.</p>
-<p>Please find the full details below, including all relevant information needed to process and respond to the request accordingly.</p>
 <p><strong>Booking Details:</strong></p>
 <ul>
   <li>Booking ID: #[[ booking_id ]]</li>
@@ -115,6 +112,7 @@ class MailTemplateTranslationSeeder extends Seeder
   <li>Booking Date: [[ booking_date ]]</li>
   <li>Booking Time: [[ booking_time ]]</li>
   <li>Amount: [[ total_amount ]]</li>
+  <li> </li>
   ' . $support_en . '
 </ul>' . $footer_en,
                     ],
@@ -136,7 +134,8 @@ class MailTemplateTranslationSeeder extends Seeder
   <li>Datum: [[ booking_date ]]</li>
   <li>Uhrzeit: [[ booking_time ]]</li>
   <li>Einsatzort: [[ city_id ]] - [[ country_id ]]</li>
-  <li>Betrag: [[ total_amount ]]</li>
+  <li>Betrag: [[total_amount ]]</li>
+  <li> </li>
   ' . $support_de . '
 </ul>' . $footer_de,
                     ],
@@ -155,6 +154,7 @@ class MailTemplateTranslationSeeder extends Seeder
   <li>Booking Date: [[ booking_date ]]</li>
   <li>Booking Time: [[ booking_time ]]</li>
   <li>Amount: [[ total_amount ]]</li>
+  <li> </li>
   ' . $support_en . '
 </ul>' . $footer_en,
                     ],
@@ -162,7 +162,7 @@ class MailTemplateTranslationSeeder extends Seeder
             ],
 
             // =================================================================
-            // assigned_booking  —  Handyman / customer / provider assignment
+            // assigned_booking
             // =================================================================
             'assigned_booking' => [
 
@@ -180,6 +180,7 @@ class MailTemplateTranslationSeeder extends Seeder
   <li>Datum: [[ booking_date ]]</li>
   <li>Uhrzeit: [[ booking_time ]]</li>
   <li>Einsatzort: [[ city_id ]] - [[ country_id ]]</li>
+  <li> </li>
   ' . $support_de . '
 </ul>' . $footer_de,
                     ],
@@ -196,6 +197,7 @@ class MailTemplateTranslationSeeder extends Seeder
   <li>Service Location: [[ city_id ]] - [[ country_id ]]</li>
   <li>Booking Date: [[ booking_date ]]</li>
   <li>Booking Time: [[ booking_time ]]</li>
+  <li> </li>
   ' . $support_en . '
 </ul>' . $footer_en,
                     ],
@@ -216,7 +218,8 @@ class MailTemplateTranslationSeeder extends Seeder
   <li>Datum: [[ booking_date ]]</li>
   <li>Uhrzeit: [[ booking_time ]]</li>
   <li>Einsatzort: [[ city_id ]] - [[ country_id ]]</li>
-  <li>Betrag: [[ total_amount ]]</li>
+  <li>Betrag: [[total_amount ]]</li>
+  <li> </li>
   ' . $support_de . '
 </ul>' . $footer_de,
                     ],
@@ -234,6 +237,7 @@ class MailTemplateTranslationSeeder extends Seeder
   <li>Booking Time: [[ booking_time ]]</li>
   <li>Service Location: [[ city_id ]] - [[ country_id ]]</li>
   <li>Amount: [[ total_amount ]]</li>
+  <li> </li>
   ' . $support_en . '
 </ul>' . $footer_en,
                     ],
@@ -254,7 +258,8 @@ class MailTemplateTranslationSeeder extends Seeder
   <li>Datum: [[ booking_date ]]</li>
   <li>Uhrzeit: [[ booking_time ]]</li>
   <li>Einsatzort: [[ city_id ]] - [[ country_id ]]</li>
-  <li>Betrag: [[ total_amount ]]</li>
+  <li>Betrag: [[total_amount ]]</li>
+  <li> </li>
   ' . $support_de . '
 </ul>' . $footer_de,
                     ],
@@ -272,6 +277,7 @@ class MailTemplateTranslationSeeder extends Seeder
   <li>Booking Time: [[ booking_time ]]</li>
   <li>Service Location: [[ city_id ]] - [[ country_id ]]</li>
   <li>Amount: [[ total_amount ]]</li>
+  <li> </li>
   ' . $support_en . '
 </ul>' . $footer_en,
                     ],
@@ -279,7 +285,7 @@ class MailTemplateTranslationSeeder extends Seeder
             ],
 
             // =================================================================
-            // update_booking_status  —  Status changed
+            // update_booking_status
             // =================================================================
             'update_booking_status' => [
 
@@ -287,18 +293,17 @@ class MailTemplateTranslationSeeder extends Seeder
                     'de' => [
                         'subject' => 'Buchungsstatus geändert — #[[ booking_id ]]',
                         'body'    => '<p>Hallo [[ admin_name ]],</p>
-<p>Wir möchten Sie informieren, dass sich der Status der Buchung #[[ booking_id ]] für [[ booking_services_name ]] auf <strong>[[ booking_status ]]</strong> geändert hat.</p>
+<p>Wir möchten Sie informieren, dass sich der Status der Buchung #[[ booking_id ]] für [[ booking_services_name ]] auf [[ booking_status ]] geändert hat.</p>
 <p>&nbsp;</p>
-<ul>
-  <li>Buchungs-ID: #[[ booking_id ]]</li>
-  <li>Service: [[ booking_services_name ]]</li>
-  <li>Kunde: [[ customer_name ]]</li>
-  <li>Auftragnehmer: [[ provider_name ]]</li>
-  <li>Datum: [[ booking_date ]]</li>
-  <li>Uhrzeit: [[ booking_time ]]</li>
-  <li>Einsatzort: [[ city_id ]] - [[ country_id ]]</li>
-  <li>Betrag: [[ total_amount ]]</li>
-</ul>' . $footer_de,
+<li>Buchungs-ID: #[[ booking_id ]]</li>
+<li>Service: [[ booking_services_name ]]</li>
+<li>Kunde: [[ customer_name ]]</li>
+<li>Auftragnehmer: [[ provider_name ]]</li>
+<li>Datum: [[ booking_date ]]</li>
+<li>Uhrzeit: [[ booking_time ]]</li>
+<li>Einsatzort: [[ city_id ]] - [[ country_id ]]</li>
+<li>Betrag: [[total_amount ]]</li>
+<li> </li>' . $footer_de,
                     ],
                     'en' => [
                         'subject' => 'Booking Status Updated — #[[ booking_id ]]',
@@ -321,7 +326,7 @@ class MailTemplateTranslationSeeder extends Seeder
                     'de' => [
                         'subject' => 'Buchungsstatus geändert — #[[ booking_id ]]',
                         'body'    => '<p>Hallo [[ provider_name ]],</p>
-<p>Hiermit informieren wir Sie, dass sich der Status der Buchung #[[ booking_id ]] für [[ booking_services_name ]] auf <strong>[[ booking_status ]]</strong> geändert hat.</p>
+<p>Hiermit informieren wir Sie, dass sich der Status der Buchung #[[ booking_id ]] für [[ booking_services_name ]] auf [[ booking_status ]] geändert hat.</p>
 <p><strong>Buchungsdetails:</strong></p>
 <ul>
   <li>Buchungs-ID: #[[ booking_id ]]</li>
@@ -330,7 +335,8 @@ class MailTemplateTranslationSeeder extends Seeder
   <li>Datum: [[ booking_date ]]</li>
   <li>Uhrzeit: [[ booking_time ]]</li>
   <li>Einsatzort: [[ city_id ]] - [[ country_id ]]</li>
-  <li>Betrag: [[ total_amount ]]</li>
+  <li>Betrag: [[total_amount ]]</li>
+  <li> </li>
   ' . $support_de . '
 </ul>' . $footer_de,
                     ],
@@ -347,6 +353,7 @@ class MailTemplateTranslationSeeder extends Seeder
   <li>Booking Time: [[ booking_time ]]</li>
   <li>Service Location: [[ city_id ]] - [[ country_id ]]</li>
   <li>Amount: [[ total_amount ]]</li>
+  <li> </li>
   ' . $support_en . '
 </ul>' . $footer_en,
                     ],
@@ -356,7 +363,7 @@ class MailTemplateTranslationSeeder extends Seeder
                     'de' => [
                         'subject' => 'Buchungsstatus geändert — #[[ booking_id ]]',
                         'body'    => '<p>Hallo [[ handyman_name ]],</p>
-<p>Hiermit informieren wir Sie, dass sich der Status der Buchung #[[ booking_id ]] für [[ booking_services_name ]] auf <strong>[[ booking_status ]]</strong> geändert hat.</p>
+<p>Hiermit informieren wir Sie, dass sich der Status der Buchung #[[ booking_id ]] für [[ booking_services_name ]] auf [[ booking_status ]] geändert hat.</p>
 <p><strong>Buchungsdetails:</strong></p>
 <ul>
   <li>Buchungs-ID: #[[ booking_id ]]</li>
@@ -366,6 +373,7 @@ class MailTemplateTranslationSeeder extends Seeder
   <li>Datum: [[ booking_date ]]</li>
   <li>Uhrzeit: [[ booking_time ]]</li>
   <li>Einsatzort: [[ city_id ]] - [[ country_id ]]</li>
+  <li> </li>
   ' . $support_de . '
 </ul>' . $footer_de,
                     ],
@@ -382,6 +390,7 @@ class MailTemplateTranslationSeeder extends Seeder
   <li>Booking Date: [[ booking_date ]]</li>
   <li>Booking Time: [[ booking_time ]]</li>
   <li>Service Location: [[ city_id ]] - [[ country_id ]]</li>
+  <li> </li>
   ' . $support_en . '
 </ul>' . $footer_en,
                     ],
@@ -391,7 +400,7 @@ class MailTemplateTranslationSeeder extends Seeder
                     'de' => [
                         'subject' => 'Buchungsstatus geändert — #[[ booking_id ]]',
                         'body'    => '<p>Hallo [[ customer_name ]],</p>
-<p>Hiermit informieren wir Sie, dass sich der Status der Buchung #[[ booking_id ]] für [[ booking_services_name ]] auf <strong>[[ booking_status ]]</strong> geändert hat.</p>
+<p>Hiermit informieren wir Sie, dass sich der Status der Buchung #[[ booking_id ]] für [[ booking_services_name ]] auf [[ booking_status ]] geändert hat.</p>
 <p><strong>Buchungsdetails:</strong></p>
 <ul>
   <li>Buchungs-ID: #[[ booking_id ]]</li>
@@ -401,7 +410,8 @@ class MailTemplateTranslationSeeder extends Seeder
   <li>Datum: [[ booking_date ]]</li>
   <li>Uhrzeit: [[ booking_time ]]</li>
   <li>Einsatzort: [[ city_id ]] - [[ country_id ]]</li>
-  <li>Betrag: [[ total_amount ]]</li>
+  <li>Betrag: [[total_amount ]]</li>
+  <li> </li>
   ' . $support_de . '
 </ul>' . $footer_de,
                     ],
@@ -419,6 +429,7 @@ class MailTemplateTranslationSeeder extends Seeder
   <li>Booking Time: [[ booking_time ]]</li>
   <li>Service Location: [[ city_id ]] - [[ country_id ]]</li>
   <li>Amount: [[ total_amount ]]</li>
+  <li> </li>
   ' . $support_en . '
 </ul>' . $footer_en,
                     ],
@@ -426,7 +437,7 @@ class MailTemplateTranslationSeeder extends Seeder
             ],
 
             // =================================================================
-            // cancel_booking  —  Booking cancelled
+            // cancel_booking
             // =================================================================
             'cancel_booking' => [
 
@@ -445,7 +456,8 @@ class MailTemplateTranslationSeeder extends Seeder
   <li>Datum: [[ booking_date ]]</li>
   <li>Uhrzeit: [[ booking_time ]]</li>
   <li>Einsatzort: [[ city_id ]] - [[ country_id ]]</li>
-  <li>Betrag: [[ total_amount ]]</li>
+  <li>Betrag: [[total_amount ]]</li>
+  <li> </li>
   ' . $support_de . '
 </ul>' . $footer_de,
                     ],
@@ -463,6 +475,7 @@ class MailTemplateTranslationSeeder extends Seeder
   <li>Booking Time: [[ booking_time ]]</li>
   <li>Service Location: [[ city_id ]] - [[ country_id ]]</li>
   <li>Amount: [[ total_amount ]]</li>
+  <li> </li>
   ' . $support_en . '
 </ul>' . $footer_en,
                     ],
@@ -483,14 +496,15 @@ class MailTemplateTranslationSeeder extends Seeder
   <li>Datum: [[ booking_date ]]</li>
   <li>Uhrzeit: [[ booking_time ]]</li>
   <li>Einsatzort: [[ city_id ]] - [[ country_id ]]</li>
-  <li>Betrag: [[ total_amount ]]</li>
+  <li>Betrag: [[total_amount ]]</li>
+  <li> </li>
   ' . $support_de . '
 </ul>' . $footer_de,
                     ],
                     'en' => [
                         'subject' => 'Booking #[[ booking_id ]] Cancelled',
                         'body'    => '<p>Hello [[ provider_name ]],</p>
-<p>Booking #[[ booking_id ]] for <strong>[[ booking_services_name ]]</strong> has been cancelled by [[ cancelled_user_name ]]. Please review the details and take any necessary action.</p>
+<p>Booking #[[ booking_id ]] for <strong>[[ booking_services_name ]]</strong> has been cancelled by [[ cancelled_user_name ]].</p>
 <p><strong>Booking Details:</strong></p>
 <ul>
   <li>Cancelled Service: [[ booking_services_name ]]</li>
@@ -501,6 +515,7 @@ class MailTemplateTranslationSeeder extends Seeder
   <li>Booking Time: [[ booking_time ]]</li>
   <li>Service Location: [[ city_id ]] - [[ country_id ]]</li>
   <li>Amount: [[ total_amount ]]</li>
+  <li> </li>
   ' . $support_en . '
 </ul>' . $footer_en,
                     ],
@@ -514,20 +529,21 @@ class MailTemplateTranslationSeeder extends Seeder
 <p>&nbsp;</p>
 <p><strong>Buchungsdetails:</strong></p>
 <ul>
-  <li>Stornierter Service: [[ booking_services_name ]]</li>
+  <li>Stornierter Service: [[ booking_services_names ]]</li>
   <li>Buchungs-ID: #[[ booking_id ]]</li>
   <li>Kunde: [[ customer_name ]]</li>
   <li>Arbeitgeber: [[ provider_name ]]</li>
   <li>Datum: [[ booking_date ]]</li>
   <li>Uhrzeit: [[ booking_time ]]</li>
   <li>Einsatzort: [[ city_id ]] - [[ country_id ]]</li>
+  <li> </li>
   ' . $support_de . '
 </ul>' . $footer_de,
                     ],
                     'en' => [
                         'subject' => 'Booking #[[ booking_id ]] Cancelled',
                         'body'    => '<p>Hello [[ handyman_name ]],</p>
-<p>Booking #[[ booking_id ]] for <strong>[[ booking_services_name ]]</strong> has been cancelled by [[ cancelled_user_name ]]. Please review the details and take any necessary action.</p>
+<p>Booking #[[ booking_id ]] for <strong>[[ booking_services_name ]]</strong> has been cancelled by [[ cancelled_user_name ]].</p>
 <p><strong>Booking Details:</strong></p>
 <ul>
   <li>Cancelled Service: [[ booking_services_name ]]</li>
@@ -537,6 +553,7 @@ class MailTemplateTranslationSeeder extends Seeder
   <li>Booking Date: [[ booking_date ]]</li>
   <li>Booking Time: [[ booking_time ]]</li>
   <li>Service Location: [[ city_id ]] - [[ country_id ]]</li>
+  <li> </li>
   ' . $support_en . '
 </ul>' . $footer_en,
                     ],
@@ -550,21 +567,22 @@ class MailTemplateTranslationSeeder extends Seeder
 <p>&nbsp;</p>
 <p><strong>Buchungsdetails:</strong></p>
 <ul>
-  <li>Stornierter Service: [[ booking_services_name ]]</li>
+  <li>Stornierter Service: [[ booking_services_names ]]</li>
   <li>Buchungs-ID: #[[ booking_id ]]</li>
   <li>Kunde: [[ customer_name ]]</li>
   <li>Auftragnehmer: [[ provider_name ]]</li>
   <li>Datum: [[ booking_date ]]</li>
   <li>Uhrzeit: [[ booking_time ]]</li>
   <li>Einsatzort: [[ city_id ]] - [[ country_id ]]</li>
-  <li>Betrag: [[ total_amount ]]</li>
+  <li>Betrag: [[total_amount ]]</li>
+  <li> </li>
   ' . $support_de . '
 </ul>' . $footer_de,
                     ],
                     'en' => [
                         'subject' => 'Booking #[[ booking_id ]] Cancelled',
                         'body'    => '<p>Hello [[ customer_name ]],</p>
-<p>Booking #[[ booking_id ]] for <strong>[[ booking_services_name ]]</strong> has been cancelled by [[ cancelled_user_name ]]. Please review the details and take any necessary action.</p>
+<p>Booking #[[ booking_id ]] for <strong>[[ booking_services_name ]]</strong> has been cancelled by [[ cancelled_user_name ]].</p>
 <p><strong>Booking Details:</strong></p>
 <ul>
   <li>Cancelled Service: [[ booking_services_name ]]</li>
@@ -575,6 +593,7 @@ class MailTemplateTranslationSeeder extends Seeder
   <li>Booking Time: [[ booking_time ]]</li>
   <li>Service Location: [[ city_id ]] - [[ country_id ]]</li>
   <li>Amount: [[ total_amount ]]</li>
+  <li> </li>
   ' . $support_en . '
 </ul>' . $footer_en,
                     ],
@@ -582,7 +601,7 @@ class MailTemplateTranslationSeeder extends Seeder
             ],
 
             // =================================================================
-            // payment_message_status  —  Payment status changed
+            // payment_message_status
             // =================================================================
             'payment_message_status' => [
 
@@ -590,18 +609,19 @@ class MailTemplateTranslationSeeder extends Seeder
                     'de' => [
                         'subject' => 'Zahlungsstatus geändert — Buchung #[[ booking_id ]]',
                         'body'    => '<p>Hallo [[ customer_name ]],</p>
-<p>Hiermit informieren wir Sie, dass der Zahlungsstatus der Buchung #[[ booking_id ]] für [[ booking_services_name ]] auf <strong>[[ payment_status ]]</strong> geändert wurde.</p>
+<p>Hiermit informieren wir Sie, dass der Zahlungsstatus der Buchung #[[ booking_id ]] für [[ booking_services_name ]] auf:" [[ payment_status ]]" geändert wurde.</p>
 <p>&nbsp;</p>
 <p><strong>Buchungsdetails:</strong></p>
 <ul>
+  <li>Stornierter Service: [[ booking_services_names ]]</li>
   <li>Buchungs-ID: #[[ booking_id ]]</li>
-  <li>Service: [[ booking_services_name ]]</li>
   <li>Kunde: [[ customer_name ]]</li>
   <li>Auftragnehmer: [[ provider_name ]]</li>
   <li>Datum: [[ booking_date ]]</li>
   <li>Uhrzeit: [[ booking_time ]]</li>
   <li>Einsatzort: [[ city_id ]] - [[ country_id ]]</li>
-  <li>Betrag: [[ total_amount ]]</li>
+  <li>Betrag: [[total_amount ]]</li>
+  <li> </li>
   ' . $support_de . '
 </ul>' . $footer_de,
                     ],
@@ -619,6 +639,7 @@ class MailTemplateTranslationSeeder extends Seeder
   <li>Booking Time: [[ booking_time ]]</li>
   <li>Service Location: [[ city_id ]] - [[ country_id ]]</li>
   <li>Amount: [[ total_amount ]]</li>
+  <li> </li>
   ' . $support_en . '
 </ul>' . $footer_en,
                     ],
@@ -628,18 +649,19 @@ class MailTemplateTranslationSeeder extends Seeder
                     'de' => [
                         'subject' => 'Zahlungsstatus geändert — Buchung #[[ booking_id ]]',
                         'body'    => '<p>Hallo [[ admin_name ]],</p>
-<p>Hiermit informieren wir Sie, dass der Zahlungsstatus der Buchung #[[ booking_id ]] für [[ booking_services_name ]] auf <strong>[[ payment_status ]]</strong> geändert wurde.</p>
+<p>Hiermit informieren wir Sie, dass der Zahlungsstatus der Buchung #[[ booking_id ]] für [[ booking_services_name ]] auf:" [[ payment_status ]]" geändert wurde.</p>
 <p>&nbsp;</p>
 <p><strong>Buchungsdetails:</strong></p>
 <ul>
+  <li>Stornierter Service: [[ booking_services_names ]]</li>
   <li>Buchungs-ID: #[[ booking_id ]]</li>
-  <li>Service: [[ booking_services_name ]]</li>
   <li>Kunde: [[ customer_name ]]</li>
   <li>Auftragnehmer: [[ provider_name ]]</li>
   <li>Datum: [[ booking_date ]]</li>
   <li>Uhrzeit: [[ booking_time ]]</li>
   <li>Einsatzort: [[ city_id ]] - [[ country_id ]]</li>
-  <li>Betrag: [[ total_amount ]]</li>
+  <li>Betrag: [[total_amount ]]</li>
+  <li> </li>
   ' . $support_de . '
 </ul>' . $footer_de,
                     ],
@@ -657,6 +679,7 @@ class MailTemplateTranslationSeeder extends Seeder
   <li>Booking Time: [[ booking_time ]]</li>
   <li>Service Location: [[ city_id ]] - [[ country_id ]]</li>
   <li>Amount: [[ total_amount ]]</li>
+  <li> </li>
   ' . $support_en . '
 </ul>' . $footer_en,
                     ],
@@ -666,18 +689,19 @@ class MailTemplateTranslationSeeder extends Seeder
                     'de' => [
                         'subject' => 'Zahlungsstatus geändert — Buchung #[[ booking_id ]]',
                         'body'    => '<p>Hallo [[ provider_name ]],</p>
-<p>Hiermit informieren wir Sie, dass der Zahlungsstatus der Buchung #[[ booking_id ]] für [[ booking_services_name ]] auf <strong>[[ payment_status ]]</strong> geändert wurde.</p>
+<p>Hiermit informieren wir Sie, dass der Zahlungsstatus der Buchung #[[ booking_id ]] für [[ booking_services_name ]] auf:" [[ payment_status ]]" geändert wurde.</p>
 <p>&nbsp;</p>
 <p><strong>Buchungsdetails:</strong></p>
 <ul>
+  <li>Stornierter Service: [[ booking_services_names ]]</li>
   <li>Buchungs-ID: #[[ booking_id ]]</li>
-  <li>Service: [[ booking_services_name ]]</li>
   <li>Kunde: [[ customer_name ]]</li>
   <li>Auftragnehmer: [[ provider_name ]]</li>
   <li>Datum: [[ booking_date ]]</li>
   <li>Uhrzeit: [[ booking_time ]]</li>
   <li>Einsatzort: [[ city_id ]] - [[ country_id ]]</li>
-  <li>Betrag: [[ total_amount ]]</li>
+  <li>Betrag: [[total_amount ]]</li>
+  <li> </li>
   ' . $support_de . '
 </ul>' . $footer_de,
                     ],
@@ -695,6 +719,7 @@ class MailTemplateTranslationSeeder extends Seeder
   <li>Booking Time: [[ booking_time ]]</li>
   <li>Service Location: [[ city_id ]] - [[ country_id ]]</li>
   <li>Amount: [[ total_amount ]]</li>
+  <li> </li>
   ' . $support_en . '
 </ul>' . $footer_en,
                     ],
@@ -704,17 +729,18 @@ class MailTemplateTranslationSeeder extends Seeder
                     'de' => [
                         'subject' => 'Zahlungsstatus geändert — Buchung #[[ booking_id ]]',
                         'body'    => '<p>Hallo [[ handyman_name ]],</p>
-<p>Hiermit informieren wir Sie, dass der Zahlungsstatus der Buchung #[[ booking_id ]] für [[ booking_services_name ]] auf <strong>[[ payment_status ]]</strong> geändert wurde.</p>
+<p>Hiermit informieren wir Sie, dass der Zahlungsstatus der Buchung #[[ booking_id ]] für [[ booking_services_name ]] auf:" [[ payment_status ]]" geändert wurde.</p>
 <p>&nbsp;</p>
 <p><strong>Buchungsdetails:</strong></p>
 <ul>
+  <li>Stornierter Service: [[ booking_services_names ]]</li>
   <li>Buchungs-ID: #[[ booking_id ]]</li>
-  <li>Service: [[ booking_services_name ]]</li>
   <li>Kunde: [[ customer_name ]]</li>
   <li>Auftragnehmer: [[ provider_name ]]</li>
   <li>Datum: [[ booking_date ]]</li>
   <li>Uhrzeit: [[ booking_time ]]</li>
   <li>Einsatzort: [[ city_id ]] - [[ country_id ]]</li>
+  <li> </li>
   ' . $support_de . '
 </ul>' . $footer_de,
                     ],
@@ -731,6 +757,7 @@ class MailTemplateTranslationSeeder extends Seeder
   <li>Booking Date: [[ booking_date ]]</li>
   <li>Booking Time: [[ booking_time ]]</li>
   <li>Service Location: [[ city_id ]] - [[ country_id ]]</li>
+  <li> </li>
   ' . $support_en . '
 </ul>' . $footer_en,
                     ],
@@ -738,9 +765,10 @@ class MailTemplateTranslationSeeder extends Seeder
             ],
 
             // =================================================================
-            // wallet_payout_transfer  —  Payout processed
+            // wallet_payout_transfer
             // =================================================================
             'wallet_payout_transfer' => [
+
                 'admin' => [
                     'de' => [
                         'subject' => 'Auszahlung verarbeitet',
@@ -754,6 +782,7 @@ class MailTemplateTranslationSeeder extends Seeder
 <p>We want to inform you that a payout of [[ pay_amount ]] has been successfully processed to [[ user_name ]].</p>' . $footer_en,
                     ],
                 ],
+
                 'provider' => [
                     'de' => [
                         'subject' => 'Ihre Auszahlung wurde verarbeitet',
@@ -769,6 +798,7 @@ class MailTemplateTranslationSeeder extends Seeder
 <p>If you have any questions, please contact our support team at info@frobster.com.</p>' . $footer_en,
                     ],
                 ],
+
                 'handyman' => [
                     'de' => [
                         'subject' => 'Ihre Auszahlung wurde verarbeitet',
@@ -787,9 +817,10 @@ class MailTemplateTranslationSeeder extends Seeder
             ],
 
             // =================================================================
-            // wallet_top_up  —  Wallet topped up
+            // wallet_top_up
             // =================================================================
             'wallet_top_up' => [
+
                 'admin' => [
                     'de' => [
                         'subject' => 'Wallet aufgeladen — [[ customer_name ]]',
@@ -798,13 +829,14 @@ class MailTemplateTranslationSeeder extends Seeder
 <p>&nbsp;</p>
 <p><strong>Transaktionsdetails:</strong></p>
 <ul>
-  <li>Kunde: [[ customer_name ]]</li>
+  <li>Customer: [[ customer_name ]]</li>
   <li>Transaktions-ID: [[ wallet_transaction_id ]]</li>
   <li>Transaktionstyp: [[ wallet_transaction_type ]]</li>
   <li>Betrag: [[ wallet_amount ]]</li>
-  <li>Transaktionsdatum: [[ wallet_transaction_date ]]</li>
-  <li>Transaktionszeit: [[ wallet_transaction_time ]]</li>
+  <li>Transaktiondatum: [[ wallet_transaction_date ]]</li>
+  <li>Transaktionzeit: [[ wallet_transaction_time ]]</li>
 </ul>
+<p>&nbsp;</p>
 <p>Sollten Sie Fragen haben oder zusätzliche Unterstützung benötigen, kontaktieren Sie uns bitte jederzeit.</p>' . $footer_de,
                     ],
                     'en' => [
@@ -822,6 +854,7 @@ class MailTemplateTranslationSeeder extends Seeder
 </ul>' . $footer_en,
                     ],
                 ],
+
                 'provider' => [
                     'de' => [
                         'subject' => 'Wallet aufgeladen',
@@ -830,12 +863,13 @@ class MailTemplateTranslationSeeder extends Seeder
 <p>&nbsp;</p>
 <p><strong>Transaktionsdetails:</strong></p>
 <ul>
-  <li>Nutzer: [[ provider_name ]]</li>
+  <li>Customer: [[ provider_name ]]</li>
   <li>Transaktions-ID: [[ wallet_transaction_id ]]</li>
   <li>Transaktionstyp: [[ wallet_transaction_type ]]</li>
   <li>Betrag: [[ wallet_amount ]]</li>
   <li>Transaktionsdatum: [[ wallet_transaction_date ]]</li>
   <li>Transaktionszeit: [[ wallet_transaction_time ]]</li>
+  <li> </li>
   ' . $support_de . '
 </ul>' . $footer_de,
                     ],
@@ -851,10 +885,12 @@ class MailTemplateTranslationSeeder extends Seeder
   <li>Amount: [[ wallet_amount ]]</li>
   <li>Transaction Date: [[ wallet_transaction_date ]]</li>
   <li>Transaction Time: [[ wallet_transaction_time ]]</li>
+  <li> </li>
   ' . $support_en . '
 </ul>' . $footer_en,
                     ],
                 ],
+
                 'user' => [
                     'de' => [
                         'subject' => 'Wallet erfolgreich aufgeladen',
@@ -863,12 +899,13 @@ class MailTemplateTranslationSeeder extends Seeder
 <p>&nbsp;</p>
 <p><strong>Transaktionsdetails:</strong></p>
 <ul>
-  <li>Kunde: [[ customer_name ]]</li>
+  <li>Customer: [[ customer_name ]]</li>
   <li>Transaktions-ID: [[ wallet_transaction_id ]]</li>
   <li>Transaktionstyp: [[ wallet_transaction_type ]]</li>
   <li>Betrag: [[ wallet_amount ]]</li>
   <li>Transaktionsdatum: [[ wallet_transaction_date ]]</li>
   <li>Transaktionszeit: [[ wallet_transaction_time ]]</li>
+  <li> </li>
   ' . $support_de . '
 </ul>' . $footer_de,
                     ],
@@ -884,6 +921,7 @@ class MailTemplateTranslationSeeder extends Seeder
   <li>Amount: [[ wallet_amount ]]</li>
   <li>Transaction Date: [[ wallet_transaction_date ]]</li>
   <li>Transaction Time: [[ wallet_transaction_time ]]</li>
+  <li> </li>
   ' . $support_en . '
 </ul>' . $footer_en,
                     ],
@@ -891,24 +929,25 @@ class MailTemplateTranslationSeeder extends Seeder
             ],
 
             // =================================================================
-            // wallet_refund  —  Refund issued
+            // wallet_refund
             // =================================================================
             'wallet_refund' => [
+
                 'admin' => [
                     'de' => [
                         'subject' => 'Rückerstattung veranlasst — Buchung #[[ booking_id ]]',
                         'body'    => '<p>Hallo [[ admin_name ]],</p>
-<p>Wir möchten Sie darüber informieren, dass der von [[ provider_name ]] gebuchte Service für [[ customer_name ]] storniert wurde. Infolgedessen wurde eine Rückerstattung in Höhe von [[ refund_amount ]] an den Kunden vorgenommen.</p>
+<p>Wir möchten Sie darüber informieren, dass der von [[ provider_name ]] erbrachte Service für [[ customer_name ]] storniert wurde. Infolgedessen wurde eine Rückerstattung in Höhe von [[ refund_amount ]] an den Kunden vorgenommen.</p>
 <p>&nbsp;</p>
 <p>Sollten Sie Fragen haben oder zusätzliche Unterstützung benötigen, kontaktieren Sie uns bitte jederzeit.</p>' . $footer_de,
                     ],
                     'en' => [
                         'subject' => 'Refund Issued — Booking #[[ booking_id ]]',
                         'body'    => '<p>Hello [[ admin_name ]],</p>
-<p>The service booked by [[ provider_name ]] for [[ customer_name ]] has been cancelled. As a result, a refund of [[ refund_amount ]] has been issued to the customer.</p>
-<p>If you have any questions, please contact us at any time.</p>' . $footer_en,
+<p>The service booked by [[ provider_name ]] for [[ customer_name ]] has been cancelled. As a result, a refund of [[ refund_amount ]] has been issued to the customer.</p>' . $footer_en,
                     ],
                 ],
+
                 'provider' => [
                     'de' => [
                         'subject' => 'Rückerstattung veranlasst — Buchung #[[ booking_id ]]',
@@ -916,20 +955,21 @@ class MailTemplateTranslationSeeder extends Seeder
 <p>Wir möchten Sie darüber informieren, dass der von Ihnen für [[ customer_name ]] erbrachte Service storniert wurde. Infolgedessen wurde eine Rückerstattung in Höhe von [[ refund_amount ]] an den Kunden veranlasst.</p>
 <p><strong>Buchungsdetails:</strong></p>
 <ul>
-  <li>Stornierter Service: [[ booking_services_name ]]</li>
+  <li>Stornierter Service: [[ booking_services_names ]]</li>
   <li>Buchungs-ID: #[[ booking_id ]]</li>
   <li>Kunde: [[ customer_name ]]</li>
   <li>Auftragnehmer: [[ provider_name ]]</li>
   <li>Datum: [[ booking_date ]]</li>
   <li>Uhrzeit: [[ booking_time ]]</li>
   <li>Einsatzort: [[ city_id ]] - [[ country_id ]]</li>
+  <li> </li>
   ' . $support_de . '
 </ul>' . $footer_de,
                     ],
                     'en' => [
                         'subject' => 'Refund Issued — Booking #[[ booking_id ]]',
                         'body'    => '<p>Hello [[ provider_name ]],</p>
-<p>The service you provided for [[ customer_name ]] has been cancelled. As a result, a refund of [[ refund_amount ]] has been issued to the customer.</p>
+<p>The service you provided for [[ customer_name ]] has been cancelled. A refund of [[ refund_amount ]] has been issued to the customer.</p>
 <p><strong>Booking Details:</strong></p>
 <ul>
   <li>Cancelled Service: [[ booking_services_name ]]</li>
@@ -939,25 +979,27 @@ class MailTemplateTranslationSeeder extends Seeder
   <li>Booking Date: [[ booking_date ]]</li>
   <li>Booking Time: [[ booking_time ]]</li>
   <li>Service Location: [[ city_id ]] - [[ country_id ]]</li>
+  <li> </li>
   ' . $support_en . '
 </ul>' . $footer_en,
                     ],
                 ],
+
                 'user' => [
                     'de' => [
                         'subject' => 'Rückerstattung erhalten — Buchung #[[ booking_id ]]',
                         'body'    => '<p>Hallo [[ customer_name ]],</p>
-<p>Wir möchten Sie darüber informieren, dass der von [[ provider_name ]] für Sie gebuchte Service storniert wurde. Infolgedessen wurde eine Rückerstattung in Höhe von [[ refund_amount ]] Ihrem Wallet gutgeschrieben.</p>
+<p>Wir möchten Sie darüber informieren, dass der von [[ provider_name ]] für Sie erbrachte Service storniert wurde. Infolgedessen wurde eine Rückerstattung in Höhe von [[ refund_amount ]] Ihrem Wallet gutgeschrieben.</p>
 <p><strong>Buchungsdetails:</strong></p>
 <ul>
-  <li>Stornierter Service: [[ booking_services_name ]]</li>
+  <li>Stornierter Service: [[ booking_services_names ]]</li>
   <li>Buchungs-ID: #[[ booking_id ]]</li>
   <li>Kunde: [[ customer_name ]]</li>
   <li>Auftragnehmer: [[ provider_name ]]</li>
   <li>Datum: [[ booking_date ]]</li>
   <li>Uhrzeit: [[ booking_time ]]</li>
   <li>Einsatzort: [[ city_id ]] - [[ country_id ]]</li>
-  <li>Betrag: [[ total_amount ]]</li>
+  <li> </li>
   ' . $support_de . '
 </ul>' . $footer_de,
                     ],
@@ -974,7 +1016,7 @@ class MailTemplateTranslationSeeder extends Seeder
   <li>Booking Date: [[ booking_date ]]</li>
   <li>Booking Time: [[ booking_time ]]</li>
   <li>Service Location: [[ city_id ]] - [[ country_id ]]</li>
-  <li>Amount: [[ total_amount ]]</li>
+  <li> </li>
   ' . $support_en . '
 </ul>' . $footer_en,
                     ],
@@ -982,9 +1024,10 @@ class MailTemplateTranslationSeeder extends Seeder
             ],
 
             // =================================================================
-            // paid_with_wallet  —  Payment made via wallet
+            // paid_with_wallet
             // =================================================================
             'paid_with_wallet' => [
+
                 'admin' => [
                     'de' => [
                         'subject' => 'Wallet-Zahlung — Buchung #[[ booking_id ]]',
@@ -1000,13 +1043,14 @@ class MailTemplateTranslationSeeder extends Seeder
   <li>Uhrzeit: [[ booking_time ]]</li>
   <li>Einsatzort: [[ city_id ]] - [[ country_id ]]</li>
   <li>Betrag: [[ amount ]]</li>
+  <li> </li>
   ' . $support_de . '
 </ul>' . $footer_de,
                     ],
                     'en' => [
                         'subject' => 'Wallet Payment — Booking #[[ booking_id ]]',
                         'body'    => '<p>Hello [[ admin_name ]],</p>
-<p>The wallet payment of [[ amount ]] for booking #[[ booking_id ]] has been completed successfully. Please review the details below.</p>
+<p>The wallet payment of [[ amount ]] for booking #[[ booking_id ]] has been completed successfully.</p>
 <p><strong>Booking Details:</strong></p>
 <ul>
   <li>Booking ID: #[[ booking_id ]]</li>
@@ -1017,82 +1061,86 @@ class MailTemplateTranslationSeeder extends Seeder
   <li>Booking Time: [[ booking_time ]]</li>
   <li>Service Location: [[ city_id ]] - [[ country_id ]]</li>
   <li>Amount: [[ amount ]]</li>
+  <li> </li>
   ' . $support_en . '
 </ul>' . $footer_en,
                     ],
                 ],
+
                 'provider' => [
                     'de' => [
                         'subject' => 'Wallet-Zahlung erhalten — Buchung #[[ booking_id ]]',
                         'body'    => '<p>Hallo [[ provider_name ]],</p>
-<p>Die Buchung #[[ booking_id ]] wurde erfolgreich über das Wallet bezahlt. Bitte prüfen Sie die untenstehenden Buchungsdetails und verwalten Sie die Buchung entsprechend.</p>
+<p>Die Buchung #[[ booking_id ]] wurde erfolgreich über das Wallet bezahlt.</p>
 <p><strong>Buchungsdetails:</strong></p>
 <ul>
   <li>Buchungs-ID: #[[ booking_id ]]</li>
   <li>Service: [[ booking_services_name ]]</li>
   <li>Kunde: [[ customer_name ]]</li>
-  <li>Auftragnehmer: [[ provider_name ]]</li>
   <li>Datum: [[ booking_date ]]</li>
   <li>Uhrzeit: [[ booking_time ]]</li>
   <li>Einsatzort: [[ city_id ]] - [[ country_id ]]</li>
   <li>Betrag: [[ amount ]]</li>
+  <li> </li>
   ' . $support_de . '
 </ul>' . $footer_de,
                     ],
                     'en' => [
                         'subject' => 'Wallet Payment Received — Booking #[[ booking_id ]]',
                         'body'    => '<p>Hello [[ provider_name ]],</p>
-<p>Booking #[[ booking_id ]] has been successfully paid via wallet. Please review the booking details and manage it accordingly.</p>
+<p>Booking #[[ booking_id ]] has been successfully paid via wallet.</p>
 <p><strong>Booking Details:</strong></p>
 <ul>
   <li>Booking ID: #[[ booking_id ]]</li>
   <li>Service: [[ booking_services_name ]]</li>
   <li>Customer: [[ customer_name ]]</li>
-  <li>Provider: [[ provider_name ]]</li>
   <li>Booking Date: [[ booking_date ]]</li>
   <li>Booking Time: [[ booking_time ]]</li>
   <li>Service Location: [[ city_id ]] - [[ country_id ]]</li>
   <li>Amount: [[ amount ]]</li>
+  <li> </li>
   ' . $support_en . '
 </ul>' . $footer_en,
                     ],
                 ],
+
                 'handyman' => [
                     'de' => [
                         'subject' => 'Wallet-Zahlung — Buchung #[[ booking_id ]]',
                         'body'    => '<p>Hallo [[ handyman_name ]],</p>
-<p>Die Zahlung in Höhe von [[ amount ]] für die Buchung #[[ booking_id ]] wurde erfolgreich über das Wallet durchgeführt. Bitte prüfen Sie die untenstehenden Buchungsdetails und verwalten Sie die Buchung entsprechend.</p>
+<p>Die Zahlung in Höhe von [[ amount ]] für die Buchung #[[ booking_id ]] wurde erfolgreich über das Wallet durchgeführt.</p>
 <p><strong>Buchungsdetails:</strong></p>
 <ul>
   <li>Buchungs-ID: #[[ booking_id ]]</li>
   <li>Service: [[ booking_services_name ]]</li>
   <li>Kunde: [[ customer_name ]]</li>
-  <li>Auftragnehmer: [[ provider_name ]]</li>
   <li>Datum: [[ booking_date ]]</li>
   <li>Uhrzeit: [[ booking_time ]]</li>
   <li>Einsatzort: [[ city_id ]] - [[ country_id ]]</li>
-  <li>Angestellte(r): [[ assignee_name ]]</li>
+  <li>Betrag: [[ amount ]]</li>
+  <li> </li>
   ' . $support_de . '
 </ul>' . $footer_de,
                     ],
                     'en' => [
                         'subject' => 'Wallet Payment — Booking #[[ booking_id ]]',
                         'body'    => '<p>Hello [[ handyman_name ]],</p>
-<p>The wallet payment of [[ amount ]] for booking #[[ booking_id ]] has been completed. Please review the details and manage the booking accordingly.</p>
+<p>The wallet payment of [[ amount ]] for booking #[[ booking_id ]] has been completed.</p>
 <p><strong>Booking Details:</strong></p>
 <ul>
   <li>Booking ID: #[[ booking_id ]]</li>
   <li>Service: [[ booking_services_name ]]</li>
   <li>Customer: [[ customer_name ]]</li>
-  <li>Provider: [[ provider_name ]]</li>
   <li>Booking Date: [[ booking_date ]]</li>
   <li>Booking Time: [[ booking_time ]]</li>
   <li>Service Location: [[ city_id ]] - [[ country_id ]]</li>
-  <li>Assigned To: [[ assignee_name ]]</li>
+  <li>Amount: [[ amount ]]</li>
+  <li> </li>
   ' . $support_en . '
 </ul>' . $footer_en,
                     ],
                 ],
+
                 'user' => [
                     'de' => [
                         'subject' => 'Zahlung erfolgreich — Buchung #[[ booking_id ]]',
@@ -1102,12 +1150,11 @@ class MailTemplateTranslationSeeder extends Seeder
 <ul>
   <li>Buchungs-ID: #[[ booking_id ]]</li>
   <li>Service: [[ booking_services_name ]]</li>
-  <li>Kunde: [[ customer_name ]]</li>
-  <li>Auftragnehmer: [[ provider_name ]]</li>
   <li>Datum: [[ booking_date ]]</li>
   <li>Uhrzeit: [[ booking_time ]]</li>
   <li>Einsatzort: [[ city_id ]] - [[ country_id ]]</li>
-  <li>Angestellte(r): [[ assignee_name ]]</li>
+  <li>Betrag: [[ amount ]]</li>
+  <li> </li>
   ' . $support_de . '
 </ul>' . $footer_de,
                     ],
@@ -1119,12 +1166,11 @@ class MailTemplateTranslationSeeder extends Seeder
 <ul>
   <li>Booking ID: #[[ booking_id ]]</li>
   <li>Service: [[ booking_services_name ]]</li>
-  <li>Customer: [[ customer_name ]]</li>
-  <li>Provider: [[ provider_name ]]</li>
   <li>Booking Date: [[ booking_date ]]</li>
   <li>Booking Time: [[ booking_time ]]</li>
   <li>Service Location: [[ city_id ]] - [[ country_id ]]</li>
-  <li>Assigned To: [[ assignee_name ]]</li>
+  <li>Amount: [[ amount ]]</li>
+  <li> </li>
   ' . $support_en . '
 </ul>' . $footer_en,
                     ],
@@ -1132,39 +1178,37 @@ class MailTemplateTranslationSeeder extends Seeder
             ],
 
             // =================================================================
-            // job_requested  —  New post-job request
+            // job_requested
             // =================================================================
             'job_requested' => [
                 'admin' => [
                     'de' => [
                         'subject' => 'Neue Jobanfrage #[[ job_id ]]',
                         'body'    => '<p>Hallo [[ admin_name ]],</p>
-<p>Wir möchten Sie darüber informieren, dass eine neue Jobanfrage auf Persotel veröffentlicht wurde.</p>
-<p><strong>Auftragsdetails:</strong></p>
+<p>Wir möchten Sie informieren, dass eine neue Jobanfrage auf Persotel veröffentlicht wurde.</p>
 <p><strong>Auftrag #[[ job_id ]]</strong></p>
-<p><strong>Auftraggeber:</strong><br>[[ customer_name ]]</p>
-<p><strong>Jobauftrag:</strong><br>[[ job_request_name ]]</p>
-<p><strong>Startdatum:</strong><br>[[ job_request_start_date ]]</p>
-<p><strong>Enddatum:</strong><br>[[ job_request_end_date ]]</p>
-<p><strong>Einsatzort:</strong><br>[[ jo_brequest_city ]] - [[ job_country ]]</p>
-<p><strong>Budget:</strong><br>[[ job_request_amount ]]</p>
-<p><strong>Erstellt am:</strong><br>[[ job_request_created_at ]]</p>
+<p><strong>Auftraggeber:</strong> [[ customer_name ]]</p>
+<p><strong>Jobauftrag:</strong> [[ job_request_name ]]</p>
+<p><strong>Startdatum:</strong> [[ job_request_start_date ]]</p>
+<p><strong>Enddatum:</strong> [[ job_request_end_date ]]</p>
+<p><strong>Einsatzort:</strong> [[ jo_brequest_city ]] - [[ job_country ]]</p>
+<p><strong>Budget:</strong> [[ job_request_amount ]]</p>
+<p><strong>Erstellt am:</strong> [[ job_request_created_at ]]</p>
 <p>Sie können diese Anfrage in Ihrem Admin-Panel einsehen und verwalten.</p>
 <p>Falls Sie Fragen haben oder weitere Unterstützung benötigen, kontaktieren Sie bitte jederzeit unser Support-Team unter: info@persotel.de.</p>' . $footer_de,
                     ],
                     'en' => [
                         'subject' => 'New Job Request #[[ job_id ]]',
                         'body'    => '<p>Hello [[ admin_name ]],</p>
-<p>We want to inform you that a new job request has been published on Frobster.</p>
-<p><strong>Job Details:</strong></p>
+<p>A new job request has been published on Frobster.</p>
 <p><strong>Job #[[ job_id ]]</strong></p>
-<p><strong>Customer:</strong><br>[[ customer_name ]]</p>
-<p><strong>Job Title:</strong><br>[[ job_request_name ]]</p>
-<p><strong>Start Date:</strong><br>[[ job_request_start_date ]]</p>
-<p><strong>End Date:</strong><br>[[ job_request_end_date ]]</p>
-<p><strong>Location:</strong><br>[[ jo_brequest_city ]] - [[ job_country ]]</p>
-<p><strong>Budget:</strong><br>[[ job_request_amount ]]</p>
-<p><strong>Created:</strong><br>[[ job_request_created_at ]]</p>
+<p><strong>Customer:</strong> [[ customer_name ]]</p>
+<p><strong>Job Title:</strong> [[ job_request_name ]]</p>
+<p><strong>Start Date:</strong> [[ job_request_start_date ]]</p>
+<p><strong>End Date:</strong> [[ job_request_end_date ]]</p>
+<p><strong>Location:</strong> [[ jo_brequest_city ]] - [[ job_country ]]</p>
+<p><strong>Budget:</strong> [[ job_request_amount ]]</p>
+<p><strong>Created:</strong> [[ job_request_created_at ]]</p>
 <p>You can view and manage this request in your admin panel.</p>
 <p>If you have any questions, please contact our support team at info@frobster.com.</p>' . $footer_en,
                     ],
@@ -1174,17 +1218,15 @@ class MailTemplateTranslationSeeder extends Seeder
                         'subject' => 'Neue Jobanfrage passend zu Ihren Leistungen',
                         'body'    => '<p>Hallo [[ provider_name ]],</p>
 <p>Eine neue Jobanfrage wurde auf Persotel veröffentlicht, die zu Ihren Dienstleistungen passen könnte.</p>
-<p>Der Kunde sucht Unterstützung für folgende Aufgabe:</p>
-<p><strong>Auftragsdetails:</strong></p>
 <p><strong>Auftrag #[[ job_request_id ]]</strong></p>
-<p><strong>Auftraggeber:</strong><br>[[ customer_name ]]</p>
-<p><strong>Jobauftrag:</strong><br>[[ job_request_name ]]</p>
-<p><strong>Startdatum:</strong><br>[[ job_request_start_date ]]</p>
-<p><strong>Enddatum:</strong><br>[[ job_request_end_date ]]</p>
-<p><strong>Einsatzort:</strong><br>[[ jo_brequest_city ]] - [[ job_country ]]</p>
-<p><strong>Budget:</strong><br>[[ job_request_amount ]]</p>
-<p><strong>Erstellt am:</strong><br>[[ job_request_created_at ]]</p>
-<p>Wenn dieser Auftrag zu Ihren Fähigkeiten passt, melden Sie sich bei Persotel an und reichen Sie Ihr Angebot ein. Je schneller Sie antworten, desto höher sind Ihre Chancen.</p>
+<p><strong>Auftraggeber:</strong> [[ customer_name ]]</p>
+<p><strong>Jobauftrag:</strong> [[ job_request_name ]]</p>
+<p><strong>Startdatum:</strong> [[ job_request_start_date ]]</p>
+<p><strong>Enddatum:</strong> [[ job_request_end_date ]]</p>
+<p><strong>Einsatzort:</strong> [[ jo_brequest_city ]] - [[ job_country ]]</p>
+<p><strong>Budget:</strong> [[ job_request_amount ]]</p>
+<p><strong>Erstellt am:</strong> [[ job_request_created_at ]]</p>
+<p>Wenn dieser Auftrag zu Ihren Fähigkeiten passt, melden Sie sich bei Persotel an und reichen Sie Ihr Angebot ein.</p>
 <p><strong><a href="[[ link ]]" style="color:#2563eb;">Job ansehen und Angebot abgeben</a></strong></p>
 <p>Falls Sie Fragen haben oder weitere Unterstützung benötigen, kontaktieren Sie bitte jederzeit unser Support-Team unter: info@persotel.de.</p>' . $footer_de,
                     ],
@@ -1192,17 +1234,15 @@ class MailTemplateTranslationSeeder extends Seeder
                         'subject' => 'New Job Request Matching Your Services',
                         'body'    => '<p>Hello [[ provider_name ]],</p>
 <p>A new job request has been published on Frobster that may match your services.</p>
-<p>The customer is looking for help with the following task:</p>
-<p><strong>Job Details:</strong></p>
 <p><strong>Job #[[ job_request_id ]]</strong></p>
-<p><strong>Customer:</strong><br>[[ customer_name ]]</p>
-<p><strong>Job Title:</strong><br>[[ job_request_name ]]</p>
-<p><strong>Start Date:</strong><br>[[ job_request_start_date ]]</p>
-<p><strong>End Date:</strong><br>[[ job_request_end_date ]]</p>
-<p><strong>Location:</strong><br>[[ jo_brequest_city ]] - [[ job_country ]]</p>
-<p><strong>Budget:</strong><br>[[ job_request_amount ]]</p>
-<p><strong>Created:</strong><br>[[ job_request_created_at ]]</p>
-<p>If this job matches your skills, log in to Frobster and submit your bid. The sooner you respond, the better your chances.</p>
+<p><strong>Customer:</strong> [[ customer_name ]]</p>
+<p><strong>Job Title:</strong> [[ job_request_name ]]</p>
+<p><strong>Start Date:</strong> [[ job_request_start_date ]]</p>
+<p><strong>End Date:</strong> [[ job_request_end_date ]]</p>
+<p><strong>Location:</strong> [[ jo_brequest_city ]] - [[ job_country ]]</p>
+<p><strong>Budget:</strong> [[ job_request_amount ]]</p>
+<p><strong>Created:</strong> [[ job_request_created_at ]]</p>
+<p>If this job matches your skills, log in to Frobster and submit your bid.</p>
 <p><strong><a href="[[ link ]]" style="color:#2563eb;">View Job &amp; Submit Bid</a></strong></p>
 <p>If you have any questions, please contact our support team at info@frobster.com.</p>' . $footer_en,
                     ],
@@ -1210,7 +1250,7 @@ class MailTemplateTranslationSeeder extends Seeder
             ],
 
             // =================================================================
-            // provider_payout  —  Provider receives payout from admin
+            // provider_payout
             // =================================================================
             'provider_payout' => [
                 'provider' => [
@@ -1244,7 +1284,7 @@ class MailTemplateTranslationSeeder extends Seeder
             ],
 
             // =================================================================
-            // handyman_payout  —  Handyman receives payout from provider
+            // handyman_payout
             // =================================================================
             'handyman_payout' => [
                 'handyman' => [
@@ -1277,6 +1317,6 @@ class MailTemplateTranslationSeeder extends Seeder
                 ],
             ],
 
-        ]; // end templates()
+        ];
     }
 }
