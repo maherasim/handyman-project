@@ -2108,4 +2108,12 @@
         'handyman_rating' => 'Customer rates worker (booking)',
     ],
 
+    'start_time' => 'Start Time',
+    'end_time' => 'End Time',
+    'days' => 'Days',
+    'hours' => 'Hours',
+    'select_date_and_time' => 'Select Date and Time',
+    'about_employer' => 'About Employer',
+    'add_more_dates' => 'Add More Dates',
+
 );

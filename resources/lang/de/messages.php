@@ -2128,4 +2128,12 @@
         'handyman_rating' => 'Kunde bewertet Mitarbeiter (Buchung)',
     ],
 
+    'start_time' => 'Startzeit',
+    'end_time' => 'Endzeit',
+    'days' => 'Tage',
+    'hours' => 'Stunden',
+    'select_date_and_time' => 'Datum und Uhrzeit auswählen',
+    'about_employer' => 'Über den Anbieter',
+    'add_more_dates' => 'Weitere Termine hinzufügen',
+
 );

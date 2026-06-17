@@ -97,7 +97,7 @@
   'date_time' => 'Datum und Uhrzeit',
   'available_slots' => 'Termine',
   'slot_not_available' => 'Kein Termin',
-  'quantity' => 'Menge',
+  'quantity' => 'Anzahl',
   'remove_coupon' => 'Gutschein entfernen',
   'pay_advance' => 'Anzahlung leisten',
   'save_booking' => 'Buchung speichern',
