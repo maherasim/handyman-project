@@ -32,7 +32,7 @@
                 <div class="dropdown d-inline-block">
                   @if ($sectionData && isset($sectionData['header_setting']) && $sectionData['header_setting'] == 1)
                   @if(config('app.show_language_switcher', false) && $sectionData['enable_language'] == 1)
-                     <a class="dropdown-toggle text-white d-flex align-items-center" data-bs-toggle="dropdown" href="#"
+                     <a class="text-white d-flex align-items-center" data-bs-toggle="dropdown" href="#"
                         role="button" aria-haspopup="true" aria-expanded="false">
                         {{strtoupper(app()->getLocale())}}
                         <svg width="8" class="ms-1 transform-up" viewBox="0 0 12 8" fill="none"

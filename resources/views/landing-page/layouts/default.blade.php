@@ -118,7 +118,7 @@
 
             // Top header language dropdown – standalone handler that works
             // regardless of which Bootstrap instance is active after the build.
-            var $topToggle = $('.top-header .dropdown-toggle[data-bs-toggle="dropdown"]');
+            var $topToggle = $('.top-header [data-bs-toggle="dropdown"]');
             var $topMenu   = $('.top-header .dropdown-menu');
             if ($topToggle.length && $topMenu.length) {
                 $topToggle.on('click', function(e) {
