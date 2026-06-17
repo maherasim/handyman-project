@@ -456,4 +456,11 @@
   'bl_select_date_range' => 'Select Date Range',
   'bl_booking_search_placeholder' => 'Search…',
   'bl_select_status' => 'Select Status',
+      'start_time' => 'Start Time',
+    'end_time' => 'End Time',
+    'days' => 'Days',
+    'hours' => 'Hours',
+    'select_date_and_time' => 'Select Date and Time',
+    'about_employer' => 'About Employer',
+    'add_more_dates' => 'Add More Dates',
 );
