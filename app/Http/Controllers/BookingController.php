@@ -960,39 +960,7 @@ class BookingController extends Controller
                     }
                 }
                 
-                // Send emails to all recipients
-                $mailLocale = request('lang') ?: app()->getLocale();
-                foreach ($emailsToSend as $emailData) {
-                    try {
-                        Mail::to($emailData['user']->email)->locale($mailLocale)->send(
-                            new \App\Mail\BookingStatusUpdateMail(
-                                $emailData['user'],
-                                $bookingdata,
-                                $old_status,
-                                $newStatus,
-                                $actorName,
-                                $actorType,
-                                $emailData['type'], // recipient type: 'provider', 'handyman', or 'user'
-                                $mailLocale
-                            )
-                        );
-                        \Log::info('Booking status update email sent (web)', [
-                            'booking_id' => $id,
-                            'recipient' => $emailData['user']->email,
-                            'recipient_type' => $emailData['type'],
-                            'old_status' => $old_status,
-                            'new_status' => $newStatus,
-                            'actor' => $actorName,
-                            'actor_type' => $actorType
-                        ]);
-                    } catch (\Exception $e) {
-                        \Log::error('Failed to send booking status update email (web)', [
-                            'booking_id' => $id,
-                            'recipient' => $emailData['user']->email ?? 'unknown',
-                            'error' => $e->getMessage()
-                        ]);
-                    }
-                }
+                // Emails sent via CommonNotification (DB template)
             } catch (\Exception $e) {
                 \Log::error('Failed to send booking status update emails (web): ' . $e->getMessage(), [
                     'booking_id' => $id,

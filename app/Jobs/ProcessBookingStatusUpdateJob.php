@@ -160,24 +160,7 @@ class ProcessBookingStatusUpdateJob implements ShouldQueue
             }
         }
 
-        foreach ($emailsToSend as $emailData) {
-            try {
-                Mail::to($emailData['user']->email)->locale($this->mailLocale)->send(
-                    new \App\Mail\BookingStatusUpdateMail(
-                        $emailData['user'],
-                        $bookingdata,
-                        $oldStatus,
-                        $newStatus,
-                        $actorName,
-                        $actorType,
-                        $emailData['type'], // recipient type: 'provider', 'handyman', or 'user'
-                        $this->mailLocale
-                    )
-                );
-            } catch (\Exception $e) {
-                Log::error('Failed to send booking status update email (Job): ' . $e->getMessage());
-            }
-        }
+        // Emails sent via CommonNotification (DB template)
     }
 
     // Helper duplicated from Controller
