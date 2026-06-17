@@ -19,7 +19,11 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['*'],
+    'allowed_origins' => [
+        'https://persotel.de',
+        'https://www.persotel.de',
+        'https://frobster.com',
+    ],
 
     'allowed_origins_patterns' => [],
 
