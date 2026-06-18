@@ -209,11 +209,6 @@
             const emailOk = email !== '' && emailField && emailField.checkValidity();
             if (!(username && first && last && emailOk)) return false;
             if (!$('#customCheck1').is(':checked')) return false;
-            const ut = $('#user_type').val();
-            if (ut === 'handyman') {
-               if (!$('#providerdata').val()) return false;
-               if (!$('#handymantype').val()) return false;
-            }
             return true;
          }
 
@@ -229,8 +224,8 @@
                return @json(__('auth.password_mismatch_error'));
             }
             if ($('#user_type').val() === 'handyman') {
-               if (!$('#providerdata').val()) return @json(__('messages.select_provider'));
-               if (!$('#handymantype').val()) return @json(__('messages.select_handyman_type'));
+               // if (!$('#providerdata').val()) return @json(__('messages.select_provider'));
+               // if (!$('#handymantype').val()) return @json(__('messages.select_handyman_type'));
             }
             return '';
          }
