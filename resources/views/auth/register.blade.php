@@ -16,7 +16,7 @@
       .password-requirements li:not(.valid) { color: #6c757d; }
       .password-requirements li.valid .req-icon::before { content: '✓ '; font-weight: bold; }
       .password-requirements li:not(.valid) .req-icon::before { content: '○ '; }
-      #submit-btn:disabled { opacity: 0.65; cursor: not-allowed; }
+      #submit-btn.is-disabled { opacity: 0.65; }
    </style>
    <section class="login-content">
       <div class="container h-100">
@@ -164,7 +164,7 @@
                            @endif
 
                         </div>
-                        <button type="submit" class="btn btn-primary btn-block mt-2 w-100" id="submit-btn" disabled>{{ __('auth.create_account') }}</button>
+                        <button type="submit" class="btn btn-primary btn-block mt-2 w-100" id="submit-btn">{{ __('auth.create_account') }}</button>
                         <div class="col-lg-12 mt-3">
                            <p class="mb-0 text-center">{{__('auth.already_have_account')}} <a class="btn-link p-0 text-capitalize" href="{{route('login')}}">{{__('auth.sign_in')}}</a></p>
                         </div>
@@ -217,6 +217,24 @@
             return true;
          }
 
+         function registerValidationMessage() {
+            const emailField = document.getElementById('email');
+            if (!($('#username').val() || '').trim()) return @json(__('auth.enter_name',[ 'name' => __('auth.username') ]));
+            if (!($('#first_name').val() || '').trim()) return @json(__('auth.enter_name',[ 'name' => __('auth.first_name') ]));
+            if (!($('#last_name').val() || '').trim()) return @json(__('auth.enter_name',[ 'name' => __('auth.last_name') ]));
+            if (!emailField || !emailField.checkValidity()) return @json(__('auth.enter_name',[ 'name' => __('auth.email') ]));
+            if (!$('#customCheck1').is(':checked')) return @json(__('auth.agree'));
+            if (!passwordPolicySatisfied($('#password').val() || '')) return @json(__('auth.password_requirements_intro'));
+            if (($('#password_confirmation').val() || '').length === 0 || $('#password').val() !== $('#password_confirmation').val()) {
+               return @json(__('auth.password_mismatch_error'));
+            }
+            if ($('#user_type').val() === 'handyman') {
+               if (!$('#providerdata').val()) return @json(__('messages.select_provider'));
+               if (!$('#handymantype').val()) return @json(__('messages.select_handyman_type'));
+            }
+            return '';
+         }
+
          function updateRegisterSubmitState() {
             const password = $('#password').val() || '';
             const confirmPassword = $('#password_confirmation').val() || '';
@@ -234,13 +252,22 @@
             }
 
             const ok = registerFieldsReady() && policyOk && matchOk;
-            submitBtn.prop('disabled', !ok);
+            submitBtn.toggleClass('is-disabled', !ok).attr('aria-disabled', ok ? 'false' : 'true');
          }
 
          $(document).ready(function() {
-            $('#password, #password_confirmation, #username, #first_name, #last_name, #email').on('input change', updateRegisterSubmitState);
+            $('#password, #password_confirmation, #username, #first_name, #last_name, #email, #user_type').on('input change', updateRegisterSubmitState);
             $('#customCheck1').on('change', updateRegisterSubmitState);
             $('#providerdata, #handymantype').on('change', updateRegisterSubmitState);
+            $('form[action="{{ route('register') }}"]').on('submit', function(e) {
+               updateRegisterSubmitState();
+               const message = registerValidationMessage();
+               if (message) {
+                  e.preventDefault();
+                  if (this.reportValidity && !this.reportValidity()) return;
+                  $('#confirm_passsword').text(message);
+               }
+            });
             updateRegisterSubmitState();
 
     function fetchTypes(userType, providerId = null) {
