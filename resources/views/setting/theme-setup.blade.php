@@ -275,7 +275,7 @@
     }
 
     async function compressImage(file) {
-        if (!file || !file.type || !file.type.startsWith('image/')) {
+        if (!file || !file.type || !/^image\/jpe?g$/i.test(file.type)) {
             return file;
         }
 
