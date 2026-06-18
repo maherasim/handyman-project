@@ -443,18 +443,14 @@ function settingSession($type='get'){
 }
 
 function imageSession($type='get'){
-    if(\Session::get('images_data') == ''){
-        $type='set';
+    static $settings = null;
+
+    if ($type === 'set' || $settings === null) {
+        $settings = \App\Models\Setting::where('type','theme-setup')->where('key','theme-setup')->first();
+        \Session::put('images_data',$settings);
     }
-    switch ($type){
-        case "set" :
-            $settings = \App\Models\Setting::where('type','theme-setup')->where('key','theme-setup')->first();
-            \Session::put('images_data',$settings);
-            break;
-        default :
-            break;
-    }
-    return \Session::get('images_data');
+
+    return $settings;
 }
 
 function sitesetupSession($type='get'){

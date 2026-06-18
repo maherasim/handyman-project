@@ -878,6 +878,8 @@ class SettingController extends Controller
         storeMediaFile($setting, $request->favicon, 'favicon');
         storeMediaFile($setting, $request->footer_logo, 'footer_logo');
         storeMediaFile($setting, $request->loader, 'loader');
+        \Session::forget('images_data');
+        imageSession('set');
 
         $message = trans('messages.update_form', ['form' => trans('messages.theme_setup')]);
         return redirect()->route('setting.index', ['page' => $request->page])->withSuccess($message);

@@ -1035,6 +1035,11 @@ $data['remaining_payout'] = round($providerRemainingPayout, $digitafter_decimal_
             $data->clearMediaCollection($type);
         }
 
+        if (in_array($type, ['logo', 'favicon', 'footer_logo', 'loader'])) {
+            \Session::forget('images_data');
+            imageSession('set');
+        }
+
         $response = [
             'status'    => true,
             'image'     => getSingleMedia($data, $type),
