@@ -371,8 +371,17 @@ class SettingController extends Controller
             $data['profile_complete'] = 1;
         }
 
+        if (isset($data['first_name']) || isset($data['last_name'])) {
+            $firstName = trim((string) ($data['first_name'] ?? $user->first_name ?? ''));
+            $lastName = trim((string) ($data['last_name'] ?? $user->last_name ?? ''));
+            $data['display_name'] = trim($firstName . ' ' . $lastName);
+        }
+
         $user->fill($data)->update();
         storeMediaFile($user, $request->profile_image, 'profile_image');
+        $user->refresh();
+        \Auth::setUser($user);
+        \Session::put('auth_user', $user);
       DB::table('provider_taxes')->updateOrInsert(
     ['provider_id' => auth()->id()],
     ['tax_id' => $request->tax_country_id]
