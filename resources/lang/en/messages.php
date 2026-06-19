@@ -2184,7 +2184,7 @@
     //Missing
     'about_me_label'         => 'About me',
     'no_addresses_found'=>'Address not found',
-    'add_addresees'=>'Add Address',
+    'add_address'=>'Add Address',
 
 
 );
