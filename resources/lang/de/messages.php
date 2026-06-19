@@ -2203,6 +2203,8 @@
     'payment_already_pending' => 'Eine Zahlung für diesen Betrag wartet bereits auf Genehmigung. Bitte warten Sie auf die Admin-Überprüfung.',
     'no_addresses_found'  => 'Keine Adresse gefunden',
     'add_address'         => 'Adresse hinzufügen',
-    'pending_by_admin'=>"Pending by Admin"
+    'pending_by_admin' => "Vom Administrator ausstehend",
+'bank_transfer_selected' => 'Banküberweisung gewählt',
+'bank_transfer_email_proof' => 'Nachweis der Banküberweisung per E-Mail',
 );
 

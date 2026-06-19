@@ -124,7 +124,13 @@
                         <div id="extraChargesWrapper">
                             <!-- Dynamic rows will be added here -->
                         </div>
-                        <button type="button" class="btn btn-outline-secondary mt-3" id="addChargeRow">{{ __('messages.add_more') }}</button>
+                        <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top">
+                            <button type="button" class="btn btn-outline-secondary" id="addChargeRow">+ {{ __('messages.add_more') }}</button>
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="fw-semibold text-muted">{{ __('messages.total') }}:</span>
+                                <span class="fw-bold fs-5 text-primary border border-primary rounded px-3 py-1" id="extraChargesTotalDisplay">0.00</span>
+                            </div>
+                        </div>
                     </div>
                     <div class="modal-footer">
                         <button type="submit" class="btn btn-success">{{ __('messages.modal_submit_charges') }}</button>

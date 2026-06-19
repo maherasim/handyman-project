@@ -2187,5 +2187,8 @@
     'no_addresses_found'=>'Address not found',
     'add_address'=>'Add Address',
     'waiting_admin_approval'=>'Add Address',
-    'pending_by_admin' => "Vom Administrator ausstehend"
+    'pending_by_admin' => "Pending By Admin",
+    'bank_transfer_selected'=>" Bank Transfer",
+    'bank_transfer_email_proof'=> "Bank Transfer Email Proof ",
+
 );

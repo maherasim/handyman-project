@@ -20,7 +20,7 @@ when
             <td class="bk-value">
                 {{ $bookingdata->quantity }}
             </td>
-        </tr>
+        </tr>f
 
         <!-- Total Amount (Price x Quantity) -->
         <tr>
@@ -1861,25 +1861,45 @@ when
         // Add extra charge row
         $('#addChargeRow').on('click', function () {
             addChargeRow();
+            recalcExtraTotal();
         });
 
         // Remove charge row
         $(document).on('click', '.remove-charge-row', function () {
             $(this).closest('.charge-row').remove();
+            recalcExtraTotal();
         });
 
         // Increase quantity
         $(document).on('click', '.increase-qty', function () {
             const input = $(this).closest('.input-group').find('.charge-quantity');
             input.val(Math.round((parseFloat(input.val() || 0) + 0.5) * 100) / 100);
+            recalcExtraTotal();
         });
 
         // Decrease quantity
         $(document).on('click', '.decrease-qty', function () {
             const input = $(this).closest('.input-group').find('.charge-quantity');
             let qty = parseFloat(input.val() || 0.5);
-            if (qty > 0.5) input.val(Math.round((qty - 0.5) * 100) / 100);
+            if (qty > 0.01) input.val(Math.round((qty - 0.5) * 100) / 100);
+            recalcExtraTotal();
         });
+
+        // Live total on manual input
+        $(document).on('input change', '.charge-amount, .charge-quantity', function () {
+            recalcExtraTotal();
+        });
+
+        // Recalculate total of all charge rows
+        function recalcExtraTotal() {
+            let total = 0;
+            $('.charge-row').each(function () {
+                const amount = parseFloat($(this).find('.charge-amount').val()) || 0;
+                const qty    = parseFloat($(this).find('.charge-quantity').val()) || 0;
+                total += amount * qty;
+            });
+            $('#extraChargesTotalDisplay').text(total.toFixed(2));
+        }
 
         // Submit charges
         $('#extraChargesForm').on('submit', function (e) {
@@ -1931,7 +1951,7 @@ when
                             <label class="form-label">{{ __('messages.quantity') }}</label>
                             <div class="input-group">
                                 <button class="btn btn-outline-secondary btn-sm decrease-qty" type="button">-</button>
-                                <input type="number" class="form-control text-center charge-quantity" value="1" step="0.5" min="0.5">
+                                <input type="number" class="form-control text-center charge-quantity" value="1" step="0.01" min="0.01">
                                 <button class="btn btn-outline-secondary btn-sm increase-qty" type="button">+</button>
                             </div>
                         </div>

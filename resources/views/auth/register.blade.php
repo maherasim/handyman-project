@@ -94,7 +94,6 @@
                                  <select name="usertype" class="form-control mb-3" id="user_type">
                                     <option value="user">{{ __('landingpage.user') }}</option>
                                     <option value="provider">{{ __('messages.provider') }}</option>
-                                    <option value="handyman">{{ __('messages.handyman') }}</option>
                                  </select>
                               </div>
                            </div>
