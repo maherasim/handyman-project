@@ -75,8 +75,49 @@
                                 <small class="help-block with-errors text-danger" id="languages_error"></small>
                             </div>
                             <div class="form-group col-md-3">
-                                {{ html()->label(__('messages.education'))->class('form-control-label')->for('education') }}
-                                {{ html()->text('education', $handymandata->education)->placeholder(__('messages.education'))->class('form-control') }}
+                                {{ html()->label(__('messages.education'), 'education')->class('form-control-label')->for('education') }}
+                                {{ html()->select(
+                                        'education',
+                                        [
+                                            '' => __('messages.select_name', ['select' => __('messages.education')]),
+                                            'any_graduate' => __('messages.education_any_graduate'),
+                                            'apprenticeship_degree' => __('messages.education_apprenticeship_degree'),
+                                            'traineeship_degree' => __('messages.education_traineeship_degree'),
+                                            'secondary_degree' => __('messages.education_secondary_degree'),
+                                            'undergraduate_diploma' => __('messages.education_undergraduate_diploma'),
+                                            'high_school_graduate' => __('messages.education_high_school_graduate'),
+                                            'associate_degree' => __('messages.education_associate_degree'),
+                                            'college_degree' => __('messages.education_college_degree'),
+                                            'university_degree' => __('messages.education_university_degree'),
+                                            'bachelors_degree' => __('messages.education_bachelor_degree'),
+                                            'masters_degree' => __('messages.education_master_degree'),
+                                            'doctorate_degree' => __('messages.education_doctorate_degree'),
+                                            'professional_degree' => __('messages.education_professional_degree'),
+                                        ],
+                                        old('education', $handymandata->education ?? ''),
+                                    )->class('form-control')->attribute('data-placeholder', __('messages.education')) }}
+                                <small class="help-block with-errors text-danger"></small>
+                            </div>
+                            <div class="form-group col-md-3">
+                                {{ html()->label(__('messages.career_level'))->class('form-control-label')->for('career_level') }}
+                                {{ html()->select(
+                                        'career_level',
+                                        [
+                                            'not_specified' => __('messages.career_level_not_specified'),
+                                            'entry_level' => __('messages.career_level_entry_level'),
+                                            'intermediate_level' => __('messages.career_level_intermediate_level'),
+                                            'experienced' => __('messages.career_level_experienced'),
+                                            'professional' => __('messages.career_level_professional'),
+                                            'middle_management' => __('messages.career_level_middle_management'),
+                                            'executive_management' => __('messages.career_level_executive_management'),
+                                            'senior_management' => __('messages.career_level_senior_management'),
+                                            'director' => __('messages.career_level_director'),
+                                            'technician' => __('messages.career_level_technician'),
+                                            'leader' => __('messages.career_level_leader'),
+                                            'manager' => __('messages.career_level_manager'),
+                                        ],
+                                        old('career_level', $handymandata->career_level ?? 'not_specified'),
+                                    )->class('form-control')->attribute('data-placeholder', __('messages.career_level')) }}
                                 <small class="help-block with-errors text-danger"></small>
                             </div>
                             <div class="form-group col-md-3">

@@ -160,16 +160,18 @@ const remainingAmount = computed(() => {
 })
 
 const paymentDisplayAmount = computed(() => {
+    let amount
     if (props.payment_type === 'paid') {
-        const advancePaid = props.total_advance_paid_amount || 0;
-        return props.total_booking_amount - advancePaid;
+        const advancePaid = Number(props.total_advance_paid_amount) || 0
+        amount = props.total_booking_amount - advancePaid
     } else {
-        const bookedAdvance = Number(props.total_advance_paid_amount) || 0;
-        return bookedAdvance > 0
+        const bookedAdvance = Number(props.total_advance_paid_amount) || 0
+        amount = bookedAdvance > 0
             ? bookedAdvance
-            : (props.total_booking_amount * props.advance_percentage) / 100;
+            : (props.total_booking_amount * props.advance_percentage) / 100
     }
-});
+    return Math.round(amount * 100) / 100
+})
 
 const canUseWallet = computed(() => {
   const balance = Number(props.wallet_amount) || 0;
@@ -477,7 +479,11 @@ const onPaymentMethodChange = () => {
 }
 
 const formatCurrencyVue = (value) => {
-  return window.currencyFormat !== undefined ? window.currencyFormat(value) : value
+  if (window.currencyFormat !== undefined) {
+    const result = window.currencyFormat(value)
+    if (result !== '' && result != null) return result
+  }
+  return (Number(value) || 0).toFixed(2)
 }
 
 const isChildComponentVisible = ref(false)
