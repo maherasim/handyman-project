@@ -2229,6 +2229,6 @@
     'commission_request_helpdesk_body'  => 'Provider :provider has requested to change the commission for handyman :handyman from :current% to :new%.' . "\n\n" . 'Reason: :reason',
     'commission_request_approved_message' => 'Admin has approved the commission change request. New commission: :new%.',
     'commission_request_rejected_message' => 'Admin has rejected the commission change request. Reason: :reason',
-    'reject'='Reject',
+    'reject'=>'Reject',
 
 );
