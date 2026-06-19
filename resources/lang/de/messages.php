@@ -2200,6 +2200,7 @@
  
     // Missing
     'about_me_label'      => 'Über mich',
+    'payment_already_pending' => 'Eine Zahlung für diesen Betrag wartet bereits auf Genehmigung. Bitte warten Sie auf die Admin-Überprüfung.',
     'no_addresses_found'  => 'Keine Adresse gefunden',
     'add_address'         => 'Adresse hinzufügen',
 );

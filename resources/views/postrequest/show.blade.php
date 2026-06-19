@@ -1050,13 +1050,25 @@
                         showCancelButton: true,
                     }).then(() => {});
 
+                    let isProcessing = false;
+
                     setTimeout(() => {
                         const walletBtn = document.getElementById('walletPayBtn');
                         const stripeBtn = document.getElementById('stripePayBtn');
                         const paypalBtn = document.getElementById('paypalPayBtn');
-                        const bankBtn = document.getElementById('bankPayBtn');
+                        const bankBtn   = document.getElementById('bankPayBtn');
+
+                        function setProcessing(flag) {
+                            isProcessing = flag;
+                            [walletBtn, stripeBtn, paypalBtn, bankBtn].forEach(b => {
+                                if (b) b.disabled = flag;
+                            });
+                        }
+
                         if (walletBtn) {
                             walletBtn.addEventListener('click', () => {
+                                if (isProcessing) return;
+                                setProcessing(true);
                                 Swal.close();
                                 fetch(`{{ route('post-job-request.pay-advance', ':id') }}`
                                         .replace(':id', postId), {
@@ -1067,23 +1079,26 @@
                                             },
                                             body: JSON.stringify({
                                                 amount: amount,
-                                                type: isRemaining ?
-                                                    'remaining' : 'advance'
+                                                type: isRemaining ? 'remaining' : 'advance'
                                             })
                                         }).then(res => res.json())
                                     .then(response => {
-                                        Swal.fire(response.status ? pjrJsLang.success :
-                                                pjrJsLang.js_error, response.message,
-                                                response.status ? 'success' :
-                                                'error')
+                                        setProcessing(false);
+                                        Swal.fire(response.status ? pjrJsLang.success : pjrJsLang.js_error,
+                                                response.message,
+                                                response.status ? 'success' : 'error')
                                             .then(() => location.reload());
-                                    }).catch(() => Swal.fire(pjrJsLang.js_error,
-                                        pjrJsLang.something_wrong_exclaim, 'error'));
+                                    }).catch(() => {
+                                        setProcessing(false);
+                                        Swal.fire(pjrJsLang.js_error, pjrJsLang.something_wrong_exclaim, 'error');
+                                    });
                             });
                         }
 
                         if (stripeBtn) {
                             stripeBtn.addEventListener('click', () => {
+                                if (isProcessing) return;
+                                setProcessing(true);
                                 Swal.close();
                                 fetch(`{{ route('postjob.stripe.create', ':id') }}`
                                         .replace(':id', postId), {
@@ -1094,8 +1109,7 @@
                                             },
                                             body: JSON.stringify({
                                                 amount: amount,
-                                                type: isRemaining ?
-                                                    'remaining' : 'advance',
+                                                type: isRemaining ? 'remaining' : 'advance',
                                                 use_checkout: true
                                             })
                                         }).then(res => res.json())
@@ -1103,113 +1117,89 @@
                                         if (session && session.status && session.url) {
                                             window.location.href = session.url;
                                         } else {
-                                            Swal.fire(pjrJsLang.error, session
-                                                .message ||
-                                                pjrJsLang.stripe_init_failed,
-                                                'error');
+                                            setProcessing(false);
+                                            Swal.fire(pjrJsLang.error, session.message || pjrJsLang.stripe_init_failed, 'error');
                                         }
-                                    }).catch(() => Swal.fire(pjrJsLang.js_error,
-                                        pjrJsLang.something_wrong_exclaim, 'error'));
+                                    }).catch(() => {
+                                        setProcessing(false);
+                                        Swal.fire(pjrJsLang.js_error, pjrJsLang.something_wrong_exclaim, 'error');
+                                    });
                             });
                         }
+
                         if (bankBtn) {
                             bankBtn.addEventListener('click', () => {
-                                // 1) Fetch provider bank details
-                                fetch(`{{ route('postjob.bank.details', ':id') }}`
-                                        .replace(':id', postId), {
-                                            method: 'GET',
-                                            headers: {
-                                                'X-Requested-With': 'XMLHttpRequest'
-                                            }
-                                        }).then(res => res.json())
-                                    .then(data => {
-                                        const d = data || {};
-                                        const bank = d.bank || {};
+                                if (isProcessing) return;
+                                setProcessing(true);
+                                // Fetch bank details from the central API
+                                const lang = (document.documentElement.lang || 'en').split('-')[0];
+                                const bankApiUrl = (document.querySelector('meta[name="baseUrl"]')?.getAttribute('content') || '') + '/api/bank-transfer-settings?language=' + lang;
+                                fetch(bankApiUrl)
+                                    .then(res => res.json())
+                                    .then(json => {
+                                        const bank = Array.isArray(json.data) ? (json.data[0] || {}) : (json.data || {});
+                                        const bankName    = bank.bank_name    || '';
+                                        const bankAddress = bank.bank_address || '';
                                         const infoHtml = `
-                 <div class="text-start">
+<div class="text-start">
   <h6 class="mb-2">${pjrJsLang.bank_info_heading}</h6>
   <div class="mb-2"><strong>${pjrJsLang.amount_label}</strong> ${formatCurrencyJS(formattedAmount)}</div>
   <div class="mb-2"><strong>${pjrJsLang.bank_for_transfers}</strong></div>
-  <div><strong>${pjrJsLang.bank_recipient}</strong> Ben Ghezaiel</div>
-  <div><strong>${pjrJsLang.bank_iban}</strong> DE02 1001 0178 1361 6331 79</div>
-  <div><strong>${pjrJsLang.bank_bic}</strong> REVODEB2</div>
-  <div class="mt-2"><strong>${pjrJsLang.bank_name_address}</strong></div>
-  <div class="ms-3">Revolut Bank UAB,<br>
-    Zweigniederlassung Deutschland<br>
-    FORA Linden Palais, Unter den<br>
-    Linden 40<br>
-    10117, Berlin, Germany</div>
-  <div class="mt-2"><strong>${pjrJsLang.bank_bic_sender}</strong> CHASDEFX</div>
-  
+  <div><strong>${pjrJsLang.bank_recipient}</strong> ${bank.recipient || ''}</div>
+  <div><strong>${pjrJsLang.bank_iban}</strong> ${bank.iban || ''}</div>
+  <div><strong>${pjrJsLang.bank_bic}</strong> ${bank.bic || ''}</div>
+  <div class="mt-2"><strong>{{ __('messages.bank_transfer_bank_name') }}:</strong> ${bankName}</div>
+  <div><strong>{{ __('messages.bank_transfer_bank_address') }}:</strong> <span style="white-space:pre-line">${bankAddress}</span></div>
   <h6 class="mt-3">${pjrJsLang.bank_instructions}</h6>
- 
   <div class="small mt-1">
     ${pjrJsLang.bank_send_proof}
-    <a href="mailto:billing@frobster.com">billing@frobster.com</a>
+    <a href="mailto:${bank.email || ''}">${bank.email || ''}</a>
   </div>
-</div>
-
-              `;
-                                        // 2) Show popup with details and confirm
+</div>`;
+                                        setProcessing(false);
                                         Swal.fire({
                                             title: pjrJsLang.bank_transfer,
                                             html: infoHtml,
                                             showCancelButton: true,
                                             confirmButtonText: pjrJsLang.proceed,
                                         }).then(result => {
-                                            if (!result.isConfirmed)
-                                                return;
-                                            // 3) Create pending bank transfer record
+                                            if (!result.isConfirmed) return;
+                                            setProcessing(true);
                                             fetch(`{{ route('postjob.bank.transfer', ':id') }}`
-                                                    .replace(':id',
-                                                        postId), {
+                                                    .replace(':id', postId), {
                                                         method: 'POST',
                                                         headers: {
                                                             'X-CSRF-TOKEN': '{{ csrf_token() }}',
                                                             'Content-Type': 'application/json'
                                                         },
-                                                        body: JSON
-                                                            .stringify({
-                                                                amount: amount,
-                                                                type: isRemaining ?
-                                                                    'remaining' :
-                                                                    'advance'
-                                                            })
-                                                    }).then(res => res
-                                                    .json())
+                                                        body: JSON.stringify({
+                                                            amount: amount,
+                                                            type: isRemaining ? 'remaining' : 'advance'
+                                                        })
+                                                    }).then(res => res.json())
                                                 .then(response => {
+                                                    setProcessing(false);
                                                     Swal.fire(
-                                                            response
-                                                            .status ?
-                                                            pjrJsLang.recorded :
-                                                            pjrJsLang.js_error,
-                                                            response
-                                                            .message ||
-                                                            (response
-                                                                .status ?
-                                                                pjrJsLang.transfer_recorded :
-                                                                pjrJsLang.unable_record_transfer
-                                                            ),
-                                                            response
-                                                            .status ?
-                                                            'success' :
-                                                            'error')
-                                                        .then(() =>
-                                                            location
-                                                            .reload()
-                                                        );
-                                                }).catch(() => Swal
-                                                    .fire(pjrJsLang.js_error,
-                                                        pjrJsLang.something_wrong_exclaim,
-                                                        'error'));
+                                                            response.status ? pjrJsLang.recorded : pjrJsLang.js_error,
+                                                            response.message || (response.status ? pjrJsLang.transfer_recorded : pjrJsLang.unable_record_transfer),
+                                                            response.status ? 'success' : 'error')
+                                                        .then(() => location.reload());
+                                                }).catch(() => {
+                                                    setProcessing(false);
+                                                    Swal.fire(pjrJsLang.js_error, pjrJsLang.something_wrong_exclaim, 'error');
+                                                });
                                         });
-                                    }).catch(() => Swal.fire(pjrJsLang.js_error,
-                                        pjrJsLang.fetch_bank_failed, 'error'
-                                    ));
+                                    }).catch(() => {
+                                        setProcessing(false);
+                                        Swal.fire(pjrJsLang.js_error, pjrJsLang.fetch_bank_failed, 'error');
+                                    });
                             });
                         }
+
                         if (paypalBtn) {
                             paypalBtn.addEventListener('click', () => {
+                                if (isProcessing) return;
+                                setProcessing(true);
                                 Swal.close();
                                 fetch(`{{ route('postjob.paypal.create', ':id') }}`
                                         .replace(':id', postId), {
@@ -1220,21 +1210,20 @@
                                             },
                                             body: JSON.stringify({
                                                 amount: amount,
-                                                type: isRemaining ?
-                                                    'remaining' : 'advance'
+                                                type: isRemaining ? 'remaining' : 'advance'
                                             })
                                         }).then(res => res.json())
                                     .then(data => {
                                         if (data && data.url) {
-                                            window.location.href = data
-                                                .url; // PayPal approval page
+                                            window.location.href = data.url;
                                         } else {
-                                            Swal.fire(pjrJsLang.js_error, data.error ||
-                                                pjrJsLang.paypal_init_failed,
-                                                'error');
+                                            setProcessing(false);
+                                            Swal.fire(pjrJsLang.js_error, data.error || pjrJsLang.paypal_init_failed, 'error');
                                         }
-                                    }).catch(() => Swal.fire(pjrJsLang.js_error,
-                                        pjrJsLang.something_wrong_exclaim, 'error'));
+                                    }).catch(() => {
+                                        setProcessing(false);
+                                        Swal.fire(pjrJsLang.js_error, pjrJsLang.something_wrong_exclaim, 'error');
+                                    });
                             });
                         }
                     }, 50);

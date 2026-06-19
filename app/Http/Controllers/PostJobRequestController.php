@@ -1986,6 +1986,19 @@ class PostJobRequestController extends Controller
             return response()->json(['status' => false, 'message' => __('messages.invalid_amount')], 422);
         }
 
+        // Prevent duplicate submissions (double-click / network retry)
+        $pendingStatus = $type === 'advance' ? 'advance_pending' : 'remaining_pending';
+        $alreadyExists = PaymentPostJOb::where('post_job_bid_request_id', $bid->id)
+            ->where('customer_id', $user->id)
+            ->where('payment_status', $pendingStatus)
+            ->exists();
+        if ($alreadyExists) {
+            return response()->json([
+                'status'  => false,
+                'message' => __('messages.payment_already_pending'),
+            ], 409);
+        }
+
         // Calculate admin commission and provider earning
         $admin_commission_percentage = 10; // fixed 10%
         $admin_commission_amount = ($payAmount * $admin_commission_percentage) / 100;

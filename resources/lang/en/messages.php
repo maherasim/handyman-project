@@ -2183,8 +2183,10 @@
 
     //Missing
     'about_me_label'         => 'About me',
+    'payment_already_pending' => 'A payment for this amount is already pending approval. Please wait for admin verification.',
     'no_addresses_found'=>'Address not found',
     'add_address'=>'Add Address',
+    'waiting_admin_approval'=>'Add Address',
 
 
 );
