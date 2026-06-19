@@ -84,8 +84,8 @@
                   <li><strong>{{ $t('messages.pjr_bank_recipient') }}</strong> {{ bankConfig.recipient }}</li>
                   <li><strong>{{ $t('messages.pjr_bank_iban') }}</strong> {{ bankConfig.iban }}</li>
                   <li><strong>{{ $t('messages.pjr_bank_bic') }}</strong> {{ bankConfig.bic }}</li>
-                  <li class="mt-2"><strong>{{ $t('messages.pjr_bank_name_address') }}</strong></li>
-                  <li class="ms-3" style="white-space: pre-line">{{ bankConfig.bank_name }},<br>{{ bankConfig.bank_address }}</li>
+                  <li><strong>{{ $t('messages.bank_transfer_bank_name') }}:</strong> {{ bankConfig.bank_name }}</li>
+                  <li><strong>{{ $t('messages.bank_transfer_bank_address') }}:</strong> <span style="white-space: pre-line">{{ bankConfig.bank_address }}</span></li>
                 </ul>
               </div>
             </div>
