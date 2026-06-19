@@ -14,6 +14,7 @@ use App\Http\Requests\UserRequest;
 use App\Models\NotificationTemplate;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Cache;
+use App\Models\BankTransferSetting;
 class SettingController extends Controller
 {
     public function __construct()
@@ -299,6 +300,11 @@ class SettingController extends Controller
                 $earningsetting   = Setting::where('type', '=', 'earning-setting')->first();
 
                 $data  = view('setting.' . $page, compact('earningsetting', 'page'))->render();
+                break;
+            case 'bank-transfer-setting':
+                $enSettings = BankTransferSetting::where('language', 'en')->first();
+                $deSettings = BankTransferSetting::where('language', 'de')->first();
+                $data = view('setting.bank-transfer-setting', compact('page', 'enSettings', 'deSettings'))->render();
                 break;
             default:
                 $data  = view('setting.' . $page, compact('settings', 'page', 'envSettting'))->render();
@@ -1066,5 +1072,31 @@ class SettingController extends Controller
         $settings = [];
         $services = Service::pluck('name', 'id');
         return view('setting.push-notification-setting', compact('settings', 'pageTitle', 'services'))->render();
+    }
+
+    public function bankTransferSetting(Request $request)
+    {
+        if (demoUserPermission()) {
+            return redirect()->back()->withErrors(trans('messages.demo_permission_denied'));
+        }
+
+        $language = $request->input('language', 'en');
+        $page = $request->input('page', 'bank-transfer-setting');
+
+        BankTransferSetting::updateOrCreate(
+            ['language' => $language],
+            [
+                'recipient'    => $request->input('recipient'),
+                'iban'         => $request->input('iban'),
+                'bic'          => $request->input('bic'),
+                'bank_name'    => $request->input('bank_name'),
+                'bank_address' => $request->input('bank_address'),
+                'email'        => $request->input('email'),
+                'is_active'    => 1,
+            ]
+        );
+
+        $message = trans('messages.update_form', ['form' => 'Bank Transfer Settings']);
+        return redirect()->route('setting.index', ['page' => $page])->withSuccess($message);
     }
 }

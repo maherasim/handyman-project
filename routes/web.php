@@ -401,6 +401,7 @@ Route::group(['middleware' => ['auth', 'verified', 'active']], function () {
     Route::post('social-media-save', [SettingController::class, 'socialMedia'])->name('socialMedia');
     route::post('role-permission', [RoleController::class, 'rolePermission'])->name('role_layout_page');
     Route::post('cookie-setup-save', [SettingController::class, 'cookieSetup'])->name('cookiesetup');
+    Route::post('bank-transfer-setting-save', [SettingController::class, 'bankTransferSetting'])->name('bankTransferSetting');
 
     Route::group(['middleware' => ['permission:document list|providerdocument list']], function () {
         Route::resource('document', DocumentsController::class);

@@ -22,6 +22,7 @@ use App\Models\Booking;
 use App\Models\Tax;
 use App\Models\AppSetting;
 use App\Models\User;
+use App\Models\BankTransferSetting;
 use App\Http\Resources\API\ServiceResource;
 use App\Http\Resources\API\TypeResource;
 use App\Http\Resources\API\BankResource;
@@ -85,6 +86,27 @@ class CommanController extends Controller
             'data' => $data,
             'options' => $map,
         ]);
+    }
+
+    public function getBankTransferSettings(Request $request)
+    {
+        $language = $request->query('language');
+
+        if ($language) {
+            $setting = BankTransferSetting::where('language', $language)
+                ->where('is_active', 1)
+                ->first();
+
+            if (!$setting) {
+                return comman_custom_response(['data' => null, 'message' => 'No settings found for the requested language.'], 404);
+            }
+
+            return comman_custom_response(['data' => $setting]);
+        }
+
+        $settings = BankTransferSetting::where('is_active', 1)->get();
+
+        return comman_custom_response(['data' => $settings]);
     }
 
     public function getProviderTax(Request $request){
