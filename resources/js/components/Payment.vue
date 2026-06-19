@@ -120,7 +120,8 @@ import {
   GET_STRIPE_PAYMENT_URL,
   WALLET_PAYMENT_API,
   PAYMENT_GATEWAY_LIST,
-    BANK_TRANSFER_PAYMENT_API
+  BANK_TRANSFER_PAYMENT_API,
+  BANK_TRANSFER_SETTINGS_API
 } from '../data/api'
 import Swal from 'sweetalert2'
 import { confirmcancleSwal, confirmcancleWallet } from '../data/utilities'
@@ -129,7 +130,19 @@ import Wallet from '../components/Wallet.vue'
 const { t } = useI18n()
 const props = defineProps(['booking_id', 'customer_id', 'discount', 'total_amount', 'advance_payment_amount', 'wallet_amount', 'payment_type', 'total_advance_paid_amount', 'total_booking_amount', 'advance_percentage'])
 
-const bankConfig = window.bankTransferConfig || {}
+const bankConfig = ref(window.bankTransferConfig || {})
+
+const fetchBankTransferSettings = async () => {
+  try {
+    const res = await fetch(BANK_TRANSFER_SETTINGS_API)
+    if (res.ok) {
+      const json = await res.json()
+      if (json.data) bankConfig.value = json.data
+    }
+  } catch (e) {
+    console.error('Bank transfer settings fetch failed:', e)
+  }
+}
 
 const paymentLabel = computed(() => {
   if (props.payment_type === 'paid') return t('messages.total_amount')
@@ -187,6 +200,7 @@ const fetchPaymentGatewayList = async () => {
 
 onMounted(async () => {
   await fetchPaymentGatewayList()
+  fetchBankTransferSettings()
   setFormData(defaultData())
 })
 

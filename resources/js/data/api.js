@@ -37,3 +37,4 @@ export const GET_WALLET_PAYMENT_METHOD = `${BASE_URL}/get-wallet-payment-method`
 export const GET_WALLET_STRIPE_PAYMENT_URL = `${BASE_URL}/create-wallet-stripe-payment`;
 export const PAYMENT_GATEWAY_LIST = `${BASE_URL}/payment-gateway-list`;
 export const STORE_HELPDESK_API = `${BASE_URL}/helpdesk-save`;
+export const BANK_TRANSFER_SETTINGS_API = `${BASE_URL}/bank-transfer-settings`;
