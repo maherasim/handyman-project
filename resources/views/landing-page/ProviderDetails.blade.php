@@ -854,58 +854,107 @@
         </div>
 
     </div>
-    <div class="modal fade" id="chooseme" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-            <div class="modal-content overflow-visible">
-                <span class="text-primary custom-btn-close" data-bs-dismiss="modal" aria-label="{{ __('messages.close') }}">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="40" height="41" viewBox="0 0 40 41"
-                        fill="none">
-                        <rect x="12" y="11.8381" width="17" height="17" fill="white"></rect>
-                        <path fill-rule="evenodd" clip-rule="evenodd"
-                            d="M12.783 4.17017H27.233C32.883 4.17017 36.6663 8.13683 36.6663 14.0368V27.6552C36.6663 33.5385 32.883 37.5035 27.233 37.5035H12.783C7.13301 37.5035 3.33301 33.5385 3.33301 27.6552V14.0368C3.33301 8.13683 7.13301 4.17017 12.783 4.17017ZM25.0163 25.8368C25.583 25.2718 25.583 24.3552 25.0163 23.7885L22.0497 20.8218L25.0163 17.8535C25.583 17.2885 25.583 16.3552 25.0163 15.7885C24.4497 15.2202 23.533 15.2202 22.9497 15.7885L19.9997 18.7535L17.033 15.7885C16.4497 15.2202 15.533 15.2202 14.9663 15.7885C14.3997 16.3552 14.3997 17.2885 14.9663 17.8535L17.933 20.8218L14.9663 23.7718C14.3997 24.3552 14.3997 25.2718 14.9663 25.8368C15.2497 26.1202 15.633 26.2718 15.9997 26.2718C16.383 26.2718 16.7497 26.1202 17.033 25.8368L19.9997 22.8885L22.9663 25.8368C23.2497 26.1385 23.6163 26.2718 23.983 26.2718C24.3663 26.2718 24.733 26.1202 25.0163 25.8368Z"
-                            fill="currentColor">
-                        </path>
-                    </svg>
-                </span>
-                @if (isset($why_choose_me))
-                    @if (isset($why_choose_me['about_description']))
-                        <div class="modal-body">
-                            <h6 class="text-capitalize mb-2">{{ __('landingpage.why_choose_me_title') }}</h6>
-                            <p class="m-0">
-                                {{ $why_choose_me['about_description'] }}
+    </div>
+    </div>
+
+    {{-- Why Choose Me Modal --}}
+    <div class="modal fade" id="chooseme" tabindex="-1" aria-labelledby="chooseMeLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+            <div class="modal-content border-0 shadow-lg" style="border-radius:20px;overflow:hidden;">
+
+                {{-- Gradient Header --}}
+                <div class="wcm-modal-header position-relative" style="background:linear-gradient(135deg,#3333ff 0%,#6366f1 60%,#8b5cf6 100%);padding:2rem 2rem 3.5rem;">
+                    <button type="button" class="btn-close btn-close-white position-absolute" data-bs-dismiss="modal"
+                        aria-label="Close" style="top:1rem;right:1rem;opacity:.9;"></button>
+
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="position-relative flex-shrink-0">
+                            <img src="{{ $providerData['data']['profile_image'] }}"
+                                alt="{{ $providerData['data']['display_name'] }}"
+                                class="rounded-circle object-cover border border-3 border-white shadow"
+                                style="width:64px;height:64px;object-fit:cover;">
+                            <span class="position-absolute bottom-0 end-0 bg-success rounded-circle border border-2 border-white"
+                                style="width:14px;height:14px;"></span>
+                        </div>
+                        <div>
+                            <p class="text-white mb-1 fw-semibold" style="font-size:.8rem;opacity:.8;letter-spacing:.06em;text-transform:uppercase;">
+                                {{ __('landingpage.why_choose_me') }}
                             </p>
-                    @endif
-                    @if (isset($why_choose_me['reason']))
-                        <h6 class="mt-3">{{ __('landingpage.reason') }}</h6>
-                        <ul class="list-inline mt-2 mb-0 p-0">
-                            @foreach ($why_choose_me['reason'] as $reason)
-                                <li>
-                                    <div class="d-flex gap-2">
-                                        <span class="text-primary">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                                viewBox="0 0 16 16" fill="none">
-                                                <g>
-                                                    <path d="M5.5 8.5L7 10L10.5 6.5" stroke="currentColor"
-                                                        stroke-width="1.5" stroke-linecap="round"
-                                                        stroke-linejoin="round"></path>
-                                                    <path
-                                                        d="M8 14C11.3137 14 14 11.3137 14 8C14 4.68629 11.3137 2 8 2C4.68629 2 2 4.68629 2 8C2 11.3137 4.68629 14 8 14Z"
-                                                        stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
-                                                        stroke-linejoin="round"></path>
-                                                </g>
+                            <h5 class="text-white fw-bold mb-0" id="chooseMeLabel">{{ $providerData['data']['display_name'] }}</h5>
+                            @if(!empty($providerData['data']['designation']))
+                                <p class="mb-0" style="color:rgba(255,255,255,.75);font-size:.875rem;">
+                                    {{ $providerData['data']['designation'] }}
+                                </p>
+                            @endif
+                        </div>
+                    </div>
+
+                    {{-- Decorative circles --}}
+                    <div class="position-absolute" style="top:-30px;right:-30px;width:130px;height:130px;border-radius:50%;background:rgba(255,255,255,.07);pointer-events:none;"></div>
+                    <div class="position-absolute" style="bottom:-20px;left:60%;width:80px;height:80px;border-radius:50%;background:rgba(255,255,255,.05);pointer-events:none;"></div>
+                </div>
+
+                {{-- White card overlap --}}
+                <div class="modal-body px-4 pt-0 pb-4" style="margin-top:-1.75rem;">
+                    <div class="bg-white rounded-4 shadow-sm p-4">
+
+                        @if(isset($why_choose_me))
+
+                            @if(isset($why_choose_me['about_description']))
+                                <div class="mb-4">
+                                    <div class="d-flex align-items-center gap-2 mb-2">
+                                        <span class="d-inline-flex align-items-center justify-content-center rounded-circle flex-shrink-0"
+                                            style="width:32px;height:32px;background:rgba(51,51,255,.1);">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z"
+                                                    stroke="#3333ff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                                                <path d="M12 8V12M12 16H12.01" stroke="#3333ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                                             </svg>
                                         </span>
-                                        <span>{{ $reason }}</span>
+                                        <h6 class="fw-bold mb-0" style="color:#1a1a2e;">{{ __('landingpage.why_choose_me_title') }}</h6>
                                     </div>
-                                </li>
-                            @endforeach
-                        </ul>
-                    @endif
+                                    <p class="mb-0 ps-1" style="color:#4b5563;line-height:1.7;font-size:.9375rem;">
+                                        {{ $why_choose_me['about_description'] }}
+                                    </p>
+                                </div>
+                            @endif
+
+                            @if(isset($why_choose_me['reason']) && count($why_choose_me['reason']) > 0)
+                                <div>
+                                    <div class="d-flex align-items-center gap-2 mb-3">
+                                        <span class="d-inline-flex align-items-center justify-content-center rounded-circle flex-shrink-0"
+                                            style="width:32px;height:32px;background:rgba(51,51,255,.1);">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M9 11L12 14L22 4" stroke="#3333ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                                <path d="M21 12V19C21 20.1046 20.1046 21 19 21H5C3.89543 21 3 20.1046 3 19V5C3 3.89543 3.89543 3 5 3H16"
+                                                    stroke="#3333ff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                                            </svg>
+                                        </span>
+                                        <h6 class="fw-bold mb-0" style="color:#1a1a2e;">{{ __('landingpage.reason') }}</h6>
+                                    </div>
+                                    <div class="d-flex flex-column gap-2">
+                                        @foreach($why_choose_me['reason'] as $reason)
+                                            <div class="d-flex align-items-start gap-3 p-3 rounded-3"
+                                                style="background:linear-gradient(135deg,rgba(51,51,255,.04) 0%,rgba(99,102,241,.03) 100%);border:1px solid rgba(51,51,255,.08);">
+                                                <span class="d-inline-flex align-items-center justify-content-center rounded-circle flex-shrink-0"
+                                                    style="width:24px;height:24px;min-width:24px;background:#3333ff;margin-top:1px;">
+                                                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                        <path d="M2 6L4.5 8.5L10 3" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                                                    </svg>
+                                                </span>
+                                                <span style="color:#374151;font-size:.9375rem;line-height:1.6;">{{ $reason }}</span>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            @endif
+
+                        @endif
+                    </div>
+                </div>
+
             </div>
-            @endif
         </div>
-    </div>
-    </div>
     </div>
 @endsection
 
