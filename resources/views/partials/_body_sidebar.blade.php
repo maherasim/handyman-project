@@ -1449,6 +1449,22 @@ $menu->add('<span>'.__('messages.sidebar_favourit_provider').'</span><span class
 
         $menu
             ->add(
+                '<span>Bank Transfer Settings</span><span class="custom-tooltip"><span class="tooltip-text">Bank Transfer Settings</span></span>',
+                ['route' => ['setting.index', ['page' => 'bank-transfer-setting']]],
+            )
+            ->prepend(
+                '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M2 8.5H22" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M6 16.5H8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M10.5 16.5H14.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M6.44 3.5H17.56C20.22 3.5 22 5.39 22 8.06V15.94C22 18.61 20.22 20.5 17.56 20.5H6.44C3.78 20.5 2 18.61 2 15.94V8.06C2 5.39 3.78 3.5 6.44 3.5Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>',
+            )
+            ->nickname('bank_transfer_setting')
+            ->data('role', ['admin', 'demo_admin']);
+
+        $menu
+            ->add(
                 '<span>' .
                     __('messages.Settings') .
                     '</span><span class="custom-tooltip"><span class="tooltip-text">' .

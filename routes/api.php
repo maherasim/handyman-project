@@ -36,6 +36,7 @@ Route::get('subcategory-list',[API\SubCategoryController::class,'getSubCategoryL
 Route::middleware([OptionalSanctumAuth::class])->get('service-list',[API\ServiceController::class,'getServiceList']);
 Route::get('type-list',[API\CommanController::class,'getTypeList']);
 Route::get('spoken-languages', [API\CommanController::class, 'getSpokenLanguageOptions']);
+Route::get('bank-transfer-settings', [API\CommanController::class, 'getBankTransferSettings']);
 Route::get('blog-list',[API\BlogController::class,'getBlogList']);
 Route::post('blog-detail',[API\BlogController::class,'getBlogDetail']);
 Route::get('landing-page-list',[API\FrontendSettingController::class,'getLandingPageSetting']);
