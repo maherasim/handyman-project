@@ -1466,7 +1466,7 @@
     'booking_hold_service_confirm' => 'Do you want to hold this service?',
     'booking_enter_reason' => 'Enter reason',
     'add_extra_charges' => 'Add Extra Charges',
-    'add_more' => '+ Add More',
+    'add_more' => ' Add More',
     'profile_add_more_reason' => 'Add more reason',
     'country_tax' => 'Tax Country',
     'submit_charges' => 'Submit Charges',

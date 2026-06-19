@@ -1464,7 +1464,7 @@
     'booking_hold_service_confirm' => 'Möchten Sie diese Service zurückstellen?',
     'booking_enter_reason' => 'Grund angeben',
     'add_extra_charges' => 'Extrakosten hinzufügen',
-    'add_more' => '+ Weitere hinzufügen',
+    'add_more' => 'Weitere hinzufügen',
     'profile_add_more_reason' => 'Weiteren Grund hinzufügen',
     'country_tax' => 'Steuerland',
     'submit_charges' => 'Kosten absenden',
