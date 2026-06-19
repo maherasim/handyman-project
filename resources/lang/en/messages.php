@@ -2223,6 +2223,8 @@
     'send_request'                      => 'Send Request',
     'edit_commission'                   => 'Edit Commission',
     'not_authorized'                    => 'You are not authorized to perform this action.',
+    'commission_request_admin_email_subject'    => 'New Commission Change Request for :handyman',
+    'commission_request_handyman_email_subject' => 'Commission Change Requested for Your Profile',
     'commission_request_helpdesk_subject' => 'Commission Change Request: :handyman (:current% → :new%)',
     'commission_request_helpdesk_body'  => 'Provider :provider has requested to change the commission for handyman :handyman from :current% to :new%.' . "\n\n" . 'Reason: :reason',
     'commission_request_approved_message' => 'Admin has approved the commission change request. New commission: :new%.',

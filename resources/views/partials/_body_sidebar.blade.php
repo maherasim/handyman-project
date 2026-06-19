@@ -427,8 +427,11 @@
             )
             ->link->attr(['class' => '']);
 
+        @php
+            $pendingCommissionCount = \App\Models\HandymanCommissionRequest::where('status', 'pending')->count();
+        @endphp
         $menu->handyman
-            ->add('<span>' . __('messages.commission_requests') . '</span>', [
+            ->add('<span>' . __('messages.commission_requests') . ($pendingCommissionCount > 0 ? ' <span style="background:#ef4444;color:#fff;font-size:11px;font-weight:700;padding:1px 7px;border-radius:10px;margin-left:6px;">' . $pendingCommissionCount . '</span>' : '') . '</span>', [
                 'class' => 'sidebar-layout',
                 'route' => 'commission-request.index',
             ])

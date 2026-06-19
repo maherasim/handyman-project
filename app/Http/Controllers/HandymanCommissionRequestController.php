@@ -8,6 +8,8 @@ use App\Models\HelpDesk;
 use App\Models\HelpDeskActivityMapping;
 use App\Models\User;
 use App\Traits\NotificationTrait;
+use App\Mail\CommissionRequestAdminMail;
+use App\Mail\CommissionRequestHandymanMail;
 
 class HandymanCommissionRequestController extends Controller
 {
@@ -85,18 +87,68 @@ class HandymanCommissionRequestController extends Controller
             'provider_agreed'       => true,
         ]);
 
-        // Notify admin
+        $admin = User::where('user_type', 'admin')->first();
+
+        // In-app notification to admin via helpdesk
         try {
-            $activity_data = [
+            $this->sendNotification([
                 'activity_type' => 'add_helpdesk',
                 'helpdesk_id'   => $helpdesk->id,
                 'sender_id'     => $provider->id,
                 'receiver_id'   => admin_id(),
                 'helpdesk'      => $helpdesk,
-            ];
-            $this->sendNotification($activity_data);
+            ]);
         } catch (\Throwable $th) {
-            \Log::warning('Commission request notification failed: ' . $th->getMessage());
+            \Log::warning('Commission request admin in-app notification failed: ' . $th->getMessage());
+        }
+
+        // In-app notification to handyman
+        try {
+            HelpDeskActivityMapping::create([
+                'helpdesk_id'   => $helpdesk->id,
+                'sender_id'     => $provider->id,
+                'receiver_id'   => $handyman->id,
+                'messages'      => $description,
+                'activity_type' => 'add_helpdesk',
+            ]);
+            $this->sendNotification([
+                'activity_type' => 'add_helpdesk',
+                'helpdesk_id'   => $helpdesk->id,
+                'sender_id'     => $provider->id,
+                'receiver_id'   => $handyman->id,
+                'helpdesk'      => $helpdesk,
+            ]);
+        } catch (\Throwable $th) {
+            \Log::warning('Commission request handyman in-app notification failed: ' . $th->getMessage());
+        }
+
+        // Email to admin
+        try {
+            if ($admin && $admin->email) {
+                \Mail::to($admin->email)->send(new CommissionRequestAdminMail(
+                    $handyman,
+                    $provider,
+                    (float) $handyman->handyman_commission,
+                    (float) $request->requested_commission,
+                    $reason
+                ));
+            }
+        } catch (\Throwable $th) {
+            \Log::warning('Commission request admin email failed: ' . $th->getMessage());
+        }
+
+        // Email to handyman
+        try {
+            \Mail::to($handyman->email)->send(new CommissionRequestHandymanMail(
+                $handyman,
+                $provider,
+                (float) $handyman->handyman_commission,
+                (float) $request->requested_commission,
+                $helpdesk->id,
+                $reason
+            ));
+        } catch (\Throwable $th) {
+            \Log::warning('Commission request handyman email failed: ' . $th->getMessage());
         }
 
         return redirect()->back()->withSuccess(__('messages.commission_request_sent'));
