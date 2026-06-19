@@ -2241,11 +2241,12 @@
     'not_authorized'                     => 'Sie sind nicht berechtigt, diese Aktion durchzuführen.',
     'commission_request_admin_email_subject'    => 'Neue Provisionsänderungsanfrage für :handyman',
     'commission_request_handyman_email_subject' => 'Provisionsänderung für Ihr Profil beantragt',
+    'waiting_admin_approval'             => 'Warten auf Admin-Genehmigung',
     'commission_request_helpdesk_subject'=> 'Provisionsänderungsanfrage: :handyman (:current% → :new%)',
     'commission_request_helpdesk_body'   => 'Anbieter :provider hat beantragt, die Provision für Handwerker :handyman von :current% auf :new% zu ändern.' . "\n\n" . 'Grund: :reason',
     'commission_request_approved_message'=> 'Der Administrator hat die Provisionsänderungsanfrage genehmigt. Neue Provision: :new%.',
     'commission_request_rejected_message'=> 'Der Administrator hat die Provisionsänderungsanfrage abgelehnt. Grund: :reason',
-     'reject'=>'Reject',
-    'approved'=>'Approved',
+    'reject'   => 'Ablehnen',
+    'approved' => 'Genehmigt',
 );
 

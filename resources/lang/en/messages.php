@@ -2186,10 +2186,26 @@
     'payment_already_pending' => 'A payment for this amount is already pending approval. Please wait for admin verification.',
     'no_addresses_found'=>'Address not found',
     'add_address'=>'Add Address',
-    'waiting_admin_approval'=>'Add Address',
+    'waiting_admin_approval' => 'Waiting for Admin Approval',
     'pending_by_admin' => "Pending By Admin",
     'bank_transfer_selected'=>" Bank Transfer",
     'bank_transfer_email_proof'=> "Bank Transfer Email Proof ",
+
+    // Withdrawal reject & refund
+    'confirm_approve_withdrawal'   => 'Are you sure you want to approve this withdrawal?',
+    'confirm_reject_withdrawal'    => 'Are you sure you want to reject this withdrawal?',
+    'reject_refund'                => 'Reject & Refund',
+    'rejected'                     => 'Rejected',
+    'withdrawal_rejected_refunded' => 'Withdrawal rejected and amount refunded to wallet.',
+    'yes_reject_refund'            => 'Yes, Reject & Refund',
+
+    // Education levels (German academic system)
+    'education_not_specified_2'        => 'Bachelor',
+    'education_any_graduate_2'         => 'Master',
+    'education_apprenticeship_degree_2' => 'State Examination (Staatsexamen)',
+    'education_traineeship_degree_2'   => 'Doctorate (PhD)',
+    'education_secondary_degree_2'     => 'Habilitation',
+    'education_undergraduate_diploma_2' => 'Professorship',
 
     // Handyman profile lock & commission request
     'handyman_profile_locked'           => 'Handyman profile is locked. You cannot edit handyman information.',
