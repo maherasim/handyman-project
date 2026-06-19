@@ -42,7 +42,7 @@
             </div>
           <div class="mt-3">
             <div class="d-inline-flex align-items-center flex-wrap gap-3">
-              <button class="btn btn-primary" type="submit" :disabled="isProceedDisabled">
+              <button class="btn btn-primary" type="submit" :disabled="isProceedDisabled || IsLoading == 1">
                 <span v-if="IsLoading == 1" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                 <span v-else>{{ $t('landingpage.Proceed_To_Payment') }}</span>
               </button>
@@ -235,6 +235,7 @@ const { value: payment_method } = useField('payment_method')
 const errorMessages = ref({})
 
 const formSubmit = handleSubmit(async (values) => {
+  if (IsLoading.value === 1) return
    let advance_payment = (Number(props.total_advance_paid_amount) && Number(props.total_advance_paid_amount) > 0)
        ? Number(props.total_advance_paid_amount)
        : (props.total_booking_amount * props.advance_percentage) / 100;
@@ -299,12 +300,15 @@ const formSubmit = handleSubmit(async (values) => {
       })
     }
   } else if (values.payment_type === 'bank_transfer') {
+      IsLoading.value = 1
       values.txn_id = `#${props.booking_id}`
       values.payment_status = values.type === 'advance_payment' ? 'advanced_paid' : 'paid'
 
       confirmcancleSwal({ title: t('messages.bank_transfer_selected'), subtitle: t('messages.bank_transfer_email_proof') }).then(async (result) => {
-          IsLoading.value = 0
-          // if (!result.isConfirmed) return
+          if (!result.isConfirmed) {
+            IsLoading.value = 0
+            return
+          }
           IsLoading.value = 1
           const response = await fetch(BANK_TRANSFER_PAYMENT_API, {
               method: 'POST',
