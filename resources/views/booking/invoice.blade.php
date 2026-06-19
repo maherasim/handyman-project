@@ -38,28 +38,19 @@ $generaldata = isset($settings['general-setting']) ? json_decode($settings['gene
 $logoPath = public_path('assets/frobster logo.png');
 ?>
 @php
-    $showAdvance = false;
-    if (isset($payment)) {
-        if ($payment->payment_type === 'bank_transfer' && $payment->status == 1) {
-            $showAdvance = true;
-        } elseif ($payment->payment_type !== 'bank_transfer') {
-            $showAdvance = true;
-        }
-    }
-
     $unitPrice = (float) ($bookingdata->amount ?? 0);
-    $quantity = (int) ($bookingdata->quantity ?? 1);
+    $quantity  = (float) ($bookingdata->quantity ?? 1);
     $baseTotal = $unitPrice * $quantity;
 
     $discountAmount = ($bookingdata->discount ?? 0) > 0 ? (float) ($bookingdata->final_discount_amount ?? 0) : 0;
-    $couponAmount = $bookingdata->couponAdded ? (float) ($bookingdata->final_coupon_discount_amount ?? 0) : 0;
+    $couponAmount   = $bookingdata->couponAdded ? (float) ($bookingdata->final_coupon_discount_amount ?? 0) : 0;
 
     $subTotal = $baseTotal - $discountAmount - $couponAmount;
 
-    $addonTotal = (float) ($bookingdata->bookingAddonService->sum('price') ?? 0);
+    $addonTotal      = (float) ($bookingdata->bookingAddonService->sum('price') ?? 0);
     $extraChargeTotal = 0;
     foreach ($bookingdata->bookingExtraCharge as $item) {
-        $extraChargeTotal += (float) ($item->price ?? 0) * (int) ($item->qty ?? 0);
+        $extraChargeTotal += (float) ($item->price ?? 0) * (float) ($item->qty ?? 0);
     }
 
     $totalBeforeTax = $subTotal + $addonTotal + $extraChargeTotal;
@@ -67,14 +58,28 @@ $logoPath = public_path('assets/frobster logo.png');
     $taxRate = 0;
     if (!empty(optional($bookingdata->service)->tax_country_id)) {
         $taxModel = \App\Models\Tax::find(optional($bookingdata->service)->tax_country_id);
-        $taxRate = $taxModel->value ?? 0;
+        $taxRate  = $taxModel->value ?? 0;
     }
 
-    $taxAmount = ($totalBeforeTax * $taxRate) / 100;
+    $taxAmount  = ($totalBeforeTax * $taxRate) / 100;
     $grandTotal = $totalBeforeTax + $taxAmount;
 
+    // Advance payment — use calculated amount when not yet paid
+    $advancePercent  = (float) (optional($bookingdata->service)->advance_payment_amount ?? 0);
+    $isAdvanceEnabled = optional($bookingdata->service)->is_enable_advance_payment == 1 && $advancePercent > 0;
+
     $advancePaid = (float) ($bookingdata->advance_paid_amount ?? 0);
+    if ($advancePaid <= 0 && $isAdvanceEnabled) {
+        $advancePaid = ($grandTotal * $advancePercent) / 100;
+    }
     $remainingAmount = $grandTotal - $advancePaid;
+
+    // Show advance section when service has it enabled, OR when a payment record exists (bank transfer approved)
+    $showAdvance = $isAdvanceEnabled;
+    if (!$showAdvance && isset($payment)) {
+        $showAdvance = ($payment->payment_type === 'bank_transfer' && $payment->status == 1)
+                    || $payment->payment_type !== 'bank_transfer';
+    }
 
     $invoiceDateIssued = $bookingdata->created_at
         ? \Carbon\Carbon::parse($bookingdata->created_at)->locale(app()->getLocale())->translatedFormat('d F Y')
